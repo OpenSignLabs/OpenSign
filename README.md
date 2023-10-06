@@ -1,10 +1,10 @@
-# OpenSign by OpenSign Labs
+# OpenSign by [OpenSign Labs](https://www.opensignlabs.com)
                     
 The open source DocuSign | PandaDoc | SignNow | Adobe Sign | Smartwaiver | SignRequest | HelloSign | Zoho sign alternative.
 
 Visit our website
 
-# OpenSign
+# [OpenSign](https://www.opensignlabs.com)
 
 ## An Open-Source Alternative to DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, and HelloSign
 
@@ -61,7 +61,7 @@ We welcome contributions from the open-source community. For more information on
 
 ### License
 
-OpenSign is licensed under the MIT License. For more details, see the [LICENSE](LICENSE.md) file.
+OpenSign is licensed under the AGPL License. For more details, see the [LICENSE](LICENSE.md) file.
 
 ---
 
