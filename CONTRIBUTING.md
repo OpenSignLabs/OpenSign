@@ -1,6 +1,3 @@
-Certainly, Amol. Here is a combined version of the two responses, formatted using Markdown:
-
----
 
 # Contributing to OpenSign
 
