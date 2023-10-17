@@ -80,5 +80,3 @@ Engage with the community on our [Gitter Channel](https://gitter.im/OpenSignLabs
 By contributing, you agree that your contributions will be licensed under its [MIT License](LICENSE).
 
 ---
-
-This combined version encapsulates the Hacktoberfest participation along with the general guidelines for contributing to OpenSign, presenting a comprehensive overview for potential contributors. This should serve as a solid foundation to encourage and manage contributions from the community effectively.
