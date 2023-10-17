@@ -1,9 +1,21 @@
-# OpenSign by [OpenSign Labs](https://www.opensignlabs.com)
+<h1 align="center"><a href='https://www.opensignlabs.com'>OpenSign™</a></h1>
                     
-The open source DocuSign | PandaDoc | SignNow | Adobe Sign | Smartwaiver | SignRequest | HelloSign | Zoho sign alternative.
+<div align="center">
 
-Visit us on -
-# [OpenSignLabs.com](https://www.opensignlabs.com)
+The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign | Smartwaiver | SignRequest | HelloSign | Zoho sign.
+
+<a href="https://www.opensignlabs.com/">Website</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://www.opensignlabs.com">Docs</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://www.opensignlabs.com/blog">Blog</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://discord.com/invite/v42Nrt7H">Discord</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://twitter.com/opensignlabs">Twitter</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://www.linkedin.com/company/opensign%E2%84%A2/about/">LinkedIn</a>
+
 
 ## An Open-Source Alternative to DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, and HelloSign
 
@@ -14,6 +26,7 @@ Support us -
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/opensignlabs.svg?style=social&label=Follow%20%40opensignlabs)](https://twitter.com/opensignlabs)
 
 ---
+</div>
 
 ### Table of Contents
 
