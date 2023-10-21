@@ -1,0 +1,84 @@
+{
+  "name": "open_sign",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.7",
+    "@rjsf/core": "^5.13.0",
+    "@rjsf/utils": "^5.13.0",
+    "@rjsf/validator-ajv8": "^5.13.0",
+    "axios": "^1.5.1",
+    "daisyui": "^3.9.2",
+    "file-saver": "^2.0.5",
+    "html-react-parser": "^4.2.2",
+    "json-rules-engine-simplified": "^0.1.17",
+    "jwt-decode": "^3.1.2",
+    "mf-cra": "^0.0.5",
+    "moment": "^2.29.4",
+    "parse": "^4.2.0",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.9.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-multi-backend": "^8.0.3",
+    "react-dnd-touch-backend": "^16.0.1",
+    "react-dom": "^18.2.0",
+    "react-drag-listview": "^2.0.0",
+    "react-helmet": "^6.1.0",
+    "react-modal": "^3.16.1",
+    "react-redux": "^8.1.3",
+    "react-router-dom": "^6.16.0",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.7.7",
+    "reactour": "^1.19.1",
+    "redux": "^4.2.1",
+    "redux-thunk": "^2.4.2",
+    "rjsf-conditionals": "github:prafullnavkar-nxg/rjsf-conditionals",
+    "styled-components": "^4.4.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "mf-cra start",
+    "build": "CI=false && mf-cra build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "release": "standard-version",
+    "commit": "cz"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "devDependencies": {
+    "@babel/runtime-corejs2": "^7.23.2",
+    "autoprefixer": "^10.4.16",
+    "commitizen": "^4.3.0",
+    "eslint": "^8.51.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.33.2",
+    "lint-staged": "^15.0.1",
+    "postcss": "^8.4.31",
+    "prettier": "^2.8.0",
+    "pretty-quick": "^3.1.3",
+    "tailwindcss": "^3.3.3"
+  }
+}

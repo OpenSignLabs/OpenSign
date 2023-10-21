@@ -1,0 +1,13 @@
+runtime: nodejs
+env: flex
+
+env_variables:
+  # --REQUIRED--
+  DATABASE_URI: mongodb://localhost:27017/dev
+  APP_ID: <your-app-id>
+  MASTER_KEY: <your-master-key>
+  SERVER_URL: https://your-project-id.appspot.com/parse
+  # --OPTIONAL--
+  # FILE_KEY: <your-file-key>
+  # PARSE_MOUNT: /parse
+  # CLOUD_CODE_MAIN:  
