@@ -109,33 +109,6 @@ const Signup = (props) => {
     }
   };
 
-  const setLocalIframe = (iframeUrl) => {
-    try {
-      let data = {
-        accesstoken: localStorage.getItem("accesstoken"),
-        baseUrl: localStorage.getItem("baseUrl"),
-        parseAppId: localStorage.getItem("parseAppId"),
-        extended_class: localStorage.getItem("extended_class"),
-        extend_details: localStorage.getItem("Extand_Class"),
-        userSettings: localStorage.getItem("userSettings"),
-        username: localStorage.getItem("username"),
-        _appName: localStorage.getItem("_appName"),
-        TenetId: localStorage.getItem("TenetId")
-      };
-      let storage = JSON.stringify({
-        key: "storage",
-        method: "set",
-        data: data
-      });
-      var iframe = document.getElementById("def_iframe");
-      iframe.contentWindow.postMessage(storage, "*");
-      setTimeout(() => {
-        navigate(`/microapp/${iframeUrl}`);
-      }, 4000);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const handleNavigation = async (sessionToken) => {
     const baseUrl = localStorage.getItem("BaseUrl12");
     const parseAppId = localStorage.getItem("AppID12");
@@ -316,19 +289,13 @@ const Signup = (props) => {
                                 element.pageType
                               );
                               setState({ loading: false });
-                              if (
-                                localStorage.getItem("domain") === "contracts"
-                              ) {
+                              if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
                                 navigate("/subscription");
                               } else {
                                 alert("Registered user successfully");
-                                if (element.pageType === "microapp") {
-                                  setLocalIframe(element.pageId);
-                                } else {
-                                  navigate(
-                                    `/${element.pageType}/${element.pageId}`
-                                  );
-                                }
+                                navigate(
+                                  `/${element.pageType}/${element.pageId}`
+                                );
                               }
                             }
                           } else {
@@ -340,19 +307,12 @@ const Signup = (props) => {
                             );
                             localStorage.setItem("pageType", element.pageType);
                             setState({ loading: false });
-
-                            if (
-                              localStorage.getItem("domain") === "contracts"
-                            ) {
+                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
                               navigate("/subscription");
                             } else {
-                              if (element.pageType === "microapp") {
-                                setLocalIframe(element.pageId);
-                              } else {
-                                navigate(
-                                  `/${element.pageType}/${element.pageId}`
-                                );
-                              }
+                              navigate(
+                                `/${element.pageType}/${element.pageId}`
+                              );
                             }
                           }
                         },

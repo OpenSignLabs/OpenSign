@@ -59,9 +59,17 @@ function App() {
           <Routes>
             <Route exact path="/" element={<Login />} />
             <Route exact path="/signup" element={<Signup />} />
-            <Route exact path="/pgsignup" element={<Pgsignup />} />
             <Route exact path="/forgetpassword" element={<ForgetPassword />} />
-            <Route exact path="/subscription" element={<PlanSubscriptions />} />
+            {process.env.REACT_APP_ENABLE_SUBSCRIPTION && (
+              <>
+                <Route exact path="/pgsignup" element={<Pgsignup />} />
+                <Route
+                  exact
+                  path="/subscription"
+                  element={<PlanSubscriptions />}
+                />
+              </>
+            )}
             <Route
               exact
               path="/changepassword"
