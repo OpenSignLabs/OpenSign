@@ -3,7 +3,7 @@ import Parse from "parse";
 import "../styles/toast.css";
 import "../styles/loader.css";
 import { connect } from "react-redux";
-import { fetchAppInfo, setEnableCart, showTenantName } from "../redux/actions";
+import { fetchAppInfo, showTenantName } from "../redux/actions";
 import axios from "axios";
 import Title from "../components/Title";
 import GoogleSignInBtn from "../components/LoginGoogle";
@@ -40,34 +40,6 @@ class Login extends Component {
     let currentHideNav = window.innerWidth <= 760;
     if (currentHideNav !== this.state.hideNav) {
       this.setState({ hideNav: currentHideNav });
-    }
-  };
-
-  setLocalIframe = (iframeUrl) => {
-    try {
-      let data = {
-        accesstoken: localStorage.getItem("accesstoken"),
-        baseUrl: localStorage.getItem("baseUrl"),
-        parseAppId: localStorage.getItem("parseAppId"),
-        extended_class: localStorage.getItem("extended_class"),
-        extend_details: localStorage.getItem("Extand_Class"),
-        userSettings: localStorage.getItem("userSettings"),
-        username: localStorage.getItem("username"),
-        _appName: localStorage.getItem("_appName"),
-        TenetId: localStorage.getItem("TenetId")
-      };
-      let storage = JSON.stringify({
-        key: "storage",
-        method: "set",
-        data: data
-      });
-      var iframe = document.getElementById("def_iframe");
-      iframe.contentWindow.postMessage(storage, "*");
-      setTimeout(() => {
-        <Navigate to={`/microapp/${iframeUrl}`} />;
-      }, 4000);
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -145,16 +117,6 @@ class Login extends Component {
                                 ""
                               );
                               localStorage.setItem("_user_role", _role);
-
-                              if (element.enableCart) {
-                                localStorage.setItem(
-                                  "EnableCart",
-                                  element.enableCart
-                                );
-                                this.props.setEnableCart(element.enableCart);
-                              } else {
-                                localStorage.removeItem("EnableCart");
-                              }
                               // Get TenentID from Extendend Class
                               localStorage.setItem(
                                 "extended_class",
@@ -225,7 +187,7 @@ class Login extends Component {
                                         element.pageType
                                       );
                                       this.setState({ loading: false });
-                                      return <Navigate to={`/`} />;
+                                      window.location = "/";
                                     } else {
                                       extendedInfo.forEach((x) => {
                                         if (x.TenantId) {
@@ -264,8 +226,8 @@ class Login extends Component {
                                       );
                                       this.setState({ loading: false });
                                       if (
-                                        localStorage.getItem("domain") ===
-                                        "contracts"
+                                        process.env
+                                          .REACT_APP_ENABLE_SUBSCRIPTION
                                       ) {
                                         const LocalUserDetails = {
                                           name: results[0].get("Name"),
@@ -285,39 +247,16 @@ class Login extends Component {
                                             localStorage.removeItem(
                                               "userDetails"
                                             );
-                                            if (
-                                              element.pageType === "microapp"
-                                            ) {
-                                              this.setLocalIframe(
-                                                element.pageId
-                                              );
-                                            } else {
-                                              return (
-                                                <Navigate
-                                                  to={`/${element.pageType}/${element.pageId}`}
-                                                />
-                                              );
-                                            }
+
+                                            window.location = `/${element.pageType}/${element.pageId}`;
                                           } else {
-                                            return (
-                                              <Navigate to={`/subscription`} />
-                                            );
+                                            window.location = `/subscription`;
                                           }
                                         } else {
-                                          return (
-                                            <Navigate to={`/subscription`} />
-                                          );
+                                          window.location = `/subscription`;
                                         }
                                       } else {
-                                        if (element.pageType === "microapp") {
-                                          this.setLocalIframe(element.pageId);
-                                        } else {
-                                          return (
-                                            <Navigate
-                                              to={`/${element.pageType}/${element.pageId}`}
-                                            />
-                                          );
-                                        }
+                                        window.location = `/${element.pageType}/${element.pageId}`;
                                       }
                                     }
                                   } else {
@@ -335,8 +274,7 @@ class Login extends Component {
                                     );
                                     this.setState({ loading: false });
                                     if (
-                                      localStorage.getItem("domain") ===
-                                      "contracts"
+                                      process.env.REACT_APP_ENABLE_SUBSCRIPTION
                                     ) {
                                       const LocalUserDetails = {
                                         name: _user.name,
@@ -350,20 +288,10 @@ class Login extends Component {
                                       );
                                       const billingDate = "";
                                       if (billingDate) {
-                                        return (
-                                          <Navigate to={`/subscription`} />
-                                        );
+                                        window.location = `/subscription`;
                                       }
                                     } else {
-                                      if (element.pageType === "microapp") {
-                                        this.setLocalIframe(element.pageId);
-                                      } else {
-                                        return (
-                                          <Navigate
-                                            to={`/${element.pageType}/${element.pageId}`}
-                                          />
-                                        );
-                                      }
+                                      window.location = `/${element.pageType}/${element.pageId}`;
                                     }
                                   }
                                 },
@@ -569,12 +497,6 @@ class Login extends Component {
                       );
                       localStorage.setItem("_user_role", _role);
 
-                      if (element.enableCart) {
-                        localStorage.setItem("EnableCart", element.enableCart);
-                        this.props.setEnableCart(element.enableCart);
-                      } else {
-                        localStorage.removeItem("EnableCart");
-                      }
                       // Get TenentID from Extendend Class
                       localStorage.setItem(
                         "extended_class",
@@ -641,7 +563,7 @@ class Login extends Component {
                               );
                               this.setThirdpartyLoader(false);
                               this.setState({ loading: false });
-                              return <Navigate to={`/login`} />;
+                              window.location = "/";
                             } else {
                               extendedInfo.forEach((x) => {
                                 if (x.TenantId) {
@@ -682,28 +604,12 @@ class Login extends Component {
                               if (billingDate) {
                                 if (billingDate > new Date()) {
                                   localStorage.removeItem("userDetails");
-                                  if (element.pageType === "microapp") {
-                                    this.setLocalIframe(element.pageId);
-                                  } else {
-                                    return (
-                                      <Navigate
-                                        to={`/${element.pageType}/${element.pageId}`}
-                                      />
-                                    );
-                                  }
+                                  window.location = `/${element.pageType}/${element.pageId}`;
                                 } else {
-                                  return (
-                                    <Navigate
-                                      to={`/${element.pageType}/${element.pageId}`}
-                                    />
-                                  );
+                                  window.location = `/subscription`;
                                 }
                               } else {
-                                return (
-                                  <Navigate
-                                    to={`/${element.pageType}/${element.pageId}`}
-                                  />
-                                );
+                                window.location = `/subscription`;
                               }
                             }
                           } else {
@@ -718,28 +624,13 @@ class Login extends Component {
                             if (billingDate) {
                               if (billingDate > new Date()) {
                                 localStorage.removeItem("userDetails");
-                                if (element.pageType === "microapp") {
-                                  this.setLocalIframe(element.pageId);
-                                } else {
-                                  return (
-                                    <Navigate
-                                      to={`/${element.pageType}/${element.pageId}`}
-                                    />
-                                  );
-                                }
+
+                                window.location = `/${element.pageType}/${element.pageId}`;
                               } else {
-                                return (
-                                  <Navigate
-                                    to={`/${element.pageType}/${element.pageId}`}
-                                  />
-                                );
+                                window.location = `/subscription`;
                               }
                             } else {
-                              return (
-                                <Navigate
-                                  to={`/${element.pageType}/${element.pageId}`}
-                                />
-                              );
+                              window.location = `/subscription`;
                             }
                           }
                         },
@@ -909,15 +800,6 @@ class Login extends Component {
                         );
                         localStorage.setItem("_user_role", _role);
 
-                        if (element.enableCart) {
-                          localStorage.setItem(
-                            "EnableCart",
-                            element.enableCart
-                          );
-                          this.props.setEnableCart(element.enableCart);
-                        } else {
-                          localStorage.removeItem("EnableCart");
-                        }
                         // Get TenentID from Extendend Class
                         localStorage.setItem(
                           "extended_class",
@@ -968,7 +850,7 @@ class Login extends Component {
                                   "pageType",
                                   element.pageType
                                 );
-                                return <Navigate to={`/login`} />;
+                                window.location = `/`;
                               } else {
                                 extendedInfo.forEach((x) => {
                                   if (x.TenantId) {
@@ -995,16 +877,7 @@ class Login extends Component {
                                   "pageType",
                                   element.pageType
                                 );
-                                localStorage.removeItem("SwitcherApp");
-                                if (element.pageType === "microapp") {
-                                  this.setLocalIframe(element.pageId);
-                                } else {
-                                  return (
-                                    <Navigate
-                                      to={`/${element.pageType}/${element.pageId}`}
-                                    />
-                                  );
-                                }
+                                window.location = `/${element.pageType}/${element.pageId}`;
                               }
                             } else {
                               localStorage.setItem(
@@ -1019,16 +892,7 @@ class Login extends Component {
                                 "pageType",
                                 element.pageType
                               );
-                              localStorage.removeItem("SwitcherApp");
-                              if (element.pageType === "microapp") {
-                                this.setLocalIframe(element.pageId);
-                              } else {
-                                return (
-                                  <Navigate
-                                    to={`/${element.pageType}/${element.pageId}`}
-                                  />
-                                );
-                              }
+                              window.location = `/${element.pageType}/${element.pageId}`;
                             }
                           },
                           (error) => {
@@ -1139,14 +1003,10 @@ class Login extends Component {
       localStorage.getItem("accesstoken") &&
       localStorage.getItem("pageType")
     ) {
-      if (localStorage.getItem("pageType") === "microapp") {
-        this.setLocalIframe(localStorage.getItem("PageLanding"));
-      } else {
-        let _redirect = `/${localStorage.getItem(
-          "pageType"
-        )}/${localStorage.getItem("PageLanding")}`;
-        return <Navigate to={_redirect} />;
-      }
+      let _redirect = `/${localStorage.getItem(
+        "pageType"
+      )}/${localStorage.getItem("PageLanding")}`;
+      return <Navigate to={_redirect} />;
     }
 
     const { email, password } = this.state;
@@ -1226,7 +1086,6 @@ class Login extends Component {
                         </div>
                         <div>
                           <span className="text-[13px]">
-                            {/* <a href="/ForgotPassword" >Forgot Password ?</a></span> */}
                             <NavLink to={`/forgetpassword`}>
                               Forgot Password ?
                             </NavLink>
@@ -1409,6 +1268,5 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   fetchAppInfo,
-  setEnableCart,
   showTenantName
 })(Login);
