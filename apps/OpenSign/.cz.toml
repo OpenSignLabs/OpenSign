@@ -1,0 +1,6 @@
+[tool.commitizen]
+version = "0.1.0"  # This should be your current semver version
+version_files = [
+    "package.json:\"version\":",
+    "package-lock.json:\"version\":",
+]
