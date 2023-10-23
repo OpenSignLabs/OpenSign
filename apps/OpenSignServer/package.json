@@ -13,7 +13,7 @@
     "lint": "eslint --cache ./cloud && eslint --cache index.js && eslint --cache ./spec",
     "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js && eslint --cache --fix ./spec",
     "prettier": "prettier --write '{cloud,spec}/{**/*,*}.js' 'index.js'",
-    "start": "ls && node index.js",
+    "start": "node index.js",
     "test": "mongodb-runner start && TESTING=true jasmine",
     "watch": "nodemon index.js"
   },
