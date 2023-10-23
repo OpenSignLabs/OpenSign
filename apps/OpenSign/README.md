@@ -23,9 +23,3 @@ The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-# Remote Deployment
-
-## DigitalOcean
-
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/prafullnavkar-nxg/open_sign/tree/master&refcode=30db1c901ab0)

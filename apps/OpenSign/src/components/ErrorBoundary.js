@@ -29,7 +29,6 @@ export class ErrorBoundary extends Component {
               flexFlow: "column"
             }}
           >
-            {/* <img src="./images/1210964-link.jpg" alt="" /> */}
             <h1
               style={{
                 fontSize: "2em",

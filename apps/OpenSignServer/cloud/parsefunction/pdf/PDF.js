@@ -221,7 +221,9 @@ async function PDF(req, res) {
         // let PdfBuffer = fs.readFileSync("exports/simple.pdf");
 
         //  `P12Buffer` used to create buffer from p12 certificate
-        const P12Buffer = fs.readFileSync(`pdfFile/emudhra-test-class2.pfx`);
+        const pfxFile = process.env.PFX_BASE64;
+        // const P12Buffer = fs.readFileSync();
+        const P12Buffer = Buffer.from(pfxFile, 'base64');
 
         if (sign) {
           //  `plainAddPlaceholder` is used to add code of digitial sign in pdf file
@@ -241,10 +243,7 @@ async function PDF(req, res) {
             signatureLength: 10000,
           });
         }
-
         // console.log("PdfBuffer ", PdfBuffer);
-        // const clientIP = req.headers["x-real-ip"];
-        // console.log("req.ip", clientIP);
 
         //`new signPDF` create new instance of pdfBuffer and p12Buffer
         const OBJ = new SignPDF(PdfBuffer, P12Buffer);

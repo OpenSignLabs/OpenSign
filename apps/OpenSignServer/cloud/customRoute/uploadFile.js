@@ -64,7 +64,7 @@ async function uploadFile(req, res) {
         s3,
         bucket: DO_SPACE,
         metadata: function (req, file, cb) {
-          cb(null, { fieldName: 'TESTING_METADATA' });
+          cb(null, { fieldName: 'OPENSIGN_METADATA' });
         },
         key: function (req, file, cb) {
           //console.log(file);

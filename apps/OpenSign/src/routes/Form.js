@@ -185,8 +185,8 @@ class FormBuilder extends Component {
         let PageLanding = localStorage.getItem("PageLanding");
         let domain = localStorage.getItem("domain");
         let _appName = localStorage.getItem("_appName");
-        let baseUrr = localStorage.getItem("BaseUrl12");
-        let appidd = localStorage.getItem("AppID12");
+        let baseUrl = localStorage.getItem("BaseUrl12");
+        let appid = localStorage.getItem("AppID12");
         localStorage.clear();
         localStorage.setItem("appLogo", applogo);
         localStorage.setItem("appName", appName);
@@ -195,8 +195,8 @@ class FormBuilder extends Component {
         localStorage.setItem("PageLanding", PageLanding);
         localStorage.setItem("domain", domain);
         localStorage.setItem("userSettings", appdata);
-        localStorage.setItem("BaseUrl12", baseUrr);
-        localStorage.setItem("AppID12", appidd);
+        localStorage.setItem("BaseUrl12", baseUrl);
+        localStorage.setItem("AppID12", appid);
         this.props.navigate(`/`);
       }
       console.log(e.message);
