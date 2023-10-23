@@ -1,0 +1,57 @@
+.submiBtn {
+    background: #1ab6ce;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+    border: none;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.submiBtn:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+    background: #028fa5;
+    color: white;
+
+}
+
+.resetBtn {
+    background: #188ae2;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+    border: none;
+    color: white;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 600;
+
+}
+
+.resetBtn:hover {
+    box-shadow: 0 2px 4px rgba(27, 26, 26, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+    background: #0362aa;
+    color: white;
+
+}
+
+.form-group {
+    margin-bottom: 0.5rem;
+
+}
+
+.required{
+    color: red;
+}
+
+.form-control {
+    height: 35px;
+    font-size: 12px;
+}
+
+.form-group.field.field-object {
+    margin-left: 5px;
+}
+legend{
+    font-size: 17px;
+    font-weight: 500;
+}
