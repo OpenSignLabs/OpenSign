@@ -1,26 +1,27 @@
-FROM node:latest
+# Use an official Node runtime as the base image
+FROM node:16
 
-RUN mkdir parse
+# Set the working directory inside the container
+WORKDIR /usr/src/app
 
-ADD . /parse
-WORKDIR /parse
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY apps/OpenSignServer/package*.json ./
+
+# Install application dependencies
 RUN npm install
 
-ENV APP_ID setYourAppId
-ENV MASTER_KEY setYourMasterKey
-ENV DATABASE_URI setMongoDBURI
+# If you have native dependencies, you'll need extra tools. Uncomment the following line if needed.
+# RUN apk add --no-cache make gcc g++ python3
 
-# Optional (default : 'parse/cloud/main.js')
-# ENV CLOUD_CODE_MAIN cloudCodePath
+# Copy the current directory contents into the container
+COPY apps/OpenSignServer/ .
 
-# Optional (default : '/parse')
-# ENV PARSE_MOUNT mountPath
+# Make port 8080 available to the world outside this container
+EXPOSE 8080
 
-EXPOSE 1337
+# Define environment variables if needed
+# ENV NODE_ENV production
+# ENV DATABASE_URL mongodb://db:27017
 
-# Uncomment if you want to access cloud code outside of your container
-# A main.js file must be present, if not Parse will not start
-
-# VOLUME /parse/cloud               
-
-CMD [ "npm", "start" ]
+# Run the application
+CMD ["npm", "start"]
