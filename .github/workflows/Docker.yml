@@ -1,0 +1,44 @@
+name: ci
+on:
+  push:
+    branches:
+      - 'monorepo'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - image: amolshejole/OpenSign
+            dockerfile: apps/OpenSign/Dockerfile
+          - image: amolshejole/OpenSignServer
+            dockerfile: apps/OpenSignServer/Dockerfile
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ matrix.image }}
+      -
+        name: Debug - List files
+        run: ls -R apps/OpenSign/  # Adjust the path as needed
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
