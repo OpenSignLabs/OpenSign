@@ -42,7 +42,6 @@
     "build": "CI=false && mf-cra build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepare": "husky install | chmod ug+x .husky/*",
     "release": "standard-version",
     "commit": "cz"
   },
@@ -76,7 +75,6 @@
     "eslint": "^8.51.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.33.2",
-    "husky": "^8.0.3",
     "lint-staged": "^15.0.1",
     "postcss": "^8.4.31",
     "prettier": "^2.8.0",
