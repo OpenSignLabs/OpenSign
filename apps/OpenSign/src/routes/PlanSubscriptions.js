@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from "react";
-import "../styles/plansubscription.css";
 import { useNavigate } from "react-router";
+import { NavLink } from "react-router-dom";
+import checkmark from "../assets/images/checkmark.png";
+import plansArr from '../json/plansArr.json'
+const listItemStyle = {
+  paddingLeft: '20px', // Add padding to create space for the image
+  backgroundImage: `url(${checkmark})`, // Set your image as the list style image
+  backgroundPosition: 'left',
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: '16px 16px', // Adjust the size of the image
+};
+
 const PlanSubscriptions = () => {
   const navigate = useNavigate();
   const [yearlyVisible, setYearlyVisible] = useState(false);
@@ -28,9 +38,9 @@ const PlanSubscriptions = () => {
     // eslint-disable-next-line
   }, []);
 
-  const toggleFrequency = () => {
-    setYearlyVisible(!yearlyVisible);
-  };
+  // const toggleFrequency = () => {
+  //   setYearlyVisible(!yearlyVisible);
+  // };
 
   return (
     <>
@@ -54,6 +64,7 @@ const PlanSubscriptions = () => {
       ) : (
         <div
           style={{
+            backgroundColor: "white",
             overflowY: "auto",
             maxHeight: "600px",
             "--theme-color": "#7952b3",
@@ -62,638 +73,89 @@ const PlanSubscriptions = () => {
         >
           <div
             id="monthlyPlans"
-            style={{ display: yearlyVisible ? "none" : "block" }}
+            className={`${yearlyVisible ? "none" : "block my-2"}`}
           >
-            <div id="app">
-              <div className="pricing-table-main">
-                <div className="">
-                  <div className="pricing-table-frequency clearfix">
-                    <ul
-                      className="navs"
-                      style={{
-                        listStyle: "none",
-                        display: "flex",
-                        alignItems: "baseline"
-                      }}
-                    >
-                      <li className="nav-item">
-                        <button
-                          className="nav-link frequency active"
-                          name="1_months"
+            {/* <div className=" my-2 w-full flex justify-center">
+              <ul
+                className="navs"
+                style={{
+                  listStyle: "none",
+                  display: "flex",
+                  alignItems: "baseline"
+                }}
+              >
+                <li className="nav-item">
+                  <button className="nav-link frequency active" name="1_months">
+                    Monthly
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className="nav-link frequency "
+                    onClick={toggleFrequency}
+                    name="1_years"
+                  >
+                    Yearly
+                  </button>
+                </li>
+              </ul>
+            </div> */}
+            <div className="flex justify-center w-full my-2">
+              <ul className=" flex flex-col md:flex-row h-full bg-white justify-center border-collapse border-[1px] border-gray-300">
+                {plansArr.map((item) => (
+                  <li
+                    className="flex flex-col md:my-0 text-center border-[1px] border-gray-300 w-[260px]"
+                    key={item.planName}
+                  >
+                    <div className="p-2 flex flex-col justify-center items-center">
+                      <h3 className="text-[#002862] uppercase">
+                        {item.planName}
+                      </h3>
+                      <div className="w-[150px] h-[150px]">
+                        <img
+                          className="icon-basic mx-auto"
+                          src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
+                          alt="freeimg"
+                        />
+                      </div>
+                      <div className="">
+                        <span className="text-3xl">
+                          {item.currency && <small>{item.currency}</small>}
+                          {item.price}
+                        </span>
+                        <div
+                          className={`${
+                            item.subtitle.length <= 32
+                              ? "w-[150px]  text-center"
+                              : ""
+                          } text-sm text-center my-2`}
                         >
-                          Monthly
-                        </button>
-                      </li>
-                      <li className="nav-item">
-                        <button
-                          className="nav-link frequency "
-                          onClick={toggleFrequency}
-                          name="1_years"
+                          <p>{item.subtitle}</p>
+                        </div>
+                      </div>
+                      <div className="bg-[#002862] w-full text-white py-2 rounded">
+                        <NavLink
+                          to={item.url + details}
+                          className="rounded uppercase hover:no-underline hover:text-white"
+                          target="_self"
                         >
-                          Yearly
-                        </button>
-                      </li>
+                          {item.btnText}
+                        </NavLink>
+                      </div>
+                    </div>
+                    <hr className="w-full bg-gray-300 p-[.5px]" />
+                    <ul className="mx-1 p-3 text-left break-words text-sm list-none">
+                      {item.benefits.map((subitem, index) => (
+                        <li style={listItemStyle} key={index} className="m-1">
+                          <span style={{ position: "relative" }}>
+                            {subitem}
+                          </span>
+                        </li>
+                      ))}
                     </ul>
-                  </div>
-                </div>
-                <div className="pricing-table-body">
-                  <div className="pricing-table popular">
-                    <ul
-                      //   className="clearfix Elegant Pro"
-                      className="plans-custom"
-                    >
-                      <li className="plan-item">
-                        <div className="plan-block ">
-                          <h3 id="plan-name">Free</h3>
-                          <div className="pricing-img">
-                            <img
-                              className="icon-basic"
-                              src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                              alt="freeimg"
-                            />
-                          </div>
-                          <div className="main-price">
-                            <span className="price-figure">
-                              <small>₹</small>
-                              <span className="basic-plan price-value">
-                                <span
-                                  className="otherCurrency"
-                                  id="plan-amount"
-                                >
-                                  {" "}
-                                  0{" "}
-                                </span>
-                              </span>
-                            </span>
-                            <span className="price-term">
-                              <span>Billed Monthly </span>
-                            </span>
-                            <span className="goal">
-                              <a
-                                href={
-                                  "https://subscriptions.zoho.in/subscribe/3caf22e54c684d69f22ba6640f3961501c018beadbc1c771dbde1ccf1c7a189d/008" +
-                                  details
-                                }
-                                className="rounded"
-                                target="_self"
-                              >
-                                Subscribe
-                              </a>
-                            </span>
-                          </div>
-                          <ul
-                            id="price-features"
-                            className="price-features"
-                            style={{
-                              borderTop: "1px solid rgb(237, 237, 237)",
-                              paddingBottom: 7
-                            }}
-                          >
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Sign upto 5 documents per month
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                5GB secure storage on OpenSignDrive™
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Import from Google Drive & Dropbox
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                      <li className="plan-item">
-                        <div className="plan-block">
-                          <h3 id="plan-name">PROFESSIONAL</h3>
-                          <div className="pricing-img">
-                            <img
-                              className="icon-basic"
-                              src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                              alt="professionalimg"
-                            />
-                          </div>
-                          <div className="main-price">
-                            <span className="price-figure">
-                              <small>₹</small>
-                              <span className="basic-plan price-value">
-                                <span
-                                  className="otherCurrency"
-                                  id="plan-amount"
-                                >
-                                  {" "}
-                                  999{" "}
-                                </span>
-                              </span>
-                            </span>
-                            <span className="price-term">
-                              <span>Billed Monthly </span>
-                            </span>
-                            <span className="goal">
-                              <a
-                                href={
-                                  "https://subscriptions.zoho.in/subscribe/3caf22e54c684d69f22ba6640f3961501c018beadbc1c771dbde1ccf1c7a189d/004" +
-                                  details
-                                }
-                                className="rounded"
-                                target="_self"
-                              >
-                                Subscribe
-                              </a>
-                            </span>
-                          </div>
-                          <ul
-                            id="price-features"
-                            className="price-features"
-                            style={{
-                              borderTop: "1px solid rgb(237, 237, 237)",
-                              paddingBottom: 7
-                            }}
-                          >
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Sign upto 50 documents per month
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                50GB secure storage on OpenSignDrive™
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Import from Google Drive & Dropbox
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                      <li className="plan-item">
-                        <div className="plan-block ">
-                          <h3 id="plan-name">PREMIUM</h3>
-                          <div className="pricing-img">
-                            <img
-                              className="icon-basic"
-                              src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                              alt="premiumimg"
-                            />
-                          </div>
-                          <div className="main-price">
-                            <span className="price-figure">
-                              <small>₹</small>
-                              <span className="basic-plan price-value">
-                                <span
-                                  className="otherCurrency"
-                                  id="plan-amount"
-                                >
-                                  {" "}
-                                  1999{" "}
-                                </span>
-                              </span>
-                            </span>
-                            <span className="price-term">
-                              <span>Billed Monthly </span>
-                            </span>
-                            <span className="goal">
-                              <a
-                                href={
-                                  "https://subscriptions.zoho.in/subscribe/3caf22e54c684d69f22ba6640f3961501c018beadbc1c771dbde1ccf1c7a189d/003" +
-                                  details
-                                }
-                                className="rounded"
-                                target="_self"
-                              >
-                                Subscribe
-                              </a>
-                            </span>
-                          </div>
-
-                          <ul
-                            id="price-features"
-                            className="price-features"
-                            style={{
-                              borderTop: "1px solid rgb(237, 237, 237)",
-                              paddingBottom: 7
-                            }}
-                          >
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Sign unlimited documents
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Unlimited secure storage on OpenSignDrive™
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Import from Google Drive & Dropbox
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                      <li className="plan-item">
-                        <div className="plan-block ">
-                          <h3 id="plan-name">ELITE</h3>
-                          <div className="pricing-img">
-                            <img
-                              className="icon-basic"
-                              src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                              alt="eliteimg"
-                            />
-                          </div>
-                          <div className="main-price">
-                            <span className="price-figure">
-                              <small>₹</small>
-                              <span className="basic-plan price-value">
-                                <span
-                                  className="otherCurrency"
-                                  id="plan-amount"
-                                >
-                                  {" "}
-                                  3999{" "}
-                                </span>
-                              </span>
-                            </span>
-                            <span className="price-term">
-                              <span>Billed Monthly </span>
-                            </span>
-                            <span className="goal">
-                              <a
-                                href={
-                                  "https://subscriptions.zoho.in/subscribe/3caf22e54c684d69f22ba6640f3961501c018beadbc1c771dbde1ccf1c7a189d/006" +
-                                  details
-                                }
-                                className="rounded"
-                                target="_self"
-                              >
-                                Subscribe
-                              </a>
-                            </span>
-                          </div>
-                          <ul
-                            id="price-features"
-                            className="price-features"
-                            style={{
-                              borderTop: "1px solid rgb(237, 237, 237)",
-                              paddingBottom: 7
-                            }}
-                          >
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Sign upto 50 documents per month
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Unlimited secure storage on OpenSignDrive™
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Import from Google Drive & Dropbox
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Premium support included{" "}
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                SSO supported
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            id="yearlyPlans"
-            style={{ display: yearlyVisible ? "block" : "none" }}
-          >
-            <div id="app">
-              <div className="pricing-table-main">
-                <div className="">
-                  <div className="pricing-table-frequency clearfix">
-                    <ul
-                      className="navs"
-                      style={{
-                        listStyle: "none",
-                        display: "flex",
-                        alignItems: "baseline"
-                      }}
-                    >
-                      <li className="nav-item">
-                        <a
-                          className="nav-link frequency "
-                          onClick={toggleFrequency}
-                          name="1_months"
-                        >
-                          Monthly
-                        </a>
-                      </li>
-                      <li className="nav-item">
-                        <a className="nav-link frequency active" name="1_years">
-                          Yearly
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="pricing-table-body">
-                  <div className="pricing-table popular">
-                    <ul
-                      //   className="clearfix Elegant Pro"
-                      className="plans-custom"
-                    >
-                      <li className="plan-item">
-                        <div className="plan-block ">
-                          <h3 id="plan-name">Free</h3>
-                          <div className="pricing-img">
-                            <img
-                              className="icon-basic"
-                              src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                              alt="freeyimg"
-                            />
-                          </div>
-                          <div className="main-price">
-                            <span className="price-figure">
-                              <small>₹</small>
-                              <span className="basic-plan price-value">
-                                <span
-                                  className="otherCurrency"
-                                  id="plan-amount"
-                                >
-                                  {" "}
-                                  0{" "}
-                                </span>
-                              </span>
-                            </span>
-                            <span className="price-term">
-                              <span>Billed Yearly </span>
-                            </span>
-                            <span className="goal">
-                              <a
-                                href={
-                                  "https://subscriptions.zoho.in/subscribe/ef798486e6a0a11ea65f2bae8f2af9019cd1d0c8dd2e4a1818972435fd62a5da/009" +
-                                  details
-                                }
-                                className="rounded"
-                                target="_self"
-                              >
-                                Subscribe
-                              </a>
-                            </span>
-                          </div>
-                          <ul
-                            id="price-features"
-                            className="price-features"
-                            style={{
-                              borderTop: "1px solid rgb(237, 237, 237)",
-                              paddingBottom: 7
-                            }}
-                          >
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Sign upto 5 documents per month
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                5GB secure storage on OpenSignDrive™
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Import from Google Drive & Dropbox
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                      <li className="plan-item">
-                        <div className="plan-block ">
-                          <h3 id="plan-name">PROFESSIONAL</h3>
-                          <div className="pricing-img">
-                            <img
-                              className="icon-basic"
-                              src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                              alt="professionalyimg"
-                            />
-                          </div>
-                          <div className="main-price">
-                            <span className="price-figure">
-                              <small>₹</small>
-                              <span className="basic-plan price-value">
-                                <span
-                                  className="otherCurrency"
-                                  id="plan-amount"
-                                >
-                                  {" "}
-                                  5999{" "}
-                                </span>
-                              </span>
-                            </span>
-                            <span className="price-term">
-                              <span>Billed Yearly </span>
-                            </span>
-                            <span className="goal">
-                              <a
-                                href={
-                                  "https://subscriptions.zoho.in/subscribe/3caf22e54c684d69f22ba6640f3961501c018beadbc1c771dbde1ccf1c7a189d/005" +
-                                  details
-                                }
-                                className="rounded"
-                                target="_self"
-                              >
-                                Subscribe
-                              </a>
-                            </span>
-                          </div>
-                          <ul
-                            id="price-features"
-                            className="price-features"
-                            style={{
-                              borderTop: "1px solid rgb(237, 237, 237)",
-                              paddingBottom: 7
-                            }}
-                          >
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Sign upto 50 documents per month
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                50GB secure storage on OpenSignDrive™
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Import from Google Drive & Dropbox
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                      <li className="plan-item">
-                        <div className="plan-block ">
-                          <h3 id="plan-name">PREMIUM</h3>
-                          <div className="pricing-img">
-                            <img
-                              className="icon-basic"
-                              src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                              alt="premiumyimg"
-                            />
-                          </div>
-                          <div className="main-price">
-                            <span className="price-figure">
-                              <small>₹</small>
-                              <span className="basic-plan price-value">
-                                <span
-                                  className="otherCurrency"
-                                  id="plan-amount"
-                                >
-                                  {" "}
-                                  11999{" "}
-                                </span>
-                              </span>
-                            </span>
-                            <span className="price-term">
-                              <span>Billed Yearly </span>
-                            </span>
-                            <span className="goal">
-                              <a
-                                href={
-                                  "https://subscriptions.zoho.in/subscribe/3caf22e54c684d69f22ba6640f3961501c018beadbc1c771dbde1ccf1c7a189d/002" +
-                                  details
-                                }
-                                className="rounded"
-                                target="_self"
-                              >
-                                Subscribe
-                              </a>
-                            </span>
-                          </div>
-
-                          <ul
-                            id="price-features"
-                            className="price-features"
-                            style={{
-                              borderTop: "1px solid rgb(237, 237, 237)",
-                              paddingBottom: 7
-                            }}
-                          >
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Sign unlimited documents
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Unlimited secure storage on OpenSignDrive™
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Import from Google Drive & Dropbox
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                      <li className="plan-item">
-                        <div className="plan-block ">
-                          <h3 id="plan-name">ELITE</h3>
-                          <div className="pricing-img">
-                            <img
-                              className="icon-basic"
-                              src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                              alt="eliteyimg"
-                            />
-                          </div>
-                          <div className="main-price">
-                            <span className="price-figure">
-                              <small>₹</small>
-                              <span className="basic-plan price-value">
-                                <span
-                                  className="otherCurrency"
-                                  id="plan-amount"
-                                >
-                                  {" "}
-                                  23999{" "}
-                                </span>
-                              </span>
-                            </span>
-                            <span className="price-term">
-                              <span>Billed Yearly </span>
-                            </span>
-                            <span className="goal">
-                              <a
-                                href={
-                                  "https://subscriptions.zoho.in/subscribe/3caf22e54c684d69f22ba6640f3961501c018beadbc1c771dbde1ccf1c7a189d/007" +
-                                  details
-                                }
-                                className="rounded"
-                                target="_self"
-                              >
-                                Subscribe
-                              </a>
-                            </span>
-                          </div>
-                          <ul
-                            id="price-features"
-                            className="price-features"
-                            style={{
-                              borderTop: "1px solid rgb(237, 237, 237)",
-                              paddingBottom: 7
-                            }}
-                          >
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Sign upto 50 documents per month
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Unlimited secure storage on OpenSignDrive™
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Import from Google Drive & Dropbox
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                Premium support included{" "}
-                              </p>
-                            </li>
-                            <li>
-                              <p style={{ position: "relative" }}>
-                                SSO supported
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

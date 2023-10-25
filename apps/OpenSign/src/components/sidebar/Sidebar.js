@@ -103,7 +103,10 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           <i className="fa-brands fa-linkedin"></i>
         </NavLink>
         <NavLink to="https://www.twitter.com/opensignlabs" target="_blank">
-          <i className="fa-brands fa-square-x-twitter"></i>{" "}
+          <i className="fa-brands fa-square-x-twitter"></i>
+        </NavLink>
+        <NavLink to="https://discord.com/invite/xe9TDuyAyj" target="_blank">
+          <i className="fa-brands fa-discord"></i>
         </NavLink>
       </div>
     </div>
