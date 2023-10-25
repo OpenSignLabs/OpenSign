@@ -175,7 +175,7 @@ const HomeLayout = ({ children }) => {
         <div className="relative h-screen flex flex-col justify-between w-full overflow-y-auto">
           <div className="bg-[#eef1f5] p-3">{children}</div>
           <div>
-            <Footer footer="xap" />
+            <Footer />
           </div>
         </div>
       </div>
