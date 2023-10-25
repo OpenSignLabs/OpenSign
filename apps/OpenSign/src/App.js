@@ -23,7 +23,7 @@ function App() {
 
   const handleCredentials = () => {
     const appId = process.env.REACT_APP_APPID;
-    const baseurl = process.env.REACT_APP_SEVERURL;
+    const baseurl = process.env.REACT_APP_SERVERURL;
     const appName = "contracts";
     try {
       localStorage.setItem("BaseUrl12", `${baseurl}/`);
