@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 async function sendMailOTPv1(request) {
   try {
     //--for elearning app side
