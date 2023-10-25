@@ -13,7 +13,7 @@ async function sendMailOTPv1(request) {
     if (email) {
       axios({
         method: 'POST',
-        url: serverUrl + '/functions/sendmail',
+        url: process.env.SERVER_URL + '/functions/sendmail',
         headers: {
           'Content-Type': 'application/json',
           'X-Parse-Application-Id': process.env.APP_ID,
