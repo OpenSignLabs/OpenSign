@@ -92,9 +92,18 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           </>
         )}
       </ul>
-      <div className="mt-4 flex justify-center items-center text-[25px] text-black">
+      <div className="mt-4 flex justify-center items-center text-[25px] text-black gap-3">
         <NavLink to="https://github.com/opensignlabs/opensign" target="_blank">
-          <i className="fa-brands fa-github cursor-pointer"></i>
+          <i className="fa-brands fa-github"></i>
+        </NavLink>
+        <NavLink
+          to="https://www.linkedin.com/company/opensign%E2%84%A2/"
+          target="_blank"
+        >
+          <i className="fa-brands fa-linkedin"></i>
+        </NavLink>
+        <NavLink to="https://www.twitter.com/opensignlabs" target="_blank">
+          <i className="fa-brands fa-square-x-twitter"></i>{" "}
         </NavLink>
       </div>
     </div>
