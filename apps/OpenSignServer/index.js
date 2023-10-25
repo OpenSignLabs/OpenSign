@@ -32,14 +32,16 @@ const s3Options = {
   },
 };
 
-// ApiPayloadConverter
-// import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
-const mailgun = new Mailgun(formData);
-const mailgunClient = mailgun.client({
-  username: 'api',
-  key: process.env.MAILGUN_API_KEY,
-});
-const mailgunDomain = process.env.MAILGUN_DOMAIN;
+let mailgunClient;
+let mailgunDomain;
+if (process.env.MAILGUN_API_KEY) {
+  const mailgun = new Mailgun(formData);
+  mailgunClient = mailgun.client({
+    username: 'api',
+    key: process.env.MAILGUN_API_KEY,
+  });
+  mailgunDomain = process.env.MAILGUN_DOMAIN;
+}
 
 export const config = {
   databaseURI:
@@ -53,34 +55,36 @@ export const config = {
   publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Open Sign',
-  emailAdapter: {
-    module: 'parse-server-api-mail-adapter',
-    options: {
-      // The email address from which emails are sent.
-      sender: process.env.MAILGUN_SENDER,
-      // The email templates.
-      templates: {
-        // The template used by Parse Server to send an email for password
-        // reset; this is a reserved template name.
-        passwordResetEmail: {
-          subjectPath: './files/password_reset_email_subject.txt',
-          textPath: './files/password_reset_email.txt',
-          htmlPath: './files/password_reset_email.html',
+  emailAdapter: process.env.MAILGUN_API_KEY
+    ? {
+        module: 'parse-server-api-mail-adapter',
+        options: {
+          // The email address from which emails are sent.
+          sender: process.env.MAILGUN_SENDER,
+          // The email templates.
+          templates: {
+            // The template used by Parse Server to send an email for password
+            // reset; this is a reserved template name.
+            passwordResetEmail: {
+              subjectPath: './files/password_reset_email_subject.txt',
+              textPath: './files/password_reset_email.txt',
+              htmlPath: './files/password_reset_email.html',
+            },
+            // The template used by Parse Server to send an email for email
+            // address verification; this is a reserved template name.
+            verificationEmail: {
+              subjectPath: './files/verification_email_subject.txt',
+              textPath: './files/verification_email.txt',
+              htmlPath: './files/verification_email.html',
+            },
+          },
+          apiCallback: async ({ payload, locale }) => {
+            const mailgunPayload = ApiPayloadConverter.mailgun(payload);
+            await mailgunClient.messages.create(mailgunDomain, mailgunPayload);
+          },
         },
-        // The template used by Parse Server to send an email for email
-        // address verification; this is a reserved template name.
-        verificationEmail: {
-          subjectPath: './files/verification_email_subject.txt',
-          textPath: './files/verification_email.txt',
-          htmlPath: './files/verification_email.html',
-        },
-      },
-      apiCallback: async ({ payload, locale }) => {
-        const mailgunPayload = ApiPayloadConverter.mailgun(payload);
-        await mailgunClient.messages.create(mailgunDomain, mailgunPayload);
-      },
-    },
-  },
+      }
+    : null,
   filesAdapter: new S3Adapter(s3Options),
   auth: {
     google: {
