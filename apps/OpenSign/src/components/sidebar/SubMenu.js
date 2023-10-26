@@ -23,7 +23,7 @@ const Submenu = ({ icon, title, children }) => {
           ></i>
         </div>
       </button>
-      {isOpen && <ul className="pl-6 lg:pl-8">{children}</ul>}
+      {isOpen && <ul>{children}</ul>}
     </div>
   );
 };
