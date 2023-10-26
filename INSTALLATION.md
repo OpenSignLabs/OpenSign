@@ -17,7 +17,7 @@ OpenSign application consistes of 3 components -
 
 You can install all 3 components on digital ocean using the button below -
 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/OpenSignLabs/OpenSign/tree/monorepo&refcode=30db1c901ab0)
+[![Deploy on DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/OpenSignLabs/Deploy-OpenSign-to-Digital-Ocean/tree/main&refcode=30db1c901ab0)
 
 ## You will need to create an AWS S3 bucket or digital ocean space in order to store your uploaded documents
 
