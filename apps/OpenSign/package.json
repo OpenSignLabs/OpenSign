@@ -34,13 +34,11 @@
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
     "rjsf-conditionals": "github:prafullnavkar-nxg/rjsf-conditionals",
-    "serve": "^14.2.1",
     "styled-components": "^4.4.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start-dev": "mf-cra start",
-    "start": "serve -s build",
+    "start": "mf-cra start",
     "build": "CI=false && mf-cra build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
