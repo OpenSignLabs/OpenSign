@@ -53,7 +53,7 @@ const Report = () => {
   };
   return (
     <>
-      <Title title={"Pgsignup page"} />
+      <Title title={reportName} />
       {isLoader ? (
         <div
           style={{

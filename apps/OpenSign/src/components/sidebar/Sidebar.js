@@ -62,7 +62,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
               !item.children ? (
                 <li key={item.title} onClick={() => closeSidebar()}>
                   <Link
-                    className={`mx-auto flex items-center hover:bg-[#eef1f5] p-3 lg:p-4 hover:no-underline`}
+                    className={`mx-auto flex items-center hover:bg-[#eef1f5] p-3 lg:p-4 hover:no-underline cursor-pointer`}
                     to={`/${item.pageType}/${item.objectId}`}
                   >
                     <i className={item.icon + " text-[18px]"}></i>
@@ -74,9 +74,9 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
               ) : (
                 <Submenu key={item.title} icon={item.icon} title={item.title}>
                   {item.children.map((item) => (
-                    <li key={item.title} onClick={() => closeSidebar()}>
+                    <li key={item.title} onClick={() => closeSidebar()} className="pl-6 md:pl-8 hover:bg-[#eef1f5] cursor-pointer">
                       <Link
-                        className={`mx-auto flex items-center hover:bg-[#eef1f5] p-2 lg:p-3 hover:no-underline`}
+                        className={`mx-auto flex items-center p-2 lg:p-3 hover:no-underline`}
                         to={`/${item.pageType}/${item.objectId}`}
                       >
                         <i className={item.icon + " text-[18px]"}></i>

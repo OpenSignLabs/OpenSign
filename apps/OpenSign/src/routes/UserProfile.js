@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import dp from "../assets/images/dp.png";
+import Title from "../components/Title";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -118,6 +119,7 @@ function UserProfile() {
 
   return (
     <React.Fragment>
+      <Title title={"Profile"} />
       {isLoader ? (
         <div
           style={{

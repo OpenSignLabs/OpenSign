@@ -1,7 +1,7 @@
 async function AuthLoginAsMail(request) {
   try {
     //function for login user using user objectId without touching user's password
-
+    const serverUrl = process.env.SERVER_URL
     let otpN = request.params.otp;
     let otp = parseInt(otpN);
     let email = request.params.email;
