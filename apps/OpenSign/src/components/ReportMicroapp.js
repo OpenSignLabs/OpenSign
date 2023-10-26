@@ -2,7 +2,7 @@ import useFederatedComponent from "mf-cra";
 import React, { Suspense, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const MicroappModal = ({ app }) => {
+const MicroappModal = () => {
   const { remoteApp } = useParams();
 
   useEffect(() => {
@@ -33,9 +33,9 @@ const MicroappModal = ({ app }) => {
       {/* <!-- Modal Container --> */}
       <div className="bg-white rounded-lg shadow-lg w-full">
         {/* <!-- Modal Header --> */}
-        <div className="flex w-full items-center border-b-2 mb-2 p-4">
+        <div className="flex w-full items-center border-b-2 mb-2 p-2">
           <button
-            className="focus:outline-none bg-blue-500 text-white shadow px-3 py-2 rounded"
+            className="focus:outline-none bg-blue-500 text-white text-sm shadow px-2.5 py-1 rounded"
             id="closeModal"
             onClick={(e) => {
               e.preventDefault();
@@ -45,6 +45,11 @@ const MicroappModal = ({ app }) => {
           >
             Back
           </button>
+          {localStorage.getItem('domain') && (
+            <p className="flex-1 w-full text-sm md:text-base text-black text-center">
+              {localStorage.getItem('domain') === "contracts" ? "Document":""}
+            </p>
+          )}
         </div>
         {/* <!-- Modal Body --> */}
         <div className="w-full">

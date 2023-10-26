@@ -2,12 +2,14 @@ import { Suspense } from "react";
 import { useParams } from "react-router-dom";
 import useFederatedComponent from "mf-cra";
 import React from "react";
+import Title from "../components/Title";
 function RemoteApp({ app }) {
   // console.log("app ", app);
   const { Component: RemoteComponent } = useFederatedComponent(app);
   // console.log("RemoteComponent ", RemoteComponent);
   return (
     <>
+      <Title title={app.remoteName} />
       <Suspense
         fallback={
           <div style={{ height: "300px" }}>

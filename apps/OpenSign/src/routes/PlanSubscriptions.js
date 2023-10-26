@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
 import plansArr from '../json/plansArr.json'
+import Title from "../components/Title";
 const listItemStyle = {
   paddingLeft: '20px', // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -44,6 +45,7 @@ const PlanSubscriptions = () => {
 
   return (
     <>
+    <Title title={"Subscriptions"} />
       {isLoader ? (
         <div
           style={{
