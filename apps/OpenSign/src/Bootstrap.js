@@ -13,6 +13,11 @@ import {
   Preview
 } from "react-dnd-multi-backend";
 import DragElement from "./microappComponent/DragElement";
+import TagManager from "react-gtm-module";
+
+const tagManagerArgs = {
+  gtmId: "GTM-529N7LD"
+};
 
 const HTML5toTouch = {
   backends: [
@@ -42,6 +47,8 @@ const generatePreview = (props) => {
     </div>
   );
 };
+
+TagManager.initialize(tagManagerArgs);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
