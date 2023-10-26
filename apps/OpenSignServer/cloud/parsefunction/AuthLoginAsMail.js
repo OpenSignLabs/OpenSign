@@ -57,7 +57,7 @@ async function AuthLoginAsMail(request) {
                 let user = new Parse.User();
                 user.set('username', email);
                 user.set('email', email);
-                user.set('password', pass);
+                user.set('password', "12345");
                 user
                   .save()
                   .then(token => {
