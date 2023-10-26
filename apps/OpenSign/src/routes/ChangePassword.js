@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Parse from "parse";
 import { Navigate } from "react-router-dom";
+import Title from "../components/Title";
 
 function ChangePassword() {
   const [currentpassword, setCurrentPassword] = useState("");
@@ -49,6 +50,7 @@ function ChangePassword() {
   }
   return (
     <div className="w-full bg-white shadow rounded p-2">
+      <Title title={"Change Password"} />
       <div className="text-xl font-bold border-b-[1px] border-gray-300">
         Change Password
       </div>
