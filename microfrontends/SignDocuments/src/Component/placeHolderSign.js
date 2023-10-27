@@ -22,6 +22,7 @@ import SignerListPlace from "./component/signerListPlace";
 import Header from "./component/header";
 import { contactBook, contractUsers } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
+import ModalComponent from "./component/modalComponent";
 
 function PlaceHolderSign() {
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -58,6 +59,8 @@ function PlaceHolderSign() {
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [contractName, setContractName] = useState("");
   const { docId } = useParams();
+  const [isShowEmail, setIsShowEmail] = useState(false);
+  const [selectedEmail, setSelectedEmail] = useState(false);
 
   const color = [
     "#93a3db",
@@ -301,40 +304,80 @@ function PlaceHolderSign() {
     //     setIsLoading(loadObj);
     //   });
   };
+  console.log("signerpos", signerPos, isDragStampSS, isDragSignatureSS);
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
+    const isMobile = window.innerWidth < 712;
+
+    if (isMobile) {
+      if (selectedEmail) {
+        getSignerPos(item, monitor);
+      } else {
+        setIsShowEmail(true);
+      }
+    } else {
+      getSignerPos(item, monitor);
+    }
+  };
+
+  const getSignerPos = (item, monitor) => {
+    const isMobile = window.innerWidth < 712;
+    const newWidth = window.innerWidth;
+    const scale = pdfOriginalWidth / newWidth;
     const key = Math.floor(1000 + Math.random() * 9000);
-    const offset = monitor.getClientOffset();
-    //adding and updating drop position in array when user drop signature button in div
-    const containerRect = document
-      .getElementById("container")
-      .getBoundingClientRect();
-    const x = offset.x - containerRect.left;
-    const y = offset.y - containerRect.top;
-    const ybottom = containerRect.bottom - offset.y;
-
-    const dropData = [];
-    const xyPosArr = [];
-    const dropObj = {
-      xPosition: x - signBtnPosition[0].xPos,
-      yPosition: y - signBtnPosition[0].yPos,
-      isStamp: isDragStamp ? true : false,
-      key: key,
-      isDrag: false,
-      firstXPos: signBtnPosition[0].xPos,
-      firstYPos: signBtnPosition[0].yPos,
-      yBottom: ybottom,
-    };
-    dropData.push(dropObj);
-    const xyPos = {
-      pageNumber: pageNumber,
-      pos: dropData,
-    };
-
-    xyPosArr.push(xyPos);
-    const filterSignerPos = signerPos.filter(
+    let filterSignerPos = signerPos.filter(
       (data) => data.signerObjId === signerObjId
     );
+    let dropData = [];
+    let xyPosArr = [];
+    let xyPos = {};
+    if (item === "onclick") {
+      const dropObj = {
+        xPosition: window.innerWidth / 2 - 100,
+        yPosition: window.innerHeight / 2 - 60,
+        isStamp: monitor,
+        key: key,
+        isDrag: false,
+        scale: isMobile && scale,
+        yBottom: window.innerHeight / 2 - 60,
+      };
+      dropData.push(dropObj);
+      xyPos = {
+        pageNumber: pageNumber,
+        pos: dropData,
+      };
+
+      xyPosArr.push(xyPos);
+    } else if (item.type === "BOX") {
+      const offset = monitor.getClientOffset();
+      //adding and updating drop position in array when user drop signature button in div
+      const containerRect = document
+        .getElementById("container")
+        .getBoundingClientRect();
+      const x = offset.x - containerRect.left;
+      const y = offset.y - containerRect.top;
+      const ybottom = containerRect.bottom - offset.y;
+
+      const dropObj = {
+        xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
+        yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
+        isStamp: isDragStamp || isDragStampSS ? true : false,
+        key: key,
+        isDrag: false,
+        firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
+        firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
+        yBottom: ybottom,
+        scale: isMobile && scale,
+      };
+
+      dropData.push(dropObj);
+      xyPos = {
+        pageNumber: pageNumber,
+        pos: dropData,
+      };
+
+      xyPosArr.push(xyPos);
+    }
 
     //add signers objId first inseretion
     if (filterSignerPos.length > 0) {
@@ -739,6 +782,9 @@ function PlaceHolderSign() {
           Placeholders: signerPos,
           SignedUrl: pdfDetails[0].URL,
         };
+        const isMobile = window.innerWidth < 712;
+        const newWidth = window.innerWidth;
+        const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
 
         await axios
           .put(
@@ -822,7 +868,9 @@ function PlaceHolderSign() {
     }
     await axios
       .put(
-        `${localStorage.getItem("baseUrl")}classes/${extUserClass}/${signerUserId}`,
+        `${localStorage.getItem(
+          "baseUrl"
+        )}classes/${extUserClass}/${signerUserId}`,
         {
           TourStatus: updatedTourStatus,
         },
@@ -1009,6 +1057,11 @@ function PlaceHolderSign() {
                 )}
               </Modal.Footer>
             </Modal>
+            <ModalComponent
+              isShow={isShowEmail}
+              type={"signersAlert"}
+              setIsShowEmail={setIsShowEmail}
+            />
             {/* pdf header which contain funish back button */}
             <Header
               isPlaceholder={true}
@@ -1022,55 +1075,63 @@ function PlaceHolderSign() {
               alertSendEmail={alertSendEmail}
               isShowHeader={true}
               currentSigner={true}
+              dataTut4="reactourFour"
             />
-            <RenderPdf
-              pageNumber={pageNumber}
-              pdfOriginalWidth={pdfOriginalWidth}
-              pdfNewWidth={pdfNewWidth}
-              pdfDetails={pdfDetails}
-              signerPos={signerPos}
-              successEmail={false}
-              numPages={numPages}
-              pageDetails={pageDetails}
-              placeholder={true}
-              drop={drop}
-              handleDeleteSign={handleDeleteSign}
-              handleTabDrag={handleTabDrag}
-              handleStop={handleStop}
-              handleImageResize={handleImageResize}
-            />
+            <div data-tut="reactourThird">
+              <RenderPdf
+                pageNumber={pageNumber}
+                pdfOriginalWidth={pdfOriginalWidth}
+                pdfNewWidth={pdfNewWidth}
+                pdfDetails={pdfDetails}
+                signerPos={signerPos}
+                successEmail={false}
+                numPages={numPages}
+                pageDetails={pageDetails}
+                placeholder={true}
+                drop={drop}
+                handleDeleteSign={handleDeleteSign}
+                handleTabDrag={handleTabDrag}
+                handleStop={handleStop}
+                handleImageResize={handleImageResize}
+              />
+            </div>
           </div>
 
           {/* signature button */}
           {isMobile ? (
-           
-              <div data-tut="reactourSecond">
-                <FieldsComponent
-                  pdfUrl={isMailSend}
-                  sign={sign}
-                  stamp={stamp}
-                  dragSignature={dragSignature}
-                  signRef={signRef}
-                  handleDivClick={handleDivClick}
-                  handleMouseLeave={handleMouseLeave}
-                  isDragSign={isDragSign}
-                  themeColor={themeColor}
-                  dragStamp={dragStamp}
-                  dragRef={dragRef}
-                  isDragStamp={isDragStamp}
-                  // isSignYourself={true}
-                  isDragSignatureSS={isDragSignatureSS}
-                  dragSignatureSS={dragSignatureSS}
-                  dragStampSS={dragStampSS}
-                  addPositionOfSignature={addPositionOfSignature}
-                  signerPos={signerPos}
-                  signersdata={signersdata}
-                  isSelectListId={isSelectListId}
-                  setSignerObjId={setSignerObjId}
-                  setIsSelectId={setIsSelectId}
-                  setContractName={setContractName}
-                />
-             
+            <div>
+              <FieldsComponent
+                dataTut="reactourFirst"
+                dataTut2="reactourSecond"
+                pdfUrl={isMailSend}
+                sign={sign}
+                stamp={stamp}
+                dragSignature={dragSignature}
+                signRef={signRef}
+                handleDivClick={handleDivClick}
+                handleMouseLeave={handleMouseLeave}
+                isDragSign={isDragSign}
+                themeColor={themeColor}
+                dragStamp={dragStamp}
+                dragRef={dragRef}
+                isDragStamp={isDragStamp}
+                isSignYourself={true}
+                isDragSignatureSS={isDragSignatureSS}
+                dragSignatureSS={dragSignatureSS}
+                dragStampSS={dragStampSS}
+                addPositionOfSignature={addPositionOfSignature}
+                signerPos={signerPos}
+                signersdata={signersdata}
+                isSelectListId={isSelectListId}
+                setSignerObjId={setSignerObjId}
+                setIsSelectId={setIsSelectId}
+                setContractName={setContractName}
+                isSigners={true}
+                setIsShowEmail={setIsShowEmail}
+                isMailSend={isMailSend}
+                setSelectedEmail={setSelectedEmail}
+                selectedEmail={selectedEmail}
+              />
             </div>
           ) : (
             <div>
@@ -1098,9 +1159,6 @@ function PlaceHolderSign() {
                     dragRef={dragRef}
                     isDragStamp={isDragStamp}
                     isSignYourself={false}
-                    isDragSignatureSS={isDragSignatureSS}
-                    dragSignatureSS={dragSignatureSS}
-                    dragStampSS={dragStampSS}
                     // xyPostion={xyPostion}
                     //  isSigners={false}
                     addPositionOfSignature={addPositionOfSignature}

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
- 
+
 import { PDFDocument, rgb } from "pdf-lib";
 import "../css/./signature.css";
 import sign from "../assests/sign3.png";
@@ -1167,7 +1167,6 @@ function SignYourSelf() {
                 pdfOriginalWidth={pdfOriginalWidth}
                 pdfNewWidth={pdfNewWidth}
                 drop={drop}
-              
                 successEmail={successEmail}
                 nodeRef={nodeRef}
                 handleTabDrag={handleTabDrag}
@@ -1192,8 +1191,9 @@ function SignYourSelf() {
           {/*if document is not completed then render signature and stamp button in the right side */}
           {/*else document is  completed then render signed by signer name in the right side */}
           {!documentStatus.isCompleted ? (
-            <div data-tut="reactourFirst">
+            <div>
               <FieldsComponent
+                dataTut="reactourFirst"
                 pdfUrl={pdfUrl}
                 sign={sign}
                 stamp={stamp}
@@ -1213,6 +1213,7 @@ function SignYourSelf() {
                 xyPostion={xyPostion}
                 isSignYourself={true}
                 addPositionOfSignature={addPositionOfSignature}
+                isMailSend={false}
               />
             </div>
           ) : (
