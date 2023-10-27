@@ -37,7 +37,7 @@ export default function reportJson(id) {
             textColor: "white",
             btnIcon: "fa fa-plus",
             redirectUrl:
-              "remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/draftDocument"
+              "remoteUrl=aHR0cDovL2xvY2FsaG9zdDozMDAwL21mYnVpbGQvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/draftDocument"
           }
         ]
       };

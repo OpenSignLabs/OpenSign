@@ -1,0 +1,60 @@
+{
+  "name": "signmicroapp",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@radix-ui/themes": "^1.1.2",
+    "@react-pdf/renderer": "^3.1.9",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.5.1",
+    "file-saver": "^2.0.5",
+    "gh-pages": "^6.0.0",
+    "mf-cra": "^0.0.5",
+    "parse": "^4.2.0",
+    "pdf-lib": "^1.17.1",
+    "print-js": "^1.6.0",
+    "radix-ui": "^1.0.1",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.9.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-multi-backend": "^8.0.3",
+    "react-dnd-touch-backend": "^16.0.1",
+    "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.6",
+    "react-pdf": "^7.4.0",
+    "react-rnd": "^10.4.1",
+    "react-router-dom": "^6.16.0",
+    "react-scripts": "5.0.1",
+    "react-scrollbars-custom": "^4.1.1",
+    "react-signature-canvas": "^1.0.6",
+    "reactour": "^1.19.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "mf-cra start",
+    "build": "CI=false && mf-cra build && mv build ../../apps/OpenSign/public/mfbuild",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

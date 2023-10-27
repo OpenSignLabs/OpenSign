@@ -166,15 +166,15 @@ const HomeLayout = ({ children }) => {
   };
   return (
     <div>
-      <div className="sticky top-0 z-30">
+      <div className="sticky top-0 z-50">
         <Header showSidebar={showSidebar} />
       </div>
-      <div className="flex md:flex-row flex-col">
+      <div className="flex md:flex-row flex-col z-50">
         <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
 
         <div className="relative h-screen flex flex-col justify-between w-full overflow-y-auto">
           <div className="bg-[#eef1f5] p-3">{children}</div>
-          <div>
+          <div className="z-30">
             <Footer />
           </div>
         </div>
