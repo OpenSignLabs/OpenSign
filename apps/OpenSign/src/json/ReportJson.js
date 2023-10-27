@@ -96,7 +96,7 @@ export default function reportJson(id) {
       };
     case "1MwEuxLEkF":
       return {
-        reportName: "InProgress Document",
+        reportName: "In-progress documents",
         className: "contracts_Document",
         params: {
           Type: { $ne: "Folder" },
