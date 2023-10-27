@@ -67,7 +67,7 @@ function Header({
   const handleDownloadPdf = () => {
     const pdfName = pdfDetails[0] && pdfDetails[0].Name;
 
-    saveAs(pdfUrl, `${pdfName}_signed_by_opensign.qik.ai.pdf`);
+    saveAs(pdfUrl, `${pdfName}_signed_by_OpenSign™.pdf`);
   };
 
   return (

@@ -143,7 +143,7 @@ function EmailComponent({
 
   //handle download signed pdf
   const handleDownloadPdf = () => {
-    saveAs(pdfUrl, `${pdfName}_signed_by_opensign.qik.ai.pdf`);
+    saveAs(pdfUrl, `${pdfName}_signed_by_OpenSign™.pdf`);
   };
 
   return (
