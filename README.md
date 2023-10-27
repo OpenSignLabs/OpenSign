@@ -10,7 +10,7 @@ The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign |
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://www.opensignlabs.com/blog">Blog</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-  <a href="https://discord.com/invite/v42Nrt7H">Discord</a>
+  <a href="https://discord.com/invite/xe9TDuyAyj">Discord</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://twitter.com/opensignlabs">Twitter</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
