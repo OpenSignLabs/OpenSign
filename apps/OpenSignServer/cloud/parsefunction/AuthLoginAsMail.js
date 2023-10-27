@@ -50,7 +50,7 @@ async function AuthLoginAsMail(request) {
                     if (res.data) {
                       resolve(res.data);
                     } else {
-                      reject('User not found!');
+                      reject('user not found!');
                     }
                   })
                   .catch(err => {
@@ -59,25 +59,7 @@ async function AuthLoginAsMail(request) {
                 // user couldn't find lets sign up!
               })
               .catch(() => {
-                let user = new Parse.User();
-                user.set('username', email);
-                user.set('email', email);
-                user.set('password', '12345');
-                user
-                  .save()
-                  .then(token => {
-                    var error = token == '' ? true : false;
-                    if (error) {
-                      reject('result not found!');
-                    } else {
-                      resolve(token);
-                    }
-                  })
-                  .catch(e => {
-                    console.log('error in auth');
-                    reject('user already exists!');
-                    console.log(e);
-                  });
+                reject('user not found!');
               });
           });
         }
