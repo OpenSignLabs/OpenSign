@@ -191,7 +191,7 @@ function EmailComponent({
               className="btn btn-primary btn-sm"
             >
               <i
-                class="fa fa-print"
+                className="fa fa-print"
                 style={{
                   fontSize: "15px",
                   marginRight: "3px",
@@ -332,7 +332,7 @@ function EmailComponent({
                 marginTop: "10px",
                 color: "white",
               }}
-              class="fa fa-plus"
+              className="fa fa-plus"
               aria-hidden="true"
             ></i>
           </span>

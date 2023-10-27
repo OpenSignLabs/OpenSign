@@ -26,7 +26,6 @@ import Header from "./component/header";
 import ModalComponent from "./component/modalComponent";
 import RenderPdf from "./component/renderPdf";
 function EmbedPdfImage() {
-
   const { id, userPhone } = useParams();
 
   const [isSignPad, setIsSignPad] = useState(false);
@@ -618,10 +617,13 @@ function EmbedPdfImage() {
               ? imgUrlList[id].Height
               : 60;
             const imgWidth = imgUrlList[id].Width ? imgUrlList[id].Width : 150;
-
+            const isMobile = window.innerWidth < 712;
+            const newWidth = window.innerWidth;
+            const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
             page.drawImage(img, {
-              x: imgUrlList[id].xPosition,
-              y: page.getHeight() - imgUrlList[id].yPosition - imgHeight,
+              x: imgUrlList[id].xPosition * scale + 50,
+              y:
+                page.getHeight() - imgUrlList[id].yPosition * scale - imgHeight,
               width: imgWidth,
               height: imgHeight,
             });
@@ -647,17 +649,26 @@ function EmbedPdfImage() {
     pageNo
   ) => {
     let signgleSign;
+    const isMobile = window.innerWidth < 712;
+    const newWidth = window.innerWidth;
+    const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
       const height = xyPosData.Height ? xyPosData.Height : 60;
       const bottomY = xyPosData.isDrag
-        ? xyPosData.yBottom - height
-        : xyPosData.yBottom - height + xyPosData.firstYPos;
+        ? xyPosData.yBottom * scale - height
+        : xyPosData.firstYPos
+        ? xyPosData.yBottom * scale - height + xyPosData.firstYPos
+        : xyPosData.yBottom * scale - height;
       signgleSign = {
         pdfFile: pdfBase64Url,
         docId: docId,
         sign: {
           Base64: base64Url,
-          Left: xyPosData.resizeXPos
+          Left: isMobile
+            ? xyPosData.resizeXPos
+              ? xyPosData.resizeXPos * scale + 80
+              : xyPosData.xPosition * scale + 80
+            : xyPosData.resizeXPos
             ? xyPosData.resizeXPos
             : xyPosData.xPosition,
           Bottom: bottomY,
@@ -770,99 +781,6 @@ function EmbedPdfImage() {
   const saveImage = () => {
     const getImage = onSaveImage(xyPostion, index, signKey, imgWH, image);
     setXyPostion(getImage);
-    // const updateFilter = xyPostion[index].pos.filter(
-    //   (data) =>
-    //     data.key === signKey && data.Width && data.Height && data.SignUrl
-    // );
-
-    // if (updateFilter.length > 0) {
-    //   let newWidth, nweHeight;
-    //   const aspectRatio = imgWH.width / imgWH.height;
-    //   const getXYdata = xyPostion[index].pos;
-    //   if (aspectRatio === 1) {
-    //     newWidth = aspectRatio * 100;
-    //     nweHeight = aspectRatio * 100;
-    //   } else if (aspectRatio < 2) {
-    //     newWidth = aspectRatio * 100;
-    //     nweHeight = 100;
-    //   } else if (aspectRatio > 2 && aspectRatio < 4) {
-    //     newWidth = aspectRatio * 70;
-    //     nweHeight = 70;
-    //   } else if (aspectRatio > 4) {
-    //     newWidth = aspectRatio * 40;
-    //     nweHeight = 40;
-    //   } else if (aspectRatio > 5) {
-    //     newWidth = aspectRatio * 10;
-    //     nweHeight = 10;
-    //   }
-    //   const getPosData = getXYdata;
-    //   const addSign = getPosData.map((url, ind) => {
-    //     if (url.key === signKey) {
-    //       return {
-    //         ...url,
-    //         Width: newWidth,
-    //         Height: nweHeight,
-    //         SignUrl: image.src,
-    //         ImageType: image.imgType,
-    //       };
-    //     }
-    //     return url;
-    //   });
-
-    //   const newUpdateUrl = xyPostion.map((obj, ind) => {
-    //     if (ind === index) {
-    //       return { ...obj, pos: addSign };
-    //     }
-    //     return obj;
-    //   });
-    //   setXyPostion(newUpdateUrl);
-    // } else {
-    //   const getXYdata = xyPostion[index].pos;
-
-    //   const getPosData = getXYdata;
-
-    //   const aspectRatio = imgWH.width / imgWH.height;
-
-    //   let newWidth, nweHeight;
-    //   if (aspectRatio === 1) {
-    //     newWidth = aspectRatio * 100;
-    //     nweHeight = aspectRatio * 100;
-    //   } else if (aspectRatio < 2) {
-    //     newWidth = aspectRatio * 100;
-    //     nweHeight = 100;
-    //   } else if (aspectRatio > 2 && aspectRatio < 4) {
-    //     newWidth = aspectRatio * 70;
-    //     nweHeight = 70;
-    //   } else if (aspectRatio > 4) {
-    //     newWidth = aspectRatio * 40;
-    //     nweHeight = 40;
-    //   } else if (aspectRatio > 5) {
-    //     newWidth = aspectRatio * 10;
-    //     nweHeight = 10;
-    //   }
-
-    //   const addSign = getPosData.map((url, ind) => {
-    //     if (url.key === signKey) {
-    //       return {
-    //         ...url,
-    //         Width: newWidth,
-    //         Height: nweHeight,
-    //         SignUrl: image.src,
-    //         ImageType: image.imgType,
-    //       };
-    //     }
-    //     return url;
-    //   });
-
-    //   const newUpdateUrl = xyPostion.map((obj, ind) => {
-    //     if (ind === index) {
-    //       return { ...obj, pos: addSign };
-    //     }
-    //     return obj;
-    //   });
-
-    //   setXyPostion(newUpdateUrl);
-    // }
   };
 
   //function for set decline true on press decline button

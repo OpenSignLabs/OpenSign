@@ -38,10 +38,11 @@ function RenderPdf({
   signerObjectId,
   signedSigners,
   setPdfLoadFail,
-  setIsDragging,
   placeholder,
 }) {
   const isMobile = window.innerWidth < 712;
+
+  //function for render placeholder block over pdf document
 
   const checkSignedSignes = (data) => {
     // console.log("data",data)
@@ -903,8 +904,12 @@ function RenderPdf({
                               }}
                               disableDragging={true}
                               default={{
-                                x: pos.xPosition,
-                                y: pos.yPosition,
+                                x: pos.scale
+                                  ? pos.xPosition * pos.scale
+                                  : pos.xPosition,
+                                y: pos.scale
+                                  ? pos.yPosition * pos.scale
+                                  : pos.yPosition,
                               }}
                               onClick={() => {
                                 setIsSignPad(true);
