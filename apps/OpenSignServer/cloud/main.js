@@ -12,6 +12,7 @@ import ContractUsersAftersave from './parsefunction/ContractUsersAftersave.js';
 import sendMailOTPv1 from './parsefunction/SendMailOTPv1.js';
 import SendMailv1 from './parsefunction/SendMailv1.js';
 import AuthLoginAsMail from './parsefunction/AuthLoginAsMail.js';
+import getUserId from './parsefunction/getUserId.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
@@ -27,3 +28,4 @@ Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
 Parse.Cloud.define('SendOTPMailV1', sendMailOTPv1);
 Parse.Cloud.define('sendmail', SendMailv1);
 Parse.Cloud.define('AuthLoginAsMail', AuthLoginAsMail);
+Parse.Cloud.define('getUserId', getUserId);
