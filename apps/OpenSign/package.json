@@ -40,8 +40,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "serve -s build",
-    "start-dev": "mf-cra start",
+    "start": "mf-cra start",
     "build": "CI=false && mf-cra build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
