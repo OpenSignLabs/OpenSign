@@ -38,7 +38,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     <div
       className={`${
         isOpen ? "block" : "hidden"
-      } bg-white text-[#444] h-screen w-full md:w-[300px] overflow-y-auto transform transition-transform ${
+      } bg-white text-[#444] h-screen w-full md:w-[300px] overflow-y-auto transform transition-transform z-40 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
