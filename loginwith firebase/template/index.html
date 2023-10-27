@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>nest login</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'><link rel="stylesheet" href="/static/style12.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="container" id="container">
+	<div class="form-container sign-up-container">
+		<form action="#">
+			<h1>Create Account</h1>
+			<div class="social-container">
+				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+			</div>
+			<span>or use your email for registration</span>
+			<input type="text" placeholder="Name"id="username" required />
+			<input type="email" placeholder="Email"id="email" required/>
+			<input type="password" placeholder="Password"id="password" required />
+			<button type="button" value="signup" id="SIGNUP">Sign Up</button>
+		</form>
+	</div>
+	<div class="form-container sign-in-container">
+		<form action="#">
+			<h1>Sign in</h1>
+			<div class="social-container">
+				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+			</div>
+			<span>or use your account</span>
+			<input type="email" placeholder="Email"  id="email" required/>
+			<input type="password" placeholder="Password" id="password" required />
+			<a href="#">Forgot your password?</a>
+			<button type="button" value="login" id="login" >Sign In</button>
+		</form>
+	</div>
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>Welcome To NEST</h1>
+				<p>To keep connected with your friends please login with your personal info</p>
+				<button class="ghost" id="signIn">Sign In</button>
+			</div>
+			<div class="overlay-panel overlay-right">
+				<h1>Welcome To NEST</h1>
+				<p>we are like Birds</p>
+				<button class="ghost" id="signUp">Sign Up</button>
+			</div>
+		</div>
+	</div>
+</div>
+  <script  src="/static/script.js"></script>
+
+</body>
+
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+    import { getDatabase,set,ref,update } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+    // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyArh5N_lurqqSDjidkUbqitB9qeCDDJv-E",
+    authDomain: "authentication-app-129dc.firebaseapp.com",
+    databaseURL: "https://authentication-app-129dc-default-rtdb.firebaseio.com",
+    projectId: "authentication-app-129dc",
+    storageBucket: "authentication-app-129dc.appspot.com",
+    messagingSenderId: "900267854986",
+    appId: "1:900267854986:web:6f053299802b16bb187173"
+  };
+	// Initialize Firebase
+	const app = initializeApp(firebaseConfig);
+	const database = getDatabase(app);
+	const auth = getAuth(app);
+	
+
+	SIGNUP.addEventListener('click', (e) => {
+  try {
+    console.log(11);
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+    var username = document.getElementById("username").value;
+    console.log(email, password, username);
+    createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+		
+	  set (ref (database,'users/' + user.uid),{
+		email: email,
+		password: password
+	  })
+      // Redirect to login.html on successful signup
+      if (userCredential) {
+        window.location.href = 'home.html';
+      }
+	  alert('user created !!');
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log("hello2");
+
+      alert(errorMessage);
+    });
+  } catch (error) {
+    console.log({ error });
+  }
+
+  });
+  login.addEventListener('click',(e)=>{
+	var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value; 
+
+	signInWithEmailAndPassword(auth, email, password)
+  	.then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    // ...
+	var dt = new Date();
+	update(ref(database,'users/' + user.uid),{
+		last_login:dt,
+	})
+	if (userCredential) {
+        window.location.href = 'home.html';
+      }
+	
+	alert('user loged in !!');
+  })
+  	.catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+	alert(errorMessage);
+  });
+
+ });
+
+</script>
+
+</html>
