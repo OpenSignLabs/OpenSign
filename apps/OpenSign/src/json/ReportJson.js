@@ -4,6 +4,7 @@ export default function reportJson(id) {
   // console.log("userId", currentUserId)
 
   switch (id) {
+    // draft documents report
     case "ByHuevtCFY":
       return {
         reportName: "Draft Documents",
@@ -40,6 +41,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    // Need your sign report
     case "4Hhwbp482K":
       return {
         reportName: "Need your sign",
@@ -94,6 +96,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    // In progess report
     case "1MwEuxLEkF":
       return {
         reportName: "In-progress documents",
@@ -133,6 +136,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    // completed documents report
     case "kQUoW4hUXz":
       return {
         reportName: "Completed Documents",
@@ -163,6 +167,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    // OpenSignDrive™ documents Drafts
     case "VRFDmUmw5B":
       return {
         reportName: "OpenSignDrive™ Drafts",
@@ -199,6 +204,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    //  declined documents report
     case "UPr2Fm5WY3":
       return {
         reportName: "Declined Documents",
@@ -224,6 +230,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    //  Expired Documents report
     case "zNqBHXHsYH":
       return {
         reportName: "Expired Documents",
@@ -271,6 +278,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    //  Recently sent for signatures report show on dashboard
     case "d9k3UfYHBc":
       return {
         reportName: "Recently sent for signatures",
@@ -310,6 +318,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    //  Recent signature requests report show on dashboard
     case "5Go51Q7T8r":
       return {
         reportName: "Recent signature requests",
@@ -364,6 +373,7 @@ export default function reportJson(id) {
           }
         ]
       };
+    // Drafts report show on dashboard
     case "kC5mfynCi4":
       return {
         reportName: "Drafts",

@@ -587,7 +587,6 @@ class FormBuilder extends Component {
                     () => {
                       let redirect_type = this.state.redirect_type;
                       let redirect_id = this.state.redirect_id;
-                      let isApp = this.state.isAppRequest;
                       this.props.removeState();
                       this.props.removeLevel2State();
                       this.props.removeLevel3State();
@@ -629,192 +628,155 @@ class FormBuilder extends Component {
             });
           },
           async (error) => {
-            try {
-              Parse.serverURL = this.state.parseBaseUrl;
-              Parse.initialize(this.state.parseAppId);
-              var _users = Parse.Object.extend("_User");
-              var query = new Parse.Query(_users);
+            if (error.code === 202) {
+              let params;
               if (UserData.username) {
-                query.equalTo("username", UserData.username);
+                params = { username: UserData.username };
               } else if (UserData.email) {
-                query.equalTo("email", UserData.email);
+                params = { email: UserData.email };
               } else {
-                query.equalTo("username", UserData.phone);
+                params = { username: UserData.phone };
               }
-              await query
-                .first()
-                .then(async (results) => {
-                  if (results) {
-                    let response = results.toJSON();
-                    let _emp = {
-                      __type: "Pointer",
-                      className: "_User",
-                      objectId: results.id
-                    };
-                    let roleurl = `${this.state.parseBaseUrl}functions/AddUserToRole`;
-                    const headers = {
-                      "Content-Type": "application/json",
-                      "X-Parse-Application-Id": this.state.parseAppId,
-                      sessionToken: localStorage.getItem("accesstoken")
-                    };
-                    let body = {
-                      appName: localStorage.getItem("_appName"),
-                      roleName: RoleField,
-                      userId: results.id
-                    };
-                    await axios
-                      .post(roleurl, body, { headers: headers })
-                      .then((res) => {
-                        const currentUser = Parse.User.current();
-                        let _fname = this.state.title;
-                        var forms = Parse.Object.extend(_fname);
-                        var form = new forms();
-                        form.set(
-                          "CreatedBy",
-                          Parse.User.createWithoutData(currentUser.id)
-                        );
-                        if (localStorage.getItem("TenetId")) {
-                          form.set("TenantId", {
-                            __type: "Pointer",
-                            className: "partners_Tenant",
-                            objectId: localStorage.getItem("TenetId")
-                          });
+              const userRes = await Parse.Cloud.run("getUserId", params);
+              try {
+                let _emp = {
+                  __type: "Pointer",
+                  className: "_User",
+                  objectId: userRes.id
+                };
+                let roleurl = `${this.state.parseBaseUrl}functions/AddUserToRole`;
+                const headers = {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": this.state.parseAppId,
+                  sessionToken: localStorage.getItem("accesstoken")
+                };
+                let body = {
+                  appName: localStorage.getItem("_appName"),
+                  roleName: RoleField,
+                  userId: userRes.id
+                };
+                await axios
+                  .post(roleurl, body, { headers: headers })
+                  .then((res) => {
+                    const currentUser = Parse.User.current();
+                    let _fname = this.state.title;
+                    var forms = Parse.Object.extend(_fname);
+                    var form = new forms();
+                    form.set(
+                      "CreatedBy",
+                      Parse.User.createWithoutData(currentUser.id)
+                    );
+                    if (localStorage.getItem("TenetId")) {
+                      form.set("TenantId", {
+                        __type: "Pointer",
+                        className: "partners_Tenant",
+                        objectId: localStorage.getItem("TenetId")
+                      });
+                    }
+                    form.set("UserId", _emp);
+                    form.set("UserRole", RoleField);
+                    if (this.state["FormACL"]) {
+                      let ACL = {};
+                      for (let [key, value] of Object.entries(
+                        this.state["FormACL"]
+                      )) {
+                        if (key === "*") {
+                          ACL[key] = value;
                         }
-                        form.set("UserId", _emp);
-                        form.set("UserRole", RoleField);
-                        if (this.state["FormACL"]) {
-                          let ACL = {};
-                          for (let [key, value] of Object.entries(
-                            this.state["FormACL"]
-                          )) {
-                            if (key === "*") {
-                              ACL[key] = value;
-                            }
-                            if (key === "#currentUser#") {
-                              ACL[Parse.User.current().id] = value;
-                            }
-                            if (key.startsWith("role")) {
-                              ACL[key] = value;
-                            }
+                        if (key === "#currentUser#") {
+                          ACL[Parse.User.current().id] = value;
+                        }
+                        if (key.startsWith("role")) {
+                          ACL[key] = value;
+                        }
+                      }
+                      form.setACL(new Parse.ACL(ACL));
+                    }
+                    form.save(RowData).then(
+                      (form) => {
+                        let filtered = {};
+                        if (this.state.redirect_type === "clearData") {
+                          if (
+                            this.state.persistentFields &&
+                            this.state.persistentFields.length
+                          ) {
+                            filtered = Object.keys(RowData)
+                              .filter((key) =>
+                                this.state.persistentFields.includes(key)
+                              )
+                              .reduce((obj, key) => {
+                                obj[key] = RowData[key];
+                                return obj;
+                              }, {});
                           }
-                          form.setACL(new Parse.ACL(ACL));
+                        } else {
+                          RowData = {};
                         }
-                        form.save(RowData).then(
-                          (form) => {
-                            let filtered = {};
-                            if (this.state.redirect_type === "clearData") {
-                              if (
-                                this.state.persistentFields &&
-                                this.state.persistentFields.length
-                              ) {
-                                filtered = Object.keys(RowData)
-                                  .filter((key) =>
-                                    this.state.persistentFields.includes(key)
-                                  )
-                                  .reduce((obj, key) => {
-                                    obj[key] = RowData[key];
-                                    return obj;
-                                  }, {});
-                              }
-                            } else {
-                              RowData = {};
-                            }
-                            this.setState(
-                              {
-                                formData: filtered,
-                                active: true,
-                                loading: false,
-                                toastColor: "#5cb85c",
-                                toastDescription: this.state.successMassage
-                              },
-                              () => {
-                                let redirect_type = this.state.redirect_type;
-                                let redirect_id = this.state.redirect_id;
-                                let isApp = this.state.isAppRequest;
-                                this.props.removeState();
-                                this.props.removeLevel2State();
-                                this.props.removeLevel3State();
-                                var x = document.getElementById("snackbar");
-                                x.className = "show";
-                                setTimeout(function () {
-                                  x.className = x.className.replace("show", "");
-                                  if (redirect_type === "Form") {
-                                    this.props.navigate(`/form/${redirect_id}`);
-                                  } else if (redirect_type === "Report") {
-                                    this.props.navigate(
-                                      `/report/${redirect_id}`
-                                    );
-                                  } else if (redirect_type === "Dashboard") {
-                                    this.props.navigate(
-                                      `/dashboard/${redirect_id}`
-                                    );
-                                  } else if (redirect_type === "Url") {
-                                    window.location = redirect_id;
-                                  } else if (redirect_type === "Microapp") {
-                                    this.props.navigate(`/asmf/${redirect_id}`);
-                                  }
-                                }, 2000);
-                              }
-                            );
+                        this.setState(
+                          {
+                            formData: filtered,
+                            active: true,
+                            loading: false,
+                            toastColor: "#5cb85c",
+                            toastDescription: this.state.successMassage
                           },
-                          (error) => {
-                            this.setState({
-                              loading: false,
-                              active: true,
-                              toastColor: "#d9534f",
-                              toastDescription: error.message
-                            });
-
+                          () => {
+                            let redirect_type = this.state.redirect_type;
+                            let redirect_id = this.state.redirect_id;
+                            this.props.removeState();
+                            this.props.removeLevel2State();
+                            this.props.removeLevel3State();
                             var x = document.getElementById("snackbar");
                             x.className = "show";
                             setTimeout(function () {
                               x.className = x.className.replace("show", "");
+                              if (redirect_type === "Form") {
+                                this.props.navigate(`/form/${redirect_id}`);
+                              } else if (redirect_type === "Report") {
+                                this.props.navigate(`/report/${redirect_id}`);
+                              } else if (redirect_type === "Dashboard") {
+                                this.props.navigate(
+                                  `/dashboard/${redirect_id}`
+                                );
+                              } else if (redirect_type === "Url") {
+                                window.location = redirect_id;
+                              } else if (redirect_type === "Microapp") {
+                                this.props.navigate(`/asmf/${redirect_id}`);
+                              }
                             }, 2000);
                           }
                         );
-                      });
-                  } else {
-                    this.setState({
-                      loading: false,
-                      active: true,
-                      toastColor: "#d9534f",
-                      toastDescription: error.message
-                    });
+                      },
+                      (error) => {
+                        this.setState({
+                          loading: false,
+                          active: true,
+                          toastColor: "#d9534f",
+                          toastDescription: error.message
+                        });
 
-                    var x = document.getElementById("snackbar");
-                    x.className = "show";
-                    setTimeout(function () {
-                      x.className = x.className.replace("show", "");
-                    }, 2000);
-                  }
-                })
-                .catch((error) => {
-                  this.setState({
-                    loading: false,
-                    active: true,
-                    toastColor: "#d9534f",
-                    toastDescription: error.message
+                        var x = document.getElementById("snackbar");
+                        x.className = "show";
+                        setTimeout(function () {
+                          x.className = x.className.replace("show", "");
+                        }, 2000);
+                      }
+                    );
                   });
-
-                  var x = document.getElementById("snackbar");
-                  x.className = "show";
-                  setTimeout(function () {
-                    x.className = x.className.replace("show", "");
-                  }, 2000);
+              } catch (error) {
+                this.setState({
+                  loading: false,
+                  active: true,
+                  toastColor: "#d9534f",
+                  toastDescription: error.message
                 });
-            } catch (error) {
-              this.setState({
-                loading: false,
-                active: true,
-                toastColor: "#d9534f",
-                toastDescription: error.message
-              });
 
-              var x = document.getElementById("snackbar");
-              x.className = "show";
-              setTimeout(function () {
-                x.className = x.className.replace("show", "");
-              }, 2000);
+                var x = document.getElementById("snackbar");
+                x.className = "show";
+                setTimeout(function () {
+                  x.className = x.className.replace("show", "");
+                }, 2000);
+              }
             }
           }
         );
@@ -1137,7 +1099,6 @@ class FormBuilder extends Component {
               () => {
                 let redirect_type = this.state.redirect_type;
                 let redirect_id = this.state.redirect_id;
-                let isApp = this.state.isAppRequest;
                 var x = document.getElementById("snackbar");
                 this.props.removeState();
                 this.props.removeLevel2State();
