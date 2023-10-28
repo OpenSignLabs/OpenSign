@@ -114,6 +114,9 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Rishabh-git10"><img src="https://avatars.githubusercontent.com/u/107680241?v=4?s=100" width="100px;" alt="Rishabh Dewangan"/><br /><sub><b>Rishabh Dewangan</b></sub></a><br /><a href="#code-Rishabh-git10" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/LemonDrop847"><img src="https://avatars.githubusercontent.com/u/106615670?v=4?s=100" width="100px;" alt="Nitin Mishra"/><br /><sub><b>Nitin Mishra</b></sub></a><br /><a href="#code-LemonDrop847" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://jobinselvanose.com"><img src="https://avatars.githubusercontent.com/u/63976083?v=4?s=100" width="100px;" alt="Jobin Selvanose"/><br /><sub><b>Jobin Selvanose</b></sub></a><br /><a href="#doc-Jobin-S" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
