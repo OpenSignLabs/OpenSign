@@ -4,6 +4,10 @@
 
 The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign | Smartwaiver | SignRequest | HelloSign | Zoho sign.
 
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/opensignlabs/opensign.svg)](http://isitmaintained.com/project/opensignlabs/opensign "Average time to resolve an issue")
+
+[![All Contributors](https://img.shields.io/github/all-contributors/opensignlabs/opensign?color=ee8449&style=flat-square)](#contributors)
+
 <a href="https://www.opensignlabs.com/">Website</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://www.opensignlabs.com">Docs</a>
@@ -93,3 +97,15 @@ OpenSign is licensed under the AGPL License. For more details, see the [LICENSE]
 We would like to thank all our contributors and users for their support and feedback. Special thanks to [OpenSignLabs](https://github.com/OpenSignLabs) for spearheading this initiative.
 
 ---
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
