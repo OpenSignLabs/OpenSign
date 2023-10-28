@@ -107,6 +107,7 @@ We would like to thank all our contributors and users for their support and feed
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://aleksandarjakovljevic.com/"><img src="https://avatars.githubusercontent.com/u/2115393?v=4?s=100" width="100px;" alt="Aleksandar Jakovljevic"/><br /><sub><b>Aleksandar Jakovljevic</b></sub></a><br /><a href="#code-ajakov" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/nxglabs"><img src="https://avatars.githubusercontent.com/u/5486116?v=4?s=100" width="100px;" alt="Amol"/><br /><sub><b>Amol</b></sub></a><br /><a href="#code-nxglabs" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
