@@ -112,6 +112,7 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Tashuuuu"><img src="https://avatars.githubusercontent.com/u/85075827?v=4?s=100" width="100px;" alt="Akriti Sengar"/><br /><sub><b>Akriti Sengar</b></sub></a><br /><a href="#code-Tashuuuu" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/parthrc"><img src="https://avatars.githubusercontent.com/u/101104958?v=4?s=100" width="100px;" alt="Parth Chawande"/><br /><sub><b>Parth Chawande</b></sub></a><br /><a href="#code-parthrc" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Rishabh-git10"><img src="https://avatars.githubusercontent.com/u/107680241?v=4?s=100" width="100px;" alt="Rishabh Dewangan"/><br /><sub><b>Rishabh Dewangan</b></sub></a><br /><a href="#code-Rishabh-git10" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LemonDrop847"><img src="https://avatars.githubusercontent.com/u/106615670?v=4?s=100" width="100px;" alt="Nitin Mishra"/><br /><sub><b>Nitin Mishra</b></sub></a><br /><a href="#code-LemonDrop847" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
