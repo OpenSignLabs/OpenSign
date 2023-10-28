@@ -1,4 +1,21 @@
 {
-  "projectName": "<insert the repo's name>",
-  "projectOwner": "<insert the repo's owner/orgs>"
+  "projectName": "OpenSign",
+  "projectOwner": "OpenSignLabs",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "ajakov",
+      "name": "Aleksandar Jakovljevic",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2115393?v=4",
+      "profile": "https://aleksandarjakovljevic.com/",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
