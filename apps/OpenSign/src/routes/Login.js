@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import Parse from "parse";
 import "../styles/toast.css";
 import "../styles/loader.css";
@@ -17,6 +17,7 @@ class Login extends Component {
     toastColor: "#5cb85c",
     toastDescription: "",
     password: "",
+    passwordVisible: false,
     mobile: "",
     phone: "",
     OTP: "",
@@ -1009,9 +1010,14 @@ class Login extends Component {
       return <Navigate to={_redirect} />;
     }
 
-    const { email, password } = this.state;
+    const { email, password, passwordVisible } = this.state;
     let image = this.props.appInfo.applogo;
     let settings = this.props.appInfo.settings || undefined;
+    const togglePasswordVisibility = () => {
+      this.setState((prevState) => ({
+        passwordVisible: !prevState.passwordVisible
+      }));
+    };
     return (
       <div className="bg-white">
         {settings &&
@@ -1061,14 +1067,30 @@ class Login extends Component {
                           />
                           <hr className="my-2 border-none" />
                           <label className="block text-xs">Password</label>
-                          <input
-                            type="password"
-                            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-                            name="password"
-                            value={password}
-                            onChange={this.handleChange}
-                            required
-                          />
+                          <div className="relative">
+                            <input
+                              type={passwordVisible ? "text" : "password"}
+                              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                              name="password"
+                              value={password}
+                              onChange={this.handleChange}
+                              required
+                            />
+                            <span
+                              className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
+                                passwordVisible
+                                  ? "text-[#007bff]"
+                                  : "text-black"
+                              }`}
+                              onClick={togglePasswordVisibility}
+                            >
+                              {passwordVisible ? (
+                                <i className="fa fa-eye-slash" /> // Close eye icon
+                              ) : (
+                                <i className="fa fa-eye" /> // Open eye icon
+                              )}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex flex-row justify-between items-center text-xs px-4 py-2">
