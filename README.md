@@ -109,6 +109,7 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://aleksandarjakovljevic.com/"><img src="https://avatars.githubusercontent.com/u/2115393?v=4?s=100" width="100px;" alt="Aleksandar Jakovljevic"/><br /><sub><b>Aleksandar Jakovljevic</b></sub></a><br /><a href="#code-ajakov" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/nxglabs"><img src="https://avatars.githubusercontent.com/u/5486116?v=4?s=100" width="100px;" alt="Amol"/><br /><sub><b>Amol</b></sub></a><br /><a href="#code-nxglabs" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/BuilderPrid"><img src="https://avatars.githubusercontent.com/u/106882895?v=4?s=100" width="100px;" alt="Priyanshu Dwivedi"/><br /><sub><b>Priyanshu Dwivedi</b></sub></a><br /><a href="#code-BuilderPrid" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Tashuuuu"><img src="https://avatars.githubusercontent.com/u/85075827?v=4?s=100" width="100px;" alt="Akriti Sengar"/><br /><sub><b>Akriti Sengar</b></sub></a><br /><a href="#code-Tashuuuu" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
