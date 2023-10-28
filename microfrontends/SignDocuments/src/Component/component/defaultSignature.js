@@ -111,7 +111,7 @@ function DefaultSignature({
           </>
         ) : (
           <div style={{ margin: "10px" }}>
-            <span>You didn't add your default signature yet!</span>
+            <span>Click a signature placeholder to start signing the document!</span>
           </div>
         )}
       </div>
