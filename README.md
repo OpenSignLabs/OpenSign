@@ -116,6 +116,7 @@ We would like to thank all our contributors and users for their support and feed
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://jobinselvanose.com"><img src="https://avatars.githubusercontent.com/u/63976083?v=4?s=100" width="100px;" alt="Jobin Selvanose"/><br /><sub><b>Jobin Selvanose</b></sub></a><br /><a href="#doc-Jobin-S" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/HansF"><img src="https://avatars.githubusercontent.com/u/1503?v=4?s=100" width="100px;" alt="Hans Fraiponts"/><br /><sub><b>Hans Fraiponts</b></sub></a><br /><a href="#doc-HansF" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
