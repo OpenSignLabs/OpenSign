@@ -1,7 +1,7 @@
 
 # INSTALLATON INSTRUCTIONS
 
-You can use our app as a cloud version from [OpenSignLabs](www.opensignlabs.com)
+You can use our app as a cloud version from [OpenSignLabs](https://www.opensignlabs.com)
 
 or follow below instructions to install it on your own infrastructure.
 
