@@ -8,8 +8,10 @@ export const fetchAppInfo = (str, burl, app_id) => async (dispatch) => {
   Parse.initialize(app_id);
 
   const response = appInfo;
-  let _base = response.baseurl.charAt(response.baseurl.length - 1);
-  localStorage.removeItem("baseUrl");
+  let _base = ""; // Define _base here and initialize it to an empty string
+  if (response && response.baseurl) {
+    _base = response.baseurl.charAt(response.baseurl.length - 1);
+  }  localStorage.removeItem("baseUrl");
   localStorage.setItem("_appName", response.appname);
   localStorage.setItem("_app_objectId", response.objectId);
   if (_base === "/") {
