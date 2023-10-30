@@ -74,6 +74,7 @@ const TreeEditForm = (props) => {
             }
           },
           (error) => {
+            console.log("err", error);
             setloading(false);
           }
         );
@@ -155,8 +156,7 @@ const TreeEditForm = (props) => {
                     RowData[k] = RowData[k].trim();
                 }
                 if (val.properties[k].data !== undefined) {
-                  if (Array.isArray(val.properties[k].data)) {
-                  } else if (val.properties[k].data.isPointer) {
+                  if (val.properties[k].data.isPointer) {
                     let pointer = undefined;
                     if (val.properties[k].data.class) {
                       if (RowData[k]) {
@@ -243,8 +243,7 @@ const TreeEditForm = (props) => {
           }
         }
         if (_dd[k].data !== undefined) {
-          if (_dd[k].data[0] !== undefined) {
-          } else if (_dd[k].data.isPointer) {
+          if (_dd[k].data.isPointer) {
             let pointer = undefined;
             if (typeof RowData[k] === "object") {
               if (RowData[k]) {
@@ -322,15 +321,20 @@ const TreeEditForm = (props) => {
               props.HideView(false);
               setloading(false);
               setactive(true);
-            } catch (error) {}
+            } catch (error) {
+              console.log("err", error);
+            }
           },
           (error) => {
+            console.log("err", error);
             setloading(false);
             setactive(true);
           }
         );
       });
     } catch (error) {
+      console.log("err", error);
+
       alert(error.message);
       setloading(false);
       setactive(true);

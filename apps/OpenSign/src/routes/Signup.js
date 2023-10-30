@@ -25,7 +25,6 @@ const Signup = (props) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  const settings = props.appInfo.settings;
   const image = props.appInfo.applogo;
 
   const handleSubmit = (event) => {
@@ -320,95 +319,74 @@ const Signup = (props) => {
                           /*   alert(
                           "You dont have access to this application."
                         ); */
-                          setState(
-                            {
-                              loading: false,
-                              toastColor: "#d9534f",
-                              toastDescription:
-                                "You dont have access to this application."
-                            },
-                            () => {
-                              var x = document.getElementById("snackbar");
-                              x.className = "show";
-                              setTimeout(function () {
-                                x.className = x.className.replace("show", "");
-                              }, 5000);
-                              localStorage.setItem("accesstoken", null);
-                            }
-                          );
-
+                          setState({
+                            loading: false,
+                            toastColor: "#d9534f",
+                            toastDescription:
+                              "You dont have access to this application."
+                          });
+                          const x = document.getElementById("snackbar");
+                          x.className = "show";
+                          setTimeout(function () {
+                            x.className = x.className.replace("show", "");
+                          }, 2000);
+                          localStorage.setItem("accesstoken", null);
                           console.error("Error while fetching Follow", error);
                         }
                       );
                     }
                   });
                 } else {
-                  setState(
-                    {
-                      loading: false,
-                      toastColor: "#d9534f",
-                      toastDescription: "User Role Not Found."
-                    },
-                    () => {
-                      var x = document.getElementById("snackbar");
-                      x.className = "show";
-                      setTimeout(function () {
-                        x.className = x.className.replace("show", "");
-                      }, 5000);
-                    }
-                  );
-                }
-              } else {
-                setState(
-                  {
+                  setState({
                     loading: false,
                     toastColor: "#d9534f",
                     toastDescription: "User Role Not Found."
-                  },
-                  () => {
-                    var x = document.getElementById("snackbar");
-                    x.className = "show";
-                    setTimeout(function () {
-                      x.className = x.className.replace("show", "");
-                    }, 5000);
-                  }
-                );
-              }
-            })
-            .catch((err) => {
-              setState(
-                {
-                  loading: false,
-                  toastColor: "#d9534f",
-                  toastDescription: `Does not have permissions to access this application.`
-                },
-                () => {
-                  var x = document.getElementById("snackbar");
+                  });
+                  const x = document.getElementById("snackbar");
                   x.className = "show";
                   setTimeout(function () {
                     x.className = x.className.replace("show", "");
-                  }, 5000);
+                  }, 2000);
                 }
-              );
+              } else {
+                setState({
+                  loading: false,
+                  toastColor: "#d9534f",
+                  toastDescription: "User Role Not Found."
+                });
+                const x = document.getElementById("snackbar");
+                x.className = "show";
+                setTimeout(function () {
+                  x.className = x.className.replace("show", "");
+                }, 2000);
+              }
+            })
+            .catch((err) => {
+              console.log("err", err);
+              setState({
+                loading: false,
+                toastColor: "#d9534f",
+                toastDescription: `Does not have permissions to access this application.`
+              });
+              const x = document.getElementById("snackbar");
+              x.className = "show";
+              setTimeout(function () {
+                x.className = x.className.replace("show", "");
+              }, 2000);
             });
         }
       } catch (error) {
         // alert(`${error.message}`);
-        setState(
-          {
-            loading: false,
-            toastColor: "#d9534f",
-            toastDescription: `${error.message}`
-          },
-          () => {
-            var x = document.getElementById("snackbar");
-            x.className = "show";
-            setTimeout(function () {
-              x.className = x.className.replace("show", "");
-            }, 5000);
-          }
-        );
-
+        setState({
+          loading: false,
+          toastColor: "#d9534f",
+          toastDescription: `${error.message}`
+        });
+        const x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function () {
+          x.className = x.className.replace("show", "");
+        }, 2000);
         console.log(error);
       }
     }
@@ -458,19 +436,6 @@ const Signup = (props) => {
           ></div>
         </div>
       )}
-      {settings &&
-        settings.map((x) => {
-          return x.pageType === "microapp" ? (
-            <iframe
-              key={x.pageId}
-              id="def_iframe"
-              src={x.pageId}
-              height="0px"
-              width="0px"
-              title="signi"
-            />
-          ) : null;
-        })}
 
       <Title title={"Signup page"} />
 

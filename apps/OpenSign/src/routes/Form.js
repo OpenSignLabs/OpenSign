@@ -95,9 +95,7 @@ class FormBuilder extends Component {
             userSchema: resultjson.userSchema
           });
         }
-        for (let [key, value] of Object.entries(
-          resultjson.jsonSchema.properties
-        )) {
+        for (let [value] of Object.entries(resultjson.jsonSchema.properties)) {
           if (typeof value === "object") {
             for (let [k, v] of Object.entries(value)) {
               if (k === "format" && v === "date") {
@@ -292,8 +290,7 @@ class FormBuilder extends Component {
                         RowData[k] = RowData[k].trim();
                     }
                     if (val.properties[k].data !== undefined) {
-                      if (Array.isArray(val.properties[k].data)) {
-                      } else if (val.properties[k].data.isPointer) {
+                      if (val.properties[k].data.isPointer) {
                         let pointer = undefined;
                         if (val.properties[k].data.class) {
                           if (val.properties[k].data.savePointerClass) {
@@ -343,8 +340,6 @@ class FormBuilder extends Component {
           });
         }
         let _userScheama = this.state.userSchema;
-        let temp = [];
-
         Object.keys(_scanData).forEach(function (key) {
           let _dd = _scanData[key];
           typeof _dd === "object" &&
@@ -418,8 +413,7 @@ class FormBuilder extends Component {
                 RowData[k] = newDate;
               }
               if (_dd[k].data !== undefined) {
-                if (_dd[k].data[0] !== undefined) {
-                } else if (_dd[k].data.isPointer) {
+                if (_dd[k].data.isPointer) {
                   let pointer = undefined;
                   if (_dd[k].data.savePointerClass) {
                     if (RowData[k]) {
@@ -469,8 +463,6 @@ class FormBuilder extends Component {
         });
 
         Object.keys(_userScheama).forEach(function (kkey) {
-          let _userKey = _userScheama[kkey];
-
           Object.keys(RowData).forEach(function (_k) {
             if (_userScheama[kkey].startsWith("$")) {
               let _uuu = _userScheama[kkey].replace("$", "");
@@ -521,7 +513,7 @@ class FormBuilder extends Component {
               roleName: RoleField,
               userId: u.id
             };
-            axios.post(roleurl, body, { headers: headers }).then((res) => {
+            axios.post(roleurl, body, { headers: headers }).then(() => {
               const currentUser = Parse.User.current();
               let _fname = this.state.title;
               var forms = Parse.Object.extend(_fname);
@@ -657,7 +649,7 @@ class FormBuilder extends Component {
                 };
                 await axios
                   .post(roleurl, body, { headers: headers })
-                  .then((res) => {
+                  .then(() => {
                     const currentUser = Parse.User.current();
                     let _fname = this.state.title;
                     var forms = Parse.Object.extend(_fname);
@@ -693,7 +685,7 @@ class FormBuilder extends Component {
                       form.setACL(new Parse.ACL(ACL));
                     }
                     form.save(RowData).then(
-                      (form) => {
+                      () => {
                         let filtered = {};
                         if (this.state.redirect_type === "clearData") {
                           if (
@@ -825,8 +817,7 @@ class FormBuilder extends Component {
                         RowData[k] = RowData[k].trim();
                     }
                     if (val.properties[k].data !== undefined) {
-                      if (Array.isArray(val.properties[k].data)) {
-                      } else if (val.properties[k].data.isPointer) {
+                      if (val.properties[k].data.isPointer) {
                         let pointer = undefined;
                         if (val.properties[k].data.savePointerClass) {
                           if (RowData[k]) {
@@ -948,8 +939,7 @@ class FormBuilder extends Component {
                 }
               }
               if (_dd[k].data !== undefined) {
-                if (_dd[k].data[0] !== undefined) {
-                } else if (_dd[k].data.isPointer) {
+                if (_dd[k].data.isPointer) {
                   let pointer = undefined;
                   if (RowData[k] && RowData[k] !== "Select") {
                     if (_dd[k].type === "array") {
@@ -1050,16 +1040,10 @@ class FormBuilder extends Component {
                   const qu = new Parse.Query(Agent);
                   qu.equalTo("objectId", l.objectId);
                   qu.include(new_arr[1]);
-                  await qu.first().then(
-                    (results) => {},
-                    (error) => {
-                      console.error(
-                        "Error while fetching Agent",
-                        error.massage
-                      );
-                    }
-                  );
-                } catch (err) {}
+                  await qu.first();
+                } catch (err) {
+                  console.error("Error while fetching Agent", err.massage);
+                }
               }
             }
             if (key.startsWith("role")) {
@@ -1178,7 +1162,7 @@ class FormBuilder extends Component {
     this.saveUrlParamToFormdata();
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     let id = newProps.id;
     this.getForm(id);
   }

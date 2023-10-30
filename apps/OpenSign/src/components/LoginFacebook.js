@@ -21,25 +21,25 @@ const LoginFacebook = ({
     Name: "",
     Email: ""
   });
-  // const responseFacebook = async (response) => {
-  //   // console.log("response ", response);
-  //   if (response.userID) {
-  //     setThirdpartyLoader(true);
-  //     const details = {
-  //       Email: response.email,
-  //       Name: response.name,
-  //     };
-  //     setUserDetails({ ...userDetails, ...details });
-  //     const fDetails = {
-  //       Id: response.userID,
-  //       AccessToken: response.accessToken,
-  //       Name: response.name,
-  //       Email: response.email,
-  //     };
-  //     setFBDetails({ ...fBDetails, ...fDetails });
-  //     const res = await checkExtUser(fDetails);
-  //   }
-  // };
+  const responseFacebook = async (response) => {
+    // console.log("response ", response);
+    if (response.userID) {
+      setThirdpartyLoader(true);
+      const details = {
+        Email: response.email,
+        Name: response.name,
+      };
+      setUserDetails({ ...userDetails, ...details });
+      const fDetails = {
+        Id: response.userID,
+        AccessToken: response.accessToken,
+        Name: response.name,
+        Email: response.email,
+      };
+      setFBDetails({ ...fBDetails, ...fDetails });
+      const res = await checkExtUser(fDetails);
+    }
+  };
 
   const checkExtUser = async (details) => {
     const extUser = new Parse.Query("contracts_Users");
