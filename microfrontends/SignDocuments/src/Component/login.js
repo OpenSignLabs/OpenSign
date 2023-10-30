@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import signLogo from "../assests/mailLogo.png";
 import "../css/LoginPage.css";
 import loader from "../assests/loader2.gif";
 import axios from "axios";
@@ -9,7 +8,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 function Login() {
-  const { id, userMail, serverUrl,serverId } = useParams();
+  const { id, userMail, serverUrl } = useParams();
   let navigate = useNavigate();
   //   const history = useHistory();
 

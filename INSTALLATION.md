@@ -5,8 +5,36 @@ You can use our app as a cloud version from [OpenSignLabs](https://www.opensignl
 
 or follow below instructions to install it on your own infrastructure.
 
+- Localhost(Frontend only)
 - Digital Ocean
-- Localhost
+
+## Localhost(Frontend only)
+
+This is the easiest way to run the frontend application for development or testing purpose without the hassle of installing backend & DB. All the features including document upload, signing, email notifications will work seamlessly from staging backend.
+
+**Warning:** All data, including user accounts and documents, is stored in the staging backend. This data will be erased every time there is a merge to the main branch. As a result, you may need to recreate user accounts repeatedly. If you find that login attempts are failing, it is likely because the data has been cleared due to a recent merge.
+
+Below are the steps to follow -
+- [Clone the repository](https://help.github.com/articles/cloning-a-repository/) to your local machine using below command -
+  ```
+  git clone https://github.com/OpenSignLabs/OpenSign.git
+  ```
+- Rename the .env.frontend_dev file to .env using below command
+  ```
+  mv .env.frontend_dev .env
+  ```
+- CD to /apps/OpenSign directory
+- Install NPM packages using
+  ```
+  npm install
+  ```
+- Run the project locally using
+  ```
+  npm run start
+  ```
+You should be able to access the application from https://localhost:3000 after this.
+Create an account by signing-up and start contributing.
+
 
 ## Digital Ocean
 
