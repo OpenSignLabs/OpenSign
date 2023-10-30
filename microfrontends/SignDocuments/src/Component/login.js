@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 function Login() {
-  const { id, userMail, serverUrl } = useParams();
+  const { id, userMail,contactBookId, serverUrl } = useParams();
   let navigate = useNavigate();
   //   const history = useHistory();
 
@@ -137,7 +137,7 @@ function Login() {
           setLoading(false);
           //navigate user to on signature page
           //  history.push(`/recipientSignPdf/${id}/${_user.phone}`);
-          navigate(`/recipientSignPdf/${id}/${_user.phone}`);
+          navigate(`/recipientSignPdf/${id}/${contactBookId}`);
         }
       } catch (error) {}
     } else {
