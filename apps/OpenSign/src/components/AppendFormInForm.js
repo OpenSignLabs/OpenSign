@@ -77,9 +77,7 @@ class AppendFormInForm extends Component {
             userSchema: resultjson.userSchema
           });
         }
-        for (let [key, value] of Object.entries(
-          resultjson.jsonSchema.properties
-        )) {
+        for (let [value] of Object.entries(resultjson.jsonSchema.properties)) {
           if (typeof value === "object") {
             for (let [k, v] of Object.entries(value)) {
               if (k === "format" && v === "date") {
@@ -401,8 +399,7 @@ class AppendFormInForm extends Component {
                 RowData[k] = newDate;
               }
               if (_dd[k].data !== undefined) {
-                if (_dd[k].data[0] !== undefined) {
-                } else if (_dd[k].data.isPointer) {
+                if (_dd[k].data.isPointer) {
                   let pointer = undefined;
                   if (_dd[k].data.savePointerClass) {
                     if (RowData[k]) {
@@ -502,7 +499,7 @@ class AppendFormInForm extends Component {
               roleName: RoleField,
               userId: u.id
             };
-            axios.post(roleurl, body, { headers: headers }).then((res) => {
+            axios.post(roleurl, body, { headers: headers }).then(() => {
               const currentUser = Parse.User.current();
               let _fname = this.state.title;
               var forms = Parse.Object.extend(_fname);
@@ -634,7 +631,7 @@ class AppendFormInForm extends Component {
                 };
                 await axios
                   .post(roleurl, body, { headers: headers })
-                  .then((res) => {
+                  .then(() => {
                     const currentUser = Parse.User.current();
                     let _fname = this.state.title;
                     var forms = Parse.Object.extend(_fname);
@@ -670,7 +667,7 @@ class AppendFormInForm extends Component {
                       form.setACL(new Parse.ACL(ACL));
                     }
                     form.save(RowData).then(
-                      (form) => {
+                      () => {
                         let filtered = {};
                         if (this.state.redirect_type === "clearData") {
                           if (
@@ -725,12 +722,6 @@ class AppendFormInForm extends Component {
                       }
                     );
                   });
-
-                const x = document.getElementById("snackbar");
-                x.className = "show";
-                setTimeout(function () {
-                  x.className = x.className.replace("show", "");
-                }, 2000);
               } catch (error) {
                 this.setState({
                   loading: false,
@@ -793,8 +784,7 @@ class AppendFormInForm extends Component {
                         RowData[k] = RowData[k].trim();
                     }
                     if (val.properties[k].data !== undefined) {
-                      if (Array.isArray(val.properties[k].data)) {
-                      } else if (val.properties[k].data.isPointer) {
+                      if (val.properties[k].data.isPointer) {
                         let pointer = undefined;
                         if (val.properties[k].data.savePointerClass) {
                           if (RowData[k]) {
@@ -916,8 +906,7 @@ class AppendFormInForm extends Component {
                 }
               }
               if (_dd[k].data !== undefined) {
-                if (_dd[k].data[0] !== undefined) {
-                } else if (_dd[k].data.isPointer) {
+                if (_dd[k].data.isPointer) {
                   let pointer = undefined;
                   if (RowData[k] && RowData[k] !== "Select") {
                     if (_dd[k].type === "array") {
@@ -1018,16 +1007,10 @@ class AppendFormInForm extends Component {
                   const qu = new Parse.Query(Agent);
                   qu.equalTo("objectId", l.objectId);
                   qu.include(new_arr[1]);
-                  await qu.first().then(
-                    (results) => {},
-                    (error) => {
-                      console.error(
-                        "Error while fetching Agent",
-                        error.massage
-                      );
-                    }
-                  );
-                } catch (err) {}
+                  await qu.first();
+                } catch (err) {
+                  console.log("Error while fetching Agent", err.massage);
+                }
               }
             }
             if (key.startsWith("role")) {
