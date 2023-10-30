@@ -334,11 +334,6 @@ const PgSignUp = (props) => {
 
                               localStorage.setItem("showpopup", true);
                               localStorage.setItem(
-                                "IncludedApps",
-                                JSON.stringify(tenentInfo)
-                              );
-
-                              localStorage.setItem(
                                 "PageLanding",
                                 element.pageId
                               );
@@ -420,6 +415,7 @@ const PgSignUp = (props) => {
               }
             })
             .catch((err) => {
+              console.log('err', err)
               setIsLoader(false);
             });
         }

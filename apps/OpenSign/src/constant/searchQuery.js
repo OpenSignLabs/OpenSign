@@ -2,7 +2,7 @@ import moment from "moment";
 
 export default function onSearchFilter(_search) {
   switch (_search) {
-    case "Today":
+    case "Today": {
       let d = new Date();
       let formDate = new Date(
         Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0)
@@ -12,7 +12,8 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let Query = `'$gte':'${formDate}','$lte':'${Todate}'`;
       return Query;
-    case "Yesterday":
+    }
+    case "Yesterday": {
       let d1 = new Date();
       d1.setDate(d1.getDate() - 1);
       let yesFrDate = new Date(
@@ -24,8 +25,9 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let Query1 = `'$gte':'${yesFrDate}','$lte':'${YesTodate}'`;
       return Query1;
+    }
 
-    case "This week":
+    case "This week": {
       let oneDay = 24 * 60 * 60 * 1000;
       let curr = new Date(); // get current date
       let first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
@@ -66,8 +68,9 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let Query2 = `'$gte':'${firstday}','$lte':'${lastday}'`;
       return Query2;
+    }
 
-    case "Last 7 days":
+    case "Last 7 days": {
       let d7 = new Date();
       let d7l = new Date();
       d7.setDate(d7.getDate() - 7);
@@ -79,8 +82,8 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let Query7 = `'$gte':'${date7}','$lte':'${l7t}'`;
       return Query7;
-
-    case "Last 14 days":
+    }
+    case "Last 14 days": {
       let d14 = new Date();
       let d14l = new Date();
       let l14t = new Date(
@@ -100,8 +103,9 @@ export default function onSearchFilter(_search) {
 
       let Query14 = `'$gte':'${date14}','$lte':'${l14t}'`;
       return Query14;
+    }
 
-    case "Last 30 days":
+    case "Last 30 days": {
       let d30 = new Date();
       let d30l = new Date();
       let l30t = new Date(
@@ -119,13 +123,13 @@ export default function onSearchFilter(_search) {
         Date.UTC(d30.getFullYear(), d30.getMonth(), d30.getDate(), 0, 0, 0)
       ).toISOString();
       return `'$gte':'${date30}','$lte':'${l30t}'`;
-
-    case "Last week":
+    }
+    case "Last week": {
       const from_date = moment().startOf("week").subtract(7, "days");
       const to_date = moment().endOf("week").subtract(7, "days");
       return `'$gte':'${from_date.toISOString()}','$lte':'${to_date.toISOString()}'`;
-
-    case "This month":
+    }
+    case "This month": {
       var tdate = new Date();
       var tfirstDay = new Date(
         tdate.getFullYear(),
@@ -139,8 +143,8 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let Querylt = `'$gte':'${tfirstDay}','$lte':'${tlastDay}'`;
       return Querylt;
-
-    case "Last month":
+    }
+    case "Last month": {
       var ldate = new Date();
       var lfirstDay = new Date(
         ldate.getFullYear(),
@@ -154,8 +158,8 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let Queryltl = `'$gte':'${lfirstDay}','$lte':'${llastDay}'`;
       return Queryltl;
-
-    case "All":
+    }
+    case "All": {
       let fall = new Date(
         new Date().getFullYear() - 100,
         0,
@@ -166,8 +170,8 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let fall_year = `'$gte':'${fall}'`;
       return fall_year;
-
-    case "This year":
+    }
+    case "This year": {
       let fcy = new Date(new Date().getFullYear(), 0, 1, 0, 0, 0).toISOString();
       let lcy = new Date(
         new Date().getFullYear(),
@@ -179,8 +183,8 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let cur_year = `'$gte':'${fcy}','$lte':'${lcy}'`;
       return cur_year;
-
-    case "Last year":
+    }
+    case "Last year": {
       let fly = new Date(
         new Date().getFullYear() - 1,
         0,
@@ -199,7 +203,7 @@ export default function onSearchFilter(_search) {
       ).toISOString();
       let last_year = `'$gte':'${fly}','$lte':'${lly}'`;
       return last_year;
-
+    }
     default:
       return "";
   }

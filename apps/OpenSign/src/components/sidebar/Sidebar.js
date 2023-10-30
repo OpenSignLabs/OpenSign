@@ -23,7 +23,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       var sideMenu = Parse.Object.extend("w_menu");
       var query = new Parse.Query(sideMenu);
       query.equalTo("objectId", localStorage.getItem("defaultmenuid"));
-      //	query.equalTo("objectId", "46X9z6lAv2");
+   
       const results = await query.first();
       const resultjson = results.toJSON();
       // console.log("resultjson ", resultjson);

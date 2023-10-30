@@ -106,7 +106,9 @@ const TreeWidget = (props) => {
                 return;
               }
             }
-          } catch (error) {}
+          } catch (error) {
+            console.log("error ", error);
+          }
         } else {
           Parse.serverURL = parseBaseUrl;
           Parse.initialize(parseAppId);
@@ -280,6 +282,7 @@ const TreeWidget = (props) => {
             );
           },
           (error) => {
+            console.log("error ", error);
             // The object was not retrieved successfully.
             setLoader(false);
           }
@@ -304,7 +307,7 @@ const TreeWidget = (props) => {
         });
         props.onChange(tabList[len]["objectId"]);
         let url = "Folders";
-        tabList.forEach((t, i) => {
+        tabList.forEach((t) => {
           url = url + " / " + t[`${props.schema.data.FolderNameField}`];
         });
         setTabURL(url);
@@ -325,7 +328,6 @@ const TreeWidget = (props) => {
     try {
       let objectId = formData.objectId;
       let className = formData.className;
-      let condition = false;
       Parse.serverURL = parseBaseUrl;
       Parse.initialize(parseAppId);
       const fldr = Parse.Object.extend(className);
@@ -410,8 +412,7 @@ const TreeWidget = (props) => {
             }
           }
           if (_dd[k].data !== undefined) {
-            if (_dd[k].data[0] !== undefined) {
-            } else if (_dd[k].data.isPointer) {
+            if (_dd[k].data.isPointer) {
               let pointer = {};
               if (RowData[k] && RowData[k] !== "Select") {
                 if (_dd[k].data.class) {
@@ -495,6 +496,7 @@ const TreeWidget = (props) => {
           }
         },
         (error) => {
+          console.log("error ", error);
           setLoader(false);
         }
       );
@@ -671,7 +673,7 @@ const TreeWidget = (props) => {
               }}
             >
               <a
-                onClick={(e) => {
+                onClick={() => {
                   setTabList([]);
                   setIsAddField(false);
                   setDefaultState(true);
@@ -785,7 +787,7 @@ const TreeWidget = (props) => {
                                   marginLeft: "4px",
                                   cursor: "pointer"
                                 }}
-                                onClick={(e) => {
+                                onClick={() => {
                                   setTabList((tabs) => tabs.concat(fldr));
                                   selectedItemList(fldr);
                                 }}
