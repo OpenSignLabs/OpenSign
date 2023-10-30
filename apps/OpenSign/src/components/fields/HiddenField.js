@@ -60,15 +60,15 @@ export class HiddenField extends Component {
             });
           }
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log('err', error)
+      }
     }
   };
   componentDidMount() {
     this.loadData();
   }
-  /*  componentWillReceiveProps() {
-    this.loadData();
-  } */
+
   render() {
     return (
       <input

@@ -23,17 +23,17 @@ function ChangePassword() {
                 user.set("password", newpassword);
                 user
                   .save()
-                  .then((response) => {
+                  .then(() => {
                     alert("Password updated successfully.");
                   })
                   .catch((error) => {
+                    console.log("err", error);
                     alert("Something went wrong.");
                   });
               });
             } else {
               alert("Your current password is missing or incorrect.");
             }
-
             console.log("Logged in user", user);
           })
           .catch((error) => {
@@ -43,7 +43,9 @@ function ChangePassword() {
       } else {
         alert("Your password and confirmation password do not match.");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("err", error);
+    }
   };
   if (localStorage.getItem("accesstoken") === null) {
     return <Navigate to="/" />;

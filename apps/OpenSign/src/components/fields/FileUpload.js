@@ -34,6 +34,7 @@ const FileUpload = (props) => {
           let Extensions = props.schema.filetypes.map((x) => x.toLowerCase());
           let arr = Extensions.filter((x) => x === fileNameExt);
           if (arr.length > 0) {
+            console.log("multiple type");
           } else {
             alert(
               "Only these file types are accepted : " + Extensions.join(", ")
@@ -41,12 +42,11 @@ const FileUpload = (props) => {
           }
         }
         if (props.schema.maxfilesizeKB && props.schema.maxfilesizeKB !== "") {
-          console.log(Math.round(files[0].size / 1024));
+          // console.log(Math.round(files[0].size / 1024));
           if (
-            Math.round(Number(files[0].size) / 1024) <=
+            Math.round(Number(files[0].size) / 1024) >=
             props.schema.maxfilesizeKB
           ) {
-          } else {
             alert(
               `The selected file size is too large. Please select a file less than ${Math.round(
                 props.schema.maxfilesizeKB / 1024
@@ -72,7 +72,6 @@ const FileUpload = (props) => {
     const size = file.size;
     // console.log("file ", file)
     setfileload(true);
-    const tenant = localStorage.getItem("TenetId");
     const pdfFile = file;
     const parseFile = new Parse.File(pdfFile.name, pdfFile);
 

@@ -44,7 +44,7 @@ export const SaveFileSize = async (size, imageUrl) => {
             }
           }
         )
-        .then((result) => {
+        .then(() => {
           // const res = result.data;
           // console.log("save res", res);
         })
@@ -62,7 +62,7 @@ export const SaveFileSize = async (size, imageUrl) => {
             "X-Parse-Application-Id": parseAppId
           }
         })
-        .then((result) => {
+        .then(() => {
           // const res = result.data;
           // console.log("res", res);
         })
@@ -91,7 +91,7 @@ const saveDataFile = async (size, imageUrl) => {
         "X-Parse-Application-Id": parseAppId
       }
     })
-    .then((result) => {
+    .then(() => {
       // const res = result.data;
       // console.log("res", res);
     })

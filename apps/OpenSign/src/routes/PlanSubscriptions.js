@@ -39,10 +39,6 @@ const PlanSubscriptions = () => {
     // eslint-disable-next-line
   }, []);
 
-  // const toggleFrequency = () => {
-  //   setYearlyVisible(!yearlyVisible);
-  // };
-
   return (
     <>
     <Title title={"Subscriptions"} />

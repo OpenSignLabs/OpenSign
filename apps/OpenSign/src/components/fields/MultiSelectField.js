@@ -22,7 +22,7 @@ const MultiSelectField = (props) => {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [state, setState] = useState(undefined);
-  const [editFormData, setEditFormData] = useState([]);
+  // const [editFormData, setEditFormData] = useState([]);
   const [selected, setSelected] = React.useState([]);
   const [isModal, setIsModel] = useState(false);
   const onChange = (selectedOptions) => setSelected(selectedOptions);
@@ -146,7 +146,9 @@ const MultiSelectField = (props) => {
           setSelected(_selected);
         }
       });
-    } catch (error) {}
+    } catch (error) {
+      console.log("err", error);
+    }
   };
 
   const handleCheckChieldElement = (event) => {
@@ -164,271 +166,271 @@ const MultiSelectField = (props) => {
     setState({ [`${props.name}_DD`]: SelectLists });
   };
 
-  const Level1CheckList = async (id) => {
-    try {
-      let response = [];
-      // eslint-disable-next-line
-      let reg = /(\#.*?\#)/gi;
-      let _query = props.schema.data.query;
-      let output = _query.match(reg);
-      if (output.length === 2) {
-        let res;
-        if (localStorage.getItem("Extand_Class")) {
-          let data = JSON.parse(localStorage.getItem("Extand_Class"));
-          res = data[0];
-        }
-        output = output.filter((x) => x !== "#queryString#");
-        if (output.length === 1) {
-          _query = _query.replace("#queryString#", id);
-          output = output.join();
-          output = output.substring(1, output.length - 1);
-          output = output.split(".");
-          if (output.length > 0) {
-            _query = _query.replace(reg, res[output[0]][output[1]]);
-          } else {
-            _query = _query.replace(reg, res[output[0]]);
-          }
-        }
-      } else {
-        _query = props.schema.data.query.replace(reg, id);
-      }
+  // const Level1CheckList = async (id) => {
+  //   try {
+  //     let response = [];
+  //     // eslint-disable-next-line
+  //     let reg = /(\#.*?\#)/gi;
+  //     let _query = props.schema.data.query;
+  //     let output = _query.match(reg);
+  //     if (output.length === 2) {
+  //       let res;
+  //       if (localStorage.getItem("Extand_Class")) {
+  //         let data = JSON.parse(localStorage.getItem("Extand_Class"));
+  //         res = data[0];
+  //       }
+  //       output = output.filter((x) => x !== "#queryString#");
+  //       if (output.length === 1) {
+  //         _query = _query.replace("#queryString#", id);
+  //         output = output.join();
+  //         output = output.substring(1, output.length - 1);
+  //         output = output.split(".");
+  //         if (output.length > 0) {
+  //           _query = _query.replace(reg, res[output[0]][output[1]]);
+  //         } else {
+  //           _query = _query.replace(reg, res[output[0]]);
+  //         }
+  //       }
+  //     } else {
+  //       _query = props.schema.data.query.replace(reg, id);
+  //     }
 
-      let url = `${parseBaseUrl}classes/${props.schema.data.class}?${_query}`;
-      const headers = {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": parseAppId,
-        "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-      };
-      await axios.get(url, { headers: headers }).then(async (res) => {
-        let temp = [];
-        let formArray = [];
-        let _selected = [];
-        if (editFormData.length > 0) {
-          editFormData.forEach((x) => {
-            if (typeof x === "object") {
-              formArray.push(x.objectId);
-            } else {
-              formArray.push(x);
-            }
-          });
-        } else if (
-          props.schema.selectedData &&
-          Object.keys(props.schema.selectedData).length !== 0 &&
-          props.schema.selectedData.constructor === Object
-        ) {
-          try {
-            let selectedDataQuery = props.schema.selectedData.query.replace(
-              reg,
-              id
-            );
-            let selectedDataUrl = `${parseBaseUrl}classes/${props.schema.selectedData.class}?${selectedDataQuery}`;
+  //     let url = `${parseBaseUrl}classes/${props.schema.data.class}?${_query}`;
+  //     const headers = {
+  //       "Content-Type": "application/json",
+  //       "X-Parse-Application-Id": parseAppId,
+  //       "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+  //     };
+  //     await axios.get(url, { headers: headers }).then(async (res) => {
+  //       let temp = [];
+  //       let formArray = [];
+  //       let _selected = [];
+  //       if (editFormData.length > 0) {
+  //         editFormData.forEach((x) => {
+  //           if (typeof x === "object") {
+  //             formArray.push(x.objectId);
+  //           } else {
+  //             formArray.push(x);
+  //           }
+  //         });
+  //       } else if (
+  //         props.schema.selectedData &&
+  //         Object.keys(props.schema.selectedData).length !== 0 &&
+  //         props.schema.selectedData.constructor === Object
+  //       ) {
+  //         try {
+  //           let selectedDataQuery = props.schema.selectedData.query.replace(
+  //             reg,
+  //             id
+  //           );
+  //           let selectedDataUrl = `${parseBaseUrl}classes/${props.schema.selectedData.class}?${selectedDataQuery}`;
 
-            await axios.get(selectedDataUrl, { headers }).then((sltres) => {
-              let sltData = sltres.data.results;
-              sltData.forEach((x) => {
-                if (props.schema.selectedData.valueKey.includes(".")) {
-                  let sltArr = props.schema.selectedData.valueKey.split(".");
+  //           await axios.get(selectedDataUrl, { headers }).then((sltres) => {
+  //             let sltData = sltres.data.results;
+  //             sltData.forEach((x) => {
+  //               if (props.schema.selectedData.valueKey.includes(".")) {
+  //                 let sltArr = props.schema.selectedData.valueKey.split(".");
 
-                  if (Array.isArray(x[sltArr[0]])) {
-                    x[sltArr[0]].forEach((l) => {
-                      formArray.push(l[sltArr[1]]);
-                    });
-                  } else {
-                    formArray.push(x[sltArr[0][sltArr[1]]]);
-                  }
-                } else {
-                  formArray.push(x[props.schema.selectedData.valueKey]);
-                }
-              });
-            });
-          } catch (error) {}
-        }
-        res.data.results.forEach((x) => {
-          let obj = {};
-          if (props.schema.data.valueKey.includes(".")) {
-            let newArr = props.schema.data.valueKey.split(".");
-            if (Array.isArray(x[newArr[0]])) {
-              if (props.schema.data.displayKey.includes(".")) {
-                let _dis = props.schema.data.displayKey.split(".");
-                x[newArr[0]].forEach((l) => {
-                  if (formArray.includes(l[newArr[1]])) {
-                    obj = {
-                      label: l[_dis[1]],
-                      value: l[newArr[1]],
-                      isChecked: true
-                    };
-                    _selected.push(obj);
-                  } else {
-                    if (props.schema.selectAll) {
-                      obj = {
-                        label: l[_dis[1]],
-                        value: l[newArr[1]],
-                        isChecked: true
-                      };
-                      _selected.push(obj);
-                    } else {
-                      obj = {
-                        label: l[_dis[1]],
-                        value: l[newArr[1]],
-                        isChecked: false
-                      };
-                    }
-                  }
-                  temp.push(obj);
-                });
-              } else {
-                x[newArr[0]].forEach((l) => {
-                  if (formArray.includes(l[newArr[1]])) {
-                    obj = {
-                      label: x[props.schema.data.displayKey],
-                      value: l[newArr[1]],
-                      isChecked: true
-                    };
-                    _selected.push(obj);
-                  } else {
-                    if (props.schema.selectAll) {
-                      obj = {
-                        label: x[props.schema.data.displayKey],
-                        value: l[newArr[1]],
-                        isChecked: true
-                      };
-                      _selected.push(obj);
-                    } else {
-                      obj = {
-                        label: x[props.schema.data.displayKey],
-                        value: l[newArr[1]],
-                        isChecked: false
-                      };
-                    }
-                  }
-                  temp.push(obj);
-                });
-              }
-            } else {
-              if (props.schema.data.displayKey.includes(".")) {
-                let disArr = props.schema.data.displayKey.split(".");
-                if (formArray.includes(x[newArr[0]][newArr[1]])) {
-                  obj = {
-                    label: x[disArr[0]][disArr[1]],
-                    value: x[newArr[0]][newArr[1]],
-                    isChecked: true
-                  };
-                  _selected.push(obj);
-                } else {
-                  if (props.schema.selectAll) {
-                    obj = {
-                      label: x[disArr[0]][disArr[1]],
-                      value: x[newArr[0]][newArr[1]],
-                      isChecked: true
-                    };
-                    _selected.push(obj);
-                  } else {
-                    obj = {
-                      label: x[disArr[0]][disArr[1]],
-                      value: x[newArr[0]][newArr[1]],
-                      isChecked: false
-                    };
-                  }
-                }
-              } else {
-                if (formArray.includes(x[newArr[0]][newArr[1]])) {
-                  obj = {
-                    label: x[props.schema.data.displayKey],
-                    value: x[newArr[0]][newArr[1]],
-                    isChecked: true
-                  };
-                  _selected.push(obj);
-                } else {
-                  if (props.schema.selectAll) {
-                    obj = {
-                      label: x[props.schema.data.displayKey],
-                      value: x[newArr[0]][newArr[1]],
-                      isChecked: true
-                    };
-                    _selected.push(obj);
-                  } else {
-                    obj = {
-                      label: x[props.schema.data.displayKey],
-                      value: x[newArr[0]][newArr[1]],
-                      isChecked: false
-                    };
-                  }
-                }
-              }
-            }
-          } else {
-            if (Array.isArray(x[props.schema.data.valueKey])) {
-              x[props.schema.data.valueKey].forEach((t) => {
-                if (formArray.includes(t)) {
-                  obj = {
-                    label: t,
-                    value: t,
-                    isChecked: true
-                  };
-                  _selected.push(obj);
-                } else {
-                  if (props.schema.selectAll) {
-                    obj = {
-                      label: t,
-                      value: t,
-                      isChecked: true
-                    };
-                    _selected.push(obj);
-                  } else {
-                    obj = {
-                      label: t,
-                      value: t,
-                      isChecked: false
-                    };
-                  }
-                }
-                temp.push(obj);
-              });
-            } else if (formArray.includes(x[props.schema.data.valueKey])) {
-              obj = {
-                label: x[props.schema.data.displayKey],
-                value: x[props.schema.data.valueKey],
-                isChecked: true
-              };
-              _selected.push(obj);
-            } else {
-              if (props.schema.selectAll) {
-                obj = {
-                  label: x[props.schema.data.displayKey],
-                  value: x[props.schema.data.valueKey],
-                  isChecked: true
-                };
-                _selected.push(obj);
-              } else {
-                obj = {
-                  label: x[props.schema.data.displayKey],
-                  value: x[props.schema.data.valueKey],
-                  isChecked: false
-                };
-              }
-            }
-            temp.push(obj);
-          }
-        });
-        response = temp;
-        if (props.schema.uiLayout === "MultiDropdownList") {
-          if (editFormData) {
-            let checkData = [];
-            response.forEach((x) => {
-              if (x.isChecked) {
-                checkData.push(x.value);
-              }
-            });
-            setSelected(checkData);
-          }
-          setState({ [`${props.name}_DD`]: response });
-        } else {
-          setState({ [`${props.name}_DD`]: response });
-          setSelected(_selected);
-        }
-      });
-    } catch (error) {}
-  };
+  //                 if (Array.isArray(x[sltArr[0]])) {
+  //                   x[sltArr[0]].forEach((l) => {
+  //                     formArray.push(l[sltArr[1]]);
+  //                   });
+  //                 } else {
+  //                   formArray.push(x[sltArr[0][sltArr[1]]]);
+  //                 }
+  //               } else {
+  //                 formArray.push(x[props.schema.selectedData.valueKey]);
+  //               }
+  //             });
+  //           });
+  //         } catch (error) {}
+  //       }
+  //       res.data.results.forEach((x) => {
+  //         let obj = {};
+  //         if (props.schema.data.valueKey.includes(".")) {
+  //           let newArr = props.schema.data.valueKey.split(".");
+  //           if (Array.isArray(x[newArr[0]])) {
+  //             if (props.schema.data.displayKey.includes(".")) {
+  //               let _dis = props.schema.data.displayKey.split(".");
+  //               x[newArr[0]].forEach((l) => {
+  //                 if (formArray.includes(l[newArr[1]])) {
+  //                   obj = {
+  //                     label: l[_dis[1]],
+  //                     value: l[newArr[1]],
+  //                     isChecked: true
+  //                   };
+  //                   _selected.push(obj);
+  //                 } else {
+  //                   if (props.schema.selectAll) {
+  //                     obj = {
+  //                       label: l[_dis[1]],
+  //                       value: l[newArr[1]],
+  //                       isChecked: true
+  //                     };
+  //                     _selected.push(obj);
+  //                   } else {
+  //                     obj = {
+  //                       label: l[_dis[1]],
+  //                       value: l[newArr[1]],
+  //                       isChecked: false
+  //                     };
+  //                   }
+  //                 }
+  //                 temp.push(obj);
+  //               });
+  //             } else {
+  //               x[newArr[0]].forEach((l) => {
+  //                 if (formArray.includes(l[newArr[1]])) {
+  //                   obj = {
+  //                     label: x[props.schema.data.displayKey],
+  //                     value: l[newArr[1]],
+  //                     isChecked: true
+  //                   };
+  //                   _selected.push(obj);
+  //                 } else {
+  //                   if (props.schema.selectAll) {
+  //                     obj = {
+  //                       label: x[props.schema.data.displayKey],
+  //                       value: l[newArr[1]],
+  //                       isChecked: true
+  //                     };
+  //                     _selected.push(obj);
+  //                   } else {
+  //                     obj = {
+  //                       label: x[props.schema.data.displayKey],
+  //                       value: l[newArr[1]],
+  //                       isChecked: false
+  //                     };
+  //                   }
+  //                 }
+  //                 temp.push(obj);
+  //               });
+  //             }
+  //           } else {
+  //             if (props.schema.data.displayKey.includes(".")) {
+  //               let disArr = props.schema.data.displayKey.split(".");
+  //               if (formArray.includes(x[newArr[0]][newArr[1]])) {
+  //                 obj = {
+  //                   label: x[disArr[0]][disArr[1]],
+  //                   value: x[newArr[0]][newArr[1]],
+  //                   isChecked: true
+  //                 };
+  //                 _selected.push(obj);
+  //               } else {
+  //                 if (props.schema.selectAll) {
+  //                   obj = {
+  //                     label: x[disArr[0]][disArr[1]],
+  //                     value: x[newArr[0]][newArr[1]],
+  //                     isChecked: true
+  //                   };
+  //                   _selected.push(obj);
+  //                 } else {
+  //                   obj = {
+  //                     label: x[disArr[0]][disArr[1]],
+  //                     value: x[newArr[0]][newArr[1]],
+  //                     isChecked: false
+  //                   };
+  //                 }
+  //               }
+  //             } else {
+  //               if (formArray.includes(x[newArr[0]][newArr[1]])) {
+  //                 obj = {
+  //                   label: x[props.schema.data.displayKey],
+  //                   value: x[newArr[0]][newArr[1]],
+  //                   isChecked: true
+  //                 };
+  //                 _selected.push(obj);
+  //               } else {
+  //                 if (props.schema.selectAll) {
+  //                   obj = {
+  //                     label: x[props.schema.data.displayKey],
+  //                     value: x[newArr[0]][newArr[1]],
+  //                     isChecked: true
+  //                   };
+  //                   _selected.push(obj);
+  //                 } else {
+  //                   obj = {
+  //                     label: x[props.schema.data.displayKey],
+  //                     value: x[newArr[0]][newArr[1]],
+  //                     isChecked: false
+  //                   };
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         } else {
+  //           if (Array.isArray(x[props.schema.data.valueKey])) {
+  //             x[props.schema.data.valueKey].forEach((t) => {
+  //               if (formArray.includes(t)) {
+  //                 obj = {
+  //                   label: t,
+  //                   value: t,
+  //                   isChecked: true
+  //                 };
+  //                 _selected.push(obj);
+  //               } else {
+  //                 if (props.schema.selectAll) {
+  //                   obj = {
+  //                     label: t,
+  //                     value: t,
+  //                     isChecked: true
+  //                   };
+  //                   _selected.push(obj);
+  //                 } else {
+  //                   obj = {
+  //                     label: t,
+  //                     value: t,
+  //                     isChecked: false
+  //                   };
+  //                 }
+  //               }
+  //               temp.push(obj);
+  //             });
+  //           } else if (formArray.includes(x[props.schema.data.valueKey])) {
+  //             obj = {
+  //               label: x[props.schema.data.displayKey],
+  //               value: x[props.schema.data.valueKey],
+  //               isChecked: true
+  //             };
+  //             _selected.push(obj);
+  //           } else {
+  //             if (props.schema.selectAll) {
+  //               obj = {
+  //                 label: x[props.schema.data.displayKey],
+  //                 value: x[props.schema.data.valueKey],
+  //                 isChecked: true
+  //               };
+  //               _selected.push(obj);
+  //             } else {
+  //               obj = {
+  //                 label: x[props.schema.data.displayKey],
+  //                 value: x[props.schema.data.valueKey],
+  //                 isChecked: false
+  //               };
+  //             }
+  //           }
+  //           temp.push(obj);
+  //         }
+  //       });
+  //       response = temp;
+  //       if (props.schema.uiLayout === "MultiDropdownList") {
+  //         if (editFormData) {
+  //           let checkData = [];
+  //           response.forEach((x) => {
+  //             if (x.isChecked) {
+  //               checkData.push(x.value);
+  //             }
+  //           });
+  //           setSelected(checkData);
+  //         }
+  //         setState({ [`${props.name}_DD`]: response });
+  //       } else {
+  //         setState({ [`${props.name}_DD`]: response });
+  //         setSelected(_selected);
+  //       }
+  //     });
+  //   } catch (error) {}
+  // };
 
   const dragProps = {
     onDragEnd(fromIndex, toIndex) {
@@ -469,15 +471,15 @@ const MultiSelectField = (props) => {
     // eslint-disable-next-line
   }, [selected]);
 
-  useState(() => {
-    if (props.formData) {
-      if (props.formData === "Select") {
-      } else {
-        setEditFormData(props.formData);
-      }
-    }
-    // eslint-disable-next-line
-  }, [props.formData]);
+  // useState(() => {
+  //   if (props.formData) {
+  //     if (props.formData === "Select") {
+  //     } else {
+  //       setEditFormData(props.formData);
+  //     }
+  //   }
+  //   // eslint-disable-next-line
+  // }, [props.formData]);
 
   const handleModalCloseClick = () => {
     setIsModel(false);

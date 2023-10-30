@@ -44,11 +44,8 @@ class forgotPassword extends Component {
     }
   };
 
-  componentWillMount() {
-    this.props.fetchAppInfo(localStorage.getItem("domain"));
-  }
-
   componentDidMount() {
+    this.props.fetchAppInfo(localStorage.getItem("domain"));
     window.addEventListener("resize", this.resize.bind(this));
     this.resize();
   }

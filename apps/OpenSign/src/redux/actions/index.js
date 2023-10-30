@@ -141,7 +141,9 @@ export const login = (username, password) => async (dispatch) => {
                   console.error("Error while fetching tour", error);
                 }
               );
-            } catch (error) {}
+            } catch (error) {
+              console.log("err ", error)
+            }
           }
         });
 
@@ -167,7 +169,7 @@ export const login = (username, password) => async (dispatch) => {
 };
 
 //for reset password
-export const forgetPassword = (username) => async (dispatch) => {
+export const forgetPassword = (username) => async () => {
   // let res = {};
   let baseUrl = localStorage.getItem("BaseUrl12");
   let parseAppId = localStorage.getItem("AppID12");
