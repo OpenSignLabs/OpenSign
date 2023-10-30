@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Package from "../../package.json";
 
 const Footer = () => {
-  let footer = localStorage.getItem("_appName");
   const [showButton, setShowButton] = useState(false);
   const handleScroll = () => {
     if (window.pageYOffset >= 50) {
@@ -24,11 +23,14 @@ const Footer = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const appName = "OpenSign";
+  
   return (
     <>
       <div className="bg-[#222c3c] text-[#98a6ba] text-center text-[13px] py-3">
         All Rights Reserved &copy; {new Date().getFullYear()} &nbsp;
-        {footer && `${footer.charAt(0).toUpperCase()}${footer.slice(1)}`}{" "}
+        {appName}{" "}
         (version:{" "}
         {localStorage.getItem("appVersion") &&
           `${Package.version}.${localStorage.getItem("appVersion")}`}
