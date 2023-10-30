@@ -86,7 +86,7 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
           Width: newWidth,
           Height: nweHeight,
           SignUrl: image.src,
-          ImageType: image.imgType,
+          ImageType: image.imgType
         };
       }
       return url;
@@ -132,7 +132,7 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
           Width: newWidth,
           Height: newHeight,
           SignUrl: image.src,
-          ImageType: image.imgType,
+          ImageType: image.imgType
         };
       }
       return url;
@@ -151,54 +151,54 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
 
 //function for save button to save signature or image url
 export function onSaveSign(xyPostion, index, signKey, signatureImg) {
-  const updateFilter = xyPostion[index].pos.filter(
-    (data) => data.key === signKey && data.SignUrl
-  );
+  // const updateFilter = xyPostion[index].pos.filter(
+  //   (data) => data.key === signKey && data.SignUrl
+  // );
 
-  if (updateFilter.length > 0) {
-    const getXYdata = xyPostion[index].pos;
-    // updateFilter[0].SignUrl = signatureImg;
+  let getXYdata = xyPostion[index].pos;
+  let getPosData = getXYdata;
+  // if (updateFilter.length > 0) {
+  // updateFilter[0].SignUrl = signatureImg;
+  const addSign = getPosData.map((url, ind) => {
+    if (url.key === signKey) {
+      return {
+        ...url,
+        Width: getPosData[0].Width ? getPosData[0].Width : 150,
+        Height: getPosData[0].Height ? getPosData[0].Height : 60,
+        SignUrl: signatureImg
+      };
+    }
+    return url;
+  });
 
-    const getPosData = getXYdata;
-    const addSign = getPosData.map((url, ind) => {
-      if (url.key === signKey) {
-        return {
-          ...url,
-          Width: 150,
-          Height: 60,
-          SignUrl: signatureImg,
-        };
-      }
-      return url;
-    });
+  const newUpdateUrl = xyPostion.map((obj, ind) => {
+    if (ind === index) {
+      return { ...obj, pos: addSign };
+    }
+    return obj;
+  });
+  return newUpdateUrl;
+  // } else {
+  //   const addSign = getPosData.map((url, ind) => {
+  //     if (url.key === signKey) {
+  //       return {
+  //         ...url,
+  //         SignUrl: signatureImg,
+  //         Width: getPosData[0].Width ? getPosData[0].Width : 150,
+  //         Height: getPosData[0].Height ? getPosData[0].Height : 60
+  //       };
+  //     }
+  //     return url;
+  //   });
 
-    const newUpdateUrl = xyPostion.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: addSign };
-      }
-      return obj;
-    });
-    return newUpdateUrl;
-  } else {
-    const getXYdata = xyPostion[index].pos;
-
-    const getPosData = getXYdata;
-
-    const addSign = getPosData.map((url, ind) => {
-      if (url.key === signKey) {
-        return { ...url, SignUrl: signatureImg, Width: 150, Height: 60 };
-      }
-      return url;
-    });
-
-    const newUpdateUrl = xyPostion.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: addSign };
-      }
-      return obj;
-    });
-    return newUpdateUrl;
-  }
+  //   const newUpdateUrl = xyPostion.map((obj, ind) => {
+  //     if (ind === index) {
+  //       return { ...obj, pos: addSign };
+  //     }
+  //     return obj;
+  //   });
+  //   return newUpdateUrl;
+  // }
 }
 
 //function for getting contract_User details
@@ -212,8 +212,8 @@ export const contractUsers = async (objectId) => {
         headers: {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-        },
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
       }
     )
     .then((Listdata) => {
@@ -239,8 +239,8 @@ export const contactBook = async (objectId) => {
         headers: {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-        },
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
       }
     )
     .then((Listdata) => {
@@ -265,8 +265,8 @@ export const contactBookName = async (userPhone, className) => {
         headers: {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-        },
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
       }
     )
     .then((Listdata) => {
@@ -278,3 +278,5 @@ export const contactBookName = async (userPhone, className) => {
     });
   return result;
 };
+
+ 
