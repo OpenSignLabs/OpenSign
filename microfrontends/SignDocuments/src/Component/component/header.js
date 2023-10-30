@@ -224,11 +224,13 @@ function Header({
                     )}
                     {isPlaceholder ? (
                       <div
+                     
                         onClick={() => {
                           if (!isMailSend) {
                             alertSendEmail();
                           }
                         }}
+                      
                         style={{
                           color: isMailSend ? "gray" : themeColor(),
                           border: "none",
@@ -241,6 +243,7 @@ function Header({
                       </div>
                     ) : (
                       <div
+                      data-tut="reactourThird"
                         onClick={() => {
                           if (!pdfUrl) {
                             embedImages();
