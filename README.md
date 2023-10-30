@@ -4,6 +4,10 @@
 
 The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign | Smartwaiver | SignRequest | HelloSign | Zoho sign.
 
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/opensignlabs/opensign.svg)](http://isitmaintained.com/project/opensignlabs/opensign "Average time to resolve an issue")
+
+[![All Contributors](https://img.shields.io/github/all-contributors/opensignlabs/opensign?color=ee8449&style=flat-square)](#contributors)
+
 <a href="https://www.opensignlabs.com/">Website</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
   <a href="https://www.opensignlabs.com">Docs</a>
@@ -93,3 +97,33 @@ OpenSign is licensed under the AGPL License. For more details, see the [LICENSE]
 We would like to thank all our contributors and users for their support and feedback. Special thanks to [OpenSignLabs](https://github.com/OpenSignLabs) for spearheading this initiative.
 
 ---
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://aleksandarjakovljevic.com/"><img src="https://avatars.githubusercontent.com/u/2115393?v=4?s=100" width="100px;" alt="Aleksandar Jakovljevic"/><br /><sub><b>Aleksandar Jakovljevic</b></sub></a><br /><a href="#code-ajakov" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/nxglabs"><img src="https://avatars.githubusercontent.com/u/5486116?v=4?s=100" width="100px;" alt="Amol"/><br /><sub><b>Amol</b></sub></a><br /><a href="#code-nxglabs" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/BuilderPrid"><img src="https://avatars.githubusercontent.com/u/106882895?v=4?s=100" width="100px;" alt="Priyanshu Dwivedi"/><br /><sub><b>Priyanshu Dwivedi</b></sub></a><br /><a href="#code-BuilderPrid" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Tashuuuu"><img src="https://avatars.githubusercontent.com/u/85075827?v=4?s=100" width="100px;" alt="Akriti Sengar"/><br /><sub><b>Akriti Sengar</b></sub></a><br /><a href="#code-Tashuuuu" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/parthrc"><img src="https://avatars.githubusercontent.com/u/101104958?v=4?s=100" width="100px;" alt="Parth Chawande"/><br /><sub><b>Parth Chawande</b></sub></a><br /><a href="#code-parthrc" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Rishabh-git10"><img src="https://avatars.githubusercontent.com/u/107680241?v=4?s=100" width="100px;" alt="Rishabh Dewangan"/><br /><sub><b>Rishabh Dewangan</b></sub></a><br /><a href="#code-Rishabh-git10" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LemonDrop847"><img src="https://avatars.githubusercontent.com/u/106615670?v=4?s=100" width="100px;" alt="Nitin Mishra"/><br /><sub><b>Nitin Mishra</b></sub></a><br /><a href="#code-LemonDrop847" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://jobinselvanose.com"><img src="https://avatars.githubusercontent.com/u/63976083?v=4?s=100" width="100px;" alt="Jobin Selvanose"/><br /><sub><b>Jobin Selvanose</b></sub></a><br /><a href="#doc-Jobin-S" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/HansF"><img src="https://avatars.githubusercontent.com/u/1503?v=4?s=100" width="100px;" alt="Hans Fraiponts"/><br /><sub><b>Hans Fraiponts</b></sub></a><br /><a href="#doc-HansF" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://linktr.ee/monilprajapati"><img src="https://avatars.githubusercontent.com/u/99136041?v=4?s=100" width="100px;" alt="Monil Prajapati"/><br /><sub><b>Monil Prajapati</b></sub></a><br /><a href="#code-Monilprajapati" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+

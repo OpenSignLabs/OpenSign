@@ -123,7 +123,7 @@ export const formJson = (id) => {
           Name: {
             type: "string",
             title: "Title",
-            maxLength: 50
+            maxLength: 100
           },
           Description: {
             type: "string",

@@ -221,7 +221,7 @@ function PdfFileComponent({
         // console.log("download")
         const pdfName = data && data.Name;
         const pdfUrl = data && data.SignedUrl ? data.SignedUrl : data.URL;
-        saveAs(pdfUrl, `${pdfName}_signed_by_opensign.qik.ai.pdf`);
+        saveAs(pdfUrl, `${pdfName}_signed_by_OpenSign™.pdf`);
       } else if (selectType === "Rename") {
         // console.log("rename")
         setRenameValue(data.Name);
