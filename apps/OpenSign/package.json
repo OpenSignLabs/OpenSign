@@ -31,7 +31,7 @@
     "react-router-dom": "^6.16.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.7",
-    "reactour": "^1.19.1",
+    "reactour": "^1.19.2",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
     "rjsf-conditionals": "github:prafullnavkar-nxg/rjsf-conditionals",
