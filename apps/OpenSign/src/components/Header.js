@@ -82,7 +82,10 @@ const Header = ({ showSidebar }) => {
           />
         </div>
       </div>
-      <div className="flex justify-between items-center gap-x-3">
+      <div
+        id="profile-menu"
+        className="flex justify-between items-center gap-x-3"
+      >
         <div>
           <FullScreenButton />
         </div>
@@ -103,7 +106,7 @@ const Header = ({ showSidebar }) => {
             {username && username}
           </div>
         )}
-        <div className="relative" id="profile-menu">
+        <div className="relative">
           <div className="cursor-pointer">
             <i onClick={toggleDropdown} className="fa-solid fa-angle-down"></i>
           </div>
