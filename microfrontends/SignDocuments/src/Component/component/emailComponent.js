@@ -267,7 +267,11 @@ function EmailComponent({
                 >
                   {emailCount.map((data, ind) => {
                     return (
-                      <div className="emailChip" key={ind}>
+                      <div className="emailChip" style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center"
+                        }} key={ind}>
                         <span
                           style={{
                             color: "white",
@@ -277,7 +281,6 @@ function EmailComponent({
                         >
                           {data}
                         </span>
-
                         <img
                           alt="print img"
                           onClick={() => removeChip(ind)}
