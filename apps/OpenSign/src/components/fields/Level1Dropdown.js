@@ -338,13 +338,14 @@ const Level1Dropdown = (props) => {
         setTimeout(function () {
           x.className = x.className.replace("show", "");
         }, 5000);
-      } catch (error) {}
+      } catch (error) {
+        console.log("Err", error)
+      }
     }
   };
 
   useEffect(() => {
     Level1DropdownData();
-
     // eslint-disable-next-line
   }, []);
 

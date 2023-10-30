@@ -15,9 +15,7 @@ export function useWindowSize() {
 
   useEffect(() => {
     onResize();
-
     window.addEventListener("resize", onResize);
-
     return () => {
       window.removeEventListener("resize", onResize);
     };

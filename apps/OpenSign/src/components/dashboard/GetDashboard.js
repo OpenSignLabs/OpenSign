@@ -14,7 +14,7 @@ const GetDashboard = (props) => {
     let _search = e.target.value;
     localStorage.setItem("DashboardDefaultFilter", _search);
     switch (_search) {
-      case "Today":
+      case "Today": {
         let d = new Date();
         let formDate = new Date(
           Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0)
@@ -26,7 +26,8 @@ const GetDashboard = (props) => {
         setfilter(Query);
         setoption(_search);
         break;
-      case "Yesterday":
+      }
+      case "Yesterday": {
         let d1 = new Date();
         d1.setDate(d1.getDate() - 1);
         let yesFrDate = new Date(
@@ -40,7 +41,8 @@ const GetDashboard = (props) => {
         setfilter(Query1);
         setoption(_search);
         break;
-      case "This week":
+      }
+      case "This week": {
         let oneDay = 24 * 60 * 60 * 1000;
         let curr = new Date(); // get current date
         let first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
@@ -90,7 +92,8 @@ const GetDashboard = (props) => {
         setfilter(Query2);
         setoption(_search);
         break;
-      case "Last 7 days":
+      }
+      case "Last 7 days": {
         let d7 = new Date();
         let d7l = new Date();
         d7.setDate(d7.getDate() - 7);
@@ -104,7 +107,8 @@ const GetDashboard = (props) => {
         setfilter(Query7);
         setoption(_search);
         break;
-      case "Last 14 days":
+      }
+      case "Last 14 days": {
         let d14 = new Date();
         let d14l = new Date();
         let l14t = new Date(
@@ -126,7 +130,8 @@ const GetDashboard = (props) => {
         setfilter(Query14);
         setoption(_search);
         break;
-      case "Last 30 days":
+      }
+      case "Last 30 days": {
         let d30 = new Date();
         let d30l = new Date();
         let l30t = new Date(
@@ -147,21 +152,23 @@ const GetDashboard = (props) => {
         setfilter(Query30);
         setoption(_search);
         break;
-      case "Last week":
+      }
+      case "Last week": {
         const from_date = moment().startOf("week").subtract(7, "days");
         const to_date = moment().endOf("week").subtract(7, "days");
         let Queryl = `'$gte':'${from_date.toISOString()}','$lte':'${to_date.toISOString()}'`;
         setfilter(Queryl);
         setoption(_search);
         break;
-      case "This month":
-        var tdate = new Date();
-        var tfirstDay = new Date(
+      }
+      case "This month": {
+        const tdate = new Date();
+        let tfirstDay = new Date(
           tdate.getFullYear(),
           tdate.getMonth(),
           1
         ).toISOString();
-        var tlastDay = new Date(
+        let tlastDay = new Date(
           tdate.getFullYear(),
           tdate.getMonth() + 1,
           0
@@ -170,8 +177,9 @@ const GetDashboard = (props) => {
         setfilter(Querylt);
         setoption(_search);
         break;
-      case "Last month":
-        var ldate = new Date();
+      }
+      case "Last month": {
+        const ldate = new Date();
         var lfirstDay = new Date(
           ldate.getFullYear(),
           ldate.getMonth() - 1,
@@ -186,7 +194,8 @@ const GetDashboard = (props) => {
         setfilter(Queryltl);
         setoption(_search);
         break;
-      case "All":
+      }
+      case "All": {
         let fall = new Date(
           new Date().getFullYear() - 100,
           0,
@@ -199,7 +208,8 @@ const GetDashboard = (props) => {
         setfilter(fall_year);
         setoption(_search);
         break;
-      case "This year":
+      }
+      case "This year": {
         let fcy = new Date(
           new Date().getFullYear(),
           0,
@@ -220,7 +230,8 @@ const GetDashboard = (props) => {
         setfilter(cur_year);
         setoption(_search);
         break;
-      case "Last year":
+      }
+      case "Last year": {
         let fly = new Date(
           new Date().getFullYear() - 1,
           0,
@@ -241,9 +252,11 @@ const GetDashboard = (props) => {
         setfilter(last_year);
         setoption(_search);
         break;
-      default:
+      }
+      default: {
         setoption(_search);
         break;
+      }
     }
   };
   const renderSwitchWithTour = (col) => {
@@ -305,7 +318,7 @@ const GetDashboard = (props) => {
             {col.widget.label}
           </h3>
         );
-      case "report":
+      case "report": {
         let _filter = `${col.widget.filterKey}:${filter}`;
         return (
           <div data-tut={col.widget.data.tourSection}>
@@ -316,6 +329,7 @@ const GetDashboard = (props) => {
             </Suspense>
           </div>
         );
+      }
       default:
         return null;
     }
@@ -377,7 +391,7 @@ const GetDashboard = (props) => {
             {col.widget.label}
           </h3>
         );
-      case "report":
+      case "report": {
         let _filter = `${col.widget.filterKey}:${filter}`;
         return (
           <Suspense fallback={<div>please wait</div>}>
@@ -386,6 +400,7 @@ const GetDashboard = (props) => {
             </div>
           </Suspense>
         );
+      }
       default:
         return null;
     }

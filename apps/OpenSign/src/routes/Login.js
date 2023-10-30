@@ -7,7 +7,7 @@ import { fetchAppInfo, showTenantName } from "../redux/actions";
 import axios from "axios";
 import Title from "../components/Title";
 import GoogleSignInBtn from "../components/LoginGoogle";
-import LoginFacebook from "../components/LoginFacebook";
+// import LoginFacebook from "../components/LoginFacebook";
 import { NavLink, useNavigate } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 
@@ -375,6 +375,7 @@ function Login(props) {
                       }
                     })
                     .catch((err) => {
+                      console.log("err", err);
                       setState({
                         ...state,
                         loading: false,
@@ -690,7 +691,7 @@ function Login(props) {
                 }, 2000);
               }
             })
-            .catch((err) => {
+            .catch(() => {
               setThirdpartyLoader(false);
               setState({
                 ...state,
@@ -1034,14 +1035,14 @@ function Login(props) {
                       justifyContent: "center"
                     }}
                   >
-                    {props.appInfo.fbAppId && props.appInfo.fbAppId !== "" ? (
+                    {/* {props.appInfo.fbAppId && props.appInfo.fbAppId !== "" ? (
                       <LoginFacebook
                         FBCred={props.appInfo.fbAppId}
                         thirdpartyLoginfn={thirdpartyLoginfn}
                         thirdpartyLoader={state.thirdpartyLoader}
                         setThirdpartyLoader={setThirdpartyLoader}
                       />
-                    ) : null}
+                    ) : null} */}
                   </div>
                   <div style={{ margin: "10px 0" }}></div>
                   <div
