@@ -3,7 +3,7 @@ import stamp from "./stamp2.png";
 import sign from "./sign3.png";
 import { themeColor } from "./IconColor.js";
 
-function DragElement({ type, id }) {
+function DragElement({ id }) {
   const selectedId = id;
 
   return (
