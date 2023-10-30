@@ -4,13 +4,13 @@ import { Helmet } from "react-helmet";
 function Title(props) {
   return (
     <Helmet>
-      <title>{`${props.title} - OpenSign`}</title>
+      <title>{`${props.title} - OpenSign™`}</title>
       {/* <title>
         {`${localStorage.getItem("appTitle") ? localStorage.getItem("appTitle") : ""} - ${props.title}`}
       </title> */}
       <meta
         name="description"
-        content={`${props.title} - OpenSign`}
+        content={`${props.title} - OpenSign™`}
       />
       {/* <meta
         name="description"
