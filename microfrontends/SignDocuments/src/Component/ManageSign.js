@@ -515,20 +515,20 @@ const ManageSign = () => {
                                     border: "none",
                                     margin: "5px",
                                     borderBottom:
-                                      key == 0 && penColor == "blue"
+                                      key === 0 && penColor === "blue"
                                         ? "2px solid blue"
-                                        : key == 1 && penColor == "red"
+                                        : key === 1 && penColor === "red"
                                         ? "2px solid red"
-                                        : key == 2 && penColor == "black"
+                                        : key === 2 && penColor === "black"
                                         ? "2px solid black"
                                         : "2px solid white",
                                   }}
                                   onClick={() => {
-                                    if (key == 0) {
+                                    if (key === 0) {
                                       setPenColor("blue");
-                                    } else if (key == 1) {
+                                    } else if (key === 1) {
                                       setPenColor("red");
-                                    } else if (key == 2) {
+                                    } else if (key === 2) {
                                       setPenColor("black");
                                     }
                                   }}
@@ -629,24 +629,25 @@ const ManageSign = () => {
                         {allColor.map((data, key) => {
                           return (
                             <img
+                            alt="pen"
                               style={{
                                 border: "none",
                                 margin: "5px",
                                 borderBottom:
-                                  key == 0 && initialPen == "blue"
+                                  key === 0 && initialPen === "blue"
                                     ? "2px solid blue"
-                                    : key == 1 && initialPen == "red"
+                                    : key === 1 && initialPen === "red"
                                     ? "2px solid red"
-                                    : key == 2 && initialPen == "black"
+                                    : key === 2 && initialPen === "black"
                                     ? "2px solid black"
                                     : "2px solid white",
                               }}
                               onClick={() => {
-                                if (key == 0) {
+                                if (key === 0) {
                                   setInitialPen("blue");
-                                } else if (key == 1) {
+                                } else if (key === 1) {
                                   setInitialPen("red");
-                                } else if (key == 2) {
+                                } else if (key === 2) {
                                   setInitialPen("black");
                                 }
                               }}
