@@ -14,7 +14,7 @@ import DefaultSignature from "./component/defaultSignature";
 import {
   getBase64FromUrl,
   getBase64FromIMG,
-  contactBookName,
+  contactBookName
 } from "../utils/Utils";
 import Tour from "reactour";
 import Signedby from "./component/signedby";
@@ -46,7 +46,7 @@ function EmbedPdfImage() {
   const [handleError, setHandleError] = useState();
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time",
+    message: "This might take some time"
   });
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [userObjectID, setUserObjectID] = useState();
@@ -62,9 +62,12 @@ function EmbedPdfImage() {
   const [noData, setNoData] = useState(false);
   const [contractName, setContractName] = useState("");
   const [isDecline, setIsDecline] = useState({
-    isDeclined: false,
+    isDeclined: false
   });
-  const [pdfLoadFail, setPdfLoadFail] = useState(false);
+  const [pdfLoadFail, setPdfLoadFail] = useState({
+    status: false,
+    type: "load"
+  });
 
   const docId = id && id;
   //"F0hg0twSJH";
@@ -86,7 +89,8 @@ function EmbedPdfImage() {
     //aspfUo7wRl
     let currUserId, userObjectId;
     const json = await contactBookName(userPhone, "_Users");
-    if (json && json.results[0]) {
+
+    if (json !== "Error: Something went wrong!" && json && json.results[0]) {
       setContractName("_Users");
       if (json.results[0]) {
         userObjectId = json.results[0].UserId.objectId;
@@ -109,13 +113,13 @@ function EmbedPdfImage() {
       } else {
         setNoData(true);
         const loadObj = {
-          isLoad: false,
+          isLoad: false
         };
         setIsLoading(loadObj);
       }
     } else if (json === "Error: Something went wrong!") {
       const loadObj = {
-        isLoad: false,
+        isLoad: false
       };
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
@@ -144,7 +148,7 @@ function EmbedPdfImage() {
         } else {
           setNoData(true);
           const loadObj = {
-            isLoad: false,
+            isLoad: false
           };
           setIsLoading(loadObj);
         }
@@ -210,8 +214,8 @@ function EmbedPdfImage() {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((Listdata) => {
@@ -230,27 +234,27 @@ function EmbedPdfImage() {
             //then show alert with completed message
             const alreadySign = {
               status: true,
-              mssg: "This document has already been signed!",
+              mssg: "This document has already been signed!"
             };
             setIsAlreadySign(alreadySign);
             setPdfUrl(res[0].SignedUrl);
             setSignedPdfData(json.results);
             setCompletePdfData(res);
             const loadObj = {
-              isLoad: false,
+              isLoad: false
             };
             setIsLoading(loadObj);
           } else if (declined) {
             const currentDecline = {
               currnt: "another",
-              isDeclined: true,
+              isDeclined: true
             };
             setIsDecline(currentDecline);
 
             setSignedPdfData(json.results);
 
             const loadObj = {
-              isLoad: false,
+              isLoad: false
             };
             setIsLoading(loadObj);
           } else if (currDate > expireUpdateDate) {
@@ -281,7 +285,7 @@ function EmbedPdfImage() {
               setSignKey(key);
 
               const loadObj = {
-                isLoad: false,
+                isLoad: false
               };
               setIsLoading(loadObj);
             }
@@ -301,13 +305,13 @@ function EmbedPdfImage() {
               setSignKey(key);
 
               const loadObj = {
-                isLoad: false,
+                isLoad: false
               };
               setIsLoading(loadObj);
             }
 
             const loadObj = {
-              isLoad: false,
+              isLoad: false
             };
             setIsLoading(loadObj);
           } else {
@@ -338,12 +342,12 @@ function EmbedPdfImage() {
               if (checkAlreadyBySigner && checkAlreadyBySigner.length > 0) {
                 const alreadySign = {
                   status: true,
-                  mssg: "You have successfully signed the document!",
+                  mssg: "You have successfully signed the document!"
                 };
                 setIsAlreadySign(alreadySign);
                 setPdfUrl(res[0].SignedUrl);
                 const loadObj = {
-                  isLoad: false,
+                  isLoad: false
                 };
                 setIsLoading(loadObj);
               }
@@ -363,7 +367,7 @@ function EmbedPdfImage() {
                 setSignKey(key);
 
                 const loadObj = {
-                  isLoad: false,
+                  isLoad: false
                 };
                 setIsLoading(loadObj);
               }
@@ -384,7 +388,7 @@ function EmbedPdfImage() {
               setSignKey(key);
 
               const loadObj = {
-                isLoad: false,
+                isLoad: false
               };
               setIsLoading(loadObj);
             }
@@ -392,14 +396,14 @@ function EmbedPdfImage() {
         } else {
           setNoData(true);
           const loadObj = {
-            isLoad: false,
+            isLoad: false
           };
           setIsLoading(loadObj);
         }
       })
       .catch((err) => {
         const loadObj = {
-          isLoad: false,
+          isLoad: false
         };
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
@@ -414,8 +418,8 @@ function EmbedPdfImage() {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((Listdata) => {
@@ -426,7 +430,7 @@ function EmbedPdfImage() {
           setDefaultSignImg(res[0].ImageURL);
         }
         const loadObj = {
-          isLoad: false,
+          isLoad: false
         };
         setIsLoading(loadObj);
       })
@@ -438,6 +442,10 @@ function EmbedPdfImage() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
+    const load = {
+      status: true
+    };
+    setPdfLoadFail(load);
     pdf.getPage(1).then((pdfPage) => {
       const pageWidth = pdfPage.view[2];
 
@@ -462,7 +470,7 @@ function EmbedPdfImage() {
     } else {
       const loadObj = {
         isLoad: true,
-        message: "This might take some time",
+        message: "This might take some time"
       };
       setIsLoading(loadObj);
       const url = pdfUrl
@@ -474,7 +482,7 @@ function EmbedPdfImage() {
 
       // Load a PDFDocument from the existing PDF bytes
       const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-        ignoreEncryption: true,
+        ignoreEncryption: true
       });
 
       const pngUrl = xyPostion;
@@ -499,7 +507,7 @@ function EmbedPdfImage() {
               y: page.getHeight() - 10,
               size: fontSize,
               font,
-              color: rgb(0.5, 0.5, 0.5),
+              color: rgb(0.5, 0.5, 0.5)
             });
           }
           pdfBase64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
@@ -575,7 +583,7 @@ function EmbedPdfImage() {
             y: page.getHeight() - 10,
             size: fontSize,
             font,
-            color: rgb(0.5, 0.5, 0.5),
+            color: rgb(0.5, 0.5, 0.5)
           });
         }
         for (let i = 0; i < pngUrl.length; i++) {
@@ -621,11 +629,14 @@ function EmbedPdfImage() {
             const newWidth = window.innerWidth;
             const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
             page.drawImage(img, {
-              x: imgUrlList[id].xPosition * scale + 50,
+              x: isMobile
+                ? imgUrlList[id].xPosition * scale + 50
+                : imgUrlList[id].xPosition,
+
               y:
                 page.getHeight() - imgUrlList[id].yPosition * scale - imgHeight,
               width: imgWidth,
-              height: imgHeight,
+              height: imgHeight
             });
           });
         }
@@ -674,13 +685,13 @@ function EmbedPdfImage() {
           Bottom: bottomY,
           Width: xyPosData.Width ? xyPosData.Width : 150,
           Height: height,
-          Page: pageNo,
-        },
+          Page: pageNo
+        }
       };
     } else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
       signgleSign = {
         pdfFile: base64Url,
-        docId: docId,
+        docId: docId
       };
     }
 
@@ -692,8 +703,8 @@ function EmbedPdfImage() {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            sessionToken: localStorage.getItem("accesstoken"),
-          },
+            sessionToken: localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((Listdata) => {
@@ -786,7 +797,7 @@ function EmbedPdfImage() {
   //function for set decline true on press decline button
   const declineDoc = async () => {
     const data = {
-      IsDeclined: true,
+      IsDeclined: true
     };
 
     await axios
@@ -799,8 +810,8 @@ function EmbedPdfImage() {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((result) => {
@@ -808,7 +819,7 @@ function EmbedPdfImage() {
         if (res) {
           const currentDecline = {
             currnt: "YouDeclined",
-            isDeclined: true,
+            isDeclined: true
           };
           setIsDecline(currentDecline);
         }
@@ -834,7 +845,7 @@ function EmbedPdfImage() {
 
       const newXypos = {
         pageNumber: getPageNo,
-        pos: addSign,
+        pos: addSign
       };
       xyDefaultPos.push(newXypos);
     }
@@ -869,14 +880,14 @@ function EmbedPdfImage() {
           "_appName"
         )}${contractName}/${signerUserId}`,
         {
-          TourStatus: updatedTourStatus,
+          TourStatus: updatedTourStatus
         },
         {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            sessionToken: localStorage.getItem("accesstoken"),
-          },
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((Listdata) => {
@@ -896,20 +907,20 @@ function EmbedPdfImage() {
         selector: '[data-tut="reactourFirst"]',
         content: `You can click "Auto Sign All" to automatically sign at all the locations meant to be signed by you.Make sure that you review the document properly before you click this button.`,
         position: "top",
-        style: { fontSize: "13px" },
+        style: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="reactourSecond"]',
         content: `Click any of such placeholders appearing on the document to sign.You will see the options to draw sign or upload an image once you click here.`,
         position: "top",
-        style: { fontSize: "13px" },
+        style: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="reactourThird"]',
         content: `Click here to finish & download the signed document.You will also receive a copy on your email.`,
         position: "top",
-        style: { fontSize: "13px" },
-      },
+        style: { fontSize: "13px" }
+      }
     ];
 
     const stepsToShow =
@@ -928,6 +939,7 @@ function EmbedPdfImage() {
       />
     );
   };
+
   return (
     <DndProvider backend={HTML5Backend}>
       {isLoading.isLoad ? (
@@ -939,7 +951,10 @@ function EmbedPdfImage() {
       ) : (
         <div className="signatureContainer">
           {/* this component used for UI interaction and show their functionality */}
-          {!isExpired || (!pdfLoadFail && !checkTourStatus && tourFunction())}
+          {pdfLoadFail.status &&
+            !isExpired &&
+            !checkTourStatus &&
+            tourFunction()}
 
           {/* this component used to render all pdf pages in left side */}
           <RenderAllPdfPage
@@ -954,7 +969,7 @@ function EmbedPdfImage() {
           <div
             style={{
               marginLeft: pdfOriginalWidth > 500 && "20px",
-              marginRight: pdfOriginalWidth > 500 && "20px",
+              marginRight: pdfOriginalWidth > 500 && "20px"
             }}
           >
             {/* this modal is used for show decline alert */}
@@ -982,7 +997,7 @@ function EmbedPdfImage() {
                   <>
                     <button
                       style={{
-                        color: "black",
+                        color: "black"
                       }}
                       type="button"
                       className="finishBtn"
@@ -992,7 +1007,7 @@ function EmbedPdfImage() {
                     </button>
                     <button
                       style={{
-                        background: "#de4337",
+                        background: "#de4337"
                       }}
                       type="button"
                       className="finishBtn"
@@ -1004,8 +1019,7 @@ function EmbedPdfImage() {
                 )}
               </Modal.Footer>
             </Modal>
-            {/* this modal component is used for show failed document pdf files */}
-            <ModalComponent isShow={pdfLoadFail} type={"pdfFail"} />
+
             {/* this modal component is used for show expired document */}
             <ModalComponent isShow={isExpired} type={"expire"} />
 
@@ -1025,7 +1039,7 @@ function EmbedPdfImage() {
                     borderRadius: "0px",
                     border: "1.5px solid #e3e2e1",
                     fontWeight: "600",
-                    color: "black",
+                    color: "black"
                   }}
                   className="btn"
                   onClick={() => setIsAlreadySign({ status: false })}
@@ -1036,7 +1050,7 @@ function EmbedPdfImage() {
                   <button
                     onClick={() => addDefaultSignature()}
                     style={{
-                      background: themeColor(),
+                      background: themeColor()
                     }}
                     type="button"
                     className="finishBtn"
@@ -1063,7 +1077,7 @@ function EmbedPdfImage() {
               defaultSign={defaultSignImg}
             />
 
-            {/* pdf header which contain funish back button */}
+            {/* pdf header which contain finish back button */}
             <Header
               recipient={true}
               pdfDetails={completePdfData}
@@ -1095,6 +1109,7 @@ function EmbedPdfImage() {
               recipient={true}
               isAlreadySign={isAlreadySign}
               setPdfLoadFail={setPdfLoadFail}
+              pdfLoadFail={pdfLoadFail}
             />
           </div>
 

@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { themeColor } from "../utils/ThemeColor/backColor";
-
 import { PDFDocument, rgb } from "pdf-lib";
 import "../css/signature.css";
 import axios from "axios";
@@ -16,7 +15,7 @@ import {
   contactBook,
   contractUsers,
   getBase64FromIMG,
-  getBase64FromUrl,
+  getBase64FromUrl
 } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -44,7 +43,7 @@ function PdfRequestFiles() {
   const [handleError, setHandleError] = useState();
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time",
+    message: "This might take some time"
   });
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
@@ -58,7 +57,11 @@ function PdfRequestFiles() {
   const [currentSigner, setCurrentSigner] = useState(false);
   const [isCompleted, setIsCompleted] = useState({
     isCertificate: false,
-    isModal: false,
+    isModal: false
+  });
+  const [pdfLoadFail, setPdfLoadFail] = useState({
+    status: false,
+    type: "load"
   });
   const [isSigned, setIsSigned] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
@@ -104,7 +107,7 @@ function PdfRequestFiles() {
       setSignerObjectId(objId);
     } else if (contractUsersRes === "Error: Something went wrong!") {
       const loadObj = {
-        isLoad: false,
+        isLoad: false
       };
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
@@ -126,8 +129,8 @@ function PdfRequestFiles() {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((Listdata) => {
@@ -149,13 +152,13 @@ function PdfRequestFiles() {
             setIsSigned(true);
             const data = {
               isCertificate: true,
-              isModal: true,
+              isModal: true
             };
             setIsCompleted(data);
           } else if (declined) {
             const currentDecline = {
               currnt: "another",
-              isDeclined: true,
+              isDeclined: true
             };
             setIsDecline(currentDecline);
           } else if (currDate > expireUpdateDate) {
@@ -226,7 +229,7 @@ function PdfRequestFiles() {
           // alert("No data found!");
           setNoData(true);
           const loadObj = {
-            isLoad: false,
+            isLoad: false
           };
           setIsLoading(loadObj);
           setIsUiLoading(false);
@@ -235,7 +238,7 @@ function PdfRequestFiles() {
       .catch((err) => {
         console.log("err", err);
         const loadObj = {
-          isLoad: false,
+          isLoad: false
         };
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
@@ -251,8 +254,8 @@ function PdfRequestFiles() {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((Listdata) => {
@@ -263,13 +266,13 @@ function PdfRequestFiles() {
           setDefaultSignImg(res[0].ImageURL);
         }
         const loadObj = {
-          isLoad: false,
+          isLoad: false
         };
         setIsLoading(loadObj);
       })
       .catch((err) => {
         const loadObj = {
-          isLoad: false,
+          isLoad: false
         };
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
@@ -311,7 +314,7 @@ function PdfRequestFiles() {
         );
 
         const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-          ignoreEncryption: true,
+          ignoreEncryption: true
         });
         let pdfBase64;
 
@@ -336,11 +339,11 @@ function PdfRequestFiles() {
                 y: page.getHeight() - 10,
                 size: fontSize,
                 font,
-                color: rgb(0.5, 0.5, 0.5),
+                color: rgb(0.5, 0.5, 0.5)
               });
             }
             pdfBase64 = await pdfDoc.saveAsBase64({
-              useObjectStreams: false,
+              useObjectStreams: false
             });
           }
 
@@ -423,7 +426,7 @@ function PdfRequestFiles() {
               y: page.getHeight() - 10,
               size: fontSize,
               font,
-              color: rgb(0.5, 0.5, 0.5),
+              color: rgb(0.5, 0.5, 0.5)
             });
           }
 
@@ -474,12 +477,12 @@ function PdfRequestFiles() {
                 x: imgUrlList[id].xPosition,
                 y: page.getHeight() - imgUrlList[id].yPosition - imgHeight,
                 width: imgWidth,
-                height: imgHeight,
+                height: imgHeight
               });
             });
           }
           const pdfBytes = await pdfDoc.saveAsBase64({
-            useObjectStreams: false,
+            useObjectStreams: false
           });
 
           signPdfFun(pdfBytes, documentId, pngUrl);
@@ -524,8 +527,8 @@ function PdfRequestFiles() {
           Bottom: bottomY,
           Width: xyPosData.Width ? xyPosData.Width : 150,
           Height: height,
-          Page: pageNo,
-        },
+          Page: pageNo
+        }
       };
     } else if (
       xyPosData &&
@@ -534,7 +537,7 @@ function PdfRequestFiles() {
     ) {
       signgleSign = {
         pdfFile: base64Url,
-        docId: documentId,
+        docId: documentId
       };
     }
 
@@ -546,8 +549,8 @@ function PdfRequestFiles() {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            sessionToken: localStorage.getItem("accesstoken"),
-          },
+            sessionToken: localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((Listdata) => {
@@ -569,6 +572,10 @@ function PdfRequestFiles() {
   };
   //function for get pdf page details
   const pageDetails = async (pdf) => {
+    const load = {
+      status: true
+    };
+    setPdfLoadFail(load);
     pdf.getPage(1).then((pdfPage) => {
       const pageWidth = pdfPage.view[2];
 
@@ -666,7 +673,7 @@ function PdfRequestFiles() {
             Width: newWidth,
             Height: nweHeight,
             SignUrl: image.src,
-            ImageType: image.imgType,
+            ImageType: image.imgType
           };
         }
         return url;
@@ -715,7 +722,7 @@ function PdfRequestFiles() {
             Width: newWidth,
             Height: nweHeight,
             SignUrl: image.src,
-            ImageType: image.imgType,
+            ImageType: image.imgType
           };
         }
         return url;
@@ -801,7 +808,7 @@ function PdfRequestFiles() {
   //function for set decline true on press decline button
   const declineDoc = async () => {
     const data = {
-      IsDeclined: true,
+      IsDeclined: true
     };
     setIsUiLoading(true);
 
@@ -815,8 +822,8 @@ function PdfRequestFiles() {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
       )
       .then((result) => {
@@ -824,7 +831,7 @@ function PdfRequestFiles() {
         if (res) {
           const currentDecline = {
             currnt: "YouDeclined",
-            isDeclined: true,
+            isDeclined: true
           };
           setIsDecline(currentDecline);
           setIsUiLoading(false);
@@ -859,7 +866,7 @@ function PdfRequestFiles() {
                 alignItems: "center",
                 zIndex: "20",
                 backgroundColor: "#e6f2f2",
-                opacity: 0.8,
+                opacity: 0.8
               }}
             >
               <img
@@ -886,7 +893,7 @@ function PdfRequestFiles() {
             <div
               style={{
                 marginLeft: pdfOriginalWidth > 500 && "20px",
-                marginRight: pdfOriginalWidth > 500 && "20px",
+                marginRight: pdfOriginalWidth > 500 && "20px"
               }}
             >
               <Modal show={isExpired}>
@@ -927,7 +934,7 @@ function PdfRequestFiles() {
                     <>
                       <button
                         style={{
-                          color: "black",
+                          color: "black"
                         }}
                         type="button"
                         className="finishBtn"
@@ -937,7 +944,7 @@ function PdfRequestFiles() {
                       </button>
                       <button
                         style={{
-                          background: "#de4337",
+                          background: "#de4337"
                         }}
                         type="button"
                         className="finishBtn"
@@ -965,7 +972,7 @@ function PdfRequestFiles() {
                 <Modal.Footer>
                   <button
                     style={{
-                      color: "black",
+                      color: "black"
                     }}
                     type="button"
                     className="finishBtn"
@@ -1027,6 +1034,8 @@ function PdfRequestFiles() {
                 signerObjectId={signerObjectId}
                 signedSigners={signedSigners}
                 setCurrentSigner={setCurrentSigner}
+                setPdfLoadFail={setPdfLoadFail}
+                pdfLoadFail={pdfLoadFail}
               />
             </div>
             <div>
@@ -1035,7 +1044,7 @@ function PdfRequestFiles() {
                   <>
                     <div
                       style={{
-                        background: themeColor(),
+                        background: themeColor()
                         //  color:"white"
                       }}
                       className="signedStyle"
@@ -1051,7 +1060,7 @@ function PdfRequestFiles() {
                               flexDirection: "row",
                               padding: "10px",
 
-                              background: checkSignerBackColor(obj),
+                              background: checkSignerBackColor(obj)
                             }}
                             key={ind}
                           >
@@ -1065,14 +1074,14 @@ function PdfRequestFiles() {
                                 borderRadius: 30 / 2,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginRight: "20px",
+                                marginRight: "20px"
                               }}
                             >
                               <span
                                 style={{
                                   fontSize: "10px",
                                   textAlign: "center",
-                                  fontWeight: "bold",
+                                  fontWeight: "bold"
                                 }}
                               >
                                 {" "}
@@ -1082,7 +1091,7 @@ function PdfRequestFiles() {
                             <div
                               style={{
                                 display: "flex",
-                                flexDirection: "column",
+                                flexDirection: "column"
                               }}
                             >
                               <span className="userName">{obj.Name}</span>
@@ -1103,7 +1112,7 @@ function PdfRequestFiles() {
                         color: "white",
                         padding: "5px",
                         fontFamily: "sans-serif",
-                        marginTop: signedSigners.length > 0 && "20px",
+                        marginTop: signedSigners.length > 0 && "20px"
                       }}
                     >
                       Yet To Sign
@@ -1116,7 +1125,7 @@ function PdfRequestFiles() {
                               display: "flex",
                               flexDirection: "row",
                               padding: "10px",
-                              background: checkSignerBackColor(obj),
+                              background: checkSignerBackColor(obj)
                             }}
                             key={ind}
                           >
@@ -1130,14 +1139,14 @@ function PdfRequestFiles() {
                                 borderRadius: 30 / 2,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginRight: "20px",
+                                marginRight: "20px"
                               }}
                             >
                               <span
                                 style={{
                                   fontSize: "8px",
                                   textAlign: "center",
-                                  fontWeight: "bold",
+                                  fontWeight: "bold"
                                 }}
                               >
                                 {" "}
@@ -1147,7 +1156,7 @@ function PdfRequestFiles() {
                             <div
                               style={{
                                 display: "flex",
-                                flexDirection: "column",
+                                flexDirection: "column"
                               }}
                             >
                               <span className="userName">{obj.Name}</span>
