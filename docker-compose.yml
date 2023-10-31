@@ -12,7 +12,7 @@ services:
       - ./apps/OpenSignServer/:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - "5000:5000"
+      - "5001:5001"
     depends_on:
       - mongo
     env_file: .env
