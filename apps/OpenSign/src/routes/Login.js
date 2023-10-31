@@ -125,7 +125,26 @@ function Login(props) {
                           ) {
                             _currentRole = userRoles[1];
                           } else {
-                            _currentRole = userRoles[0];
+                            const rolesfiltered = userRoles.filter(
+                              (x) => x !== "contracts_Guest"
+                            );
+                            if (rolesfiltered.length > 0) {
+                              _currentRole = rolesfiltered[0];
+                            } else {
+                              setThirdpartyLoader(false);
+                              setState({
+                                ...state,
+                                loading: false,
+                                toastColor: "#d9534f",
+                                toastDescription: `Does not have permissions to access this application.`
+                              });
+                              const x = document.getElementById("snackbar");
+                              x.className = "show";
+                              setTimeout(function () {
+                                x.className = x.className.replace("show", "");
+                              }, 2000);
+                            }
+                            // _currentRole = userRoles[0];
                           }
                         } else {
                           _currentRole = userRoles[0];
@@ -725,6 +744,7 @@ function Login(props) {
   };
 
   const GetLoginData = async () => {
+    setState({...state, loading: true})
     try {
       Parse.serverURL = localStorage.getItem("baseUrl");
       Parse.initialize(localStorage.getItem("parseAppId"));
@@ -769,7 +789,26 @@ function Login(props) {
                 ) {
                   _currentRole = userRoles[1];
                 } else {
-                  _currentRole = userRoles[0];
+                  const rolesfiltered = userRoles.filter(
+                    (x) => x !== "contracts_Guest"
+                  );
+                  if (rolesfiltered.length > 0) {
+                    _currentRole = rolesfiltered[0];
+                  } else {
+                    setThirdpartyLoader(false);
+                    setState({
+                      ...state,
+                      loading: false,
+                      toastColor: "#d9534f",
+                      toastDescription: `Does not have permissions to access this application.`
+                    });
+                    const x = document.getElementById("snackbar");
+                    x.className = "show";
+                    setTimeout(function () {
+                      x.className = x.className.replace("show", "");
+                    }, 2000);
+                  }
+                  // _currentRole = userRoles[0];
                 }
               } else {
                 _currentRole = userRoles[0];
