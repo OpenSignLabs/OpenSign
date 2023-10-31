@@ -23,7 +23,7 @@ function AppRoutes() {
         <Route path="/signaturePdf/:docId" element={<SignYourselfPdf />} />
         {/* recipient signature route with no rowlevel data using docId from url */}
         <Route
-          path="/recipientSignPdf/:id/:userPhone"
+          path="/recipientSignPdf/:id/:contactBookId"
           element={<RecipientSignPdf />}
         />
         {/* recipient placeholder set route with  rowlevel data */}
@@ -33,7 +33,7 @@ function AppRoutes() {
         {/*Add default signature of user route */}
         <Route path="/managesign" element={<ManageSign />} />
         {/* login page route */}
-        <Route path="/login/:id/:userMail/:serverUrl" element={<Login />} />
+        <Route path="/login/:id/:userMail/:contactBookId/:serverUrl" element={<Login />} />
         {/* draft document route to handle and navigate route page accordiing to document status */}
         <Route path="/draftDocument" element={<DraftDocument />} />
         {/* for user signature (need your sign route) with row level data */}
