@@ -7,6 +7,7 @@ or follow below instructions to install it on your own infrastructure.
 
 - Localhost(Frontend only)
 - Digital Ocean
+- Localhost(Docker)
 
 ## Localhost(Frontend only)
 
