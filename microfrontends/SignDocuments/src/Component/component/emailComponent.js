@@ -267,7 +267,8 @@ function EmailComponent({
                 >
                   {emailCount.map((data, ind) => {
                     return (
-                      <div className="emailChip" key={ind}>
+                      <div className="emailChip" key={ind}
+                      style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
                         <span
                           style={{
                             color: "white",
