@@ -14,8 +14,6 @@ RUN npm install
 COPY apps/OpenSign/ .
 COPY apps/OpenSign/.husky .
 
-RUN npm run build
-
 # Make port 3000 available to the world outside this container
 EXPOSE 3000
 
