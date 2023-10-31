@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SaveFileSize } from "../../constant/saveFileSize";
 import Parse from "parse";
+import sanitizeFileName from "../../primitives/sanitizeFileName";
 
 const FileUpload = (props) => {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -70,10 +71,11 @@ const FileUpload = (props) => {
     Parse.serverURL = parseBaseUrl;
     Parse.initialize(parseAppId);
     const size = file.size;
-    // console.log("file ", file)
+    const fileName = file.name;
+    const name = sanitizeFileName(fileName);
     setfileload(true);
     const pdfFile = file;
-    const parseFile = new Parse.File(pdfFile.name, pdfFile);
+    const parseFile = new Parse.File(name, pdfFile);
 
     try {
       const response = await parseFile.save();

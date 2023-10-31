@@ -957,9 +957,9 @@ function Login(props) {
                             onClick={togglePasswordVisibility}
                           >
                             {state.passwordVisible ? (
-                              <i className="fa fa-eye-slash" /> // Close eye icon
+                              <i className="fa fa-eye-slash text-xs pb-1" /> // Close eye icon
                             ) : (
-                              <i className="fa fa-eye" /> // Open eye icon
+                              <i className="fa fa-eye text-xs pb-1 " /> // Open eye icon
                             )}
                           </span>
                         </div>

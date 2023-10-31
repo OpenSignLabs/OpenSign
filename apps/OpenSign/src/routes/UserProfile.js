@@ -4,6 +4,7 @@ import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import dp from "../assets/images/dp.png";
 import Title from "../components/Title";
+import sanitizeFileName from "../primitives/sanitizeFileName";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -90,7 +91,9 @@ function UserProfile() {
   const handleFileUpload = async (file) => {
     const size = file.size;
     const pdfFile = file;
-    const parseFile = new Parse.File(pdfFile.name, pdfFile);
+    const fileName = file.name;
+    const name = sanitizeFileName(fileName);
+    const parseFile = new Parse.File(name, pdfFile);
 
     try {
       const response = await parseFile.save();
