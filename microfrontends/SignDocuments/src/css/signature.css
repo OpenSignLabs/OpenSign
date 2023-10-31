@@ -237,6 +237,7 @@
    background: #08bc66;
    border: none !important;
    color: white !important;
+   text-decoration: none !important;
  }
 
  .certificateBtn:hover {
