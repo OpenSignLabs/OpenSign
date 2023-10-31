@@ -19,9 +19,9 @@ Below are the steps to follow -
   ```
   git clone https://github.com/OpenSignLabs/OpenSign.git
   ```
-- Copy the .env.frontend_dev file to .env using below command(on mac & linux). For windows use COPY command instead.
+- Copy the .env.frontend_dev file to  apps/OpenSign/.env using below command(on mac & linux). For windows use COPY command instead.
   ```
-  cp .env.frontend_dev .env
+  cp .env.frontend_dev apps/OpenSign/.env
   ```
 - CD to /apps/OpenSign directory
 - Install NPM packages using
