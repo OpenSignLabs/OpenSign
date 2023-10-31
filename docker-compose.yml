@@ -5,7 +5,7 @@ services:
     build:
       context: ./apps/OpenSignServer
       dockerfile: Dockerfile
-    image: OpenSignServer-image
+    image: opensignserver-image
     container_name: OpenSignServer-container
     command: /usr/src/app/node_modules/.bin/nodemon server.js
     volumes:
@@ -15,7 +15,7 @@ services:
       - "5000:5000"
     depends_on:
       - mongo
-    env_file: ./OpenSignServer/.env
+    env_file: .env
     environment:
       - NODE_ENV=development
     networks:
@@ -32,7 +32,7 @@ services:
     build:
       context: ./apps/OpenSign
       dockerfile: Dockerfile
-    image: OpenSign-image
+    image: opensign-image
     container_name: OpenSign-container
     command: npm start
     volumes:
@@ -53,4 +53,4 @@ volumes:
     data-volume:
     node_modules:
     web-root:
-      driver: local
+      driver: local
