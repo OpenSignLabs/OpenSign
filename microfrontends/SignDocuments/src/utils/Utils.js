@@ -255,12 +255,12 @@ export const contactBook = async (objectId) => {
   return result;
 };
 
-export const contactBookName = async (userPhone, className) => {
+export const contactBookName = async (objectId, className) => {
   const result = await axios
     .get(
       `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
         "_appName"
-      )}${className}?where={"objectId":"${userPhone}"}`,
+      )}${className}?where={"objectId":"${objectId}"}`,
       {
         headers: {
           "Content-Type": "application/json",
