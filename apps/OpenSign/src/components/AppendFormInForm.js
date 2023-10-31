@@ -667,7 +667,15 @@ class AppendFormInForm extends Component {
                       form.setACL(new Parse.ACL(ACL));
                     }
                     form.save(RowData).then(
-                      () => {
+                      (formd) => {
+                        const parseData = JSON.parse(JSON.stringify(formd));
+                        this.props.details({
+                          value: parseData[this.props.valueKey],
+                          label: parseData[this.props.displayKey]
+                        });
+                        if (this.props.closePopup) {
+                          this.props.closePopup();
+                        }
                         let filtered = {};
                         if (this.state.redirect_type === "clearData") {
                           if (
@@ -686,25 +694,21 @@ class AppendFormInForm extends Component {
                         } else {
                           RowData = {};
                         }
-                        this.setState(
-                          {
-                            formData: filtered,
-                            active: true,
-                            loading: false,
-                            toastColor: "#5cb85c",
-                            toastDescription: this.state.successMassage
-                          },
-                          () => {
-                            this.props.removeState();
-                            this.props.removeLevel2State();
-                            this.props.removeLevel3State();
-                            var x = document.getElementById("snackbar");
-                            x.className = "show";
-                            setTimeout(function () {
-                              x.className = x.className.replace("show", "");
-                            }, 2000);
-                          }
-                        );
+                        this.setState({
+                          formData: filtered,
+                          active: true,
+                          loading: false,
+                          toastColor: "#5cb85c",
+                          toastDescription: "Record inserted successfully."
+                        });
+                        //   this.props.removeState();
+                        //   this.props.removeLevel2State();
+                        //   this.props.removeLevel3State();
+                        //   var x = document.getElementById("snackbar");
+                        //   x.className = "show";
+                        //   setTimeout(function () {
+                        //     x.className = x.className.replace("show", "");
+                        //   }, 2000);
                       },
                       (error) => {
                         this.setState({
