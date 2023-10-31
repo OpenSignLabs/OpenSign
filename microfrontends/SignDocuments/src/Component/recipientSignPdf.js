@@ -26,8 +26,7 @@ import Header from "./component/header";
 import ModalComponent from "./component/modalComponent";
 import RenderPdf from "./component/renderPdf";
 function EmbedPdfImage() {
-  const { id, userPhone } = useParams();
-
+  const { id, contactBookId } = useParams();
   const [isSignPad, setIsSignPad] = useState(false);
   const [pdfUrl, setPdfUrl] = useState();
   const [allPages, setAllPages] = useState(null);
@@ -88,7 +87,7 @@ function EmbedPdfImage() {
   const getDocumentDetails = async () => {
     //aspfUo7wRl
     let currUserId, userObjectId;
-    const json = await contactBookName(userPhone, "_Users");
+    const json = await contactBookName(contactBookId, "_Users");
 
     if (json !== "Error: Something went wrong!" && json && json.results[0]) {
       setContractName("_Users");
@@ -124,7 +123,7 @@ function EmbedPdfImage() {
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else {
-      const json = await contactBookName(userPhone, "_Contactbook");
+      const json = await contactBookName(contactBookId, "_Contactbook");
       if (json && json.results[0]) {
         setContractName("_Contactbook");
         if (json.results[0]) {
