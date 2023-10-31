@@ -260,7 +260,7 @@ export const contactBookName = async (userPhone, className) => {
     .get(
       `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
         "_appName"
-      )}${className}?where={"Phone":"${userPhone}"}`,
+      )}${className}?where={"objectId":"${userPhone}"}`,
       {
         headers: {
           "Content-Type": "application/json",
