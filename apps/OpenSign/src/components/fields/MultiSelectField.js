@@ -494,9 +494,9 @@ const MultiSelectField = (props) => {
   const handleNewDetails = (data) => {
     setState({ [`${props.name}_DD`]: [...state[`${props.name}_DD`], data] });
     if (selected.length > 0) {
-      setSelected([data]);
-    } else {
       setSelected([...selected, data]);
+    } else {
+      setSelected([data]);
     }
   };
   if (props.schema.uiLayout === "MultiDropdownList") {
@@ -656,7 +656,7 @@ const MultiSelectField = (props) => {
               right: 0,
               bottom: 0,
               backgroundColor: "rgba(255, 255, 255, 0.75)",
-              zIndex: 10
+              zIndex: 50
             }
           }}
         >
