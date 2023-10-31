@@ -19,9 +19,9 @@ Below are the steps to follow -
   ```
   git clone https://github.com/OpenSignLabs/OpenSign.git
   ```
-- Rename the .env.frontend_dev file to .env using below command
+- Copy the .env.frontend_dev file to .env using below command(on mac & linux). For windows use COPY command instead.
   ```
-  mv .env.frontend_dev .env
+  cp .env.frontend_dev .env
   ```
 - CD to /apps/OpenSign directory
 - Install NPM packages using
@@ -32,7 +32,7 @@ Below are the steps to follow -
   ```
   npm run start
   ```
-You should be able to access the application from https://localhost:3000 after this.
+You should be able to access the application from http://localhost:3000 after this.
 Create an account by signing-up and start contributing.
 
 
