@@ -740,12 +740,12 @@ function PlaceHolderSign() {
         };
         const serverUrl = localStorage.getItem("baseUrl");
         const newServer = serverUrl.replaceAll("/", "%2F");
-
+        const objectId = signerMail[i].objectId;
         const serverParams = `${newServer}&${localStorage.getItem(
           "parseAppId"
         )}&${localStorage.getItem("_appName")}`;
 
-        let signPdf = `https://qik-ai-org.github.io/Sign-MicroappV2/#/login/${signersdata.objectId}/${signerMail[i].Email}/${serverParams}`;
+        let signPdf = `https://qik-ai-org.github.io/Sign-MicroappV2/#/login/${signersdata.objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
 
         const themeBGcolor = themeColor();
         let params = {
@@ -1025,7 +1025,7 @@ function PlaceHolderSign() {
 
                     <a
                       style={{ color: "white" }}
-                      href={`https://qik-ai-org.github.io/Sign-MicroappV2/#/recipientSignPdf/${documentId}/${currentEmail[0].Phone}`}
+                      href={`https://qik-ai-org.github.io/Sign-MicroappV2/#/recipientSignPdf/${documentId}/${currentEmail[0].objectId}`}
                     >
                       <button
                         style={{

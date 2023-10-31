@@ -119,6 +119,8 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/HansF"><img src="https://avatars.githubusercontent.com/u/1503?v=4?s=100" width="100px;" alt="Hans Fraiponts"/><br /><sub><b>Hans Fraiponts</b></sub></a><br /><a href="#doc-HansF" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://linktr.ee/monilprajapati"><img src="https://avatars.githubusercontent.com/u/99136041?v=4?s=100" width="100px;" alt="Monil Prajapati"/><br /><sub><b>Monil Prajapati</b></sub></a><br /><a href="#code-Monilprajapati" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://emm-dev0.github.io/portfolio/"><img src="https://avatars.githubusercontent.com/u/97445413?v=4?s=100" width="100px;" alt="Edogbanya Emmanuel"/><br /><sub><b>Edogbanya Emmanuel</b></sub></a><br /><a href="#bug-Emm-dev0" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/pranav514"><img src="https://avatars.githubusercontent.com/u/76992202?v=4?s=100" width="100px;" alt="pranav514"/><br /><sub><b>pranav514</b></sub></a><br /><a href="#code-pranav514" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/arianxq"><img src="https://avatars.githubusercontent.com/u/122199576?v=4?s=100" width="100px;" alt="Aria"/><br /><sub><b>Aria</b></sub></a><br /><a href="#code-arianxq" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
