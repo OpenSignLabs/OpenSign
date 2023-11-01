@@ -16,9 +16,25 @@ const ReportTable = ({ ReportName, List, actions }) => {
   };
   const handlemicroapp = (item, url) => {
     localStorage.removeItem("rowlevel");
+    // const params = new URLSearchParams(url);
+    // let arr = [];
+    // for (let [key, value] of params.entries()) {
+    //   if (key === "remoteUrl") {
+    //     arr.push(
+    //       `${key}=${window.btoa(
+    //         window.location.origin + "/mfbuild/remoteEntry.js"
+    //       )}`
+    //     );
+    //   } else {
+    //     arr.push(`${key}=${value}`);
+    //   }
+    // }
+    // const remoteUrl = arr.join("&");
+    // console.log("arr", remoteUrl);
+
     navigate("/rpmf/" + url);
     localStorage.setItem("rowlevel", JSON.stringify(item));
-    // localStorage.setItem("rowlevelMicro")
+    // localStorage.setItem("rowlevelMicro");
   };
   const handlebtn = () => {
     console.log("clicked");
