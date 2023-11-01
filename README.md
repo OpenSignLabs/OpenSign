@@ -125,6 +125,7 @@ We would like to thank all our contributors and users for their support and feed
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/VishakhaSainani"><img src="https://avatars.githubusercontent.com/u/113436770?v=4?s=100" width="100px;" alt="VishakhaSainani"/><br /><sub><b>VishakhaSainani</b></sub></a><br /><a href="#code-VishakhaSainani" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/andrew-opensignlabs"><img src="https://avatars.githubusercontent.com/u/148278535?v=4?s=100" width="100px;" alt="Andrew"/><br /><sub><b>Andrew</b></sub></a><br /><a href="#code-andrew-opensignlabs" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
