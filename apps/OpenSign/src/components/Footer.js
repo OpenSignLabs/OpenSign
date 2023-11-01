@@ -24,7 +24,7 @@ const Footer = () => {
     };
   }, []);
 
-  const appName = "OpenSign";
+  const appName = "OpenSign™";
   
   return (
     <>
