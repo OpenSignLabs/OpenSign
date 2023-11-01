@@ -1,3 +1,3 @@
 build:
-	cp .env.frontend_dev .env
+	cp .env.local_dev .env
 	docker compose up -d
