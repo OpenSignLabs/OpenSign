@@ -144,6 +144,11 @@ export default function reportJson(id) {
         params: {
           Type: null,
           IsCompleted: true,
+          CreatedBy: {
+            __type: "Pointer",
+            className: "_User",
+            objectId: currentUserId
+          },
           $or: [{ IsDeclined: null }, { IsDeclined: false }]
         },
         keys: [
