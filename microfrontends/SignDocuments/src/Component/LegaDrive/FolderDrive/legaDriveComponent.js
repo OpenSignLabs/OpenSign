@@ -99,7 +99,7 @@ function PdfFileComponent({
 
   //function for navigate user to microapp-signature component
   const checkPdfStatus = async (data) => {
-    // console.log("document", data);
+    
     const hostUrl = getHostUrl();
     const expireDate = data.ExpiryDate.iso;
     const expireUpdateDate = new Date(expireDate).getTime();
@@ -117,7 +117,7 @@ function PdfFileComponent({
       // window.location.hash = `/pdfRequestFiles/${data.objectId}`;
     } else if (data.IsCompleted && !signerExist) {
       navigate(
-        `${hostUrl}recipientSignPdf/${data.objectId}/${data.ExtUserPtr.Phone}`
+        `${hostUrl}signaturePdf/${data.objectId}`
       );
       // window.location.hash = `/recipientSignPdf/${data.objectId}/${data.ExtUserPtr.Phone}`;
     }
