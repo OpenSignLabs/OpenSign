@@ -5,8 +5,10 @@
 The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign | Smartwaiver | SignRequest | HelloSign | Zoho sign.
 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/opensignlabs/opensign.svg)](http://isitmaintained.com/project/opensignlabs/opensign "Average time to resolve an issue")
-
 [![All Contributors](https://img.shields.io/github/all-contributors/opensignlabs/opensign?color=ee8449&style=flat-square)](#contributors)
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/w/opensignlabs/opensign)
+![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/opensignlabs/opensign)
+
 
 <a href="https://www.opensignlabs.com/">Website</a>
   <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
@@ -22,12 +24,6 @@ The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign |
 
 
 ## An Open-Source Alternative to DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, and HelloSign
-
-Support us -
-
-<a href="https://www.producthunt.com/posts/opensign-transforming-how-we-sign-docs?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-opensign&#0045;transforming&#0045;how&#0045;we&#0045;sign&#0045;docs" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=418556&theme=light" alt="OpenSign™&#0058;&#0032;Transforming&#0032;How&#0032;We&#0032;Sign&#0032;Docs - Enterprise&#0045;Level&#0032;Document&#0032;Signing&#0032;Goes&#0032;Open&#0045;Source | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-
-[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/opensignlabs.svg?style=social&label=Follow%20%40opensignlabs)](https://twitter.com/opensignlabs)
 
 ---
 </div>
