@@ -12,7 +12,7 @@ services:
       - ./apps/OpenSignServer/:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - "5001:5001"
+      - "8080:8080"
     depends_on:
       - mongo
     env_file: .env
@@ -35,6 +35,7 @@ services:
     image: opensign-image
     container_name: OpenSign-container
     command: npm start
+    env_file: .env
     volumes:
       - ./apps/OpenSign/:/usr/app
       - /usr/app/node_modules
@@ -44,6 +45,16 @@ services:
       - "3000:3000"
     networks:
       - app-network
+  localstack:
+    image: localstack/localstack:2.0
+    ports:
+      - '4566:4566' # LocalStack endpoint
+      - '4510-4559:4510-4559' # external services port range
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - ./localstack-script.sh:/etc/localstack/init/ready.d/script.sh
+      - '/var/run/docker.sock:/var/run/docker.sock'
 
 networks:
     app-network:
