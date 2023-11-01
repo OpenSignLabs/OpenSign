@@ -82,7 +82,7 @@ function DraftDocument() {
     else if (data.IsCompleted && !checkSignerExist) {
       // window.location.hash = `/recipientSignPdf/${data.objectId}/${data.ExtUserPtr.Phone}`;
       navigate(
-        `${hostUrl}recipientSignPdf/${data.objectId}/${data.ExtUserPtr.Phone}`
+        `${hostUrl}signaturePdf`
       );
     }
     //checking document is declined by someone then navigate to pdfRequestFiles file
@@ -123,7 +123,7 @@ function DraftDocument() {
       // window.location.hash = `/placeHolderSign`;
     } else {
       // window.location.hash = `/signaturePdf/`;
-      navigate(`${hostUrl}signaturePdf/`);
+      navigate(`${hostUrl}signaturePdf`);
     }
   };
 
