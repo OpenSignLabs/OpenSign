@@ -375,11 +375,11 @@ const TreeEditForm = (props) => {
     >
       <div>
         {active ? (
-          <button className="btn btn-info pull-right" type="submit">
+          <button className="bg-[#1ab6ce] px-3 py-2 rounded text-white text-sm" type="submit">
             Update
           </button>
         ) : (
-          <button className="btn btn-info" type="submit" disabled>
+          <button className="bg-[#1ab6ce] px-3 py-2 rounded text-white text-sm" type="submit" disabled>
             Update
           </button>
         )}

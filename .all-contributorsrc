@@ -18,15 +18,6 @@
       ]
     },
     {
-      "login": "nxglabs",
-      "name": "Amol",
-      "avatar_url": "https://avatars.githubusercontent.com/u/5486116?v=4",
-      "profile": "https://github.com/nxglabs",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
       "login": "BuilderPrid",
       "name": "Priyanshu Dwivedi",
       "avatar_url": "https://avatars.githubusercontent.com/u/106882895?v=4",
@@ -130,6 +121,33 @@
       "name": "Soumyadipto Pal",
       "avatar_url": "https://avatars.githubusercontent.com/u/119007659?v=4",
       "profile": "https://github.com/SoumyadiptoPal",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "AndreyCurious",
+      "name": "Andrey Didenko",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105622604?v=4",
+      "profile": "https://github.com/AndreyCurious",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "VishakhaSainani",
+      "name": "VishakhaSainani",
+      "avatar_url": "https://avatars.githubusercontent.com/u/113436770?v=4",
+      "profile": "https://github.com/VishakhaSainani",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "andrew-opensignlabs",
+      "name": "Andrew",
+      "avatar_url": "https://avatars.githubusercontent.com/u/148278535?v=4",
+      "profile": "https://github.com/andrew-opensignlabs",
       "contributions": [
         "code"
       ]
