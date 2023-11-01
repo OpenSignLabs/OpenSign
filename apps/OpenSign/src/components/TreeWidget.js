@@ -522,18 +522,19 @@ const TreeWidget = (props) => {
   }, [defaultState]);
   const customStyles = {
     content: {
-      top: "40%",
+      top: "50%",
       left: "50%",
-      right: "20%",
-      bottom: "20%",
+      right: "auto",
+      bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      zIndex: "50",
       backgroundColor: "white",
-      padding: "0px",
-      maxWidth: "100%", // Set a maximum width for the modal
-      maxHeight: "100vh",
-      height: "300px"
+      padding: 0
+    },
+    overlay: {
+      width:"100%",
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
+      zIndex: 50
     }
   };
 
@@ -560,7 +561,7 @@ const TreeWidget = (props) => {
         >
           <div style={{ width: "20%" }}>
             <div
-              className=" pull-left"
+              className="pull-left"
               title="Select Folder"
               style={{
                 color: "#33bbff",
@@ -618,10 +619,11 @@ const TreeWidget = (props) => {
       <Modal
         isOpen={isShowModal}
         onRequestClose={() => setIsShowModal(false)}
+        shouldCloseOnOverlayClick={false}
         contentLabel="Modal"
         style={customStyles}
       >
-        <div>
+        <div className="w-full min-w-[300px] md:min-w-[500px]">
           {/* header */}
           <div
             style={{
@@ -636,7 +638,7 @@ const TreeWidget = (props) => {
             </div>
             <div style={{ padding: "10px" }}>
               <button
-                className="   btn btn-sm pull-right"
+                className="btn btn-sm pull-right"
                 data-dismiss="modal"
                 title="Select Folder"
                 style={{
@@ -662,10 +664,9 @@ const TreeWidget = (props) => {
           </div>
           <hr />
           {/* body */}
-          <div className="pt-3 pb-3 pl-6 pr-6 space-y-6">
+          <div className="p-3 space-y-6">
             <div
               style={{
-                height: "40px",
                 color: "#ac4848",
                 cursor: "pointer",
                 fontSize: "14px",
@@ -755,7 +756,6 @@ const TreeWidget = (props) => {
                               border: "1px solid gray",
                               borderRadius: "1px",
                               marginTop: "8px",
-                              marginRight: "8px",
                               transition: "all 0.75s ease",
                               WebkitTransition: "all 0.5s ease",
                               MozTransition: "all 0.5s ease",
@@ -826,7 +826,7 @@ const TreeWidget = (props) => {
           </div>
           {/* footer */}
 
-          <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600 justify-between">
+          <div className="flex items-center p-3 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600 justify-between">
             <button
               className="btn btn-sm float-left  createFolder"
               title="Create New Folder"
