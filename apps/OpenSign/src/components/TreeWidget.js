@@ -528,12 +528,15 @@ const TreeWidget = (props) => {
       bottom: "20%",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      zIndex: "50",
       backgroundColor: "white",
       padding: "0px",
       maxWidth: "100%", // Set a maximum width for the modal
       maxHeight: "100vh",
       height: "300px"
+    },
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
+      zIndex: 50
     }
   };
 
@@ -618,6 +621,7 @@ const TreeWidget = (props) => {
       <Modal
         isOpen={isShowModal}
         onRequestClose={() => setIsShowModal(false)}
+        shouldCloseOnOverlayClick={false}
         contentLabel="Modal"
         style={customStyles}
       >
