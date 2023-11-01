@@ -123,6 +123,9 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/arianxq"><img src="https://avatars.githubusercontent.com/u/122199576?v=4?s=100" width="100px;" alt="Aria"/><br /><sub><b>Aria</b></sub></a><br /><a href="#code-arianxq" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/SoumyadiptoPal"><img src="https://avatars.githubusercontent.com/u/119007659?v=4?s=100" width="100px;" alt="Soumyadipto Pal"/><br /><sub><b>Soumyadipto Pal</b></sub></a><br /><a href="#code-SoumyadiptoPal" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AndreyCurious"><img src="https://avatars.githubusercontent.com/u/105622604?v=4?s=100" width="100px;" alt="Andrey Didenko"/><br /><sub><b>Andrey Didenko</b></sub></a><br /><a href="#code-AndreyCurious" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
