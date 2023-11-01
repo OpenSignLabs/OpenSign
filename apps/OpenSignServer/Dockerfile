@@ -24,4 +24,4 @@ EXPOSE 8080
 # ENV DATABASE_URL mongodb://db:27017
 
 # Run the application
-CMD ["npm", "start"]
+ENTRYPOINT npm start
