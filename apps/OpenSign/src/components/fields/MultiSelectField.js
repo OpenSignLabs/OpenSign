@@ -19,6 +19,7 @@ function arrayMove(array, from, to) {
  */
 
 const MultiSelectField = (props) => {
+  Modal.setAppElement("body");
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [state, setState] = useState(undefined);
@@ -647,41 +648,51 @@ const MultiSelectField = (props) => {
         <Modal
           isOpen={modalIsOpen}
           onRequestClose={handleModalCloseClick}
+          shouldCloseOnOverlayClick={false}
           contentLabel="Modal"
           style={{
+            content: {
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              bottom: "auto",
+              transform: "translate(-50%, -50%)",
+              padding: 0
+            },
             overlay: {
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(255, 255, 255, 0.75)",
+              width: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.75)",
               zIndex: 50
             }
           }}
         >
-          <div
-            type="button"
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <div style={{ color: "transparent", width: "100%" }}>.</div>
-            <button onClick={handleModalCloseClick}>
-              <i
-                style={{ fontSize: 25 }}
-                className="fa fa-times-circle"
-                aria-hidden="true"
-              ></i>
-            </button>
+          <div className="min-w-full md:min-w-[500px]">
+            <div
+              type="button"
+              className="flex justify-between items-center p-3 border-b-[1px] border-gray-300"
+            >
+              <div className=" text-black text-xl font-semibold pl-3">
+                Add Signer
+              </div>
+              <button onClick={handleModalCloseClick}>
+                <i
+                  style={{ fontSize: 25 }}
+                  className="fa fa-times-circle"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
+
+            {isModal && (
+              <AppendFormInForm
+                id={props.schema.data.quickAddFormId}
+                valueKey={props.schema.data.valueKey}
+                displayKey={props.schema.data.displayKey}
+                details={handleNewDetails}
+                closePopup={handleModalCloseClick}
+              />
+            )}
           </div>
-          {isModal && (
-            <AppendFormInForm
-              id={props.schema.data.quickAddFormId}
-              valueKey={props.schema.data.valueKey}
-              displayKey={props.schema.data.displayKey}
-              details={handleNewDetails}
-              closePopup={handleModalCloseClick}
-            />
-          )}
         </Modal>
       </div>
     </React.Fragment>
