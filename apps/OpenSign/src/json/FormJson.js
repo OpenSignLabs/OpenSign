@@ -1,3 +1,4 @@
+import Parse from "parse";
 export const formJson = (id) => {
   let formData;
   //json form for signYourself
@@ -104,6 +105,12 @@ export const formJson = (id) => {
   }
   //json form for request signature
   else if (id === "8mZzFxbG1z") {
+    const user = Parse.User.current();
+    const userPtr = JSON.stringify({
+      __type: "Pointer",
+      className: "_User",
+      objectId: user.id
+    });
     formData = {
       jsonSchema: {
         title: "New Document",
@@ -140,7 +147,7 @@ export const formJson = (id) => {
               class: "contracts_Contactbook",
               displayKey: "Name",
               valueKey: "objectId",
-              query: "keys=Name",
+              query: `where={"CreatedBy":${userPtr}}&keys=Name`,
               isPointer: true,
               helpbody: "",
               helplink: "",
@@ -575,3 +582,4 @@ export const formJson = (id) => {
     return formData;
   }
 };
+
