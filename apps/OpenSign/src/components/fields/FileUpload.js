@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { SaveFileSize } from "../../constant/saveFileSize";
-import Parse from "parse";
-import sanitizeFileName from "../../primitives/sanitizeFileName";
+// import Parse from "parse";
+// import sanitizeFileName from "../../primitives/sanitizeFileName";
+import axios from "axios";
 
 const FileUpload = (props) => {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -11,7 +12,7 @@ const FileUpload = (props) => {
 
   const [localValue, setLocalValue] = useState("");
   const [Message] = useState(false);
-  const [percentage] = useState(0);
+  const [percentage, setpercentage] = useState(0);
 
   const REQUIRED_FIELD_SYMBOL = "*";
 
@@ -68,33 +69,50 @@ const FileUpload = (props) => {
   };
 
   const handleFileUpload = async (file) => {
-    Parse.serverURL = parseBaseUrl;
-    Parse.initialize(parseAppId);
-    const size = file.size;
-    const fileName = file.name;
-    const name = sanitizeFileName(fileName);
     setfileload(true);
-    const pdfFile = file;
-    const parseFile = new Parse.File(name, pdfFile);
+    const file_url = parseBaseUrl.slice(0, -4);
+    const url = `${file_url}file_upload`;
+    const formData = new FormData();
+    formData.append("file", file);
+    const config = {
+      headers: {
+        "content-type": "multipart/form-data",
+        "X-Parse-Application-Id": parseAppId
+      },
+      onUploadProgress: function (progressEvent) {
+        var percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        setpercentage(percentCompleted);
+      }
+    };
 
     try {
-      const response = await parseFile.save();
+      await axios
+        .post(url, formData, config)
+        .then((res) => {
+          if (res.data.status === "Error") {
+            alert(res.data.message);
+          }
+          setFileUpload(res.data.imageUrl);
+          props.onChange(res.data.imageUrl);
+          setfileload(false);
+          setpercentage(0);
 
-      setFileUpload(response.url());
-      props.onChange(response.url());
-      setfileload(false);
-      // The response object will contain information about the uploaded file
-      // console.log("File uploaded:", response);
-
-      // You can access the URL of the uploaded file using response.url()
-      // console.log("File URL:", response.url());
-      if (response.url()) {
-        SaveFileSize(size, response.url());
-
-        return response.url();
-      }
+          if (res.data.imageUrl) {
+            SaveFileSize(file.size, res.data.imageUrl);
+            return res.data.imageUrl;
+          }
+        })
+        .catch((err) => {
+          alert(`${err.message}`);
+          setfileload(false);
+          setpercentage(0);
+        });
     } catch (error) {
-      console.error("Error uploading file:", error);
+      alert(error.message);
+      setfileload(false);
+      setpercentage(0);
     }
   };
 
@@ -106,7 +124,7 @@ const FileUpload = (props) => {
         <a
           href={props.formData}
           title={props.formData}
-          style={{ paddingBottom: "10px", color: "blue" }}
+          style={{ paddingBottom: "10px", color: "blue"}}
         >
           Download
         </a>
@@ -133,12 +151,14 @@ const FileUpload = (props) => {
             <span className="required">{REQUIRED_FIELD_SYMBOL}</span>
           )}
           {fileload ? (
-            <div className="progress pull-right">
-              <div
-                className="progress__bar"
-                style={{ width: `${percentage}%` }}
-              ></div>
-              <span className="progress__value">{percentage}%</span>
+            <div className="flex items-center gap-x-2">
+              <div className="h-2 rounded-full w-[200px] md:w-[400px] bg-gray-200">
+                <div
+                  className="h-2 rounded-full bg-blue-500"
+                  style={{ width: `${percentage}%` }}
+                ></div>
+              </div>
+              <span className="text-black text-sm">{percentage}%</span>
             </div>
           ) : (
             Message && (
