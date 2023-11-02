@@ -1,7 +1,9 @@
 import Parse from "parse";
 export default function reportJson(id) {
   const currentUserId = Parse.User.current().id;
-  // console.log("userId", currentUserId)
+  // const extendedCls = localStorage.getItem("Extand_Class");
+  // const json = JSON.parse(extendedCls)?.[0];
+  // console.log("json ", json);
 
   switch (id) {
     // draft documents report
@@ -149,7 +151,7 @@ export default function reportJson(id) {
             className: "_User",
             objectId: currentUserId
           },
-          $or: [{ IsDeclined: null }, { IsDeclined: false }]
+          IsDeclined: { $ne: true }
         },
         keys: [
           "Name",
@@ -215,6 +217,11 @@ export default function reportJson(id) {
         reportName: "Declined Documents",
         className: "contracts_Document",
         params: { Type: null, IsDeclined: true },
+        CreatedBy: {
+          __type: "Pointer",
+          className: "_User",
+          objectId: currentUserId
+        },
         keys: [
           "Name",
           "Note",
