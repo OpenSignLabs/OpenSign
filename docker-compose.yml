@@ -50,16 +50,6 @@ services:
       - "3000:3000"
     networks:
       - app-network
-  localstack:
-    image: localstack/localstack:2.0
-    ports:
-      - '4566:4566' # LocalStack endpoint
-      - '4510-4559:4510-4559' # external services port range
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
-    volumes:
-      - ./apps/localstack/localstack-script.sh:/etc/localstack/init/ready.d/script.sh
-      - '/var/run/docker.sock:/var/run/docker.sock'
 
 networks:
     app-network:
