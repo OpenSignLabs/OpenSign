@@ -21,9 +21,14 @@ services:
     networks:
       - app-network
   mongo:
-    image: mongo
+    build:
+      context: ./apps/mongo
+      dockerfile: Dockerfile
+    container_name: mongo-container
+    image: opensign-mongo
     volumes:
       - data-volume:/data/db
+      - ./apps/mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     ports:
       - "27017:27017"
     networks:
@@ -53,7 +58,7 @@ services:
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - ./localstack-script.sh:/etc/localstack/init/ready.d/script.sh
+      - .apps/localstack/localstack-script.sh:/etc/localstack/init/ready.d/script.sh
       - '/var/run/docker.sock:/var/run/docker.sock'
 
 networks:

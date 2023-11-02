@@ -1,0 +1,657 @@
+[{
+    "_id": "_Role",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "name": "string",
+    "users": "relation<_User>",
+    "roles": "relation<_Role>",
+    "_metadata": {
+      "indexes": {
+        "name_1": {
+          "name": 1
+        },
+        "_id_": {
+          "_id": 1
+        }
+      },
+      "class_permissions": {
+        "get": {
+          "*": true
+        },
+        "find": {
+          "*": true
+        },
+        "count": {
+          "*": true
+        },
+        "create": {
+          "*": true
+        },
+        "update": {
+          "*": true
+        },
+        "delete": {
+          "*": true
+        },
+        "addField": {},
+        "protectedFields": {
+          "*": []
+        }
+      }
+    }
+  },
+  {
+    "_id": "_Session",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "user": "*_User",
+    "installationId": "string",
+    "sessionToken": "string",
+    "expiresAt": "date",
+    "createdWith": "object",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      }
+    }
+  },
+  {
+    "_id": "_User",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "username": "string",
+    "email": "string",
+    "emailVerified": "boolean",
+    "authData": "object",
+    "_metadata": {
+      "indexes": {
+        "phone_1": {
+          "phone": 1
+        },
+        "username_1": {
+          "username": 1
+        },
+        "case_insensitive_username": {
+          "username": 1
+        },
+        "email_1": {
+          "email": 1
+        },
+        "case_insensitive_email": {
+          "email": 1
+        },
+        "_id_": {
+          "_id": 1
+        }
+      },
+      "class_permissions": {
+        "get": {
+          "*": true
+        },
+        "find": {
+          "*": true
+        },
+        "count": {
+          "*": true
+        },
+        "create": {
+          "*": true
+        },
+        "update": {
+          "*": true
+        },
+        "delete": {
+          "*": true
+        },
+        "addField": {},
+        "protectedFields": {
+          "*": [
+            "email"
+          ]
+        }
+      }
+    },
+    "name": "string",
+    "phone": "string",
+    "ProfilePic": "string"
+  },
+  {
+    "_id": "contracts_Contactbook",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "Phone": "string",
+    "Email": "string",
+    "Name": "string",
+    "UserRole": "string",
+    "UserId": "*_User",
+    "CreatedBy": "*_User",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      }
+    },
+    "TenantId": "*partners_Tenant",
+    "TourStatus": "array"
+  },
+  {
+    "_id": "contracts_Document",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "_metadata": {
+      "fields_options": {
+        "EnablePhoneOTP": {
+          "required": "false"
+        },
+        "IsCompleted": {
+          "required": "false",
+          "defaultValue": false
+        },
+        "IsDeclined": {
+          "required": "false",
+          "defaultValue": false
+        },
+        "SendinOrder": {
+          "required": "false",
+          "defaultValue": false
+        },
+        "ExpiryDate": {
+          "required": "false"
+        },
+        "Signers": {
+          "required": "false"
+        },
+        "Name": {
+          "required": "false"
+        },
+        "AgreementValidUntil": {
+          "required": "false"
+        },
+        "URL": {
+          "required": "false"
+        },
+        "RemindOnceInEvery": {
+          "required": "false",
+          "defaultValue": 5
+        },
+        "EnableEmailOTP": {
+          "required": "false"
+        },
+        "AutomaticReminders": {
+          "required": "false",
+          "defaultValue": false
+        },
+        "SentToOthers": {
+          "required": "false",
+          "defaultValue": false
+        },
+        "TimeToCompleteDays": {
+          "required": "false",
+          "defaultValue": 15
+        },
+        "Recipients": {
+          "required": "false"
+        },
+        "Type": {
+          "required": "false"
+        },
+        "Description": {
+          "required": "false"
+        },
+        "ExtUserPtr": {
+          "required": "false"
+        },
+        "SignedUrl": {
+          "required": "false"
+        },
+        "AuditTrail": {
+          "required": "false"
+        },
+        "Placeholders": {
+          "required": "false"
+        },
+        "Folder": {
+          "required": "false"
+        },
+        "Note": {
+          "required": false
+        },
+        "Clauses": {
+          "required": false
+        },
+        "AgreementDelta": {
+          "required": false
+        }
+      },
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      },
+      "class_permissions": {
+        "get": {
+          "*": true
+        },
+        "find": {
+          "*": true
+        },
+        "count": {
+          "*": true
+        },
+        "create": {
+          "*": true
+        },
+        "update": {
+          "*": true
+        },
+        "delete": {
+          "*": true
+        },
+        "addField": {},
+        "protectedFields": {
+          "*": []
+        }
+      }
+    },
+    "EnablePhoneOTP": "boolean",
+    "IsCompleted": "boolean",
+    "IsDeclined": "boolean",
+    "SendinOrder": "boolean",
+    "ExpiryDate": "date",
+    "Signers": "array",
+    "Name": "string",
+    "AgreementValidUntil": "date",
+    "URL": "string",
+    "RemindOnceInEvery": "number",
+    "EnableEmailOTP": "boolean",
+    "AutomaticReminders": "boolean",
+    "SentToOthers": "boolean",
+    "TimeToCompleteDays": "number",
+    "Recipients": "array",
+    "Type": "string",
+    "Description": "string",
+    "ExtUserPtr": "*contracts_Users",
+    "SignedUrl": "string",
+    "AuditTrail": "array",
+    "Placeholders": "array",
+    "Folder": "*contracts_Document",
+    "Note": "string",
+    "CreatedBy": "*_User",
+    "Clauses": "array",
+    "AgreementDelta": "array"
+  },
+  {
+    "_id": "contracts_Signature",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "_metadata": {
+      "fields_options": {
+        "SignatureName": {
+          "required": "false"
+        },
+        "SignText": {
+          "required": "false"
+        },
+        "ImageURL": {
+          "required": "false"
+        },
+        "SignTextFont": {
+          "required": "false"
+        },
+        "InitialsText": {
+          "required": "false"
+        },
+        "InitialsFont": {
+          "required": "false"
+        },
+        "UserId": {
+          "required": false
+        }
+      },
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      },
+      "class_permissions": {
+        "get": {
+          "*": true
+        },
+        "find": {
+          "*": true
+        },
+        "count": {
+          "*": true
+        },
+        "create": {
+          "*": true
+        },
+        "update": {
+          "*": true
+        },
+        "delete": {
+          "*": true
+        },
+        "addField": {},
+        "protectedFields": {
+          "*": []
+        }
+      }
+    },
+    "SignatureName": "string",
+    "SignText": "string",
+    "ImageURL": "string",
+    "SignTextFont": "string",
+    "InitialsText": "string",
+    "InitialsFont": "string",
+    "Initials": "string",
+    "UserId": "*_User"
+  },
+  {
+    "_id": "contracts_Users",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "_metadata": {
+      "fields_options": {
+        "Name": {
+          "required": "false"
+        },
+        "Phone": {
+          "required": "false"
+        },
+        "JobTitle": {
+          "required": "false"
+        },
+        "Email": {
+          "required": "false"
+        },
+        "Company": {
+          "required": "false"
+        },
+        "UserId": {
+          "required": "false"
+        },
+        "TenantId": {
+          "required": "false"
+        },
+        "TourStatus": {
+          "required": false
+        },
+        "IsContactEntry": {
+          "required": false,
+          "defaultValue": false
+        },
+        "ShareWithTeam": {
+          "required": false
+        }
+      },
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      },
+      "class_permissions": {
+        "get": {
+          "*": true
+        },
+        "find": {
+          "*": true
+        },
+        "count": {
+          "*": true
+        },
+        "create": {
+          "*": true
+        },
+        "update": {
+          "*": true
+        },
+        "delete": {
+          "*": true
+        },
+        "addField": {},
+        "protectedFields": {
+          "*": []
+        }
+      }
+    },
+    "Name": "string",
+    "Phone": "string",
+    "JobTitle": "string",
+    "Email": "string",
+    "Company": "string",
+    "UserId": "*_User",
+    "TenantId": "*partners_Tenant",
+    "TourStatus": "array",
+    "Plan": "object",
+    "UserRole": "string",
+    "Next_billing_date": "date",
+    "Customer_id": "string",
+    "Subscription_id": "string",
+    "CreatedBy": "*_User",
+    "IsContactEntry": "boolean",
+    "ShareWithTeam": "boolean"
+  },
+  {
+    "_id": "partners_DataFiles",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "FileSize": "number",
+    "FileUrl": "string",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      }
+    }
+  },
+  {
+    "_id": "partners_Subscriptions",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date"
+  },
+  {
+    "_id": "partners_Tenant",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "EmailAddress": "string",
+    "TenantName": "string",
+    "IsActive": "boolean",
+    "CreatedBy": "*_User",
+    "ContactNumber": "string",
+    "UserId": "*_User",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      }
+    }
+  },
+  {
+    "_id": "partners_TenantCredits",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "usedStorage": "number",
+    "PartnersTenant": "*partners_Tenant",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      }
+    }
+  },
+  {
+    "_id": "w_appinfo",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "orgId": "string",
+    "forgetpassFormId": "string",
+    "mainformObjId": "string",
+    "applogo": "string",
+    "fbAppId": "string",
+    "appname": "string",
+    "loginFormId": "string",
+    "baseurl": "string",
+    "org_name": "string",
+    "signUpFormId": "string",
+    "defaultmenuid": "string",
+    "version": "string",
+    "formTitle": "string",
+    "googleClietId": "string",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      },
+      "class_permissions": {
+        "get": {
+          "*": true
+        },
+        "find": {
+          "*": true
+        },
+        "count": {
+          "*": true
+        },
+        "create": {
+          "*": true
+        },
+        "update": {
+          "*": true
+        },
+        "delete": {
+          "*": true
+        },
+        "addField": {
+          "*": true
+        }
+      },
+      "fields_options": {
+        "uploadUrl": {
+          "required": false
+        }
+      }
+    },
+    "class": "string",
+    "LandingPageId": "string",
+    "accessType": "string",
+    "settings": "array",
+    "appTitle": "string",
+    "metaDescription": "string",
+    "branding_image": "string",
+    "fev_Icon": "string",
+    "defaultRole": "string",
+    "results": "array",
+    "loginType": "string",
+    "createdBy": "*_User",
+    "domain": "string",
+    "enableWebNotification": "boolean",
+    "allowWhiteLabel": "boolean",
+    "uploadUrl": "string"
+  },
+  {
+    "_id": "w_dashboard",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "dbDescription": "string",
+    "dbTitle": "string",
+    "bgColor": "string",
+    "rows": "array",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      }
+    },
+    "appId": "*w_appinfo"
+  },
+  {
+    "_id": "w_formV3",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "description": "string",
+    "uiSchema": "object",
+    "jsonSchema": "object",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      }
+    },
+    "class": "string",
+    "success_message": "string",
+    "restrict_form_entry": "object",
+    "send_email": "boolean",
+    "restrict_form_access": "object",
+    "email_template": "object",
+    "form_permission": "string",
+    "success_redirect": "string",
+    "form_buttons": "object",
+    "buttons": "object",
+    "appId": "*w_appinfo",
+    "rpTitle": "string",
+    "rpDescription": "string",
+    "rpType": "string",
+    "bgColor": "string",
+    "rows": "array",
+    "redirect_id": "string",
+    "formACL": "object",
+    "userSchema": "object",
+    "isRegisterForm": "boolean",
+    "liveValidate": "boolean",
+    "noValidate": "boolean",
+    "validFunction": "string",
+    "help": "object",
+    "name": "string",
+    "phone": "string",
+    "email": "string",
+    "password": "string",
+    "username": "string",
+    "role": "string",
+    "helpText": "object",
+    "helpTextForm": "object",
+    "hideActionsAfter": "number",
+    "rules": "array",
+    "extraActions": "object",
+    "persistentFields": "array"
+  },
+  {
+    "_id": "w_menu",
+    "objectId": "string",
+    "updatedAt": "date",
+    "createdAt": "date",
+    "menuTitle": "string",
+    "menuType": "string",
+    "menuItems": "array",
+    "_metadata": {
+      "indexes": {
+        "_id_": {
+          "_id": 1
+        }
+      }
+    },
+    "appId": "*w_appinfo"
+  }]
