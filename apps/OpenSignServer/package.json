@@ -38,6 +38,7 @@
     "parse-server": "6.3.1",
     "parse-server-api-mail-adapter": "^3.0.0",
     "parse-server-s3-adapter": "^1.2.0",
+    "parse-server-fs-adapter": "1.0.1",
     "pdf-lib": "^1.16.0",
     "pdfkit": "^0.13.0",
     "razorpay": "^2.8.6",
