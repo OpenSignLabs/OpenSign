@@ -58,7 +58,7 @@ services:
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - .apps/localstack/localstack-script.sh:/etc/localstack/init/ready.d/script.sh
+      - ./apps/localstack/localstack-script.sh:/etc/localstack/init/ready.d/script.sh
       - '/var/run/docker.sock:/var/run/docker.sock'
 
 networks:
