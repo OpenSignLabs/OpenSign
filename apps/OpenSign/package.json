@@ -41,6 +41,7 @@
   },
   "scripts": {
     "start": "mf-cra start",
+    "start-prod": "serve -s build",
     "build": "rm -rf public/mfbuild && npm run micro && CI=false && mf-cra build",
     "micro": "cd ../../microfrontends/SignDocuments && npm install && npm run build",
     "test": "react-scripts test",
