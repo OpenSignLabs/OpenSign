@@ -7,6 +7,7 @@ or follow below instructions to install it on your own infrastructure.
 
 - Localhost(Frontend only)
 - Digital Ocean
+- Localhost(Docker)
 
 ## Localhost(Frontend only)
 
@@ -83,3 +84,9 @@ You can install all 3 components on digital ocean using the button below -
 
  Visit below link if you face any issues while following the above instructions -
   - https://repost.aws/knowledge-center/create-access-key
+
+
+## Localhost(Docker)
+
+Below are the steps to follow -
+- Execute `make build`

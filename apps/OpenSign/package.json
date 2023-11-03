@@ -41,7 +41,7 @@
   },
   "scripts": {
     "start": "mf-cra start",
-    "build": "npm run micro && CI=false && mf-cra build",
+    "build": "rm -rf public/mfbuild/* && npm run micro && CI=false && mf-cra build",
     "micro": "cd ../../microfrontends/SignDocuments && npm install && npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
