@@ -151,6 +151,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "rishabjasrotia",
+      "name": "Rishab",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33950743?v=4",
+      "profile": "https://github.com/rishabjasrotia",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "maoo",
+      "name": "Maurizio Pillitu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/327285?v=4",
+      "profile": "https://session.it",
+      "contributions": [
+        "bug"
+      ]
     }
   ]
 }
