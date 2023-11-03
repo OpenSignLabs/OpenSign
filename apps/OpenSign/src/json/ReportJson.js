@@ -1,7 +1,7 @@
 import Parse from "parse";
 export default function reportJson(id) {
   const currentUserId = Parse.User.current().id;
-  // console.log("userId", currentUserId)
+  // console.log("json ", json);
 
   switch (id) {
     // draft documents report
@@ -53,28 +53,7 @@ export default function reportJson(id) {
           ExpiryDate: {
             $gt: { __type: "Date", iso: new Date().toISOString() }
           },
-          $and: [
-            {
-              "AuditTrail.UserPtr": {
-                $ne: {
-                  __type: "Pointer",
-                  className: "contracts_Users",
-                  objectId: "CkpaR0F6mj"
-                }
-              }
-            },
-            { "AuditTrail.Activity": { $ne: "Signed" } }
-          ],
-          Placeholders: { $ne: null },
-          Signers: {
-            $in: [
-              {
-                __type: "Pointer",
-                className: "contracts_Users",
-                objectId: "CkpaR0F6mj"
-              }
-            ]
-          }
+          Placeholders: { $ne: null }
         },
         keys: [
           "Name",
@@ -82,7 +61,9 @@ export default function reportJson(id) {
           "Folder.Name",
           "URL",
           "ExtUserPtr.Name",
-          "Signers.Name"
+          "Signers.Name",
+          "Signers.UserId",
+          "AuditTrail"
         ],
         orderBy: "-updatedAt",
         actions: [
@@ -144,7 +125,12 @@ export default function reportJson(id) {
         params: {
           Type: null,
           IsCompleted: true,
-          $or: [{ IsDeclined: null }, { IsDeclined: false }]
+          CreatedBy: {
+            __type: "Pointer",
+            className: "_User",
+            objectId: currentUserId
+          },
+          IsDeclined: { $ne: true }
         },
         keys: [
           "Name",
@@ -210,6 +196,11 @@ export default function reportJson(id) {
         reportName: "Declined Documents",
         className: "contracts_Document",
         params: { Type: null, IsDeclined: true },
+        CreatedBy: {
+          __type: "Pointer",
+          className: "_User",
+          objectId: currentUserId
+        },
         keys: [
           "Name",
           "Note",
@@ -330,28 +321,7 @@ export default function reportJson(id) {
           ExpiryDate: {
             $gt: { __type: "Date", iso: new Date().toISOString() }
           },
-          $and: [
-            {
-              "AuditTrail.UserPtr": {
-                $ne: {
-                  __type: "Pointer",
-                  className: "contracts_Users",
-                  objectId: "CkpaR0F6mj"
-                }
-              }
-            },
-            { "AuditTrail.Activity": { $ne: "Signed" } }
-          ],
-          Placeholders: { $ne: null },
-          Signers: {
-            $in: [
-              {
-                __type: "Pointer",
-                className: "contracts_Users",
-                objectId: "CkpaR0F6mj"
-              }
-            ]
-          }
+          Placeholders: { $ne: null }
         },
         keys: [
           "Name",
@@ -359,7 +329,9 @@ export default function reportJson(id) {
           "Folder.Name",
           "URL",
           "ExtUserPtr.Name",
-          "Signers.Name"
+          "Signers.Name",
+          "Signers.UserId",
+          "AuditTrail"
         ],
         orderBy: "-updatedAt",
         actions: [
