@@ -8,7 +8,7 @@ import "../css/signature.css";
 import axios from "axios";
 import { toDataUrl } from "../utils/toDataUrl";
 
-// console.log("appName ", appName)
+ 
 const ManageSign = () => {
   let appName;
   const [penColor, setPenColor] = useState("blue");
@@ -68,7 +68,6 @@ const ManageSign = () => {
         if (res.data.results.length > 0) {
           setId(res.data.results[0].objectId);
           setSignName(res.data.results[0].SignatureName);
-          // console.log(res.data.results[0].ImageURL);
           setImage(res.data.results[0].ImageURL);
           if (res.data.results[0] && res.data.results[0].Initials) {
             setInitials(res.data.results[0].Initials);
@@ -143,7 +142,7 @@ const ManageSign = () => {
 
     if (!signName) {
       setNameWarning(true);
-      // setTimeout(() => setNameWarning(false), 1000);
+     
     } else if (!isvalue) {
       setWarning(true);
       setTimeout(() => setWarning(false), 1000);
@@ -337,12 +336,8 @@ const ManageSign = () => {
       <div
         className="mainDiv"
         style={{
-          // height: "100%",
-
           width: "100%",
           paddingRight: "10px",
-
-          // maxHeight:"500px",
         }}
       >
         <div style={{ margin: 20 }}>
