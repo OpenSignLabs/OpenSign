@@ -15,7 +15,9 @@ const MicroappModal = () => {
     // console.log("value ", key + ":" + value);
 
     if (key === "remoteUrl") {
-      obj = { ...obj, [key]: atob(value) };
+      const url = window.location.origin + "/mfbuild/remoteEntry.js";
+      // console.log("atob(value) ", atob(value))
+      obj = { ...obj, [key]: url };
     } else {
       if (key === "moduleToLoad") {
         obj = { ...obj, [key]: "./" + value };
@@ -45,9 +47,9 @@ const MicroappModal = () => {
           >
             Back
           </button>
-          {localStorage.getItem('domain') && (
+          {localStorage.getItem("domain") && (
             <p className="flex-1 w-full text-sm md:text-base text-black text-center">
-              {localStorage.getItem('domain') === "contracts" ? "Document":""}
+              {localStorage.getItem("domain") === "contracts" ? "Document" : ""}
             </p>
           )}
         </div>
