@@ -42,7 +42,7 @@ function DraftDocument() {
       .then((Listdata) => {
         const json = Listdata.data;
         const res = json.results;
-        // console.log("res", res);
+        
         if (res[0] && res.length > 0) {
           setPdfDetails(res);
           const loadObj = {
@@ -74,20 +74,16 @@ function DraftDocument() {
 
     //checking document is completed and signer exist then navigate to pdfRequestFiles file
     if (data.IsCompleted && checkSignerExist) {
-      // window.location.hash = `/pdfRequestFiles`;
-
-      navigate(`${hostUrl}pdfRequestFiles`);
+    navigate(`${hostUrl}pdfRequestFiles`);
     }
     //checking document is completed and signer does not exist then navigate to recipientSignPdf file
     else if (data.IsCompleted && !checkSignerExist) {
-      // window.location.hash = `/recipientSignPdf/${data.objectId}/${data.ExtUserPtr.Phone}`;
       navigate(
         `${hostUrl}signaturePdf`
       );
     }
     //checking document is declined by someone then navigate to pdfRequestFiles file
     else if (isDecline) {
-      // window.location.hash = `/pdfRequestFiles`;
       navigate(`${hostUrl}pdfRequestFiles`);
     }
     //checking document has expired and signers exist and placeholder does not set yet then navigate to pdfRequestFiles file
@@ -97,7 +93,6 @@ function DraftDocument() {
       checkSignerExist &&
       !isPlaceholder
     ) {
-      // window.location.hash = `/placeHolderSign`;
       navigate(`${hostUrl}placeHolderSign`);
     }
     //checking document has expired and signers does not exist and document not signed yet then navigate to pdfRequestFiles file

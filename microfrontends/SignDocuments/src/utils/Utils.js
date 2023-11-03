@@ -62,6 +62,7 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
     let newWidth, nweHeight;
     const aspectRatio = imgWH.width / imgWH.height;
     const getXYdata = xyPostion[index].pos;
+   
     if (aspectRatio === 1) {
       newWidth = aspectRatio * 100;
       nweHeight = aspectRatio * 100;
@@ -78,13 +79,15 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
       newWidth = aspectRatio * 10;
       nweHeight = 10;
     }
-    const getPosData = getXYdata;
-    const addSign = getPosData.map((url, ind) => {
+   
+    let getPosData = xyPostion[index].pos.filter((data) => data.key === signKey);
+    
+    const addSign = getXYdata.map((url, ind) => {
       if (url.key === signKey) {
         return {
           ...url,
-          Width: newWidth,
-          Height: nweHeight,
+          Width: getPosData[0].Width ? getPosData[0].Width : 150,
+          Height: getPosData[0].Height ? getPosData[0].Height : 60,
           SignUrl: image.src,
           ImageType: image.imgType
         };
@@ -103,8 +106,7 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
   } else {
     const getXYdata = xyPostion[index].pos;
 
-    const getPosData = getXYdata;
-
+    let getPosData = xyPostion[index].pos.filter((data) => data.key === signKey);
     const aspectRatio = imgWH.width / imgWH.height;
 
     let newWidth, newHeight;
@@ -125,12 +127,12 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
       newHeight = 10;
     }
 
-    const addSign = getPosData.map((url, ind) => {
+    const addSign = getXYdata.map((url, ind) => {
       if (url.key === signKey) {
         return {
           ...url,
-          Width: newWidth,
-          Height: newHeight,
+          Width: getPosData[0].Width ? getPosData[0].Width : 150,
+          Height: getPosData[0].Height ? getPosData[0].Height : 60,
           SignUrl: image.src,
           ImageType: image.imgType
         };
@@ -151,15 +153,10 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
 
 //function for save button to save signature or image url
 export function onSaveSign(xyPostion, index, signKey, signatureImg) {
-  // const updateFilter = xyPostion[index].pos.filter(
-  //   (data) => data.key === signKey && data.SignUrl
-  // );
-
   let getXYdata = xyPostion[index].pos;
-  let getPosData = getXYdata;
-  // if (updateFilter.length > 0) {
-  // updateFilter[0].SignUrl = signatureImg;
-  const addSign = getPosData.map((url, ind) => {
+  let getPosData = xyPostion[index].pos.filter((data) => data.key === signKey);
+
+  const addSign = getXYdata.map((url, ind) => {
     if (url.key === signKey) {
       return {
         ...url,
@@ -178,27 +175,6 @@ export function onSaveSign(xyPostion, index, signKey, signatureImg) {
     return obj;
   });
   return newUpdateUrl;
-  // } else {
-  //   const addSign = getPosData.map((url, ind) => {
-  //     if (url.key === signKey) {
-  //       return {
-  //         ...url,
-  //         SignUrl: signatureImg,
-  //         Width: getPosData[0].Width ? getPosData[0].Width : 150,
-  //         Height: getPosData[0].Height ? getPosData[0].Height : 60
-  //       };
-  //     }
-  //     return url;
-  //   });
-
-  //   const newUpdateUrl = xyPostion.map((obj, ind) => {
-  //     if (ind === index) {
-  //       return { ...obj, pos: addSign };
-  //     }
-  //     return obj;
-  //   });
-  //   return newUpdateUrl;
-  // }
 }
 
 //function for getting contract_User details
@@ -278,5 +254,3 @@ export const contactBookName = async (objectId, className) => {
     });
   return result;
 };
-
- 

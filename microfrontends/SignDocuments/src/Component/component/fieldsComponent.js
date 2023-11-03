@@ -36,8 +36,8 @@ function FieldsComponent({
 }) {
   const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
 
-  const isMobile = window.innerWidth < 712;
-
+  const isMobile = window.innerWidth <767;
+  
   const SelectItem = React.forwardRef(
     ({ children, className, ...props }, forwardedRef) => {
       return (
@@ -107,7 +107,7 @@ function FieldsComponent({
                   }}
                 >
                   <Select.Trigger
-                    className="SelectTrigger"
+                    className={selectedEmail ? "selectEmail": "SelectTrigger"}
                     style={{
                       background: isSelectListId
                         ? color[isSelectListId % color.length]
@@ -115,7 +115,10 @@ function FieldsComponent({
                     }}
                     aria-label="Food"
                   >
-                    <Select.Value placeholder="Select signer.." />
+                    <Select.Value
+                    
+                    placeholder="Select signer.." />
+                    {!selectedEmail && 
                     <Select.Icon className="SelectIcon">
                       <i
                         style={{
@@ -127,7 +130,7 @@ function FieldsComponent({
                         className="fa fa-angle-down"
                         aria-hidden="true"
                       ></i>
-                    </Select.Icon>
+                    </Select.Icon>}
                   </Select.Trigger>
                   <Select.Portal>
                     <Select.Content
