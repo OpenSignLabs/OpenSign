@@ -14,23 +14,31 @@ import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
 import S3Adapter from 'parse-server-s3-adapter';
+import FSFilesAdapter from 'parse-server-fs-adapter';
 import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 
 const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 // console.log("configuration ", configuration);
-const s3Options = {
-  bucket: process.env.DO_SPACE, // globalConfig.S3FilesAdapter.bucket,
-  baseUrl: process.env.DO_BASEURL,
-  region: process.env.DO_REGION,
-  directAccess: true,
-  preserveFileName: true,
-  s3overrides: {
-    accessKeyId: process.env.DO_ACCESS_KEY_ID,
-    secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
-    endpoint: spacesEndpoint,
-  },
-};
+if (process.env.USE_LOCAL !== "TRUE") {
+  const s3Options = {
+    bucket: process.env.DO_SPACE, // globalConfig.S3FilesAdapter.bucket,
+    baseUrl: process.env.DO_BASEURL,
+    region: process.env.DO_REGION,
+    directAccess: true,
+    preserveFileName: true,
+    s3overrides: {
+      accessKeyId: process.env.DO_ACCESS_KEY_ID,
+      secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
+      endpoint: spacesEndpoint,
+    },
+  };
+  var fsAdapter = new S3Adapter(s3Options);
+} else {
+  var fsAdapter = new FSFilesAdapter({
+    "filesSubDirectory": "files" // optional, defaults to ./files
+  });
+}
 
 let mailgunClient;
 let mailgunDomain;
@@ -85,7 +93,7 @@ export const config = {
         },
       }
     : null,
-  filesAdapter: new S3Adapter(s3Options),
+  filesAdapter: fsAdapter,
   auth: {
     google: {
       enabled: true,
