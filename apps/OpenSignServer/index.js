@@ -63,6 +63,7 @@ export const config = {
   publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Open Sign',
+  allowClientClassCreation: false,
   emailAdapter: process.env.MAILGUN_API_KEY
     ? {
         module: 'parse-server-api-mail-adapter',
