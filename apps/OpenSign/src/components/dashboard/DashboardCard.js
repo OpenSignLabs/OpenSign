@@ -156,7 +156,35 @@ const DashboardCard = (props) => {
             if (props.Data.key !== "count") {
               setresponse(res.data.results[0][props.Data.key]);
             } else {
-              setresponse(res.data[props.Data.key]);
+              if (props.Label === "Need your Signature") {
+                const listData = res.data?.results.filter(
+                  (x) => x.Signers.length > 0
+                );
+                let arr = [];
+                for (const obj of listData) {
+                  const isSigner = obj.Signers.some(
+                    (item) => item.UserId.objectId === currentUser.id
+                  );
+                  if (isSigner) {
+                    let isRecord;
+                    if (obj?.AuditTrail && obj?.AuditTrail.length > 0) {
+                      isRecord = obj?.AuditTrail.some(
+                        (item) =>
+                          item?.UserPtr?.UserId?.objectId === currentUser.id &&
+                          item.Activity === "Signed"
+                      );
+                    } else {
+                      isRecord = false;
+                    }
+                    if (isRecord === false) {
+                      arr.push(obj);
+                    }
+                  }
+                }
+                setresponse(arr.length);
+              } else {
+                setresponse(res.data[props.Data.key]);
+              }
             }
           } else {
             setresponse(0);
