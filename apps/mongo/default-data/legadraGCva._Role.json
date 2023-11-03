@@ -1,0 +1,70 @@
+[{
+    "_id": "lpm8ijrwod",
+    "name": "contracts_Admin",
+    "_wperm": [
+      "*"
+    ],
+    "_rperm": [
+      "*"
+    ],
+    "_acl": {
+      "*": {
+        "r": true,
+        "w": true
+      }
+    },
+    "_created_at": {
+      "$date": "2023-09-19T09:25:20.205Z"
+    },
+    "_updated_at": {
+      "$date": "2023-09-28T09:47:03.968Z"
+    }
+  },
+  {
+    "_id": "Bz90QJSYMw",
+    "name": "contracts_Guest",
+    "_wperm": [
+      "ZhOmhqvw7S"
+    ],
+    "_rperm": [
+      "*",
+      "ZhOmhqvw7S"
+    ],
+    "_acl": {
+      "ZhOmhqvw7S": {
+        "w": true,
+        "r": true
+      },
+      "*": {
+        "r": true
+      }
+    },
+    "_created_at": {
+      "$date": "2023-10-20T07:56:10.094Z"
+    },
+    "_updated_at": {
+      "$date": "2023-10-20T10:50:36.229Z"
+    }
+  },
+  {
+    "_id": "Tb14x04JK2",
+    "name": "contracts_User",
+    "_wperm": [
+      "*"
+    ],
+    "_rperm": [
+      "*"
+    ],
+    "_acl": {
+      "*": {
+        "r": true,
+        "w": true
+      }
+    },
+    "_created_at": {
+      "$date": "2023-09-19T09:25:20.205Z"
+    },
+    "_updated_at": {
+      "$date": "2023-10-20T06:54:09.836Z"
+    }
+  }]

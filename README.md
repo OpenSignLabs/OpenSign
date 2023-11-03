@@ -122,6 +122,8 @@ We would like to thank all our contributors and users for their support and feed
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/VishakhaSainani"><img src="https://avatars.githubusercontent.com/u/113436770?v=4?s=100" width="100px;" alt="VishakhaSainani"/><br /><sub><b>VishakhaSainani</b></sub></a><br /><a href="#code-VishakhaSainani" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/andrew-opensignlabs"><img src="https://avatars.githubusercontent.com/u/148278535?v=4?s=100" width="100px;" alt="Andrew"/><br /><sub><b>Andrew</b></sub></a><br /><a href="#code-andrew-opensignlabs" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rishabjasrotia"><img src="https://avatars.githubusercontent.com/u/33950743?v=4?s=100" width="100px;" alt="Rishab"/><br /><sub><b>Rishab</b></sub></a><br /><a href="#code-rishabjasrotia" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://session.it"><img src="https://avatars.githubusercontent.com/u/327285?v=4?s=100" width="100px;" alt="Maurizio Pillitu"/><br /><sub><b>Maurizio Pillitu</b></sub></a><br /><a href="#bug-maoo" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
