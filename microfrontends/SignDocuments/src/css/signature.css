@@ -120,17 +120,18 @@
    border: none;
    margin-left: 10px;
  }
-.sendMail{
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  padding: 3px 30px;
-  color: white;
-  font-weight: 500 !important;
-  font-size: 14px !important;
-  border: none;
-  margin-left: 10px;
-  /* color: rgb(77, 75, 75); */
-}
- 
+
+ .sendMail {
+   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+   padding: 3px 30px;
+   color: white;
+   font-weight: 500 !important;
+   font-size: 14px !important;
+   border: none;
+   margin-left: 10px;
+   /* color: rgb(77, 75, 75); */
+ }
+
  .finishBtn:focus {
    border: none;
    outline: none;
@@ -244,6 +245,7 @@
    box-shadow: 0 2px 4px rgba(15, 150, 87, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
 
  }
+ 
 
  .signerList {
    overflow-y: scroll;
@@ -447,6 +449,25 @@
    align-items: center;
    justify-content: center;
    border-radius: 4px;
+   padding: 0 70px;
+   font-size: 13px;
+   line-height: 1;
+   height: 35px;
+   gap: 5px;
+   border: none;
+   background-color: #887abf;
+
+   width: 100px;
+   white-space: nowrap;
+   overflow: hidden !important;
+   text-overflow: ellipsis;
+ }
+
+ .selectEmail {
+
+   align-items: center;
+   justify-content: center;
+   border-radius: 4px;
    padding: 0 15px;
    font-size: 13px;
    line-height: 1;
@@ -454,23 +475,37 @@
    gap: 5px;
    border: none;
    background-color: #887abf;
-   color: black
+
+   width: 200px;
+   white-space: nowrap;
+   overflow: hidden !important;
+   text-overflow: ellipsis;
  }
 
  option {
    overflow-y: scroll;
  }
 
- .SelectTrigger:hover {
+  .SelectTrigger:hover {
    border: none;
    outline: none;
  }
+ .selectEmail:hover{
+  border: none;
+  outline: none;
+}
 
- .SelectTrigger:focus {
+
+  .SelectTrigger:focus {
    /* box-shadow: 0 0 0 2px black; */
    border: none;
    outline: none;
  }
+ .selectEmail:focus {
+  /* box-shadow: 0 0 0 2px black; */
+  border: none;
+  outline: none;
+}
 
  .SelectTrigger[data-placeholder] {
    color: black;
@@ -550,7 +585,7 @@
 
 
 
- @media screen and (max-width:767px) {
+ @media screen and (max-width:766px) {
 
    .showPages {
      display: none;

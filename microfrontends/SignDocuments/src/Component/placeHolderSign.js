@@ -17,11 +17,13 @@ import HandleError from "./component/HandleError";
 import Nodata from "./component/Nodata";
 import SignerListPlace from "./component/signerListPlace";
 import Header from "./component/header";
-import { contactBook, contractUsers } from "../utils/Utils";
+import { contactBook, contractUsers, getHostUrl } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
+import { useNavigate } from "react-router-dom";
 
 function PlaceHolderSign() {
+  const navigate = useNavigate();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [isMailSend, setIsMailSend] = useState(false);
   const [allPages, setAllPages] = useState(null);
@@ -74,7 +76,9 @@ function PlaceHolderSign() {
     "#66ccff",
     "#ffffcc"
   ];
-
+  const isMobile = window.innerWidth < 767;
+  const newWidth = window.innerWidth;
+  const scale = pdfOriginalWidth / newWidth;
   const [{ isOver }, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
@@ -119,7 +123,7 @@ function PlaceHolderSign() {
       isDragSignatureSS: !!monitor.isDragging()
     })
   });
-  const isMobile = window.innerWidth < 712;
+
   const [{ isDragStampSS }, dragStampSS] = useDrag({
     type: "BOX",
 
@@ -162,7 +166,7 @@ function PlaceHolderSign() {
       getDocumentDetails();
     }
   }, []);
-
+ 
   //function for get document details
   const getDocumentDetails = async () => {
     await axios
@@ -257,56 +261,10 @@ function PlaceHolderSign() {
         setIsLoading(loadObj);
       }
     }
-    // await axios
-    //   .get(
-    //     `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-    //       "_appName"
-    //     )}_Contactbook?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
-    //       jsonSender.objectId
-    //     }"}}`,
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-    //         "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-    //       },
-    //     }
-    //   )
-    //   .then((Listdata) => {
-    //     const json = Listdata.data;
-    //     const res = json.results;
-
-    //     if (res[0] && res.length) {
-    //       setSignerUserId(res[0].objectId);
-    //       const tourstatus = res[0].TourStatus && res[0].TourStatus;
-    //       if (tourstatus && tourstatus.length > 0) {
-    //         setTourStatus(tourstatus);
-    //         const checkTourRecipients = tourstatus.filter(
-    //           (data) => data.placeholder
-    //         );
-    //         if (checkTourRecipients && checkTourRecipients.length > 0) {
-    //           setCheckTourStatus(checkTourRecipients[0].placeholder);
-    //         }
-    //       }
-    //       const loadObj = {
-    //         isLoad: false,
-    //       };
-    //       setIsLoading(loadObj);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     const loadObj = {
-    //       isLoad: false,
-    //     };
-    //     setHandleError("Error: Something went wrong!");
-    //     setIsLoading(loadObj);
-    //   });
   };
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
-    const isMobile = window.innerWidth < 712;
-
     if (isMobile) {
       if (selectedEmail) {
         getSignerPos(item, monitor);
@@ -317,11 +275,8 @@ function PlaceHolderSign() {
       getSignerPos(item, monitor);
     }
   };
-
+ 
   const getSignerPos = (item, monitor) => {
-    const isMobile = window.innerWidth < 712;
-    const newWidth = window.innerWidth;
-    const scale = pdfOriginalWidth / newWidth;
     const key = Math.floor(1000 + Math.random() * 9000);
     let filterSignerPos = signerPos.filter(
       (data) => data.signerObjId === signerObjId
@@ -336,7 +291,8 @@ function PlaceHolderSign() {
         isStamp: monitor,
         key: key,
         isDrag: false,
-        scale: isMobile && scale,
+        scale: scale,
+        isMobile: isMobile,
         yBottom: window.innerHeight / 2 - 60
       };
       dropData.push(dropObj);
@@ -365,7 +321,8 @@ function PlaceHolderSign() {
         firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
         firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
         yBottom: ybottom,
-        scale: isMobile && scale
+        scale: scale,
+        isMobile: isMobile
       };
 
       dropData.push(dropObj);
@@ -394,16 +351,12 @@ function PlaceHolderSign() {
       //add entry of position for same signer on multiple page
       if (getPageNumer.length > 0) {
         const getPos = getPageNumer[0].pos;
-
-        //if (updateData.length > dropData.length) {
         const newSignPos = getPos.concat(dropData);
-
         let xyPos = {
           pageNumber: pageNumber,
           pos: newSignPos
         };
         updatePlace.push(xyPos);
-
         let placeHolderPos = {
           blockColor: color[isSelectListId],
           signerObjId: signerObjId,
@@ -417,7 +370,6 @@ function PlaceHolderSign() {
 
         signerPos.splice(colorIndex, 1, placeHolderPos);
       } else {
-        // const newSignPos = getPlaceHolder.push(xyPosArr[0]);
         const newSignPoss = getPlaceHolder.concat(xyPosArr[0]);
 
         let placeHolderPos = {
@@ -444,7 +396,7 @@ function PlaceHolderSign() {
         blockColor: color[isSelectListId],
         placeHolder: xyPosArr
       };
-
+     
       setSignerPos((prev) => [...prev, placeHolderPos]);
     }
   };
@@ -467,17 +419,19 @@ function PlaceHolderSign() {
   };
 
   //function for set and update x and y postion after drag and drop signature tab
-  const handleStop = (event, dragElement) => {
+  const handleStop = (event, dragElement, signerId, key) => {
     const containerRect = document
       .getElementById("container")
       .getBoundingClientRect();
-
+    const signId = signerId ? signerId : signerObjId;
+    const keyValue = key ? key : dragKey;
     const ybottom = containerRect.height - dragElement.y;
 
-    if (dragKey >= 0) {
+    if (keyValue >= 0) {
       const filterSignerPos = signerPos.filter(
-        (data) => data.signerObjId === signerObjId
+        (data) => data.signerObjId === signId
       );
+
       if (filterSignerPos.length > 0) {
         const getPlaceHolder = filterSignerPos[0].placeHolder;
 
@@ -490,7 +444,7 @@ function PlaceHolderSign() {
 
           const getPosData = getXYdata;
           const addSignPos = getPosData.map((url, ind) => {
-            if (url.key === dragKey) {
+            if (url.key === keyValue) {
               return {
                 ...url,
                 xPosition: dragElement.x,
@@ -509,16 +463,15 @@ function PlaceHolderSign() {
             return obj;
           });
           const newUpdateSigner = signerPos.map((obj, ind) => {
-            if (obj.signerObjId === signerObjId) {
+            if (obj.signerObjId === signId) {
               return { ...obj, placeHolder: newUpdateSignPos };
             }
             return obj;
           });
+
           setSignerPos(newUpdateSigner);
         }
       }
-
-      // }
     }
   };
 
@@ -556,6 +509,7 @@ function PlaceHolderSign() {
             }
             return obj;
           });
+
           setSignerPos(newUpdateSigner);
         } else {
           const updateFilter = signerPos.filter(
@@ -577,6 +531,7 @@ function PlaceHolderSign() {
               (data) => data.signerObjId !== signerId
             );
             signerupdate.push(newUpdatePos[0]);
+
             setSignerPos(signerupdate);
           } else {
             setSignerPos(updateFilter);
@@ -621,12 +576,14 @@ function PlaceHolderSign() {
             }
             return obj;
           });
+
           const newUpdateSigner = signerPos.map((obj, ind) => {
             if (obj.signerObjId === signerId) {
               return { ...obj, placeHolder: newUpdateSignPos };
             }
             return obj;
           });
+
           setSignerPos(newUpdateSigner);
         } else {
           const getXYdata = getPageNumer[0].pos;
@@ -650,12 +607,14 @@ function PlaceHolderSign() {
             }
             return obj;
           });
+
           const newUpdateSigner = signerPos.map((obj, ind) => {
             if (obj.signerObjId === signerId) {
               return { ...obj, placeHolder: newUpdateSignPos };
             }
             return obj;
           });
+
           setSignerPos(newUpdateSigner);
         }
       }
@@ -667,11 +626,9 @@ function PlaceHolderSign() {
     setSignBtnPosition([]);
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
   }
-
+ 
   //function for capture position on hover signature button
   const handleDivClick = (e) => {
-    // if (signBtnPosition.length == 0) {
-
     const divRect = e.currentTarget.getBoundingClientRect();
     const mouseX = e.clientX - divRect.left;
     const mouseY = e.clientY - divRect.top;
@@ -721,17 +678,13 @@ function PlaceHolderSign() {
       month: "long",
       year: "numeric"
     });
-
     let sender = signersdata.ExtUserPtr.Email;
-    //  let sender ="raktima.c@qik.ai"
-    const signerMail = signersdata.Signers;
+   const signerMail = signersdata.Signers;
 
     for (let i = 0; i < signerMail.length; i++) {
       try {
         const imgPng =
           "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
-        // "https://qikinnovation.ams3.digitaloceanspaces.com/mailLogo_2023-08-18T12%3A51%3A31.573Z.png";
-
         let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3/`;
         const headers = {
           "Content-Type": "application/json",
@@ -800,14 +753,12 @@ function PlaceHolderSign() {
             }
           )
           .then((result) => {
-            //   const res = result.data;
             setIsSend(true);
             setIsMailSend(true);
             const loadObj = {
               isLoad: false
             };
             setIsLoading(loadObj);
-            // console.log("save res", res);
           })
           .catch((err) => {
             console.log("axois err ", err);
@@ -888,6 +839,12 @@ function PlaceHolderSign() {
       .catch((err) => {
         console.log("axois err ", err);
       });
+  };
+  const handleRecipientSign = () => {
+    const hostUrl = getHostUrl();
+    navigate(
+      `${hostUrl}recipientSignPdf/${documentId}/${currentEmail[0].objectId}`
+    );
   };
   return (
     <DndProvider backend={HTML5Backend}>
@@ -993,7 +950,6 @@ function PlaceHolderSign() {
                 style={{
                   background: themeColor()
                 }}
-                // className="bg-danger"
               >
                 <span style={{ color: "white" }}>Send Mail </span>
               </Modal.Header>
@@ -1023,21 +979,19 @@ function PlaceHolderSign() {
                       No
                     </button>
 
-                    <a
-                      style={{ color: "white" }}
-                      href={`https://qik-ai-org.github.io/Sign-MicroappV2/#/recipientSignPdf/${documentId}/${currentEmail[0].objectId}`}
+                    <button
+                      onClick={() => {
+                        handleRecipientSign();
+                      }}
+                      style={{
+                        background: themeColor(),
+                        color: "white"
+                      }}
+                      type="button"
+                      className="finishBtn"
                     >
-                      <button
-                        style={{
-                          background: themeColor(),
-                          color: "white"
-                        }}
-                        type="button"
-                        className="finishBtn"
-                      >
-                        Yes
-                      </button>
-                    </a>
+                      Yes
+                    </button>
                   </>
                 ) : (
                   <button
@@ -1160,8 +1114,6 @@ function PlaceHolderSign() {
                     dragRef={dragRef}
                     isDragStamp={isDragStamp}
                     isSignYourself={false}
-                    // xyPostion={xyPostion}
-                    //  isSigners={false}
                     addPositionOfSignature={addPositionOfSignature}
                   />
                 </div>
