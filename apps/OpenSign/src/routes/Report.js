@@ -27,6 +27,7 @@ const Report = () => {
       const { className, params, keys, orderBy } = json;
       Parse.serverURL = localStorage.getItem("BaseUrl12");
       Parse.initialize(localStorage.getItem("AppID12"));
+      const currentUser = Parse.User.current().id;
       const serverURL =
         localStorage.getItem("BaseUrl12") + "classes/" + className;
 
@@ -38,10 +39,37 @@ const Report = () => {
         "X-Parse-Session-Token": localStorage.getItem("accesstoken")
       };
       try {
-        const url = `${serverURL}?where=${strParams}&keys=${strKeys}&order=${orderBy}`;
+        const url = `${serverURL}?where=${strParams}&keys=${strKeys}&order=${orderBy}&include=AuditTrail.UserPtr`;
         const res = await axios.get(url, { headers: headers });
-        // console.log("res ", res.data?.results);
-        setList(res.data?.results);
+        if (id === "4Hhwbp482K") {
+          const listData = res.data?.results.filter(
+            (x) => x.Signers.length > 0
+          );
+          let arr = [];
+          for (const obj of listData) {
+            const isSigner = obj.Signers.some(
+              (item) => item.UserId.objectId === currentUser
+            );
+            if (isSigner) {
+              let isRecord;
+              if (obj?.AuditTrail && obj?.AuditTrail.length > 0) {
+                isRecord = obj?.AuditTrail.some(
+                  (item) =>
+                    item?.UserPtr?.UserId?.objectId === currentUser &&
+                    item.Activity === "Signed"
+                );
+              } else {
+                isRecord = false;
+              }
+              if (isRecord === false) {
+                arr.push(obj);
+              }
+            }
+          }
+          setList(arr);
+        } else {
+          setList(res.data?.results);
+        }
         setIsLoader(false);
       } catch (err) {
         console.log("err ", err);
