@@ -65,7 +65,9 @@ export default function RemoteAppContainer() {
     // console.log("value ", key + ":" + value);
 
     if (key === "remoteUrl") {
-      obj = { ...obj, [key]: atob(value) };
+      const url = window.location.origin + "/mfbuild/remoteEntry.js";
+      // console.log("atob(value) ", atob(value))
+      obj = { ...obj, [key]: url };
     } else {
       if (key === "moduleToLoad") {
         obj = { ...obj, [key]: "./" + value };
