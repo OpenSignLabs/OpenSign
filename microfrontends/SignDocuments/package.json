@@ -35,7 +35,7 @@
   },
   "scripts": {
     "start": "mf-cra start",
-    "build": "CI=false && mf-cra build && mv build ../../apps/OpenSign/public/mfbuild",
+    "build": "CI=false && mf-cra build && mv build/* ../../apps/OpenSign/public/mfbuild",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
