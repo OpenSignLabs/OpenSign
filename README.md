@@ -84,7 +84,7 @@ We welcome contributions from the open-source community. For more information on
 
 ### License
 
-OpenSign is licensed under the AGPL License. For more details, see the [LICENSE](LICENSE.md) file.
+OpenSign is licensed under the AGPL License. For more details, see the [LICENSE](LICENSE) file.
 
 ---
 
