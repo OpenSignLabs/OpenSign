@@ -12,8 +12,6 @@ import { useParams } from "react-router-dom";
 import SignPad from "./component/signPad";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import {
-  contactBook,
-  contractUsers,
   getBase64FromIMG,
   getBase64FromUrl
 } from "../utils/Utils";
@@ -65,6 +63,7 @@ function PdfRequestFiles() {
   });
   const [isSigned, setIsSigned] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
+  const [alreadySign, setAlreadySign] = useState(false);
 
   const rowLevel =
     localStorage.getItem("rowlevel") &&
@@ -89,6 +88,7 @@ function PdfRequestFiles() {
     const clientWidth = window.innerWidth;
     const value = docId ? 80 : 30;
     const pdfWidth = clientWidth - 160 - 200 - value;
+
     //160 is width of left side, 200 is width of right side component and 50 is space of middle compoent
     //pdf from left and right component
     setPdfNewWidth(pdfWidth);
@@ -99,27 +99,6 @@ function PdfRequestFiles() {
 
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async () => {
-    const contractUsersRes = await contractUsers(jsonSender.objectId);
-
-    if (contractUsersRes && contractUsersRes[0]) {
-      const objId = contractUsersRes[0].objectId;
-
-      setSignerObjectId(objId);
-    } else if (contractUsersRes === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
-      setIsLoading(loadObj);
-    } else if (contractUsersRes.length === 0) {
-      const contractContactBook = await contactBook(jsonSender.objectId);
-      if (contractContactBook && contractContactBook[0]) {
-        const objId = contractUsersRes[0].objectId;
-
-        setSignerObjectId(objId);
-      }
-    }
-
     await axios
       .get(
         `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
@@ -136,13 +115,24 @@ function PdfRequestFiles() {
       .then((Listdata) => {
         const json = Listdata.data;
         const res = json.results;
-        // console.log("res", res);
+
         if (res[0] && res.length > 0) {
           const isCompleted = res[0].IsCompleted && res[0].IsCompleted;
           const expireDate = res[0].ExpiryDate.iso;
           const declined = res[0].IsDeclined && res[0].IsDeclined;
           const expireUpdateDate = new Date(expireDate).getTime();
           const currDate = new Date().getTime();
+          const getSigners = res[0].Signers;
+          const getCurrentSigner =
+            getSigners &&
+            getSigners.filter(
+              (data) => data.UserId.objectId === jsonSender.objectId
+            );
+
+          const currUserId = getCurrentSigner[0]
+            ? getCurrentSigner[0].objectId
+            : "";
+          setSignerObjectId(currUserId);
           if (res[0].SignedUrl) {
             setPdfUrl(res[0].SignedUrl);
           } else {
@@ -154,6 +144,7 @@ function PdfRequestFiles() {
               isCertificate: true,
               isModal: true
             };
+            setAlreadySign(true);
             setIsCompleted(data);
           } else if (declined) {
             const currentDecline = {
@@ -173,17 +164,34 @@ function PdfRequestFiles() {
                 (data) => data.Activity === "Signed"
               );
 
+            const checkAlreadySign =
+              json.results[0].AuditTrail &&
+              json.results[0].AuditTrail.length > 0 &&
+              json.results[0].AuditTrail.filter(
+                (data) =>
+                  data.UserPtr.objectId === currUserId &&
+                  data.Activity === "Signed"
+              );
+            if (
+              checkAlreadySign &&
+              checkAlreadySign[0] &&
+              checkAlreadySign.length > 0
+            ) {
+              setAlreadySign(true);
+            }
+
             let signers = [];
             let unSignedSigner = [];
 
             //check document is signed or not
             if (checkDocIdExist && checkDocIdExist.length > 0) {
+              setAlreadySign(true);
               setIsDocId(true);
               const signerRes = res[0].Signers;
               //comparison auditTrail user details with signers user details
               for (let i = 0; i < signerRes.length; i++) {
                 const signerId = signerRes[i].objectId;
-                // console.log("getSigner", getSigner);
+               
                 let isSigned = false;
                 for (let j = 0; j < checkDocIdExist.length; j++) {
                   const signedExist =
@@ -192,7 +200,6 @@ function PdfRequestFiles() {
                   // if match then add signed data in signer array and break loop
 
                   if (signerId === signedExist) {
-                    // console.log("signedExist", signedExist);
                     signers.push({ ...signerRes[i], ...signerRes[i] });
                     isSigned = true;
                     break;
@@ -202,8 +209,6 @@ function PdfRequestFiles() {
                 if (!isSigned) {
                   unSignedSigner.push({ ...signerRes[i], ...signerRes[i] });
                 }
-
-                // console.log("check Signers status",signers,unSignedSigner)
               }
               setSignedSigners(signers);
               setUnSignedSigners(unSignedSigner);
@@ -211,7 +216,6 @@ function PdfRequestFiles() {
               setSignerPos(res[0].Placeholders);
             } else {
               let unsigned = [];
-              // console.log("else condition");
               for (let i = 0; i < res.length; i++) {
                 unsigned.push(res[i].Signers);
               }
@@ -226,7 +230,6 @@ function PdfRequestFiles() {
             alert("No data found!");
           }
         } else {
-          // alert("No data found!");
           setNoData(true);
           const loadObj = {
             isLoad: false
@@ -279,7 +282,6 @@ function PdfRequestFiles() {
       });
   };
 
-  //  console.log("signer", signerPos, unsignedSigners, isCompleted);
   //function for embed signature or image url in pdf
   async function embedImages() {
     const checkUser = signerPos.filter(
@@ -320,7 +322,6 @@ function PdfRequestFiles() {
 
         //checking if signature is only one then send image url in jpeg formate to server
         if (pngUrl.length === 1 && pngUrl[0].pos.length === 1) {
-          // console.log("else condition");
           if (isDocId) {
             pdfBase64 = await getBase64FromUrl(url);
           } else {
@@ -330,7 +331,7 @@ function PdfRequestFiles() {
               const fontSize = 10;
               const textContent =
                 documentId && `OpenSign™ DocumentId: ${documentId}`;
-              // console.log("textcontent", documentId);
+
               const pages = pdfDoc.getPages();
               const page = pages[i];
 
@@ -472,10 +473,54 @@ function PdfRequestFiles() {
               const imgWidth = imgUrlList[id].Width
                 ? imgUrlList[id].Width
                 : 150;
-
+              const isMobile = window.innerWidth < 767;
+              const newWidth = window.innerWidth;
+              const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+              const xPos = (pos) => {
+                //checking both condition mobile and desktop view
+                if (isMobile) {
+                  //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+                  if (pos.isMobile) {
+                    const x = pos.xPosition * (pos.scale / scale);
+                    return x * scale + 50;
+                  } else {
+                    const x = pos.xPosition / scale;
+                    return x * scale;
+                  }
+                } else {
+                  //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+                  if (pos.isMobile) {
+                    const x = pos.xPosition * pos.scale + 50;
+                    return x;
+                  } else {
+                    return pos.xPosition;
+                  }
+                }
+              };
+              const yPos = (pos) => {
+                //checking both condition mobile and desktop view
+                const y = pos.yPosition / scale;
+                if (isMobile) {
+                  //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+                  if (pos.isMobile) {
+                    const y = pos.yPosition * (pos.scale / scale);
+                    return page.getHeight() - y * scale - imgHeight;
+                  } else {
+                    return page.getHeight() - y * scale - imgHeight;
+                  }
+                } else {
+                  //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+                  if (pos.isMobile) {
+                    const y = pos.yPosition * pos.scale;
+                    return page.getHeight() - y - imgHeight;
+                  } else {
+                    return page.getHeight() - pos.yPosition - imgHeight;
+                  }
+                }
+              };
               page.drawImage(img, {
-                x: imgUrlList[id].xPosition,
-                y: page.getHeight() - imgUrlList[id].yPosition - imgHeight,
+                x: xPos(imgUrlList[id]),
+                y: yPos(imgUrlList[id]),
                 width: imgWidth,
                 height: imgHeight
               });
@@ -506,24 +551,91 @@ function PdfRequestFiles() {
     signerData
   ) => {
     let signgleSign;
-
+    const isMobile = window.innerWidth < 767;
+    const newWidth = window.innerWidth;
+    const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     if (
       signerData &&
       signerData.length === 1 &&
       signerData[0].pos.length === 1
     ) {
       const height = xyPosData.Height ? xyPosData.Height : 60;
-      const bottomY = xyPosData.isDrag
-        ? xyPosData.yBottom - height
-        : xyPosData.yBottom - height + xyPosData.firstYPos;
+
+      const xPos = (pos) => {
+        //checking both condition mobile and desktop view
+        if (isMobile) {
+          //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+          if (pos.isMobile) {
+            const x = pos.xPosition * (pos.scale / scale);
+            return x * scale + 50;
+          } else {
+            const x = pos.xPosition / scale;
+            return x * scale;
+          }
+        } else {
+          //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+          if (pos.isMobile) {
+            const x = pos.xPosition * pos.scale + 50;
+            return x;
+          } else {
+            return pos.xPosition;
+          }
+        }
+      };
+
+      const yBottom = (pos) => {
+        let yPosition;
+        //checking both condition mobile and desktop view
+
+        if (isMobile) {
+          //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+          if (pos.isMobile) {
+            const y = pos.yPosition * (pos.scale / scale);
+            yPosition = pos.isDrag
+              ? y * scale - height
+              : pos.firstYPos
+              ? y * scale - height + pos.firstYPos
+              : y * scale - height;
+            return yPosition;
+          } else {
+            const y = pos.yBottom / scale;
+
+            yPosition = pos.isDrag
+              ? y * scale - height
+              : pos.firstYPos
+              ? y * scale - height + pos.firstYPos
+              : y * scale - height;
+            return yPosition;
+          }
+        } else {
+          //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+          if (pos.isMobile) {
+            const y = pos.yBottom * pos.scale;
+
+            yPosition = pos.isDrag
+              ? y - height
+              : pos.firstYPos
+              ? y - height + pos.firstYPos
+              : y - height;
+            return yPosition;
+          } else {
+            yPosition = pos.isDrag
+              ? pos.yBottom - height
+              : pos.firstYPos
+              ? pos.yBottom - height + pos.firstYPos
+              : pos.yBottom - height;
+            return yPosition;
+          }
+        }
+      };
+      const bottomY = yBottom(xyPosData);
       signgleSign = {
         pdfFile: pdfBase64Url,
         docId: documentId,
+        userId: signerObjectId,
         sign: {
           Base64: base64Url,
-          Left: xyPosData.resizeXPos
-            ? xyPosData.resizeXPos
-            : xyPosData.xPosition,
+          Left: xPos(xyPosData),
           Bottom: bottomY,
           Width: xyPosData.Width ? xyPosData.Width : 150,
           Height: height,
@@ -537,7 +649,8 @@ function PdfRequestFiles() {
     ) {
       signgleSign = {
         pdfFile: base64Url,
-        docId: documentId
+        docId: documentId,
+        userId: signerObjectId
       };
     }
 
@@ -565,7 +678,6 @@ function PdfRequestFiles() {
         }
       })
       .catch((err) => {
-        // this.setState({ loading: false });
         console.log("axois err ", err);
         alert("something went wrong");
       });
@@ -595,17 +707,12 @@ function PdfRequestFiles() {
   //function for image upload or update
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      // setIsSignPad(false);
-
       const imageType = event.target.files[0].type;
-
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
-
       reader.onloadend = function (e) {
         let width, height;
         const image = new Image();
-
         image.src = e.target.result;
         image.onload = function () {
           width = image.width;
@@ -783,8 +890,6 @@ function PdfRequestFiles() {
         return obj;
       });
 
-      // currentSigner[0].placeHolder.splice(i, 1, newUpdateUrl[0]);
-      // console.log("currentSigner sign", currentSigner);
       const newUpdatePos = currentSigner.map((obj, ind) => {
         if (obj.signerObjId === signerObjectId) {
           return { ...obj, placeHolder: newUpdateUrl };
@@ -842,8 +947,6 @@ function PdfRequestFiles() {
       });
   };
 
-  // console.log("unsigned", unsignedSigners, signerObjectId,isExpired);
-
   return (
     <DndProvider backend={HTML5Backend}>
       {isLoading.isLoad ? (
@@ -859,7 +962,7 @@ function PdfRequestFiles() {
               style={{
                 position: "absolute",
                 height: "100vh",
-                width: window.innerWidth,
+                width: "100%",
                 display: "flex",
                 justifyContent: "center",
                 flexDirection: "column",
@@ -1015,6 +1118,8 @@ function PdfRequestFiles() {
                 setIsDecline={setIsDecline}
                 decline={true}
                 currentSigner={currentSigner}
+                pdfUrl={pdfUrl}
+                alreadySign={alreadySign}
               />
 
               <RenderPdf
@@ -1045,7 +1150,6 @@ function PdfRequestFiles() {
                     <div
                       style={{
                         background: themeColor()
-                        //  color:"white"
                       }}
                       className="signedStyle"
                     >
