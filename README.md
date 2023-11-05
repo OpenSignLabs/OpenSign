@@ -2,7 +2,7 @@
                     
 <div align="center">
 
-The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign | Smartwaiver | SignRequest | HelloSign | Zoho sign.
+The free and open source alternative to DocuSign
 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/opensignlabs/opensign.svg)](http://isitmaintained.com/project/opensignlabs/opensign "Average time to resolve an issue")
 [![All Contributors](https://img.shields.io/github/all-contributors/opensignlabs/opensign?color=ee8449&style=flat-square)](#contributors)
@@ -23,7 +23,7 @@ The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign |
   <a href="https://www.linkedin.com/company/opensign%E2%84%A2/about/">LinkedIn</a>
 
 
-## An Open-Source Alternative to DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, and HelloSign
+## An open-source document e-signing solution
 
 ---
 </div>
