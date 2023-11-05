@@ -33,23 +33,23 @@ function Certificate({ pdfData }) {
     page: {
       borderRadius: "5px",
       padding: "10px",
-      backgroundColor: "white",
+      backgroundColor: "white"
     },
     section1: {
       border: "1px solid rgb(177, 174, 174)",
-      padding: "20px",
+      padding: "20px"
     },
     textStyle: {
       fontWeight: "bold",
       fontSize: "11px",
-      marginBottom: "10px",
+      marginBottom: "10px"
     },
     textStyle2: {
       fontWeight: "600",
       fontSize: "11px",
       marginBottom: "10px",
-      color: "gray",
-    },
+      color: "gray"
+    }
   });
 
   const generatedDate = () => {
@@ -57,7 +57,7 @@ function Certificate({ pdfData }) {
     const localExpireDate = newDate.toLocaleDateString("en-US", {
       day: "numeric",
       month: "long",
-      year: "numeric",
+      year: "numeric"
     });
 
     var currentOffset = newDate.getTimezoneOffset();
@@ -79,7 +79,7 @@ function Certificate({ pdfData }) {
           textAlign: "right",
           color: "gray",
           fontSize: "10px",
-          marginBottom: "30px",
+          marginBottom: "30px"
         }}
       >
         Generated On {localExpireDate} {hoursIST}:{minutesIST} IST
@@ -92,7 +92,7 @@ function Certificate({ pdfData }) {
     const localExpireDate = newDate.toLocaleDateString("en-US", {
       day: "numeric",
       month: "long",
-      year: "numeric",
+      year: "numeric"
     });
 
     var currentOffset = newDate.getTimezoneOffset();
@@ -136,7 +136,7 @@ function Certificate({ pdfData }) {
       )
     );
   };
- 
+
   return (
     isLoad && (
       <Document>
@@ -151,7 +151,7 @@ function Certificate({ pdfData }) {
                   fontSize: "20px",
                   fontWeight: "bold",
                   color: "#31bceb",
-                  marginBottom: "10px",
+                  marginBottom: "10px"
                 }}
               >
                 {" "}
@@ -165,7 +165,7 @@ function Certificate({ pdfData }) {
                       fontSize: "16px",
                       fontWeight: "bold",
                       color: "#31bceb",
-                      margin: "10px 0px 10px 0px",
+                      margin: "10px 0px 10px 0px"
                     }}
                   >
                     Summary
@@ -203,36 +203,40 @@ function Certificate({ pdfData }) {
                         fontSize: "16px",
                         fontWeight: "bold",
                         color: "#31bceb",
-                        margin: "10px 0px 10px 0px",
+                        margin: "10px 0px 10px 0px"
                       }}
                     >
                       Recipients
                     </Text>
 
                     <View>
-                      {multiSigner && multiSigner.map((data, ind) => {
-                        return (
-                          <View
-                            key={ind}
-                            style={{ display: "flex", flexDirection: "column" }}
-                          >
+                      {multiSigner &&
+                        multiSigner.map((data, ind) => {
+                          return (
                             <View
+                              key={ind}
                               style={{
-                                border: "0.4px solid #bdbbbb",
-                                marginBottom: "10px",
+                                display: "flex",
+                                flexDirection: "column"
                               }}
-                            ></View>
-                            {signerName(data)}
+                            >
+                              <View
+                                style={{
+                                  border: "0.4px solid #bdbbbb",
+                                  marginBottom: "10px"
+                                }}
+                              ></View>
+                              {signerName(data)}
 
-                            <Text style={styles.textStyle}>
-                              Accessed from : &nbsp;
-                              <Text style={styles.textStyle2}>
-                                {data.ipAddress}
+                              <Text style={styles.textStyle}>
+                                Accessed from : &nbsp;
+                                <Text style={styles.textStyle2}>
+                                  {data.ipAddress}
+                                </Text>
                               </Text>
-                            </Text>
-                          </View>
-                        );
-                      })}
+                            </View>
+                          );
+                        })}
                     </View>
                   </View>
                 ) : (
@@ -242,7 +246,7 @@ function Certificate({ pdfData }) {
                         fontSize: "16px",
                         fontWeight: "bold",
                         color: "#31bceb",
-                        margin: "10px 0px 10px 0px",
+                        margin: "10px 0px 10px 0px"
                       }}
                     >
                       Recipients
@@ -259,7 +263,8 @@ function Certificate({ pdfData }) {
                     <Text style={styles.textStyle}>
                       Accessed from : &nbsp;
                       <Text style={styles.textStyle2}>
-                        {pdfData[0].AuditTrail && pdfData[0].AuditTrail[0].ipAddress}
+                        {pdfData[0].AuditTrail &&
+                          pdfData[0].AuditTrail[0].ipAddress}
                       </Text>
                     </Text>
 
