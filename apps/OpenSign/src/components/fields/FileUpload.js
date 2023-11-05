@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SaveFileSize } from "../../constant/saveFileSize";
-// import Parse from "parse";
-// import sanitizeFileName from "../../primitives/sanitizeFileName";
-import axios from "axios";
+import Parse from "parse";
+import sanitizeFileName from "../../primitives/sanitizeFileName";
 
 const FileUpload = (props) => {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -69,53 +68,44 @@ const FileUpload = (props) => {
   };
 
   const handleFileUpload = async (file) => {
+    Parse.serverURL = parseBaseUrl;
+    Parse.initialize(parseAppId);
     setfileload(true);
-    const file_url = parseBaseUrl.slice(0, -4);
-    const url = `${file_url}file_upload`;
-    const formData = new FormData();
-    formData.append("file", file);
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data",
-        "X-Parse-Application-Id": parseAppId
-      },
-      onUploadProgress: function (progressEvent) {
-        var percentCompleted = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total
-        );
-        setpercentage(percentCompleted);
-      }
-    };
+    const size = file.size;
+    const fileName = file.name;
+    const name = sanitizeFileName(fileName);
+    const pdfFile = file;
+    const parseFile = new Parse.File(name, pdfFile);
 
     try {
-      await axios
-        .post(url, formData, config)
-        .then((res) => {
-          if (res.data.status === "Error") {
-            alert(res.data.message);
+      const response = await parseFile.save({
+        progress: (progressValue, loaded, total, { type }) => {
+          if (type === "upload" && progressValue !== null) {
+            const percentCompleted = Math.round((loaded * 100) / total);
+            console.log("percentCompleted ", percentCompleted);
+            setpercentage(percentCompleted);
           }
-          setFileUpload(res.data.imageUrl);
-          props.onChange(res.data.imageUrl);
-          setfileload(false);
-          setpercentage(0);
+        }
+      });
 
-          if (res.data.imageUrl) {
-            SaveFileSize(file.size, res.data.imageUrl);
-            return res.data.imageUrl;
-          }
-        })
-        .catch((err) => {
-          alert(`${err.message}`);
-          setfileload(false);
-          setpercentage(0);
-        });
+      setFileUpload(response.url());
+      props.onChange(response.url());
+      setfileload(false);
+      // The response object will contain information about the uploaded file
+      // console.log("File uploaded:", response);
+
+      // You can access the URL of the uploaded file using response.url()
+      // console.log("File URL:", response.url());
+      if (response.url()) {
+        SaveFileSize(size, response.url());
+        return response.url();
+      }
     } catch (error) {
-      alert(error.message);
       setfileload(false);
       setpercentage(0);
+      console.error("Error uploading file:", error);
     }
   };
-
   let fileView =
     props.formData &&
     props.schema.uploadtype === "s3viajw" ? null : props.formData &&
@@ -124,7 +114,7 @@ const FileUpload = (props) => {
         <a
           href={props.formData}
           title={props.formData}
-          style={{ paddingBottom: "10px", color: "blue"}}
+          style={{ paddingBottom: "10px", color: "blue" }}
         >
           Download
         </a>
