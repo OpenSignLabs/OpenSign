@@ -2,6 +2,7 @@
   "name": "signmicroapp",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./mfbuild",
   "dependencies": {
     "@radix-ui/themes": "^1.1.2",
     "@react-pdf/renderer": "^3.1.9",
@@ -35,7 +36,7 @@
   },
   "scripts": {
     "start": "mf-cra start",
-    "build": "CI=false && BUILD_PATH='./mfbuild' mf-cra build && mv mfbuild ../../apps/OpenSign/public",
+    "build": "CI=false && PUBLIC_URL=./mfbuild BUILD_PATH='./mfbuild' mf-cra build && mv mfbuild ../../apps/OpenSign/public",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
