@@ -2,7 +2,7 @@
                     
 <div align="center">
 
-The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign | Smartwaiver | SignRequest | HelloSign | Zoho sign.
+The free and open source alternative to DocuSign
 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/opensignlabs/opensign.svg)](http://isitmaintained.com/project/opensignlabs/opensign "Average time to resolve an issue")
 [![All Contributors](https://img.shields.io/github/all-contributors/opensignlabs/opensign?color=ee8449&style=flat-square)](#contributors)
@@ -23,7 +23,7 @@ The free open source alternative to DocuSign | PandaDoc | SignNow | Adobe Sign |
   <a href="https://www.linkedin.com/company/opensign%E2%84%A2/about/">LinkedIn</a>
 
 
-## An Open-Source Alternative to DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, and HelloSign
+## An open-source document e-signing solution
 
 ---
 </div>
@@ -124,6 +124,7 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/andrew-opensignlabs"><img src="https://avatars.githubusercontent.com/u/148278535?v=4?s=100" width="100px;" alt="Andrew"/><br /><sub><b>Andrew</b></sub></a><br /><a href="#code-andrew-opensignlabs" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rishabjasrotia"><img src="https://avatars.githubusercontent.com/u/33950743?v=4?s=100" width="100px;" alt="Rishab"/><br /><sub><b>Rishab</b></sub></a><br /><a href="#code-rishabjasrotia" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://session.it"><img src="https://avatars.githubusercontent.com/u/327285?v=4?s=100" width="100px;" alt="Maurizio Pillitu"/><br /><sub><b>Maurizio Pillitu</b></sub></a><br /><a href="#bug-maoo" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://luisparra.dev"><img src="https://avatars.githubusercontent.com/u/16653744?v=4?s=100" width="100px;" alt="Luis Parra"/><br /><sub><b>Luis Parra</b></sub></a><br /><a href="#a11y-lsprr" title="Accessibility">️️️️♿️</a></td>
     </tr>
   </tbody>
 </table>
