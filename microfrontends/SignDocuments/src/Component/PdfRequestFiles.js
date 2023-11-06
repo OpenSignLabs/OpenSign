@@ -11,15 +11,13 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useParams } from "react-router-dom";
 import SignPad from "./component/signPad";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
-import {
-  getBase64FromIMG,
-  getBase64FromUrl
-} from "../utils/Utils";
+import { getBase64FromIMG, getBase64FromUrl } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
 import Nodata from "./component/Nodata";
 import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
+import CustomModal from "./component/CustomModal";
 
 function PdfRequestFiles() {
   const { docId } = useParams();
@@ -191,7 +189,7 @@ function PdfRequestFiles() {
               //comparison auditTrail user details with signers user details
               for (let i = 0; i < signerRes.length; i++) {
                 const signerId = signerRes[i].objectId;
-               
+
                 let isSigned = false;
                 for (let j = 0; j < checkDocIdExist.length; j++) {
                   const signedExist =
@@ -912,6 +910,7 @@ function PdfRequestFiles() {
 
   //function for set decline true on press decline button
   const declineDoc = async () => {
+    setIsDecline({ isDeclined: false });
     const data = {
       IsDeclined: true
     };
@@ -984,6 +983,36 @@ function PdfRequestFiles() {
           )}
 
           <div className="signatureContainer">
+            {/* this modal is used to show decline alert */}
+            <CustomModal
+              show={isDecline.isDeclined}
+              headMsg="Document Declined Alert!"
+              bodyMssg={
+                isDecline.currnt === "Sure" ? (
+                  <p className="pTagBody">
+                    Are you sure want to decline this document ?
+                  </p>
+                ) : isDecline.currnt === "YouDeclined" ? (
+                  <p className="pTagBody">You have declined this document!</p>
+                ) : (
+                  isDecline.currnt === "another" && (
+                    <p className="pTagBody">
+                      You cannot sign this document as it has been declined by
+                      one or more person(s).
+                    </p>
+                  )
+                )
+              }
+              footerMessage={isDecline.currnt === "Sure"}
+              declineDoc={declineDoc}
+              setIsDecline={setIsDecline}
+            />
+            {/* this modal is used for show expired alert */}
+            <CustomModal
+              show={isExpired}
+              headMsg="Document Expired!"
+              bodyMssg="This Document is no longer available."
+            />
             {/* this component used to render all pdf pages in left side */}
             <RenderAllPdfPage
               signPdfUrl={pdfDetails[0].URL}
@@ -999,66 +1028,6 @@ function PdfRequestFiles() {
                 marginRight: pdfOriginalWidth > 500 && "20px"
               }}
             >
-              <Modal show={isExpired}>
-                <ModalHeader className="bg-danger">
-                  <span className="spanTagHead">Document Expired!</span>
-                </ModalHeader>
-
-                <Modal.Body>
-                  <p className="pTagBody">
-                    This Document is no longer available.
-                  </p>
-                </Modal.Body>
-              </Modal>
-              {/* this modal is used for show decline alert */}
-              <Modal show={isDecline.isDeclined}>
-                <ModalHeader className="bg-danger">
-                  <span className="spanTagHead">Document Declined Alert!</span>
-                </ModalHeader>
-
-                <Modal.Body>
-                  {isDecline.currnt === "Sure" ? (
-                    <p className="pTagBody">
-                      Are you sure want to decline this document ?
-                    </p>
-                  ) : isDecline.currnt === "YouDeclined" ? (
-                    <p className="pTagBody">You have declined this document!</p>
-                  ) : (
-                    isDecline.currnt === "another" && (
-                      <p className="pTagBody">
-                        You cannot sign this document as it has been declined by
-                        one or more person(s).
-                      </p>
-                    )
-                  )}
-                </Modal.Body>
-                <Modal.Footer>
-                  {isDecline.currnt === "Sure" && (
-                    <>
-                      <button
-                        style={{
-                          color: "black"
-                        }}
-                        type="button"
-                        className="finishBtn"
-                        onClick={() => setIsDecline({ isDeclined: false })}
-                      >
-                        Close
-                      </button>
-                      <button
-                        style={{
-                          background: "#de4337"
-                        }}
-                        type="button"
-                        className="finishBtn"
-                        onClick={() => declineDoc()}
-                      >
-                        Yes
-                      </button>
-                    </>
-                  )}
-                </Modal.Footer>
-              </Modal>
               {/* this modal is used show this document is already sign */}
 
               <Modal show={isCompleted.isModal}>

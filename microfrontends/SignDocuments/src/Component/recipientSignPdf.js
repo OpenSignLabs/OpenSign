@@ -23,8 +23,8 @@ import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
 import Nodata from "./component/Nodata";
 import Header from "./component/header";
-import ModalComponent from "./component/modalComponent";
 import RenderPdf from "./component/renderPdf";
+import CustomModal from "./component/CustomModal";
 function EmbedPdfImage() {
   const { id, contactBookId } = useParams();
   const [isSignPad, setIsSignPad] = useState(false);
@@ -953,6 +953,34 @@ function EmbedPdfImage() {
         <Nodata />
       ) : (
         <div className="signatureContainer">
+          {/* this modal is used to show decline alert */}
+          <CustomModal
+            show={isDecline.isDeclined}
+            headMsg="Document Declined Alert!"
+            bodyMssg={
+              isDecline.currnt === "Sure" ? (
+                <p>Are you sure want to decline this document ?</p>
+              ) : isDecline.currnt === "YouDeclined" ? (
+                <p>You have declined this document!</p>
+              ) : (
+                isDecline.currnt === "another" && (
+                  <p>
+                    You cannot sign this document as it has been declined by one
+                    or more person(s).
+                  </p>
+                )
+              )
+            }
+            footerMessage={isDecline.currnt === "Sure"}
+            declineDoc={declineDoc}
+            setIsDecline={setIsDecline}
+          />
+          {/* this modal is used for show expired alert */}
+          <CustomModal
+            show={isExpired}
+            headMsg="Document Expired!"
+            bodyMssg="This Document is no longer available."
+          />
           {/* this component used for UI interaction and show their functionality */}
           {pdfLoadFail.status &&
             !isExpired &&
@@ -975,57 +1003,6 @@ function EmbedPdfImage() {
               marginRight: pdfOriginalWidth > 500 && "20px"
             }}
           >
-            {/* this modal is used for show decline alert */}
-            <Modal show={isDecline.isDeclined}>
-              <ModalHeader className="bg-danger" style={{ color: "white" }}>
-                Document Declined Alert!
-              </ModalHeader>
-
-              <Modal.Body>
-                {isDecline.currnt === "Sure" ? (
-                  <p>Are you sure want to decline this document ?</p>
-                ) : isDecline.currnt === "YouDeclined" ? (
-                  <p>You have declined this document!</p>
-                ) : (
-                  isDecline.currnt === "another" && (
-                    <p>
-                      You cannot sign this document as it has been declined by
-                      one or more person(s).
-                    </p>
-                  )
-                )}
-              </Modal.Body>
-              <Modal.Footer>
-                {isDecline.currnt === "Sure" && (
-                  <>
-                    <button
-                      style={{
-                        color: "black"
-                      }}
-                      type="button"
-                      className="finishBtn"
-                      onClick={() => setIsDecline({ isDeclined: false })}
-                    >
-                      Close
-                    </button>
-                    <button
-                      style={{
-                        background: "#de4337"
-                      }}
-                      type="button"
-                      className="finishBtn"
-                      onClick={() => declineDoc()}
-                    >
-                      Yes
-                    </button>
-                  </>
-                )}
-              </Modal.Footer>
-            </Modal>
-
-            {/* this modal component is used for show expired document */}
-            <ModalComponent isShow={isExpired} type={"expire"} />
-
             {/* this modal is used show this document is already sign */}
             <Modal show={isAlreadySign.status}>
               <ModalHeader style={{ background: themeColor() }}>

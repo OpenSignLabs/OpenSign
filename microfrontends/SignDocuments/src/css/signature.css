@@ -341,6 +341,7 @@
     flex-direction: row;
     justify-content: space-between;
     background-color: #ebebeb;
+    position:"relative"
     /* max-height: 800px; */
     /* overflow: auto; */
   }
