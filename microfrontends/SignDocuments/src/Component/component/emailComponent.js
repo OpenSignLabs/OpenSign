@@ -109,6 +109,7 @@ function EmailComponent({
   const handleToPrint = async (event) => {
     event.preventDefault();
 
+    const pdf = await getBase64FromUrl(pdfUrl);
     const isAndroidDevice = navigator.userAgent.match(/Android/i);
     const isAppleDevice = (/iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) && !window.MSStream
     if (isAndroidDevice || isAppleDevice) {
