@@ -82,7 +82,7 @@ const FileUpload = (props) => {
         progress: (progressValue, loaded, total, { type }) => {
           if (type === "upload" && progressValue !== null) {
             const percentCompleted = Math.round((loaded * 100) / total);
-            console.log("percentCompleted ", percentCompleted);
+            // console.log("percentCompleted ", percentCompleted);
             setpercentage(percentCompleted);
           }
         }

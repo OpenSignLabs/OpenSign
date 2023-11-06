@@ -251,7 +251,7 @@ const Signup = (props) => {
                                 element.pageType
                               );
                               setState({ loading: false });
-                              navigate("/login");
+                              navigate("/");
                             } else {
                               extendedInfo.forEach((x) => {
                                 if (x.TenantId) {
