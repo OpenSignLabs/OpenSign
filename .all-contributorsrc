@@ -169,6 +169,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "lsprr",
+      "name": "Luis Parra",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16653744?v=4",
+      "profile": "https://luisparra.dev",
+      "contributions": [
+        "a11y"
+      ]
     }
   ]
 }
