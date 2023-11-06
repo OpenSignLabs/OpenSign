@@ -60,6 +60,17 @@ function Header({
     event.preventDefault();
 
     const pdf = await getBase64FromUrl(pdfUrl);
+    const isAndroidDevice = navigator.userAgent.match(/Android/i);
+    const isAppleDevice = (/iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) && !window.MSStream
+    if (isAndroidDevice || isAppleDevice) {
+      const byteArray = Uint8Array.from(atob(pdf).split('').map(char => char.charCodeAt(0)));
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    } else {
+      printModule({ printable: pdf, type: "pdf", base64: true });
+    }
+
 
     printModule({ printable: pdf, type: "pdf", base64: true });
   };
