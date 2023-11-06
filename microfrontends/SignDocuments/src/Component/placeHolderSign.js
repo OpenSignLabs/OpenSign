@@ -166,7 +166,7 @@ function PlaceHolderSign() {
       getDocumentDetails();
     }
   }, []);
- 
+
   //function for get document details
   const getDocumentDetails = async () => {
     await axios
@@ -275,7 +275,7 @@ function PlaceHolderSign() {
       getSignerPos(item, monitor);
     }
   };
- 
+
   const getSignerPos = (item, monitor) => {
     const key = Math.floor(1000 + Math.random() * 9000);
     let filterSignerPos = signerPos.filter(
@@ -396,7 +396,7 @@ function PlaceHolderSign() {
         blockColor: color[isSelectListId],
         placeHolder: xyPosArr
       };
-     
+
       setSignerPos((prev) => [...prev, placeHolderPos]);
     }
   };
@@ -626,7 +626,7 @@ function PlaceHolderSign() {
     setSignBtnPosition([]);
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
   }
- 
+
   //function for capture position on hover signature button
   const handleDivClick = (e) => {
     const divRect = e.currentTarget.getBoundingClientRect();
@@ -679,7 +679,7 @@ function PlaceHolderSign() {
       year: "numeric"
     });
     let sender = signersdata.ExtUserPtr.Email;
-   const signerMail = signersdata.Signers;
+    const signerMail = signersdata.Signers;
 
     for (let i = 0; i < signerMail.length; i++) {
       try {
@@ -698,7 +698,8 @@ function PlaceHolderSign() {
           "parseAppId"
         )}&${localStorage.getItem("_appName")}`;
 
-        let signPdf = `https://qik-ai-org.github.io/Sign-MicroappV2/#/login/${signersdata.objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
+        const hostUrl = window.location.origin + "/loadmf/signmicroapp";
+        let signPdf = `${hostUrl}/login/${signersdata.objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
 
         const themeBGcolor = themeColor();
         let params = {
