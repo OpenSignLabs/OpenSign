@@ -70,9 +70,6 @@ function Header({
     } else {
       printModule({ printable: pdf, type: "pdf", base64: true });
     }
-
-
-    printModule({ printable: pdf, type: "pdf", base64: true });
   };
 
   //handle download signed pdf
