@@ -8,11 +8,19 @@ function CustomModal({
   bodyMssg,
   footerMessage,
   declineDoc,
-  setIsDecline
+  setIsDecline,
+  containerWH
 }) {
+  const isMobile = window.innerWidth < 767;
   return (
     show && (
-      <div className="parentDiv">
+      <div
+        className="parentDiv"
+        style={{
+          width: containerWH && containerWH.width,
+          height: isMobile ? "100%" : containerWH && containerWH.height
+        }}
+      >
         <div className="childDiv">
           <div className="modalHeadDiv bg-danger">{headMsg && headMsg}</div>
           <div className="modalBodyDIv">

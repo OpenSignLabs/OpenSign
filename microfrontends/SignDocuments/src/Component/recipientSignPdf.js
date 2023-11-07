@@ -67,12 +67,13 @@ function EmbedPdfImage() {
     status: false,
     type: "load"
   });
-
+  const [containerWH, setContainerWH] = useState({});
   const docId = id && id;
   const isMobile = window.innerWidth < 767;
   const index = xyPostion.findIndex((object) => {
     return object.pageNumber === pageNumber;
   });
+  const divRef = useRef(null);
 
   useEffect(() => {
     const clientWidth = window.innerWidth;
@@ -82,6 +83,14 @@ function EmbedPdfImage() {
     setPdfNewWidth(pdfWidth);
     getDocumentDetails();
   }, []);
+  useEffect(() => {
+    if (divRef.current) {
+      setContainerWH({
+        width: divRef.current.offsetWidth,
+        height: divRef.current.offsetHeight
+      });
+    }
+  }, [divRef.current]);
 
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async () => {
@@ -952,9 +961,10 @@ function EmbedPdfImage() {
       ) : noData ? (
         <Nodata />
       ) : (
-        <div className="signatureContainer">
+        <div className="signatureContainer" ref={divRef}>
           {/* this modal is used to show decline alert */}
           <CustomModal
+            containerWH={containerWH}
             show={isDecline.isDeclined}
             headMsg="Document Declined Alert!"
             bodyMssg={
@@ -977,6 +987,7 @@ function EmbedPdfImage() {
           />
           {/* this modal is used for show expired alert */}
           <CustomModal
+            containerWH={containerWH}
             show={isExpired}
             headMsg="Document Expired!"
             bodyMssg="This Document is no longer available."

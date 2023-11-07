@@ -62,7 +62,8 @@ function PdfRequestFiles() {
   const [isSigned, setIsSigned] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const [alreadySign, setAlreadySign] = useState(false);
-
+  const [containerWH, setContainerWH] = useState({});
+  const divRef = useRef(null);
   const rowLevel =
     localStorage.getItem("rowlevel") &&
     JSON.parse(localStorage.getItem("rowlevel"));
@@ -94,6 +95,14 @@ function PdfRequestFiles() {
       getDocumentDetails();
     }
   }, []);
+  useEffect(() => {
+    if (divRef.current) {
+      setContainerWH({
+        width: divRef.current.offsetWidth,
+        height: divRef.current.offsetHeight
+      });
+    }
+  }, [divRef.current]);
 
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async () => {
@@ -982,9 +991,10 @@ function PdfRequestFiles() {
             </div>
           )}
 
-          <div className="signatureContainer">
+          <div className="signatureContainer" ref={divRef}>
             {/* this modal is used to show decline alert */}
             <CustomModal
+              containerWH={containerWH}
               show={isDecline.isDeclined}
               headMsg="Document Declined Alert!"
               bodyMssg={
@@ -1009,6 +1019,7 @@ function PdfRequestFiles() {
             />
             {/* this modal is used for show expired alert */}
             <CustomModal
+              containerWH={containerWH}
               show={isExpired}
               headMsg="Document Expired!"
               bodyMssg="This Document is no longer available."
