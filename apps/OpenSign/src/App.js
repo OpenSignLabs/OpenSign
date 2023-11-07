@@ -14,6 +14,7 @@ import PageNotFound from "./routes/PageNotFound";
 import ForgetPassword from "./routes/ForgetPassword";
 import ChangePassword from "./routes/ChangePassword";
 import ReportMicroapp from "./components/ReportMicroapp";
+import LoadMf from "./routes/LoadMf";
 
 function App() {
   const [isloading, setIsLoading] = useState(true);
@@ -59,6 +60,7 @@ function App() {
           <Routes>
             <Route exact path="/" element={<Login />} />
             <Route exact path="/signup" element={<Signup />} />
+            <Route exact path="/loadmf/:remoteApp/*" element={<LoadMf />} />
             <Route exact path="/forgetpassword" element={<ForgetPassword />} />
             {process.env.REACT_APP_ENABLE_SUBSCRIPTION && (
               <>

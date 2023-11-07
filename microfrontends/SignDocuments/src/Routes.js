@@ -8,6 +8,7 @@ import Login from "./Component/login";
 import DraftDocument from "./Component/DraftDocument";
 import PdfRequestFiles from "./Component/PdfRequestFiles";
 import LegaDrive from "./Component/LegaDrive/LegaDrive";
+import PageNotFound from "./Component/PageNotFound";
 
 // `AppRoutes` is used to define route path of app and
 // it expose to host app, check moduleFederation.config.js for more
@@ -33,7 +34,10 @@ function AppRoutes() {
         {/*Add default signature of user route */}
         <Route path="/managesign" element={<ManageSign />} />
         {/* login page route */}
-        <Route path="/login/:id/:userMail/:contactBookId/:serverUrl" element={<Login />} />
+        <Route
+          path="/login/:id/:userMail/:contactBookId/:serverUrl"
+          element={<Login />}
+        />
         {/* draft document route to handle and navigate route page accordiing to document status */}
         <Route path="/draftDocument" element={<DraftDocument />} />
         {/* for user signature (need your sign route) with row level data */}
@@ -42,6 +46,8 @@ function AppRoutes() {
         <Route path="/pdfRequestFiles/:docId" element={<PdfRequestFiles />} />
         {/* lega drive route */}
         <Route path="/legadrive" element={<LegaDrive />} />
+        {/* Page Not Found */}
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>
   );
