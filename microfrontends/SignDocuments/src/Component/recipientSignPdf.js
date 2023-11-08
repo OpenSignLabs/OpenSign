@@ -74,7 +74,8 @@ function EmbedPdfImage() {
     return object.pageNumber === pageNumber;
   });
   const divRef = useRef(null);
-
+  //check isSigner is present in local if yes than handle login flow header in mobile view
+  const isSigner = localStorage.getItem("isSigner");
   useEffect(() => {
     const clientWidth = window.innerWidth;
     const pdfWidth = clientWidth - 160 - 220 - 30;
@@ -1010,8 +1011,8 @@ function EmbedPdfImage() {
           {/* pdf render view */}
           <div
             style={{
-              marginLeft: pdfOriginalWidth > 500 && "20px",
-              marginRight: pdfOriginalWidth > 500 && "20px"
+              marginLeft: !isSigner && pdfOriginalWidth > 500 && "20px",
+              marginRight: !isSigner && pdfOriginalWidth > 500 && "20px"
             }}
           >
             {/* this modal is used show this document is already sign */}

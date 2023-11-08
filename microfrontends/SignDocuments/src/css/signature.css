@@ -636,7 +636,10 @@
      left: 0.9rem;
 
    }
-
+   .stickySignerHead{
+    position: fixed;
+    
+   }
    .stickyfooter {
      position: fixed;
      bottom: 0px;
