@@ -114,10 +114,11 @@ function Login() {
           localStorage.setItem("UserInformation", JSON.stringify(_user));
           localStorage.setItem("username", _user.name);
           localStorage.setItem("accesstoken", _user.sessionToken);
+          //save isSigner true in local to handle login flow header in mobile view
+          localStorage.setItem("isSigner", true);
           setLoading(false);
           //navigate user to on signature page
-          // navigate(`/recipientSignPdf/${id}/${contactBookId}`);
-          navigate(`/loadmf/signmicroapp/recipientSignPdf/${id}/${contactBookId}`);
+          navigate(`/recipientSignPdf/${id}/${contactBookId}`);
         }
       } catch (error) {}
     } else {
@@ -173,9 +174,7 @@ function Login() {
                 <span className="KNLO">
                   Verification code is sent to your email
                 </span>
-                <div className="card card-box"
-                style={{borderRadius:"0px"}}
-                >
+                <div className="card card-box" style={{ borderRadius: "0px" }}>
                   <div className="card-body">
                     <input
                       type="email"
