@@ -64,7 +64,7 @@ const PlanSubscriptions = () => {
           style={{
             backgroundColor: "white",
             overflowY: "auto",
-            maxHeight: "600px",
+            maxHeight: "100%",
             "--theme-color": "#7952b3",
             "--plan-width": 30
           }}
