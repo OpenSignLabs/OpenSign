@@ -141,6 +141,32 @@ const GoogleSignInBtn = ({
       alert("Please fill required details!");
     }
   };
+  const handleCloseModal = () => {
+    setIsModal(false);
+    Parse.User.logOut();
+
+    let appdata = localStorage.getItem("userSettings");
+    let applogo = localStorage.getItem("appLogo");
+    let appName = localStorage.getItem("appName");
+    let defaultmenuid = localStorage.getItem("defaultmenuid");
+    let PageLanding = localStorage.getItem("PageLanding");
+    let domain = localStorage.getItem("domain");
+    let _appName = localStorage.getItem("_appName");
+    let baseUrl = localStorage.getItem("BaseUrl12");
+    let appid = localStorage.getItem("AppID12");
+
+    localStorage.clear();
+
+    localStorage.setItem("appLogo", applogo);
+    localStorage.setItem("appName", appName);
+    localStorage.setItem("_appName", _appName);
+    localStorage.setItem("defaultmenuid", defaultmenuid);
+    localStorage.setItem("PageLanding", PageLanding);
+    localStorage.setItem("domain", domain);
+    localStorage.setItem("userSettings", appdata);
+    localStorage.setItem("BaseUrl12", baseUrl);
+    localStorage.setItem("AppID12", appid);
+  };
   return (
     <div style={{ position: "relative" }}>
       {thirdpartyLoader && (
@@ -259,16 +285,16 @@ const GoogleSignInBtn = ({
                   <div>
                     <button
                       type="button"
-                      className="btn btn-secondary"
-                      onClick={() => setIsModal(false)}
+                      className="bg-[#6c757d] p-2 text-white rounded"
+                      onClick={handleCloseModal}
                       style={{ marginRight: 10, width: 90 }}
                     >
                       Cancel
                     </button>
                     <button
                       type="button"
+                      className="bg-[#17a2b8] p-2 text-white rounded"
                       onClick={() => handleSubmitbtn()}
-                      className="btn btn-info"
                     >
                       Sign up
                     </button>
