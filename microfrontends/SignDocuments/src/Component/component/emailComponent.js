@@ -109,8 +109,17 @@ function EmailComponent({
   const handleToPrint = async (event) => {
     event.preventDefault();
 
-    const base64 = await getBase64FromUrl(pdfUrl);
-    printModule({ printable: base64, type: "pdf", base64: true });
+    const pdf = await getBase64FromUrl(pdfUrl);
+    const isAndroidDevice = navigator.userAgent.match(/Android/i);
+    const isAppleDevice = (/iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) && !window.MSStream
+    if (isAndroidDevice || isAppleDevice) {
+      const byteArray = Uint8Array.from(atob(pdf).split('').map(char => char.charCodeAt(0)));
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    } else {
+      printModule({ printable: pdf, type: "pdf", base64: true });
+    }
 
   };
 
