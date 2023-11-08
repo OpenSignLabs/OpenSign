@@ -57,37 +57,41 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
     (data, ind) =>
       data.key === signKey && data.Width && data.Height && data.SignUrl
   );
+   
 
   if (updateFilter.length > 0) {
-    let newWidth, nweHeight;
+    let newWidth, newHeight;
     const aspectRatio = imgWH.width / imgWH.height;
+
     const getXYdata = xyPostion[index].pos;
-   
+
     if (aspectRatio === 1) {
       newWidth = aspectRatio * 100;
-      nweHeight = aspectRatio * 100;
+      newHeight = aspectRatio * 100;
     } else if (aspectRatio < 2) {
       newWidth = aspectRatio * 100;
-      nweHeight = 100;
+      newHeight = 100;
     } else if (aspectRatio > 2 && aspectRatio < 4) {
       newWidth = aspectRatio * 70;
-      nweHeight = 70;
+      newHeight = 70;
     } else if (aspectRatio > 4) {
       newWidth = aspectRatio * 40;
-      nweHeight = 40;
+      newHeight = 40;
     } else if (aspectRatio > 5) {
       newWidth = aspectRatio * 10;
-      nweHeight = 10;
+      newHeight = 10;
     }
-   
-    let getPosData = xyPostion[index].pos.filter((data) => data.key === signKey);
-    
+
+    let getPosData = xyPostion[index].pos.filter(
+      (data) => data.key === signKey
+    );
+
     const addSign = getXYdata.map((url, ind) => {
       if (url.key === signKey) {
         return {
           ...url,
-          Width: getPosData[0].Width ? getPosData[0].Width : 150,
-          Height: getPosData[0].Height ? getPosData[0].Height : 60,
+          Width: getPosData[0].Width ? getPosData[0].Width : newWidth,
+          Height: getPosData[0].Height ? getPosData[0].Height : newHeight,
           SignUrl: image.src,
           ImageType: image.imgType
         };
@@ -106,7 +110,9 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
   } else {
     const getXYdata = xyPostion[index].pos;
 
-    let getPosData = xyPostion[index].pos.filter((data) => data.key === signKey);
+    let getPosData = xyPostion[index].pos.filter(
+      (data) => data.key === signKey
+    );
     const aspectRatio = imgWH.width / imgWH.height;
 
     let newWidth, newHeight;
@@ -131,9 +137,9 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
       if (url.key === signKey) {
         return {
           ...url,
-          Width: getPosData[0].Width ? getPosData[0].Width : 150,
-          Height: getPosData[0].Height ? getPosData[0].Height : 60,
-          SignUrl: image.src,
+          Width: getPosData[0].Width ? getPosData[0].Width : newWidth,
+          Height: getPosData[0].Height ? getPosData[0].Height : newHeight,
+         SignUrl: image.src,
           ImageType: image.imgType
         };
       }
