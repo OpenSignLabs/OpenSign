@@ -232,6 +232,27 @@ function RenderPdf({
       })
     );
   };
+  // handle signature block width and height according to screen
+  const posWidth = (pos) => {
+    let width;
+    if (!pos.isMobile) {
+      width = pos.Width / scale ? pos.Width / scale : 150 / scale;
+      return width;
+    } else {
+      width = pos.Width ? pos.Width : 150;
+      return width;
+    }
+  };
+  const posHeight = (pos) => {
+    let width;
+    if (!pos.isMobile) {
+      width = pos.Height / scale ? pos.Height / scale : 60 / scale;
+      return width;
+    } else {
+      width = pos.Height ? pos.Height : 60;
+      return width;
+    }
+  };
 
   return (
     <>
@@ -298,8 +319,8 @@ function RenderPdf({
                                 borderWidth: "0.2px"
                               }}
                               size={{
-                                width: pos.Width ? pos.Width : 150,
-                                height: pos.Height ? pos.Height : 60
+                                width: posWidth(pos),
+                                height: posHeight(pos)
                               }}
                               lockAspectRatio={pos.Width && 2.5}
                               //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
@@ -365,8 +386,10 @@ function RenderPdf({
                                 borderWidth: "0.2px"
                               }}
                               size={{
-                                width: pos.Width ? pos.Width : 150,
-                                height: pos.Height ? pos.Height : 60
+                                width: posWidth(pos),
+                                height: posHeight(pos)
+                                // width: pos.Width ? pos.Width : 150,
+                                // height: pos.Height ? pos.Height : 60
                               }}
                               disableDragging={true}
                               default={{
