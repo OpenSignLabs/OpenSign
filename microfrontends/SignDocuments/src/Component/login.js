@@ -118,7 +118,8 @@ function Login() {
           localStorage.setItem("isSigner", true);
           setLoading(false);
           //navigate user to on signature page
-          navigate(`/recipientSignPdf/${id}/${contactBookId}`);
+          // navigate(`/recipientSignPdf/${id}/${contactBookId}`);
+          navigate(`/loadmf/signmicroapp/recipientSignPdf/${id}/${contactBookId}`);
         }
       } catch (error) {}
     } else {

@@ -744,7 +744,7 @@ function Login(props) {
   };
 
   const GetLoginData = async () => {
-    setState({...state, loading: true})
+    setState({ ...state, loading: true })
     try {
       Parse.serverURL = localStorage.getItem("baseUrl");
       Parse.initialize(localStorage.getItem("parseAppId"));
@@ -925,6 +925,7 @@ function Login(props) {
       <Title title={"Login Page"} />
       {state.loading && (
         <div
+          aria-live="assertive"
           style={{
             position: "fixed",
             width: "100vw",
@@ -936,63 +937,66 @@ function Login(props) {
           }}
         >
           <div
+            role="status"
             style={{
               position: "fixed",
               fontSize: "50px",
               color: "#3ac9d6",
               top: "50%",
-              left: "45%"
+              left: "50%",
+              transform: 'translate(-50%, -50%)'
             }}
             className="loader-37"
-          ></div>
+          >
+            <span className="sr-only">Loading...</span>
+          </div>
         </div>
       )}
       {props.isloginVisible && props.isloginVisible ? (
-        <div>
+        <div aria-labelledby="loginHeading" role="region">
           <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
             <div className="w-[250px] h-[66px] inline-block">
               {state.hideNav ? (
-                <img src={image} width="100%" alt="" />
+                <img src={image} width="100%" alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly." />
               ) : (
-                <img src={image} width="100%" alt="" />
+                <img src={image} width="100%" alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly." />
               )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-              <div className="">
+              <div>
                 <div>
-                  <form onSubmit={handleSubmit}>
-                    <h2 className="text-[30px] mt-6">Welcome Back !</h2>
-                    <span className="text-[12px] text-[#878787]">
-                      Login to your account
-                    </span>
-                    <div className="shadow-md rounded my-4">
+                  <form onSubmit={handleSubmit} aria-label="Login Form">
+                    <h1 className="text-[30px] mt-6">Welcome Back!</h1>
+                    <fieldset className="outline outline-1 outline-slate-300/50 my-4">
+                      <legend className="text-xs font-bold px-6 mt-4">Login to your account</legend>
                       <div className="px-6 py-4">
-                        <label className="block text-xs">Username</label>
+                        <label className="block text-xs" htmlFor="email">Username</label>
                         <input
+                          id="email"
                           type="text"
-                          className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                          className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
                           name="email"
                           value={state.email}
                           onChange={handleChange}
                           required
                         />
                         <hr className="my-2 border-none" />
-                        <label className="block text-xs">Password</label>
+                        <label className="block text-xs" htmlFor="password">Password</label>
                         <div className="relative">
                           <input
+                            id="password"
                             type={state.passwordVisible ? "text" : "password"}
-                            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
                             name="password"
                             value={state.password}
                             onChange={handleChange}
                             required
                           />
                           <span
-                            className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
-                              state.passwordVisible
-                                ? "text-[#007bff]"
-                                : "text-black"
-                            }`}
+                            className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${state.passwordVisible
+                              ? "text-[#007bff]"
+                              : "text-black"
+                              }`}
                             onClick={togglePasswordVisibility}
                           >
                             {state.passwordVisible ? (
@@ -1003,32 +1007,32 @@ function Login(props) {
                           </span>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex flex-row justify-between items-center text-xs px-4 py-2">
+                    </fieldset>
+                    <div className="flex flex-row justify-between items-center px-4 py-2">
                       <div>
-                        <label className="form-check-label">
+                        <label className="form-check-label inline-block cursor-pointer" htmlFor="rememberpassword">
                           <input
                             type="checkbox"
-                            className="form-check-input"
+                            className="form-check-input mr-2"
                             value=""
+                            id="rememberpassword"
                           />
-                          <span className="text-center pl-1">
-                            Remember Password
-                          </span>
+                          <span className="text-[13px] pl-1">Remember Password</span>
                         </label>
                       </div>
                       <div>
-                        <span className="text-[13px]">
-                          <NavLink to={`/forgetpassword`}>
-                            Forgot Password ?
-                          </NavLink>
-                        </span>
+                        <NavLink
+                          to="/forgetpassword"
+                          className="text-[13px] underline focus:outline-none focus:ring-2 focus:ring-blue-600"
+                        >
+                          Forgot Password?
+                        </NavLink>
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
                       <button
                         type="submit"
-                        className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow uppercase"
+                        className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow outline-none uppercase focus:ring-2 focus:ring-blue-600"
                         disabled={state.loading}
                       >
                         {state.loading ? "Loading..." : "Login"}
@@ -1093,7 +1097,7 @@ function Login(props) {
                     }}
                   >
                     {props.appInfo.googleClietId &&
-                    props.appInfo.googleClietId !== "" ? (
+                      props.appInfo.googleClietId !== "" ? (
                       <GoogleSignInBtn
                         GoogleCred={props.appInfo.googleClietId}
                         thirdpartyLoginfn={thirdpartyLoginfn}
@@ -1107,14 +1111,18 @@ function Login(props) {
               {!state.hideNav && (
                 <div className="self-center">
                   <div className="mx-auto md:w-[300px] lg:w-[500px]">
-                    <img src={login_img} alt="bisec" width="100%" />
+                    <img src={login_img} alt="The image illustrates a person from behind, seated at a desk with a four-monitor computer setup, in an environment with a light blue and white color scheme, featuring a potted plant to the right." width="100%" />
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          <div id="snackbar" style={{ backgroundColor: state.toastColor }}>
+          <div
+            id="snackbar"
+            role="alert"
+            style={{ backgroundColor: state.toastColor }}
+          >
             {state.toastDescription}
           </div>
         </div>

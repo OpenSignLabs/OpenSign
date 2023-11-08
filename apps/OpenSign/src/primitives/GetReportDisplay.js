@@ -93,7 +93,7 @@ const ReportTable = ({
           {List?.length > 0 ? (
             <>
               {currentLists.map((item, index) => (
-                <tr className="border-t-[1px]" key={index}>
+                <tr className="border-y-[1px]" key={index}>
                   <td className="px-4 py-2">{index + 1}</td>
                   <td className="px-4 py-2 font-semibold">{item?.Name} </td>
                   <td className="px-4 py-2">{item?.Note || "-"}</td>
@@ -153,7 +153,7 @@ const ReportTable = ({
           )}
         </tbody>
       </table>
-      <div className="flex flex-wrap items-center gap-2 p-2 border-t-[1px]">
+      <div className="flex flex-wrap items-center gap-2 p-2 ">
         {List.length > 10 && (
           <>
             {currentPage > 1 && (
