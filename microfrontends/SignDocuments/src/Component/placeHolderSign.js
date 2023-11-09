@@ -952,7 +952,7 @@ function PlaceHolderSign() {
                   background: themeColor()
                 }}
               >
-                <span style={{ color: "white" }}>Send Mail </span>
+                <span style={{ color: "white" }}>Mails Sent</span>
               </Modal.Header>
 
               {/* signature modal */}
