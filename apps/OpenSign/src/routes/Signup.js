@@ -99,9 +99,38 @@ const Signup = (props) => {
             }
           }
         })
-        .catch((err) => {
-          alert(err.message);
-          setState({ loading: false });
+        .catch(async (err) => {
+          if (err.code === 202) {
+            const userQuery = new Parse.Query("contracts_Users");
+            userQuery.equalTo("Email", email);
+            const res = await userQuery.first();
+            // console.log("Res ", res);
+            if (res) {
+              alert("User already exists with this username!");
+              setState({ loading: false });
+            } else {
+              let baseUrl = localStorage.getItem("BaseUrl12");
+              let parseAppId = localStorage.getItem("AppID12");
+              // console.log("state.email ", email);
+              try {
+                Parse.serverURL = baseUrl;
+                Parse.initialize(parseAppId);
+                await Parse.User.requestPasswordReset(email).then(
+                  async function (res1) {
+                    if (res1.data === undefined) {
+                      alert("Email has been sent to your mail!");
+                    }
+                  }
+                );
+              } catch (err) {
+                console.log(err);
+              }
+              setState({ loading: false });
+            }
+          } else {
+            alert(err.message);
+            setState({ loading: false });
+          }
         });
     } catch (error) {
       console.log("err ", error);
@@ -453,7 +482,7 @@ const Signup = (props) => {
               <div className="">
                 <form onSubmit={handleSubmit}>
                   <h2 className="text-[30px] mt-6">Create Account !</h2>
-                  <div className="shadow-md rounded my-4">
+                  <div className="outline outline-1 outline-slate-300/50 shadow-md rounded my-4">
                     <div className="px-6 py-4 text-xs">
                       <label className="block ">
                         Name{" "}
@@ -472,6 +501,7 @@ const Signup = (props) => {
                         <span style={{ color: "red", fontSize: 13 }}>*</span>
                       </label>
                       <input
+                        id="email"
                         type="text"
                         className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                         value={email}
@@ -563,7 +593,7 @@ const Signup = (props) => {
               </div>
               {!state.hideNav && (
                 <div className="self-center">
-                  <div className="mx-auto md:w-[300px] lg:w-[500px]">
+                  <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
                     <img src={login_img} alt="bisec" width="100%" />
                   </div>
                 </div>
