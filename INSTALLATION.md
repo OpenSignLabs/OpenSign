@@ -143,5 +143,8 @@ In order to address this, your document storage system must be instructed to acc
 
 # Build Local Environment
 
-Below are the steps to follow -
+Command to build project -
 - Execute `make build`
+
+Command to run project -
+- Execute `make run`
