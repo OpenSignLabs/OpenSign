@@ -106,8 +106,8 @@ function Login() {
           localStorage.setItem("UserInformation", JSON.stringify(_user));
           localStorage.setItem("username", _user.name);
           localStorage.setItem("accesstoken", _user.sessionToken);
-          //save isSigner true in local to handle login flow header in mobile view
-          localStorage.setItem("isSigner", true);
+          //save isGuestSigner true in local to handle login flow header in mobile view
+          localStorage.setItem("isGuestSigner", true);
           setLoading(false);
           navigate(
             `/loadmf/signmicroapp/recipientSignPdf/${id}/${contactBookId}`
