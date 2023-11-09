@@ -101,9 +101,8 @@ const Signup = (props) => {
         })
         .catch(async (err) => {
           if (err.code === 202) {
-            const userQuery = new Parse.Query("contracts_Users");
-            userQuery.equalTo("Email", email);
-            const res = await userQuery.first();
+            const params = { email: email };
+            const res = await Parse.Cloud.run("getContractUser", params);
             // console.log("Res ", res);
             if (res) {
               alert("User already exists with this username!");

@@ -129,7 +129,7 @@ function Login(props) {
                           );
                           if (rolesfiltered.length > 0) {
                             _currentRole = rolesfiltered[0];
-                          } 
+                          }
                         } else {
                           const rolesfiltered = userRoles.filter(
                             (x) => !valuesToExclude.includes(x)
@@ -334,23 +334,6 @@ function Login(props) {
                                     sessionToken: user.getSessionToken()
                                   };
                                   handleSubmitbtn(payload);
-                                  // setState({
-                                  //   ...state,
-                                  //   loading: false,
-                                  //   toastColor: "#d9534f",
-                                  //   toastDescription:
-                                  //     "You dont have access to this application."
-                                  // });
-
-                                  // const x = document.getElementById("snackbar");
-                                  // x.className = "show";
-                                  // setTimeout(function () {
-                                  //   x.className = x.className.replace(
-                                  //     "show",
-                                  //     ""
-                                  //   );
-                                  // }, 2000);
-                                  // localStorage.setItem("accesstoken", null);
                                   console.error(
                                     "Error while fetching Follow",
                                     error
@@ -472,7 +455,7 @@ function Login(props) {
                   );
                   if (rolesfiltered.length > 0) {
                     _currentRole = rolesfiltered[0];
-                  } 
+                  }
                 } else {
                   const rolesfiltered = userRoles.filter(
                     (x) => !valuesToExclude.includes(x)
@@ -596,6 +579,30 @@ function Login(props) {
                               setThirdpartyLoader(false);
                               setState({ ...state, loading: false });
                               if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                                if (billingDate) {
+                                  if (billingDate > new Date()) {
+                                    localStorage.removeItem("userDetails");
+                                    navigate(
+                                      `/${element.pageType}/${element.pageId}`
+                                    );
+                                  } else {
+                                    navigate(`/subscription`);
+                                  }
+                                } else {
+                                  navigate(`/subscription`);
+                                }
+                              }
+                            }
+                          } else {
+                            localStorage.setItem("PageLanding", element.pageId);
+                            localStorage.setItem(
+                              "defaultmenuid",
+                              element.menuId
+                            );
+                            localStorage.setItem("pageType", element.pageType);
+                            setState({ ...state, loading: false });
+                            setThirdpartyLoader(false);
+                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
                               if (billingDate) {
                                 if (billingDate > new Date()) {
                                   localStorage.removeItem("userDetails");
@@ -610,31 +617,7 @@ function Login(props) {
                               }
                             }
                           }
-                          } else {
-                            localStorage.setItem("PageLanding", element.pageId);
-                            localStorage.setItem(
-                              "defaultmenuid",
-                              element.menuId
-                            );
-                            localStorage.setItem("pageType", element.pageType);
-                            setState({ ...state, loading: false });
-                            setThirdpartyLoader(false);
-                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                            if (billingDate) {
-                              if (billingDate > new Date()) {
-                                localStorage.removeItem("userDetails");
-                                navigate(
-                                  `/${element.pageType}/${element.pageId}`
-                                );
-                              } else {
-                                navigate(`/subscription`);
-                              }
-                            } else {
-                              navigate(`/subscription`);
-                            }
-                          }
-                        }
-                      },
+                        },
                         (error) => {
                           const payload = {
                             sessionToken: sessionToken
@@ -655,7 +638,6 @@ function Login(props) {
               } else {
                 setThirdpartyLoader(false);
                 setState({ ...state, loading: false });
-               
               }
             })
             .catch((err) => {
@@ -717,9 +699,10 @@ function Login(props) {
 
         await axios
           .post(url, JSON.stringify(body), { headers: headers1 })
-          .then((roles) => {
+          .then((axiosres) => {
+            const roles = axiosres.data.result;
             if (roles) {
-              userRoles = roles.data.result;
+              userRoles = roles;
               let _currentRole = "";
               if (userRoles.length > 1) {
                 if (
