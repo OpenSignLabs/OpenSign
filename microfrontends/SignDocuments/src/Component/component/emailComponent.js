@@ -26,7 +26,7 @@ function EmailComponent({
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
-    let sendMail, recipent;
+    let sendMail;
     for (let i = 0; i < emailCount.length; i++) {
        
       try {
