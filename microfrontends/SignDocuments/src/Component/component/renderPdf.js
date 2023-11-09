@@ -42,8 +42,42 @@ function RenderPdf({
   const isMobile = window.innerWidth < 767;
   const newWidth = window.innerWidth;
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-  //function for render placeholder block over pdf document
+ 
+  // handle signature block width and height according to screen
+  const posWidth = (pos) => {
+    let width;
+    if (isMobile) {
+      if (!pos.isMobile) {
+        width = pos.Width / scale ? pos.Width / scale : 150 / scale;
+        return width;
+      } else {
+        width = pos.Width ? pos.Width : 150;
+        return width;
+      }
+    } else {
+      width = pos.Width ? pos.Width : 150;
+      return width;
+    }
+  };
+  const posHeight = (pos) => {
+    let width;
+    if (isMobile) {
+      if (!pos.isMobile) {
+        width = pos.Height / scale ? pos.Height / scale : 60 / scale;
+        return width;
+      } else {
+        width = pos.Height ? pos.Height : 60;
+        return width;
+      }
+    } else {
+      width = pos.Height ? pos.Height : 60;
+      return width;
+    }
+  };
+  //check isGuestSigner is present in local if yes than handle login flow header in mobile view
+  const isGuestSigner = localStorage.getItem("isGuestSigner");
 
+  //function for render placeholder block over pdf document
   const checkSignedSignes = (data) => {
     const checkSign = signedSigners.filter(
       (sign) => sign.objectId === data.signerObjId
@@ -56,7 +90,7 @@ function RenderPdf({
       if (isMobile) {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (!pos.isMobile) {
-          return pos.xPosition / scale;
+          return pos.xPosition / scale - 20;
         }
         //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
         else {
@@ -134,8 +168,8 @@ function RenderPdf({
                         borderWidth: "0.2px"
                       }}
                       size={{
-                        width: pos.Width ? pos.Width : 150,
-                        height: pos.Height ? pos.Height : 60
+                        width: posWidth(pos),
+                        height: posHeight(pos)
                       }}
                       lockAspectRatio={pos.Width && 2.5}
                       default={{
@@ -205,8 +239,8 @@ function RenderPdf({
                       y: yPos(pos)
                     }}
                     size={{
-                      width: pos.Width ? pos.Width : 150,
-                      height: pos.Height ? pos.Height : 60
+                      width: posWidth(pos),
+                      height: posHeight(pos)
                     }}
                     lockAspectRatio={pos.Width ? pos.Width / pos.Height : 2.5}
                   >
@@ -235,7 +269,8 @@ function RenderPdf({
       {isMobile && scale ? (
         <div
           style={{
-            border: "0.1px solid #ebe8e8"
+            border: "0.1px solid #ebe8e8",
+            marginTop: isGuestSigner && "30px"
           }}
           ref={drop}
           id="container"
@@ -294,12 +329,11 @@ function RenderPdf({
                                 borderWidth: "0.2px"
                               }}
                               size={{
-                                width: pos.Width ? pos.Width : 150,
-                                height: pos.Height ? pos.Height : 60
+                                width: posWidth(pos),
+                                height: posHeight(pos)
                               }}
                               lockAspectRatio={pos.Width && 2.5}
                               //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
-
                               //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
                               default={{
                                 x: !pos.isMobile
@@ -361,14 +395,13 @@ function RenderPdf({
                                 borderWidth: "0.2px"
                               }}
                               size={{
-                                width: pos.Width ? pos.Width : 150,
-                                height: pos.Height ? pos.Height : 60
+                                width: posWidth(pos),
+                                height: posHeight(pos)
                               }}
                               disableDragging={true}
                               default={{
                                 //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
                                 //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-
                                 x: !pos.isMobile
                                   ? pos.xPosition / scale
                                   : pos.xPosition * (pos.scale / scale) - 50,
