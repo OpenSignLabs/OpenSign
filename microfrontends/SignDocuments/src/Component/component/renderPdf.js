@@ -74,8 +74,10 @@ function RenderPdf({
       return width;
     }
   };
-  //function for render placeholder block over pdf document
+  //check isGuestSigner is present in local if yes than handle login flow header in mobile view
+  const isGuestSigner = localStorage.getItem("isGuestSigner");
 
+  //function for render placeholder block over pdf document
   const checkSignedSignes = (data) => {
     const checkSign = signedSigners.filter(
       (sign) => sign.objectId === data.signerObjId
@@ -268,7 +270,7 @@ function RenderPdf({
         <div
           style={{
             border: "0.1px solid #ebe8e8",
-            marginTop:"30px"
+            marginTop: isGuestSigner && "30px"
           }}
           ref={drop}
           id="container"

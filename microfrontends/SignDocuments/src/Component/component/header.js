@@ -37,7 +37,7 @@ function Header({
 }) {
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
-
+  const isGuestSigner = localStorage.getItem("isGuestSigner");
   //for go to previous page
   function previousPage() {
     changePage(-1);
@@ -81,14 +81,16 @@ function Header({
 
   return (
     <div
-      style={{ paddingBottom: "5px", paddingTop: "5px" }}
+    style={{ padding: !isGuestSigner && "5px 0px 5px 0px" }}
       className="mobileHead"
     >
       {isMobile && isShowHeader ? (
         <div
           id="navbar"
-          className="stickyHead"
-          style={{ width: window.innerWidth - 30 + "px" }}
+          className={isGuestSigner ? "stickySignerHead" : "stickyHead"}
+          style={{
+            width: isGuestSigner ? window.innerWidth : window.innerWidth - 30 + "px"
+          }}
         >
           <div className="preBtn2">
             <div
