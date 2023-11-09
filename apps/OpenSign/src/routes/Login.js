@@ -21,17 +21,18 @@ function Login(props) {
     passwordVisible: false,
     mobile: "",
     phone: "",
-    OTP: "",
     hideNav: "",
     scanResult: "",
     baseUrl: localStorage.getItem("baseUrl"),
     parseAppId: localStorage.getItem("parseAppId"),
     loading: false,
-    thirdpartyLoader: false,
-    orgModal: false,
-    ReqOtp: ""
+    thirdpartyLoader: false
   });
-
+  const [userDetails, setUserDetails] = useState({
+    Company: "",
+    Destination: ""
+  });
+  const [isModal, setIsModal] = useState(false);
   const image = props?.appInfo?.applogo || undefined;
 
   useEffect(() => {
@@ -94,7 +95,6 @@ function Login(props) {
               } else {
                 localStorage.setItem("profileImg", "");
               }
-
               // Check extended class user role and tenentId
               try {
                 let userRoles = [];
@@ -114,44 +114,36 @@ function Login(props) {
                   };
                   await axios
                     .post(url, JSON.stringify(body), { headers: headers })
-                    .then((roles) => {
+                    .then((axiosRes) => {
+                      const roles = axiosRes.data.result;
                       if (roles) {
-                        userRoles = roles.data.result;
+                        userRoles = roles;
                         let _currentRole = "";
+                        const valuesToExclude = [
+                          "contracts_Guest",
+                          `${localStorage.getItem("_appName")}_appeditor`
+                        ];
                         if (userRoles.length > 1) {
-                          if (
-                            userRoles[0] ===
-                            `${localStorage.getItem("_appName")}_appeditor`
-                          ) {
-                            _currentRole = userRoles[1];
-                          } else {
-                            const rolesfiltered = userRoles.filter(
-                              (x) => x !== "contracts_Guest"
-                            );
-                            if (rolesfiltered.length > 0) {
-                              _currentRole = rolesfiltered[0];
-                            } else {
-                              setThirdpartyLoader(false);
-                              setState({
-                                ...state,
-                                loading: false,
-                                toastColor: "#d9534f",
-                                toastDescription: `Does not have permissions to access this application.`
-                              });
-                              const x = document.getElementById("snackbar");
-                              x.className = "show";
-                              setTimeout(function () {
-                                x.className = x.className.replace("show", "");
-                              }, 2000);
-                            }
-                            // _currentRole = userRoles[0];
-                          }
+                          const rolesfiltered = userRoles.filter(
+                            (x) => !valuesToExclude.includes(x)
+                          );
+                          if (rolesfiltered.length > 0) {
+                            _currentRole = rolesfiltered[0];
+                          } 
                         } else {
-                          _currentRole = userRoles[0];
+                          const rolesfiltered = userRoles.filter(
+                            (x) => !valuesToExclude.includes(x)
+                          );
+                          if (rolesfiltered.length > 0) {
+                            _currentRole = userRoles[0];
+                          } else {
+                            _currentRole = "";
+                          }
                         }
                         if (
+                          _currentRole &&
                           _currentRole !==
-                          `${localStorage.getItem("_appName")}_appeditor`
+                            `${localStorage.getItem("_appName")}_appeditor`
                         ) {
                           userSettings.forEach(async (element) => {
                             if (element.role === _currentRole) {
@@ -178,7 +170,6 @@ function Login(props) {
                               query.include("TenantId");
                               await query.find().then(
                                 (results) => {
-                                  // console.log("results ", results);
                                   let tenentInfo = [];
                                   if (results) {
                                     let extendedInfo_stringify =
@@ -339,25 +330,27 @@ function Login(props) {
                                   }
                                 },
                                 (error) => {
-                                  /*   alert(
-                                  "You dont have access to this application."
-                                ); */
-                                  setState({
-                                    ...state,
-                                    loading: false,
-                                    toastColor: "#d9534f",
-                                    toastDescription:
-                                      "You dont have access to this application."
-                                  });
-                                  const x = document.getElementById("snackbar");
-                                  x.className = "show";
-                                  setTimeout(function () {
-                                    x.className = x.className.replace(
-                                      "show",
-                                      ""
-                                    );
-                                  }, 2000);
-                                  localStorage.setItem("accesstoken", null);
+                                  const payload = {
+                                    sessionToken: user.getSessionToken()
+                                  };
+                                  handleSubmitbtn(payload);
+                                  // setState({
+                                  //   ...state,
+                                  //   loading: false,
+                                  //   toastColor: "#d9534f",
+                                  //   toastDescription:
+                                  //     "You dont have access to this application."
+                                  // });
+
+                                  // const x = document.getElementById("snackbar");
+                                  // x.className = "show";
+                                  // setTimeout(function () {
+                                  //   x.className = x.className.replace(
+                                  //     "show",
+                                  //     ""
+                                  //   );
+                                  // }, 2000);
+                                  // localStorage.setItem("accesstoken", null);
                                   console.error(
                                     "Error while fetching Follow",
                                     error
@@ -367,45 +360,18 @@ function Login(props) {
                             }
                           });
                         } else {
-                          setState({
-                            ...state,
-                            loading: false,
-                            toastColor: "#d9534f",
-                            toastDescription: "User Role Not Found."
-                          });
-                          const x = document.getElementById("snackbar");
-                          x.className = "show";
-                          setTimeout(function () {
-                            x.className = x.className.replace("show", "");
-                          }, 2000);
+                          setState({ ...state, loading: false });
+                          setIsModal(true);
                         }
                       } else {
-                        setState({
-                          ...state,
-                          loading: false,
-                          toastColor: "#d9534f",
-                          toastDescription: "User Role Not Found."
-                        });
-                        const x = document.getElementById("snackbar");
-                        x.className = "show";
-                        setTimeout(function () {
-                          x.className = x.className.replace("show", "");
-                        }, 2000);
+                        setState({ ...state, loading: false });
+                        setIsModal(true);
                       }
                     })
                     .catch((err) => {
                       console.log("err", err);
-                      setState({
-                        ...state,
-                        loading: false,
-                        toastColor: "#d9534f",
-                        toastDescription: `Does not have permissions to access this application.`
-                      });
-                      const x = document.getElementById("snackbar");
-                      x.className = "show";
-                      setTimeout(function () {
-                        x.className = x.className.replace("show", "");
-                      }, 2000);
+                      setState({ ...state, loading: false });
+                      setIsModal(true);
                     });
                 }
               } catch (error) {
@@ -460,7 +426,6 @@ function Login(props) {
     await Parse.User.become(sessionToken).then(() => {
       window.localStorage.setItem("accesstoken", sessionToken);
     });
-    // console.log("me res ", res);
     if (res.data) {
       let _user = res.data;
       localStorage.setItem("UserInformation", JSON.stringify(_user));
@@ -492,25 +457,36 @@ function Login(props) {
           };
           await axios
             .post(url, JSON.stringify(body), { headers: headers })
-            .then((roles) => {
+            .then((axiosRes) => {
+              const roles = axiosRes.data.result;
               if (roles) {
-                userRoles = roles.data.result;
+                userRoles = roles;
                 let _currentRole = "";
+                const valuesToExclude = [
+                  "contracts_Guest",
+                  `${localStorage.getItem("_appName")}_appeditor`
+                ];
                 if (userRoles.length > 1) {
-                  if (
-                    userRoles[0] ===
-                    `${localStorage.getItem("_appName")}_appeditor`
-                  ) {
-                    _currentRole = userRoles[1];
-                  } else {
-                    _currentRole = userRoles[0];
-                  }
+                  const rolesfiltered = userRoles.filter(
+                    (x) => !valuesToExclude.includes(x)
+                  );
+                  if (rolesfiltered.length > 0) {
+                    _currentRole = rolesfiltered[0];
+                  } 
                 } else {
-                  _currentRole = userRoles[0];
+                  const rolesfiltered = userRoles.filter(
+                    (x) => !valuesToExclude.includes(x)
+                  );
+                  if (rolesfiltered.length > 0) {
+                    _currentRole = userRoles[0];
+                  } else {
+                    _currentRole = "";
+                  }
                 }
                 if (
+                  _currentRole &&
                   _currentRole !==
-                  `${localStorage.getItem("_appName")}_appeditor`
+                    `${localStorage.getItem("_appName")}_appeditor`
                 ) {
                   userSettings.forEach(async (element) => {
                     if (element.role === _currentRole) {
@@ -581,7 +557,7 @@ function Login(props) {
                               );
                               setThirdpartyLoader(false);
                               setState({ ...state, loading: false });
-                              navigate(`/`);
+                              navigate("/");
                             } else {
                               extendedInfo.forEach((x) => {
                                 if (x.TenantId) {
@@ -619,6 +595,7 @@ function Login(props) {
                               );
                               setThirdpartyLoader(false);
                               setState({ ...state, loading: false });
+                              if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
                               if (billingDate) {
                                 if (billingDate > new Date()) {
                                   localStorage.removeItem("userDetails");
@@ -632,6 +609,7 @@ function Login(props) {
                                 navigate(`/subscription`);
                               }
                             }
+                          }
                           } else {
                             localStorage.setItem("PageLanding", element.pageId);
                             localStorage.setItem(
@@ -641,6 +619,7 @@ function Login(props) {
                             localStorage.setItem("pageType", element.pageType);
                             setState({ ...state, loading: false });
                             setThirdpartyLoader(false);
+                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
                             if (billingDate) {
                               if (billingDate > new Date()) {
                                 localStorage.removeItem("userDetails");
@@ -654,27 +633,16 @@ function Login(props) {
                               navigate(`/subscription`);
                             }
                           }
-                        },
+                        }
+                      },
                         (error) => {
-                          /*   alert(
-                          "You dont have access to this application."
-                        ); */
+                          const payload = {
+                            sessionToken: sessionToken
+                          };
                           setThirdpartyLoader(false);
+                          handleSubmitbtn(payload);
 
-                          setState({
-                            ...state,
-                            loading: false,
-                            toastColor: "#d9534f",
-                            toastDescription:
-                              "You dont have access to this application."
-                          });
-
-                          const x = document.getElementById("snackbar");
-                          x.className = "show";
-                          setTimeout(function () {
-                            x.className = x.className.replace("show", "");
-                          }, 2000);
-                          localStorage.setItem("accesstoken", null);
+                          // localStorage.setItem("accesstoken", null);
                           console.error("Error while fetching Follow", error);
                         }
                       );
@@ -682,47 +650,18 @@ function Login(props) {
                   });
                 } else {
                   setThirdpartyLoader(false);
-                  setState({
-                    ...state,
-                    loading: false,
-                    toastColor: "#d9534f",
-                    toastDescription: "User Role Not Found."
-                  });
-
-                  const x = document.getElementById("snackbar");
-                  x.className = "show";
-                  setTimeout(function () {
-                    x.className = x.className.replace("show", "");
-                  }, 2000);
+                  setState({ ...state, loading: false });
                 }
               } else {
                 setThirdpartyLoader(false);
-                setState({
-                  ...state,
-                  loading: false,
-                  toastColor: "#d9534f",
-                  toastDescription: "User Role Not Found."
-                });
-                const x = document.getElementById("snackbar");
-                x.className = "show";
-                setTimeout(function () {
-                  x.className = x.className.replace("show", "");
-                }, 2000);
+                setState({ ...state, loading: false });
+               
               }
             })
-            .catch(() => {
+            .catch((err) => {
+              console.log("err", err);
               setThirdpartyLoader(false);
-              setState({
-                ...state,
-                loading: false,
-                toastColor: "#d9534f",
-                toastDescription: `Does not have permissions to access this application.`
-              });
-              const x = document.getElementById("snackbar");
-              x.className = "show";
-              setTimeout(function () {
-                x.className = x.className.replace("show", "");
-              }, 2000);
+              setState({ ...state, loading: false });
             });
         }
       } catch (error) {
@@ -744,7 +683,7 @@ function Login(props) {
   };
 
   const GetLoginData = async () => {
-    setState({ ...state, loading: true })
+    setState({ ...state, loading: true });
     try {
       Parse.serverURL = localStorage.getItem("baseUrl");
       Parse.initialize(localStorage.getItem("parseAppId"));
@@ -920,6 +859,80 @@ function Login(props) {
     setState({ ...state, passwordVisible: !state.passwordVisible });
   };
 
+  const handleSubmitbtn = async (e) => {
+    e.preventDefault();
+    if (userDetails.Destination && userDetails.Company) {
+      setThirdpartyLoader(true);
+      // console.log("handelSubmit", userDetails);
+      // const payload = await Parse.User.logIn(state.email, state.password);
+      const payload = { sessionToken: localStorage.getItem("accesstoken") };
+      const userInformation = JSON.parse(
+        localStorage.getItem("UserInformation")
+      );
+      // console.log("payload ", payload);
+      if (payload && payload.sessionToken) {
+        const params = {
+          userDetails: {
+            name: userInformation.name,
+            email: userInformation.email,
+            phone: userInformation.phone,
+            role: "contracts_User",
+            company: userDetails.Company,
+            jobTitle: userDetails.Destination
+          }
+        };
+        const userSignUp = await Parse.Cloud.run("usersignup", params);
+        // console.log("userSignUp ", userSignUp);
+        if (userSignUp && userSignUp.sessionToken) {
+          const LocalUserDetails = {
+            name: userInformation.name,
+            email: userInformation.email,
+            phone: userInformation.phone,
+            company: userDetails.Company,
+            jobTitle: userDetails.JobTitle
+          };
+          localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
+          thirdpartyLoginfn(userSignUp.sessionToken);
+        } else {
+          alert(userSignUp.message);
+        }
+      } else if (
+        payload &&
+        payload.message.replace(/ /g, "_") === "Internal_server_err"
+      ) {
+        alert("Internal server error !");
+      }
+    } else {
+      alert("Please fill required details!");
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModal(false);
+    Parse.User.logOut();
+
+    let appdata = localStorage.getItem("userSettings");
+    let applogo = localStorage.getItem("appLogo");
+    let appName = localStorage.getItem("appName");
+    let defaultmenuid = localStorage.getItem("defaultmenuid");
+    let PageLanding = localStorage.getItem("PageLanding");
+    let domain = localStorage.getItem("domain");
+    let _appName = localStorage.getItem("_appName");
+    let baseUrl = localStorage.getItem("BaseUrl12");
+    let appid = localStorage.getItem("AppID12");
+
+    localStorage.clear();
+
+    localStorage.setItem("appLogo", applogo);
+    localStorage.setItem("appName", appName);
+    localStorage.setItem("_appName", _appName);
+    localStorage.setItem("defaultmenuid", defaultmenuid);
+    localStorage.setItem("PageLanding", PageLanding);
+    localStorage.setItem("domain", domain);
+    localStorage.setItem("userSettings", appdata);
+    localStorage.setItem("BaseUrl12", baseUrl);
+    localStorage.setItem("AppID12", appid);
+  };
   return (
     <div className="bg-white">
       <Title title={"Login Page"} />
@@ -944,7 +957,7 @@ function Login(props) {
               color: "#3ac9d6",
               top: "50%",
               left: "50%",
-              transform: 'translate(-50%, -50%)'
+              transform: "translate(-50%, -50%)"
             }}
             className="loader-37"
           >
@@ -953,132 +966,145 @@ function Login(props) {
         </div>
       )}
       {props.isloginVisible && props.isloginVisible ? (
-        <div aria-labelledby="loginHeading" role="region">
-          <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
-            <div className="w-[250px] h-[66px] inline-block">
-              {state.hideNav ? (
-                <img src={image} width="100%" alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly." />
-              ) : (
-                <img src={image} width="100%" alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly." />
-              )}
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-              <div>
+        <>
+          <div aria-labelledby="loginHeading" role="region">
+            <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-4 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
+              <div className="w-[250px] h-[66px] inline-block">
+                <img
+                  src={image}
+                  width="100%"
+                  alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
                 <div>
-                  <form onSubmit={handleSubmit} aria-label="Login Form">
-                    <h1 className="text-[30px] mt-6">Welcome Back!</h1>
-                    <fieldset className="outline outline-1 outline-slate-300/50 my-4">
-                      <legend className="text-xs font-bold px-6 mt-4">Login to your account</legend>
-                      <div className="px-6 py-4">
-                        <label className="block text-xs" htmlFor="email">Username</label>
-                        <input
-                          id="email"
-                          type="text"
-                          className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
-                          name="email"
-                          value={state.email}
-                          onChange={handleChange}
-                          required
-                        />
-                        <hr className="my-2 border-none" />
-                        <label className="block text-xs" htmlFor="password">Password</label>
-                        <div className="relative">
+                  <div>
+                    <form onSubmit={handleSubmit} aria-label="Login Form">
+                      <h1 className="text-[30px] mt-6">Welcome Back!</h1>
+                      <fieldset>
+                        <legend className="text-[12px] text-[#878787]">
+                          Login to your account
+                        </legend>
+                        <div className="px-6 py-4 outline outline-1 outline-slate-300/50 my-2 rounded shadow-md">
+                          <label className="block text-xs" htmlFor="email">
+                            Username
+                          </label>
                           <input
-                            id="password"
-                            type={state.passwordVisible ? "text" : "password"}
+                            id="email"
+                            type="text"
                             className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
-                            name="password"
-                            value={state.password}
+                            name="email"
+                            value={state.email}
                             onChange={handleChange}
                             required
                           />
-                          <span
-                            className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${state.passwordVisible
-                              ? "text-[#007bff]"
-                              : "text-black"
+                          <hr className="my-2 border-none" />
+                          <label className="block text-xs" htmlFor="password">
+                            Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              id="password"
+                              type={state.passwordVisible ? "text" : "password"}
+                              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
+                              name="password"
+                              value={state.password}
+                              onChange={handleChange}
+                              required
+                            />
+                            <span
+                              className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
+                                state.passwordVisible
+                                  ? "text-[#007bff]"
+                                  : "text-black"
                               }`}
-                            onClick={togglePasswordVisibility}
+                              onClick={togglePasswordVisibility}
+                            >
+                              {state.passwordVisible ? (
+                                <i className="fa fa-eye-slash text-xs pb-1" /> // Close eye icon
+                              ) : (
+                                <i className="fa fa-eye text-xs pb-1 " /> // Open eye icon
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </fieldset>
+                      <div className="flex flex-row justify-between items-center ml-4 py-2">
+                        <div>
+                          <label
+                            className="form-check-label inline-block cursor-pointer"
+                            htmlFor="rememberpassword"
                           >
-                            {state.passwordVisible ? (
-                              <i className="fa fa-eye-slash text-xs pb-1" /> // Close eye icon
-                            ) : (
-                              <i className="fa fa-eye text-xs pb-1 " /> // Open eye icon
-                            )}
-                          </span>
+                            <input
+                              type="checkbox"
+                              className="form-check-input mr-1"
+                              value=""
+                              id="rememberpassword"
+                            />
+                            <span className="text-[13px]">
+                              Remember Password
+                            </span>
+                          </label>
+                        </div>
+                        <div>
+                          <NavLink
+                            to="/forgetpassword"
+                            className="text-[13px] underline focus:outline-none focus:ring-2 focus:ring-blue-600"
+                          >
+                            Forgot Password ?
+                          </NavLink>
                         </div>
                       </div>
-                    </fieldset>
-                    <div className="flex flex-row justify-between items-center px-4 py-2">
-                      <div>
-                        <label className="form-check-label inline-block cursor-pointer" htmlFor="rememberpassword">
-                          <input
-                            type="checkbox"
-                            className="form-check-input mr-2"
-                            value=""
-                            id="rememberpassword"
-                          />
-                          <span className="text-[13px] pl-1">Remember Password</span>
-                        </label>
-                      </div>
-                      <div>
-                        <NavLink
-                          to="/forgetpassword"
-                          className="text-[13px] underline focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
+                        <button
+                          type="submit"
+                          className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow outline-none uppercase focus:ring-2 focus:ring-blue-600"
+                          disabled={state.loading}
                         >
-                          Forgot Password?
+                          {state.loading ? "Loading..." : "Login"}
+                        </button>
+                        <NavLink
+                          className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
+                          to="/signup"
+                          style={state.hideNav ? { textAlign: "center" } : {}}
+                        >
+                          Create Account
                         </NavLink>
                       </div>
-                    </div>
-                    <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
-                      <button
-                        type="submit"
-                        className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow outline-none uppercase focus:ring-2 focus:ring-blue-600"
-                        disabled={state.loading}
+                    </form>
+                    <br />
+                    {(props.appInfo.fbAppId || props.appInfo.googleClietId) && (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center"
+                        }}
+                        className="text-sm"
                       >
-                        {state.loading ? "Loading..." : "Login"}
-                      </button>
-                      <NavLink
-                        className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
-                        to="/signup"
-                        style={state.hideNav ? { textAlign: "center" } : {}}
-                      >
-                        Create Account
-                      </NavLink>
-                    </div>
-                  </form>
-                  <br />
-                  {(props.appInfo.fbAppId || props.appInfo.googleClietId) && (
+                        <hr
+                          className={"border-[1px] border-gray-300 w-full"}
+                          style={{ color: "grey" }}
+                        />
+                        <span style={{ color: "grey" }} className="px-2 ">
+                          OR
+                        </span>
+                        <hr
+                          className={"border-[1px] border-gray-300 w-full"}
+                          style={{ color: "grey" }}
+                        />
+                      </div>
+                    )}
+                    <br />
                     <div
                       style={{
+                        textAlign: "center",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
                       }}
-                      className="text-sm"
                     >
-                      <hr
-                        className={"border-[1px] border-gray-300 w-full"}
-                        style={{ color: "grey" }}
-                      />
-                      <span style={{ color: "grey" }} className="px-2 ">
-                        OR
-                      </span>
-                      <hr
-                        className={"border-[1px] border-gray-300 w-full"}
-                        style={{ color: "grey" }}
-                      />
-                    </div>
-                  )}
-                  <br />
-                  <div
-                    style={{
-                      textAlign: "center",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    {/* {props.appInfo.fbAppId && props.appInfo.fbAppId !== "" ? (
+                      {/* {props.appInfo.fbAppId && props.appInfo.fbAppId !== "" ? (
                       <LoginFacebook
                         FBCred={props.appInfo.fbAppId}
                         thirdpartyLoginfn={thirdpartyLoginfn}
@@ -1086,46 +1112,142 @@ function Login(props) {
                         setThirdpartyLoader={setThirdpartyLoader}
                       />
                     ) : null} */}
-                  </div>
-                  <div style={{ margin: "10px 0" }}></div>
-                  <div
-                    style={{
-                      textAlign: "center",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    {props.appInfo.googleClietId &&
+                    </div>
+                    <div style={{ margin: "10px 0" }}></div>
+                    <div
+                      style={{
+                        textAlign: "center",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                    >
+                      {props.appInfo.googleClietId &&
                       props.appInfo.googleClietId !== "" ? (
-                      <GoogleSignInBtn
-                        GoogleCred={props.appInfo.googleClietId}
-                        thirdpartyLoginfn={thirdpartyLoginfn}
-                        thirdpartyLoader={state.thirdpartyLoader}
-                        setThirdpartyLoader={setThirdpartyLoader}
+                        <GoogleSignInBtn
+                          GoogleCred={props.appInfo.googleClietId}
+                          thirdpartyLoginfn={thirdpartyLoginfn}
+                          thirdpartyLoader={state.thirdpartyLoader}
+                          setThirdpartyLoader={setThirdpartyLoader}
+                        />
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+                {!state.hideNav && (
+                  <div className="self-center">
+                    <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
+                      <img
+                        src={login_img}
+                        alt="The image illustrates a person from behind, seated at a desk with a four-monitor computer setup, in an environment with a light blue and white color scheme, featuring a potted plant to the right."
+                        width="100%"
                       />
-                    ) : null}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div
+              id="snackbar"
+              role="alert"
+              style={{ backgroundColor: state.toastColor }}
+            >
+              {state.toastDescription}
+            </div>
+          </div>
+          {isModal && (
+            <div
+              className="modal fade show"
+              id="exampleModal"
+              tabIndex="-1"
+              role="dialog"
+              style={{
+                display: "block",
+                zIndex: 1,
+                backgroundColor: "rgba(0,0,0,0.5)"
+              }}
+            >
+              <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">Login form</h5>
+                    <span>
+                      <span></span>
+                    </span>
+                  </div>
+                  <div className="modal-body">
+                    <form className="text-sm">
+                      <div className="form-group">
+                        <label
+                          htmlFor="Company"
+                          style={{ display: "flex" }}
+                          className="col-form-label"
+                        >
+                          Company{" "}
+                          <span style={{ fontSize: 13, color: "red" }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="Company"
+                          value={userDetails.Company}
+                          onChange={(e) =>
+                            setUserDetails({
+                              ...userDetails,
+                              Company: e.target.value
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label
+                          htmlFor="Destination"
+                          style={{ display: "flex" }}
+                          className="col-form-label"
+                        >
+                          Destination{" "}
+                          <span style={{ fontSize: 13, color: "red" }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="Destination"
+                          value={userDetails.Destination}
+                          onChange={(e) =>
+                            setUserDetails({
+                              ...userDetails,
+                              Destination: e.target.value
+                            })
+                          }
+                          required
+                        />
+                      </div>
+                      <div className="mt-4">
+                        <button
+                          type="button"
+                          className="bg-[#6c757d] text-sm p-2 text-white rounded uppercase"
+                          onClick={handleCloseModal}
+                          style={{ marginRight: 10, width: 90 }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-[#17a2b8] text-sm p-2 text-white rounded uppercase"
+                          onClick={(e) => handleSubmitbtn(e)}
+                        >
+                          Login
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
-              {!state.hideNav && (
-                <div className="self-center">
-                  <div className="mx-auto md:w-[300px] lg:w-[500px]">
-                    <img src={login_img} alt="The image illustrates a person from behind, seated at a desk with a four-monitor computer setup, in an environment with a light blue and white color scheme, featuring a potted plant to the right." width="100%" />
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
-
-          <div
-            id="snackbar"
-            role="alert"
-            style={{ backgroundColor: state.toastColor }}
-          >
-            {state.toastDescription}
-          </div>
-        </div>
+          )}
+        </>
       ) : (
         <div
           style={{
@@ -1140,7 +1262,6 @@ function Login(props) {
       )}
     </div>
   );
-  // }
 }
 
 const mapStateToProps = (state) => {
