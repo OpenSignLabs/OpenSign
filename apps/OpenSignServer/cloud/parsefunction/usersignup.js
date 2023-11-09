@@ -123,6 +123,9 @@ export default async function (request) {
       if (userDetails && userDetails.company) {
         newObj.set("Company", userDetails.company);
       }
+      if (userDetails && userDetails.jobTitle) {
+        newObj.set("JobTitle", userDetails.jobTitle);
+      }
       if (planDetails && planDetails.customer_id) {
         newObj.set("Next_billing_date", new Date(planDetails.nextBillingDate));
         newObj.set("Plan", planDetails.plan);
