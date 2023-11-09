@@ -4,6 +4,12 @@ import multerS3 from 'multer-s3';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
 dotenv.config();
+
+function sanitizeFileName(fileName) {
+  // Remove spaces and invalid characters
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, '');
+}
+
 async function uploadFile(req, res) {
   try {
     //--size extended to 100 mb
@@ -50,7 +56,7 @@ async function uploadFile(req, res) {
       region: process.env.DO_REGION,
     });
 
-    const parseBaseUrl = process.env.REACT_APP_SERVERURL;
+    const parseBaseUrl = process.env.SERVER_URL;
     const parseAppId = process.env.APP_ID;
 
     if (process.env.USE_LOCAL == "TRUE") {
@@ -65,7 +71,7 @@ async function uploadFile(req, res) {
           let filename = file.originalname;
           let filenam = filename.split('.')[0];
           let extension = filename.split('.')[1];
-          filenam = filenam + '_' + new Date().toISOString() + '.' + extension;
+          filenam = sanitizeFileName(filenam + '_' + new Date().toISOString() + '.' + extension)
           console.log(filenam);
           cb(null, filenam);
         }
@@ -83,7 +89,7 @@ async function uploadFile(req, res) {
           let filename = file.originalname;
           let filenam = filename.split('.')[0];
           let extension = filename.split('.')[1];
-          filenam = filenam + '_' + new Date().toISOString() + '.' + extension;
+          filenam = sanitizeFileName(filenam + '_' + new Date().toISOString() + '.' + extension)
           console.log(filenam);
           cb(null, filenam);
         }
