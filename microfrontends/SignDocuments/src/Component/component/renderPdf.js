@@ -42,8 +42,7 @@ function RenderPdf({
   const isMobile = window.innerWidth < 767;
   const newWidth = window.innerWidth;
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-  //check isSigner is present in local if yes than handle login flow header in mobile view
-  const isSigner = localStorage.getItem("isSigner");
+ 
   // handle signature block width and height according to screen
   const posWidth = (pos) => {
     let width;
@@ -269,7 +268,7 @@ function RenderPdf({
         <div
           style={{
             border: "0.1px solid #ebe8e8",
-            marginTop: isSigner && "30px"
+            marginTop:"30px"
           }}
           ref={drop}
           id="container"
