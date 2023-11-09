@@ -69,11 +69,11 @@ async function uploadFile(req, res) {
         },
         filename: function(req, file, cb) {
           let filename = file.originalname;
-          let filenam = filename.split('.')[0];
+          let newFileName = filename.split('.')[0];
           let extension = filename.split('.')[1];
-          filenam = sanitizeFileName(filenam + '_' + new Date().toISOString() + '.' + extension)
-          console.log(filenam);
-          cb(null, filenam);
+          newFileName = sanitizeFileName(newFileName + '_' + new Date().toISOString() + '.' + extension)
+          console.log(newFileName);
+          cb(null, newFileName);
         }
       });
     } else {
@@ -87,11 +87,11 @@ async function uploadFile(req, res) {
         key: function (req, file, cb) {
           //console.log(file);
           let filename = file.originalname;
-          let filenam = filename.split('.')[0];
+          let newFileName = filename.split('.')[0];
           let extension = filename.split('.')[1];
-          filenam = sanitizeFileName(filenam + '_' + new Date().toISOString() + '.' + extension)
-          console.log(filenam);
-          cb(null, filenam);
+          newFileName = sanitizeFileName(newFileName + '_' + new Date().toISOString() + '.' + extension)
+          console.log(newFileName);
+          cb(null, newFileName);
         }
       });
     }
