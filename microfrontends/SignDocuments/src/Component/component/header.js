@@ -27,8 +27,7 @@ function Header({
   signersdata,
   isMailSend,
   alertSendEmail,
-  isSigned,
-  isCompleted,
+ isCompleted,
   isShowHeader,
   decline,
   currentSigner,
@@ -61,12 +60,19 @@ function Header({
 
     const pdf = await getBase64FromUrl(pdfUrl);
     const isAndroidDevice = navigator.userAgent.match(/Android/i);
-    const isAppleDevice = (/iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) && !window.MSStream
+    const isAppleDevice =
+      (/iPad|iPhone|iPod/.test(navigator.platform) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) &&
+      !window.MSStream;
     if (isAndroidDevice || isAppleDevice) {
-      const byteArray = Uint8Array.from(atob(pdf).split('').map(char => char.charCodeAt(0)));
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const byteArray = Uint8Array.from(
+        atob(pdf)
+          .split("")
+          .map((char) => char.charCodeAt(0))
+      );
+      const blob = new Blob([byteArray], { type: "application/pdf" });
       const blobUrl = URL.createObjectURL(blob);
-      window.open(blobUrl, '_blank');
+      window.open(blobUrl, "_blank");
     } else {
       printModule({ printable: pdf, type: "pdf", base64: true });
     }
@@ -77,6 +83,43 @@ function Header({
     const pdfName = pdfDetails[0] && pdfDetails[0].Name;
 
     saveAs(pdfUrl, `${pdfName}_signed_by_OpenSign™.pdf`);
+  };
+
+  const CertificateDropDown = () => {
+    return (
+      <PDFDownloadLink
+        style={{ textDecoration: "none" }}
+        document={<Certificate pdfData={pdfDetails} />}
+        fileName={`completion certificate-${
+          pdfDetails[0] && pdfDetails[0].Name
+        }.pdf`}
+      >
+        {({ blob, url, loading, error }) => (
+          <>
+            {console.log("error", error)}
+            {loading ? (
+              "Loading document..."
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row"
+                }}
+              >
+                <i
+                  className="fa fa-certificate"
+                  style={{
+                    marginRight: "2px"
+                  }}
+                  aria-hidden="true"
+                ></i>
+                Certificate
+              </div>
+            )}
+          </>
+        )}
+      </PDFDownloadLink>
+    );
   };
 
   return (
@@ -132,7 +175,7 @@ function Header({
                 style={{ color: "gray", cursor: "pointer" }}
               ></i>
             </div>
-            {pdfUrl ? (
+            {pdfUrl && alreadySign ? (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <div
@@ -171,44 +214,37 @@ function Header({
                         Download
                       </div>
                     </DropdownMenu.Item>
-                    <DropdownMenu.Item className="DropdownMenuItem">
-                      <PDFDownloadLink
-                        style={{ textDecoration: "none" }}
-                        document={<Certificate pdfData={pdfDetails} />}
-                        fileName={`completion certificate-${
-                          pdfDetails[0] && pdfDetails[0].Name
-                        }.pdf`}
+
+                    {recipient && pdfDetails[0] && pdfDetails.length > 0 ? (
+                      <DropdownMenu.Item className="DropdownMenuItem">
+                        <CertificateDropDown />
+                      </DropdownMenu.Item>
+                    ) : (
+                      isPdfRequestFiles &&
+                      alreadySign &&
+                      isCompleted.isCertificate && (
+                        <DropdownMenu.Item className="DropdownMenuItem">
+                          <CertificateDropDown />
+                        </DropdownMenu.Item>
+                      )
+                    )}
+                    <DropdownMenu.Item
+                      className="DropdownMenuItem"
+                      onClick={handleToPrint}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row"
+                        }}
                       >
-                        {({ blob, url, loading, error }) => (
-                          <>
-                            {console.log("error", error)}
-                            {loading ? (
-                              "Loading document..."
-                            ) : (
-                              <button
-                                type="button"
-                                className="defaultBtn certificateBtn"
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center"
-                                }}
-                              >
-                                <i
-                                  className="fa fa-certificate"
-                                  style={{
-                                    color: "white",
-                                    fontSize: "15px",
-                                    marginRight: "3px"
-                                  }}
-                                  aria-hidden="true"
-                                ></i>
-                                Certificate
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </PDFDownloadLink>
+                        <i
+                          class="fa fa-print"
+                          aria-hidden="true"
+                          style={{ marginRight: "2px" }}
+                        ></i>
+                        Print
+                      </div>
                     </DropdownMenu.Item>
                   </DropdownMenu.Content>
                 </DropdownMenu.Portal>
@@ -258,6 +294,8 @@ function Header({
                         data-tut="reactourThird"
                         onClick={() => {
                           if (!pdfUrl) {
+                            embedImages();
+                          } else if (isPdfRequestFiles) {
                             embedImages();
                           }
                         }}

@@ -161,7 +161,9 @@ function PdfRequestFiles() {
             setIsDecline(currentDecline);
           } else if (currDate > expireUpdateDate) {
             setIsExpired(true);
-          } else if (res.length > 0) {
+          } 
+          
+          if (res.length > 0) {
             const checkDocIdExist =
               json.results[0].AuditTrail &&
               json.results[0].AuditTrail.length > 0 &&

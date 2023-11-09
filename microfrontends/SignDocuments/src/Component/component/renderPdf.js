@@ -43,7 +43,7 @@ function RenderPdf({
   const newWidth = window.innerWidth;
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
   //function for render placeholder block over pdf document
-
+ 
   const checkSignedSignes = (data) => {
     const checkSign = signedSigners.filter(
       (sign) => sign.objectId === data.signerObjId
@@ -744,7 +744,13 @@ function RenderPdf({
               }}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
-              file={pdfUrl ? pdfUrl : pdfDetails[0] && pdfDetails[0].URL}
+              file={
+                pdfUrl
+                  ? pdfUrl
+                  : pdfDetails[0] && pdfDetails[0].SignedUrl
+                  ? pdfDetails[0].SignedUrl
+                  : pdfDetails[0].URL
+              }
             >
               {Array.from(new Array(numPages), (el, index) => (
                 <Page
@@ -1260,7 +1266,13 @@ function RenderPdf({
               }}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
-              file={pdfUrl ? pdfUrl : pdfDetails[0] && pdfDetails[0].URL}
+              file={
+                pdfUrl
+                  ? pdfUrl
+                  : pdfDetails[0] && pdfDetails[0].SignedUrl
+                  ? pdfDetails[0].SignedUrl
+                  : pdfDetails[0].URL
+              }
             >
               {Array.from(new Array(numPages), (el, index) => (
                 <Page

@@ -1082,6 +1082,7 @@ function EmbedPdfImage() {
               isShowHeader={true}
               currentSigner={true}
               decline={true}
+              alreadySign={pdfUrl ? true :false}
             />
 
             <RenderPdf
