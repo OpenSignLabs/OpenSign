@@ -1,778 +1,779 @@
- .signatureCanvas {
-   border: 2px solid #888;
-   background-color: rgb(255, 255, 255);
-   width: 460px;
-   height: 184px;
- }
-
- .penContainer {
-   width: 460px;
- }
-
- .signatureBtn {
-   border: 1.5px solid #47a3ad;
-   margin-bottom: 10px;
-   border-radius: 3px;
-   display: flex;
-   padding: 0px;
-   justify-content: space-between;
-   background: white;
-   transition-duration: 0.4s;
-   cursor: all-scroll;
-   width: 150px;
-   height: 30px;
-   color: black;
- }
-
- .disableSign {
-   border: 1.5px solid #47a3ad;
-   margin-bottom: 10px;
-   border-radius: 3px;
-   display: flex;
-   padding: 0px;
-   justify-content: space-between;
-   background: white;
-   transition-duration: 0.4s;
-   cursor: all-scroll;
-   width: 150px;
-   height: 30px;
-   color: black;
-   border: 1px solid rgb(203, 203, 203);
-   cursor: text;
- }
-
- .emailInput {
-   padding: 10px;
-   border: 1.5px solid gray;
-   border-radius: 4px;
-   width: 100%;
-   font-size: 15px;
-   padding-bottom: 20px;
- }
-
- .emailInput:focus {
-   outline: none;
-   border: 1.5px solid #47a3ad;
- }
-
- .addEmail {
-   padding: "0px";
-   border: 1.5px solid #47a3ad;
-   border-radius: 4px;
-   width: 100%;
-   font-size: 15px;
- }
-
- .addEmail,
- .emailInput {
-   outline: none;
- }
-
- .addEmailInput {
-   border: none;
-   outline: none;
- }
-
- .emailChip {
-   background-color: #47a3ad;
-   margin: 4px;
-   border-radius: 10px;
-   padding: 5px 10px;
- }
-
- .addEmailInput {
-   padding: 10px;
-   border-radius: 4px;
-   width: 100%;
-   font-size: 15px;
- }
-
- .addEmailInput:focus {
-   outline: none;
-   border: none;
- }
-
- .signatureInput {
-   padding: 10px;
-   width: 80%;
-   border-radius: 4px;
-   font-size: 0.75rem;
-   border: 1px solid #e2dddd;
-   color: black;
-   font-family: inherit;
-   font-feature-settings: inherit;
-   font-variation-settings: inherit;
-   font-weight: inherit;
-   overflow: visible;
- }
-
- .signatureInput:focus {
-   outline: none;
- }
-
- .finishBtn {
-   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-   padding: 3px 30px;
-   color: white;
-   font-weight: 500 !important;
-   font-size: 14px !important;
-   border: none;
-   margin-left: 10px;
- }
-
- .sendMail {
-   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-   padding: 3px 30px;
-   color: white;
-   font-weight: 500 !important;
-   font-size: 14px !important;
-   border: none;
-   margin-left: 10px;
- }
-
- .finishBtn:focus {
-   border: none;
-   outline: none;
- }
-
- .finishBtn:hover {
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-   color: white;
- }
-
- .saveBtn {
-   padding: 3px 18px !important;
- }
-
- .disabledFinish {
-   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-   padding: 3px 30px;
-   color: white;
-   font-weight: 600;
-   font-size: 14px;
-   border: none;
-   margin-left: 10px;
- }
-
- .sendHover:hover {
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-   color: white;
- }
-
- .defaultSignBox {
-   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-   width: 180px;
-   height: 111px;
-   padding: 8px 20px;
-   color: white;
-   font-weight: 600;
-   font-size: 14px;
-   border: none;
-   border-radius: 2px;
-   margin-left: 10px;
- }
-
- .defaultBtn {
-   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-   padding: 3px 26px;
-   color: black;
-   font-weight: 500;
-   font-size: 14px;
-   border: 1px solid gray;
-   border-radius: 2px;
-   margin-left: 10px;
- }
-
- .backBtn {
-   background-color: white;
- }
-
- .backBtn:hover {
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
- }
-
- .defaultBtn:focus {
-   border: none;
-   outline: none;
- }
-
- .downloadBtn {
-   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-   padding: 3px 15px !important;
-   background-color: rgb(241 79 79);
-   border: none !important;
-   color: white !important;
- }
-
- .downloadBtn:hover {
-   box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
- }
-
- .printBtn {
-   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-   padding: 3px 15px !important;
-   background: #188ae2;
-   border: none !important;
-   color: white !important;
- }
-
- .printBtn:hover {
-   box-shadow: 0 2px 4px rgba(23, 48, 137, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
- }
-
- .certificateBtn {
-   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-   padding: 3px 15px !important;
-   background: #08bc66;
-   border: none !important;
-   color: white !important;
-   text-decoration: none !important;
- }
-
- .certificateBtn:hover {
-   box-shadow: 0 2px 4px rgba(15, 150, 87, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
- }
-
- .signerList {
-   overflow-y: scroll;
-   max-height: 180px;
- }
-
- .signerList::-webkit-scrollbar {
-   display: none;
- }
-
- .showScroll {
-   height: 100%;
-   overflow: scroll;
-
- }
-
- .showScroll::-webkit-scrollbar {
-   display: none;
- }
-
- .hideScroll {
-   height: 100%;
-   overflow: scroll;
- }
-
- .signedStyle {
-   color: white;
-   padding: 5px;
-   font-family: sans-serif;
-   font-size: 15px !important;
- }
-
- .userName {
-   font-size: 12px !important;
-   font-weight: bold !important;
-   color: #424242 !important;
-   width: 100px;
-   white-space: nowrap;
-   overflow: hidden !important;
-   text-overflow: ellipsis;
- }
-
- .useEmail {
-   font-size: 10px;
-   color: #424242;
-   font-weight: 500;
-   width: 100px;
-   white-space: nowrap;
-   overflow: hidden !important;
-   text-overflow: ellipsis;
- }
-
- .spanTagHead {
-   color: white !important;
-   font-size: 17px;
-   font-weight: 500;
- }
-
- .pTagBody {
-
-   font-size: 15px !important;
- }
-
- .signTab {
-   cursor: pointer !important;
-   font-weight: 400 !important;
-   margin-left: 10px !important;
-   font-size: 15px !important;
- }
-
- .draggable-button {
-   padding: 10px 20px;
-   background: #3498db;
-   color: #fff;
-   border: none;
-   cursor: grab;
-   transition: transform 0.2s;
- }
-
- .draggable-button.dragging {
-   opacity: 0.5;
-   /* Reduce opacity while dragging */
-   transform: scale(1.1);
-   /* Apply a scaling effect while dragging */
- }
-
- .signatureContainer {
-   display: flex;
-   flex-direction: row;
-   justify-content: space-between;
-   background-color: #ebebeb;
-   position: "relative"
- }
-
- .signatureHeader {
-   display: flex;
-   flex-direction: row;
-   justify-content: space-between;
-   align-items: center;
-   margin-top: 5px;
- }
-
- .signerComponent {
-   /* box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px; */
-   width: 180px;
-   background-color: white;
-   height: 100%;
- }
-
- .modalBody {
-   padding: 1rem !important;
-   padding-top: 2rem !important;
- }
-
- .signLayoutContainer1 {
-   padding: 30px;
-   display: flex;
-   flex-direction: column;
-   align-items: center
- }
-
- .signLayoutContainer2 {
-   display: none;
- }
-
- .preBtn1 {
-   display: flex;
-   align-items: center;
- }
-
- .preBtn2 {
-   display: none;
- }
-
- .headerBtn2 {
-   display: none;
- }
-
- .uploadImgLogo {
-   font-size: 50px;
- }
-
-
-
- .DropdownMenuContent,
- .DropdownMenuSubContent {
-   min-width: 130px;
-   background-color: #887abf;
-   border: none;
-   padding: 5px;
-
-   animation-duration: 400ms;
-   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-   will-change: transform, opacity;
-   z-index: 30 !important;
- }
-
- .DropdownMenuContent[data-side='top'],
- .DropdownMenuSubContent[data-side='top'] {
-   animation-name: slideDownAndFade;
- }
-
- .DropdownMenuContent[data-side='right'],
- .DropdownMenuSubContent[data-side='right'] {
-   animation-name: slideLeftAndFade;
- }
-
- .DropdownMenuContent[data-side='bottom'],
- .DropdownMenuSubContent[data-side='bottom'] {
-   animation-name: slideUpAndFade;
- }
-
- .DropdownMenuContent[data-side='left'],
- .DropdownMenuSubContent[data-side='left'] {
-   animation-name: slideRightAndFade;
- }
-
- .DropdownMenuItem {
-   font-size: 13px;
-   line-height: 1;
-   color: black;
-   background-color: #887abf;
-   display: flex;
-   align-items: center;
-   height: 25px;
-   padding: 0 5px;
-   position: relative;
-   padding-left: 25px;
-   user-select: none;
-   outline: none;
-   border: none;
- }
-
- .SelectTrigger {
-   display: inline-flex;
-   align-items: center;
-   justify-content: center;
-   border-radius: 4px;
-   padding: 0 70px;
-   font-size: 13px;
-   line-height: 1;
-   height: 35px;
-   gap: 5px;
-   border: none;
-   background-color: #887abf;
-
-   width: 100px;
-   white-space: nowrap;
-   overflow: hidden !important;
-   text-overflow: ellipsis;
- }
-
- .selectEmail {
-
-   align-items: center;
-   justify-content: center;
-   border-radius: 4px;
-   padding: 0 15px;
-   font-size: 13px;
-   line-height: 1;
-   height: 35px;
-   gap: 5px;
-   border: none;
-   background-color: #887abf;
-
-   width: 200px;
-   white-space: nowrap;
-   overflow: hidden !important;
-   text-overflow: ellipsis;
- }
-
- option {
-   overflow-y: scroll;
- }
-
- .SelectTrigger:hover {
-   border: none;
-   outline: none;
- }
-
- .selectEmail:hover {
-   border: none;
-   outline: none;
- }
-
-
- .SelectTrigger:focus {
-   /* box-shadow: 0 0 0 2px black; */
-   border: none;
-   outline: none;
- }
-
- .selectEmail:focus {
-   /* box-shadow: 0 0 0 2px black; */
-   border: none;
-   outline: none;
- }
-
- .SelectTrigger[data-placeholder] {
-   color: black;
- }
-
- .SelectIcon {
-   color: Var(--violet-11);
- }
-
- .SelectContent {
-   overflow: hidden;
-   background-color: white;
-   border-radius: 6px;
-   box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
- }
-
- .SelectViewport {
-   padding: 5px;
- }
-
- .SelectItem {
-   font-size: 13px;
-   line-height: 1;
-   color: var(--violet-11);
-   border-radius: 3px;
-   display: flex;
-   align-items: center;
-   height: 25px;
-   padding: 0 35px 0 25px;
-   position: relative;
-   user-select: none;
-   z-index: 10 !important;
- }
-
- .SelectItem[data-disabled] {
-   color: var(--mauve-8);
-   pointer-events: none;
- }
-
- .SelectItem[data-highlighted] {
-   outline: none;
-   background-color: var(--violet-9);
-   color: var(--violet-1);
- }
-
- .SelectLabel {
-   padding: 0 25px;
-   font-size: 12px;
-   line-height: 25px;
-   color: var(--mauve-11);
- }
-
- .SelectSeparator {
-   height: 1px;
-   background-color: var(--violet-6);
-   margin: 5px;
- }
-
- .SelectItemIndicator {
-   position: absolute;
-   left: 0;
-   width: 25px;
-   display: inline-flex;
-   align-items: center;
-   justify-content: center;
- }
-
- .SelectScrollButton {
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   height: 25px;
-   background-color: white;
-   color: var(--violet-11);
-   cursor: default;
- }
-.fontOptionContainer{
-  border: 1px solid #d6d3d3;
-  margin: 10px 5px 5px 5px;
- 
+.signatureCanvas {
+  border: 2px solid #888;
+  background-color: rgb(255, 255, 255);
+  width: 460px;
+  height: 184px;
+}
+
+.penContainer {
+  width: 460px;
+}
+
+.signatureBtn {
+  border: 1.5px solid #47a3ad;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  display: flex;
+  padding: 0px;
+  justify-content: space-between;
+  background: white;
+  transition-duration: 0.4s;
+  cursor: all-scroll;
+  width: 150px;
+  height: 30px;
+  color: black;
+}
+
+.disableSign {
+  border: 1.5px solid #47a3ad;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  display: flex;
+  padding: 0px;
+  justify-content: space-between;
+  background: white;
+  transition-duration: 0.4s;
+  cursor: all-scroll;
+  width: 150px;
+  height: 30px;
+  color: black;
+  border: 1px solid rgb(203, 203, 203);
+  cursor: text;
+}
+
+.emailInput {
+  padding: 10px;
+  border: 1.5px solid gray;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 15px;
+  padding-bottom: 20px;
+}
+
+.emailInput:focus {
+  outline: none;
+  border: 1.5px solid #47a3ad;
+}
+
+.addEmail {
+  padding: "0px";
+  border: 1.5px solid #47a3ad;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 15px;
+}
+
+.addEmail,
+.emailInput {
+  outline: none;
+}
+
+.addEmailInput {
+  border: none;
+  outline: none;
+}
+
+.emailChip {
+  background-color: #47a3ad;
+  margin: 4px;
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
+.addEmailInput {
+  padding: 10px;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 15px;
+}
+
+.addEmailInput:focus {
+  outline: none;
+  border: none;
+}
+
+.signatureInput {
+  padding: 10px;
+  width: 80%;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  border: 1px solid #e2dddd;
+  color: black;
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-weight: inherit;
+  overflow: visible;
+}
+
+.signatureInput:focus {
+  outline: none;
+}
+
+.finishBtn {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 3px 30px;
+  color: white;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  border: none;
+  margin-left: 10px;
+}
+
+.sendMail {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 3px 30px;
+  color: white;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  border: none;
+  margin-left: 10px;
+}
+
+.finishBtn:focus {
+  border: none;
+  outline: none;
+}
+
+.finishBtn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+  color: white;
+}
+
+.saveBtn {
+  padding: 3px 18px !important;
+}
+
+.disabledFinish {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 3px 30px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  margin-left: 10px;
+}
+
+.sendHover:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+  color: white;
+}
+
+.defaultSignBox {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  width: 180px;
+  height: 111px;
+  padding: 8px 20px;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 2px;
+  margin-left: 10px;
+}
+
+.defaultBtn {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 3px 26px;
+  color: black;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid gray;
+  border-radius: 2px;
+  margin-left: 10px;
+}
+
+.backBtn {
+  background-color: white;
+}
+
+.backBtn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.defaultBtn:focus {
+  border: none;
+  outline: none;
+}
+
+.downloadBtn {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 3px 15px !important;
+  background-color: rgb(241 79 79);
+  border: none !important;
+  color: white !important;
+}
+
+.downloadBtn:hover {
+  box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.printBtn {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 3px 15px !important;
+  background: #188ae2;
+  border: none !important;
+  color: white !important;
+}
+
+.printBtn:hover {
+  box-shadow: 0 2px 4px rgba(23, 48, 137, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.certificateBtn {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 3px 15px !important;
+  background: #08bc66;
+  border: none !important;
+  color: white !important;
+  text-decoration: none !important;
+}
+
+.certificateBtn:hover {
+  box-shadow: 0 2px 4px rgba(15, 150, 87, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.signerList {
+  overflow-y: scroll;
+  max-height: 180px;
+}
+
+.signerList::-webkit-scrollbar {
+  display: none;
+}
+
+.showScroll {
+  height: 100%;
+  overflow: scroll;
+
+}
+
+.showScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.hideScroll {
+  height: 100%;
+  overflow: scroll;
+}
+
+.signedStyle {
+  color: white;
+  padding: 5px;
+  font-family: sans-serif;
+  font-size: 15px !important;
+}
+
+.userName {
+  font-size: 12px !important;
+  font-weight: bold !important;
+  color: #424242 !important;
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+.useEmail {
+  font-size: 10px;
+  color: #424242;
+  font-weight: 500;
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+.spanTagHead {
+  color: white !important;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.pTagBody {
+
+  font-size: 15px !important;
+}
+
+.signTab {
+  cursor: pointer !important;
+  font-weight: 400 !important;
+  margin-left: 10px !important;
+  font-size: 15px !important;
+}
+
+.draggable-button {
+  padding: 10px 20px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  cursor: grab;
+  transition: transform 0.2s;
+}
+
+.draggable-button.dragging {
+  opacity: 0.5;
+  /* Reduce opacity while dragging */
+  transform: scale(1.1);
+  /* Apply a scaling effect while dragging */
+}
+
+.signatureContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #ebebeb;
+  position: "relative"
+}
+
+.signatureHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.signerComponent {
+  /* box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px; */
+  width: 180px;
+  background-color: white;
+  height: 100%;
+}
+
+.modalBody {
+  padding: 1rem !important;
+  padding-top: 2rem !important;
+}
+
+.signLayoutContainer1 {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+
+.signLayoutContainer2 {
+  display: none;
+}
+
+.preBtn1 {
+  display: flex;
+  align-items: center;
+}
+
+.preBtn2 {
+  display: none;
+}
+
+.headerBtn2 {
+  display: none;
+}
+
+.uploadImgLogo {
+  font-size: 50px;
 }
 
 
- @media screen and (max-width:766px) {
 
-   .showPages {
-     display: none;
+.DropdownMenuContent,
+.DropdownMenuSubContent {
+  min-width: 130px;
+  background-color: #887abf;
+  border: none;
+  padding: 5px;
+
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  z-index: 30 !important;
+}
+
+.DropdownMenuContent[data-side='top'],
+.DropdownMenuSubContent[data-side='top'] {
+  animation-name: slideDownAndFade;
+}
+
+.DropdownMenuContent[data-side='right'],
+.DropdownMenuSubContent[data-side='right'] {
+  animation-name: slideLeftAndFade;
+}
+
+.DropdownMenuContent[data-side='bottom'],
+.DropdownMenuSubContent[data-side='bottom'] {
+  animation-name: slideUpAndFade;
+}
+
+.DropdownMenuContent[data-side='left'],
+.DropdownMenuSubContent[data-side='left'] {
+  animation-name: slideRightAndFade;
+}
+
+.DropdownMenuItem {
+  font-size: 13px;
+  line-height: 1;
+  color: black;
+  background-color: #887abf;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  padding: 0 5px;
+  position: relative;
+  padding-left: 25px;
+  user-select: none;
+  outline: none;
+  border: none;
+}
+
+.SelectTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0 70px;
+  font-size: 13px;
+  line-height: 1;
+  height: 35px;
+  gap: 5px;
+  border: none;
+  background-color: #887abf;
+
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+.selectEmail {
+
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0 15px;
+  font-size: 13px;
+  line-height: 1;
+  height: 35px;
+  gap: 5px;
+  border: none;
+  background-color: #887abf;
+
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+option {
+  overflow-y: scroll;
+}
+
+.SelectTrigger:hover {
+  border: none;
+  outline: none;
+}
+
+.selectEmail:hover {
+  border: none;
+  outline: none;
+}
+
+
+.SelectTrigger:focus {
+  /* box-shadow: 0 0 0 2px black; */
+  border: none;
+  outline: none;
+}
+
+.selectEmail:focus {
+  /* box-shadow: 0 0 0 2px black; */
+  border: none;
+  outline: none;
+}
+
+.SelectTrigger[data-placeholder] {
+  color: black;
+}
+
+.SelectIcon {
+  color: Var(--violet-11);
+}
+
+.SelectContent {
+  overflow: hidden;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+}
+
+.SelectViewport {
+  padding: 5px;
+}
+
+.SelectItem {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--violet-11);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  padding: 0 35px 0 25px;
+  position: relative;
+  user-select: none;
+  z-index: 10 !important;
+}
+
+.SelectItem[data-disabled] {
+  color: var(--mauve-8);
+  pointer-events: none;
+}
+
+.SelectItem[data-highlighted] {
+  outline: none;
+  background-color: var(--violet-9);
+  color: var(--violet-1);
+}
+
+.SelectLabel {
+  padding: 0 25px;
+  font-size: 12px;
+  line-height: 25px;
+  color: var(--mauve-11);
+}
+
+.SelectSeparator {
+  height: 1px;
+  background-color: var(--violet-6);
+  margin: 5px;
+}
+
+.SelectItemIndicator {
+  position: absolute;
+  left: 0;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.SelectScrollButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  background-color: white;
+  color: var(--violet-11);
+  cursor: default;
+}
+.fontOptionContainer{
+ border: 1px solid #d6d3d3;
+ margin: 10px 5px 5px 5px;
+
+}
+
+
+@media screen and (max-width:766px) {
+
+  .showPages {
+    display: none;
+  }
+
+  .signatureContainer {
+    display: flex;
+    flex-direction: column;
+
+  }
+
+
+  .signerComponent {
+    display: none;
+
+  }
+
+  .preBtn1 {
+    display: none;
+  }
+
+  .preBtn2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ebebeb;
+    padding: 5px 10px;
+  }
+
+  #navbar {
+    overflow: hidden;
+
+    z-index: 10;
+  }
+
+  /* Navbar links */
+  #navbar a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+  }
+
+  #navbar a.active {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  /* Page content */
+  .content {
+    padding: 16px;
+  }
+
+  /* The sticky class is added to the navbar 
+  with JS when it reaches its scroll position */
+  .stickyHead {
+    position: fixed;
+    top: 50px;
+    left: 0.9rem;
+}
+  .stickySignerHead{
+   position: fixed;
    }
-
-   .signatureContainer {
-     display: flex;
-     flex-direction: column;
-
-   }
-
-
-   .signerComponent {
-     display: none;
-
-   }
-
-   .preBtn1 {
-     display: none;
-   }
-
-   .preBtn2 {
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     background-color: #ebebeb;
-     padding: 5px 10px;
-   }
-
-   #navbar {
-     overflow: hidden;
-
-     z-index: 10;
-   }
-
-   /* Navbar links */
-   #navbar a {
-     float: left;
-     display: block;
-     color: #f2f2f2;
-     text-align: center;
-     padding: 14px;
-     text-decoration: none;
-   }
-
-   #navbar a.active {
-     background-color: #4caf50;
-     color: white;
-   }
-
-   /* Page content */
-   .content {
-     padding: 16px;
-   }
-
-   /* The sticky class is added to the navbar 
-   with JS when it reaches its scroll position */
-   .stickyHead {
-     position: fixed;
-     top: 50px;
-     left: 0.9rem;
-
-   }
-
    .stickyfooter {
-     position: fixed;
-     bottom: 0px;
-     right: 0rem;
-   }
+    position: fixed;
+    bottom: 0px;
+    right: 0rem;
+  }
 
-   /* Add some top padding to the page content 
-   to prevent sudden quick movement (as the 
-   navigation bar gets a new position at the top of the 
-   page (position:fixed and top:0) */
-   .stickyHead+.content {
-     padding-top: 60px;
-   }
+  /* Add some top padding to the page content 
+  to prevent sudden quick movement (as the 
+  navigation bar gets a new position at the top of the 
+  page (position:fixed and top:0) */
+  .stickyHead+.content {
+    padding-top: 60px;
+  }
 
 
-   .signLayoutContainer2 {
-     display: flex;
-     flex-direction: row;
-     justify-content: space-around;
-     margin-top: 5px;
-     padding: 2px 5px 10px 5px;
-     position: sticky;
-     align-items: center;
+  .signLayoutContainer2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 5px;
+    padding: 2px 5px 10px 5px;
+    position: sticky;
+    align-items: center;
 
-   }
+  }
 
-   .headerBtn {
-     display: none;
-   }
+  .headerBtn {
+    display: none;
+  }
 
-   .headerBtn2 {
-     display: flex;
-     flex-direction: column;
-     justify-content: space-between;
+  .headerBtn2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
-     margin-top: 5px;
-   }
+    margin-top: 5px;
+  }
 
-   .mobileHead {
-     display: flex;
-   }
- }
+  .mobileHead {
+    display: flex;
+  }
+}
 
- @media screen and (max-width:487px) and (min-width:351px) {
-   .signatureCanvas {
+@media screen and (max-width:487px) and (min-width:351px) {
+  .signatureCanvas {
 
-     width: 300px;
-     height: 120px;
-   }
+    width: 300px;
+    height: 120px;
+  }
 
-   .penContainer {
-     width: 300px;
-   }
+  .penContainer {
+    width: 300px;
+  }
 
-   .uploadImgLogo {
-     font-size: 30px;
-   }
+  .uploadImgLogo {
+    font-size: 30px;
+  }
 
-   .hidePdf {
-     display: none;
-   }
+  .hidePdf {
+    display: none;
+  }
 
-   .mobileHead {
-     display: flex;
-   }
+  .mobileHead {
+    display: flex;
+  }
 
- }
+}
 
- @media screen and (max-width:350px) and (min-width:311px) {
-   .signatureCanvas {
+@media screen and (max-width:350px) and (min-width:311px) {
+  .signatureCanvas {
 
-     width: 280px;
-     height: 112px;
-   }
+    width: 280px;
+    height: 112px;
+  }
 
-   .penContainer {
-     width: 280px;
-   }
+  .penContainer {
+    width: 280px;
+  }
 
-   .hidePdf {
-     display: none;
-   }
+  .hidePdf {
+    display: none;
+  }
 
-   .signTab {
+  .signTab {
 
-     font-weight: 500 !important;
+    font-weight: 500 !important;
 
-     font-size: 10px !important;
-   }
+    font-size: 10px !important;
+  }
 
-   .uploadImgLogo {
-     font-size: 25px;
-   }
+  .uploadImgLogo {
+    font-size: 25px;
+  }
 
-   .uploadImg {
+  .uploadImg {
 
-     font-size: 10px !important;
-   }
+    font-size: 10px !important;
+  }
 
-   .mobileHead {
-     display: flex;
-   }
- }
+  .mobileHead {
+    display: flex;
+  }
+}
 
- @media screen and (max-width:310px) {
-   .signatureCanvas {
+@media screen and (max-width:310px) {
+  .signatureCanvas {
 
-     width: 230px;
-     height: 92px;
-   }
+    width: 230px;
+    height: 92px;
+  }
 
-   .penContainer {
-     width: 230px;
-   }
+  .penContainer {
+    width: 230px;
+  }
 
-   .hidePdf {
-     display: none;
-   }
+  .hidePdf {
+    display: none;
+  }
 
-   .signTab {
+  .signTab {
 
-     font-weight: 500 !important;
+    font-weight: 500 !important;
 
-     font-size: 10px !important;
-   }
+    font-size: 10px !important;
+  }
 
-   .uploadImgLogo {
-     font-size: 20px;
-   }
+  .uploadImgLogo {
+    font-size: 20px;
+  }
 
-   .uploadImg {
+  .uploadImg {
 
-     font-size: 10px !important;
-   }
+    font-size: 10px !important;
+  }
 
-   .mobileHead {
-     display: flex;
-   }
- }
+  .mobileHead {
+    display: flex;
+  }
+}
