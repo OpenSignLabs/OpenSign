@@ -1116,6 +1116,7 @@ function SignYourSelf() {
               isShowHeader={true}
               currentSigner={true}
               alreadySign={pdfUrl ? true :false}
+              isSignYourself={true}
             />
 
             {/* className="hidePdf" */}

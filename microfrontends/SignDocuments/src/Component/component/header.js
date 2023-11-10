@@ -32,7 +32,8 @@ function Header({
   decline,
   currentSigner,
   dataTut4,
-  alreadySign
+  alreadySign,
+  isSignYourself
 }) {
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
@@ -86,25 +87,48 @@ function Header({
   };
   //certificate generate and download component in mobile view
   const CertificateDropDown = () => {
+    //after generate download certifcate pdf
+    const handleDownload = (pdfBlob, fileName) => {
+      if (pdfBlob) {
+        const url = window.URL.createObjectURL(pdfBlob);
+        // Create a temporary anchor element
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        // Append the anchor to the body
+        document.body.appendChild(link);
+        // Programmatically click the anchor to trigger the download
+        link.click();
+        // Remove the anchor from the body
+        document.body.removeChild(link);
+        // Release the object URL to free up resources
+        window.URL.revokeObjectURL(url);
+      }
+    };
     return (
       <PDFDownloadLink
-        style={{ textDecoration: "none" }}
+        onClick={(e) => e.preventDefault()}
+        style={{ textDecoration: "none", zIndex: "35" }}
         document={<Certificate pdfData={pdfDetails} />}
-        fileName={`completion certificate-${
-          pdfDetails[0] && pdfDetails[0].Name
-        }.pdf`}
       >
         {({ blob, url, loading, error }) => (
           <>
-            {console.log("error", error)}
             {loading ? (
               "Loading document..."
             ) : (
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "row"
+                  border: "none",
+                  backgroundColor: "#fff"
                 }}
+                onClick={() =>
+                  handleDownload(
+                    blob,
+                    `completion certificate-${
+                      pdfDetails[0] && pdfDetails[0].Name
+                    }.pdf`
+                  )
+                }
               >
                 <i
                   className="fa fa-certificate"
@@ -182,12 +206,12 @@ function Header({
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <div
-                    // onClick={() => handleDownloadPdf()}
                     style={{
                       color: themeColor(),
                       border: "none",
                       fontWeight: "650",
-                      fontSize: "16px"
+                      fontSize: "16px",
+                      padding:"0px 3px 0px 5px"
                     }}
                   >
                     <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
@@ -221,14 +245,16 @@ function Header({
                       <DropdownMenu.Item className="DropdownMenuItem">
                         <CertificateDropDown />
                       </DropdownMenu.Item>
-                    ) : (
-                      isPdfRequestFiles &&
+                    ) : isPdfRequestFiles &&
                       alreadySign &&
-                      isCompleted.isCertificate && (
-                        <DropdownMenu.Item className="DropdownMenuItem">
-                          <CertificateDropDown />
-                        </DropdownMenu.Item>
-                      )
+                      isCompleted.isCertificate ? (
+                      <DropdownMenu.Item className="DropdownMenuItem">
+                        <CertificateDropDown />
+                      </DropdownMenu.Item>
+                    ) :isSignYourself && (
+                      <DropdownMenu.Item className="DropdownMenuItem">
+                        <CertificateDropDown />
+                      </DropdownMenu.Item>
                     )}
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
