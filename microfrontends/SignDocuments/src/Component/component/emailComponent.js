@@ -28,9 +28,9 @@ function EmailComponent({
     setIsLoading(true);
     let sendMail;
     for (let i = 0; i < emailCount.length; i++) {
-       
+
       try {
-       
+
         const imgPng =
           "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
         // "https://qikinnovation.ams3.digitaloceanspaces.com/mailLogo_2023-08-18T12%3A51%3A31.573Z.png";
@@ -41,7 +41,7 @@ function EmailComponent({
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           sessionToken: localStorage.getItem("accesstoken")
         };
-        
+
         const themeBGcolor = themeColor();
         let params = {
           pdfName: pdfName,
@@ -125,12 +125,17 @@ function EmailComponent({
 
   //handle download signed pdf
   const handleDownloadPdf = () => {
-    saveAs(pdfUrl, `${pdfName}_signed_by_OpenSign™.pdf`);
+    saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
   };
+
+  const sanitizeFileName = (pdfName) => {
+    // Replace spaces with underscore
+    return pdfName.replace(/ /g, '_');
+  }
 
   const isAndroid = /Android/i.test(navigator.userAgent);
 
-  
+
   return (
     <div>
       {/* isEmail */}
@@ -248,13 +253,13 @@ function EmailComponent({
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                 
+
                     flexWrap: "wrap"
                   }}
                 >
                   {emailCount.map((data, ind) => {
                     return (
-                      <div className="emailChip" 
+                      <div className="emailChip"
                       style={{display:"flex", flexDirection:"row", alignItems:"center"}}
                       key={ind}>
                         <span
