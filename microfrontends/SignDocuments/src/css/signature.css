@@ -628,7 +628,7 @@ option {
     padding: 16px;
   }
 
-  /* The sticky class is added to the navbar 
+  /* The sticky class is added to the navbar
   with JS when it reaches its scroll position */
   .stickyHead {
     position: fixed;
@@ -639,14 +639,14 @@ option {
    position: fixed;
    }
    .stickyfooter {
-    position: fixed;
+    position: relative;
     bottom: 0px;
     right: 0rem;
   }
 
-  /* Add some top padding to the page content 
-  to prevent sudden quick movement (as the 
-  navigation bar gets a new position at the top of the 
+  /* Add some top padding to the page content
+  to prevent sudden quick movement (as the
+  navigation bar gets a new position at the top of the
   page (position:fixed and top:0) */
   .stickyHead+.content {
     padding-top: 60px;
