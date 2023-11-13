@@ -38,19 +38,15 @@ function Login() {
 
   const handleChange = (event) => {
     const { value } = event.target;
-
     setOTP(value);
   };
 
   //send email OTP function
-
   const SendOtp = async (e) => {
     const serverUrl =
       localStorage.getItem("baseUrl") && localStorage.getItem("baseUrl");
-
     const parseId =
       localStorage.getItem("parseAppId") && localStorage.getItem("parseAppId");
-
     if (serverUrl && localStorage) {
       setLoading(true);
       e.preventDefault();
@@ -84,13 +80,10 @@ function Login() {
     e.preventDefault();
     const serverUrl =
       localStorage.getItem("baseUrl") && localStorage.getItem("baseUrl");
-
     const parseId =
       localStorage.getItem("parseAppId") && localStorage.getItem("parseAppId");
-
     if (OTP) {
       setLoading(true);
-
       try {
         let url = `${serverUrl}functions/AuthLoginAsMail/`;
         const headers = {
@@ -102,7 +95,6 @@ function Login() {
           otp: OTP
         };
         let user = await axios.post(url, body, { headers: headers });
-
         if (user.data.result === "Invalid Otp") {
           alert("Invalid Otp");
           setLoading(false);
@@ -114,10 +106,12 @@ function Login() {
           localStorage.setItem("UserInformation", JSON.stringify(_user));
           localStorage.setItem("username", _user.name);
           localStorage.setItem("accesstoken", _user.sessionToken);
+          //save isGuestSigner true in local to handle login flow header in mobile view
+          localStorage.setItem("isGuestSigner", true);
           setLoading(false);
-          //navigate user to on signature page
-          // navigate(`/recipientSignPdf/${id}/${contactBookId}`);
-          navigate(`/loadmf/signmicroapp/recipientSignPdf/${id}/${contactBookId}`);
+          navigate(
+            `/loadmf/signmicroapp/recipientSignPdf/${id}/${contactBookId}`
+          );
         }
       } catch (error) {}
     } else {
@@ -173,9 +167,7 @@ function Login() {
                 <span className="KNLO">
                   Verification code is sent to your email
                 </span>
-                <div className="card card-box"
-                style={{borderRadius:"0px"}}
-                >
+                <div className="card card-box" style={{ borderRadius: "0px" }}>
                   <div className="card-body">
                     <input
                       type="email"
@@ -190,7 +182,6 @@ function Login() {
                 <div className="btnContainer">
                   {loading ? (
                     <button
-                      // className="btn btn-info loadinBtn "
                       type="button"
                       style={{
                         background: themeColor(),
@@ -214,15 +205,7 @@ function Login() {
                         color: "white",
                         marginLeft: "0px !important"
                       }}
-                      // className="btn btn-sm otpButton"
                       onClick={(e) => SendOtp(e)}
-                      // style={{
-                      //   marginBottom: "4px",
-                      //   width: "210px",
-                      //   background: themeColor(),
-                      //   color: "white",
-                      //   fontWeight: "600"
-                      // }}
                     >
                       Send OTP
                     </button>

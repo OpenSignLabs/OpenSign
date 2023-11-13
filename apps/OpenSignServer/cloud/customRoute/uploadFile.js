@@ -4,6 +4,12 @@ import multerS3 from 'multer-s3';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
 dotenv.config();
+
+function sanitizeFileName(fileName) {
+  // Remove spaces and invalid characters
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, '');
+}
+
 async function uploadFile(req, res) {
   try {
     //--size extended to 100 mb
@@ -50,16 +56,28 @@ async function uploadFile(req, res) {
       region: process.env.DO_REGION,
     });
 
-    // const s3 = new aws.S3();
-    const upload = multer({
-      fileFilter: function (req, file, cb) {
-        if (accepted_extensions.some(ext => file.originalname.toLowerCase().endsWith('.' + ext))) {
-          return cb(null, true);
+    const parseBaseUrl = process.env.SERVER_URL;
+    const parseAppId = process.env.APP_ID;
+
+    if (process.env.USE_LOCAL == "TRUE") {
+      var fileStorage = multer.diskStorage({
+        destination: function(req, file, cb) {
+          cb(null, "files/files");
+        },
+        metadata: function (req, file, cb) {
+          cb(null, { fieldName: 'OPENSIGN_METADATA' });
+        },
+        filename: function(req, file, cb) {
+          let filename = file.originalname;
+          let newFileName = filename.split('.')[0];
+          let extension = filename.split('.')[1];
+          newFileName = sanitizeFileName(newFileName + '_' + new Date().toISOString() + '.' + extension)
+          console.log(newFileName);
+          cb(null, newFileName);
         }
-        // otherwise, return error
-        return cb('Only ' + accepted_extensions.join(', ') + ' files are allowed!');
-      },
-      storage: multerS3({
+      });
+    } else {
+      var fileStorage = multerS3({
         acl: 'public-read',
         s3,
         bucket: DO_SPACE,
@@ -69,14 +87,25 @@ async function uploadFile(req, res) {
         key: function (req, file, cb) {
           //console.log(file);
           let filename = file.originalname;
-          let filenam = filename.split('.')[0];
+          let newFileName = filename.split('.')[0];
           let extension = filename.split('.')[1];
-          filenam = filenam + '_' + new Date().toISOString() + '.' + extension;
-          console.log(filenam);
-          cb(null, filenam);
-        },
-      }),
+          newFileName = sanitizeFileName(newFileName + '_' + new Date().toISOString() + '.' + extension)
+          console.log(newFileName);
+          cb(null, newFileName);
+        }
+      });
+    }
 
+    // const s3 = new aws.S3();
+    const upload = multer({
+      fileFilter: function (req, file, cb) {
+        if (accepted_extensions.some(ext => file.originalname.toLowerCase().endsWith('.' + ext))) {
+          return cb(null, true);
+        }
+        // otherwise, return error
+        return cb('Only ' + accepted_extensions.join(', ') + ' files are allowed!');
+      },
+      storage: fileStorage,
       limits: { fileSize: size },
     }).single('file');
 
@@ -93,7 +122,14 @@ async function uploadFile(req, res) {
       const status = 'Success';
       //res.header("Access-Control-Allow-Headers", "Content-Type");
       //res.setHeader("Access-Control-Allow-Origin", "*");
-      return res.json({ status, imageUrl: req.file.location });
+      if (process.env.USE_LOCAL == "TRUE") {
+        console.log(req.file);
+        var fileUrl = `${parseBaseUrl}/files/${parseAppId}/${req.file.filename}`;
+      } else {
+        var fileUrl = req.file.location;
+      }
+
+      return res.json({ status, imageUrl: fileUrl });
     });
   } catch (err) {
     console.log('Exeption in query ' + err.stack);
