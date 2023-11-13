@@ -10,9 +10,6 @@ import { ParseServer } from 'parse-server';
 import path from 'path';
 const __dirname = path.resolve();
 import http from 'http';
-import formData from 'form-data';
-import Mailgun from 'mailgun.js';
-import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
 import S3Adapter from 'parse-server-s3-adapter';
 import FSFilesAdapter from 'parse-server-fs-adapter';
 import AWS from 'aws-sdk';
@@ -46,7 +43,7 @@ let transporterMail;
 if (process.env.SMTP_USER && process.env.SMTP_PASS && process.env.SMTP_HOST) {
   transporterMail = createTransport({
     host: process.env.SMTP_HOST,
-    port: process.env.SMTP_HOST || 465,
+    port: process.env.SMTP_PORT || 465,
     secure: process.env.SMTP_SECURE || true,
     auth: {
       user: process.env.SMTP_USER,
