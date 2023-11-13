@@ -17,6 +17,7 @@ import S3Adapter from 'parse-server-s3-adapter';
 import FSFilesAdapter from 'parse-server-fs-adapter';
 import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
+import {createTransport} from "nodemailer"
 
 const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 // console.log("configuration ", configuration);
@@ -40,15 +41,18 @@ if (process.env.USE_LOCAL !== "TRUE") {
   });
 }
 
-let mailgunClient;
-let mailgunDomain;
-if (process.env.MAILGUN_API_KEY) {
-  const mailgun = new Mailgun(formData);
-  mailgunClient = mailgun.client({
-    username: 'api',
-    key: process.env.MAILGUN_API_KEY,
+let transporterMail;
+
+if (process.env.SMTP_USER && process.env.SMTP_PASS && process.env.SMTP_HOST) {
+  transporterMail = createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_HOST || 465,
+    secure: process.env.SMTP_SECURE || true,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass:  process.env.SMTP_PASS,
+    },
   });
-  mailgunDomain = process.env.MAILGUN_DOMAIN;
 }
 
 export const config = {
@@ -64,12 +68,12 @@ export const config = {
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Open Sign',
   allowClientClassCreation: false,
-  emailAdapter: process.env.MAILGUN_API_KEY
+  emailAdapter: process.env.SMTP_HOST
     ? {
         module: 'parse-server-api-mail-adapter',
         options: {
           // The email address from which emails are sent.
-          sender: process.env.MAILGUN_SENDER,
+          sender: process.env.SMTP_USER,
           // The email templates.
           templates: {
             // The template used by Parse Server to send an email for password
@@ -88,8 +92,10 @@ export const config = {
             },
           },
           apiCallback: async ({ payload, locale }) => {
-            const mailgunPayload = ApiPayloadConverter.mailgun(payload);
-            await mailgunClient.messages.create(mailgunDomain, mailgunPayload);
+            console.log("PAYLOAD FOR MAILGUN =>", payload)
+
+            if (transporterMail)
+              await transporterMail.sendMail(payload)
           },
         },
       }

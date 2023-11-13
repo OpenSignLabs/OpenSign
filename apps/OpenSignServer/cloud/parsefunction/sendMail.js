@@ -1,14 +1,16 @@
 import fs from 'node:fs';
-import formData from 'form-data';
-import Mailgun from 'mailgun.js';
 import https from 'https';
+import {createTransport} from "nodemailer"
 
-const mailgun = new Mailgun(formData);
-const mailgunClient = mailgun.client({
-  username: 'api',
-  key: process.env.MAILGUN_API_KEY,
+const transporter = createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_HOST || 465,
+  secure: process.env.SMTP_SECURE || true,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass:  process.env.SMTP_PASS,
+  },
 });
-const mailgunDomain = process.env.MAILGUN_DOMAIN;
 
 async function sendmail(req) {
   try {
@@ -38,7 +40,7 @@ async function sendmail(req) {
         const pdfName = req.params.pdfName && `${req.params.pdfName}.pdf`;
         const file = {
           filename: pdfName || 'exported.pdf',
-          data: PdfBuffer, //fs.readFileSync('./exports/exported_file_1223.pdf'),
+          content: PdfBuffer, //fs.readFileSync('./exports/exported_file_1223.pdf'),
         };
 
         // const html = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body style='text-align: center;'> <p style='font-weight: bolder; font-size: large;'>Hello!</p> <p>This is a html checking mail</p><p><button style='background-color: lightskyblue; cursor: pointer; border-radius: 5px; padding: 10px; border-style: solid; border-width: 2px; text-decoration: none; font-weight: bolder; color:blue'>Verify email</button></p></body></html>"
@@ -51,12 +53,14 @@ async function sendmail(req) {
           subject: req.params.subject,
           text: req.params.text || 'mail',
           html: req.params.html || '',
-          attachment: file,
+          attachments: [file],
         };
 
-        const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
+        const res = await transporter.sendMail(messageParams)
+        
+
         console.log('Res ', res);
-        if (res.status === 200) {
+        if (!res.err) {
           return {
             status: 'success',
           };
@@ -72,9 +76,10 @@ async function sendmail(req) {
         html: req.params.html || '',
       };
 
-      const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
+      const res = await transporter.sendMail(messageParams)
+
       console.log('Res ', res);
-      if (res.status === 200) {
+      if (!res.err) {
         return {
           status: 'success',
         };
