@@ -129,7 +129,7 @@ function Login(props) {
                           );
                           if (rolesfiltered.length > 0) {
                             _currentRole = rolesfiltered[0];
-                          } 
+                          }
                         } else {
                           const rolesfiltered = userRoles.filter(
                             (x) => !valuesToExclude.includes(x)
@@ -472,7 +472,7 @@ function Login(props) {
                   );
                   if (rolesfiltered.length > 0) {
                     _currentRole = rolesfiltered[0];
-                  } 
+                  }
                 } else {
                   const rolesfiltered = userRoles.filter(
                     (x) => !valuesToExclude.includes(x)
@@ -655,7 +655,6 @@ function Login(props) {
               } else {
                 setThirdpartyLoader(false);
                 setState({ ...state, loading: false });
-               
               }
             })
             .catch((err) => {
@@ -1171,7 +1170,7 @@ function Login(props) {
               <div className="modal-dialog" role="document">
                 <div className="modal-content">
                   <div className="modal-header">
-                    <h5 className="modal-title">Login form</h5>
+                    <h5 className="modal-title font-semibold">Additional Info</h5>
                     <span>
                       <span></span>
                     </span>
@@ -1227,18 +1226,19 @@ function Login(props) {
                       <div className="mt-4">
                         <button
                           type="button"
-                          className="bg-[#6c757d] text-sm p-2 text-white rounded uppercase"
-                          onClick={handleCloseModal}
-                          style={{ marginRight: 10, width: 90 }}
+                          className="bg-[#17a2b8] text-sm p-2 text-white rounded uppercase"
+                          onClick={(e) => handleSubmitbtn(e)}
+                          style={{ marginRight: 10 }}
                         >
-                          Cancel
+                          Login
                         </button>
                         <button
                           type="button"
-                          className="bg-[#17a2b8] text-sm p-2 text-white rounded uppercase"
-                          onClick={(e) => handleSubmitbtn(e)}
+                          className="bg-[#6c757d] text-sm p-2 text-white rounded uppercase"
+                          onClick={handleCloseModal}
+                          style={{ width: 90 }}
                         >
-                          Login
+                          Cancel
                         </button>
                       </div>
                     </form>
