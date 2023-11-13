@@ -1,0 +1,30 @@
+{
+  "name": "opensign",
+  "version": "1.0.6",
+  "description": "Free and open source alternative to DocuSign",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "lint-staged-changes": "lint-staged"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/opensignlabs/opensign"
+  },
+  "keywords": [
+    "digital",
+    "signature",
+    "e-signature",
+    "docusign",
+    "electronic",
+    "signature"
+  ],
+  "author": "OpenSignLabs",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^15.1.0",
+    "prettier": "3.1.0"
+  }
+}
