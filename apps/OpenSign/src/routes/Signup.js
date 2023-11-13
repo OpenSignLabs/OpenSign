@@ -117,7 +117,7 @@ const Signup = (props) => {
                 await Parse.User.requestPasswordReset(email).then(
                   async function (res1) {
                     if (res1.data === undefined) {
-                      alert("Email has been sent to your mail!");
+                      alert("Verification mail has been sent to your E-mail!");
                     }
                   }
                 );
