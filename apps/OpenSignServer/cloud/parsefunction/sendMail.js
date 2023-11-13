@@ -48,7 +48,7 @@ async function sendmail(req) {
         const from = req.params.from || '';
 
         const messageParams = {
-          from: from + ' <' + process.env.MAILGUN_SENDER + '>',
+          from: from + ' <' + process.env.SMTP_USER + '>',
           to: req.params.recipient,
           subject: req.params.subject,
           text: req.params.text || 'mail',
@@ -69,7 +69,7 @@ async function sendmail(req) {
     } else {
       const from = req.params.from || '';
       const messageParams = {
-        from: from + ' <' + process.env.MAILGUN_SENDER + '>',
+        from: from + ' <' + process.env.SMTP_USER + '>',
         to: req.params.recipient,
         subject: req.params.subject,
         text: req.params.text || 'mail',
