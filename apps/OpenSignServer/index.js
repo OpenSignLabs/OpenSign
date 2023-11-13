@@ -92,8 +92,6 @@ export const config = {
             },
           },
           apiCallback: async ({ payload, locale }) => {
-            console.log("PAYLOAD FOR MAILGUN =>", payload)
-
             if (transporterMail)
               await transporterMail.sendMail(payload)
           },
