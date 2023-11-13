@@ -37,7 +37,7 @@ function Header({
 }) {
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
-
+  const isGuestSigner = localStorage.getItem("isGuestSigner");
   //for go to previous page
   function previousPage() {
     changePage(-1);
@@ -76,19 +76,27 @@ function Header({
   const handleDownloadPdf = () => {
     const pdfName = pdfDetails[0] && pdfDetails[0].Name;
 
-    saveAs(pdfUrl, `${pdfName}_signed_by_OpenSign™.pdf`);
+    saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
   };
+
+  const sanitizeFileName = (pdfName) => {
+    // Replace spaces with underscore
+    return pdfName.replace(/ /g, '_');
+  }
+
 
   return (
     <div
-      style={{ paddingBottom: "5px", paddingTop: "5px" }}
+    style={{ padding: !isGuestSigner && "5px 0px 5px 0px" }}
       className="mobileHead"
     >
       {isMobile && isShowHeader ? (
         <div
           id="navbar"
-          className="stickyHead"
-          style={{ width: window.innerWidth - 30 + "px" }}
+          className={isGuestSigner ? "stickySignerHead" : "stickyHead"}
+          style={{
+            width: isGuestSigner ? window.innerWidth : window.innerWidth - 30 + "px"
+          }}
         >
           <div className="preBtn2">
             <div
@@ -215,7 +223,7 @@ function Header({
               </DropdownMenu.Root>
             ) : (
               <div style={{ display: "flex", justifyContent: "space-around" }}>
-                {/* current signer is checking user send request and check status of pdf sign than if current 
+                {/* current signer is checking user send request and check status of pdf sign than if current
                 user exist than show finish button else no
                 */}
                 {currentSigner && (
