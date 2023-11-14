@@ -627,8 +627,8 @@ function SignYourSelf() {
       const bottomY = xyPosData.isDrag
         ? xyPosData.yBottom * scale - height
         : xyPosData.firstYPos
-        ? xyPosData.yBottom * scale - height + xyPosData.firstYPos
-        : xyPosData.yBottom * scale - height;
+          ? xyPosData.yBottom * scale - height + xyPosData.firstYPos
+          : xyPosData.yBottom * scale - height;
 
       singleSign = {
         pdfFile: pdfBase64Url,
@@ -664,15 +664,7 @@ function SignYourSelf() {
         // console.log("json ", json);
         setPdfUrl(json.result.data);
         if (json.result.data) {
-          const docStatus = {
-            isCompleted: true
-          };
-
-          setDocumentStatus(docStatus);
-          const loadObj = {
-            isLoad: false
-          };
-          setIsLoading(loadObj);
+          getDocumentDetails();
         }
       })
       .catch((err) => {
