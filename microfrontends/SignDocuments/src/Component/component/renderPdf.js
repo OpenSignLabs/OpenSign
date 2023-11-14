@@ -89,7 +89,7 @@ function RenderPdf({
       if (isMobile) {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (!pos.isMobile) {
-          return pos.xPosition / scale - 52;
+          return pos.xPosition / scale + 32;
         }
         //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
         else {
