@@ -25,6 +25,7 @@ import Nodata from "./component/Nodata";
 import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
+import { $ } from 'select-dom';
 function EmbedPdfImage() {
   const { id, contactBookId } = useParams();
   const [isSignPad, setIsSignPad] = useState(false);
@@ -953,6 +954,19 @@ function EmbedPdfImage() {
     );
   };
 
+  const modalAlign = () => {
+
+    let modalDialog = $('.modal-dialog').getBoundingClientRect();
+    let mobileHead = $('.mobileHead').getBoundingClientRect()
+    let modal = $('.modal-dialog');
+    if (modalDialog.left < mobileHead.left) {
+      let leftOffset = mobileHead.left - modalDialog.left;
+      modal.style.left = leftOffset + 'px';
+      modal.style.top = (window.innerHeight/2.5) + 'px';
+    }
+
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       {isLoading.isLoad ? (
@@ -1016,7 +1030,10 @@ function EmbedPdfImage() {
             }}
           >
             {/* this modal is used show this document is already sign */}
-            <Modal show={isAlreadySign.status}>
+            <Modal 
+              show={isAlreadySign.status}
+              onShow={() => modalAlign()}
+            >
               <ModalHeader style={{ background: themeColor() }}>
                 <span style={{ color: "white" }}> Sign Documents</span>
               </ModalHeader>
