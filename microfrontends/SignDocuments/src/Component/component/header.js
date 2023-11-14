@@ -76,8 +76,14 @@ function Header({
   const handleDownloadPdf = () => {
     const pdfName = pdfDetails[0] && pdfDetails[0].Name;
 
-    saveAs(pdfUrl, `${pdfName}_signed_by_OpenSign™.pdf`);
+    saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
   };
+
+  const sanitizeFileName = (pdfName) => {
+    // Replace spaces with underscore
+    return pdfName.replace(/ /g, '_');
+  }
+
 
   return (
     <div
@@ -217,7 +223,7 @@ function Header({
               </DropdownMenu.Root>
             ) : (
               <div style={{ display: "flex", justifyContent: "space-around" }}>
-                {/* current signer is checking user send request and check status of pdf sign than if current 
+                {/* current signer is checking user send request and check status of pdf sign than if current
                 user exist than show finish button else no
                 */}
                 {currentSigner && (
