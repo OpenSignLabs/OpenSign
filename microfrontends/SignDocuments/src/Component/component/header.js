@@ -82,13 +82,13 @@ function Header({
   //handle download signed pdf
   const handleDownloadPdf = () => {
     const pdfName = pdfDetails[0] && pdfDetails[0].Name;
-  saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
   };
-  
+
   const sanitizeFileName = (pdfName) => {
     // Replace spaces with underscore
-    return pdfName.replace(/ /g, '_');
-  }
+    return pdfName.replace(/ /g, "_");
+  };
   //certificate generate and download component in mobile view
   const CertificateDropDown = () => {
     //after generate download certifcate pdf
@@ -109,6 +109,7 @@ function Header({
         window.URL.revokeObjectURL(url);
       }
     };
+
     return (
       <PDFDownloadLink
         onClick={(e) => e.preventDefault()}
@@ -118,7 +119,21 @@ function Header({
         {({ blob, url, loading, error }) => (
           <>
             {loading ? (
-              "Loading document..."
+              <div
+                style={{
+                  border: "none",
+                  backgroundColor: "#fff"
+                }}
+              >
+                <i
+                  className="fa fa-certificate"
+                  style={{
+                    marginRight: "2px"
+                  }}
+                  aria-hidden="true"
+                ></i>
+                Certificate
+              </div>
             ) : (
               <div
                 style={{
@@ -146,6 +161,63 @@ function Header({
             )}
           </>
         )}
+      </PDFDownloadLink>
+    );
+  };
+  const CertificateComponent = () => {
+    return (
+      <PDFDownloadLink
+        style={{ textDecoration: "none" }}
+        document={<Certificate pdfData={pdfDetails} />}
+        fileName={`completion certificate-${
+          pdfDetails[0] && pdfDetails[0].Name
+        }.pdf`}
+      >
+        {({ blob, url, loading, error }) =>
+          loading ? (
+            <button
+              type="button"
+              className="defaultBtn certificateBtn"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center"
+              }}
+            >
+              <i
+                className="fa fa-certificate"
+                style={{
+                  color: "white",
+                  fontSize: "15px",
+                  marginRight: "3px"
+                }}
+                aria-hidden="true"
+              ></i>
+              Certificate
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="defaultBtn certificateBtn"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center"
+              }}
+            >
+              <i
+                className="fa fa-certificate"
+                style={{
+                  color: "white",
+                  fontSize: "15px",
+                  marginRight: "3px"
+                }}
+                aria-hidden="true"
+              ></i>
+              Certificate
+            </button>
+          )
+        }
       </PDFDownloadLink>
     );
   };
@@ -215,7 +287,7 @@ function Header({
                       border: "none",
                       fontWeight: "650",
                       fontSize: "16px",
-                      padding:"0px 3px 0px 5px"
+                      padding: "0px 3px 0px 5px"
                     }}
                   >
                     <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
@@ -255,10 +327,12 @@ function Header({
                       <DropdownMenu.Item className="DropdownMenuItem">
                         <CertificateDropDown />
                       </DropdownMenu.Item>
-                    ) :isSignYourself && (
-                      <DropdownMenu.Item className="DropdownMenuItem">
-                        <CertificateDropDown />
-                      </DropdownMenu.Item>
+                    ) : (
+                      isSignYourself && (
+                        <DropdownMenu.Item className="DropdownMenuItem">
+                          <CertificateDropDown />
+                        </DropdownMenu.Item>
+                      )
                     )}
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
@@ -360,40 +434,7 @@ function Header({
             pdfUrl || isAlreadySign.mssg ? (
               <div style={{ display: "flex", flexDirection: "row" }}>
                 {pdfDetails[0] && pdfDetails.length > 0 && (
-                  <PDFDownloadLink
-                    style={{ textDecoration: "none" }}
-                    document={<Certificate pdfData={pdfDetails} />}
-                    fileName={`completion certificate-${
-                      pdfDetails[0] && pdfDetails[0].Name
-                    }.pdf`}
-                  >
-                    {({ blob, url, loading, error }) =>
-                      loading ? (
-                        "Loading document..."
-                      ) : (
-                        <button
-                          type="button"
-                          className="defaultBtn certificateBtn"
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center"
-                          }}
-                        >
-                          <i
-                            className="fa fa-certificate"
-                            style={{
-                              color: "white",
-                              fontSize: "15px",
-                              marginRight: "3px"
-                            }}
-                            aria-hidden="true"
-                          ></i>
-                          Certificate
-                        </button>
-                      )
-                    }
-                  </PDFDownloadLink>
+                  <CertificateComponent />
                 )}
                 <button
                   onClick={handleToPrint}
@@ -518,42 +559,7 @@ function Header({
           ) : isPdfRequestFiles ? (
             alreadySign ? (
               <div style={{ display: "flex", flexDirection: "row" }}>
-                {isCompleted.isCertificate && (
-                  <PDFDownloadLink
-                    style={{ textDecoration: "none" }}
-                    document={<Certificate pdfData={pdfDetails} />}
-                    fileName={`completion certificate-${
-                      pdfDetails[0] && pdfDetails[0].Name
-                    }.pdf`}
-                  >
-                    {({ blob, url, loading, error }) =>
-                      loading ? (
-                        "Loading document..."
-                      ) : (
-                        <button
-                          type="button"
-                          className="defaultBtn certificateBtn"
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center"
-                          }}
-                        >
-                          <i
-                            className="fa fa-certificate"
-                            style={{
-                              color: "white",
-                              fontSize: "15px",
-                              marginRight: "3px"
-                            }}
-                            aria-hidden="true"
-                          ></i>
-                          Certificate
-                        </button>
-                      )
-                    }
-                  </PDFDownloadLink>
-                )}
+                {isCompleted.isCertificate && <CertificateComponent />}
                 <button
                   onClick={handleToPrint}
                   type="button"
@@ -640,40 +646,7 @@ function Header({
             )
           ) : pdfUrl || (documentStatus && documentStatus.isCompleted) ? (
             <div style={{ display: "flex", flexDirection: "row" }}>
-              <PDFDownloadLink
-                style={{ textDecoration: "none" }}
-                document={<Certificate pdfData={pdfDetails} />}
-                fileName={`completion certificate-${
-                  pdfDetails[0] && pdfDetails[0].Name
-                }.pdf`}
-              >
-                {({ blob, url, loading, error }) =>
-                  loading ? (
-                    "Loading document..."
-                  ) : (
-                    <button
-                      type="button"
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center"
-                      }}
-                      className="defaultBtn certificateBtn"
-                    >
-                      <i
-                        className="fa fa-certificate"
-                        style={{
-                          color: "white",
-                          fontSize: "15px",
-                          marginRight: "3px"
-                        }}
-                        aria-hidden="true"
-                      ></i>
-                      Certificate
-                    </button>
-                  )
-                }
-              </PDFDownloadLink>
+              <CertificateComponent />
               <button
                 onClick={handleToPrint}
                 type="button"
