@@ -374,15 +374,13 @@
   font-size: 50px;
 }
 
-
-
 .DropdownMenuContent,
 .DropdownMenuSubContent {
   min-width: 130px;
-  background-color: #887abf;
-  border: none;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .15);
+  border-radius: 0.25rem;
   padding: 5px;
-
   animation-duration: 400ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
@@ -413,13 +411,13 @@
   font-size: 13px;
   line-height: 1;
   color: black;
-  background-color: #887abf;
+  background-color: #fff;
   display: flex;
   align-items: center;
   height: 25px;
   padding: 0 5px;
   position: relative;
-  padding-left: 25px;
+  padding-left: 20px;
   user-select: none;
   outline: none;
   border: none;
@@ -565,12 +563,12 @@ option {
   color: var(--violet-11);
   cursor: default;
 }
-.fontOptionContainer{
- border: 1px solid #d6d3d3;
- margin: 10px 5px 5px 5px;
+
+.fontOptionContainer {
+  border: 1px solid #d6d3d3;
+  margin: 10px 5px 5px 5px;
 
 }
-
 
 @media screen and (max-width:766px) {
 
@@ -634,11 +632,13 @@ option {
     position: fixed;
     top: 50px;
     left: 0.9rem;
-}
-  .stickySignerHead{
-   position: fixed;
-   }
-   .stickyfooter {
+  }
+
+  .stickySignerHead {
+    position: fixed;
+  }
+
+  .stickyfooter {
     position: fixed;
     bottom: 0px;
     right: 0rem;

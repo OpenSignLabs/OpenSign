@@ -42,7 +42,8 @@ function RenderPdf({
   const isMobile = window.innerWidth < 767;
   const newWidth = window.innerWidth;
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
- 
+ //check isGuestSigner is present in local if yes than handle login flow header in mobile view
+ const isGuestSigner = localStorage.getItem("isGuestSigner");
   // handle signature block width and height according to screen
   const posWidth = (pos) => {
     let width;
@@ -74,8 +75,7 @@ function RenderPdf({
       return width;
     }
   };
-  //check isGuestSigner is present in local if yes than handle login flow header in mobile view
-  const isGuestSigner = localStorage.getItem("isGuestSigner");
+   
 
   //function for render placeholder block over pdf document
   const checkSignedSignes = (data) => {
@@ -777,7 +777,13 @@ function RenderPdf({
               }}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
-              file={pdfUrl ? pdfUrl : pdfDetails[0] && pdfDetails[0].URL}
+              file={
+                pdfUrl
+                  ? pdfUrl
+                  : pdfDetails[0] && pdfDetails[0].SignedUrl
+                  ? pdfDetails[0].SignedUrl
+                  : pdfDetails[0].URL
+              }
             >
               {Array.from(new Array(numPages), (el, index) => (
                 <Page
@@ -1293,7 +1299,13 @@ function RenderPdf({
               }}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
-              file={pdfUrl ? pdfUrl : pdfDetails[0] && pdfDetails[0].URL}
+              file={
+                pdfUrl
+                  ? pdfUrl
+                  : pdfDetails[0] && pdfDetails[0].SignedUrl
+                  ? pdfDetails[0].SignedUrl
+                  : pdfDetails[0].URL
+              }
             >
               {Array.from(new Array(numPages), (el, index) => (
                 <Page
