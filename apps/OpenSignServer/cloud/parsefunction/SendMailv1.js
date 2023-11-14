@@ -5,7 +5,7 @@ async function SendMailv1(request) {
     const recipient = request.params.email;
     const otp = request.params.otp;
     const res = await Parse.Cloud.sendEmail({
-      from: 'Test user' + ' <' + process.env.SMTP_USER + '>',
+      from: 'Test user' + ' <' + process.env.SMTP_ENABLE ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER + '>',
       recipient: recipient,
       subject: 'Your OpenSign™ OTP',
       text: 'This email is a test.',
