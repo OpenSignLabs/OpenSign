@@ -500,7 +500,6 @@ function SignYourSelf() {
                   removeBase64Fromjpeg,
                   ""
                 );
-
                 //function for call to embed signature in pdf and get digital signature pdf
                 signPdfFun(newImgUrl, documentId, data, pdfBase64, pageNo);
               })
@@ -575,14 +574,18 @@ function SignYourSelf() {
             const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
 
             const posY = () => {
-              if (id === 0) {
-                return (
-                  page.getHeight() -
-                  imgUrlList[id].yPosition * scale -
-                  imgHeight
-                );
-              } else if (id > 0) {
-                return page.getHeight() - imgUrlList[id].yPosition * scale;
+              if (isMobile) {
+                if (id === 0) {
+                  return (
+                    page.getHeight() -
+                    imgUrlList[id].yPosition * scale -
+                    imgHeight
+                  );
+                } else if (id > 0) {
+                  return page.getHeight() - imgUrlList[id].yPosition * scale;
+                }
+              } else {
+                return page.getHeight() - imgUrlList[id].yPosition - imgHeight;
               }
             };
             page.drawImage(img, {
@@ -596,7 +599,6 @@ function SignYourSelf() {
           });
         }
         const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-
         signPdfFun(pdfBytes, documentId);
       }
       setIsSignPad(false);
@@ -615,10 +617,11 @@ function SignYourSelf() {
     pageNo
   ) => {
     let singleSign;
+
     const isMobile = window.innerWidth < 767;
     const newWidth = window.innerWidth;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-    const imgWidth = xyPosData.Width.Width ? xyPosData.Width.Width : 150;
+    const imgWidth = xyPosData ? xyPosData.Width : 150;
     if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
       const height = xyPosData.Height ? xyPosData.Height : 60;
       const bottomY = xyPosData.isDrag
@@ -1115,6 +1118,8 @@ function SignYourSelf() {
               pdfDetails={pdfDetails}
               isShowHeader={true}
               currentSigner={true}
+              alreadySign={pdfUrl ? true : false}
+              isSignYourself={true}
             />
 
             {/* className="hidePdf" */}
