@@ -28,7 +28,7 @@ const PlanSubscriptions = () => {
       : "";
   const phone =
     userDetails && userDetails.phone ? "&mobile=" + userDetails.phone : "";
-  const details = "?" + name + email + company + phone;
+  const details = "?shipping_country_code=US&" + name + email + company + phone;
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
       setIsLoader(false);

@@ -192,7 +192,6 @@ function PdfRequestFiles() {
 
             //check document is signed or not
             if (checkDocIdExist && checkDocIdExist.length > 0) {
-              setAlreadySign(true);
               setIsDocId(true);
               const signerRes = res[0].Signers;
               //comparison auditTrail user details with signers user details

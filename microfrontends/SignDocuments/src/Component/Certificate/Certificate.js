@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./certificate.css";
+import opensignLogo from "../../assests/open-sign-logo.png";
 
-import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image
+} from "@react-pdf/renderer";
 
 function Certificate({ pdfData }) {
   const [isMultiSigners, setIsMultiSigners] = useState();
@@ -49,70 +57,34 @@ function Certificate({ pdfData }) {
       fontSize: "11px",
       marginBottom: "10px",
       color: "gray"
+    },
+    image: {
+      width: "71px",
+      height: "17px"
     }
   });
 
   const generatedDate = () => {
     const newDate = new Date();
-    const localExpireDate = newDate.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
-
-    var currentOffset = newDate.getTimezoneOffset();
-
-    var ISTOffset = 330; // IST offset UTC +5:30
-
-    var ISTTime = new Date(
-      newDate.getTime() + (ISTOffset + currentOffset) * 60000
-    );
-
-    // ISTTime now represents the time in IST coordinates
-
-    var hoursIST = ISTTime.getHours();
-    var minutesIST = ISTTime.getMinutes();
+    const utcTime = newDate.toUTCString();
 
     return (
       <Text
         style={{
-          textAlign: "right",
           color: "gray",
-          fontSize: "10px",
-          marginBottom: "30px"
+          fontSize: "10px"
         }}
       >
-        Generated On {localExpireDate} {hoursIST}:{minutesIST} IST
+        Generated On {utcTime}
       </Text>
     );
   };
   const changeCompletedDate = () => {
     const completedOn = pdfData[0].updatedAt;
     const newDate = new Date(completedOn);
-    const localExpireDate = newDate.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
+    const utcTime = newDate.toUTCString();
 
-    var currentOffset = newDate.getTimezoneOffset();
-
-    var ISTOffset = 330; // IST offset UTC +5:30
-
-    var ISTTime = new Date(
-      newDate.getTime() + (ISTOffset + currentOffset) * 60000
-    );
-
-    // ISTTime now represents the time in IST coordinates
-
-    var hoursIST = ISTTime.getHours();
-    var minutesIST = ISTTime.getMinutes();
-
-    return (
-      <Text style={styles.textStyle2}>
-        {localExpireDate} {hoursIST}:{minutesIST} IST
-      </Text>
-    );
+    return <Text style={styles.textStyle2}>{utcTime}</Text>;
   };
 
   const signerName = (data) => {
@@ -143,7 +115,19 @@ function Certificate({ pdfData }) {
         {/** Page defines a single page of content. */}
         <Page size="A4" style={styles.page}>
           <View style={styles.section1}>
-            {generatedDate()}
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "30px"
+              }}
+            >
+              <Image src={opensignLogo} style={styles.image} />
+              {generatedDate()}
+            </View>
+
             <View style={{ justifyContent: "center" }}>
               <Text
                 style={{
@@ -182,7 +166,9 @@ function Certificate({ pdfData }) {
                   </Text>
                   <Text style={styles.textStyle}>
                     Organization : &nbsp;
-                    <Text style={styles.textStyle2}>__</Text>
+                    <Text style={styles.textStyle2}>
+                      {pdfData[0].ExtUserPtr.Company}
+                    </Text>
                   </Text>
                   <Text style={styles.textStyle}>
                     Completed on : &nbsp;{changeCompletedDate()}
