@@ -267,8 +267,9 @@ function RenderPdf({
 
   //handled x-position in mobile view saved from big screen or small screen
   const xPos = (pos) => {
+    //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
     if (!pos.isMobile) {
-      if (!isGuestSigner) {
+      if (isGuestSigner) {
         return pos.xPosition / scale;
       } else {
         const newWidth = window.innerWidth - 32;
@@ -281,7 +282,7 @@ function RenderPdf({
       } else {
         const newWidth = window.innerWidth - 32;
         const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-        return pos.xPosition * (pos.scale / scale) + 20;
+        return pos.xPosition * (pos.scale / scale);
       }
     }
   };
