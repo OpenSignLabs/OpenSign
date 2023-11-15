@@ -101,7 +101,7 @@ function RenderPdf({
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
         if (pos.isMobile) {
-          return pos.scale && pos.xPosition * pos.scale + 50;
+          return pos.scale && pos.xPosition * pos.scale;
         }
         //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
         else {
@@ -124,7 +124,7 @@ function RenderPdf({
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
         if (pos.isMobile) {
-          return pos.scale && pos.yPosition * pos.scale + 50;
+          return pos.scale && pos.yPosition * pos.scale;
         }
         //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
         else {
@@ -339,7 +339,7 @@ function RenderPdf({
                               default={{
                                 x: !pos.isMobile
                                   ? pos.xPosition / scale
-                                  : pos.xPosition * (pos.scale / scale) - 50,
+                                  : pos.xPosition * (pos.scale / scale),
 
                                 y: !pos.isMobile
                                   ? pos.yPosition / scale
@@ -405,7 +405,7 @@ function RenderPdf({
                                 //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
                                 x: !pos.isMobile
                                   ? pos.xPosition / scale
-                                  : pos.xPosition * (pos.scale / scale) - 50,
+                                  : pos.xPosition * (pos.scale / scale) + 20,
 
                                 y: !pos.isMobile
                                   ? pos.yPosition / scale
@@ -951,12 +951,12 @@ function RenderPdf({
                                   height: pos.Height ? pos.Height : 60
                                 }}
                                 disableDragging={true}
-                                //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
+                                //if pos.isMobile true -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
 
                                 default={{
                                   x: pos.isMobile
                                     ? pos.scale &&
-                                      pos.xPosition * pos.scale + 20
+                                      pos.xPosition * pos.scale + 70
                                     : pos.xPosition,
                                   y: pos.isMobile
                                     ? pos.scale && pos.yPosition * pos.scale
