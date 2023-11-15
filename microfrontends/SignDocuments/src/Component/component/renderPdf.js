@@ -101,7 +101,7 @@ function RenderPdf({
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
         if (pos.isMobile) {
-          return pos.scale && pos.xPosition * pos.scale;
+          return pos.scale && pos.xPosition * pos.scale + 70;
         }
         //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
         else {
@@ -265,6 +265,26 @@ function RenderPdf({
     );
   };
 
+  //handled x-position in mobile view saved from big screen or small screen
+  const xPos = (pos) => {
+    if (!pos.isMobile) {
+      if (!isGuestSigner) {
+        return pos.xPosition / scale;
+      } else {
+        const newWidth = window.innerWidth - 32;
+        const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+        return pos.xPosition / scale;
+      }
+    } else {
+      if (isGuestSigner) {
+        return pos.xPosition * (pos.scale / scale) + 20;
+      } else {
+        const newWidth = window.innerWidth - 32;
+        const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+        return pos.xPosition * (pos.scale / scale) + 20;
+      }
+    }
+  };
   return (
     <>
       {isMobile && scale ? (
@@ -337,10 +357,7 @@ function RenderPdf({
                               //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
                               //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
                               default={{
-                                x: !pos.isMobile
-                                  ? pos.xPosition / scale
-                                  : pos.xPosition * (pos.scale / scale),
-
+                                x: xPos(pos),
                                 y: !pos.isMobile
                                   ? pos.yPosition / scale
                                   : pos.yPosition * (pos.scale / scale)
@@ -403,9 +420,7 @@ function RenderPdf({
                               default={{
                                 //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
                                 //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-                                x: !pos.isMobile
-                                  ? pos.xPosition / scale
-                                  : pos.xPosition * (pos.scale / scale) + 20,
+                                x: xPos(pos),
 
                                 y: !pos.isMobile
                                   ? pos.yPosition / scale
@@ -890,7 +905,7 @@ function RenderPdf({
                                 default={{
                                   x: pos.isMobile
                                     ? pos.scale &&
-                                      pos.xPosition * pos.scale + 20
+                                      pos.xPosition * pos.scale + 70
                                     : pos.xPosition,
                                   y: pos.isMobile
                                     ? pos.scale && pos.yPosition * pos.scale
