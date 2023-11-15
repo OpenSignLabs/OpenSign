@@ -87,9 +87,11 @@ function RenderPdf({
     const xPos = (pos) => {
       //checking both condition mobile and desktop view
       if (isMobile) {
+        const newWidth = window.innerWidth - 32;
+        const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (!pos.isMobile) {
-          return pos.xPosition / scale + 32;
+          return pos.xPosition / scale - 20;
         }
         //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
         else {
