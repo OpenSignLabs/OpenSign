@@ -99,7 +99,7 @@ function PdfFileComponent({
 
   //function for navigate user to microapp-signature component
   const checkPdfStatus = async (data) => {
-    
+
     const hostUrl = getHostUrl();
     const expireDate = data.ExpiryDate.iso;
     const expireUpdateDate = new Date(expireDate).getTime();
@@ -221,13 +221,19 @@ function PdfFileComponent({
         // console.log("download")
         const pdfName = data && data.Name;
         const pdfUrl = data && data.SignedUrl ? data.SignedUrl : data.URL;
-        saveAs(pdfUrl, `${pdfName}_signed_by_OpenSign™.pdf`);
+        saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
       } else if (selectType === "Rename") {
         // console.log("rename")
         setRenameValue(data.Name);
         setRename(data.objectId);
       }
     };
+
+    const sanitizeFileName = (pdfName) => {
+      // Replace spaces with underscore
+      return pdfName.replace(/ /g, '_');
+    }
+
     const handleEnterPress = (e, data) => {
       if (e.key === "Enter") {
         handledRenameDoc(data);

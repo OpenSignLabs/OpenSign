@@ -127,7 +127,24 @@ openssl pkcs12 -inkey ./cert/local_dev.key -in ./cert/local_dev.crt -export -out
 openssl base64 -in ./cert/local_dev.pfx -out ./cert/base64_pfx
 ```
 
-#Build Local Environment
+# CORS Configuration
 
-Below are the steps to follow -
+As document storage is delegated to S3-compatible services that reside in a different host than the OpenSign one, document operations (loading, storing, deleting) are subject to [Cross-Origin Resource Sharing](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) restriction policies; as a consequence, OpenSign app may fail with (browser console) errors like the following:
+```
+Access to fetch at 'https://foo.nyc3.digitaloceanspaces.com/exported_file_4627_0000-00-00T00%3A45%3A43.344Z.pdf'
+from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header
+is present on the requested resource. If an opaque response serves your needs, set the request's mode to
+'no-cors' to fetch the resource with CORS disabled.
+```
+
+In order to address this, your document storage system must be instructed to accept requests from other hosts; below the relevant documentation links:
+- [How to Configure CORS on DigitalOcean Spaces](https://docs.digitalocean.com/products/spaces/how-to/configure-cors/)
+- [Configuring cross-origin resource sharing on AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enabling-cors-examples.html)
+
+# Build Local Environment
+
+Command to build project -
 - Execute `make build`
+
+Command to run project -
+- Execute `make run`
