@@ -961,7 +961,7 @@ function EmbedPdfImage() {
     if (modalDialog.left < mobileHead.left) {
       let leftOffset = mobileHead.left - modalDialog.left;
       modal.style.left = leftOffset + 'px';
-      modal.style.top = (window.innerHeight/2.5) + 'px';
+      modal.style.top = (window.innerHeight/3) + 'px';
     }
   };
 
