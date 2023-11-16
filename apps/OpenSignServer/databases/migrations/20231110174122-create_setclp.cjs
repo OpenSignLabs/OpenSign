@@ -18,21 +18,20 @@ exports.up = async Parse => {
   schema.addString('Next_billing_date');
   schema.addBoolean('IsContactEntry');
   schema.addBoolean('ShareWithTeam');
-  schema.addPointer('TenantId', "partners_Tenant")
-  schema.addPointer('UserId', "_User")
-  schema.addPointer("CreatedBy", "_User")
+  schema.addPointer('TenantId', 'partners_Tenant');
+  schema.addPointer('UserId', '_User');
+  schema.addPointer('CreatedBy', '_User');
   schema.setCLP({
     get: {},
     find: {},
     count: {},
-    create: {},
-    update: {},
+    create: { '*': true },
+    update: { '*': true },
     delete: {},
     addField: {},
   });
 
   return schema.save();
-
 
   // const config = new Config(process.env.APP_ID, process.env.PARSE_MOUNT);
   // const schema = await config.database.loadSchema();
