@@ -573,7 +573,7 @@ function PdfRequestFiles() {
           //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
           if (pos.isMobile) {
             const x = pos.xPosition * (pos.scale / scale);
-            return x * scale + 50;
+            return x * scale + 70;
           } else {
             const x = pos.xPosition / scale;
             return x * scale;
@@ -596,12 +596,12 @@ function PdfRequestFiles() {
         if (isMobile) {
           //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
           if (pos.isMobile) {
-            const y = pos.yPosition * (pos.scale / scale);
+            const y = pos.yBottom * (pos.scale / scale);
             yPosition = pos.isDrag
               ? y * scale - height
               : pos.firstYPos
-              ? y * scale - height + pos.firstYPos
-              : y * scale - height;
+                ? y * scale - height + pos.firstYPos
+                : y * scale - height;
             return yPosition;
           } else {
             const y = pos.yBottom / scale;
@@ -609,8 +609,8 @@ function PdfRequestFiles() {
             yPosition = pos.isDrag
               ? y * scale - height
               : pos.firstYPos
-              ? y * scale - height + pos.firstYPos
-              : y * scale - height;
+                ? y * scale - height + pos.firstYPos
+                : y * scale - height;
             return yPosition;
           }
         } else {
@@ -621,15 +621,15 @@ function PdfRequestFiles() {
             yPosition = pos.isDrag
               ? y - height
               : pos.firstYPos
-              ? y - height + pos.firstYPos
-              : y - height;
+                ? y - height + pos.firstYPos
+                : y - height;
             return yPosition;
           } else {
             yPosition = pos.isDrag
               ? pos.yBottom - height
               : pos.firstYPos
-              ? pos.yBottom - height + pos.firstYPos
-              : pos.yBottom - height;
+                ? pos.yBottom - height + pos.firstYPos
+                : pos.yBottom - height;
             return yPosition;
           }
         }

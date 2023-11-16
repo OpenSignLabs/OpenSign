@@ -42,8 +42,8 @@ function RenderPdf({
   const isMobile = window.innerWidth < 767;
   const newWidth = window.innerWidth;
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
- //check isGuestSigner is present in local if yes than handle login flow header in mobile view
- const isGuestSigner = localStorage.getItem("isGuestSigner");
+  //check isGuestSigner is present in local if yes than handle login flow header in mobile view
+  const isGuestSigner = localStorage.getItem("isGuestSigner");
   // handle signature block width and height according to screen
   const posWidth = (pos) => {
     let width;
@@ -75,7 +75,6 @@ function RenderPdf({
       return width;
     }
   };
-   
 
   //function for render placeholder block over pdf document
   const checkSignedSignes = (data) => {
@@ -88,6 +87,8 @@ function RenderPdf({
     const xPos = (pos) => {
       //checking both condition mobile and desktop view
       if (isMobile) {
+        const newWidth = window.innerWidth - 32;
+        const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (!pos.isMobile) {
           return pos.xPosition / scale - 20;
@@ -100,7 +101,7 @@ function RenderPdf({
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
         if (pos.isMobile) {
-          return pos.scale && pos.xPosition * pos.scale + 50;
+          return pos.scale && pos.xPosition * pos.scale + 70;
         }
         //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
         else {
@@ -123,7 +124,7 @@ function RenderPdf({
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
         if (pos.isMobile) {
-          return pos.scale && pos.yPosition * pos.scale + 50;
+          return pos.scale && pos.yPosition * pos.scale;
         }
         //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
         else {
@@ -264,6 +265,27 @@ function RenderPdf({
     );
   };
 
+  //handled x-position in mobile view saved from big screen or small screen
+  const xPos = (pos) => {
+    //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+    if (!pos.isMobile) {
+      if (isGuestSigner) {
+        return pos.xPosition / scale;
+      } else {
+        const newWidth = window.innerWidth - 32;
+        const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+        return pos.xPosition / scale;
+      }
+    } else {
+      if (isGuestSigner) {
+        return pos.xPosition * (pos.scale / scale) + 20;
+      } else {
+        const newWidth = window.innerWidth - 32;
+        const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+        return pos.xPosition * (pos.scale / scale);
+      }
+    }
+  };
   return (
     <>
       {isMobile && scale ? (
@@ -336,10 +358,7 @@ function RenderPdf({
                               //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
                               //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
                               default={{
-                                x: !pos.isMobile
-                                  ? pos.xPosition / scale
-                                  : pos.xPosition * (pos.scale / scale) - 50,
-
+                                x: xPos(pos),
                                 y: !pos.isMobile
                                   ? pos.yPosition / scale
                                   : pos.yPosition * (pos.scale / scale)
@@ -402,9 +421,7 @@ function RenderPdf({
                               default={{
                                 //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
                                 //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-                                x: !pos.isMobile
-                                  ? pos.xPosition / scale
-                                  : pos.xPosition * (pos.scale / scale) - 50,
+                                x: xPos(pos),
 
                                 y: !pos.isMobile
                                   ? pos.yPosition / scale
@@ -434,279 +451,144 @@ function RenderPdf({
                   );
                 })
               : pdfRequest
-              ? signerPos.map((data, key) => {
-                  return (
-                    <React.Fragment key={key}>
-                      {checkSignedSignes(data)}
-                    </React.Fragment>
-                  );
-                })
-              : placeholder
-              ? signerPos.map((data, ind) => {
-                  return (
-                    <React.Fragment key={ind}>
-                      {data.placeHolder.map((placeData, index) => {
-                        return (
-                          <React.Fragment key={index}>
-                            {placeData.pageNumber === pageNumber &&
-                              placeData.pos.map((pos) => {
-                                return (
-                                  <Rnd
-                                    key={pos.key}
-                                    bounds="parent"
-                                    style={{
-                                      padding: "0px",
-                                      cursor: "all-scroll",
-                                      zIndex: 1,
-                                      position: "absolute",
-                                      borderStyle: "dashed",
-                                      width: "200px",
-                                      height: "30px",
-                                      borderColor: themeColor(),
-                                      background: data.blockColor,
-                                      textAlign: "center",
-                                      justifyContent: "center",
-                                      borderWidth: "0.2px"
-                                    }}
-                                    onDrag={() =>
-                                      handleTabDrag(pos.key, data.signerObjId)
-                                    }
-                                    size={{
-                                      width: pos.Width ? pos.Width : 150,
-                                      height: pos.Height ? pos.Height : 60
-                                    }}
-                                    lockAspectRatio={
-                                      pos.Width ? pos.Width / pos.Height : 2.5
-                                    }
-                                    resizeHandleStyles={{
-                                      bottom: { display: "none" },
-                                      right: { display: "none" },
-                                      bottomRight: { display: "block" }
-                                    }}
-                                    onDragStop={(event, dragElement) =>
-                                      handleStop(
-                                        event,
-                                        dragElement,
-                                        data.signerObjId,
-                                        pos.key
-                                      )
-                                    }
-                                    default={{
-                                      x: pos.xPosition,
-                                      y: pos.yPosition
-                                    }}
-                                    onResize={(
-                                      e,
-                                      direction,
-                                      ref,
-                                      delta,
-                                      position
-                                    ) => {
-                                      handleImageResize(
-                                        ref,
-                                        pos.key,
-                                        data.signerObjId,
-                                        position
-                                      );
-                                    }}
-                                  >
-                                    <div
-                                      onTouchStart={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteSign(
-                                          pos.key,
-                                          data.signerObjId
-                                        );
-                                      }}
-                                      style={{
-                                        position: "absolute",
-                                        right: 0,
-                                        display: "inline-block",
-                                        background: themeColor(),
-                                        cursor: "pointer",
-                                        padding: "0px 10px",
-                                        zIndex: 10
-                                      }}
-                                    >
-                                      x
-                                    </div>
-                                    <div
-                                      style={{
-                                        fontSize: "12px",
-                                        color: "black",
-                                        fontWeight: "600",
+                ? signerPos.map((data, key) => {
+                    return (
+                      <React.Fragment key={key}>
+                        {checkSignedSignes(data)}
+                      </React.Fragment>
+                    );
+                  })
+                : placeholder
+                  ? signerPos.map((data, ind) => {
+                      return (
+                        <React.Fragment key={ind}>
+                          {data.placeHolder.map((placeData, index) => {
+                            return (
+                              <React.Fragment key={index}>
+                                {placeData.pageNumber === pageNumber &&
+                                  placeData.pos.map((pos) => {
+                                    return (
+                                      <Rnd
+                                        key={pos.key}
+                                        bounds="parent"
+                                        style={{
+                                          padding: "0px",
+                                          cursor: "all-scroll",
+                                          zIndex: 1,
+                                          position: "absolute",
+                                          borderStyle: "dashed",
+                                          width: "200px",
+                                          height: "30px",
+                                          borderColor: themeColor(),
+                                          background: data.blockColor,
+                                          textAlign: "center",
+                                          justifyContent: "center",
+                                          borderWidth: "0.2px"
+                                        }}
+                                        onDrag={() =>
+                                          handleTabDrag(
+                                            pos.key,
+                                            data.signerObjId
+                                          )
+                                        }
+                                        size={{
+                                          width: pos.Width ? pos.Width : 150,
+                                          height: pos.Height ? pos.Height : 60
+                                        }}
+                                        lockAspectRatio={
+                                          pos.Width
+                                            ? pos.Width / pos.Height
+                                            : 2.5
+                                        }
+                                        resizeHandleStyles={{
+                                          bottom: { display: "none" },
+                                          right: { display: "none" },
+                                          bottomRight: { display: "block" }
+                                        }}
+                                        onDragStop={(event, dragElement) =>
+                                          handleStop(
+                                            event,
+                                            dragElement,
+                                            data.signerObjId,
+                                            pos.key
+                                          )
+                                        }
+                                        default={{
+                                          x: pos.xPosition,
+                                          y: pos.yPosition
+                                        }}
+                                        onResize={(
+                                          e,
+                                          direction,
+                                          ref,
+                                          delta,
+                                          position
+                                        ) => {
+                                          handleImageResize(
+                                            ref,
+                                            pos.key,
+                                            data.signerObjId,
+                                            position
+                                          );
+                                        }}
+                                      >
+                                        <div
+                                          onTouchStart={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteSign(
+                                              pos.key,
+                                              data.signerObjId
+                                            );
+                                          }}
+                                          style={{
+                                            position: "absolute",
+                                            right: 0,
+                                            display: "inline-block",
+                                            background: themeColor(),
+                                            cursor: "pointer",
+                                            padding: "0px 10px",
+                                            zIndex: 10
+                                          }}
+                                        >
+                                          x
+                                        </div>
+                                        <div
+                                          style={{
+                                            fontSize: "12px",
+                                            color: "black",
+                                            fontWeight: "600",
 
-                                        marginTop: "0px"
-                                      }}
-                                    >
-                                      {pos.isStamp ? "stamp" : "signature"}
-                                    </div>
-                                  </Rnd>
-                                );
-                              })}
-                          </React.Fragment>
-                        );
-                      })}
-                    </React.Fragment>
-                  );
-                })
-              : xyPostion.map((data, ind) => {
-                  return (
-                    <React.Fragment key={ind}>
-                      {data.pageNumber === pageNumber &&
-                        data.pos.map((pos) => {
-                          return pos && pos.SignUrl ? (
-                            <Rnd
-                              lockAspectRatio={
-                                pos.Width ? pos.Width / pos.Height : 2.5
-                              }
-                              bounds="parent"
-                              ref={nodeRef}
-                              key={pos.key}
-                              style={{
-                                padding: "0px",
-                                cursor: "all-scroll",
-                                zIndex: 1,
-                                position: "absolute",
-                                borderStyle: "dashed",
-                                width: "150px",
-                                height: "60px",
-                                borderColor: themeColor(),
-                                background: "#daebe0",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                borderWidth: "0.2px",
-                                overflow: "hidden",
-                                userSelect: "none"
-                              }}
-                              size={{
-                                width: pos.Width ? pos.Width : 151,
-                                height: pos.Height ? pos.Height : 61
-                              }}
-                              default={{
-                                x: pos.xPosition,
-                                y: pos.yPosition
-                              }}
-                              onDrag={() => handleTabDrag(pos.key)}
-                              onDragStop={handleStop}
-                              onResize={(
-                                e,
-                                direction,
-                                ref,
-                                delta,
-                                position
-                              ) => {
-                                handleImageResize(
-                                  ref,
-                                  pos.key,
-                                  direction,
-                                  position
-                                );
-                              }}
-                            >
-                              {" "}
-                              <div
-                                onTouchStart={(e) => {
-                                  if (!isDragging) {
-                                    setTimeout(() => {
-                                      e.stopPropagation();
-                                      setIsSignPad(true);
-                                      setSignKey(pos.key);
-                                      setIsStamp(pos.isStamp);
-                                    }, 500);
+                                            marginTop: "0px"
+                                          }}
+                                        >
+                                          {pos.isStamp ? "stamp" : "signature"}
+                                        </div>
+                                      </Rnd>
+                                    );
+                                  })}
+                              </React.Fragment>
+                            );
+                          })}
+                        </React.Fragment>
+                      );
+                    })
+                  : xyPostion.map((data, ind) => {
+                      return (
+                        <React.Fragment key={ind}>
+                          {data.pageNumber === pageNumber &&
+                            data.pos.map((pos) => {
+                              return pos && pos.SignUrl ? (
+                                <Rnd
+                                  lockAspectRatio={
+                                    pos.Width ? pos.Width / pos.Height : 2.5
                                   }
-                                }}
-                              >
-                                <div
+                                  bounds="parent"
                                   ref={nodeRef}
-                                  onTouchStart={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteSign(pos.key);
-                                    setIsStamp(false);
-                                  }}
-                                  style={{
-                                    position: "absolute",
-                                    right: 0,
-                                    display: "inline-block",
-                                    background: themeColor(),
-                                    cursor: "pointer",
-                                    padding: "0px 10px"
-                                  }}
-                                >
-                                  x
-                                </div>
-                                <div style={{ pointerEvents: "none" }}>
-                                  <img
-                                    alt="signimg"
-                                    onClick={(e) => {
-                                      setSignKey(pos.key);
-                                      setIsSignPad(true);
-                                      setIsStamp(pos.isStamp);
-                                    }}
-                                    src={pos.SignUrl}
-                                    style={{
-                                      width: "100%",
-                                      height: "100%",
-                                      objectFit: "contain"
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </Rnd>
-                          ) : (
-                            <>
-                              <Rnd
-                                allowAnyClick
-                                ref={nodeRef}
-                                key={pos.key}
-                                lockAspectRatio={
-                                  pos.Width ? pos.Width / pos.Height : 2.5
-                                }
-                                bounds="parent"
-                                style={{
-                                  padding: "0px",
-                                  cursor: "all-scroll",
-                                  zIndex: 10,
-                                  position: "absolute",
-                                  borderStyle: "dashed",
-                                  width: "150px",
-                                  height: "60px",
-                                  borderColor: themeColor(),
-                                  background: "#daebe0",
-                                  textAlign: "center",
-                                  justifyContent: "center",
-                                  borderWidth: "0.2px",
-                                  overflow: "hidden"
-                                }}
-                                onDrag={(e) => {
-                                  handleTabDrag(pos.key, e);
-                                }}
-                                onDragStop={handleStop}
-                                size={{
-                                  width: pos.Width ? pos.Width : 150,
-                                  height: pos.Height ? pos.Height : 60
-                                }}
-                                default={{
-                                  x: pos.xPosition,
-                                  y: pos.yPosition
-                                }}
-                              >
-                                <div
-                                  onTouchStart={(e) => {
-                                    if (!isDragging) {
-                                      setTimeout(() => {
-                                        setIsSignPad(true);
-
-                                        setSignKey(pos.key);
-                                        setIsStamp(pos.isStamp);
-                                      }, 500);
-                                    }
-                                  }}
-                                  className="dragElm"
+                                  key={pos.key}
                                   style={{
                                     padding: "0px",
                                     cursor: "all-scroll",
-                                    zIndex: 20,
+                                    zIndex: 1,
                                     position: "absolute",
                                     borderStyle: "dashed",
                                     width: "150px",
@@ -716,50 +598,190 @@ function RenderPdf({
                                     textAlign: "center",
                                     justifyContent: "center",
                                     borderWidth: "0.2px",
-                                    overflow: "hidden"
+                                    overflow: "hidden",
+                                    userSelect: "none"
+                                  }}
+                                  size={{
+                                    width: pos.Width ? pos.Width : 151,
+                                    height: pos.Height ? pos.Height : 61
+                                  }}
+                                  default={{
+                                    x: pos.xPosition,
+                                    y: pos.yPosition
+                                  }}
+                                  onDrag={() => handleTabDrag(pos.key)}
+                                  onDragStop={handleStop}
+                                  onResize={(
+                                    e,
+                                    direction,
+                                    ref,
+                                    delta,
+                                    position
+                                  ) => {
+                                    handleImageResize(
+                                      ref,
+                                      pos.key,
+                                      direction,
+                                      position
+                                    );
                                   }}
                                 >
+                                  {" "}
                                   <div
                                     onTouchStart={(e) => {
-                                      e.stopPropagation();
-                                      e.preventDefault();
-
-                                      handleDeleteSign(pos.key);
-                                      setIsStamp(false);
+                                      if (!isDragging) {
+                                        setTimeout(() => {
+                                          e.stopPropagation();
+                                          setIsSignPad(true);
+                                          setSignKey(pos.key);
+                                          setIsStamp(pos.isStamp);
+                                        }, 500);
+                                      }
                                     }}
-                                    onClick={(e) => {
-                                      e.stopPropagation(); // Prevent further event propagation
-                                    }}
+                                  >
+                                    <div
+                                      ref={nodeRef}
+                                      onTouchStart={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteSign(pos.key);
+                                        setIsStamp(false);
+                                      }}
+                                      style={{
+                                        position: "absolute",
+                                        right: 0,
+                                        display: "inline-block",
+                                        background: themeColor(),
+                                        cursor: "pointer",
+                                        padding: "0px 10px"
+                                      }}
+                                    >
+                                      x
+                                    </div>
+                                    <div style={{ pointerEvents: "none" }}>
+                                      <img
+                                        alt="signimg"
+                                        onClick={(e) => {
+                                          setSignKey(pos.key);
+                                          setIsSignPad(true);
+                                          setIsStamp(pos.isStamp);
+                                        }}
+                                        src={pos.SignUrl}
+                                        style={{
+                                          width: "100%",
+                                          height: "100%",
+                                          objectFit: "contain"
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </Rnd>
+                              ) : (
+                                <>
+                                  <Rnd
+                                    allowAnyClick
+                                    ref={nodeRef}
+                                    key={pos.key}
+                                    lockAspectRatio={
+                                      pos.Width ? pos.Width / pos.Height : 2.5
+                                    }
+                                    bounds="parent"
                                     style={{
+                                      padding: "0px",
+                                      cursor: "all-scroll",
+                                      zIndex: 10,
                                       position: "absolute",
-                                      right: 0,
-                                      display: "inline-block",
-                                      background: themeColor(),
-                                      cursor: "pointer",
-                                      padding: "0px 10px"
-                                    }}
-                                  >
-                                    x
-                                  </div>
-                                  <div
-                                    cancel=".dragElm"
-                                    style={{
-                                      fontSize: "12px",
-                                      color: themeColor(),
+                                      borderStyle: "dashed",
+                                      width: "150px",
+                                      height: "60px",
+                                      borderColor: themeColor(),
+                                      background: "#daebe0",
+                                      textAlign: "center",
                                       justifyContent: "center",
-                                      marginTop: "20px"
+                                      borderWidth: "0.2px",
+                                      overflow: "hidden"
+                                    }}
+                                    onDrag={(e) => {
+                                      handleTabDrag(pos.key, e);
+                                    }}
+                                    onDragStop={handleStop}
+                                    size={{
+                                      width: pos.Width ? pos.Width : 150,
+                                      height: pos.Height ? pos.Height : 60
+                                    }}
+                                    default={{
+                                      x: pos.xPosition,
+                                      y: pos.yPosition
                                     }}
                                   >
-                                    {pos.isStamp ? "stamp" : "signature"}
-                                  </div>
-                                </div>
-                              </Rnd>
-                            </>
-                          );
-                        })}
-                    </React.Fragment>
-                  );
-                }))}
+                                    <div
+                                      onTouchStart={(e) => {
+                                        if (!isDragging) {
+                                          setTimeout(() => {
+                                            setIsSignPad(true);
+
+                                            setSignKey(pos.key);
+                                            setIsStamp(pos.isStamp);
+                                          }, 500);
+                                        }
+                                      }}
+                                      className="dragElm"
+                                      style={{
+                                        padding: "0px",
+                                        cursor: "all-scroll",
+                                        zIndex: 20,
+                                        position: "absolute",
+                                        borderStyle: "dashed",
+                                        width: "150px",
+                                        height: "60px",
+                                        borderColor: themeColor(),
+                                        background: "#daebe0",
+                                        textAlign: "center",
+                                        justifyContent: "center",
+                                        borderWidth: "0.2px",
+                                        overflow: "hidden"
+                                      }}
+                                    >
+                                      <div
+                                        onTouchStart={(e) => {
+                                          e.stopPropagation();
+                                          e.preventDefault();
+
+                                          handleDeleteSign(pos.key);
+                                          setIsStamp(false);
+                                        }}
+                                        onClick={(e) => {
+                                          e.stopPropagation(); // Prevent further event propagation
+                                        }}
+                                        style={{
+                                          position: "absolute",
+                                          right: 0,
+                                          display: "inline-block",
+                                          background: themeColor(),
+                                          cursor: "pointer",
+                                          padding: "0px 10px"
+                                        }}
+                                      >
+                                        x
+                                      </div>
+                                      <div
+                                        cancel=".dragElm"
+                                        style={{
+                                          fontSize: "12px",
+                                          color: themeColor(),
+                                          justifyContent: "center",
+                                          marginTop: "20px"
+                                        }}
+                                      >
+                                        {pos.isStamp ? "stamp" : "signature"}
+                                      </div>
+                                    </div>
+                                  </Rnd>
+                                </>
+                              );
+                            })}
+                        </React.Fragment>
+                      );
+                    }))}
 
           {/* this component for render pdf document is in middle of the component */}
           <div
@@ -781,8 +803,8 @@ function RenderPdf({
                 pdfUrl
                   ? pdfUrl
                   : pdfDetails[0] && pdfDetails[0].SignedUrl
-                  ? pdfDetails[0].SignedUrl
-                  : pdfDetails[0].URL
+                    ? pdfDetails[0].SignedUrl
+                    : pdfDetails[0].URL
               }
             >
               {Array.from(new Array(numPages), (el, index) => (
@@ -884,7 +906,7 @@ function RenderPdf({
                                 default={{
                                   x: pos.isMobile
                                     ? pos.scale &&
-                                      pos.xPosition * pos.scale + 20
+                                      pos.xPosition * pos.scale + 70
                                     : pos.xPosition,
                                   y: pos.isMobile
                                     ? pos.scale && pos.yPosition * pos.scale
@@ -945,12 +967,12 @@ function RenderPdf({
                                   height: pos.Height ? pos.Height : 60
                                 }}
                                 disableDragging={true}
-                                //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
+                                //if pos.isMobile true -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
 
                                 default={{
                                   x: pos.isMobile
                                     ? pos.scale &&
-                                      pos.xPosition * pos.scale + 20
+                                      pos.xPosition * pos.scale + 70
                                     : pos.xPosition,
                                   y: pos.isMobile
                                     ? pos.scale && pos.yPosition * pos.scale
@@ -980,89 +1002,289 @@ function RenderPdf({
                     );
                   })
                 : pdfRequest
-                ? signerPos.map((data, key) => {
-                    return (
-                      <React.Fragment key={key}>
-                        {checkSignedSignes(data)}
-                      </React.Fragment>
-                    );
-                  })
-                : placeholder
-                ? signerPos.map((data, ind) => {
-                    return (
-                      <React.Fragment key={ind}>
-                        {data.placeHolder.map((placeData, index) => {
-                          return (
-                            <React.Fragment key={index}>
-                              {placeData.pageNumber === pageNumber &&
-                                placeData.pos.map((pos) => {
-                                  return (
-                                    <Rnd
-                                      key={pos.key}
-                                      bounds="parent"
+                  ? signerPos.map((data, key) => {
+                      return (
+                        <React.Fragment key={key}>
+                          {checkSignedSignes(data)}
+                        </React.Fragment>
+                      );
+                    })
+                  : placeholder
+                    ? signerPos.map((data, ind) => {
+                        return (
+                          <React.Fragment key={ind}>
+                            {data.placeHolder.map((placeData, index) => {
+                              return (
+                                <React.Fragment key={index}>
+                                  {placeData.pageNumber === pageNumber &&
+                                    placeData.pos.map((pos) => {
+                                      return (
+                                        <Rnd
+                                          key={pos.key}
+                                          bounds="parent"
+                                          style={{
+                                            padding: "0px",
+                                            cursor: "all-scroll",
+                                            zIndex: 1,
+                                            position: "absolute",
+                                            borderStyle: "dashed",
+                                            width: "200px",
+                                            height: "30px",
+                                            borderColor: themeColor(),
+                                            background: data.blockColor,
+                                            textAlign: "center",
+                                            justifyContent: "center",
+                                            borderWidth: "0.2px"
+                                          }}
+                                          onDrag={() =>
+                                            handleTabDrag(
+                                              pos.key,
+                                              data.signerObjId
+                                            )
+                                          }
+                                          size={{
+                                            width: pos.Width ? pos.Width : 150,
+                                            height: pos.Height ? pos.Height : 60
+                                          }}
+                                          lockAspectRatio={
+                                            pos.Width
+                                              ? pos.Width / pos.Height
+                                              : 2.5
+                                          }
+                                          resizeHandleStyles={{
+                                            bottom: { display: "none" },
+                                            right: { display: "none" },
+                                            bottomRight: { display: "block" }
+                                          }}
+                                          onDragStop={(event, dragElement) =>
+                                            handleStop(
+                                              event,
+                                              dragElement,
+                                              data.signerObjId,
+                                              pos.key
+                                            )
+                                          }
+                                          default={{
+                                            x: pos.xPosition,
+                                            y: pos.yPosition
+                                          }}
+                                          onResize={(
+                                            e,
+                                            direction,
+                                            ref,
+                                            delta,
+                                            position
+                                          ) => {
+                                            handleImageResize(
+                                              ref,
+                                              pos.key,
+                                              data.signerObjId,
+                                              position
+                                            );
+                                          }}
+                                        >
+                                          <div
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleDeleteSign(
+                                                pos.key,
+                                                data.signerObjId
+                                              );
+                                            }}
+                                            style={{
+                                              position: "absolute",
+                                              right: 0,
+                                              display: "inline-block",
+                                              background: themeColor(),
+                                              cursor: "pointer",
+                                              padding: "0px 10px",
+                                              zIndex: 10
+                                            }}
+                                          >
+                                            x
+                                          </div>
+                                          <div
+                                            style={{
+                                              fontSize: "12px",
+                                              color: "black",
+                                              fontWeight: "600",
+
+                                              marginTop: "0px"
+                                            }}
+                                          >
+                                            {pos.isStamp
+                                              ? "stamp"
+                                              : "signature"}
+                                          </div>
+                                        </Rnd>
+                                      );
+                                    })}
+                                </React.Fragment>
+                              );
+                            })}
+                          </React.Fragment>
+                        );
+                      })
+                    : xyPostion.map((data, ind) => {
+                        return (
+                          <React.Fragment key={ind}>
+                            {data.pageNumber === pageNumber &&
+                              data.pos.map((pos) => {
+                                return pos && pos.SignUrl ? (
+                                  <Rnd
+                                    ref={nodeRef}
+                                    key={pos.key}
+                                    lockAspectRatio={
+                                      pos.Width ? pos.Width / pos.Height : 2.5
+                                    }
+                                    bounds="parent"
+                                    style={{
+                                      padding: "0px",
+                                      cursor: "all-scroll",
+                                      zIndex: 1,
+                                      position: "absolute",
+                                      borderStyle: "dashed",
+                                      width: "150px",
+                                      height: "60px",
+                                      borderColor: themeColor(),
+                                      background: "#daebe0",
+                                      textAlign: "center",
+                                      justifyContent: "center",
+                                      borderWidth: "0.2px",
+                                      overflow: "hidden"
+                                    }}
+                                    onDrag={() => handleTabDrag(pos.key)}
+                                    size={{
+                                      width: pos.Width ? pos.Width : 150,
+                                      height: pos.Height ? pos.Height : 60
+                                    }}
+                                    onDragStop={handleStop}
+                                    default={{
+                                      x: pos.xPosition,
+                                      y: pos.yPosition
+                                    }}
+                                    onResize={(
+                                      e,
+                                      direction,
+                                      ref,
+                                      delta,
+                                      position
+                                    ) => {
+                                      handleImageResize(
+                                        ref,
+                                        pos.key,
+                                        direction,
+                                        position
+                                      );
+                                    }}
+                                    onClick={() => {
+                                      if (!isDragging) {
+                                        setIsSignPad(true);
+                                        setSignKey(pos.key);
+                                        setIsStamp(pos.isStamp);
+                                      }
+                                    }}
+                                  >
+                                    <div
+                                      ref={nodeRef}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteSign(pos.key);
+                                        setIsStamp(false);
+                                      }}
                                       style={{
-                                        padding: "0px",
+                                        position: "absolute",
+                                        right: 0,
+                                        display: "inline-block",
+                                        background: themeColor(),
+                                        cursor: "pointer",
+                                        padding: "0px 10px"
+                                      }}
+                                    >
+                                      x
+                                    </div>
+                                    <div style={{ pointerEvents: "none" }}>
+                                      <img
+                                        alt="signimg"
+                                        onClick={(e) => {
+                                          setSignKey(pos.key);
+                                          setIsSignPad(true);
+                                          setIsStamp(pos.isStamp);
+                                        }}
+                                        src={pos.SignUrl}
+                                        style={{
+                                          width: "100%",
+                                          height: "100%",
+                                          objectFit: "contain"
+                                        }}
+                                      />
+                                    </div>
+                                  </Rnd>
+                                ) : (
+                                  <Rnd
+                                    ref={nodeRef}
+                                    key={pos.key}
+                                    lockAspectRatio={
+                                      pos.Width ? pos.Width / pos.Height : 2.5
+                                    }
+                                    bounds="parent"
+                                    style={{
+                                      padding: "0px",
+                                      cursor: "all-scroll",
+                                      zIndex: 1,
+                                      position: "absolute",
+                                      borderStyle: "dashed",
+                                      width: "150px",
+                                      height: "60px",
+                                      borderColor: themeColor(),
+                                      background: "#daebe0",
+                                      textAlign: "center",
+                                      justifyContent: "center",
+                                      borderWidth: "0.2px",
+                                      overflow: "hidden"
+                                    }}
+                                    onDrag={(e) => handleTabDrag(pos.key, e)}
+                                    size={{
+                                      width: pos.Width ? pos.Width : 150,
+                                      height: pos.Height ? pos.Height : 60
+                                    }}
+                                    onDragStop={handleStop}
+                                    default={{
+                                      x: pos.xPosition,
+                                      y: pos.yPosition
+                                    }}
+                                  >
+                                    <div
+                                      className="dragElm"
+                                      ref={nodeRef}
+                                      onClick={(e) => {
+                                        if (!isDragging) {
+                                          e.stopPropagation();
+                                          setIsSignPad(true);
+                                          setSignKey(pos.key);
+                                          setIsStamp(pos.isStamp);
+                                        }
+                                      }}
+                                      style={{
                                         cursor: "all-scroll",
-                                        zIndex: 1,
+                                        zIndex: 10,
                                         position: "absolute",
                                         borderStyle: "dashed",
-                                        width: "200px",
-                                        height: "30px",
+                                        width: "150px",
+                                        height: "60px",
                                         borderColor: themeColor(),
-                                        background: data.blockColor,
+                                        background: "#daebe0",
                                         textAlign: "center",
                                         justifyContent: "center",
+                                        alignItems: "center",
                                         borderWidth: "0.2px"
-                                      }}
-                                      onDrag={() =>
-                                        handleTabDrag(pos.key, data.signerObjId)
-                                      }
-                                      size={{
-                                        width: pos.Width ? pos.Width : 150,
-                                        height: pos.Height ? pos.Height : 60
-                                      }}
-                                      lockAspectRatio={
-                                        pos.Width ? pos.Width / pos.Height : 2.5
-                                      }
-                                      resizeHandleStyles={{
-                                        bottom: { display: "none" },
-                                        right: { display: "none" },
-                                        bottomRight: { display: "block" }
-                                      }}
-                                      onDragStop={(event, dragElement) =>
-                                        handleStop(
-                                          event,
-                                          dragElement,
-                                          data.signerObjId,
-                                          pos.key
-                                        )
-                                      }
-                                      default={{
-                                        x: pos.xPosition,
-                                        y: pos.yPosition
-                                      }}
-                                      onResize={(
-                                        e,
-                                        direction,
-                                        ref,
-                                        delta,
-                                        position
-                                      ) => {
-                                        handleImageResize(
-                                          ref,
-                                          pos.key,
-                                          data.signerObjId,
-                                          position
-                                        );
                                       }}
                                     >
                                       <div
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          handleDeleteSign(
-                                            pos.key,
-                                            data.signerObjId
-                                          );
+                                          handleDeleteSign(pos.key);
+                                          setIsStamp(false);
                                         }}
                                         style={{
                                           position: "absolute",
@@ -1070,8 +1292,7 @@ function RenderPdf({
                                           display: "inline-block",
                                           background: themeColor(),
                                           cursor: "pointer",
-                                          padding: "0px 10px",
-                                          zIndex: 10
+                                          padding: "0px 10px"
                                         }}
                                       >
                                         x
@@ -1079,212 +1300,20 @@ function RenderPdf({
                                       <div
                                         style={{
                                           fontSize: "12px",
-                                          color: "black",
-                                          fontWeight: "600",
-
-                                          marginTop: "0px"
+                                          color: themeColor(),
+                                          justifyContent: "center",
+                                          marginTop: "20px"
                                         }}
                                       >
                                         {pos.isStamp ? "stamp" : "signature"}
                                       </div>
-                                    </Rnd>
-                                  );
-                                })}
-                            </React.Fragment>
-                          );
-                        })}
-                      </React.Fragment>
-                    );
-                  })
-                : xyPostion.map((data, ind) => {
-                    return (
-                      <React.Fragment key={ind}>
-                        {data.pageNumber === pageNumber &&
-                          data.pos.map((pos) => {
-                            return pos && pos.SignUrl ? (
-                              <Rnd
-                                ref={nodeRef}
-                                key={pos.key}
-                                lockAspectRatio={
-                                  pos.Width ? pos.Width / pos.Height : 2.5
-                                }
-                                bounds="parent"
-                                style={{
-                                  padding: "0px",
-                                  cursor: "all-scroll",
-                                  zIndex: 1,
-                                  position: "absolute",
-                                  borderStyle: "dashed",
-                                  width: "150px",
-                                  height: "60px",
-                                  borderColor: themeColor(),
-                                  background: "#daebe0",
-                                  textAlign: "center",
-                                  justifyContent: "center",
-                                  borderWidth: "0.2px",
-                                  overflow: "hidden"
-                                }}
-                                onDrag={() => handleTabDrag(pos.key)}
-                                size={{
-                                  width: pos.Width ? pos.Width : 150,
-                                  height: pos.Height ? pos.Height : 60
-                                }}
-                                onDragStop={handleStop}
-                                default={{
-                                  x: pos.xPosition,
-                                  y: pos.yPosition
-                                }}
-                                onResize={(
-                                  e,
-                                  direction,
-                                  ref,
-                                  delta,
-                                  position
-                                ) => {
-                                  handleImageResize(
-                                    ref,
-                                    pos.key,
-                                    direction,
-                                    position
-                                  );
-                                }}
-                                onClick={() => {
-                                  if (!isDragging) {
-                                    setIsSignPad(true);
-                                    setSignKey(pos.key);
-                                    setIsStamp(pos.isStamp);
-                                  }
-                                }}
-                              >
-                                <div
-                                  ref={nodeRef}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteSign(pos.key);
-                                    setIsStamp(false);
-                                  }}
-                                  style={{
-                                    position: "absolute",
-                                    right: 0,
-                                    display: "inline-block",
-                                    background: themeColor(),
-                                    cursor: "pointer",
-                                    padding: "0px 10px"
-                                  }}
-                                >
-                                  x
-                                </div>
-                                <div style={{ pointerEvents: "none" }}>
-                                  <img
-                                    alt="signimg"
-                                    onClick={(e) => {
-                                      setSignKey(pos.key);
-                                      setIsSignPad(true);
-                                      setIsStamp(pos.isStamp);
-                                    }}
-                                    src={pos.SignUrl}
-                                    style={{
-                                      width: "100%",
-                                      height: "100%",
-                                      objectFit: "contain"
-                                    }}
-                                  />
-                                </div>
-                              </Rnd>
-                            ) : (
-                              <Rnd
-                                ref={nodeRef}
-                                key={pos.key}
-                                lockAspectRatio={
-                                  pos.Width ? pos.Width / pos.Height : 2.5
-                                }
-                                bounds="parent"
-                                style={{
-                                  padding: "0px",
-                                  cursor: "all-scroll",
-                                  zIndex: 1,
-                                  position: "absolute",
-                                  borderStyle: "dashed",
-                                  width: "150px",
-                                  height: "60px",
-                                  borderColor: themeColor(),
-                                  background: "#daebe0",
-                                  textAlign: "center",
-                                  justifyContent: "center",
-                                  borderWidth: "0.2px",
-                                  overflow: "hidden"
-                                }}
-                                onDrag={(e) => handleTabDrag(pos.key, e)}
-                                size={{
-                                  width: pos.Width ? pos.Width : 150,
-                                  height: pos.Height ? pos.Height : 60
-                                }}
-                                onDragStop={handleStop}
-                                default={{
-                                  x: pos.xPosition,
-                                  y: pos.yPosition
-                                }}
-                              >
-                                <div
-                                  className="dragElm"
-                                  ref={nodeRef}
-                                  onClick={(e) => {
-                                    if (!isDragging) {
-                                      e.stopPropagation();
-                                      setIsSignPad(true);
-                                      setSignKey(pos.key);
-                                      setIsStamp(pos.isStamp);
-                                    }
-                                  }}
-                                  style={{
-                                    cursor: "all-scroll",
-                                    zIndex: 10,
-                                    position: "absolute",
-                                    borderStyle: "dashed",
-                                    width: "150px",
-                                    height: "60px",
-                                    borderColor: themeColor(),
-                                    background: "#daebe0",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    borderWidth: "0.2px"
-                                  }}
-                                >
-                                  <div
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleDeleteSign(pos.key);
-                                      setIsStamp(false);
-                                    }}
-                                    style={{
-                                      position: "absolute",
-                                      right: 0,
-                                      display: "inline-block",
-                                      background: themeColor(),
-                                      cursor: "pointer",
-                                      padding: "0px 10px"
-                                    }}
-                                  >
-                                    x
-                                  </div>
-                                  <div
-                                    style={{
-                                      fontSize: "12px",
-                                      color: themeColor(),
-                                      justifyContent: "center",
-                                      marginTop: "20px"
-                                    }}
-                                  >
-                                    {pos.isStamp ? "stamp" : "signature"}
-                                  </div>
-                                </div>
-                              </Rnd>
-                            );
-                          })}
-                      </React.Fragment>
-                    );
-                  }))}
+                                    </div>
+                                  </Rnd>
+                                );
+                              })}
+                          </React.Fragment>
+                        );
+                      }))}
             {/* this component for render pdf document is in middle of the component */}
 
             <Document
@@ -1303,8 +1332,8 @@ function RenderPdf({
                 pdfUrl
                   ? pdfUrl
                   : pdfDetails[0] && pdfDetails[0].SignedUrl
-                  ? pdfDetails[0].SignedUrl
-                  : pdfDetails[0].URL
+                    ? pdfDetails[0].SignedUrl
+                    : pdfDetails[0].URL
               }
             >
               {Array.from(new Array(numPages), (el, index) => (

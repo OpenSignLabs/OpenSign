@@ -635,7 +635,7 @@ function EmbedPdfImage() {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (pos.isMobile) {
           const x = pos.xPosition * (pos.scale / scale);
-          return x * scale + 50;
+          return x * scale + 70;
         } else {
           const x = pos.xPosition / scale;
           return x * scale;
@@ -658,12 +658,12 @@ function EmbedPdfImage() {
       if (isMobile) {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (pos.isMobile) {
-          const y = pos.yPosition * (pos.scale / scale);
+          const y = pos.yBottom * (pos.scale / scale);
           yPosition = pos.isDrag
             ? y * scale - height
             : pos.firstYPos
-            ? y * scale - height + pos.firstYPos
-            : y * scale - height;
+              ? y * scale - height + pos.firstYPos
+              : y * scale - height;
           return yPosition;
         } else {
           const y = pos.yBottom / scale;
@@ -671,8 +671,8 @@ function EmbedPdfImage() {
           yPosition = pos.isDrag
             ? y * scale - height
             : pos.firstYPos
-            ? y * scale - height + pos.firstYPos
-            : y * scale - height;
+              ? y * scale - height + pos.firstYPos
+              : y * scale - height;
           return yPosition;
         }
       } else {
@@ -683,15 +683,15 @@ function EmbedPdfImage() {
           yPosition = pos.isDrag
             ? y - height
             : pos.firstYPos
-            ? y - height + pos.firstYPos
-            : y - height;
+              ? y - height + pos.firstYPos
+              : y - height;
           return yPosition;
         } else {
           yPosition = pos.isDrag
             ? pos.yBottom - height
             : pos.firstYPos
-            ? pos.yBottom - height + pos.firstYPos
-            : pos.yBottom - height;
+              ? pos.yBottom - height + pos.firstYPos
+              : pos.yBottom - height;
           return yPosition;
         }
       }
@@ -1083,7 +1083,7 @@ function EmbedPdfImage() {
               isShowHeader={true}
               currentSigner={true}
               decline={true}
-              alreadySign={pdfUrl ? true :false}
+              alreadySign={pdfUrl ? true : false}
             />
 
             <RenderPdf
@@ -1128,7 +1128,6 @@ function EmbedPdfImage() {
           )}
         </div>
       )}
-   
     </DndProvider>
   );
 }
