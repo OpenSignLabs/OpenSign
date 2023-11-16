@@ -40,7 +40,7 @@
                 "id": "c1935cc0-28d4-3d73-b72a-8c1e3d18a17f",
                 "queryType": "",
                 "class": "contracts_Document",
-                "query": "where={\"CreatedBy\":{\"__type\":\"Pointer\",\"className\":\"_User\",\"objectId\":\"#UserId.objectId#\"},\"IsCompleted\":{\"$ne\":true},\"IsDeclined\":{\"$ne\":true},\"Type\":{\"$ne\":\"Folder\"},\"Placeholders\":{\"$ne\":null},\"ExpiryDate\":{\"#*gt\":{\"__type\":\"#Date#\",\"iso\":\"#today#\"}}}&count=1",
+                "query":  "where={\"IsDeclined\":{\"$ne\":true},\"IsCompleted\":{\"$ne\":true},\"Type\":{\"$ne\":\"Folder\"},\"Placeholders\":{\"$ne\":null},\"ExpiryDate\":{\"#*gt\":{\"__type\":\"#Date#\",\"iso\":\"#today#\"}}}&include=Signers,AuditTrail.UserPtr",
                 "key": "count",
                 "Redirect_type": "Report",
                 "Redirect_id": "1MwEuxLEkF",
