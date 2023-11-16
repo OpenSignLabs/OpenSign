@@ -1,4 +1,4 @@
-async function getContractUser(request) {
+async function getUserDetails(request) {
   try {
     const userQuery = new Parse.Query('contracts_Users');
     userQuery.equalTo('Email', request.params.email);
@@ -9,4 +9,4 @@ async function getContractUser(request) {
     return err;
   }
 }
-export default getContractUser;
+export default getUserDetails;
