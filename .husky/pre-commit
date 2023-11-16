@@ -1,5 +1,4 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-npx eslint '**/*.{js,jsx}'
-npx pretty-quick --staged '**/*.{js,jsx}'
+npm run lint-staged-changes
