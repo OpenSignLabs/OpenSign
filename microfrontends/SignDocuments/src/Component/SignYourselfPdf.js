@@ -25,6 +25,7 @@ import Nodata from "./component/Nodata";
 import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import { contractUsers, contactBook } from "../utils/Utils";
+import { modalAlign } from "../utils/Utils";
 import { $ } from 'select-dom';
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -994,17 +995,6 @@ function SignYourSelf() {
       .catch((err) => {
         console.log("axois err ", err);
       });
-  };
-
-  const modalAlign = () => {
-    let modalDialog = $('.modal-dialog').getBoundingClientRect();
-    let mobileHead = $('.mobileHead').getBoundingClientRect()
-    let modal = $('.modal-dialog');
-    if (modalDialog.left < mobileHead.left) {
-      let leftOffset = mobileHead.left - modalDialog.left;
-      modal.style.left = leftOffset + 'px';
-      modal.style.top = (window.innerHeight/3) + 'px';
-    }
   };
 
   return (
