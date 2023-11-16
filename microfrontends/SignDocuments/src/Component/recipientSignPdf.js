@@ -1028,9 +1028,10 @@ function EmbedPdfImage() {
             }}
           >
             {/* this modal is used show this document is already sign */}
-            <Modal 
+            <Modal
               show={isAlreadySign.status}
               onShow={() => modalAlign()}
+              backdropClassName="signature-backdrop"
             >
               <ModalHeader style={{ background: themeColor() }}>
                 <span style={{ color: "white" }}> Sign Documents</span>
@@ -1143,7 +1144,7 @@ function EmbedPdfImage() {
           )}
         </div>
       )}
-   
+
     </DndProvider>
   );
 }
