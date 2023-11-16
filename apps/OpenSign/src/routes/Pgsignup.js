@@ -67,9 +67,8 @@ const PgSignUp = (props) => {
         const userSettings = JSON.parse(localStorage.getItem("userSettings"));
         const extClass = userSettings[0].extended_class;
         // console.log("extClass ", extClass);
-        const checkUser = new Parse.Query(extClass);
-        checkUser.equalTo("Email", userDetails.email);
-        const res = await checkUser.first();
+        const params = { email: userDetails.email };
+        const res = await Parse.Cloud.run("getUserDetails", params);
         // console.log("res", res);
         if (res) {
           const checkUser = new Parse.Query(extClass);
@@ -279,13 +278,6 @@ const PgSignUp = (props) => {
                         ""
                       );
                       localStorage.setItem("_user_role", _role);
-
-                      if (element.enableCart) {
-                        localStorage.setItem("EnableCart", element.enableCart);
-                        props.setEnableCart(element.enableCart);
-                      } else {
-                        localStorage.removeItem("EnableCart");
-                      }
                       // Get TenentID from Extendend Class
                       localStorage.setItem(
                         "extended_class",
