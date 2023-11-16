@@ -66,9 +66,11 @@ const GoogleSignInBtn = ({
     }
   };
   const checkExtUser = async (details) => {
-    const extUser = new Parse.Query("contracts_Users");
-    extUser.equalTo("Email", details.Gmail);
-    const extRes = await extUser.first();
+    // const extUser = new Parse.Query("contracts_Users");
+    // extUser.equalTo("Email", details.Gmail);
+    // const extRes = await extUser.first();
+    const params = { email: details.Gmail };
+    const extRes = await Parse.Cloud.run("getUserDetails", params);
     // console.log("extRes ", extRes);
     if (extRes) {
       const params = { ...details, Phone: extRes.get("Phone") };
