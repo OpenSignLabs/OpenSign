@@ -28,13 +28,35 @@ export async function getBase64FromIMG(url) {
     };
   });
 }
+//function for convert signature png base64 url to jpeg base64
+export const convertPNGtoJPEG = (base64Data) => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    const img = new Image();
+    img.src = base64Data;
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff"; // white color
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      // Convert to JPEG by using the canvas.toDataURL() method
+      const jpegBase64Data = canvas.toDataURL("image/jpeg");
+
+      resolve(jpegBase64Data);
+    };
+
+    img.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
 
 export function getHostUrl() {
   const hostUrl = window.location.href;
-  /// const hostUrl = "https://contracts-defaultssty.qik.ai/#/mf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/legadrive";
-  // const hostUrl = "https://contracts-defaultssty.qik.ai/#/"
-  // const hostUrl = "https://lionfish-app-75ly7.ondigitalocean.app/mf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/legadrive"
-  //const hostUrl = "https://app.opensignlabs.com/rpmf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/draftDocument";
 
   if (hostUrl) {
     const urlSplit = hostUrl.split("/");
@@ -57,7 +79,6 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
     (data, ind) =>
       data.key === signKey && data.Width && data.Height && data.SignUrl
   );
-   
 
   if (updateFilter.length > 0) {
     let newWidth, newHeight;
@@ -139,7 +160,7 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
           ...url,
           Width: getPosData[0].Width ? getPosData[0].Width : newWidth,
           Height: getPosData[0].Height ? getPosData[0].Height : newHeight,
-         SignUrl: image.src,
+          SignUrl: image.src,
           ImageType: image.imgType
         };
       }
