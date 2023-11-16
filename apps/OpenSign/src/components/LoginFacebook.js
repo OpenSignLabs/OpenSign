@@ -46,7 +46,7 @@ const LoginFacebook = ({
     // extUser.equalTo("Email", details.Email);
     // const extRes = await extUser.first();
     const params = { email: details.Email };
-    const extRes = await Parse.Cloud.run("getContractUser", params);
+    const extRes = await Parse.Cloud.run("getUserDetails", params);
     // console.log("extRes ", extRes);
     if (extRes) {
       const params = { ...details, Phone: extRes.get("Phone") };

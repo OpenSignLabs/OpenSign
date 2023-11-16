@@ -68,7 +68,7 @@ const PgSignUp = (props) => {
         const extClass = userSettings[0].extended_class;
         // console.log("extClass ", extClass);
         const params = { email: userDetails.email };
-        const res = await Parse.Cloud.run("getContractUser", params);
+        const res = await Parse.Cloud.run("getUserDetails", params);
         // console.log("res", res);
         if (res) {
           const checkUser = new Parse.Query(extClass);
