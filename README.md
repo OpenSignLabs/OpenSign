@@ -1,8 +1,7 @@
-<h1 align="center"><a href='https://www.opensignlabs.com'>OpenSign™</a></h1>
-                    
-<div align="center">
+<h1 align="center"><a href='https://www.opensignlabs.com'><img src=https://github.com/OpenSignLabs/OpenSign/assets/5486116/e518cc9c-5de3-47da-950b-f93336b9f14e></a>
+</h1><div align="center">
 
-The free and open source alternative to DocuSign
+[The free and open source alternative to DocuSign](https://www.opensignlabs.com)
 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/opensignlabs/opensign.svg)](http://isitmaintained.com/project/opensignlabs/opensign "Average time to resolve an issue")
 [![All Contributors](https://img.shields.io/github/all-contributors/opensignlabs/opensign?color=ee8449&style=flat-square)](#contributors)
@@ -23,7 +22,7 @@ The free and open source alternative to DocuSign
   <a href="https://www.linkedin.com/company/opensign%E2%84%A2/about/">LinkedIn</a>
 
 
-## An open-source document e-signing solution
+## The open-source document e-signing solution
 
 ---
 </div>
