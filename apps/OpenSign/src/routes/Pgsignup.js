@@ -285,14 +285,12 @@ const PgSignUp = (props) => {
                       );
                       localStorage.setItem("userpointer", element.userpointer);
 
-                      const extendedClass = Parse.Object.extend(
-                        element.extended_class
-                      );
-                      let query = new Parse.Query(extendedClass);
-                      query.equalTo("UserId", Parse.User.current());
-                      query.include("TenantId");
-                      await query.find().then(
-                        (results) => {
+                      const currentUser = Parse.User.current();
+                      await Parse.Cloud.run("getUserDetails", {
+                        email: currentUser.get("email")
+                      }).then(
+                        (result) => {
+                          const results = [result];
                           let tenentInfo = [];
                           if (results) {
                             let extendedInfo_stringify =
@@ -407,7 +405,7 @@ const PgSignUp = (props) => {
               }
             })
             .catch((err) => {
-              console.log('err', err)
+              console.log("err", err);
               setIsLoader(false);
             });
         }
