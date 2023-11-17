@@ -6,7 +6,7 @@ import { createTransport } from 'nodemailer';
 
 let transporterSMTP;
 let mailgunClient;
-
+let mailgunDomain;
 if (process.env.SMTP_ENABLE) {
   transporterSMTP = createTransport({
     host: process.env.SMTP_HOST,
@@ -23,6 +23,7 @@ if (process.env.SMTP_ENABLE) {
     username: 'api',
     key: process.env.MAILGUN_API_KEY,
   });
+  mailgunDomain = process.env.MAILGUN_DOMAIN;
 }
 
 async function sendmail(req) {
