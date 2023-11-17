@@ -35,14 +35,9 @@ const DashboardCard = (props) => {
           let data = JSON.parse(localStorage.getItem("Extand_Class"));
           res = data[0];
         } else {
-          var emp = Parse.Object.extend(localStorage.getItem("extended_class"));
-          var q = new Parse.Query(emp);
-          q.equalTo("UserId", {
-            __type: "Pointer",
-            className: "_User",
-            objectId: currentUser
+          res = await Parse.Cloud.run("getUserDetails", {
+            email: currentUser.get("email")
           });
-          res = await q.first();
           if (res) res = res.toJSON();
         }
         if (res) {
@@ -110,13 +105,17 @@ const DashboardCard = (props) => {
             let data = JSON.parse(localStorage.getItem("Extand_Class"));
             resr = data[0];
           } else {
-            let emp = Parse.Object.extend(
-              localStorage.getItem("extended_class")
-            );
-            let q = new Parse.Query(emp);
-            q.equalTo("UserId", currentUser);
-            let t = await q.first();
-            resr = t.toJSON();
+            // let emp = Parse.Object.extend(
+            //   localStorage.getItem("extended_class")
+            // );
+            // let q = new Parse.Query(emp);
+            // q.equalTo("UserId", currentUser);
+            // let t = await q.first();
+            // resr = t.toJSON();
+            resr = await Parse.Cloud.run("getUserDetails", {
+              email: currentUser.get("email")
+            });
+            if (resr) resr = resr.toJSON();
           }
 
           let json = resr;
@@ -227,13 +226,17 @@ const DashboardCard = (props) => {
               let data = JSON.parse(localStorage.getItem("Extand_Class"));
               res = data[0];
             } else {
-              var emp = Parse.Object.extend(
-                localStorage.getItem("extended_class")
-              );
-              var q = new Parse.Query(emp);
-              q.equalTo("UserId", currentUser);
-              let resr = await q.first();
-              res = resr.toJSON();
+              // var emp = Parse.Object.extend(
+              //   localStorage.getItem("extended_class")
+              // );
+              // var q = new Parse.Query(emp);
+              // q.equalTo("UserId", currentUser);
+              // let resr = await q.first();
+              // res = resr.toJSON();
+              let resr = await Parse.Cloud.run("getUserDetails", {
+                email: currentUser.get("email")
+              });
+              if (res) res = resr.toJSON();
             }
 
             let json = res;
