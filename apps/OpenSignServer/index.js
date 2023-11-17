@@ -183,7 +183,7 @@ if (!process.env.TESTING) {
   httpServer.headersTimeout = 100000; // in milliseconds
   httpServer.listen(port, function () {
     console.log('parse-server-example running on port ' + port + '.');
-    const migrate = `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=${process.env.SERVER_URL} MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
+    const migrate = `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=http://localhost:8080/app MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
 
     exec(migrate, (error, stdout, stderr) => {
       if (error) {
