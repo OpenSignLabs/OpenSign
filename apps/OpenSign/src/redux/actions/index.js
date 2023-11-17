@@ -11,7 +11,8 @@ export const fetchAppInfo = (str, burl, app_id) => async (dispatch) => {
   let _base = ""; // Define _base here and initialize it to an empty string
   if (response && response.baseurl) {
     _base = response.baseurl.charAt(response.baseurl.length - 1);
-  }  localStorage.removeItem("baseUrl");
+  }
+  localStorage.removeItem("baseUrl");
   localStorage.setItem("_appName", response.appname);
   localStorage.setItem("_app_objectId", response.objectId);
   if (_base === "/") {
@@ -120,16 +121,11 @@ export const login = (username, password) => async (dispatch) => {
               localStorage.setItem("_user_role", _role);
             }
             try {
-              const tour = Parse.Object.extend(
-                localStorage.getItem("extended_class")
-              );
-              let _tour = new Parse.Query(tour);
-              _tour.equalTo("UserId", {
-                __type: "Pointer",
-                className: "_User",
-                objectId: resultjson.objectId
-              });
-              await _tour.first().then(
+              const currentUser = Parse.User.current();
+              await Parse.Cloud.run("getUserDetails", {
+                email: currentUser.get("email")
+              })
+              .then(
                 (results) => {
                   let userinfo = results.toJSON();
                   if (userinfo.TenantId) {
@@ -142,7 +138,7 @@ export const login = (username, password) => async (dispatch) => {
                 }
               );
             } catch (error) {
-              console.log("err ", error)
+              console.log("err ", error);
             }
           }
         });
