@@ -120,12 +120,10 @@ const Level1Dropdown = (props) => {
             let data = JSON.parse(localStorage.getItem("Extand_Class"));
             res = data[0];
           } else {
-            var emp = Parse.Object.extend(
-              localStorage.getItem("extended_class")
-            );
-            var q = new Parse.Query(emp);
-            q.equalTo("UserId", currentUser);
-            res = await q.first();
+            const currentUser = Parse.User.current();
+            res = await Parse.Cloud.run("getUserDetails", {
+              email: currentUser.get("email")
+            });
             if (res) res = res.toJSON();
           }
 
@@ -339,7 +337,7 @@ const Level1Dropdown = (props) => {
           x.className = x.className.replace("show", "");
         }, 5000);
       } catch (error) {
-        console.log("Err", error)
+        console.log("Err", error);
       }
     }
   };

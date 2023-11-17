@@ -207,13 +207,6 @@ const Signup = (props) => {
                         ""
                       );
                       localStorage.setItem("_user_role", _role);
-
-                      if (element.enableCart) {
-                        localStorage.setItem("EnableCart", element.enableCart);
-                        props.setEnableCart(element.enableCart);
-                      } else {
-                        localStorage.removeItem("EnableCart");
-                      }
                       // Get TenentID from Extendend Class
                       localStorage.setItem(
                         "extended_class",
@@ -221,15 +214,12 @@ const Signup = (props) => {
                       );
                       localStorage.setItem("userpointer", element.userpointer);
 
-                      const extendedClass = Parse.Object.extend(
-                        element.extended_class
-                      );
-                      let query = new Parse.Query(extendedClass);
-                      query.equalTo("UserId", Parse.User.current());
-                      query.include("TenantId");
-                      await query.find().then(
-                        (results) => {
+                      await Parse.Cloud.run("getUserDetails", {
+                        email: email
+                      }).then(
+                        (result) => {
                           let tenentInfo = [];
+                          const results = [result];
                           if (results) {
                             let extendedInfo_stringify =
                               JSON.stringify(results);
@@ -317,7 +307,7 @@ const Signup = (props) => {
                               );
                               setState({ loading: false });
                               if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                                navigate("/subscription");
+                                navigate(`/subscription`, { replace: true });
                               } else {
                                 alert("Registered user successfully");
                                 navigate(
@@ -335,7 +325,7 @@ const Signup = (props) => {
                             localStorage.setItem("pageType", element.pageType);
                             setState({ loading: false });
                             if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                              navigate("/subscription");
+                              navigate(`/subscription`, { replace: true });
                             } else {
                               navigate(
                                 `/${element.pageType}/${element.pageId}`

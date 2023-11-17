@@ -162,15 +162,13 @@ function Login(props) {
                                 element.userpointer
                               );
 
-                              const extendedClass = Parse.Object.extend(
-                                element.extended_class
-                              );
-                              let query = new Parse.Query(extendedClass);
-                              query.equalTo("UserId", Parse.User.current());
-                              query.include("TenantId");
-                              await query.find().then(
-                                (results) => {
+                              const currentUser = Parse.User.current();
+                              await Parse.Cloud.run("getUserDetails", {
+                                email: currentUser.get("email")
+                              }).then(
+                                (result) => {
                                   let tenentInfo = [];
+                                  const results = [result];
                                   if (results) {
                                     let extendedInfo_stringify =
                                       JSON.stringify(results);
@@ -280,10 +278,14 @@ function Login(props) {
                                               `/${element.pageType}/${element.pageId}`
                                             );
                                           } else {
-                                            navigate(`/subscription`);
+                                            navigate(`/subscription`, {
+                                              replace: true
+                                            });
                                           }
                                         } else {
-                                          navigate(`/subscription`);
+                                          navigate(`/subscription`, {
+                                            replace: true
+                                          });
                                         }
                                       } else {
                                         navigate(
@@ -320,7 +322,9 @@ function Login(props) {
                                       );
                                       const billingDate = "";
                                       if (billingDate) {
-                                        navigate(`/subscription`);
+                                        navigate(`/subscription`, {
+                                          replace: true
+                                        });
                                       }
                                     } else {
                                       navigate(
@@ -586,10 +590,12 @@ function Login(props) {
                                       `/${element.pageType}/${element.pageId}`
                                     );
                                   } else {
-                                    navigate(`/subscription`);
+                                    navigate(`/subscription`, {
+                                      replace: true
+                                    });
                                   }
                                 } else {
-                                  navigate(`/subscription`);
+                                  navigate(`/subscription`, { replace: true });
                                 }
                               }
                             }
@@ -610,10 +616,10 @@ function Login(props) {
                                     `/${element.pageType}/${element.pageId}`
                                   );
                                 } else {
-                                  navigate(`/subscription`);
+                                  navigate(`/subscription`, { replace: true });
                                 }
                               } else {
-                                navigate(`/subscription`);
+                                navigate(`/subscription`, { replace: true });
                               }
                             }
                           }
@@ -750,15 +756,21 @@ function Login(props) {
                     element.extended_class
                   );
 
-                  const extendedClass = Parse.Object.extend(
-                    element.extended_class
-                  );
-                  let query = new Parse.Query(extendedClass);
-                  query.equalTo("UserId", Parse.User.current());
-                  query.include("TenantId");
-                  await query.find().then(
-                    (results) => {
+                  // const extendedClass = Parse.Object.extend(
+                  //   element.extended_class
+                  // );
+                  // let query = new Parse.Query(extendedClass);
+                  // query.equalTo("UserId", Parse.User.current());
+                  // query.include("TenantId");
+                  // await query.find()
+
+                  const currentUser = Parse.User.current();
+                  await Parse.Cloud.run("getUserDetails", {
+                    email: currentUser.get("email")
+                  }).then(
+                    (result) => {
                       let tenentInfo = [];
+                      const results = [result];
                       if (results) {
                         let extendedInfo_stringify = JSON.stringify(results);
                         let extendedInfo = JSON.parse(extendedInfo_stringify);
@@ -1154,7 +1166,9 @@ function Login(props) {
               <div className="modal-dialog" role="document">
                 <div className="modal-content">
                   <div className="modal-header">
-                    <h5 className="modal-title font-semibold">Additional Info</h5>
+                    <h5 className="modal-title font-semibold">
+                      Additional Info
+                    </h5>
                     <span>
                       <span></span>
                     </span>
