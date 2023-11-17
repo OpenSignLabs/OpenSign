@@ -32,18 +32,6 @@ exports.up = async Parse => {
   });
 
   return schema.update();
-
-  // const config = new Config(process.env.APP_ID, process.env.PARSE_MOUNT);
-  // const schema = await config.database.loadSchema();
-  // await schema.setPermissions('myclass', {
-  //   get: { requiresAuthentication: true },
-  //   find: { requiresAuthentication: true },
-  //   count: { requiresAuthentication: true },
-  //   create: { requiresAuthentication: true },
-  //   update: { requiresAuthentication: true },
-  //   delete: { requiresAuthentication: true },
-  //   addField: {},
-  // });
 };
 
 /**
