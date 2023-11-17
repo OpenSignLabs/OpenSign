@@ -1,5 +1,4 @@
-[
-  {
+[{
     "_id": "_Role",
     "objectId": "string",
     "updatedAt": "date",
@@ -402,16 +401,24 @@
         }
       },
       "class_permissions": {
-        "get": {},
-        "find": {},
-        "count": {},
+        "get": {
+          "*": true
+        },
+        "find": {
+          "*": true
+        },
+        "count": {
+          "*": true
+        },
         "create": {
           "*": true
         },
         "update": {
           "*": true
         },
-        "delete": {},
+        "delete": {
+          "*": true
+        },
         "addField": {},
         "protectedFields": {
           "*": []
@@ -647,5 +654,4 @@
       }
     },
     "appId": "*w_appinfo"
-  }
-]
+  }]
