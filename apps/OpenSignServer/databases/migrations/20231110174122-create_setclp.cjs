@@ -4,23 +4,23 @@
  */
 exports.up = async Parse => {
   // TODO: set className here
-  const className = 'Contracts_Users';
+  const className = 'contracts_Users';
   const schema = new Parse.Schema(className);
-  schema.addString('Name');
-  schema.addString('Phone');
-  schema.addString('JobTitle');
-  schema.addString('Email');
-  schema.addString('Company');
-  schema.addString('UserRole');
-  schema.addObject('Plan');
-  schema.addString('Customer_id');
-  schema.addString('Subscription_id');
-  schema.addString('Next_billing_date');
-  schema.addBoolean('IsContactEntry');
-  schema.addBoolean('ShareWithTeam');
-  schema.addPointer('TenantId', 'partners_Tenant');
-  schema.addPointer('UserId', '_User');
-  schema.addPointer('CreatedBy', '_User');
+  // schema.addString('Name');
+  // schema.addString('Phone');
+  // schema.addString('JobTitle');
+  // schema.addString('Email');
+  // schema.addString('Company');
+  // schema.addString('UserRole');
+  // schema.addObject('Plan');
+  // schema.addString('Customer_id');
+  // schema.addString('Subscription_id');
+  // schema.addString('Next_billing_date');
+  // schema.addBoolean('IsContactEntry');
+  // schema.addBoolean('ShareWithTeam');
+  // schema.addPointer('TenantId', 'partners_Tenant');
+  // schema.addPointer('UserId', '_User');
+  // schema.addPointer('CreatedBy', '_User');
   schema.setCLP({
     get: {},
     find: {},
@@ -31,7 +31,7 @@ exports.up = async Parse => {
     addField: {},
   });
 
-  return schema.save();
+  return schema.update();
 
   // const config = new Config(process.env.APP_ID, process.env.PARSE_MOUNT);
   // const schema = await config.database.loadSchema();
@@ -52,7 +52,7 @@ exports.up = async Parse => {
  */
 exports.down = async Parse => {
   // TODO: set className here
-  const className = 'Contracts_Users';
+  const className = 'contracts_Users';
   const schema = new Parse.Schema(className);
 
   return schema.purge().then(() => schema.delete());
