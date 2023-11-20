@@ -109,31 +109,24 @@ function EmbedPdfImage() {
     let currUserId, userObjectId;
     //getting contracts_contactBook details
     const json = await contactBook(contactBookId);
-    if (json !== "Error: Something went wrong!" && json[0]) {
+    if (json && json.length > 0) {
       setContractName("_Contactbook");
-      if (json[0]) {
-        userObjectId = json[0].UserId.objectId;
-        setUserObjectID(userObjectId);
-        currUserId = json[0].objectId;
 
-        setSignerUserId(currUserId);
-        const tourstatus = json[0].TourStatus && json[0].TourStatus;
+      userObjectId = json[0].UserId.objectId;
+      setUserObjectID(userObjectId);
+      currUserId = json[0].objectId;
 
-        if (tourstatus && tourstatus.length > 0) {
-          setTourStatus(tourstatus);
-          const checkTourRecipients = tourstatus.filter(
-            (data) => data.recipientssign
-          );
-          if (checkTourRecipients && checkTourRecipients.length > 0) {
-            setCheckTourStatus(checkTourRecipients[0].recipientssign);
-          }
+      setSignerUserId(currUserId);
+      const tourstatus = json[0].TourStatus && json[0].TourStatus;
+
+      if (tourstatus && tourstatus.length > 0) {
+        setTourStatus(tourstatus);
+        const checkTourRecipients = tourstatus.filter(
+          (data) => data.recipientssign
+        );
+        if (checkTourRecipients && checkTourRecipients.length > 0) {
+          setCheckTourStatus(checkTourRecipients[0].recipientssign);
         }
-      } else {
-        setNoData(true);
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
       }
     } else if (json === "Error: Something went wrong!") {
       const loadObj = {
@@ -143,7 +136,7 @@ function EmbedPdfImage() {
       setIsLoading(loadObj);
     } else {
       const json = await contractUsers(jsonSender.email);
-      if (json !== "Error: Something went wrong!" && json && json[0]) {
+      if (json && json.length > 0) {
         setContractName("_Users");
         if (json[0]) {
           userObjectId = json[0].UserId.objectId;
@@ -175,12 +168,19 @@ function EmbedPdfImage() {
         };
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
+      } else {
+        setNoData(true);
+
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
       }
     }
 
     //getting document details
     const documentData = await contractDocument(docId);
-    if (documentData && documentData !== "no data found!" && documentData[0]) {
+    if (documentData && documentData.length > 0) {
       const declined = documentData[0].IsDeclined && documentData[0].IsDeclined;
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
@@ -315,18 +315,21 @@ function EmbedPdfImage() {
           setSignKey(key);
         }
       }
-    } else if (documentData === "no data found!") {
+    } else if (
+      documentData === "Error: Something went wrong!" ||
+      (documentData.result && documentData.result.error)
+    ) {
+      const loadObj = {
+        isLoad: false
+      };
+      setHandleError("Error: Something went wrong!");
+      setIsLoading(loadObj);
+    } else {
       setNoData(true);
 
       const loadObj = {
         isLoad: false
       };
-      setIsLoading(loadObj);
-    } else if (documentData === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     }
     await axios

@@ -16,8 +16,6 @@ function PdfFile() {
   const [pdfData, setPdfData] = useState([]);
   const [isFolder, setIsFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState();
-  // const [parentFolderName, setParentFolderName] = useState();
-  // const [parentFolder, setParentFolder] = useState([]);
   const [error, setError] = useState();
   const [folderLoader, setIsFolderLoader] = useState(false);
   const [isShowSort, setIsShowSort] = useState(false);
@@ -48,7 +46,7 @@ function PdfFile() {
     const driveDetails = await getDrive();
 
     if (driveDetails) {
-      if (driveDetails && driveDetails.length > 0) {
+      if (driveDetails.length > 0) {
         setPdfData(driveDetails);
       }
       const data = [
@@ -79,7 +77,7 @@ function PdfFile() {
     setIsLoading(load);
     const driveDetails = await getDrive(docId);
     if (driveDetails) {
-      if (driveDetails && driveDetails.length > 0) {
+      if (driveDetails.length > 0) {
         setPdfData(driveDetails);
       } else {
         setPdfData([]);

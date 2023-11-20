@@ -152,7 +152,6 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
       return obj;
     });
     return newUpdateUrl;
-    // setXyPostion(newUpdateUrl);
   }
 }
 
@@ -198,11 +197,13 @@ export const contractDocument = async (documentId) => {
     .then((Listdata) => {
       const json = Listdata.data;
       let data = [];
-      if (json && json.result) {
+      if (json && json.result.error) {
+        return json;
+      } else if (json && json.result) {
         data.push(json.result);
         return data;
       } else {
-        return "no data found!";
+        return [];
       }
     })
     .catch((err) => {
@@ -228,12 +229,13 @@ export const getDrive = async (documentId) => {
     .then((Listdata) => {
       const json = Listdata.data;
 
-      if (json && json.result) {
+      if (json && json.result.error) {
+        return json;
+      } else if (json && json.result) {
         const data = json.result;
-
         return data;
       } else {
-        return "no data found!";
+        return [];
       }
     })
     .catch((err) => {
@@ -258,11 +260,10 @@ export const contractUsers = async (email) => {
     .then((Listdata) => {
       const json = Listdata.data;
       let data = [];
+
       if (json && json.result) {
         data.push(json.result);
         return data;
-      } else {
-        return "no data found!";
       }
     })
     .catch((err) => {

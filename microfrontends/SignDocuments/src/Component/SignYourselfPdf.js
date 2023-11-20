@@ -176,7 +176,7 @@ function SignYourSelf() {
     //getting document details
     const documentData = await contractDocument(documentId);
 
-    if (documentData && documentData !== "no data found!" && documentData[0]) {
+    if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
@@ -193,21 +193,22 @@ function SignYourSelf() {
         setShowAlreadySignDoc(alreadySign);
         setPdfUrl(documentData[0].SignedUrl);
       }
-    } else if (documentData === "no data found!") {
-      setNoData(true);
-
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
-    } else if (documentData === "Error: Something went wrong!") {
+    } else if (
+      documentData === "Error: Something went wrong!" ||
+      (documentData.result && documentData.result.error)
+    ) {
       const loadObj = {
         isLoad: false
       };
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
+    } else {
+      setNoData(true);
+      const loadObj = {
+        isLoad: false
+      };
+      setIsLoading(loadObj);
     }
-
     await axios
       .get(
         `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
@@ -241,11 +242,7 @@ function SignYourSelf() {
 
     const contractUsersRes = await contractUsers(jsonSender.email);
 
-    if (
-      contractUsersRes !== "Error: Something went wrong!" &&
-      contractUsersRes &&
-      contractUsersRes[0]
-    ) {
+    if (contractUsersRes[0] && contractUsersRes.length > 0) {
       setContractName("_Users");
       setSignerUserId(contractUsersRes[0].objectId);
       const tourstatuss =
@@ -272,7 +269,7 @@ function SignYourSelf() {
       setIsLoading(loadObj);
     } else if (contractUsersRes.length === 0) {
       const contractContactBook = await contactBook(jsonSender.objectId);
-      if (contractContactBook && contractContactBook[0]) {
+      if (contractContactBook && contractContactBook.length > 0) {
         setContractName("_Contactbook");
         setSignerUserId(contractContactBook[0].objectId);
         const tourstatuss =
@@ -287,6 +284,8 @@ function SignYourSelf() {
             setCheckTourStatus(checkTourRecipients[0].signyourself);
           }
         }
+      } else {
+        setNoData(true);
       }
       const loadObj = {
         isLoad: false

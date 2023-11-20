@@ -176,7 +176,7 @@ function PlaceHolderSign() {
   const getDocumentDetails = async () => {
     //getting document details
     const documentData = await contractDocument(documentId);
-    if (documentData && documentData !== "no data found!" && documentData[0]) {
+    if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
 
       const currEmail = documentData[0].ExtUserPtr.Email;
@@ -190,18 +190,21 @@ function PlaceHolderSign() {
       setSignerObjId(documentData[0].Signers[0].objectId);
       setContractName(documentData[0].Signers[0].className);
       setIsSelectId(0);
-    } else if (documentData === "no data found!") {
+    } else if (
+      documentData === "Error: Something went wrong!" ||
+      (documentData.result && documentData.result.error)
+    ) {
+      const loadObj = {
+        isLoad: false
+      };
+      setHandleError("Error: Something went wrong!");
+      setIsLoading(loadObj);
+    } else {
       setNoData(true);
 
       const loadObj = {
         isLoad: false
       };
-      setIsLoading(loadObj);
-    } else if (documentData === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     }
     const res = await contractUsers(jsonSender.email);
