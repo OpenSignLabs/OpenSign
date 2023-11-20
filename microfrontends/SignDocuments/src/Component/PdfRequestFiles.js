@@ -112,7 +112,7 @@ function PdfRequestFiles() {
   const getDocumentDetails = async () => {
     //getting document details
     const documentData = await contractDocument(documentId);
-    if (documentData && documentData !== "no data found!" && documentData[0]) {
+    if (documentData && documentData.length > 0) {
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
       const expireDate = documentData[0].ExpiryDate.iso;
@@ -222,19 +222,22 @@ function PdfRequestFiles() {
       } else {
         alert("No data found!");
       }
-    } else if (documentData === "no data found!") {
+    } else if (
+      documentData === "Error: Something went wrong!" ||
+      (documentData.result && documentData.result.error)
+    ) {
+      const loadObj = {
+        isLoad: false
+      };
+      setHandleError("Error: Something went wrong!");
+      setIsLoading(loadObj);
+    } else {
       setNoData(true);
       const loadObj = {
         isLoad: false
       };
       setIsLoading(loadObj);
       setIsUiLoading(false);
-    } else if (documentData === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
-      setIsLoading(loadObj);
     }
     await axios
       .get(

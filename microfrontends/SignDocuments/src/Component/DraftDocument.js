@@ -28,18 +28,19 @@ function DraftDocument() {
   const getDocumentDetails = async () => {
     //getting document details
     const documentData = await contractDocument(docId);
-    if (documentData && documentData !== "no data found!" && documentData[0]) {
-      if (documentData[0] && documentData.length > 0) {
-        setPdfDetails(documentData);
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
-      }
-    } else if (documentData === "no data found!") {
-      alert("No data found!");
-    } else if (documentData === "Error: Something went wrong!") {
+    if (documentData && documentData.length > 0) {
+      setPdfDetails(documentData);
+      const loadObj = {
+        isLoad: false
+      };
+      setIsLoading(loadObj);
+    } else if (
+      documentData === "Error: Something went wrong!" ||
+      (documentData.result && documentData.result.error)
+    ) {
       alert("Error: Something went wrong!");
+    } else {
+      alert("No data found!");
     }
   };
 
