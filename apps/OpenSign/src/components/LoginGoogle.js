@@ -263,17 +263,17 @@ const GoogleSignInBtn = ({
                   </div>
                   <div className="form-group">
                     <label
-                      htmlFor="Destination"
+                      htmlFor="JobTitle"
                       style={{ display: "flex" }}
                       className="col-form-label"
                     >
-                      Destination{" "}
+                      Job Title{" "}
                       <span style={{ fontSize: 13, color: "red" }}>*</span>
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      id="Destination"
+                      id="JobTitle"
                       value={userDetails.Destination}
                       onChange={(e) =>
                         setUserDetails({
@@ -287,18 +287,18 @@ const GoogleSignInBtn = ({
                   <div>
                     <button
                       type="button"
+                      className="bg-[#17a2b8] p-2 text-white rounded"
+                      onClick={() => handleSubmitbtn()}
+                    >
+                      Sign up
+                    </button>
+                    <button
+                      type="button"
                       className="bg-[#6c757d] p-2 text-white rounded"
                       onClick={handleCloseModal}
                       style={{ marginRight: 10, width: 90 }}
                     >
                       Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-[#17a2b8] p-2 text-white rounded"
-                      onClick={() => handleSubmitbtn()}
-                    >
-                      Sign up
                     </button>
                   </div>
                 </form>
