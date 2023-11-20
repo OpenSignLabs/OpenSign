@@ -49,12 +49,9 @@ const TreeWidget = (props) => {
                 let data = JSON.parse(localStorage.getItem("Extand_Class"));
                 res = data[0];
               } else {
-                var emp = Parse.Object.extend(
-                  localStorage.getItem("extended_class")
-                );
-                var q = new Parse.Query(emp);
-                q.equalTo("UserId", currentUser);
-                res = await q.first();
+                res = await Parse.Cloud.run("getUserDetails", {
+                  email: currentUser.get("email")
+                });
                 if (res) res = res.toJSON();
               }
               if (res) {
@@ -79,12 +76,9 @@ const TreeWidget = (props) => {
                   let data = JSON.parse(localStorage.getItem("Extand_Class"));
                   res = data[0];
                 } else {
-                  emp = Parse.Object.extend(
-                    localStorage.getItem("extended_class")
-                  );
-                  q = new Parse.Query(emp);
-                  q.equalTo("UserId", currentUser);
-                  res = await q.first();
+                  res = await Parse.Cloud.run("getUserDetails", {
+                    email: currentUser.get("email")
+                  });
                   if (res) res = res.toJSON();
                 }
 
@@ -121,10 +115,15 @@ const TreeWidget = (props) => {
             let data = JSON.parse(localStorage.getItem("Extand_Class"));
             res = data[0];
           } else {
-            emp = Parse.Object.extend(localStorage.getItem("extended_class"));
-            q = new Parse.Query(emp);
-            q.equalTo("UserId", currentUser);
-            res = await q.first();
+            // emp = Parse.Object.extend(localStorage.getItem("extended_class"));
+            // q = new Parse.Query(emp);
+            // q.equalTo("UserId", currentUser);
+            // res = await q.first();
+            // if (res) res = res.toJSON();
+            const currentUser = Parse.User.current();
+            res = await Parse.Cloud.run("getUserDetails", {
+              email: currentUser.get("email")
+            });
             if (res) res = res.toJSON();
           }
 
@@ -532,7 +531,7 @@ const TreeWidget = (props) => {
       padding: 0
     },
     overlay: {
-      width:"100%",
+      width: "100%",
       backgroundColor: "rgba(0, 0, 0, 0.75)",
       zIndex: 50
     }

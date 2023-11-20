@@ -6,7 +6,7 @@ import { useWindowSize } from "../hook/useWindowSize";
 import Tour from "reactour";
 import axios from "axios";
 import { useSelector } from "react-redux";
-
+import Parse from "parse";
 const HomeLayout = ({ children }) => {
   const { width } = useWindowSize();
   const [isOpen, setIsOpen] = useState(false);
@@ -124,20 +124,11 @@ const HomeLayout = ({ children }) => {
   };
 
   async function checkTourStatus() {
-    const serverUrl = localStorage.getItem("baseUrl");
-    const appId = localStorage.getItem("AppID12");
-    const extUserClass = localStorage.getItem("extended_class");
-    const json = JSON.parse(localStorage.getItem("Extand_Class"));
-    const extUserId = json && json.length > 0 && json[0].objectId;
-    // console.log("extUserId ", extUserId);
-    const res = await axios.get(
-      serverUrl + "classes/" + extUserClass + "/" + extUserId,
-      {
-        headers: {
-          "X-Parse-Application-Id": appId
-        }
-      }
-    );
+    const currentUser = Parse.User.current();
+    const cloudRes = await Parse.Cloud.run("getUserDetails", {
+      email: currentUser.get("email")
+    });
+    const res = { data: cloudRes.toJSON() };
     if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
       const tourStatus = res.data.TourStatus;
       // console.log("res ", res.data.TourStatus);
