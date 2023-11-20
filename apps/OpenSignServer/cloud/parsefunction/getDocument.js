@@ -5,14 +5,22 @@ export default async function getDocument(request) {
     try {
       const query = new Parse.Query('contracts_Document');
       query.equalTo('objectId', docId);
-      query.equalTo('ACL', new Parse.ACL(userId));
       query.include('ExtUserPtr');
       query.include('CreatedBy');
       query.include('Signers');
       query.include('AuditTrail.UserPtr');
       query.include('Placeholders');
       const res = await query.first({ useMasterKey: true });
-      return res;
+      if (res) {
+        const acl = res.getACL();
+        if (acl && acl.getReadAccess(userId)) {
+          return res;
+        } else {
+          return { error: "You don't have access of this document!" };
+        }
+      } else {
+        return { error: "You don't have access of this document!" };
+      }
     } catch (err) {
       console.log('err', err);
       return err;
