@@ -27,7 +27,7 @@ export default async function getDrive(request) {
             'X-Parse-Master-key': process.env.MASTER_KEY,
           },
         });
-        console.log('res.data.results ', res.data.results);
+        // console.log('res.data.results ', res.data.results);
         if (res.data && res.data.results) {
           return res.data.results;
         } else {
