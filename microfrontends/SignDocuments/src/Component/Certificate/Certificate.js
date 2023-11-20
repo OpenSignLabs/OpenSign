@@ -247,6 +247,12 @@ function Certificate({ pdfData }) {
                       </Text>
                     </Text>
                     <Text style={styles.textStyle}>
+                      Email : &nbsp;
+                      <Text style={styles.textStyle2}>
+                        {pdfData[0].ExtUserPtr.Email}
+                      </Text>
+                    </Text>
+                    <Text style={styles.textStyle}>
                       Accessed from : &nbsp;
                       <Text style={styles.textStyle2}>
                         {pdfData[0].AuditTrail &&
