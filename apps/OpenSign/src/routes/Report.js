@@ -47,30 +47,24 @@ const Report = () => {
     if (json) {
       setActions(json.actions);
       setReportName(json.reportName);
-      const { className, params, keys, orderBy } = json;
       Parse.serverURL = localStorage.getItem("BaseUrl12");
       Parse.initialize(localStorage.getItem("AppID12"));
       const currentUser = Parse.User.current().id;
-      const serverURL =
-        localStorage.getItem("BaseUrl12") + "classes/" + className;
 
-      const strParams = JSON.stringify(params);
-      const strKeys = keys.join();
       const headers = {
         "Content-Type": "application/json",
         "X-Parse-Application-Id": localStorage.getItem("AppID12"),
-        "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        sessiontoken: localStorage.getItem("accesstoken")
       };
       try {
-        const url = `${serverURL}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skipUserRecord}&limit=${limit}&include=AuditTrail.UserPtr`;
-        const res = await axios.get(url, {
+        const params = { reportId: id, skip: skipUserRecord, limit: limit };
+        const url = `${localStorage.getItem("BaseUrl12")}/functions/getReport`;
+        const res = await axios.post(url, params, {
           headers: headers,
           signal: abortController.signal // is used to cancel fetch query
         });
         if (id === "4Hhwbp482K") {
-          const listData = res.data?.results.filter(
-            (x) => x.Signers.length > 0
-          );
+          const listData = res.data?.result.filter((x) => x.Signers.length > 0);
           let arr = [];
           for (const obj of listData) {
             const isSigner = obj.Signers.some(
@@ -101,7 +95,7 @@ const Report = () => {
             prevRecord.length > 0 ? [...prevRecord, ...arr] : arr
           );
         } else {
-          if (res.data.results.length === 10) {
+          if (res.data.result.length === 10) {
             setIsMoreDocs(true);
             console.log("here");
           } else {
@@ -110,8 +104,8 @@ const Report = () => {
           setIsNextRecord(false);
           setList((prevRecord) =>
             prevRecord.length > 0
-              ? [...prevRecord, ...res.data.results]
-              : res.data.results
+              ? [...prevRecord, ...res.data.result]
+              : res.data.result
           );
         }
         setIsLoader(false);
