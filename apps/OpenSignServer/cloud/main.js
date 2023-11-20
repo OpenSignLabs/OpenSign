@@ -15,6 +15,7 @@ import AuthLoginAsMail from './parsefunction/AuthLoginAsMail.js';
 import getUserId from './parsefunction/getUserId.js';
 import getUserDetails from './parsefunction/getUserDetails.js';
 import getDocument from './parsefunction/getDocument.js';
+import getDrive from './parsefunction/getDrive.js';
 // import getInProgressReport from './parsefunction/getInProgressReport.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
@@ -34,3 +35,4 @@ Parse.Cloud.define('AuthLoginAsMail', AuthLoginAsMail);
 Parse.Cloud.define('getUserId', getUserId);
 Parse.Cloud.define('getUserDetails', getUserDetails);
 Parse.Cloud.define('getDocument', getDocument);
+Parse.Cloud.define('getDrive', getDrive)
