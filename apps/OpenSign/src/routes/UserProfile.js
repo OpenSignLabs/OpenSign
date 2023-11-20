@@ -214,26 +214,11 @@ function UserProfile() {
             </li>
           </ul>
           <div className="flex justify-center pb-4">
-            <button
-              type="button"
-              onClick={() => {
-                if (editmode) {
-                  setEditMode(false);
-                } else {
-                  navigate("/changepassword");
-                }
-              }}
-              className={`rounded shadow text-white bg-[#3598dc] mr-4 ${
-                editmode ? "px-4 py-2 " : "p-2"
-              }`}
-            >
-              {editmode ? "Cancel" : "Change Password"}
-            </button>
             {editmode ? (
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="rounded  bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-2"
+                className="rounded  bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-2 mr-4"
               >
                 Save
               </button>
@@ -243,11 +228,26 @@ function UserProfile() {
                 onClick={() => {
                   setEditMode(true);
                 }}
-                className="rounded shadow text-white bg-[#e7505a] px-4 py-2"
+                className="rounded shadow text-white bg-[#e7505a] px-4 py-2 mr-4"
               >
                 Edit
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => {
+                if (editmode) {
+                  setEditMode(false);
+                } else {
+                  navigate("/changepassword");
+                }
+              }}
+              className={`rounded shadow text-white bg-[#3598dc]  ${
+                editmode ? "px-4 py-2 " : "p-2"
+              }`}
+            >
+              {editmode ? "Cancel" : "Change Password"}
+            </button>
           </div>
         </div>
       )}
