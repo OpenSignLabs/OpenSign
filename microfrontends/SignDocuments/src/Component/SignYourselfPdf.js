@@ -15,7 +15,7 @@ import EmailComponent from "./component/emailComponent";
 import FieldsComponent from "./component/fieldsComponent";
 import Modal from "react-bootstrap/Modal";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
-import { getBase64FromIMG } from "../utils/Utils";
+import { contractDocument, getBase64FromIMG } from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
 import { onSaveImage, onSaveSign } from "../utils/Utils";
@@ -173,55 +173,42 @@ function SignYourSelf() {
 
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async () => {
-    await axios
-      .get(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document?where={"objectId":"${documentId}"}&include=ExtUserPtr,Signers`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
-        }
-      )
-      .then((Listdata) => {
-        const json = Listdata.data;
-        const res = json.results;
+    //getting document details
+    const documentData = await contractDocument(documentId);
 
-        if (res[0] && res.length > 0) {
-          setPdfDetails(res);
-          const isCompleted = res[0].IsCompleted && res[0].IsCompleted;
-          if (isCompleted) {
-            const docStatus = {
-              isCompleted: isCompleted
-            };
-
-            setDocumentStatus(docStatus);
-            const alreadySign = {
-              status: true,
-              mssg: "You have successfully signed the document!"
-            };
-            setShowAlreadySignDoc(alreadySign);
-            setPdfUrl(res[0].SignedUrl);
-          }
-        } else {
-          setNoData(true);
-
-          const loadObj = {
-            isLoad: false
-          };
-          setIsLoading(loadObj);
-        }
-      })
-      .catch((err) => {
-        const loadObj = {
-          isLoad: false
+    if (documentData && documentData.length > 0) {
+      setPdfDetails(documentData);
+      const isCompleted =
+        documentData[0].IsCompleted && documentData[0].IsCompleted;
+      if (isCompleted) {
+        const docStatus = {
+          isCompleted: isCompleted
         };
-        setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
-      });
+
+        setDocumentStatus(docStatus);
+        const alreadySign = {
+          status: true,
+          mssg: "You have successfully signed the document!"
+        };
+        setShowAlreadySignDoc(alreadySign);
+        setPdfUrl(documentData[0].SignedUrl);
+      }
+    } else if (
+      documentData === "Error: Something went wrong!" ||
+      (documentData.result && documentData.result.error)
+    ) {
+      const loadObj = {
+        isLoad: false
+      };
+      setHandleError("Error: Something went wrong!");
+      setIsLoading(loadObj);
+    } else {
+      setNoData(true);
+      const loadObj = {
+        isLoad: false
+      };
+      setIsLoading(loadObj);
+    }
     await axios
       .get(
         `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
@@ -252,13 +239,10 @@ function SignYourSelf() {
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
       });
-    const contractUsersRes = await contractUsers(jsonSender.objectId);
 
-    if (
-      contractUsersRes !== "Error: Something went wrong!" &&
-      contractUsersRes &&
-      contractUsersRes[0]
-    ) {
+    const contractUsersRes = await contractUsers(jsonSender.email);
+
+    if (contractUsersRes[0] && contractUsersRes.length > 0) {
       setContractName("_Users");
       setSignerUserId(contractUsersRes[0].objectId);
       const tourstatuss =
@@ -285,14 +269,12 @@ function SignYourSelf() {
       setIsLoading(loadObj);
     } else if (contractUsersRes.length === 0) {
       const contractContactBook = await contactBook(jsonSender.objectId);
-      if (contractContactBook && contractContactBook[0]) {
+      if (contractContactBook && contractContactBook.length > 0) {
         setContractName("_Contactbook");
-
         setSignerUserId(contractContactBook[0].objectId);
         const tourstatuss =
           contractContactBook[0].TourStatus &&
           contractContactBook[0].TourStatus;
-
         if (tourstatuss && tourstatuss.length > 0) {
           setTourStatus(tourstatuss);
           const checkTourRecipients = tourstatuss.filter(
@@ -302,6 +284,8 @@ function SignYourSelf() {
             setCheckTourStatus(checkTourRecipients[0].signyourself);
           }
         }
+      } else {
+        setNoData(true);
       }
       const loadObj = {
         isLoad: false
