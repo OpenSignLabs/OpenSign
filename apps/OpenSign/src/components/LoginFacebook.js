@@ -211,18 +211,18 @@ const LoginFacebook = ({
                   <div>
                     <button
                       type="button"
+                      onClick={() => handleSubmitbtn()}
+                      className="btn btn-info"
+                    >
+                      Sign up
+                    </button>
+                    <button
+                      type="button"
                       className="btn btn-secondary"
                       onClick={() => setIsModal(false)}
                       style={{ marginRight: 10, width: 90 }}
                     >
                       Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSubmitbtn()}
-                      className="btn btn-info"
-                    >
-                      Sign up
                     </button>
                   </div>
                 </form>
