@@ -1,61 +1,46 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "./component/loader";
-import { getHostUrl } from "../utils/Utils";
+import { contractDocument, getHostUrl } from "../utils/Utils";
 function DraftDocument() {
   const navigate = useNavigate();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time",
+    message: "This might take some time"
   });
 
   const rowLevel =
     localStorage.getItem("rowlevel") &&
     JSON.parse(localStorage.getItem("rowlevel"));
-  const signObjId =
+  const docId =
     rowLevel && rowLevel?.id
       ? rowLevel.id
       : rowLevel?.objectId && rowLevel.objectId;
+
   useEffect(() => {
-    if (signObjId) {
+    if (docId) {
       getDocumentDetails();
     }
   }, []);
 
   //get document details
   const getDocumentDetails = async () => {
-    await axios
-      .get(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document?where={"objectId":"${signObjId}"}&include=ExtUserPtr,Signers`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
-        }
-      )
-      .then((Listdata) => {
-        const json = Listdata.data;
-        const res = json.results;
-        
-        if (res[0] && res.length > 0) {
-          setPdfDetails(res);
-          const loadObj = {
-            isLoad: false,
-          };
-          setIsLoading(loadObj);
-        } else {
-          alert("No data found!");
-        }
-      })
-      .catch((err) => {
-        console.log("axois err ", err);
-      });
+    //getting document details
+    const documentData = await contractDocument(docId);
+    if (documentData && documentData !== "no data found!" && documentData[0]) {
+      if (documentData[0] && documentData.length > 0) {
+        setPdfDetails(documentData);
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
+      }
+    } else if (documentData === "no data found!") {
+      alert("No data found!");
+    } else if (documentData === "Error: Something went wrong!") {
+      alert("Error: Something went wrong!");
+    }
   };
 
   //check document type and render on signyour self and placeholder route
@@ -63,24 +48,25 @@ function DraftDocument() {
     const data = pdfDetails[0];
     const checkSignerExist =
       pdfDetails[0] && pdfDetails[0].Signers && pdfDetails[0].Signers;
-  const isPlaceholder =
+    const isPlaceholder =
       pdfDetails[0].Placeholders && pdfDetails[0].Placeholders;
     const isDecline = data.IsDeclined && data.IsDeclined;
     const signUrl = data.SignedUrl && data.SignedUrl;
-    const expireDate = pdfDetails[0] && pdfDetails[0].ExpiryDate.iso &&  pdfDetails[0].ExpiryDate.iso;
+    const expireDate =
+      pdfDetails[0] &&
+      pdfDetails[0].ExpiryDate.iso &&
+      pdfDetails[0].ExpiryDate.iso;
     const expireUpdateDate = new Date(expireDate).getTime();
     const currDate = new Date().getTime();
     const hostUrl = getHostUrl();
 
     //checking document is completed and signer exist then navigate to pdfRequestFiles file
     if (data.IsCompleted && checkSignerExist) {
-    navigate(`${hostUrl}pdfRequestFiles`);
+      navigate(`${hostUrl}pdfRequestFiles`);
     }
     //checking document is completed and signer does not exist then navigate to recipientSignPdf file
     else if (data.IsCompleted && !checkSignerExist) {
-      navigate(
-        `${hostUrl}signaturePdf`
-      );
+      navigate(`${hostUrl}signaturePdf`);
     }
     //checking document is declined by someone then navigate to pdfRequestFiles file
     else if (isDecline) {
