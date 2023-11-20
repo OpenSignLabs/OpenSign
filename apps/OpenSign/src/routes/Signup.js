@@ -52,50 +52,27 @@ const Signup = (props) => {
       res
         .then(async (r) => {
           if (r) {
-            let roleurl = `${parseBaseUrl}functions/AddUserToRole`;
-            const headers = {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": parseAppId,
-              sessionToken:
-                r.getSessionToken() || localStorage.getItem("accesstoken")
-            };
-            let body = {
-              appName: props.appInfo.appname,
-              roleName: props.appInfo.defaultRole,
-              userId: r.id
-            };
-            await axios.post(roleurl, body, { headers: headers });
-
             let roleData = props.appInfo.settings;
             if (roleData && roleData.length > 0) {
-              roleData.forEach((rld) => {
-                if (rld.role === props.appInfo.defaultRole) {
-                  const extCls = Parse.Object.extend(rld.extended_class);
-                  const newObj = new extCls();
-                  newObj.set("UserId", {
-                    __type: "Pointer",
-                    className: "_User",
-                    objectId: r.id
-                  });
-                  newObj.set("UserRole", props.appInfo.defaultRole);
-                  newObj.set("Email", email);
-                  newObj.set("Name", name);
-                  newObj.set("Phone", phone);
-                  newObj.set("Company", company);
-                  newObj.set("JobTitle", jobTitle);
-                  newObj
-                    .save()
-                    .then((ex) => {
-                      if (ex) {
-                        handleNavigation(r.getSessionToken());
-                      }
-                    })
-                    .catch((err) => {
-                      alert(err.message);
-                      setState({ loading: false });
-                    });
+              const params = {
+                userDetails: {
+                  jobTitle: jobTitle,
+                  company: company,
+                  name: name,
+                  email: email,
+                  phone: phone,
+                  role: props.appInfo.defaultRole
                 }
-              });
+              };
+              try {
+                const usersignup = await Parse.Cloud.run("usersignup", params);
+                if (usersignup) {
+                  handleNavigation(r.getSessionToken());
+                }
+              } catch (err) {
+                alert(err.message);
+                setState({ loading: false });
+              }
             }
           }
         })
