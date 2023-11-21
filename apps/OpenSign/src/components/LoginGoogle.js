@@ -287,7 +287,7 @@ const GoogleSignInBtn = ({
                   <div>
                     <button
                       type="button"
-                      className="bg-[#17a2b8] p-2 text-white rounded"
+                      className="bg-[#17a2b8] p-2 text-white rounded mr-2"
                       onClick={() => handleSubmitbtn()}
                     >
                       Sign up
@@ -296,7 +296,7 @@ const GoogleSignInBtn = ({
                       type="button"
                       className="bg-[#6c757d] p-2 text-white rounded"
                       onClick={handleCloseModal}
-                      style={{ marginRight: 10, width: 90 }}
+                      style={{ width: 90 }}
                     >
                       Cancel
                     </button>
