@@ -16,6 +16,8 @@ function UserProfile() {
   const [Phone, SetPhone] = useState(UserProfile && UserProfile.phone);
   const [Image, setImage] = useState(localStorage.getItem("profileImg"));
   const [isLoader, setIsLoader] = useState(false);
+  const [percentage, setpercentage] = useState(0);
+
   Parse.serverURL = parseBaseUrl;
   Parse.initialize(parseAppId);
   const handleSubmit = async (e) => {
@@ -44,7 +46,7 @@ function UserProfile() {
               await updateExtUser({ Name: res.name, Phone: res.phone });
               alert("Profile updated successfully.");
               setEditMode(false);
-              navigate("/");
+              navigate("/dashboard/35KBoSgoAK");
             }
           },
           (error) => {
@@ -102,7 +104,15 @@ function UserProfile() {
     const parseFile = new Parse.File(name, pdfFile);
 
     try {
-      const response = await parseFile.save();
+      const response = await parseFile.save({
+        progress: (progressValue, loaded, total, { type }) => {
+          if (type === "upload" && progressValue !== null) {
+            const percentCompleted = Math.round((loaded * 100) / total);
+            // console.log("percentCompleted ", percentCompleted);
+            setpercentage(percentCompleted);
+          }
+        }
+      });
       // // The response object will contain information about the uploaded file
       // console.log("File uploaded:", response);
 
@@ -111,6 +121,7 @@ function UserProfile() {
       if (response.url()) {
         setImage(response.url());
         localStorage.setItem("profileImg", response.url());
+        setpercentage(0);
         SaveFileSize(size, response.url());
         return response.url();
       }
@@ -167,8 +178,18 @@ function UserProfile() {
                 }}
               />
             )}
+            {percentage !== 0 && (
+              <div className="flex items-center gap-x-2">
+                <div className="h-2 rounded-full w-[200px] md:w-[400px] bg-gray-200">
+                  <div
+                    className="h-2 rounded-full bg-blue-500"
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+                <span className="text-black text-sm">{percentage}%</span>
+              </div>
+            )}
             <div className="text-base font-semibold pt-4">
-              {" "}
               {localStorage.getItem("_user_role")}
             </div>
           </div>
