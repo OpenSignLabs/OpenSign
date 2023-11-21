@@ -15,6 +15,7 @@ const Report = () => {
   const [isNextRecord, setIsNextRecord] = useState(false);
   const [isMoreDocs, setIsMoreDocs] = useState(true);
   const abortController = new AbortController();
+  const docPerPage = 10;
 
   // below useEffect is call when id param change
   useEffect(() => {
@@ -86,7 +87,7 @@ const Report = () => {
               }
             }
           }
-          if (arr.length === 10) {
+          if (arr.length === docPerPage) {
             setIsMoreDocs(true);
           } else {
             setIsMoreDocs(false);
@@ -95,9 +96,8 @@ const Report = () => {
             prevRecord.length > 0 ? [...prevRecord, ...arr] : arr
           );
         } else {
-          if (res.data.result.length === 10) {
+          if (res.data.result.length === docPerPage) {
             setIsMoreDocs(true);
-            console.log("here");
           } else {
             setIsMoreDocs(false);
           }
@@ -149,6 +149,7 @@ const Report = () => {
               actions={actions}
               setIsNextRecord={setIsNextRecord}
               isMoreDocs={isMoreDocs}
+              docPerPage={docPerPage}
             />
           ) : (
             <div className="flex items-center justify-center h-screen w-full bg-white rounded">
