@@ -10,9 +10,11 @@ import GoogleSignInBtn from "../components/LoginGoogle";
 // import LoginFacebook from "../components/LoginFacebook";
 import { NavLink, useNavigate } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
+import { useWindowSize } from "../hook/useWindowSize";
 
 function Login(props) {
   const navigate = useNavigate();
+  const { width } = useWindowSize();
   const [state, setState] = useState({
     email: "",
     toastColor: "#5cb85c",
@@ -21,7 +23,6 @@ function Login(props) {
     passwordVisible: false,
     mobile: "",
     phone: "",
-    hideNav: "",
     scanResult: "",
     baseUrl: localStorage.getItem("baseUrl"),
     parseAppId: localStorage.getItem("parseAppId"),
@@ -47,24 +48,9 @@ function Login(props) {
     );
     // eslint-disable-next-line
   }, []);
-  useEffect(() => {
-    resize();
-    window.addEventListener("resize", resize());
-    return () => {
-      window.removeEventListener("resize", resize());
-    };
-    // eslint-disable-next-line
-  }, []);
   const handleChange = (event) => {
     const { name, value } = event.target;
     setState({ ...state, [name]: value });
-  };
-
-  const resize = () => {
-    let currentHideNav = window.innerWidth <= 760;
-    if (currentHideNav !== state.hideNav) {
-      setState({ ...state, hideNav: currentHideNav });
-    }
   };
 
   const handleSubmit = async (event) => {
@@ -594,6 +580,10 @@ function Login(props) {
                                 } else {
                                   navigate(`/subscription`, { replace: true });
                                 }
+                              } else {
+                                navigate(
+                                  `/${element.pageType}/${element.pageId}`
+                                );
                               }
                             }
                           } else {
@@ -618,6 +608,10 @@ function Login(props) {
                               } else {
                                 navigate(`/subscription`, { replace: true });
                               }
+                            } else {
+                              navigate(
+                                `/${element.pageType}/${element.pageId}`
+                              );
                             }
                           }
                         },
@@ -1050,7 +1044,7 @@ function Login(props) {
                         <NavLink
                           className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
                           to="/signup"
-                          style={state.hideNav ? { textAlign: "center" } : {}}
+                          style={width < 768 ? { textAlign: "center" } : {}}
                         >
                           Create Account
                         </NavLink>
@@ -1118,7 +1112,7 @@ function Login(props) {
                     </div>
                   </div>
                 </div>
-                {!state.hideNav && (
+                {width >= 768 && (
                   <div className="self-center">
                     <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
                       <img
