@@ -606,7 +606,7 @@ function RenderPdf({
                             >
                               {" "}
                               <div
-                                onTouchStart={(e) => {
+                                onTouchEnd ={(e) => {
                                   if (!isDragging) {
                                     setTimeout(() => {
                                       e.stopPropagation();
@@ -640,6 +640,7 @@ function RenderPdf({
                                     alt="signimg"
                                     onClick={(e) => {
                                       setSignKey(pos.key);
+                                      console.log("Drag 2");
                                       setIsSignPad(true);
                                       setIsStamp(pos.isStamp);
                                     }}
@@ -692,11 +693,10 @@ function RenderPdf({
                                 }}
                               >
                                 <div
-                                  onTouchStart={(e) => {
+                                  onTouchEnd ={(e) => {
                                     if (!isDragging) {
                                       setTimeout(() => {
                                         setIsSignPad(true);
-
                                         setSignKey(pos.key);
                                         setIsStamp(pos.isStamp);
                                       }, 500);
