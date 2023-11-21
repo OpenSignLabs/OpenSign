@@ -287,8 +287,9 @@ const GoogleSignInBtn = ({
                   <div>
                     <button
                       type="button"
-                      className="bg-[#17a2b8] p-2 text-white rounded mr-2"
+                      className="bg-[#17a2b8] p-2 text-white rounded"
                       onClick={() => handleSubmitbtn()}
+                      style={{ marginRight: 10 }}
                     >
                       Sign up
                     </button>
