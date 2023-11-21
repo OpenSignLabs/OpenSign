@@ -279,7 +279,7 @@ export const contactBook = async (objectId) => {
     .get(
       `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
         "_appName"
-      )}_Contactbook?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${objectId}"}}`,
+      )}_Contactbook?where={"objectId":"${objectId}"}`,
       {
         headers: {
           "Content-Type": "application/json",

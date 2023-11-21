@@ -231,24 +231,12 @@ function PlaceHolderSign() {
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else if (res.length === 0) {
-      const res = await contactBook(jsonSender.objectId);
-      if (res[0] && res.length) {
-        setSignerUserId(res[0].objectId);
-        const tourstatus = res[0].TourStatus && res[0].TourStatus;
-        if (tourstatus && tourstatus.length > 0) {
-          setTourStatus(tourstatus);
-          const checkTourRecipients = tourstatus.filter(
-            (data) => data.placeholder
-          );
-          if (checkTourRecipients && checkTourRecipients.length > 0) {
-            setCheckTourStatus(checkTourRecipients[0].placeholder);
-          }
-        }
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
-      }
+      setNoData(true);
+
+      const loadObj = {
+        isLoad: false
+      };
+      setIsLoading(loadObj);
     }
   };
 

@@ -489,16 +489,13 @@ function Login(props) {
                         element.extended_class
                       );
                       localStorage.setItem("userpointer", element.userpointer);
-
-                      const extendedClass = Parse.Object.extend(
-                        element.extended_class
-                      );
-                      let query = new Parse.Query(extendedClass);
-                      query.equalTo("UserId", Parse.User.current());
-                      query.include("TenantId");
-                      await query.find().then(
-                        (results) => {
+                      const currentUser = Parse.User.current();
+                      await Parse.Cloud.run("getUserDetails", {
+                        email: currentUser.get("email")
+                      }).then(
+                        (result) => {
                           let tenentInfo = [];
+                          const results = [result];
                           if (results) {
                             let extendedInfo_stringify =
                               JSON.stringify(results);
@@ -755,14 +752,6 @@ function Login(props) {
                     "extended_class",
                     element.extended_class
                   );
-
-                  // const extendedClass = Parse.Object.extend(
-                  //   element.extended_class
-                  // );
-                  // let query = new Parse.Query(extendedClass);
-                  // query.equalTo("UserId", Parse.User.current());
-                  // query.include("TenantId");
-                  // await query.find()
 
                   const currentUser = Parse.User.current();
                   await Parse.Cloud.run("getUserDetails", {

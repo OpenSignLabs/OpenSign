@@ -213,6 +213,7 @@ const LoginFacebook = ({
                       type="button"
                       onClick={() => handleSubmitbtn()}
                       className="btn btn-info"
+                      style={{ marginRight: 10 }}
                     >
                       Sign up
                     </button>
@@ -220,7 +221,7 @@ const LoginFacebook = ({
                       type="button"
                       className="btn btn-secondary"
                       onClick={() => setIsModal(false)}
-                      style={{ marginRight: 10, width: 90 }}
+                      style={{ width: 90 }}
                     >
                       Cancel
                     </button>

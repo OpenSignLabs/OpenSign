@@ -7,11 +7,11 @@ const ReportTable = ({
   List,
   actions,
   setIsNextRecord,
-  isMoreDocs
+  isMoreDocs,
+  docPerPage
 }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const docPerPage = 10;
   // const pageNumbers = [];
 
   // For loop is used to calculate page numbers visible below table
@@ -22,7 +22,7 @@ const ReportTable = ({
       calculatedPageNumbers.push(i);
     }
     return calculatedPageNumbers;
-  }, [List]);
+  }, [List, docPerPage]);
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
     return () => setCurrentPage(1);
@@ -154,7 +154,7 @@ const ReportTable = ({
         </tbody>
       </table>
       <div className="flex flex-wrap items-center gap-2 p-2 ">
-        {List.length > 10 && (
+        {List.length > docPerPage && (
           <>
             {currentPage > 1 && (
               <button
@@ -178,7 +178,7 @@ const ReportTable = ({
         {isMoreDocs && (
           <button className="text-black rounded px-1 py-2">...</button>
         )}
-        {List.length > 10 && (
+        {List.length > docPerPage && (
           <>
             {pageNumbers.includes(currentPage + 1) && (
               <button
