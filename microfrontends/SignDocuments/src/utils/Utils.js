@@ -274,12 +274,15 @@ export const contractUsers = async (email) => {
 };
 
 //function for getting contracts_contactbook details
-export const contactBook = async (objectId) => {
+export const contactBook = async (objectId, isUser) => {
+  const condition = isUser
+    ? `{"UserId": {"__type": "Pointer","className": "_User", "objectId":"${objectId}"}}`
+    : `{"objectId":"${objectId}"}`;
   const result = await axios
     .get(
       `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
         "_appName"
-      )}_Contactbook?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${objectId}"}}`,
+      )}_Contactbook?where=${condition}`,
       {
         headers: {
           "Content-Type": "application/json",

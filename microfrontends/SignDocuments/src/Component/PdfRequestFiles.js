@@ -1033,7 +1033,7 @@ function PdfRequestFiles() {
 
                 <Modal.Body>
                   <p className="pTagBody">
-                    This document has been signed by all Sigers.
+                    This document has been signed by all Signers.
                   </p>
                 </Modal.Body>
 
