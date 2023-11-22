@@ -31,10 +31,6 @@ export async function getBase64FromIMG(url) {
 
 export function getHostUrl() {
   const hostUrl = window.location.href;
-  /// const hostUrl = "https://contracts-defaultssty.qik.ai/#/mf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/legadrive";
-  // const hostUrl = "https://contracts-defaultssty.qik.ai/#/"
-  // const hostUrl = "https://lionfish-app-75ly7.ondigitalocean.app/mf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/legadrive"
-  //const hostUrl = "https://app.opensignlabs.com/rpmf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/draftDocument";
 
   if (hostUrl) {
     const urlSplit = hostUrl.split("/");
@@ -105,7 +101,6 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
       return obj;
     });
     return newUpdateUrl;
-    // setXyPostion(newUpdateUrl);
   } else {
     const getXYdata = xyPostion[index].pos;
 
@@ -298,4 +293,137 @@ export const contactBook = async (objectId) => {
       return "Error: Something went wrong!";
     });
   return result;
+};
+
+//function for call cloud function signPdf and generate digital signature
+export const signPdfFun = async (
+  base64Url,
+  documentId,
+  signerObjectId,
+  pdfOriginalWidth,
+  signerData,
+  xyPosData,
+  pdfBase64Url,
+  pageNo
+) => {
+  let signgleSign;
+  const isMobile = window.innerWidth < 767;
+  const newWidth = window.innerWidth;
+  const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+  if (signerData && signerData.length === 1 && signerData[0].pos.length === 1) {
+    const height = xyPosData.Height ? xyPosData.Height : 60;
+
+    const xPos = (pos) => {
+      //checking both condition mobile and desktop view
+      if (isMobile) {
+        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+        if (pos.isMobile) {
+          const x = pos.xPosition * (pos.scale / scale);
+          return x * scale + 70;
+        } else {
+          const x = pos.xPosition / scale;
+          return x * scale;
+        }
+      } else {
+        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+        if (pos.isMobile) {
+          const x = pos.xPosition * pos.scale + 50;
+          return x;
+        } else {
+          return pos.xPosition;
+        }
+      }
+    };
+
+    const yBottom = (pos) => {
+      let yPosition;
+      //checking both condition mobile and desktop view
+
+      if (isMobile) {
+        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+        if (pos.isMobile) {
+          const y = pos.yBottom * (pos.scale / scale);
+          yPosition = pos.isDrag
+            ? y * scale - height
+            : pos.firstYPos
+              ? y * scale - height + pos.firstYPos
+              : y * scale - height;
+          return yPosition;
+        } else {
+          const y = pos.yBottom / scale;
+
+          yPosition = pos.isDrag
+            ? y * scale - height
+            : pos.firstYPos
+              ? y * scale - height + pos.firstYPos
+              : y * scale - height;
+          return yPosition;
+        }
+      } else {
+        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+        if (pos.isMobile) {
+          const y = pos.yBottom * pos.scale;
+
+          yPosition = pos.isDrag
+            ? y - height
+            : pos.firstYPos
+              ? y - height + pos.firstYPos
+              : y - height;
+          return yPosition;
+        } else {
+          yPosition = pos.isDrag
+            ? pos.yBottom - height
+            : pos.firstYPos
+              ? pos.yBottom - height + pos.firstYPos
+              : pos.yBottom - height;
+          return yPosition;
+        }
+      }
+    };
+    const bottomY = yBottom(xyPosData);
+    signgleSign = {
+      pdfFile: pdfBase64Url,
+      docId: documentId,
+      userId: signerObjectId,
+      sign: {
+        Base64: base64Url,
+        Left: xPos(xyPosData),
+        Bottom: bottomY,
+        Width: xyPosData.Width ? xyPosData.Width : 150,
+        Height: height,
+        Page: pageNo
+      }
+    };
+  } else if (
+    signerData &&
+    signerData.length > 0 &&
+    signerData[0].pos.length > 0
+  ) {
+    signgleSign = {
+      pdfFile: base64Url,
+      docId: documentId,
+      userId: signerObjectId
+    };
+  }
+
+  const response = await axios
+    .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, signgleSign, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: localStorage.getItem("accesstoken")
+      }
+    })
+    .then((Listdata) => {
+      const json = Listdata.data;
+      const res = json.result;
+      console.log("res", res);
+      return res;
+    })
+    .catch((err) => {
+      console.log("axois err ", err);
+      alert("something went wrong");
+    });
+
+  return response;
 };

@@ -620,7 +620,7 @@ function SignYourSelf() {
         sign: {
           Base64: base64Url,
           Left: isMobile
-            ? xyPosData.xPosition * scale + imgWidth / 2
+            ? xyPosData.xPosition * scale + imgWidth / 2 - 32
             : xyPosData.xPosition,
           Bottom: bottomY,
           Width: xyPosData.Width ? xyPosData.Width : 150,
