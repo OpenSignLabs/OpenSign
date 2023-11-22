@@ -6,8 +6,10 @@ import Title from "../components/Title";
 import { fetchAppInfo, showTenantName } from "../redux/actions";
 import { useNavigate, NavLink } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
+import { useWindowSize } from "../hook/useWindowSize";
 
 const Signup = (props) => {
+  const { width } = useWindowSize();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -18,7 +20,6 @@ const Signup = (props) => {
   const [company, setCompany] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [state, setState] = useState({
-    hideNav: "",
     loading: false,
     toastColor: "#5cb85c",
     toastDescription: ""
@@ -52,58 +53,34 @@ const Signup = (props) => {
       res
         .then(async (r) => {
           if (r) {
-            let roleurl = `${parseBaseUrl}functions/AddUserToRole`;
-            const headers = {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": parseAppId,
-              sessionToken:
-                r.getSessionToken() || localStorage.getItem("accesstoken")
-            };
-            let body = {
-              appName: props.appInfo.appname,
-              roleName: props.appInfo.defaultRole,
-              userId: r.id
-            };
-            await axios.post(roleurl, body, { headers: headers });
-
             let roleData = props.appInfo.settings;
             if (roleData && roleData.length > 0) {
-              roleData.forEach((rld) => {
-                if (rld.role === props.appInfo.defaultRole) {
-                  const extCls = Parse.Object.extend(rld.extended_class);
-                  const newObj = new extCls();
-                  newObj.set("UserId", {
-                    __type: "Pointer",
-                    className: "_User",
-                    objectId: r.id
-                  });
-                  newObj.set("UserRole", props.appInfo.defaultRole);
-                  newObj.set("Email", email);
-                  newObj.set("Name", name);
-                  newObj.set("Phone", phone);
-                  newObj.set("Company", company);
-                  newObj.set("JobTitle", jobTitle);
-                  newObj
-                    .save()
-                    .then((ex) => {
-                      if (ex) {
-                        handleNavigation(r.getSessionToken());
-                      }
-                    })
-                    .catch((err) => {
-                      alert(err.message);
-                      setState({ loading: false });
-                    });
+              const params = {
+                userDetails: {
+                  jobTitle: jobTitle,
+                  company: company,
+                  name: name,
+                  email: email,
+                  phone: phone,
+                  role: props.appInfo.defaultRole
                 }
-              });
+              };
+              try {
+                const usersignup = await Parse.Cloud.run("usersignup", params);
+                if (usersignup) {
+                  handleNavigation(r.getSessionToken());
+                }
+              } catch (err) {
+                alert(err.message);
+                setState({ loading: false });
+              }
             }
           }
         })
         .catch(async (err) => {
           if (err.code === 202) {
-            const userQuery = new Parse.Query("contracts_Users");
-            userQuery.equalTo("Email", email);
-            const res = await userQuery.first();
+            const params = { email: email };
+            const res = await Parse.Cloud.run("getUserDetails", params);
             // console.log("Res ", res);
             if (res) {
               alert("User already exists with this username!");
@@ -208,13 +185,6 @@ const Signup = (props) => {
                         ""
                       );
                       localStorage.setItem("_user_role", _role);
-
-                      if (element.enableCart) {
-                        localStorage.setItem("EnableCart", element.enableCart);
-                        props.setEnableCart(element.enableCart);
-                      } else {
-                        localStorage.removeItem("EnableCart");
-                      }
                       // Get TenentID from Extendend Class
                       localStorage.setItem(
                         "extended_class",
@@ -222,15 +192,12 @@ const Signup = (props) => {
                       );
                       localStorage.setItem("userpointer", element.userpointer);
 
-                      const extendedClass = Parse.Object.extend(
-                        element.extended_class
-                      );
-                      let query = new Parse.Query(extendedClass);
-                      query.equalTo("UserId", Parse.User.current());
-                      query.include("TenantId");
-                      await query.find().then(
-                        (results) => {
+                      await Parse.Cloud.run("getUserDetails", {
+                        email: email
+                      }).then(
+                        (result) => {
                           let tenentInfo = [];
+                          const results = [result];
                           if (results) {
                             let extendedInfo_stringify =
                               JSON.stringify(results);
@@ -318,7 +285,7 @@ const Signup = (props) => {
                               );
                               setState({ loading: false });
                               if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                                navigate("/subscription");
+                                navigate(`/subscription`, { replace: true });
                               } else {
                                 alert("Registered user successfully");
                                 navigate(
@@ -336,7 +303,7 @@ const Signup = (props) => {
                             localStorage.setItem("pageType", element.pageType);
                             setState({ loading: false });
                             if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                              navigate("/subscription");
+                              navigate(`/subscription`, { replace: true });
                             } else {
                               navigate(
                                 `/${element.pageType}/${element.pageId}`
@@ -421,24 +388,14 @@ const Signup = (props) => {
     }
   };
   useEffect(() => {
-    window.addEventListener("resize", resize);
     props.fetchAppInfo(
       localStorage.getItem("domain"),
       localStorage.getItem("BaseUrl12"),
       localStorage.getItem("AppID12")
     );
-    return () => {
-      window.removeEventListener("resize", resize);
-    };
     // eslint-disable-next-line
   }, []);
 
-  const resize = () => {
-    let currentHideNav = window.innerWidth <= 760;
-    if (currentHideNav !== state.hideNav) {
-      setState({ hideNav: currentHideNav });
-    }
-  };
   return (
     <div className="bg-white">
       {state.loading && (
@@ -472,11 +429,7 @@ const Signup = (props) => {
         <div>
           <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
             <div className="w-[250px] h-[66px] inline-block">
-              {state.hideNav ? (
-                <img src={image} width="100%" alt="" />
-              ) : (
-                <img src={image} width="100%" alt="" />
-              )}
+              <img src={image} width="100%" alt="" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
               <div className="">
@@ -584,14 +537,14 @@ const Signup = (props) => {
                     <NavLink
                       className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
                       to="/"
-                      style={state.hideNav ? { textAlign: "center" } : {}}
+                      style={width < 768 ? { textAlign: "center" } : {}}
                     >
                       Login
                     </NavLink>
                   </div>
                 </form>
               </div>
-              {!state.hideNav && (
+              {width >= 768 && (
                 <div className="self-center">
                   <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
                     <img src={login_img} alt="bisec" width="100%" />

@@ -17,7 +17,7 @@ import S3Adapter from 'parse-server-s3-adapter';
 import FSFilesAdapter from 'parse-server-fs-adapter';
 import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
-import { createTransport } from 'nodemailer';
+import { exec } from 'child_process';
 
 const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 // console.log("configuration ", configuration);
@@ -84,7 +84,9 @@ export const config = {
           module: 'parse-server-api-mail-adapter',
           options: {
             // The email address from which emails are sent.
-            sender:  process.env.SMTP_ENABLE ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER,
+            sender: process.env.SMTP_ENABLE
+              ? process.env.SMTP_USER_EMAIL
+              : process.env.MAILGUN_SENDER,
             // The email templates.
             templates: {
               // The template used by Parse Server to send an email for password
@@ -181,6 +183,20 @@ if (!process.env.TESTING) {
   httpServer.headersTimeout = 100000; // in milliseconds
   httpServer.listen(port, function () {
     console.log('parse-server-example running on port ' + port + '.');
+    const migrate = `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=http://localhost:8080/app MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
+
+    exec(migrate, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error: ${error.message}`);
+        return;
+      }
+
+      if (stderr) {
+        console.error(`Error: ${stderr}`);
+        return;
+      }
+      console.log(`Command output: ${stdout}`);
+    });
   });
   // This will enable the Live Query real-time server
   await ParseServer.createLiveQueryServer(httpServer);

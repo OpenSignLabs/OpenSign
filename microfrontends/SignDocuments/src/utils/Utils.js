@@ -59,7 +59,6 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
       data.key === signKey && data.Width && data.Height && data.SignUrl
   );
 
-
   if (updateFilter.length > 0) {
     let newWidth, newHeight;
     const aspectRatio = imgWH.width / imgWH.height;
@@ -140,7 +139,7 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
           ...url,
           Width: getPosData[0].Width ? getPosData[0].Width : newWidth,
           Height: getPosData[0].Height ? getPosData[0].Height : newHeight,
-         SignUrl: image.src,
+          SignUrl: image.src,
           ImageType: image.imgType
         };
       }
@@ -154,7 +153,6 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
       return obj;
     });
     return newUpdateUrl;
-    // setXyPostion(newUpdateUrl);
   }
 }
 
@@ -184,40 +182,105 @@ export function onSaveSign(xyPostion, index, signKey, signatureImg) {
   return newUpdateUrl;
 }
 
-//function for getting contract_User details
-export const contractUsers = async (objectId) => {
-  const result = await axios
-    .get(
-      `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-        "_appName"
-      )}_Users?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${objectId}"}}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-        }
+//function for getting document details from contract_Documents class
+export const contractDocument = async (documentId) => {
+  const data = {
+    docId: documentId
+  };
+  const documentDeatils = await axios
+    .post(`${localStorage.getItem("baseUrl")}functions/getDocument`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: localStorage.getItem("accesstoken")
       }
-    )
+    })
     .then((Listdata) => {
       const json = Listdata.data;
-      const res = json.results;
-      return res;
+      let data = [];
+      if (json && json.result.error) {
+        return json;
+      } else if (json && json.result) {
+        data.push(json.result);
+        return data;
+      } else {
+        return [];
+      }
     })
     .catch((err) => {
       return "Error: Something went wrong!";
     });
 
-  return result;
+  return documentDeatils;
 };
 
-//function for getting contrscts_contactbook details
+//function for getting document details for getDrive
+export const getDrive = async (documentId) => {
+  const data = {
+    docId: documentId && documentId
+  };
+  const driveDeatils = await axios
+    .post(`${localStorage.getItem("baseUrl")}functions/getDrive`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessiontoken: localStorage.getItem("accesstoken")
+      }
+    })
+    .then((Listdata) => {
+      const json = Listdata.data;
+
+      if (json && json.result.error) {
+        return json;
+      } else if (json && json.result) {
+        const data = json.result;
+        return data;
+      } else {
+        return [];
+      }
+    })
+    .catch((err) => {
+      return "Error: Something went wrong!";
+    });
+
+  return driveDeatils;
+};
+//function for getting contract_User details
+export const contractUsers = async (email) => {
+  const data = {
+    email: email
+  };
+  const userDetails = await axios
+    .post(`${localStorage.getItem("baseUrl")}functions/getUserDetails`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: localStorage.getItem("accesstoken")
+      }
+    })
+    .then((Listdata) => {
+      const json = Listdata.data;
+      let data = [];
+
+      if (json && json.result) {
+        data.push(json.result);
+        return data;
+      }
+    })
+    .catch((err) => {
+      return "Error: Something went wrong!";
+    });
+
+  return userDetails;
+};
+
+//function for getting contracts_contactbook details
 export const contactBook = async (objectId) => {
   const result = await axios
     .get(
       `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
         "_appName"
-      )}_Contactbook?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${objectId}"}}`,
+      )}_Contactbook?where={"objectId":"${objectId}"}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -232,30 +295,6 @@ export const contactBook = async (objectId) => {
       return res;
     })
 
-    .catch((err) => {
-      return "Error: Something went wrong!";
-    });
-  return result;
-};
-
-export const contactBookName = async (objectId, className) => {
-  const result = await axios
-    .get(
-      `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-        "_appName"
-      )}${className}?where={"objectId":"${objectId}"}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-        }
-      }
-    )
-    .then((Listdata) => {
-      const json = Listdata.data;
-      return json;
-    })
     .catch((err) => {
       return "Error: Something went wrong!";
     });

@@ -27,14 +27,14 @@ const LoginFacebook = ({
       setThirdpartyLoader(true);
       const details = {
         Email: response.email,
-        Name: response.name,
+        Name: response.name
       };
       setUserDetails({ ...userDetails, ...details });
       const fDetails = {
         Id: response.userID,
         AccessToken: response.accessToken,
         Name: response.name,
-        Email: response.email,
+        Email: response.email
       };
       setFBDetails({ ...fBDetails, ...fDetails });
       const res = await checkExtUser(fDetails);
@@ -42,9 +42,11 @@ const LoginFacebook = ({
   };
 
   const checkExtUser = async (details) => {
-    const extUser = new Parse.Query("contracts_Users");
-    extUser.equalTo("Email", details.Email);
-    const extRes = await extUser.first();
+    // const extUser = new Parse.Query("contracts_Users");
+    // extUser.equalTo("Email", details.Email);
+    // const extRes = await extUser.first();
+    const params = { email: details.Email };
+    const extRes = await Parse.Cloud.run("getUserDetails", params);
     // console.log("extRes ", extRes);
     if (extRes) {
       const params = { ...details, Phone: extRes.get("Phone") };
@@ -209,18 +211,19 @@ const LoginFacebook = ({
                   <div>
                     <button
                       type="button"
-                      className="btn btn-secondary"
-                      onClick={() => setIsModal(false)}
-                      style={{ marginRight: 10, width: 90 }}
+                      onClick={() => handleSubmitbtn()}
+                      className="btn btn-info"
+                      style={{ marginRight: 10 }}
                     >
-                      Cancel
+                      Sign up
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleSubmitbtn()}
-                      className="btn btn-info"
+                      className="btn btn-secondary"
+                      onClick={() => setIsModal(false)}
+                      style={{ width: 90 }}
                     >
-                      Sign up
+                      Cancel
                     </button>
                   </div>
                 </form>

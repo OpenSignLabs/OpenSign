@@ -46,15 +46,20 @@ export default async function ZohoDetails(request) {
       (userData.data.data.subscription.customer &&
         userData.data.data.subscription.customer.company_name) ||
       '';
+    const jobTitle =
+      (userData.data.data.subscription.customer &&
+        userData.data.data.subscription.customer.cd_job_title) ||
+      '';
     const resData = {
       phone: userData.data.data.subscription.contactpersons[0].mobile,
       name: first_name + ' ' + last_name,
       email: userData.data.data.subscription.contactpersons[0].email,
-      nextBillingDate: userData.data.expiring_time,
+      nextBillingDate: userData.data.data.subscription.next_billing_at,
       company: company_name,
       plan: userData.data.data.subscription.plan,
       customer_id: userData.data.data.subscription.customer_id,
       subscription_id: userData.data.data.subscription.subscription_id,
+      jobTitle: jobTitle,
     };
     return resData;
   }

@@ -5,7 +5,7 @@ import { SaveFileSize } from "../constant/saveFileSize";
 import dp from "../assets/images/dp.png";
 import Title from "../components/Title";
 import sanitizeFileName from "../primitives/sanitizeFileName";
-
+import axios from "axios";
 function UserProfile() {
   const navigate = useNavigate();
   let UserProfile = JSON.parse(localStorage.getItem("UserInformation"));
@@ -16,6 +16,8 @@ function UserProfile() {
   const [Phone, SetPhone] = useState(UserProfile && UserProfile.phone);
   const [Image, setImage] = useState(localStorage.getItem("profileImg"));
   const [isLoader, setIsLoader] = useState(false);
+  const [percentage, setpercentage] = useState(0);
+
   Parse.serverURL = parseBaseUrl;
   Parse.initialize(parseAppId);
   const handleSubmit = async (e) => {
@@ -44,7 +46,7 @@ function UserProfile() {
               await updateExtUser({ Name: res.name, Phone: res.phone });
               alert("Profile updated successfully.");
               setEditMode(false);
-              navigate("/");
+              navigate("/dashboard/35KBoSgoAK");
             }
           },
           (error) => {
@@ -64,18 +66,24 @@ function UserProfile() {
     const extClass = localStorage.getItem("extended_class");
     const extData = JSON.parse(localStorage.getItem("Extand_Class"));
     const ExtUserId = extData[0].objectId;
-    // console.log("extData ", extData);
     // console.log("UserId ", ExtUserId);
+    const body = { Phone: obj.Phone, Name: obj.Name };
+    await axios.put(
+      parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": parseAppId,
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
+      }
+    );
+    const res = await Parse.Cloud.run("getUserDetails", {
+      email: extData[0].Email
+    });
 
-    const extQuery = new Parse.Query(extClass);
-    const update = await extQuery.get(ExtUserId);
-    // console.log("update ", update);
-
-    update.set("Phone", obj.Phone);
-    update.set("Name", obj.Name);
-    const updateRes = await update.save();
-
-    const json = JSON.parse(JSON.stringify([updateRes]));
+    const json = JSON.parse(JSON.stringify([res]));
     const extRes = JSON.stringify(json);
 
     localStorage.setItem("Extand_Class", extRes);
@@ -96,7 +104,15 @@ function UserProfile() {
     const parseFile = new Parse.File(name, pdfFile);
 
     try {
-      const response = await parseFile.save();
+      const response = await parseFile.save({
+        progress: (progressValue, loaded, total, { type }) => {
+          if (type === "upload" && progressValue !== null) {
+            const percentCompleted = Math.round((loaded * 100) / total);
+            // console.log("percentCompleted ", percentCompleted);
+            setpercentage(percentCompleted);
+          }
+        }
+      });
       // // The response object will contain information about the uploaded file
       // console.log("File uploaded:", response);
 
@@ -105,6 +121,7 @@ function UserProfile() {
       if (response.url()) {
         setImage(response.url());
         localStorage.setItem("profileImg", response.url());
+        setpercentage(0);
         SaveFileSize(size, response.url());
         return response.url();
       }
@@ -154,14 +171,25 @@ function UserProfile() {
               <input
                 type="file"
                 className="max-w-[270px] text-sm py-1 px-2 mt-4 border-[1px] border-[#15b4e9] text-black rounded"
+                accept="image/png, image/gif, image/jpeg"
                 onChange={(e) => {
                   let files = e.target.files;
                   fileUpload(files[0]);
                 }}
               />
             )}
+            {percentage !== 0 && (
+              <div className="flex items-center gap-x-2">
+                <div className="h-2 rounded-full w-[200px] md:w-[400px] bg-gray-200">
+                  <div
+                    className="h-2 rounded-full bg-blue-500"
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+                <span className="text-black text-sm">{percentage}%</span>
+              </div>
+            )}
             <div className="text-base font-semibold pt-4">
-              {" "}
               {localStorage.getItem("_user_role")}
             </div>
           </div>
@@ -214,26 +242,11 @@ function UserProfile() {
             </li>
           </ul>
           <div className="flex justify-center pb-4">
-            <button
-              type="button"
-              onClick={() => {
-                if (editmode) {
-                  setEditMode(false);
-                } else {
-                  navigate("/changepassword");
-                }
-              }}
-              className={`rounded shadow text-white bg-[#3598dc] mr-4 ${
-                editmode ? "px-4 py-2 " : "p-2"
-              }`}
-            >
-              {editmode ? "Cancel" : "Change Password"}
-            </button>
             {editmode ? (
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="rounded  bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-2"
+                className="rounded  bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-2 mr-4"
               >
                 Save
               </button>
@@ -243,11 +256,26 @@ function UserProfile() {
                 onClick={() => {
                   setEditMode(true);
                 }}
-                className="rounded shadow text-white bg-[#e7505a] px-4 py-2"
+                className="rounded shadow text-white bg-[#e7505a] px-4 py-2 mr-4"
               >
                 Edit
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => {
+                if (editmode) {
+                  setEditMode(false);
+                } else {
+                  navigate("/changepassword");
+                }
+              }}
+              className={`rounded shadow text-white bg-[#3598dc]  ${
+                editmode ? "px-4 py-2 " : "p-2"
+              }`}
+            >
+              {editmode ? "Cancel" : "Change Password"}
+            </button>
           </div>
         </div>
       )}
