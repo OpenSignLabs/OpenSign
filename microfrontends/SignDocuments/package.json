@@ -32,7 +32,6 @@
     "react-scrollbars-custom": "^4.1.1",
     "react-signature-canvas": "^1.0.6",
     "reactour": "^1.19.1",
-    "validator": "^13.11.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
