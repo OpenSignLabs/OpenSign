@@ -16,7 +16,8 @@ import {
   getBase64FromIMG,
   contractUsers,
   contactBook,
-  contractDocument
+  contractDocument,
+  urlValidator
 } from "../utils/Utils";
 import Tour from "reactour";
 import Signedby from "./component/signedby";
@@ -445,7 +446,7 @@ function EmbedPdfImage() {
           imgUrlList.map(async (data) => {
             //cheking signUrl is defau;t signature url of custom url
             let ImgUrl = data.SignUrl;
-            const checkUrl = ImgUrl.includes("https:");
+            const checkUrl = urlValidator(ImgUrl);
 
             //if default signature url then convert it in base 64
             if (checkUrl) {
@@ -523,7 +524,7 @@ function EmbedPdfImage() {
           const images = await Promise.all(
             imgUrlList.map(async (url) => {
               let signUrl = url.SignUrl;
-              const checkUrl = url.SignUrl.includes("https:");
+              const checkUrl = urlValidator(signUrl);
               if (checkUrl) {
                 signUrl = signUrl + "?get";
               }

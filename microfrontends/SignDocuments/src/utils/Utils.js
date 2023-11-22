@@ -1,4 +1,5 @@
 import axios from "axios";
+import validator from 'validator';
 
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
@@ -298,4 +299,9 @@ export const contactBook = async (objectId) => {
       return "Error: Something went wrong!";
     });
   return result;
+};
+
+// function for validating URLs
+export function urlValidator(url) {
+  return validator.isURL(url);
 };

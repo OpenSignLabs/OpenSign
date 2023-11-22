@@ -24,7 +24,7 @@ import HandleError from "./component/HandleError";
 import Nodata from "./component/Nodata";
 import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
-import { contractUsers, contactBook } from "../utils/Utils";
+import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const [pdfDetails, setPdfDetails] = useState([]);
@@ -444,7 +444,7 @@ function SignYourSelf() {
           imgUrlList.map(async (data) => {
             let ImgUrl = data.SignUrl;
             //cheking signUrl is defau;t signature url of custom url
-            const checkUrl = ImgUrl.includes("https:");
+            const checkUrl = urlValidator(ImgUrl);
 
             //if default signature url then convert it in base 64
             if (checkUrl) {
@@ -524,7 +524,7 @@ function SignYourSelf() {
             imgUrlList.map(async (url) => {
               let signUrl = url.SignUrl;
 
-              const checkUrl = url.SignUrl.includes("https:");
+              const checkUrl = urlValidator(signUrl);
               if (checkUrl) {
                 signUrl = signUrl + "?get";
               }
