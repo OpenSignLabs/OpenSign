@@ -10,6 +10,7 @@
 
 # production
 /build
+/mfbuild
 
 # misc
 .env

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Parse from "parse";
-import onSearchFilter from "../../constant/searchQuery";
 import getReplacedHashQuery from "../../constant/getReplacedHashQuery";
 import "../../styles/loader.css";
 import { useNavigate } from "react-router-dom";
@@ -35,14 +34,9 @@ const DashboardCard = (props) => {
           let data = JSON.parse(localStorage.getItem("Extand_Class"));
           res = data[0];
         } else {
-          var emp = Parse.Object.extend(localStorage.getItem("extended_class"));
-          var q = new Parse.Query(emp);
-          q.equalTo("UserId", {
-            __type: "Pointer",
-            className: "_User",
-            objectId: currentUser
+          res = await Parse.Cloud.run("getUserDetails", {
+            email: currentUser.get("email")
           });
-          res = await q.first();
           if (res) res = res.toJSON();
         }
         if (res) {
@@ -50,12 +44,7 @@ const DashboardCard = (props) => {
           var reg = /(\#.*?\#)/gi; // eslint-disable-line
           var str = props.Data.query;
           var test = "";
-          if (str.includes("#filterCondition#")) {
-            str = str.replace(
-              "#filterCondition#",
-              onSearchFilter(props.DefaultQuery)
-            );
-          }
+
           if (props.Data.extendkey) {
             let a = props.Data.extendkey.split(".");
             if (a.length > 0) {
@@ -110,13 +99,10 @@ const DashboardCard = (props) => {
             let data = JSON.parse(localStorage.getItem("Extand_Class"));
             resr = data[0];
           } else {
-            let emp = Parse.Object.extend(
-              localStorage.getItem("extended_class")
-            );
-            let q = new Parse.Query(emp);
-            q.equalTo("UserId", currentUser);
-            let t = await q.first();
-            resr = t.toJSON();
+            resr = await Parse.Cloud.run("getUserDetails", {
+              email: currentUser.get("email")
+            });
+            if (resr) resr = resr.toJSON();
           }
 
           let json = resr;
@@ -150,47 +136,65 @@ const DashboardCard = (props) => {
           "X-Parse-Application-Id": parseAppId,
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         };
-        await axios.get(url, { headers: headers }).then((res) => {
-          if (res.data.results.length > 0) {
-            setLoading(false);
-            if (props.Data.key !== "count") {
-              setresponse(res.data.results[0][props.Data.key]);
-            } else {
-              if (props.Label === "Need your Signature") {
-                const listData = res.data?.results.filter(
-                  (x) => x.Signers.length > 0
+        // handle need your sign report count
+        if (props.Data.Redirect_id === "4Hhwbp482K") {
+          const params = {
+            reportId: props.Data.Redirect_id,
+            skip: 0,
+            limit: 200
+          };
+          const url = `${parseBaseUrl}/functions/getReport`;
+          await axios
+            .post(url, params, {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": parseAppId,
+                sessiontoken: localStorage.getItem("accesstoken")
+              }
+            })
+            .then((res) => {
+              const listData = res.data?.result.filter(
+                (x) => x.Signers.length > 0
+              );
+              let arr = [];
+              for (const obj of listData) {
+                const isSigner = obj.Signers.some(
+                  (item) => item.UserId.objectId === currentUser.id
                 );
-                let arr = [];
-                for (const obj of listData) {
-                  const isSigner = obj.Signers.some(
-                    (item) => item.UserId.objectId === currentUser.id
-                  );
-                  if (isSigner) {
-                    let isRecord;
-                    if (obj?.AuditTrail && obj?.AuditTrail.length > 0) {
-                      isRecord = obj?.AuditTrail.some(
-                        (item) =>
-                          item?.UserPtr?.UserId?.objectId === currentUser.id &&
-                          item.Activity === "Signed"
-                      );
-                    } else {
-                      isRecord = false;
-                    }
-                    if (isRecord === false) {
-                      arr.push(obj);
-                    }
+                if (isSigner) {
+                  let isRecord;
+                  if (obj?.AuditTrail && obj?.AuditTrail.length > 0) {
+                    isRecord = obj?.AuditTrail.some(
+                      (item) =>
+                        item?.UserPtr?.UserId?.objectId === currentUser.id &&
+                        item.Activity === "Signed"
+                    );
+                  } else {
+                    isRecord = false;
+                  }
+                  if (isRecord === false) {
+                    arr.push(obj);
                   }
                 }
-                setresponse(arr.length);
+              }
+              setresponse(arr.length);
+              setLoading(false);
+            });
+        } else {
+          await axios.get(url, { headers: headers }).then((res) => {
+            if (res.data.results.length > 0) {
+              setLoading(false);
+              if (props.Data.key !== "count") {
+                setresponse(res.data.results[0][props.Data.key]);
               } else {
                 setresponse(res.data[props.Data.key]);
               }
+            } else {
+              setresponse(0);
+              setLoading(false);
             }
-          } else {
-            setresponse(0);
-            setLoading(false);
-          }
-        });
+          });
+        }
       } catch (e) {
         console.error("Problem", e);
         setLoading(false);
@@ -227,13 +231,10 @@ const DashboardCard = (props) => {
               let data = JSON.parse(localStorage.getItem("Extand_Class"));
               res = data[0];
             } else {
-              var emp = Parse.Object.extend(
-                localStorage.getItem("extended_class")
-              );
-              var q = new Parse.Query(emp);
-              q.equalTo("UserId", currentUser);
-              let resr = await q.first();
-              res = resr.toJSON();
+              let resr = await Parse.Cloud.run("getUserDetails", {
+                email: currentUser.get("email")
+              });
+              if (res) res = resr.toJSON();
             }
 
             let json = res;
