@@ -1,5 +1,4 @@
 import axios from "axios";
-import validator from 'validator';
 
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
@@ -303,5 +302,10 @@ export const contactBook = async (objectId) => {
 
 // function for validating URLs
 export function urlValidator(url) {
-  return validator.isURL(url);
+  try {
+    const newUrl = new URL(url);
+    return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+  } catch (err) {
+    return false;
+  }
 };
