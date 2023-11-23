@@ -6,6 +6,7 @@ import PdfFileComponent from "./FolderDrive/legaDriveComponent";
 import Modal from "react-bootstrap/Modal";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import { themeColor, iconColor } from "../../utils/ThemeColor/backColor";
+import { getDrive } from "../../utils/Utils";
 
 function PdfFile() {
   const scrollRef = useRef(null);
@@ -15,28 +16,17 @@ function PdfFile() {
   const [pdfData, setPdfData] = useState([]);
   const [isFolder, setIsFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState();
-  // const [parentFolderName, setParentFolderName] = useState();
-  // const [parentFolder, setParentFolder] = useState([]);
   const [error, setError] = useState();
   const [folderLoader, setIsFolderLoader] = useState(false);
   const [isShowSort, setIsShowSort] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time",
+    message: "This might take some time"
   });
   const [docId, setDocId] = useState();
   const [handleError, setHandleError] = useState();
 
   const [folderName, setFolderName] = useState([]);
-
-  const senderUser =
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    ) &&
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    );
-  const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
     if (docId) {
@@ -50,104 +40,59 @@ function PdfFile() {
   const getPdfDocumentList = async () => {
     const load = {
       isLoad: true,
-      message: "This might take some time",
+      message: "This might take some time"
     };
     setIsLoading(load);
-    //?where={"Type":"Folder" }&include=ExtUserPtr,Signers
-    //?where={"$or":[{"Type":{"$exists":true}},{"Folder":{"$exists":false}}]}&include=ExtUserPtr,Signers
-    // "CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${jsonSender.objectId}"}
-    // where={"Folder":{"$exists":false} }&include=ExtUserPtr,Signers`,
-    await axios
-      .get(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document?where={"Folder":{"$exists":false},"$or":[{"CreatedBy":{"$exists":false}},{"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${
-          jsonSender.objectId
-        }"}}]}&include=ExtUserPtr,Signers`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
-        }
-      )
-      .then((Listdata) => {
-        const json = Listdata.data;
-        const res = json.results;
-        // console.log("result", res);
-        if (res[0] && res.length > 0) {
-          setPdfData(res);
-        }
+    const driveDetails = await getDrive();
 
-        const data = [
-          {
-            name: "OpenSignDrive™",
-            objectId: "",
-          },
-        ];
-        setFolderName(data);
-        const loadObj = {
-          isLoad: false,
-        };
-        setIsLoading(loadObj);
-      })
-      .catch((err) => {
-        const loadObj = {
-          isLoad: false,
-        };
-        setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
-      });
+    if (driveDetails) {
+      if (driveDetails.length > 0) {
+        setPdfData(driveDetails);
+      }
+      const data = [
+        {
+          name: "OpenSignDrive™",
+          objectId: ""
+        }
+      ];
+      setFolderName(data);
+      const loadObj = {
+        isLoad: false
+      };
+      setIsLoading(loadObj);
+    } else if (driveDetails === "Error: Something went wrong!") {
+      const loadObj = {
+        isLoad: false
+      };
+      setHandleError("Error: Something went wrong!");
+      setIsLoading(loadObj);
+    }
   };
   //function for get parent folder document list
   const getPdfFolderDocumentList = async () => {
     const load = {
       isLoad: true,
-      message: "This might take some time",
+      message: "This might take some time"
     };
     setIsLoading(load);
-    //{"$inQuery":{"where":{"objectId":"${docId}"},"className":"${appName}_Document"}}
-    //"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${jsonSender.objectId}"}
-    await axios
-      .get(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document?where={"Folder":{"__type":"Pointer","className":"${localStorage.getItem(
-          "_appName"
-        )}_Document","objectId":"${docId}"},"$or":[{"CreatedBy":{"$exists":false}},{"CreatedBy":{"__type":"Pointer","className":"_User","objectId":"${
-          jsonSender.objectId
-        }"}}]}&include=ExtUserPtr,Signers,Folder`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-          },
-        }
-      )
-      .then((Listdata) => {
-        const json = Listdata.data;
-        const res = json.results;
-
-        if (res[0] && res.length > 0) {
-          setPdfData(res);
-        } else {
-          setPdfData([]);
-        }
-
-        const loadObj = {
-          isLoad: false,
-        };
-        setIsLoading(loadObj);
-      })
-      .catch((err) => {
-        const loadObj = {
-          isLoad: false,
-        };
-        setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
-      });
+    const driveDetails = await getDrive(docId);
+    if (driveDetails) {
+      if (driveDetails.length > 0) {
+        setPdfData(driveDetails);
+      } else {
+        setPdfData([]);
+      }
+      const loadObj = {
+        isLoad: false
+      };
+      setIsLoading(loadObj);
+    } else if (driveDetails === "Error: Something went wrong!") {
+      const loadObj = {
+        isLoad: false
+      };
+      setHandleError("Error: Something went wrong!");
+      setIsLoading(loadObj);
+    }
   };
 
   //function for get all pdf document list
@@ -158,7 +103,7 @@ function PdfFile() {
   const handleRoute = (data) => {
     let loadObj = {
       isLoad: true,
-      message: "This might take some time",
+      message: "This might take some time"
     };
     if (data.name === "LegaDrive™") {
       setIsLoading(loadObj);
@@ -167,7 +112,7 @@ function PdfFile() {
       } else {
         setTimeout(() => {
           const loadObj = {
-            isLoad: false,
+            isLoad: false
           };
           setIsLoading(loadObj);
         }, 1000);
@@ -176,12 +121,11 @@ function PdfFile() {
       setIsLoading(loadObj);
       setTimeout(() => {
         const loadObj = {
-          isLoad: false,
+          isLoad: false
         };
         setIsLoading(loadObj);
       }, 1000);
     } else {
-      // console.log("go here1",data.objectId)
       const findIndex = folderName.findIndex(
         (fold) => fold.objectId === data.objectId
       );
@@ -216,13 +160,13 @@ function PdfFile() {
           Folder: {
             __type: "Pointer",
             className: `${localStorage.getItem("_appName")}_Document`,
-            objectId: isParentId,
-          },
+            objectId: isParentId
+          }
         };
       } else {
         data = {
           Name: newFolderName,
-          Type: "Folder",
+          Type: "Folder"
         };
       }
 
@@ -237,8 +181,8 @@ function PdfFile() {
             headers: {
               "Content-Type": "application/json",
               "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-            },
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
           }
         )
 
@@ -388,7 +332,7 @@ function PdfFile() {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 <img
@@ -406,7 +350,7 @@ function PdfFile() {
                   style={{
                     margin: "10px 0px 10px 0px",
                     fontSize: "15px",
-                    fontWeight: "400",
+                    fontWeight: "400"
                   }}
                 >
                   Name*
@@ -428,7 +372,7 @@ function PdfFile() {
                     display: "flex",
                     alignItems: "flex-end",
                     justifyContent: "flex-end",
-                    alignContent: "flex-end",
+                    alignContent: "flex-end"
                   }}
                 >
                   <button
@@ -437,7 +381,7 @@ function PdfFile() {
                       borderRadius: "0px",
                       border: "1.5px solid #e3e2e1",
                       fontWeight: "600",
-                      color: "black",
+                      color: "black"
                     }}
                     className="finishBtn"
                     onClick={() => setIsFolder(false)}
@@ -448,7 +392,7 @@ function PdfFile() {
                   <button
                     onClick={() => handleAddFolder()}
                     style={{
-                      background: themeColor(),
+                      background: themeColor()
                     }}
                     type="button"
                     className="finishBtn"
@@ -469,7 +413,7 @@ function PdfFile() {
               alignItems: "center",
               height: "100vh",
               width: "100%",
-              flexDirection: "column",
+              flexDirection: "column"
             }}
           >
             <img
@@ -488,7 +432,7 @@ function PdfFile() {
               justifyContent: "center",
               alignItems: "center",
               height: "100vh",
-              width: "100%",
+              width: "100%"
             }}
           >
             <span style={{ fontSize: "20px", color: "gray" }}>
@@ -502,7 +446,7 @@ function PdfFile() {
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 ref={scrollRef}
                 style={{
-                  width: "100%",
+                  width: "100%"
                 }}
                 className="folderPath"
               >
@@ -514,7 +458,7 @@ function PdfFile() {
                       style={{
                         color: "#a64b4e",
                         fontWeight: "400",
-                        cursor: "pointer",
+                        cursor: "pointer"
                       }}
                     >
                       {data.name}
@@ -523,7 +467,7 @@ function PdfFile() {
                           color: "#a64b4e",
                           fontWeight: "200",
                           cursor: "pointer",
-                          margin: "0 4px",
+                          margin: "0 4px"
                         }}
                       >
                         &gt;
@@ -545,13 +489,13 @@ function PdfFile() {
                       style={{
                         marginRight: "5px",
                         fontSize: "14px",
-                        color: `${iconColor()}`,
+                        color: `${iconColor()}`
                       }}
                     ></i>
                     <span
                       style={{
                         fontSize: "15px",
-                        color: `${iconColor()}`,
+                        color: `${iconColor()}`
                       }}
                     >
                       {selectedSort}
@@ -694,7 +638,7 @@ function PdfFile() {
                   justifyContent: "center",
                   alignItems: "center",
                   height: "50vh",
-                  width: "100%",
+                  width: "100%"
                 }}
               >
                 <span style={{ fontWeight: "bold" }}>No Data Found!</span>

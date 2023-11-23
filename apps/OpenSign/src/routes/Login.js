@@ -10,9 +10,11 @@ import GoogleSignInBtn from "../components/LoginGoogle";
 // import LoginFacebook from "../components/LoginFacebook";
 import { NavLink, useNavigate } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
+import { useWindowSize } from "../hook/useWindowSize";
 
 function Login(props) {
   const navigate = useNavigate();
+  const { width } = useWindowSize();
   const [state, setState] = useState({
     email: "",
     toastColor: "#5cb85c",
@@ -21,7 +23,6 @@ function Login(props) {
     passwordVisible: false,
     mobile: "",
     phone: "",
-    hideNav: "",
     scanResult: "",
     baseUrl: localStorage.getItem("baseUrl"),
     parseAppId: localStorage.getItem("parseAppId"),
@@ -47,24 +48,9 @@ function Login(props) {
     );
     // eslint-disable-next-line
   }, []);
-  useEffect(() => {
-    resize();
-    window.addEventListener("resize", resize());
-    return () => {
-      window.removeEventListener("resize", resize());
-    };
-    // eslint-disable-next-line
-  }, []);
   const handleChange = (event) => {
     const { name, value } = event.target;
     setState({ ...state, [name]: value });
-  };
-
-  const resize = () => {
-    let currentHideNav = window.innerWidth <= 760;
-    if (currentHideNav !== state.hideNav) {
-      setState({ ...state, hideNav: currentHideNav });
-    }
   };
 
   const handleSubmit = async (event) => {
@@ -162,15 +148,13 @@ function Login(props) {
                                 element.userpointer
                               );
 
-                              const extendedClass = Parse.Object.extend(
-                                element.extended_class
-                              );
-                              let query = new Parse.Query(extendedClass);
-                              query.equalTo("UserId", Parse.User.current());
-                              query.include("TenantId");
-                              await query.find().then(
-                                (results) => {
+                              const currentUser = Parse.User.current();
+                              await Parse.Cloud.run("getUserDetails", {
+                                email: currentUser.get("email")
+                              }).then(
+                                (result) => {
                                   let tenentInfo = [];
+                                  const results = [result];
                                   if (results) {
                                     let extendedInfo_stringify =
                                       JSON.stringify(results);
@@ -280,10 +264,14 @@ function Login(props) {
                                               `/${element.pageType}/${element.pageId}`
                                             );
                                           } else {
-                                            navigate(`/subscription`);
+                                            navigate(`/subscription`, {
+                                              replace: true
+                                            });
                                           }
                                         } else {
-                                          navigate(`/subscription`);
+                                          navigate(`/subscription`, {
+                                            replace: true
+                                          });
                                         }
                                       } else {
                                         navigate(
@@ -320,7 +308,9 @@ function Login(props) {
                                       );
                                       const billingDate = "";
                                       if (billingDate) {
-                                        navigate(`/subscription`);
+                                        navigate(`/subscription`, {
+                                          replace: true
+                                        });
                                       }
                                     } else {
                                       navigate(
@@ -334,23 +324,6 @@ function Login(props) {
                                     sessionToken: user.getSessionToken()
                                   };
                                   handleSubmitbtn(payload);
-                                  // setState({
-                                  //   ...state,
-                                  //   loading: false,
-                                  //   toastColor: "#d9534f",
-                                  //   toastDescription:
-                                  //     "You dont have access to this application."
-                                  // });
-
-                                  // const x = document.getElementById("snackbar");
-                                  // x.className = "show";
-                                  // setTimeout(function () {
-                                  //   x.className = x.className.replace(
-                                  //     "show",
-                                  //     ""
-                                  //   );
-                                  // }, 2000);
-                                  // localStorage.setItem("accesstoken", null);
                                   console.error(
                                     "Error while fetching Follow",
                                     error
@@ -502,16 +475,13 @@ function Login(props) {
                         element.extended_class
                       );
                       localStorage.setItem("userpointer", element.userpointer);
-
-                      const extendedClass = Parse.Object.extend(
-                        element.extended_class
-                      );
-                      let query = new Parse.Query(extendedClass);
-                      query.equalTo("UserId", Parse.User.current());
-                      query.include("TenantId");
-                      await query.find().then(
-                        (results) => {
+                      const currentUser = Parse.User.current();
+                      await Parse.Cloud.run("getUserDetails", {
+                        email: currentUser.get("email")
+                      }).then(
+                        (result) => {
                           let tenentInfo = [];
+                          const results = [result];
                           if (results) {
                             let extendedInfo_stringify =
                               JSON.stringify(results);
@@ -596,20 +566,26 @@ function Login(props) {
                               setThirdpartyLoader(false);
                               setState({ ...state, loading: false });
                               if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                              if (billingDate) {
-                                if (billingDate > new Date()) {
-                                  localStorage.removeItem("userDetails");
-                                  navigate(
-                                    `/${element.pageType}/${element.pageId}`
-                                  );
+                                if (billingDate) {
+                                  if (billingDate > new Date()) {
+                                    localStorage.removeItem("userDetails");
+                                    navigate(
+                                      `/${element.pageType}/${element.pageId}`
+                                    );
+                                  } else {
+                                    navigate(`/subscription`, {
+                                      replace: true
+                                    });
+                                  }
                                 } else {
-                                  navigate(`/subscription`);
+                                  navigate(`/subscription`, { replace: true });
                                 }
                               } else {
-                                navigate(`/subscription`);
+                                navigate(
+                                  `/${element.pageType}/${element.pageId}`
+                                );
                               }
                             }
-                          }
                           } else {
                             localStorage.setItem("PageLanding", element.pageId);
                             localStorage.setItem(
@@ -620,21 +596,25 @@ function Login(props) {
                             setState({ ...state, loading: false });
                             setThirdpartyLoader(false);
                             if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                            if (billingDate) {
-                              if (billingDate > new Date()) {
-                                localStorage.removeItem("userDetails");
-                                navigate(
-                                  `/${element.pageType}/${element.pageId}`
-                                );
+                              if (billingDate) {
+                                if (billingDate > new Date()) {
+                                  localStorage.removeItem("userDetails");
+                                  navigate(
+                                    `/${element.pageType}/${element.pageId}`
+                                  );
+                                } else {
+                                  navigate(`/subscription`, { replace: true });
+                                }
                               } else {
-                                navigate(`/subscription`);
+                                navigate(`/subscription`, { replace: true });
                               }
                             } else {
-                              navigate(`/subscription`);
+                              navigate(
+                                `/${element.pageType}/${element.pageId}`
+                              );
                             }
                           }
-                        }
-                      },
+                        },
                         (error) => {
                           const payload = {
                             sessionToken: sessionToken
@@ -716,9 +696,10 @@ function Login(props) {
 
         await axios
           .post(url, JSON.stringify(body), { headers: headers1 })
-          .then((roles) => {
+          .then((axiosres) => {
+            const roles = axiosres.data.result;
             if (roles) {
-              userRoles = roles.data.result;
+              userRoles = roles;
               let _currentRole = "";
               if (userRoles.length > 1) {
                 if (
@@ -766,15 +747,13 @@ function Login(props) {
                     element.extended_class
                   );
 
-                  const extendedClass = Parse.Object.extend(
-                    element.extended_class
-                  );
-                  let query = new Parse.Query(extendedClass);
-                  query.equalTo("UserId", Parse.User.current());
-                  query.include("TenantId");
-                  await query.find().then(
-                    (results) => {
+                  const currentUser = Parse.User.current();
+                  await Parse.Cloud.run("getUserDetails", {
+                    email: currentUser.get("email")
+                  }).then(
+                    (result) => {
                       let tenentInfo = [];
+                      const results = [result];
                       if (results) {
                         let extendedInfo_stringify = JSON.stringify(results);
                         let extendedInfo = JSON.parse(extendedInfo_stringify);
@@ -1065,7 +1044,7 @@ function Login(props) {
                         <NavLink
                           className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
                           to="/signup"
-                          style={state.hideNav ? { textAlign: "center" } : {}}
+                          style={width < 768 ? { textAlign: "center" } : {}}
                         >
                           Create Account
                         </NavLink>
@@ -1133,7 +1112,7 @@ function Login(props) {
                     </div>
                   </div>
                 </div>
-                {!state.hideNav && (
+                {width >= 768 && (
                   <div className="self-center">
                     <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
                       <img
@@ -1170,7 +1149,9 @@ function Login(props) {
               <div className="modal-dialog" role="document">
                 <div className="modal-content">
                   <div className="modal-header">
-                    <h5 className="modal-title font-semibold">Additional Info</h5>
+                    <h5 className="modal-title font-semibold">
+                      Additional Info
+                    </h5>
                     <span>
                       <span></span>
                     </span>
