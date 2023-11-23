@@ -12,9 +12,11 @@ import { useParams } from "react-router-dom";
 import SignPad from "./component/signPad";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import {
+  convertPNGtoJPEG,
   contractDocument,
   getBase64FromIMG,
-  getBase64FromUrl
+  getBase64FromUrl,
+  urlValidator
 } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -346,38 +348,13 @@ function PdfRequestFiles() {
             imgUrlList.map(async (data) => {
               //cheking signUrl is defau;t signature url of custom url
               let ImgUrl = data.SignUrl;
-              const checkUrl = ImgUrl.includes("https:");
+              const checkUrl = urlValidator(ImgUrl);
 
               //if default signature url then convert it in base 64
               if (checkUrl) {
                 ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
               }
               //function for called convert png signatre to jpeg in base 64
-              const convertPNGtoJPEG = (base64Data) => {
-                return new Promise((resolve, reject) => {
-                  const canvas = document.createElement("canvas");
-                  const img = new Image();
-                  img.src = base64Data;
-
-                  img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-
-                    const ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0);
-
-                    // Convert to JPEG by using the canvas.toDataURL() method
-                    const jpegBase64Data = canvas.toDataURL("image/jpeg");
-
-                    resolve(jpegBase64Data);
-                  };
-
-                  img.onerror = (error) => {
-                    reject(error);
-                  };
-                });
-              };
-
               convertPNGtoJPEG(ImgUrl)
                 .then((jpegBase64Data) => {
                   const removeBase64Fromjpeg = "data:image/jpeg;base64,";
@@ -433,32 +410,21 @@ function PdfRequestFiles() {
             const images = await Promise.all(
               imgUrlList.map(async (url) => {
                 let signUrl = url.SignUrl;
-
-                const checkUrl = url.SignUrl.includes("https:");
+                if (url.ImageType === "image/png") {
+                  //function for convert signature png base64 url to jpeg base64
+                  const newUrl = await convertPNGtoJPEG(signUrl);
+                  signUrl = newUrl;
+                }   
+                const checkUrl = urlValidator(signUrl);
                 if (checkUrl) {
                   signUrl = signUrl + "?get";
                 }
                 const res = await fetch(signUrl);
-
                 return res.arrayBuffer();
               })
             );
             images.forEach(async (imgData, id) => {
-              let img;
-              if (
-                imgUrlList[id].ImageType &&
-                imgUrlList[id].ImageType === "image/jpeg"
-              ) {
-                img = await pdfDoc.embedJpg(imgData);
-              } else if (
-                imgUrlList[id].ImageType &&
-                imgUrlList[id].ImageType === "image/png"
-              ) {
-                img = await pdfDoc.embedPng(imgData);
-              } else {
-                img = await pdfDoc.embedPng(imgData);
-              }
-
+              let img = await pdfDoc.embedJpg(imgData);
               const imgHeight = imgUrlList[id].Height
                 ? imgUrlList[id].Height
                 : 60;
