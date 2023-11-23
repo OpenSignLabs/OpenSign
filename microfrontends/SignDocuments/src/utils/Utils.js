@@ -301,6 +301,13 @@ export const contactBook = async (objectId) => {
   return result;
 };
 
+// function for validating URLs
+export function urlValidator(url) {
+  try {
+    const newUrl = new URL(url);
+    return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+  } catch (err) {
+    return false;
 export const modalAlign = () => {
   let modalDialog = $('.modal-dialog').getBoundingClientRect();
   let mobileHead = $('.mobileHead').getBoundingClientRect()
