@@ -28,6 +28,7 @@ import Nodata from "./component/Nodata";
 import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
+import { modalAlign } from "../utils/Utils";
 function EmbedPdfImage() {
   const { id, contactBookId } = useParams();
   const [isSignPad, setIsSignPad] = useState(false);
@@ -1018,7 +1019,11 @@ function EmbedPdfImage() {
             }}
           >
             {/* this modal is used show this document is already sign */}
-            <Modal show={isAlreadySign.status}>
+            <Modal
+              show={isAlreadySign.status}
+              onShow={() => modalAlign()}
+              backdropClassName="signature-backdrop"
+            >
               <ModalHeader style={{ background: themeColor() }}>
                 <span style={{ color: "white" }}> Sign Documents</span>
               </ModalHeader>

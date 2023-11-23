@@ -241,26 +241,6 @@ const AppendFormInForm = (props) => {
               className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
             />
           </div>
-
-          <div className="mb-3">
-            <label
-              htmlFor="phone"
-              className="block text-xs text-gray-700 font-semibold"
-            >
-              Phone
-              <span style={{ color: "red", fontSize: 13 }}> *</span>
-            </label>
-            <input
-              type="text"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              disabled={addYourself}
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-            />
-          </div>
-
           <div className="mb-3">
             <label
               htmlFor="email"
@@ -274,6 +254,24 @@ const AppendFormInForm = (props) => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={addYourself}
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+            />
+          </div>
+          <div className="mb-3">
+            <label
+              htmlFor="phone"
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              Phone
+              <span style={{ color: "red", fontSize: 13 }}> *</span>
+            </label>
+            <input
+              type="text"
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               required
               disabled={addYourself}
               className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
