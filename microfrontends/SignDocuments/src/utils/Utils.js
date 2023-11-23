@@ -331,6 +331,7 @@ export function urlValidator(url) {
   } catch (err) {
     return false;
   }
+}
 export function modalAlign() {
   let modalDialog = $('.modal-dialog').getBoundingClientRect();
   let mobileHead = $('.mobileHead').getBoundingClientRect()
