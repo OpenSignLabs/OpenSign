@@ -1,4 +1,5 @@
 import axios from "axios";
+import { $ } from 'select-dom';
 
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
@@ -298,4 +299,15 @@ export const contactBook = async (objectId) => {
       return "Error: Something went wrong!";
     });
   return result;
+};
+
+export const modalAlign = () => {
+  let modalDialog = $('.modal-dialog').getBoundingClientRect();
+  let mobileHead = $('.mobileHead').getBoundingClientRect()
+  let modal = $('.modal-dialog');
+  if (modalDialog.left < mobileHead.left) {
+    let leftOffset = mobileHead.left - modalDialog.left;
+    modal.style.left = leftOffset + 'px';
+    modal.style.top = (window.innerHeight/3) + 'px';
+  }
 };

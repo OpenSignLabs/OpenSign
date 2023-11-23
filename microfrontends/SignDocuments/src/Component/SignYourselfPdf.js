@@ -25,6 +25,8 @@ import Nodata from "./component/Nodata";
 import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import { contractUsers, contactBook } from "../utils/Utils";
+import { modalAlign } from "../utils/Utils";
+import { $ } from 'select-dom';
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const [pdfDetails, setPdfDetails] = useState([]);
@@ -1020,7 +1022,11 @@ function SignYourSelf() {
           >
             {/* this modal is used show this document is already sign */}
 
-            <Modal show={showAlreadySignDoc.status}>
+            <Modal
+              show={showAlreadySignDoc.status}
+              onShow={() => modalAlign()}
+              backdropClassName="signature-backdrop"
+            >
               <ModalHeader style={{ background: themeColor() }}>
                 <span style={{ color: "white" }}> Sign Documents</span>
               </ModalHeader>
