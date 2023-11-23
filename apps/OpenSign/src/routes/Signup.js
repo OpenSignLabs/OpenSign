@@ -6,8 +6,10 @@ import Title from "../components/Title";
 import { fetchAppInfo, showTenantName } from "../redux/actions";
 import { useNavigate, NavLink } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
+import { useWindowSize } from "../hook/useWindowSize";
 
 const Signup = (props) => {
+  const { width } = useWindowSize();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -18,7 +20,6 @@ const Signup = (props) => {
   const [company, setCompany] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [state, setState] = useState({
-    hideNav: "",
     loading: false,
     toastColor: "#5cb85c",
     toastDescription: ""
@@ -387,24 +388,14 @@ const Signup = (props) => {
     }
   };
   useEffect(() => {
-    window.addEventListener("resize", resize);
     props.fetchAppInfo(
       localStorage.getItem("domain"),
       localStorage.getItem("BaseUrl12"),
       localStorage.getItem("AppID12")
     );
-    return () => {
-      window.removeEventListener("resize", resize);
-    };
     // eslint-disable-next-line
   }, []);
 
-  const resize = () => {
-    let currentHideNav = window.innerWidth <= 760;
-    if (currentHideNav !== state.hideNav) {
-      setState({ hideNav: currentHideNav });
-    }
-  };
   return (
     <div className="bg-white">
       {state.loading && (
@@ -438,11 +429,7 @@ const Signup = (props) => {
         <div>
           <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
             <div className="w-[250px] h-[66px] inline-block">
-              {state.hideNav ? (
-                <img src={image} width="100%" alt="" />
-              ) : (
-                <img src={image} width="100%" alt="" />
-              )}
+              <img src={image} width="100%" alt="" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
               <div className="">
@@ -550,14 +537,14 @@ const Signup = (props) => {
                     <NavLink
                       className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
                       to="/"
-                      style={state.hideNav ? { textAlign: "center" } : {}}
+                      style={width < 768 ? { textAlign: "center" } : {}}
                     >
                       Login
                     </NavLink>
                   </div>
                 </form>
               </div>
-              {!state.hideNav && (
+              {width >= 768 && (
                 <div className="self-center">
                   <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
                     <img src={login_img} alt="bisec" width="100%" />
