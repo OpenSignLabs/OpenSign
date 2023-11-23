@@ -15,7 +15,7 @@ import {
   getBase64FromUrl,
   getBase64FromIMG,
   contactBookName,
-  convertPNGtoJPEG
+  convertPNGtoJPEG,
   contractUsers,
   contactBook,
   contractDocument,
