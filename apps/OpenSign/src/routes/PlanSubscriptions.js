@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
-import plansArr from '../json/plansArr.json'
+import plansArr from "../json/plansArr.json";
 import Title from "../components/Title";
 const listItemStyle = {
-  paddingLeft: '20px', // Add padding to create space for the image
+  paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
-  backgroundPosition: 'left',
-  backgroundRepeat: 'no-repeat',
-  backgroundSize: '16px 16px', // Adjust the size of the image
+  backgroundPosition: "left",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "16px 16px" // Adjust the size of the image
 };
 
 const PlanSubscriptions = () => {
@@ -28,7 +28,12 @@ const PlanSubscriptions = () => {
       : "";
   const phone =
     userDetails && userDetails.phone ? "&mobile=" + userDetails.phone : "";
-  const details = "?shipping_country_code=US&" + name + email + company + phone;
+  const details =
+    "?shipping_country_code=US&billing_country_code=US&billing_state_code=CA&" +
+    name +
+    email +
+    company +
+    phone;
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
       setIsLoader(false);
@@ -41,7 +46,7 @@ const PlanSubscriptions = () => {
 
   return (
     <>
-    <Title title={"Subscriptions"} />
+      <Title title={"Subscriptions"} />
       {isLoader ? (
         <div
           style={{
@@ -131,15 +136,13 @@ const PlanSubscriptions = () => {
                           <p>{item.subtitle}</p>
                         </div>
                       </div>
-                      <div className="bg-[#002862] w-full text-white py-2 rounded">
-                        <NavLink
-                          to={item.url + details}
-                          className="rounded uppercase hover:no-underline hover:text-white"
-                          target="_self"
-                        >
-                          {item.btnText}
-                        </NavLink>
-                      </div>
+                      <NavLink
+                        to={item.url + details}
+                        className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white"
+                        target="_self"
+                      >
+                        {item.btnText}
+                      </NavLink>
                     </div>
                     <hr className="w-full bg-gray-300 p-[.5px]" />
                     <ul className="mx-1 p-3 text-left break-words text-sm list-none">

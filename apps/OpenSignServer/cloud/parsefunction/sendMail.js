@@ -6,7 +6,7 @@ import { createTransport } from 'nodemailer';
 
 let transporterSMTP;
 let mailgunClient;
-
+let mailgunDomain;
 if (process.env.SMTP_ENABLE) {
   transporterSMTP = createTransport({
     host: process.env.SMTP_HOST,
@@ -23,6 +23,7 @@ if (process.env.SMTP_ENABLE) {
     username: 'api',
     key: process.env.MAILGUN_API_KEY,
   });
+  mailgunDomain = process.env.MAILGUN_DOMAIN;
 }
 
 async function sendmail(req) {
@@ -54,29 +55,27 @@ async function sendmail(req) {
         const file = {
           filename: pdfName || 'exported.pdf',
           content: process.env.SMTP_ENABLE ? PdfBuffer : undefined, //fs.readFileSync('./exports/exported_file_1223.pdf'),
-          data: process.env.SMTP_ENABLE ?  undefined : PdfBuffer,
+          data: process.env.SMTP_ENABLE ? undefined : PdfBuffer,
         };
 
         // const html = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body style='text-align: center;'> <p style='font-weight: bolder; font-size: large;'>Hello!</p> <p>This is a html checking mail</p><p><button style='background-color: lightskyblue; cursor: pointer; border-radius: 5px; padding: 10px; border-style: solid; border-width: 2px; text-decoration: none; font-weight: bolder; color:blue'>Verify email</button></p></body></html>"
 
         const from = req.params.from || '';
+        const mailsender = process.env.SMTP_ENABLE
+          ? process.env.SMTP_USER_EMAIL
+          : process.env.MAILGUN_SENDER;
 
         const messageParams = {
-          from:
-            from + ' <' + process.env.SMTP_ENABLE
-              ? process.env.SMTP_USER_EMAIL
-              : process.env.MAILGUN_SENDER + '>',
+          from: from + ' <' + mailsender + '>',
           to: req.params.recipient,
           subject: req.params.subject,
           text: req.params.text || 'mail',
           html: req.params.html || '',
-          attachments: process.env.SMTP_ENABLE ?  [file] : undefined,
-          attachment: process.env.SMTP_ENABLE ?  undefined : file,
+          attachments: process.env.SMTP_ENABLE ? [file] : undefined,
+          attachment: process.env.SMTP_ENABLE ? undefined : file,
         };
-
         if (transporterSMTP) {
           const res = await transporterSMTP.sendMail(messageParams);
-  
           console.log('Res ', res);
           if (!res.err) {
             return {
@@ -95,11 +94,12 @@ async function sendmail(req) {
       }
     } else {
       const from = req.params.from || '';
+      const mailsender = process.env.SMTP_ENABLE
+        ? process.env.SMTP_USER_EMAIL
+        : process.env.MAILGUN_SENDER;
+
       const messageParams = {
-        from:
-          from + ' <' + process.env.SMTP_ENABLE
-            ? process.env.SMTP_USER_EMAIL
-            : process.env.MAILGUN_SENDER + '>',
+        from: from + ' <' + mailsender + '>',
         to: req.params.recipient,
         subject: req.params.subject,
         text: req.params.text || 'mail',
@@ -108,7 +108,6 @@ async function sendmail(req) {
 
       if (transporterSMTP) {
         const res = await transporterSMTP.sendMail(messageParams);
-
         console.log('Res ', res);
         if (!res.err) {
           return {

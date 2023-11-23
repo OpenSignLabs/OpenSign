@@ -67,9 +67,8 @@ const PgSignUp = (props) => {
         const userSettings = JSON.parse(localStorage.getItem("userSettings"));
         const extClass = userSettings[0].extended_class;
         // console.log("extClass ", extClass);
-        const checkUser = new Parse.Query(extClass);
-        checkUser.equalTo("Email", userDetails.email);
-        const res = await checkUser.first();
+        const params = { email: userDetails.email };
+        const res = await Parse.Cloud.run("getUserDetails", params);
         // console.log("res", res);
         if (res) {
           const checkUser = new Parse.Query(extClass);
@@ -152,6 +151,7 @@ const PgSignUp = (props) => {
       if (res) {
         const params = {
           userDetails: {
+            jobTitle: zohoRes.data.result.jobTitle,
             company: zohoRes.data.result.company,
             name: zohoRes.data.result.name,
             email: zohoRes.data.result.email,
@@ -279,13 +279,6 @@ const PgSignUp = (props) => {
                         ""
                       );
                       localStorage.setItem("_user_role", _role);
-
-                      if (element.enableCart) {
-                        localStorage.setItem("EnableCart", element.enableCart);
-                        props.setEnableCart(element.enableCart);
-                      } else {
-                        localStorage.removeItem("EnableCart");
-                      }
                       // Get TenentID from Extendend Class
                       localStorage.setItem(
                         "extended_class",
@@ -293,14 +286,12 @@ const PgSignUp = (props) => {
                       );
                       localStorage.setItem("userpointer", element.userpointer);
 
-                      const extendedClass = Parse.Object.extend(
-                        element.extended_class
-                      );
-                      let query = new Parse.Query(extendedClass);
-                      query.equalTo("UserId", Parse.User.current());
-                      query.include("TenantId");
-                      await query.find().then(
-                        (results) => {
+                      const currentUser = Parse.User.current();
+                      await Parse.Cloud.run("getUserDetails", {
+                        email: currentUser.get("email")
+                      }).then(
+                        (result) => {
+                          const results = [result];
                           let tenentInfo = [];
                           if (results) {
                             let extendedInfo_stringify =
@@ -415,7 +406,7 @@ const PgSignUp = (props) => {
               }
             })
             .catch((err) => {
-              console.log('err', err)
+              console.log("err", err);
               setIsLoader(false);
             });
         }
@@ -448,10 +439,10 @@ const PgSignUp = (props) => {
       ) : (
         <form id="signup" className="pgsignup-content" onSubmit={handleSubmit}>
           <div className="pgsignup-container">
-            <h1 className="text-4xl font-bold">Choose Password</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">Choose Password</h1>
             <hr className="hrt" />
             <label htmlFor="password">
-              <b>Password</b>
+              <b className="text-[13px]">Password</b>
             </label>
             <input
               type="password"
@@ -464,7 +455,7 @@ const PgSignUp = (props) => {
             />
 
             <label htmlFor="confirmPassword">
-              <b>Confirm Password</b>
+              <b className="text-[13px]">Confirm Password</b>
             </label>
             <input
               type="password"
