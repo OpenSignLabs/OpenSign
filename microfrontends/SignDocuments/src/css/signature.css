@@ -629,7 +629,6 @@ option {
   /* The sticky class is added to the navbar
   with JS when it reaches its scroll position */
   .stickyHead {
-    position: fixed;
     top: 50px;
     left: 0.9rem;
   }
