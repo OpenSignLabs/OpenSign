@@ -330,6 +330,7 @@ export function urlValidator(url) {
     return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
   } catch (err) {
     return false;
+  }
 export const modalAlign = () => {
   let modalDialog = $('.modal-dialog').getBoundingClientRect();
   let mobileHead = $('.mobileHead').getBoundingClientRect()
