@@ -14,6 +14,8 @@ import DefaultSignature from "./component/defaultSignature";
 import {
   getBase64FromUrl,
   getBase64FromIMG,
+  contactBookName,
+  convertPNGtoJPEG
   contractUsers,
   contactBook,
   contractDocument,
@@ -453,32 +455,7 @@ function EmbedPdfImage() {
             if (checkUrl) {
               ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
             }
-            //function for called convert png signatre to jpeg in base 64
-            const convertPNGtoJPEG = (base64Data) => {
-              return new Promise((resolve, reject) => {
-                const canvas = document.createElement("canvas");
-                const img = new Image();
-                img.src = base64Data;
-
-                img.onload = () => {
-                  canvas.width = img.width;
-                  canvas.height = img.height;
-
-                  const ctx = canvas.getContext("2d");
-                  ctx.drawImage(img, 0, 0);
-
-                  // Convert to JPEG by using the canvas.toDataURL() method
-                  const jpegBase64Data = canvas.toDataURL("image/jpeg");
-
-                  resolve(jpegBase64Data);
-                };
-
-                img.onerror = (error) => {
-                  reject(error);
-                };
-              });
-            };
-
+            //function for convert signature png base64 url to jpeg base64
             convertPNGtoJPEG(ImgUrl)
               .then((jpegBase64Data) => {
                 const removeBase64Fromjpeg = "data:image/jpeg;base64,";
@@ -525,6 +502,11 @@ function EmbedPdfImage() {
           const images = await Promise.all(
             imgUrlList.map(async (url) => {
               let signUrl = url.SignUrl;
+              if (url.ImageType === "image/png") {
+                //function for convert signature png base64 url to jpeg base64
+                const newUrl = await convertPNGtoJPEG(signUrl);
+                signUrl = newUrl;
+              }
               const checkUrl = urlValidator(signUrl);
               if (checkUrl) {
                 signUrl = signUrl + "?get";
@@ -535,20 +517,7 @@ function EmbedPdfImage() {
             })
           );
           images.forEach(async (imgData, id) => {
-            let img;
-            if (
-              imgUrlList[id].ImageType &&
-              imgUrlList[id].ImageType === "image/jpeg"
-            ) {
-              img = await pdfDoc.embedJpg(imgData);
-            } else if (
-              imgUrlList[id].ImageType &&
-              imgUrlList[id].ImageType === "image/png"
-            ) {
-              img = await pdfDoc.embedPng(imgData);
-            } else {
-              img = await pdfDoc.embedPng(imgData);
-            }
+            let img = await pdfDoc.embedJpg(imgData);
 
             const imgHeight = imgUrlList[id].Height
               ? imgUrlList[id].Height
@@ -1138,4 +1107,5 @@ function EmbedPdfImage() {
     </DndProvider>
   );
 }
+
 export default EmbedPdfImage;
