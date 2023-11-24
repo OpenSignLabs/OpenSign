@@ -1183,17 +1183,17 @@ function Login(props) {
                       </div>
                       <div className="form-group">
                         <label
-                          htmlFor="Destination"
+                          htmlFor="JobTitle"
                           style={{ display: "flex" }}
                           className="col-form-label"
                         >
-                          Destination{" "}
+                          Job Title
                           <span style={{ fontSize: 13, color: "red" }}>*</span>
                         </label>
                         <input
                           type="text"
                           className="form-control"
-                          id="Destination"
+                          id="JobTitle"
                           value={userDetails.Destination}
                           onChange={(e) =>
                             setUserDetails({
