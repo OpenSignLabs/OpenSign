@@ -16,7 +16,8 @@ import {
   contractDocument,
   getBase64FromIMG,
   getBase64FromUrl,
-  urlValidator
+  urlValidator,
+  pdfNewWidthFun
 } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -90,19 +91,14 @@ function PdfRequestFiles() {
   const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
-    const clientWidth = window.innerWidth;
-    const value = docId ? 80 : 30;
-    const pdfWidth = clientWidth - 160 - 200 - value;
-
-    //160 is width of left side, 200 is width of right side component and 50 is space of middle compoent
-    //pdf from left and right component
-    setPdfNewWidth(pdfWidth);
     if (documentId) {
       getDocumentDetails();
     }
   }, []);
   useEffect(() => {
     if (divRef.current) {
+      const pdfWidth = pdfNewWidthFun(divRef);
+      setPdfNewWidth(pdfWidth);
       setContainerWH({
         width: divRef.current.offsetWidth,
         height: divRef.current.offsetHeight
@@ -414,7 +410,7 @@ function PdfRequestFiles() {
                   //function for convert signature png base64 url to jpeg base64
                   const newUrl = await convertPNGtoJPEG(signUrl);
                   signUrl = newUrl;
-                }   
+                }
                 const checkUrl = urlValidator(signUrl);
                 if (checkUrl) {
                   signUrl = signUrl + "?get";

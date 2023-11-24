@@ -1,5 +1,5 @@
 import axios from "axios";
-import { $ } from 'select-dom';
+import { $ } from "select-dom";
 
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
@@ -327,18 +327,26 @@ export const contactBook = async (objectId) => {
 export function urlValidator(url) {
   try {
     const newUrl = new URL(url);
-    return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+    return newUrl.protocol === "http:" || newUrl.protocol === "https:";
   } catch (err) {
     return false;
   }
 }
 export function modalAlign() {
-  let modalDialog = $('.modal-dialog').getBoundingClientRect();
-  let mobileHead = $('.mobileHead').getBoundingClientRect()
-  let modal = $('.modal-dialog');
+  let modalDialog = $(".modal-dialog").getBoundingClientRect();
+  let mobileHead = $(".mobileHead").getBoundingClientRect();
+  let modal = $(".modal-dialog");
   if (modalDialog.left < mobileHead.left) {
     let leftOffset = mobileHead.left - modalDialog.left;
-    modal.style.left = leftOffset + 'px';
-    modal.style.top = (window.innerHeight/3) + 'px';
+    modal.style.left = leftOffset + "px";
+    modal.style.top = window.innerHeight / 3 + "px";
   }
+}
+
+export const pdfNewWidthFun = (divRef) => {
+  const clientWidth = divRef.current.offsetWidth;
+  const pdfWidth = clientWidth - 160 - 200;
+  //160 is width of left side, 200 is width of right side component and 50 is space of middle compoent
+  //pdf from left and right component
+  return pdfWidth;
 };

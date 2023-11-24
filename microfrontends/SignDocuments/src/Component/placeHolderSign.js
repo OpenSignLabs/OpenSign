@@ -18,7 +18,7 @@ import Nodata from "./component/Nodata";
 import SignerListPlace from "./component/signerListPlace";
 import Header from "./component/header";
 import {
-  contactBook,
+  pdfNewWidthFun,
   contractDocument,
   contractUsers,
   getHostUrl
@@ -36,13 +36,10 @@ function PlaceHolderSign() {
   const [pageNumber, setPageNumber] = useState(1);
   const [signBtnPosition, setSignBtnPosition] = useState([]);
   const [xySignature, setXYSignature] = useState({});
-  const signRef = useRef(null);
-  const dragRef = useRef(null);
   const [dragKey, setDragKey] = useState();
   const [signersdata, setSignersData] = useState();
   const [signerObjId, setSignerObjId] = useState();
   const [signerPos, setSignerPos] = useState([]);
-
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState({});
   const [isSend, setIsSend] = useState(false);
@@ -63,6 +60,9 @@ function PlaceHolderSign() {
   const { docId } = useParams();
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
+  const signRef = useRef(null);
+  const dragRef = useRef(null);
+  const divRef = useRef(null);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -161,16 +161,17 @@ function PlaceHolderSign() {
   const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
-    const clientWidth = window.innerWidth;
-    const value = docId ? 80 : 30;
-    const pdfWidth = clientWidth - 160 - 200 - value;
-    //160 is width of left side, 200 is width of right side component and 50 is space of middle compoent
-    //pdf from left and right component
-    setPdfNewWidth(pdfWidth);
     if (documentId) {
       getDocumentDetails();
     }
   }, []);
+
+  useEffect(() => {
+    if (divRef.current) {
+      const pdfWidth = pdfNewWidthFun(divRef);
+      setPdfNewWidth(pdfWidth);
+    }
+  }, [divRef.current]);
 
   //function for get document details
   const getDocumentDetails = async () => {
@@ -833,7 +834,7 @@ function PlaceHolderSign() {
       ) : noData ? (
         <Nodata />
       ) : (
-        <div className="signatureContainer">
+        <div className="signatureContainer" ref={divRef}>
           {/* this component used for UI interaction and show their functionality */}
           {!checkTourStatus && (
             //this tour component used in your html component where you want to put

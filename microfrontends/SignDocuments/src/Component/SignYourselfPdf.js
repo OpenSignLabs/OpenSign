@@ -18,7 +18,8 @@ import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import {
   convertPNGtoJPEG,
   contractDocument,
-  getBase64FromIMG
+  getBase64FromIMG,
+  pdfNewWidthFun
 } from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -90,7 +91,7 @@ function SignYourSelf() {
   });
 
   const pdfRef = useRef();
-
+  const divRef = useRef(null);
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
 
@@ -166,17 +167,20 @@ function SignYourSelf() {
   const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
-    const clientWidth = window.innerWidth;
-    const value = docId ? 80 : 80;
-    const pdfWidth = clientWidth - 160 - 200 - value;
-    //160 is width of left side, 200 is width of right side component and 50 is space of middle compoent
-    //pdf from left and right component
-    setPdfNewWidth(pdfWidth);
     if (documentId) {
       getDocumentDetails(true);
     }
   }, []);
 
+  useEffect(() => {
+    if (divRef.current) {
+      const pdfWidth = pdfNewWidthFun(divRef);
+      setPdfNewWidth(pdfWidth);
+      if (documentId) {
+        getDocumentDetails();
+      }
+    }
+  }, [divRef.current]);
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
     //getting document details
@@ -959,7 +963,7 @@ function SignYourSelf() {
       ) : noData ? (
         <Nodata />
       ) : (
-        <div className="signatureContainer">
+        <div className="signatureContainer" ref={divRef}>
           {/* this component used for UI interaction and show their functionality */}
           {pdfLoadFail && !checkTourStatus && (
             <Tour
