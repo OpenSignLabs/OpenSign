@@ -6,6 +6,7 @@
         "subtitle": "Free for life One click install.",
         "btnText": "Visit github",
         "url": "https://github.com/opensignlabs/opensign",
+        "target": "_blank",
         "benefits": [
             "Sign Unlimited Documents",
             "S3 Doc Storage",
@@ -29,6 +30,7 @@
         "subtitle": "Use code 'FREEBETA' to get this for free(First 1000 users)",
         "btnText": "Subscribe",
         "url": "https://subscriptions.zoho.in/subscribe/ef798486e6a0a11ea65f2bae8f2af901dbadf3175d495584fd25b9af5d2f2b9e/thanks",
+        "target": "_self",
         "benefits": [
             "Sign Unlimited Documents",
             "Unlimited Secure Doc Storage with OpenSignDrive",
@@ -50,6 +52,7 @@
         "subtitle": "Customization available Priority support.",
         "btnText": "Contact us",
         "url": "https://www.opensignlabs.com/contact-us",
+        "target": "_self",
         "benefits": [
             "All features",
             "Custom domain",

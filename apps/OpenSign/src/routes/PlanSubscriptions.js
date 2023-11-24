@@ -139,7 +139,7 @@ const PlanSubscriptions = () => {
                       <NavLink
                         to={item.url + details}
                         className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white"
-                        target="_self"
+                        target={item.target}
                       >
                         {item.btnText}
                       </NavLink>
