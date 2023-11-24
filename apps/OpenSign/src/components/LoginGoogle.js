@@ -43,8 +43,9 @@ const GoogleSignInBtn = ({
     });
   });
   const clearStorage = async () => {
-    await Parse.User.logOut();
-
+    if (Parse.User.current()) {
+      await Parse.User.logOut();
+    }
     let baseUrl = localStorage.getItem("BaseUrl12");
     let appid = localStorage.getItem("AppID12");
     let applogo = localStorage.getItem("appLogo");
@@ -74,7 +75,6 @@ const GoogleSignInBtn = ({
     localStorage.setItem("userSettings", userSettings);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
-
   };
   const responseGoogle = async (response) => {
     clearStorage();
