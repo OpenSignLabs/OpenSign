@@ -28,9 +28,7 @@ function EmailComponent({
     setIsLoading(true);
     let sendMail;
     for (let i = 0; i < emailCount.length; i++) {
-
       try {
-
         const imgPng =
           "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
         // "https://qikinnovation.ams3.digitaloceanspaces.com/mailLogo_2023-08-18T12%3A51%3A31.573Z.png";
@@ -111,16 +109,22 @@ function EmailComponent({
 
     const pdf = await getBase64FromUrl(pdfUrl);
     const isAndroidDevice = navigator.userAgent.match(/Android/i);
-    const isAppleDevice = (/iPad|iPhone|iPod/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) && !window.MSStream
+    const isAppleDevice =
+      (/iPad|iPhone|iPod/.test(navigator.platform) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) &&
+      !window.MSStream;
     if (isAndroidDevice || isAppleDevice) {
-      const byteArray = Uint8Array.from(atob(pdf).split('').map(char => char.charCodeAt(0)));
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const byteArray = Uint8Array.from(
+        atob(pdf)
+          .split("")
+          .map((char) => char.charCodeAt(0))
+      );
+      const blob = new Blob([byteArray], { type: "application/pdf" });
       const blobUrl = URL.createObjectURL(blob);
-      window.open(blobUrl, '_blank');
+      window.open(blobUrl, "_blank");
     } else {
       printModule({ printable: pdf, type: "pdf", base64: true });
     }
-
   };
 
   //handle download signed pdf
@@ -130,11 +134,10 @@ function EmailComponent({
 
   const sanitizeFileName = (pdfName) => {
     // Replace spaces with underscore
-    return pdfName.replace(/ /g, '_');
-  }
+    return pdfName.replace(/ /g, "_");
+  };
 
   const isAndroid = /Android/i.test(navigator.userAgent);
-
 
   return (
     <div>
@@ -167,7 +170,7 @@ function EmailComponent({
         )}
 
         <ModalHeader style={{ background: themeColor() }}>
-          <span style={{ color: "white" }}>Email Documents</span>
+          <span style={{ color: "white" }}>Successfully signed!</span>
 
           <div style={{ display: "flex", flexDirection: "row" }}>
             <div></div>
@@ -259,14 +262,20 @@ function EmailComponent({
                 >
                   {emailCount.map((data, ind) => {
                     return (
-                      <div className="emailChip"
-                      style={{display:"flex", flexDirection:"row", alignItems:"center"}}
-                      key={ind}>
+                      <div
+                        className="emailChip"
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center"
+                        }}
+                        key={ind}
+                      >
                         <span
                           style={{
                             color: "white",
                             fontSize: "13px",
-                            marginRight: "20px"
+                            marginTop: "2px"
                           }}
                         >
                           {data}
@@ -278,7 +287,7 @@ function EmailComponent({
                           src={close}
                           width={10}
                           height={10}
-                          style={{ fontWeight: "600" }}
+                          style={{ fontWeight: "600", margin: "0 0 10px 2px" }}
                         />
                       </div>
                     );

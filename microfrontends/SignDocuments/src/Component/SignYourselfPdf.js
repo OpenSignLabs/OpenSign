@@ -15,7 +15,11 @@ import EmailComponent from "./component/emailComponent";
 import FieldsComponent from "./component/fieldsComponent";
 import Modal from "react-bootstrap/Modal";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
-import { convertPNGtoJPEG, contractDocument, getBase64FromIMG } from "../utils/Utils";
+import {
+  convertPNGtoJPEG,
+  contractDocument,
+  getBase64FromIMG
+} from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
 import { onSaveImage, onSaveSign } from "../utils/Utils";
@@ -26,7 +30,7 @@ import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
 import { modalAlign } from "../utils/Utils";
-import { $ } from 'select-dom';
+import { $ } from "select-dom";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const [pdfDetails, setPdfDetails] = useState([]);
@@ -169,12 +173,12 @@ function SignYourSelf() {
     //pdf from left and right component
     setPdfNewWidth(pdfWidth);
     if (documentId) {
-      getDocumentDetails();
+      getDocumentDetails(true);
     }
   }, []);
 
   //function for get document details for perticular signer with signer'object id
-  const getDocumentDetails = async () => {
+  const getDocumentDetails = async (showComplete) => {
     //getting document details
     const documentData = await contractDocument(documentId);
 
@@ -182,7 +186,7 @@ function SignYourSelf() {
       setPdfDetails(documentData);
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
-      if (isCompleted) {
+      if (isCompleted && showComplete) {
         const docStatus = {
           isCompleted: isCompleted
         };
@@ -615,7 +619,7 @@ function SignYourSelf() {
         // console.log("json ", json);
         setPdfUrl(json.result.data);
         if (json.result.data) {
-          getDocumentDetails();
+          getDocumentDetails(false);
         }
       })
       .catch((err) => {
