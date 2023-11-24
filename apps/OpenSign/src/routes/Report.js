@@ -12,6 +12,7 @@ const Report = () => {
   const [isLoader, setIsLoader] = useState(true);
   const [reportName, setReportName] = useState("");
   const [actions, setActions] = useState([]);
+  const [heading, setHeading] = useState([]);
   const [isNextRecord, setIsNextRecord] = useState(false);
   const [isMoreDocs, setIsMoreDocs] = useState(true);
   const abortController = new AbortController();
@@ -47,6 +48,7 @@ const Report = () => {
     const json = reportJson(id);
     if (json) {
       setActions(json.actions);
+      setHeading(json.heading);
       setReportName(json.reportName);
       Parse.serverURL = localStorage.getItem("BaseUrl12");
       Parse.initialize(localStorage.getItem("AppID12"));
@@ -146,7 +148,9 @@ const Report = () => {
             <ReportTable
               ReportName={reportName}
               List={List}
+              setList={setList}
               actions={actions}
+              heading={heading}
               setIsNextRecord={setIsNextRecord}
               isMoreDocs={isMoreDocs}
               docPerPage={docPerPage}
