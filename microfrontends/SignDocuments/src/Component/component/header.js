@@ -88,7 +88,7 @@ function Header({
   const sanitizeFileName = (pdfName) => {
     // Replace spaces with underscore
     return pdfName.replace(/ /g, "_");
-  };
+
   //certificate generate and download component in mobile view
   const CertificateDropDown = () => {
     //after generate download certifcate pdf
@@ -221,6 +221,7 @@ function Header({
       </PDFDownloadLink>
     );
   };
+
   return (
     <div
       style={{ padding: !isGuestSigner && "5px 0px 5px 0px" }}
@@ -358,7 +359,7 @@ function Header({
               </DropdownMenu.Root>
             ) : (
               <div style={{ display: "flex", justifyContent: "space-around" }}>
-                {/* current signer is checking user send request and check status of pdf sign than if current 
+                {/* current signer is checking user send request and check status of pdf sign than if current
                 user exist than show finish button else no
                 */}
                 {currentSigner && (

@@ -34,6 +34,7 @@ const PlanSubscriptions = () => {
     email +
     company +
     phone;
+
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
       setIsLoader(false);

@@ -29,6 +29,7 @@ function EmailComponent({
     let sendMail;
     for (let i = 0; i < emailCount.length; i++) {
       try {
+
         const imgPng =
           "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
         // "https://qikinnovation.ams3.digitaloceanspaces.com/mailLogo_2023-08-18T12%3A51%3A31.573Z.png";
@@ -135,9 +136,15 @@ function EmailComponent({
   const sanitizeFileName = (pdfName) => {
     // Replace spaces with underscore
     return pdfName.replace(/ /g, "_");
-  };
+
+
+  const sanitizeFileName = (pdfName) => {
+    // Replace spaces with underscore
+    return pdfName.replace(/ /g, '_');
+  }
 
   const isAndroid = /Android/i.test(navigator.userAgent);
+
 
   return (
     <div>
@@ -271,6 +278,7 @@ function EmailComponent({
                         }}
                         key={ind}
                       >
+
                         <span
                           style={{
                             color: "white",
