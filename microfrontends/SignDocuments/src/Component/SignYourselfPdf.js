@@ -550,8 +550,7 @@ function SignYourSelf() {
           });
         }
         const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-        console.log("pdf", pdfBytes);
-        // signPdfFun(pdfBytes, documentId);
+        signPdfFun(pdfBytes, documentId);
       }
       setIsSignPad(false);
       setIsEmail(true);
