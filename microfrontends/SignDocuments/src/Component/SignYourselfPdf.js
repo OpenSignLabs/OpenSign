@@ -525,20 +525,16 @@ function SignYourSelf() {
               : 60;
             const imgWidth = imgUrlList[id].Width ? imgUrlList[id].Width : 150;
             const isMobile = window.innerWidth < 767;
-            const newWidth = window.innerWidth;
+            const newWidth = window.innerWidth - 32;
             const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
 
             const posY = () => {
               if (isMobile) {
-                if (id === 0) {
-                  return (
-                    page.getHeight() -
-                    imgUrlList[id].yPosition * scale -
-                    imgHeight
-                  );
-                } else if (id > 0) {
-                  return page.getHeight() - imgUrlList[id].yPosition * scale;
-                }
+                return (
+                  page.getHeight() -
+                  imgUrlList[id].yPosition * scale -
+                  imgHeight * scale
+                );
               } else {
                 return page.getHeight() - imgUrlList[id].yPosition - imgHeight;
               }
@@ -548,13 +544,14 @@ function SignYourSelf() {
                 ? imgUrlList[id].xPosition * scale + imgWidth / 2
                 : imgUrlList[id].xPosition,
               y: posY(),
-              width: imgWidth,
-              height: imgHeight
+              width: imgWidth * scale,
+              height: imgHeight * scale
             });
           });
         }
         const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-        signPdfFun(pdfBytes, documentId);
+        console.log("pdf", pdfBytes);
+        // signPdfFun(pdfBytes, documentId);
       }
       setIsSignPad(false);
       setIsEmail(true);
@@ -574,16 +571,16 @@ function SignYourSelf() {
     let singleSign;
 
     const isMobile = window.innerWidth < 767;
-    const newWidth = window.innerWidth;
+    const newWidth = window.innerWidth - 32;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const imgWidth = xyPosData ? xyPosData.Width : 150;
     if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
       const height = xyPosData.Height ? xyPosData.Height : 60;
       const bottomY = xyPosData.isDrag
-        ? xyPosData.yBottom * scale - height
+        ? xyPosData.yBottom * scale - height * scale
         : xyPosData.firstYPos
-          ? xyPosData.yBottom * scale - height + xyPosData.firstYPos
-          : xyPosData.yBottom * scale - height;
+          ? xyPosData.yBottom * scale - height * scale + xyPosData.firstYPos
+          : xyPosData.yBottom * scale - height * scale;
 
       singleSign = {
         pdfFile: pdfBase64Url,
@@ -594,8 +591,8 @@ function SignYourSelf() {
             ? xyPosData.xPosition * scale + imgWidth / 2
             : xyPosData.xPosition,
           Bottom: bottomY,
-          Width: xyPosData.Width ? xyPosData.Width : 150,
-          Height: height,
+          Width: xyPosData.Width ? xyPosData.Width * scale : 150 * scale,
+          Height: height * scale,
           Page: pageNo
         }
       };

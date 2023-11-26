@@ -639,6 +639,7 @@ option {
 
   .stickyfooter {
     position: fixed;
+    z-index: 32 !important;
     bottom: 0px;
     right: 0rem;
   }
