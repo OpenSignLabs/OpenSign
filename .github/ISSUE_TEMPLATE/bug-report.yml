@@ -9,7 +9,7 @@ body:
         Please fill in as much of the form below as you're able to so that contributors have a clear understanding of the issue.
   - type: textarea
     attributes:
-      label: Issue Description:
+      label: Issue Description
       description: Please provide a clear & concise description of the problem. 
   - type: textarea
     attributes:
