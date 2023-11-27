@@ -65,3 +65,5 @@ body:
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
+        - label: I have searched the existing issues & discussions to make sure that this is not a duplicate.
+          required: true
