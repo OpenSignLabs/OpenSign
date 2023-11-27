@@ -38,7 +38,7 @@ body:
         - Firefox
         - Safari
         - Microsoft Edge
-      default: Chrome
+      default: 0
   - type: input
     attributes:
       label: What version of OpenSign™ are you seeing this issue on? [e.g. 1.0.6]
