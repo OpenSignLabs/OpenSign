@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import "../styles/loader.css";
 import GetDashboard from "../components/dashboard/GetDashboard";
-import { Navigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Title from "../components/Title";
 import { save_tourSteps } from "../redux/actions";
 import { connect } from "react-redux";
 const Dashboard = (props) => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [dashboard, setdashboard] = useState([]);
   const [classnameArray, setclassnameArray] = useState([]);
@@ -14,6 +15,19 @@ const Dashboard = (props) => {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [defaultQuery, setDefaultQuery] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("accesstoken")) {
+      if (id !== undefined) {
+        getDashboard(id);
+      } else {
+        getDashboard(localStorage.getItem("PageLanding"));
+      }
+    } else {
+      navigate("/", { replace: true });
+    }
+    // eslint-disable-next-line
+  }, [id]);
 
   const getDashboard = async (id) => {
     setloading(true);
@@ -92,20 +106,6 @@ const Dashboard = (props) => {
       setloading(false);
     }
   };
-
-  useEffect(() => {
-    if (id !== undefined) {
-      getDashboard(id);
-    } else {
-      getDashboard(localStorage.getItem("PageLanding"));
-    }
-
-    // eslint-disable-next-line
-  }, [id]);
-
-  if (localStorage.getItem("accesstoken") === "" || null) {
-    return <Navigate to="/" />;
-  }
 
   let _dash = (
     <GetDashboard

@@ -198,6 +198,20 @@ export default function reportJson(id, userId) {
         },
         keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
       };
+    // contact book report
+    case '5KhaPr482K':
+      return {
+        reportName: 'Contactbook',
+        params: {
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
+          IsDeleted: { $ne: true },
+        },
+        keys: ['Name', 'Email', 'Phone'],
+      };
     default:
       return null;
   }

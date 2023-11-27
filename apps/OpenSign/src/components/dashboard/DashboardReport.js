@@ -9,6 +9,7 @@ function DashboardReport(props) {
   const [isLoader, setIsLoader] = useState(true);
   const [reportName, setReportName] = useState("");
   const [actions, setActions] = useState([]);
+  const [heading, setHeading] = useState([]);
   const [isNextRecord, setIsNextRecord] = useState(false);
   const [isMoreDocs, setIsMoreDocs] = useState(true);
   const abortController = new AbortController();
@@ -43,6 +44,7 @@ function DashboardReport(props) {
     if (json) {
       setActions(json.actions);
       setReportName(json.reportName);
+      setHeading(json.heading);
       Parse.serverURL = localStorage.getItem("BaseUrl12");
       Parse.initialize(localStorage.getItem("AppID12"));
       const currentUser = Parse.User.current().id;
@@ -140,7 +142,9 @@ function DashboardReport(props) {
             <ReportTable
               ReportName={reportName}
               List={List}
+              setList={setList}
               actions={actions}
+              heading={heading}
               setIsNextRecord={setIsNextRecord}
               isMoreDocs={isMoreDocs}
               docPerPage={docPerPage}
