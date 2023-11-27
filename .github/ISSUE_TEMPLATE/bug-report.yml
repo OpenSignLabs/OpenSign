@@ -46,7 +46,7 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: browsers
+    id: environment
     attributes:
       label: What environment are you seeing the problem on?
       multiple: true
@@ -60,4 +60,3 @@ body:
       label: Please check the boxes that apply to this issue report.
       options:
         - label: I have searched the existing issues & discussions to make sure that this is not a duplicate.
-        - label: I 
