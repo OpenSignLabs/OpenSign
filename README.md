@@ -128,6 +128,7 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rishabjasrotia"><img src="https://avatars.githubusercontent.com/u/33950743?v=4?s=100" width="100px;" alt="Rishab"/><br /><sub><b>Rishab</b></sub></a><br /><a href="#code-rishabjasrotia" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://session.it"><img src="https://avatars.githubusercontent.com/u/327285?v=4?s=100" width="100px;" alt="Maurizio Pillitu"/><br /><sub><b>Maurizio Pillitu</b></sub></a><br /><a href="#bug-maoo" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://luisparra.dev"><img src="https://avatars.githubusercontent.com/u/16653744?v=4?s=100" width="100px;" alt="Luis Parra"/><br /><sub><b>Luis Parra</b></sub></a><br /><a href="#a11y-lsprr" title="Accessibility">️️️️♿️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Govinda04"><img src="https://avatars.githubusercontent.com/u/50038172?v=4?s=100" width="100px;" alt="Govinda Kocharekar"/><br /><sub><b>Govinda Kocharekar</b></sub></a><br /><a href="#code-Govinda04" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
