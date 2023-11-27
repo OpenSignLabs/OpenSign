@@ -1,5 +1,8 @@
 name: "Bug Report"
 labels: "bug"
+title: "[Bug]: "
+assignees:
+  - andrew-opensignlabs
 description: Create a bug report to help us make OpenSign™ the world's best document e-signature platform
 body:
   - type: textarea
@@ -35,6 +38,7 @@ body:
         - Firefox
         - Safari
         - Microsoft Edge
+      default: Chrome
   - type: input
     attributes:
       label: What version of OpenSign™ are you seeing this issue on? [e.g. 1.0.6]
