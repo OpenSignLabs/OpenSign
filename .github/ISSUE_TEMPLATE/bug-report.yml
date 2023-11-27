@@ -1,20 +1,16 @@
 name: "Bug Report"
 labels: "bug"
-description: Create a bug report to help us improve
+description: Create a bug report to help us make OpenSign the world's best document e-signature platform
 body:
   - type: markdown
     attributes:
       value:
-        Thank you for reporting an issue.
-        Please fill in as much of the form below as you're able to.
+        Thank you for reporting the issue.
+        Please fill in as much of the form below as you're able to so that contributors have a clear understanding of the issue.
   - type: textarea
     attributes:
-      label: Issue Description
-      description: Please provide a clear and concise description of the problem. 
-  - type: textarea
-    attributes:
-      label: Steps to Reproduce
-      description: Please provide step-by-step instructions to reproduce the issue. Include code snippets, error messages, and any other relevant information.
+      label: Issue Description:
+      description: Please provide a clear & concise description of the problem. 
   - type: textarea
     attributes:
       label: Expected Behavior
@@ -22,26 +18,46 @@ body:
   - type: textarea
     attributes:
       label: Current Behavior
-      description: Describe what is currently happening.
+      description: Describe what is happening instead.
   - type: textarea
     attributes:
-      label: Screenshots (optional)
-      description: If applicable, add screenshots to help explain the issue.
+      label: Steps to reproduce
+      description: Please provide step-by-step instructions to reproduce the issue. Include code snippets, URLs, error messages and any other relevant information.
+  - type: textarea
+    attributes:
+      label: Screenshots of the issue(optional)
+      description: Add screenshots to better explain the issue.
   - type: input
     attributes:
-      label: Operating System [e.g., Windows 10]
+      label: Operating System [e.g., MacOS Sonoma 14.1, Windows 11]
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+      multiple: true
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Microsoft Edge
   - type: input
     attributes:
-      label: Browser [e.g., Chrome, Firefox]
-  - type: input
+      label: What version of OpenSign™ are you seeing this issue on? [e.g. 1.0.6]
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
     attributes:
-      label: Version [e.g., 2.0.1]
+      label: What environment are you seeing the problem on?
+      multiple: true
+      options:
+        - Production (app.opensignlabs.com)
+        - Staging (staging-app.opensignlabs.com)
+        - Hosted (app.yourdomain.com)
+        - Dev (localhost:3000)
   - type: checkboxes
     attributes:
       label: Please check the boxes that apply to this issue report.
       options:
-        - label: I have searched the existing issues to make sure this is not a duplicate.
-        - label: I have provided steps to reproduce the issue.
-        - label: I have included relevant environment information.
-        - label: I have included any relevant screenshots.
-        - label: I understand that this is a voluntary contribution and that there is no guarantee of resolution.
+        - label: I have searched the existing issues & discussions to make sure that this is not a duplicate.
+        - label: I 
