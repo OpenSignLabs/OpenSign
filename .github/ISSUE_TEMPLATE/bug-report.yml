@@ -55,4 +55,5 @@ body:
       label: Please check the boxes that apply to this issue report.
       options:
         - label: I have searched the existing issues & discussions to make sure that this is not a duplicate.
+    validations:
       required: true
