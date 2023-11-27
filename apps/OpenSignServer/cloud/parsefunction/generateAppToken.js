@@ -13,7 +13,7 @@ export default async function generateAppToken(request) {
       console.log("New API Token Generation");
       const appToken = Parse.Object.extend('appToken');
       const appTokenQuery = new appToken();
-      const token = generateApiKey();
+      const token = generateApiKey({ method: 'base62', prefix: 'opensign' });;
       appTokenQuery.set('token', token);
       appTokenQuery.set('Id',request.user.id);
   
