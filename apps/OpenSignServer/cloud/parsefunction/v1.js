@@ -1,3 +1,4 @@
+import reportJson from './reportsJson.js';
 // API V1 file to handle all API calls
 export default async function v1(request) {
   var reqToken = request.params.appToken;
@@ -18,6 +19,9 @@ export default async function v1(request) {
         query.equalTo("objectId", userId);
         let user = await query.first({ useMasterKey: true });
         result = user;
+        break;
+      case 'getDocuments':
+        result = reportJson('ByHuevtCFY', userId)
         break;
     }
     return { message: 'Token Valid', result: result };
