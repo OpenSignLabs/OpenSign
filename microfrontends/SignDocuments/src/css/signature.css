@@ -80,6 +80,10 @@
   padding: 5px 10px;
 }
 
+.emailChipClose:hover {
+  cursor: pointer;
+}
+
 .addEmailInput {
   padding: 10px;
   border-radius: 4px;
