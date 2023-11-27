@@ -10,20 +10,16 @@ export default async function v1(request) {
   const token = await tokenQuery.first({ useMasterKey: true });
   if (token !== undefined) {
     // Valid Token then proceed request
+    const userId = token.get('Id');
     switch(action)  {
       case 'getUser':
-        var username = request.params.username;
-        var password = request.params.password;
-        await Parse.User.logIn(username, password)
-        .then(async (user) => {
-          if (user) {
-            return user;
-          }
-          console.log(user)
-        });
+        let query = new Parse.Query(Parse.User);
+        query.equalTo("objectId", userId);
+        let user = await query.first({ useMasterKey: true });
+        result = user;
         break;
     }
-    return { message: 'Token Valid' };
+    return { message: 'Token Valid', result: result };
   }
   return { message: 'Request Invalid Please validate API Token or Request' };
 };
