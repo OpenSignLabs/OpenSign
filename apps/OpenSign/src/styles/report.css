@@ -1,0 +1,36 @@
+.alertBox {
+    z-index: 1;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 13px;
+    animation: inAnimation 2s ease-in-out;
+}
+
+@keyframes inAnimation {
+    0% {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    25% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    50% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    75% {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
