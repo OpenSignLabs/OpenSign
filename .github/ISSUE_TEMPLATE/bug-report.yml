@@ -2,11 +2,6 @@ name: "Bug Report"
 labels: "bug"
 description: Create a bug report to help us make OpenSign the world's best document e-signature platform
 body:
-  - type: markdown
-    attributes:
-      value:
-        Thank you for reporting the issue.
-        Please fill in as much of the form below as you're able to so that contributors have a clear understanding of the issue.
   - type: textarea
     attributes:
       label: Issue Description
