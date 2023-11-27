@@ -88,6 +88,7 @@ function Header({
   const sanitizeFileName = (pdfName) => {
     // Replace spaces with underscore
     return pdfName.replace(/ /g, "_");
+  };
 
   //certificate generate and download component in mobile view
   const CertificateDropDown = () => {
