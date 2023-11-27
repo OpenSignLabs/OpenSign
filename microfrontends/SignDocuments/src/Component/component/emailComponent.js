@@ -136,12 +136,7 @@ function EmailComponent({
   const sanitizeFileName = (pdfName) => {
     // Replace spaces with underscore
     return pdfName.replace(/ /g, "_");
-
-
-  const sanitizeFileName = (pdfName) => {
-    // Replace spaces with underscore
-    return pdfName.replace(/ /g, '_');
-  }
+  };
 
   const isAndroid = /Android/i.test(navigator.userAgent);
 

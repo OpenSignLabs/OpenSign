@@ -1101,8 +1101,7 @@ function Login(props) {
                       }}
                     >
                       {props.appInfo.googleClietId &&
-                      prop
-                      s.appInfo.googleClietId !== "" ? (
+                      props.appInfo.googleClietId !== "" ? (
                         <GoogleSignInBtn
                           GoogleCred={props.appInfo.googleClietId}
                           thirdpartyLoginfn={thirdpartyLoginfn}
