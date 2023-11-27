@@ -6,6 +6,7 @@ function Api() {
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [editmode, setEditMode] = useState(false);
   const [apiToken, SetApiToken] = useState(localStorage.getItem("apiToken"));
+  const [appId, SetAppId] = useState(localStorage.getItem("AppID12"));
   const [isLoader, setIsLoader] = useState(false);
 
   Parse.serverURL = parseBaseUrl;
@@ -65,6 +66,14 @@ function Api() {
             >
               <span>Api Token:</span>{" "} 
                <span>{localStorage.getItem("apiToken")}</span>
+            </li>
+            <li
+              className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                editmode ? "py-1" : "py-2"
+              }`}
+            >
+              <span>Api Id:</span>{" "} 
+               <span>{localStorage.getItem("AppID12")}</span>
             </li>
           </ul>
           <div className="flex justify-center pb-4">
