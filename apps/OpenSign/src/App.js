@@ -10,6 +10,7 @@ import Dashboard from "./routes/Dashboard";
 import PlanSubscriptions from "./routes/PlanSubscriptions";
 import HomeLayout from "./layout/HomeLayout";
 import UserProfile from "./routes/UserProfile";
+import Api from "./routes/Api";
 import PageNotFound from "./routes/PageNotFound";
 import ForgetPassword from "./routes/ForgetPassword";
 import ChangePassword from "./routes/ChangePassword";
@@ -135,6 +136,15 @@ function App() {
               element={
                 <HomeLayout>
                   <UserProfile />
+                </HomeLayout>
+              }
+            />
+
+            <Route
+              path="/api"
+              element={
+                <HomeLayout>
+                  <Api />
                 </HomeLayout>
               }
             />

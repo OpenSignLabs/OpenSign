@@ -17,6 +17,7 @@ import getUserDetails from './parsefunction/getUserDetails.js';
 import getDocument from './parsefunction/getDocument.js';
 import getDrive from './parsefunction/getDrive.js';
 import getReport from './parsefunction/getReport.js';
+import generateAppToken from './parsefunction/generateAppToken.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
@@ -37,3 +38,4 @@ Parse.Cloud.define('getUserDetails', getUserDetails);
 Parse.Cloud.define('getDocument', getDocument);
 Parse.Cloud.define('getDrive', getDrive)
 Parse.Cloud.define('getReport', getReport)
+Parse.Cloud.define('generateAppToken', generateAppToken)
