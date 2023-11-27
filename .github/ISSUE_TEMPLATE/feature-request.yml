@@ -1,6 +1,6 @@
 name: "Feature request"
-labels: "bug,up-for-grabs"
-title: "[Bug]: "
+labels: "enhancement"
+title: "[enhancement]: "
 assignees:
   - andrew-opensignlabs
 description: Create a bug report to help us make OpenSign™ the world's best document e-signature platform
