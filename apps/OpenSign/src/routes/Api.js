@@ -18,7 +18,6 @@ function Api() {
       await Parse.Cloud.run("generateAppToken").then(
       (res) => {
          if (res) {
-            console.log(res.get('token'))
             SetApiToken(res.get('token'));
             localStorage.setItem("apiToken", res.get('token'));
             alert("Token Generated successfully.");
