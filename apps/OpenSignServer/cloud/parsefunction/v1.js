@@ -11,6 +11,7 @@ export default async function v1(request) {
   if (token !== undefined) {
     // Valid Token then proceed request
     const userId = token.get('Id');
+    var result;
     switch(action)  {
       case 'getUser':
         let query = new Parse.Query(Parse.User);
