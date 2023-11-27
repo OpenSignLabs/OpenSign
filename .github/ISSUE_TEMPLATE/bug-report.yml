@@ -1,5 +1,5 @@
 name: "Bug Report"
-labels: "bug,up-for-grabs"
+labels: ["bug","up-for-grabs"]
 title: "[Bug]: "
 assignees:
   - andrew-opensignlabs
