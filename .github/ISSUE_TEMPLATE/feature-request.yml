@@ -26,17 +26,18 @@ body:
       placeholder: |
         e.g., I'm proposing an advanced signature verification feature that...
     validations:
-      required: true  - type: dropdown
-    id: featuretype
-    attributes:
-      label: What type of feature are you requesting?
-      multiple: true
-      options:
-        - UI/UX Improvement
-        - Security / Compliance
-        - Performance / Optimization
-        - 3rd party integration
-        - Other
+      required: true  
+  - type: dropdown
+      id: featuretype
+      attributes:
+        label: What type of feature are you requesting?
+        multiple: true
+        options:
+          - UI/UX Improvement
+          - Security / Compliance
+          - Performance / Optimization
+          - 3rd party integration
+          - Other
   - type: dropdown
       id: importance
       attributes:
