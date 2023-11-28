@@ -28,28 +28,28 @@ body:
     validations:
       required: true  
   - type: dropdown
-      id: featuretype
-      attributes:
-        label: What type of feature are you requesting?
-        multiple: true
-        options:
-          - UI/UX Improvement
-          - Security / Compliance
-          - Performance / Optimization
-          - 3rd party integration
-          - Other
+    id: featuretype
+    attributes:
+      label: What type of feature are you requesting?
+      multiple: true
+      options:
+        - UI/UX Improvement
+        - Security / Compliance
+        - Performance / Optimization
+        - 3rd party integration
+        - Other
   - type: dropdown
-      id: importance
-      attributes:
-        label: Importance
-        description: How important is this feature to you?
-        options:
-          - Critical
-          - High
-          - Medium
-          - Low
-      validations:
-        required: true
+    id: importance
+    attributes:
+      label: Importance
+      description: How important is this feature to you?
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
 
   - type: textarea
     id: additional-context
