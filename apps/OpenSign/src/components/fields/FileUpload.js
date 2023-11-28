@@ -256,7 +256,7 @@ const FileUpload = (props) => {
       <>
         {props.formData ? (
           <div className="flex gap-2 justify-center items-center">
-            <div className="flex justify-between items-center px-2 py-[6px] w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
+            <div className="flex justify-between items-center px-2 py-[3px] w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
               <div className="break-all">
                 file selected : {props.formData.split("/")[3]}
               </div>
@@ -266,9 +266,9 @@ const FileUpload = (props) => {
                   setFileUpload([]);
                   props.onChange(undefined);
                 }}
-                className="cursor-pointer px-[10px] text-base font-bold bg-white"
+                className="cursor-pointer px-[10px] text-[20px] font-bold bg-white text-red-500"
               >
-                X
+                <i className="fa-solid fa-xmark"></i>
               </div>
             </div>
             <DropboxChooser
