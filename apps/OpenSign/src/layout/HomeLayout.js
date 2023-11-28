@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import Parse from "parse";
 const HomeLayout = ({ children }) => {
   const { width } = useWindowSize();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const arr = useSelector((state) => state.TourSteps);
 
   // reactour state
@@ -19,13 +19,11 @@ const HomeLayout = ({ children }) => {
   const [tourConfigs, setTourConfigs] = useState([]);
 
   const showSidebar = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(value => !value);
   };
   useEffect(() => {
     if (width && width <= 768) {
       setIsOpen(false);
-    } else {
-      setIsOpen(true);
     }
   }, [width]);
 
