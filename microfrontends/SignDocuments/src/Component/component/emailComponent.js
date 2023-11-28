@@ -277,8 +277,7 @@ function EmailComponent({
                         <span
                           style={{
                             color: "white",
-                            fontSize: "13px",
-                            marginTop: "2px"
+                            fontSize: "13px"
                           }}
                         >
                           {data}
@@ -290,7 +289,8 @@ function EmailComponent({
                           src={close}
                           width={10}
                           height={10}
-                          style={{ fontWeight: "600", margin: "0 0 10px 2px" }}
+                          style={{ fontWeight: "600", marginLeft: "7px" }}
+                          className="emailChipClose"
                         />
                       </div>
                     );
