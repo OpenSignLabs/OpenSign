@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { SaveFileSize } from "../../constant/saveFileSize";
 import Parse from "parse";
 import sanitizeFileName from "../../primitives/sanitizeFileName";
-
+import DropboxChooser from "./DropboxChoose";
 const FileUpload = (props) => {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
@@ -105,6 +105,56 @@ const FileUpload = (props) => {
       setpercentage(0);
       console.error("Error uploading file:", error);
     }
+  };
+
+  const dropboxSuccess = async (files) => {
+    // console.log("file ", files);
+    setfileload(true);
+    const file = files[0];
+    const url = file.link;
+    const size = file.bytes;
+    const mb = Math.round(file.bytes / Math.pow(1024, 2));
+
+    if (mb > 10) {
+      setTimeout(() => {
+        alert(
+          `The selected file size is too large. Please select a file less than 10 MB`
+        );
+      }, 500);
+      return;
+    } else {
+      const name = sanitizeFileName(file.name);
+
+      const parseFile = new Parse.File(name, { uri: url });
+
+      try {
+        const response = await parseFile.save({
+          progress: (progressValue, loaded, total, { type }) => {
+            if (type === "upload" && progressValue !== null) {
+              const percentCompleted = Math.round((loaded * 100) / total);
+              // console.log("percentCompleted ", percentCompleted);
+              setpercentage(percentCompleted);
+            }
+          }
+        });
+        // console.log("response.url() ", response.url());
+        setFileUpload(response.url());
+        props.onChange(response.url());
+        setfileload(false);
+
+        if (response.url()) {
+          SaveFileSize(size, response.url());
+          return response.url();
+        }
+      } catch (error) {
+        setfileload(false);
+        setpercentage(0);
+        console.error("Error uploading file:", error);
+      }
+    }
+  };
+  const dropboxCancel = async () => {
+    console.log("cancel clicked ");
   };
   let fileView =
     props.formData &&
@@ -258,6 +308,7 @@ const FileUpload = (props) => {
           />
         )}
       </>
+      <DropboxChooser onSuccess={dropboxSuccess} onCancel={dropboxCancel} />
     </React.Fragment>
   );
 };
