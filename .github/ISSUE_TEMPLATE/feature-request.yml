@@ -1,66 +1,62 @@
-name: "Feature request"
-labels: "enhancement"
-title: "[enhancement]: "
-assignees:
-  - andrew-opensignlabs
-description: Create a bug report to help us make OpenSign™ the world's best document e-signature platform
+name: Feature Request
+description: Suggest an idea for this project
+title: "Feature Request: [Short Description]"
+labels: [feature request, needs triage]
 body:
-  - type: textarea
+  - type: markdown
     attributes:
-      label: Issue Description
-      description: Please provide a clear & concise description of the problem. 
-  - type: textarea
-    attributes:
-      label: Expected Behavior
-      description: Describe what you expected to happen.
-  - type: textarea
-    attributes:
-      label: Current Behavior
-      description: Describe what is happening instead.
-  - type: textarea
-    attributes:
-      label: Steps to reproduce
-      description: Please provide step-by-step instructions to reproduce the issue. Include code snippets, URLs, error messages and any other relevant information.
-  - type: textarea
-    attributes:
-      label: Screenshots of the issue(optional)
-      description: Add screenshots to better explain the issue.
+      value: |
+        ## Thanks for taking the time to fill out this feature request!
+
   - type: input
+    id: title
     attributes:
-      label: Operating System [e.g. MacOS Sonoma 14.1, Windows 11]
-  - type: dropdown
-    id: browsers
-    attributes:
-      label: What browsers are you seeing the problem on?
-      multiple: true
-      options:
-        - Chrome
-        - Firefox
-        - Safari
-        - Microsoft Edge
-      default: 0
-  - type: input
-    attributes:
-      label: What version of OpenSign™ are you seeing this issue on? [e.g. 1.0.6]
+      label: Feature Title
+      description: What would you call this feature?
+      placeholder: e.g., Advanced Signature Verification
     validations:
       required: true
-  - type: dropdown
-    id: environment
+
+  - type: textarea
+    id: feature-description
     attributes:
-      label: What environment are you seeing the problem on?
+      label: Feature Description
+      description: |
+        Please provide a detailed description of the feature you're proposing.
+      placeholder: |
+        e.g., I'm proposing an advanced signature verification feature that...
+    validations:
+      required: true  - type: dropdown
+    id: featuretype
+    attributes:
+      label: What type of feature are you requesting?
       multiple: true
       options:
-        - Production (app.opensignlabs.com)
-        - Staging (staging-app.opensignlabs.com)
-        - Hosted (app.yourdomain.com)
-        - Dev (localhost or vercel)
-  - type: checkboxes
+        - UI/UX Improvement
+        - Security / Compliance
+        - Performance / Optimization
+        - 3rd party integration
+        - Other
+  - type: dropdown
+      id: importance
+      attributes:
+        label: Importance
+        description: How important is this feature to you?
+        options:
+          - Critical
+          - High
+          - Medium
+          - Low
+      validations:
+        required: true
+
+  - type: textarea
+    id: additional-context
     attributes:
-      label: Please check the boxes that apply to this issue report.
-      options:
-        - label: I have searched the existing issues & discussions to make sure that this is not a duplicate.
-    validations:
-      required: true
+      label: Additional Context
+      description: Any other context or screenshots about the feature request here.
+      placeholder: Additional details, examples, or screenshots...
+
   - type: checkboxes
     id: terms
     attributes:
