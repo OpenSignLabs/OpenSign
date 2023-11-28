@@ -8,8 +8,6 @@ const FileUpload = (props) => {
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [_fileupload, setFileUpload] = useState("");
   const [fileload, setfileload] = useState(false);
-
-  const [localValue, setLocalValue] = useState("");
   const [Message] = useState(false);
   const [percentage, setpercentage] = useState(0);
 
@@ -25,7 +23,6 @@ const FileUpload = (props) => {
   const onChange = (e) => {
     try {
       let files = e.target.files;
-      setLocalValue(e.target.files);
       if (typeof files[0] !== "undefined") {
         if (props.schema.filetypes && props.schema.filetypes.length > 0) {
           var fileName = files[0].name;
@@ -257,58 +254,53 @@ const FileUpload = (props) => {
       </div>
 
       <>
-        {localValue ? (
-          <input
-            type="file"
-            id="hashfile"
-            style={{
-              border: "1px solid #ccc",
-              color: "gray",
-              backgroundColor: "white",
-              padding: "5px 10px",
-              borderRadius: "4px",
-              fontSize: "13px",
-              width: "100%",
-              fontWeight: "bold"
-            }}
-            accept="application/pdf,application/vnd.ms-excel"
-            onChange={onChange}
-          />
-        ) : props.formData ? (
-          <div
-            style={{
-              border: "1px solid #ccc",
-              color: "gray",
-              backgroundColor: "white",
-              padding: "5px 10px",
-              borderRadius: "4px",
-              fontSize: "13px",
-              width: "100%",
-              fontWeight: "bold"
-            }}
-          >
-            file selected : {props.formData.split("/")[3]}
+        {props.formData ? (
+          <div className="flex gap-2 justify-center items-center">
+            <div className="flex justify-between items-center px-2 py-[6px] w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
+              <div className="break-all">
+                file selected : {props.formData.split("/")[3]}
+              </div>
+              <div
+                onClick={() => {
+                  console.log("clicked");
+                  setFileUpload([]);
+                  props.onChange(undefined);
+                }}
+                className="cursor-pointer px-[10px] text-base font-bold bg-white"
+              >
+                X
+              </div>
+            </div>
+            <DropboxChooser
+              onSuccess={dropboxSuccess}
+              onCancel={dropboxCancel}
+            />
           </div>
         ) : (
-          <input
-            type="file"
-            id="hashfile"
-            style={{
-              border: "1px solid #ccc",
-              color: "gray",
-              backgroundColor: "white",
-              padding: "5px 10px",
-              borderRadius: "4px",
-              fontSize: "13px",
-              width: "100%",
-              fontWeight: "bold"
-            }}
-            accept="application/pdf,application/vnd.ms-excel"
-            onChange={onChange}
-          />
+          <div className="flex gap-2 justify-center items-center">
+            <input
+              type="file"
+              id="hashfile"
+              style={{
+                border: "1px solid #ccc",
+                color: "gray",
+                backgroundColor: "white",
+                padding: "5px 10px",
+                borderRadius: "4px",
+                fontSize: "13px",
+                width: "100%",
+                fontWeight: "bold"
+              }}
+              accept="application/pdf,application/vnd.ms-excel"
+              onChange={onChange}
+            />
+            <DropboxChooser
+              onSuccess={dropboxSuccess}
+              onCancel={dropboxCancel}
+            />
+          </div>
         )}
       </>
-      <DropboxChooser onSuccess={dropboxSuccess} onCancel={dropboxCancel} />
     </React.Fragment>
   );
 };
