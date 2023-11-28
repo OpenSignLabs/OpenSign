@@ -72,7 +72,7 @@ function Api() {
                 editmode ? "py-1" : "py-2"
               }`}
             >
-              <span>Api Id:</span>{" "} 
+              <span>Application Id:</span>{" "} 
                <span>{localStorage.getItem("AppID12")}</span>
             </li>
           </ul>
