@@ -14,7 +14,7 @@ export const formJson = (id) => {
             type: "string",
             title: "Select Document",
             filetypes: [],
-            maxfilesizeKB: "5000",
+            maxfilesizeKB: "10000",
             uploadtype: "regular",
             helpbody: "",
             helplink: ""
