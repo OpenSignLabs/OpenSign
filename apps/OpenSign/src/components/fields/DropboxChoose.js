@@ -50,8 +50,8 @@ export default function DropboxChooser({ children, onSuccess, onCancel }) {
   return (
     <div onClick={handleChoose}>
       {children || (
-        <button className="px-2 py-2 rounded border-[1px] text-blue-400 border-gray-300 w-full">
-          <i className="fa-brands fa-dropbox"></i> Choose from Dropbox
+        <button className="px-2 py-[2px] text-2xl rounded border-[1px] text-blue-400 border-gray-300 w-full">
+          <i className="fa-brands fa-dropbox"></i>
         </button>
       )}
     </div>
