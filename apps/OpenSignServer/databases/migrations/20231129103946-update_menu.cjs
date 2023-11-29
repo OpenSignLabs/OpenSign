@@ -4,9 +4,9 @@
  */
 exports.up = async Parse => {
   const className = 'w_menu';
-  const query = new Parse.Query(className);
-  const updateQuery = await query.get('H9vRfEYKhT');
-  updateQuery.set('menuItems', [
+  const userMenu = new Parse.Query(className);
+  const updateUserMenu = await userMenu.get('H9vRfEYKhT');
+  updateUserMenu.set('menuItems', [
     {
       icon: 'fas fa-tachometer-alt',
       title: 'Dashboard',
@@ -137,9 +137,9 @@ exports.up = async Parse => {
     },
   ]);
 
-  const query2 = new Parse.Query(className);
-  const updateQuery2 = await query2.get('VPh91h0ZHk');
-  updateQuery2.set('menuItems', [
+  const AdminMenu = new Parse.Query(className);
+  const updateAdminMenu = await AdminMenu.get('VPh91h0ZHk');
+  updateAdminMenu.set('menuItems', [
     {
       icon: 'fas fa-tachometer-alt',
       title: 'Dashboard',
@@ -280,7 +280,7 @@ exports.up = async Parse => {
   // TODO: Set the schema here
   // Example:
   // schema.addString('name').addNumber('cash');
-  const batch = [updateQuery, updateQuery2];
+  const batch = [updateUserMenu, updateAdminMenu];
   return Parse.Object.saveAll(batch, { useMasterKey: true });
 };
 
@@ -291,9 +291,9 @@ exports.up = async Parse => {
 exports.down = async Parse => {
   // TODO: set className here
   const className = 'w_menu';
-  const query = new Parse.Query(className);
-  const updateQuery = await query.get('H9vRfEYKhT');
-  updateQuery.set('menuItems', [
+  const userMenu = new Parse.Query(className);
+  const revertUserMenu = await userMenu.get('H9vRfEYKhT');
+  revertUserMenu.set('menuItems', [
     {
       icon: 'fas fa-tachometer-alt',
       title: 'Dashboard',
@@ -416,9 +416,9 @@ exports.down = async Parse => {
     },
   ]);
 
-  const query2 = new Parse.Query(className);
-  const updateQuery2 = await query2.get('VPh91h0ZHk');
-  updateQuery2.set('menuItems', [
+  const adminMenu = new Parse.Query(className);
+  const revertAdminMenu = await adminMenu.get('VPh91h0ZHk');
+  revertAdminMenu.set('menuItems', [
     {
       icon: 'fas fa-tachometer-alt',
       title: 'Dashboard',
@@ -551,6 +551,6 @@ exports.down = async Parse => {
   // TODO: Set the schema here
   // Example:
   // schema.addString('name').addNumber('cash');
-  const batch = [updateQuery, updateQuery2];
+  const batch = [revertUserMenu, revertAdminMenu];
   return Parse.Object.saveAll(batch, { useMasterKey: true });
 };
