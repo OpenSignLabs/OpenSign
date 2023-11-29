@@ -1,0 +1,73 @@
+name: "Bug Report"
+labels: ["bug","up-for-grabs"]
+title: "[Bug]: "
+assignees:
+  - andrew-opensignlabs
+description: Create a bug report to help us make OpenSign™ the world's best document e-signature platform
+body:
+  - type: textarea
+    attributes:
+      label: Issue Description
+      description: Please provide a clear & concise description of the problem. 
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: Describe what you expected to happen.
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: Describe what is happening instead.
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Please provide step-by-step instructions to reproduce the issue. Include code snippets, URLs, error messages and any other relevant information.
+  - type: textarea
+    attributes:
+      label: Screenshots of the issue(optional)
+      description: Add screenshots to better explain the issue.
+  - type: input
+    attributes:
+      label: Operating System [e.g. MacOS Sonoma 14.1, Windows 11]
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+      multiple: true
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Microsoft Edge
+      default: 0
+  - type: input
+    attributes:
+      label: What version of OpenSign™ are you seeing this issue on? [e.g. 1.0.6]
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: What environment are you seeing the problem on?
+      multiple: true
+      options:
+        - Production (app.opensignlabs.com)
+        - Staging (staging-app.opensignlabs.com)
+        - Hosted (app.yourdomain.com)
+        - Dev (localhost or vercel)
+  - type: checkboxes
+    attributes:
+      label: Please check the boxes that apply to this issue report.
+      options:
+        - label: I have searched the existing issues & discussions to make sure that this is not a duplicate.
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://www.opensignlabs.com)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+        - label: I have searched the existing issues & discussions to make sure that this is not a duplicate.
+          required: true
