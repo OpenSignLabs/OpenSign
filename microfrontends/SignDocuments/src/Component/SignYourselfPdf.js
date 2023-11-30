@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { PDFDocument, rgb } from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
 import "../css/./signature.css";
 import sign from "../assests/sign3.png";
 import stamp from "../assests/stamp2.png";
@@ -18,7 +18,9 @@ import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import {
   convertPNGtoJPEG,
   contractDocument,
-  getBase64FromIMG
+  getBase64FromIMG,
+  embedDocId,
+  multiSignEmbed
 } from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -30,7 +32,7 @@ import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
 import { modalAlign } from "../utils/Utils";
-import { $ } from "select-dom";
+
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const [pdfDetails, setPdfDetails] = useState([]);
@@ -422,24 +424,7 @@ function SignYourSelf() {
       //checking if signature is only one then send image url in jpeg formate to server
       if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
         //embed document's object id to all pages in pdf document
-        for (let i = 0; i < allPages; i++) {
-          const font = await pdfDoc.embedFont("Helvetica");
-
-          const fontSize = 10;
-          const textContent =
-            documentId && `OpenSign™ DocumentId: ${documentId}`;
-
-          const pages = pdfDoc.getPages();
-          const page = pages[i];
-
-          page.drawText(textContent, {
-            x: 10,
-            y: page.getHeight() - 10,
-            size: fontSize,
-            font,
-            color: rgb(0.5, 0.5, 0.5)
-          });
-        }
+        await embedDocId(pdfDoc, documentId, allPages);
         const pdfBase64 = await pdfDoc.saveAsBase64({
           useObjectStreams: false
         });
@@ -475,85 +460,15 @@ function SignYourSelf() {
       }
       //else if signature is more than one then embed all sign with the use of pdf-lib
       else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-        for (let i = 0; i < allPages; i++) {
-          const font = await pdfDoc.embedFont("Helvetica");
-
-          const fontSize = 10;
-          const textContent =
-            documentId && `OpenSign™ DocumentId: ${documentId} `;
-
-          const pages = pdfDoc.getPages();
-          const page = pages[i];
-
-          page.drawText(textContent, {
-            x: 10,
-            y: page.getHeight() - 10,
-            size: fontSize,
-            font,
-            color: rgb(0.5, 0.5, 0.5)
-          });
-        }
-        for (let i = 0; i < pngUrl.length; i++) {
-          const pageNo = pngUrl[i].pageNumber;
-
-          const imgUrlList = pngUrl[i].pos;
-          const pages = pdfDoc.getPages();
-          const page = pages[pageNo - 1];
-
-          const images = await Promise.all(
-            imgUrlList.map(async (url) => {
-              let signUrl = url.SignUrl;
-
-              if (url.ImageType === "image/png") {
-                //function for convert signature png base64 url to jpeg base64
-                const newUrl = await convertPNGtoJPEG(signUrl);
-                signUrl = newUrl;
-              }
-              const checkUrl = urlValidator(signUrl);
-              if (checkUrl) {
-                signUrl = signUrl + "?get";
-              }
-              const res = await fetch(signUrl);
-
-              return res.arrayBuffer();
-            })
-          );
-          images.forEach(async (imgData, id) => {
-            let img = await pdfDoc.embedJpg(imgData);
-            const imgHeight = imgUrlList[id].Height
-              ? imgUrlList[id].Height
-              : 60;
-            const imgWidth = imgUrlList[id].Width ? imgUrlList[id].Width : 150;
-            const isMobile = window.innerWidth < 767;
-            const newWidth = window.innerWidth;
-            const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-
-            const posY = () => {
-              if (isMobile) {
-                if (id === 0) {
-                  return (
-                    page.getHeight() -
-                    imgUrlList[id].yPosition * scale -
-                    imgHeight
-                  );
-                } else if (id > 0) {
-                  return page.getHeight() - imgUrlList[id].yPosition * scale;
-                }
-              } else {
-                return page.getHeight() - imgUrlList[id].yPosition - imgHeight;
-              }
-            };
-            page.drawImage(img, {
-              x: isMobile
-                ? imgUrlList[id].xPosition * scale + imgWidth / 2
-                : imgUrlList[id].xPosition,
-              y: posY(),
-              width: imgWidth,
-              height: imgHeight
-            });
-          });
-        }
-        const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+        //embed document's object id to all pages in pdf document
+        await embedDocId(pdfDoc, documentId, allPages);
+        //embed multi signature in pdf
+        const pdfBytes = await multiSignEmbed(
+          pngUrl,
+          pdfDoc,
+          pdfOriginalWidth,
+          true
+        );
         signPdfFun(pdfBytes, documentId);
       }
       setIsSignPad(false);
@@ -574,16 +489,16 @@ function SignYourSelf() {
     let singleSign;
 
     const isMobile = window.innerWidth < 767;
-    const newWidth = window.innerWidth;
+    const newWidth = window.innerWidth - 32;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const imgWidth = xyPosData ? xyPosData.Width : 150;
     if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
       const height = xyPosData.Height ? xyPosData.Height : 60;
       const bottomY = xyPosData.isDrag
-        ? xyPosData.yBottom * scale - height
+        ? xyPosData.yBottom * scale - height * scale
         : xyPosData.firstYPos
-          ? xyPosData.yBottom * scale - height + xyPosData.firstYPos
-          : xyPosData.yBottom * scale - height;
+          ? xyPosData.yBottom * scale - height * scale + xyPosData.firstYPos
+          : xyPosData.yBottom * scale - height * scale;
 
       singleSign = {
         pdfFile: pdfBase64Url,
@@ -591,11 +506,11 @@ function SignYourSelf() {
         sign: {
           Base64: base64Url,
           Left: isMobile
-            ? xyPosData.xPosition * scale + imgWidth / 2
+            ? xyPosData.xPosition * scale + 43
             : xyPosData.xPosition,
           Bottom: bottomY,
-          Width: xyPosData.Width ? xyPosData.Width : 150,
-          Height: height,
+          Width: xyPosData.Width ? xyPosData.Width * scale : 150 * scale,
+          Height: height * scale,
           Page: pageNo
         }
       };
