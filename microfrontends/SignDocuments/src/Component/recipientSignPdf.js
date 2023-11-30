@@ -935,7 +935,7 @@ function EmbedPdfImage() {
             {/* pdf header which contain finish back button */}
             <Header
               recipient={true}
-              pdfDetails={completePdfData}
+              pdfDetails={signedPdfData}
               isAlreadySign={isAlreadySign}
               pageNumber={pageNumber}
               allPages={allPages}
