@@ -176,9 +176,6 @@ function SignYourSelf() {
     if (divRef.current) {
       const pdfWidth = pdfNewWidthFun(divRef);
       setPdfNewWidth(pdfWidth);
-      if (documentId) {
-        getDocumentDetails();
-      }
     }
   }, [divRef.current]);
   //function for get document details for perticular signer with signer'object id
@@ -190,18 +187,20 @@ function SignYourSelf() {
       setPdfDetails(documentData);
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
-      if (isCompleted && showComplete) {
+      if (isCompleted) {
         const docStatus = {
           isCompleted: isCompleted
         };
 
         setDocumentStatus(docStatus);
+        setPdfUrl(documentData[0].SignedUrl);
         const alreadySign = {
           status: true,
           mssg: "You have successfully signed the document!"
         };
-        setShowAlreadySignDoc(alreadySign);
-        setPdfUrl(documentData[0].SignedUrl);
+        if (showComplete) {
+          setShowAlreadySignDoc(alreadySign);
+        }
       }
     } else if (
       documentData === "Error: Something went wrong!" ||
