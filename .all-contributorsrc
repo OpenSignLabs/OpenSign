@@ -178,6 +178,24 @@
       "contributions": [
         "a11y"
       ]
+    },
+    {
+      "login": "Govinda04",
+      "name": "Govinda Kocharekar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50038172?v=4",
+      "profile": "https://github.com/Govinda04",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "crediblebilal",
+      "name": "Bilal Ahmad Bhat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55330484?v=4",
+      "profile": "https://bilal.cc",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

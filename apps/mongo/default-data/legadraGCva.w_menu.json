@@ -1,4 +1,5 @@
-[{
+[
+  {
     "_id": "H9vRfEYKhT",
     "_created_at": {
       "$date": "2023-09-04T14:04:00.669Z"
@@ -105,6 +106,14 @@
             "pageType": "report",
             "description": "",
             "objectId": "zNqBHXHsYH"
+          },
+          {
+            "icon": "fa-solid fa-address-book",
+            "title": "Contactbook",
+            "target": "_self",
+            "pageType": "report",
+            "description": "",
+            "objectId": "5KhaPr482K"
           }
         ]
       },
@@ -237,6 +246,14 @@
             "pageType": "report",
             "description": "",
             "objectId": "zNqBHXHsYH"
+          },
+          {
+            "icon": "fa-solid fa-address-book",
+            "title": "Contactbook",
+            "target": "_self",
+            "pageType": "report",
+            "description": "",
+            "objectId": "5KhaPr482K"
           }
         ]
       },
@@ -269,4 +286,5 @@
     ],
     "menuTitle": "Admin Menu",
     "menuType": "Side Menu"
-  }]
+  }
+]
