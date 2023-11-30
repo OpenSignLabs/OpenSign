@@ -21,6 +21,9 @@ const PgSignUp = (props) => {
   });
   const [validationMessage, setValidationMessage] = useState("");
   const [isLoader, setIsLoader] = useState(true);
+  const [lengthValid, setLengthValid] = useState(false);
+  const [caseDigitValid, setCaseDigitValid] = useState(false);
+  const [specialCharValid, setSpecialCharValid] = useState(false);
 
   // below useEffect is used to fetch App data and save to redux state
   useEffect(() => {
@@ -104,21 +107,23 @@ const PgSignUp = (props) => {
   // "handleSubmit" is used to save user details signup him/her who come from plan-pricing page
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsLoader(true);
-    if (formData.password === formData.confirmPassword) {
-      const url = window.location.href;
-      let paramString = url.split("?")[1];
-      let queryString = new URLSearchParams(paramString);
-      // console.log("url ", queryString);
+    if (lengthValid && caseDigitValid && specialCharValid) {
+      setIsLoader(true);
+      if (formData.password === formData.confirmPassword) {
+        const url = window.location.href;
+        let paramString = url.split("?")[1];
+        let queryString = new URLSearchParams(paramString);
+        // console.log("url ", queryString);
 
-      let obj = { ...formData };
-      for (let pair of queryString.entries()) {
-        // console.log("Key is: " + pair[0]);
-        // console.log("Value is: " + pair[1]);
-        obj = { ...obj, [pair[0]]: pair[1] };
+        let obj = { ...formData };
+        for (let pair of queryString.entries()) {
+          // console.log("Key is: " + pair[0]);
+          // console.log("Value is: " + pair[1]);
+          obj = { ...obj, [pair[0]]: pair[1] };
+        }
+        saveUser(obj);
+        // console.log("obj ", obj);}
       }
-      saveUser(obj);
-      // console.log("obj ", obj);}
     }
   };
   const saveUser = async (obj) => {
@@ -194,6 +199,15 @@ const PgSignUp = (props) => {
     const newPassword = e.target.value;
     setFormData({ ...formData, [e.target.name]: e.target.value });
     validatePasswords(newPassword, formData.confirmPassword);
+
+    // Check conditions separately
+    setLengthValid(newPassword.length >= 8);
+    setCaseDigitValid(
+      /[a-z]/.test(newPassword) &&
+        /[A-Z]/.test(newPassword) &&
+        /\d/.test(newPassword)
+    );
+    setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>]/.test(newPassword));
   };
   const handleConFirmPassowordChange = (e) => {
     const newConfirmPassword = e.target.value;
@@ -485,6 +499,33 @@ const PgSignUp = (props) => {
             >
               {validationMessage}
             </div>
+            {formData.password.length > 0 && (
+              <div className="mt-1 text-[11px]">
+                <p
+                  className={`${
+                    lengthValid ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {lengthValid ? "✓" : "✗"} Password should be 8 characters long
+                </p>
+                <p
+                  className={`${
+                    caseDigitValid ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {caseDigitValid ? "✓" : "✗"} Password should contain uppercase
+                  letter, lowercase letter, digit
+                </p>
+                <p
+                  className={`${
+                    specialCharValid ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {specialCharValid ? "✓" : "✗"} Password should contain special
+                  character
+                </p>
+              </div>
+            )}
             <div className="clearfix">
               <button type="submit" className="signupbtn">
                 Submit
