@@ -25,92 +25,138 @@ const Signup = (props) => {
     toastDescription: ""
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [lengthValid, setLengthValid] = useState(false);
+  const [caseDigitValid, setCaseDigitValid] = useState(false);
+  const [specialCharValid, setSpecialCharValid] = useState(false);
+
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const image = props.appInfo.applogo;
 
+  const clearStorage = async () => {
+    if (Parse.User.current()) {
+      await Parse.User.logOut();
+    }
+    let baseUrl = localStorage.getItem("BaseUrl12");
+    let appid = localStorage.getItem("AppID12");
+    let applogo = localStorage.getItem("appLogo");
+    let domain = localStorage.getItem("domain");
+    let appversion = localStorage.getItem("appVersion");
+    let appTitle = localStorage.getItem("appTitle");
+    let defaultmenuid = localStorage.getItem("defaultmenuid");
+    let PageLanding = localStorage.getItem("PageLanding");
+    let _appName = localStorage.getItem("_appName");
+    let _app_objectId = localStorage.getItem("_app_objectId");
+    let appName = localStorage.getItem("appName");
+    let userSettings = localStorage.getItem("userSettings");
+
+    localStorage.clear();
+
+    localStorage.setItem("BaseUrl12", baseUrl);
+    localStorage.setItem("AppID12", appid);
+    localStorage.setItem("appLogo", applogo);
+    localStorage.setItem("domain", domain);
+    localStorage.setItem("appversion", appversion);
+    localStorage.setItem("appTitle", appTitle);
+    localStorage.setItem("defaultmenuid", defaultmenuid);
+    localStorage.setItem("PageLanding", PageLanding);
+    localStorage.setItem("_appName", _appName);
+    localStorage.setItem("_app_objectId", _app_objectId);
+    localStorage.setItem("appName", appName);
+    localStorage.setItem("userSettings", userSettings);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
+  };
   const handleSubmit = (event) => {
-    setState({ loading: true });
-    const userDetails = {
-      name: name,
-      email: email,
-      phone: phone,
-      company: company,
-      jobTitle: jobTitle
-    };
-    localStorage.setItem("userDetails", JSON.stringify(userDetails));
-    try {
-      event.preventDefault();
-      Parse.serverURL = parseBaseUrl;
-      Parse.initialize(parseAppId);
-      event.preventDefault();
-      var user = new Parse.User();
-      user.set("name", name);
-      user.set("email", email);
-      user.set("password", password);
-      user.set("phone", phone);
-      user.set("username", email);
-      let res = user.save();
-      res
-        .then(async (r) => {
-          if (r) {
-            let roleData = props.appInfo.settings;
-            if (roleData && roleData.length > 0) {
-              const params = {
-                userDetails: {
-                  jobTitle: jobTitle,
-                  company: company,
-                  name: name,
-                  email: email,
-                  phone: phone,
-                  role: props.appInfo.defaultRole
+    event.preventDefault();
+    if (lengthValid && caseDigitValid && specialCharValid) {
+      clearStorage();
+      setState({ loading: true });
+      const userDetails = {
+        name: name,
+        email: email,
+        phone: phone,
+        company: company,
+        jobTitle: jobTitle
+      };
+      localStorage.setItem("userDetails", JSON.stringify(userDetails));
+      try {
+        Parse.serverURL = parseBaseUrl;
+        Parse.initialize(parseAppId);
+        event.preventDefault();
+        var user = new Parse.User();
+        user.set("name", name);
+        user.set("email", email);
+        user.set("password", password);
+        user.set("phone", phone);
+        user.set("username", email);
+        let res = user.save();
+        res
+          .then(async (r) => {
+            if (r) {
+              let roleData = props.appInfo.settings;
+              if (roleData && roleData.length > 0) {
+                const params = {
+                  userDetails: {
+                    jobTitle: jobTitle,
+                    company: company,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    role: props.appInfo.defaultRole
+                  }
+                };
+                try {
+                  const usersignup = await Parse.Cloud.run(
+                    "usersignup",
+                    params
+                  );
+                  if (usersignup) {
+                    handleNavigation(r.getSessionToken());
+                  }
+                } catch (err) {
+                  alert(err.message);
+                  setState({ loading: false });
                 }
-              };
-              try {
-                const usersignup = await Parse.Cloud.run("usersignup", params);
-                if (usersignup) {
-                  handleNavigation(r.getSessionToken());
+              }
+            }
+          })
+          .catch(async (err) => {
+            if (err.code === 202) {
+              const params = { email: email };
+              const res = await Parse.Cloud.run("getUserDetails", params);
+              // console.log("Res ", res);
+              if (res) {
+                alert("User already exists with this username!");
+                setState({ loading: false });
+              } else {
+                let baseUrl = localStorage.getItem("BaseUrl12");
+                let parseAppId = localStorage.getItem("AppID12");
+                // console.log("state.email ", email);
+                try {
+                  Parse.serverURL = baseUrl;
+                  Parse.initialize(parseAppId);
+                  await Parse.User.requestPasswordReset(email).then(
+                    async function (res1) {
+                      if (res1.data === undefined) {
+                        alert(
+                          "Verification mail has been sent to your E-mail!"
+                        );
+                      }
+                    }
+                  );
+                } catch (err) {
+                  console.log(err);
                 }
-              } catch (err) {
-                alert(err.message);
                 setState({ loading: false });
               }
-            }
-          }
-        })
-        .catch(async (err) => {
-          if (err.code === 202) {
-            const params = { email: email };
-            const res = await Parse.Cloud.run("getUserDetails", params);
-            // console.log("Res ", res);
-            if (res) {
-              alert("User already exists with this username!");
-              setState({ loading: false });
             } else {
-              let baseUrl = localStorage.getItem("BaseUrl12");
-              let parseAppId = localStorage.getItem("AppID12");
-              // console.log("state.email ", email);
-              try {
-                Parse.serverURL = baseUrl;
-                Parse.initialize(parseAppId);
-                await Parse.User.requestPasswordReset(email).then(
-                  async function (res1) {
-                    if (res1.data === undefined) {
-                      alert("Verification mail has been sent to your E-mail!");
-                    }
-                  }
-                );
-              } catch (err) {
-                console.log(err);
-              }
+              alert(err.message);
               setState({ loading: false });
             }
-          } else {
-            alert(err.message);
-            setState({ loading: false });
-          }
-        });
-    } catch (error) {
-      console.log("err ", error);
+          });
+      } catch (error) {
+        console.log("err ", error);
+      }
     }
   };
 
@@ -396,6 +442,19 @@ const Signup = (props) => {
     // eslint-disable-next-line
   }, []);
 
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    // Check conditions separately
+    setLengthValid(newPassword.length >= 8);
+    setCaseDigitValid(
+      /[a-z]/.test(newPassword) &&
+        /[A-Z]/.test(newPassword) &&
+        /\d/.test(newPassword)
+    );
+    setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>]/.test(newPassword));
+  };
   return (
     <div className="bg-white">
       {state.loading && (
@@ -508,7 +567,7 @@ const Signup = (props) => {
                           className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                           name="password"
                           value={password}
-                          onChange={(e) => setPassword(e.target.value)}
+                          onChange={(e) => handlePasswordChange(e)}
                           required
                         />
                         <span
@@ -524,6 +583,38 @@ const Signup = (props) => {
                           )}
                         </span>
                       </div>
+                      {password.length > 0 && (
+                        <div className="mt-1 text-[11px]">
+                          <p
+                            className={`${
+                              lengthValid ? "text-green-600" : "text-red-600"
+                            }`}
+                          >
+                            {lengthValid ? "✓" : "✗"} Password should be 8
+                            characters long
+                          </p>
+                          <p
+                            className={`${
+                              caseDigitValid ? "text-green-600" : "text-red-600"
+                            }`}
+                          >
+                            {caseDigitValid ? "✓" : "✗"} Password should contain
+                            uppercase letter, lowercase letter, digit
+                          </p>
+                          <p
+                            className={`${
+                              specialCharValid
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {specialCharValid ? "✓" : "✗"} Password should
+                            contain special character
+                          </p>
+                          {/* </>
+                          )} */}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
