@@ -80,6 +80,10 @@
   padding: 5px 10px;
 }
 
+.emailChipClose:hover {
+  cursor: pointer;
+}
+
 .addEmailInput {
   padding: 10px;
   border-radius: 4px;
@@ -639,6 +643,7 @@ option {
 
   .stickyfooter {
     position: fixed;
+    z-index: 32 !important;
     bottom: 0px;
     right: 0rem;
   }

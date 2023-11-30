@@ -1,5 +1,5 @@
 import reportJson from './reportsJson.js';
-import axios from 'axios'
+import axios from 'axios';
 
 export default async function getReport(request) {
   const reportId = request.params.reportId;
@@ -19,6 +19,7 @@ export default async function getReport(request) {
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
       const json = reportId && reportJson(reportId, userId);
+      const clsName = reportId === '5KhaPr482K' ? 'contracts_Contactbook' : 'contracts_Document';
       if (json) {
         const { params, keys } = json;
         const orderBy = '-updatedAt';
@@ -29,7 +30,7 @@ export default async function getReport(request) {
           'X-Parse-Application-Id': appId,
           'X-Parse-Master-Key': process.env.MASTER_KEY,
         };
-        const url = `${serverUrl}/classes/contracts_Document?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr`;
+        const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr`;
         const res = await axios.get(url, { headers: headers });
         if (res.data && res.data.results) {
           return res.data.results;
