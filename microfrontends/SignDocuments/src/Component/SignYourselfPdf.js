@@ -178,9 +178,6 @@ function SignYourSelf() {
     if (divRef.current) {
       const pdfWidth = pdfNewWidthFun(divRef);
       setPdfNewWidth(pdfWidth);
-      if (documentId) {
-        getDocumentDetails();
-      }
     }
   }, [divRef.current]);
 
