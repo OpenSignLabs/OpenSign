@@ -14,7 +14,7 @@ import DefaultSignature from "./component/defaultSignature";
 import {
   getBase64FromUrl,
   getBase64FromIMG,
-  contactBookName,
+  pdfNewWidthFun,
   convertPNGtoJPEG,
   contractUsers,
   contactBook,
@@ -94,15 +94,12 @@ function EmbedPdfImage() {
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
   useEffect(() => {
-    const clientWidth = window.innerWidth;
-    const pdfWidth = clientWidth - 160 - 220 - 30;
-    //160 is width of left side, 200 is width of right side component and 50 is space of middle compoent
-    //pdf from left and right component
-    setPdfNewWidth(pdfWidth);
     getDocumentDetails();
   }, []);
   useEffect(() => {
     if (divRef.current) {
+      const pdfWidth = pdfNewWidthFun(divRef);
+      setPdfNewWidth(pdfWidth);
       setContainerWH({
         width: divRef.current.offsetWidth,
         height: divRef.current.offsetHeight

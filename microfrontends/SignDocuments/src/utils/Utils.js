@@ -479,3 +479,10 @@ export const embedDocId = async (pdfDoc, documentId, allPages) => {
     });
   }
 };
+
+export const pdfNewWidthFun = (divRef) => {
+  const clientWidth = divRef.current.offsetWidth;
+  const pdfWidth = clientWidth - 160 - 200;
+  //160 is width of left side, 200 is width of right side component
+  return pdfWidth;
+};
