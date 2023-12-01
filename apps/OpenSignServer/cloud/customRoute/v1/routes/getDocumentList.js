@@ -3,7 +3,7 @@ import reportJson from '../../../parsefunction/reportsJson.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-export default async function getDocuments(request, response) {
+export default async function getDocumentList(request, response) {
   const reqToken = request.headers['x-api-token'];
   const appId = process.env.APP_ID;
   const serverUrl = process.env.SERVER_URL;
