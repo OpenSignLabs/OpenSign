@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { PDFDocument, rgb } from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
 import "../css/./signature.css";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
@@ -14,12 +14,14 @@ import DefaultSignature from "./component/defaultSignature";
 import {
   getBase64FromUrl,
   getBase64FromIMG,
-  contactBookName,
+  pdfNewWidthFun,
   convertPNGtoJPEG,
   contractUsers,
   contactBook,
   contractDocument,
-  urlValidator
+  urlValidator,
+  multiSignEmbed,
+  embedDocId
 } from "../utils/Utils";
 import Tour from "reactour";
 import Signedby from "./component/signedby";
@@ -92,15 +94,12 @@ function EmbedPdfImage() {
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
   useEffect(() => {
-    const clientWidth = window.innerWidth;
-    const pdfWidth = clientWidth - 160 - 220 - 30;
-    //160 is width of left side, 200 is width of right side component and 50 is space of middle compoent
-    //pdf from left and right component
-    setPdfNewWidth(pdfWidth);
     getDocumentDetails();
   }, []);
   useEffect(() => {
     if (divRef.current) {
+      const pdfWidth = pdfNewWidthFun(divRef);
+      setPdfNewWidth(pdfWidth);
       setContainerWH({
         width: divRef.current.offsetWidth,
         height: divRef.current.offsetHeight
@@ -424,23 +423,8 @@ function EmbedPdfImage() {
         if (isDocId) {
           pdfBase64 = await getBase64FromUrl(url);
         } else {
-          for (let i = 0; i < allPages; i++) {
-            const font = await pdfDoc.embedFont("Helvetica");
-
-            const fontSize = 10;
-            const textContent = docId && `OpenSign™ DocumentId: ${docId} `;
-
-            const pages = pdfDoc.getPages();
-            const page = pages[i];
-
-            page.drawText(textContent, {
-              x: 10,
-              y: page.getHeight() - 10,
-              size: fontSize,
-              font,
-              color: rgb(0.5, 0.5, 0.5)
-            });
-          }
+          //embed document's object id to all pages in pdf document
+          await embedDocId(pdfDoc, docId, allPages);
           pdfBase64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
         }
         for (let i = 0; i < xyPostion.length; i++) {
@@ -475,115 +459,18 @@ function EmbedPdfImage() {
       }
       //else if signature is more than one then embed all sign with the use of pdf-lib
       else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-        for (let i = 0; i < allPages; i++) {
-          const font = await pdfDoc.embedFont("Helvetica");
-
-          const fontSize = 10;
-          const textContent = docId && `OpenSign™ DocumentId: ${docId} `;
-
-          const pages = pdfDoc.getPages();
-          const page = pages[i];
-
-          page.drawText(textContent, {
-            x: 10,
-            y: page.getHeight() - 10,
-            size: fontSize,
-            font,
-            color: rgb(0.5, 0.5, 0.5)
-          });
-        }
-        for (let i = 0; i < pngUrl.length; i++) {
-          const pageNo = pngUrl[i].pageNumber;
-
-          const imgUrlList = pngUrl[i].pos;
-          const pages = pdfDoc.getPages();
-          const page = pages[pageNo - 1];
-
-          const images = await Promise.all(
-            imgUrlList.map(async (url) => {
-              let signUrl = url.SignUrl;
-              if (url.ImageType === "image/png") {
-                //function for convert signature png base64 url to jpeg base64
-                const newUrl = await convertPNGtoJPEG(signUrl);
-                signUrl = newUrl;
-              }
-              const checkUrl = urlValidator(signUrl);
-              if (checkUrl) {
-                signUrl = signUrl + "?get";
-              }
-              const res = await fetch(signUrl);
-
-              return res.arrayBuffer();
-            })
-          );
-          images.forEach(async (imgData, id) => {
-            let img = await pdfDoc.embedJpg(imgData);
-
-            const imgHeight = imgUrlList[id].Height
-              ? imgUrlList[id].Height
-              : 60;
-            const imgWidth = imgUrlList[id].Width ? imgUrlList[id].Width : 150;
-            const isMobile = window.innerWidth < 767;
-            const newWidth = window.innerWidth;
-            const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-            const xPos = (pos) => {
-              //checking both condition mobile and desktop view
-              if (isMobile) {
-                //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-                if (pos.isMobile) {
-                  const x = pos.xPosition * (pos.scale / scale);
-                  return x * scale + 50;
-                } else {
-                  const x = pos.xPosition / scale;
-                  return x * scale;
-                }
-              } else {
-                //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-                if (pos.isMobile) {
-                  const x = pos.xPosition * pos.scale + 50;
-                  return x;
-                } else {
-                  return pos.xPosition;
-                }
-              }
-            };
-            const yPos = (pos) => {
-              //checking both condition mobile and desktop view
-
-              if (isMobile) {
-                //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-                if (pos.isMobile) {
-                  const y = pos.yPosition * (pos.scale / scale);
-                  return page.getHeight() - y * scale - imgHeight;
-                } else {
-                  const y = pos.yPosition / scale;
-                  return page.getHeight() - y * scale - imgHeight;
-                }
-              } else {
-                //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-                if (pos.isMobile) {
-                  const y = pos.yPosition * pos.scale;
-                  return page.getHeight() - y - imgHeight;
-                } else {
-                  return page.getHeight() - pos.yPosition - imgHeight;
-                }
-              }
-            };
-
-            page.drawImage(img, {
-              x: xPos(imgUrlList[id]),
-              y: yPos(imgUrlList[id]),
-              width: imgWidth,
-              height: imgHeight
-            });
-          });
-        }
-        const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+        //embed document's object id to all pages in pdf document
+        await embedDocId(pdfDoc, docId, allPages);
+        //embed multi signature in pdf
+        const pdfBytes = await multiSignEmbed(
+          pngUrl,
+          pdfDoc,
+          pdfOriginalWidth,
+          false
+        );
         signPdfFun(pdfBytes, docId);
       }
-
       setIsSignPad(false);
-
       setXyPostion([]);
     }
   }
@@ -1048,7 +935,7 @@ function EmbedPdfImage() {
             {/* pdf header which contain finish back button */}
             <Header
               recipient={true}
-              pdfDetails={completePdfData}
+              pdfDetails={signedPdfData}
               isAlreadySign={isAlreadySign}
               pageNumber={pageNumber}
               allPages={allPages}

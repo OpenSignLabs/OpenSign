@@ -1,0 +1,70 @@
+name: Feature Request
+description: Suggest an idea for OpenSign™
+title: "Feature Request: [Short Description]"
+labels: [feature request, needs triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thanks for taking the time to fill out this feature request!
+
+  - type: input
+    id: title
+    attributes:
+      label: Feature Title
+      description: What would you call this feature?
+      placeholder: e.g., Advanced Signature Verification
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: |
+        Please provide a detailed description of the feature you're proposing.
+      placeholder: |
+        e.g., I'm proposing an advanced signature verification feature that...
+    validations:
+      required: true  
+  - type: dropdown
+    id: featuretype
+    attributes:
+      label: What type of feature are you requesting?
+      multiple: true
+      options:
+        - UI/UX Improvement
+        - Security / Compliance
+        - Performance / Optimization
+        - 3rd party integration
+        - Other
+  - type: dropdown
+    id: importance
+    attributes:
+      label: Importance
+      description: How important is this feature to you?
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context or screenshots about the feature request here.
+      placeholder: Additional details, examples, or screenshots...
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://www.opensignlabs.com)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+        - label: I have searched the existing issues & discussions to make sure that this is not a duplicate.
+          required: true
