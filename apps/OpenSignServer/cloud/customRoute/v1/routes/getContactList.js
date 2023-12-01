@@ -1,4 +1,4 @@
-export default async function getContacts(request, response) {
+export default async function getContactList(request, response) {
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
