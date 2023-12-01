@@ -9,6 +9,14 @@
   width: 460px;
 }
 
+.borderResize {
+  position: absolute;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+
+}
+
 .signatureBtn {
   border: 1.5px solid #47a3ad;
   margin-bottom: 10px;
@@ -112,6 +120,48 @@
 
 .signatureInput:focus {
   outline: none;
+}
+
+.resizable-box-overlay {
+  position: absolute;
+  border: 2px solid #ddd;
+  overflow: hidden;
+  background-color: white;
+}
+
+.box-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.close-button {
+  align-self: flex-end;
+  margin: 8px;
+  cursor: pointer;
+}
+
+.placeholdCloseBtn {
+  position: absolute;
+  right: -9px;
+  top: -15px;
+  border-radius: 100%;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 0px 5px;
+}
+.placeholderBlock{
+  padding: 0px;
+  z-index: 1;
+  position: absolute;
+  border-style: dashed;
+  width: 150px;
+  height: 60px;
+  background: #daebe0;
+  text-align: center;
+  justify-content: center;
+  border-width: 0.2px
 }
 
 .finishBtn {
@@ -784,7 +834,10 @@ option {
 
 .signature-backdrop {
   position: fixed;
-  top: 0; bottom: 0; left: 0; right: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: #000;
 }
 

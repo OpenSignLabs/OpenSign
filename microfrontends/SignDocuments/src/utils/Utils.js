@@ -486,3 +486,154 @@ export const pdfNewWidthFun = (divRef) => {
   //160 is width of left side, 200 is width of right side component
   return pdfWidth;
 };
+
+//function for resize image and update width and height for mulitisigners
+export const handleImageResize = (
+  ref,
+  key,
+  signerId,
+  position,
+  signerPos,
+  pageNumber,
+  setSignerPos
+) => {
+  const filterSignerPos = signerPos.filter(
+    (data) => data.signerObjId === signerId
+  );
+  if (filterSignerPos.length > 0) {
+    const getPlaceHolder = filterSignerPos[0].placeHolder;
+    const getPageNumer = getPlaceHolder.filter(
+      (data) => data.pageNumber === pageNumber
+    );
+    if (getPageNumer.length > 0) {
+      const getXYdata = getPageNumer[0].pos.filter(
+        (data, ind) => data.key === key && data.Width && data.Height
+      );
+      if (getXYdata.length > 0) {
+        const getXYdata = getPageNumer[0].pos;
+        const getPosData = getXYdata;
+        const addSignPos = getPosData.map((url, ind) => {
+          if (url.key === key) {
+            return {
+              ...url,
+              Width: ref.offsetWidth,
+              Height: ref.offsetHeight,
+              xPosition: position.x
+            };
+          }
+          return url;
+        });
+
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+
+        const newUpdateSigner = signerPos.map((obj, ind) => {
+          if (obj.signerObjId === signerId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+
+        setSignerPos(newUpdateSigner);
+      } else {
+        const getXYdata = getPageNumer[0].pos;
+
+        const getPosData = getXYdata;
+
+        const addSignPos = getPosData.map((url, ind) => {
+          if (url.key === key) {
+            return {
+              ...url,
+              Width: ref.offsetWidth,
+              Height: ref.offsetHeight
+            };
+          }
+          return url;
+        });
+
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+
+        const newUpdateSigner = signerPos.map((obj, ind) => {
+          if (obj.signerObjId === signerId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+
+        setSignerPos(newUpdateSigner);
+      }
+    }
+  }
+};
+
+//function for resize image and update width and height for sign-yourself
+export const handleSignYourselfImageResize = (
+  ref,
+  key,
+  direction,
+  position,
+  xyPostion,
+  index,
+  setXyPostion
+) => {
+  const updateFilter = xyPostion[index].pos.filter(
+    (data) => data.key === key && data.Width && data.Height
+  );
+
+  if (updateFilter.length > 0) {
+    const getXYdata = xyPostion[index].pos;
+    const getPosData = getXYdata;
+    const addSign = getPosData.map((url, ind) => {
+      if (url.key === key) {
+        return {
+          ...url,
+          Width: ref.offsetWidth,
+          Height: ref.offsetHeight,
+          xPosition: position.x
+        };
+      }
+      return url;
+    });
+
+    const newUpdateUrl = xyPostion.map((obj, ind) => {
+      if (ind === index) {
+        return { ...obj, pos: addSign };
+      }
+      return obj;
+    });
+
+    setXyPostion(newUpdateUrl);
+  } else {
+    const getXYdata = xyPostion[index].pos;
+
+    const getPosData = getXYdata;
+
+    const addSign = getPosData.map((url, ind) => {
+      if (url.key === key) {
+        return {
+          ...url,
+          Width: ref.offsetWidth,
+          Height: ref.offsetHeight
+        };
+      }
+      return url;
+    });
+
+    const newUpdateUrl = xyPostion.map((obj, ind) => {
+      if (ind === index) {
+        return { ...obj, pos: addSign };
+      }
+      return obj;
+    });
+    setXyPostion(newUpdateUrl);
+  }
+};

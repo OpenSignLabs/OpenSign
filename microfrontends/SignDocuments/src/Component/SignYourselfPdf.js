@@ -692,60 +692,6 @@ function SignYourSelf() {
     setSignBtnPosition([xySignature]);
   };
 
-  //function for resize image and update width and height
-  const handleImageResize = (ref, key, direction, position) => {
-    const updateFilter = xyPostion[index].pos.filter(
-      (data, ind) => data.key === key && data.Width && data.Height
-    );
-
-    if (updateFilter.length > 0) {
-      const getXYdata = xyPostion[index].pos;
-      const getPosData = getXYdata;
-      const addSign = getPosData.map((url, ind) => {
-        if (url.key === key) {
-          return {
-            ...url,
-            Width: ref.offsetWidth,
-            Height: ref.offsetHeight,
-            xPosition: position.x
-          };
-        }
-        return url;
-      });
-
-      const newUpdateUrl = xyPostion.map((obj, ind) => {
-        if (ind === index) {
-          return { ...obj, pos: addSign };
-        }
-        return obj;
-      });
-
-      setXyPostion(newUpdateUrl);
-    } else {
-      const getXYdata = xyPostion[index].pos;
-
-      const getPosData = getXYdata;
-
-      const addSign = getPosData.map((url, ind) => {
-        if (url.key === key) {
-          return {
-            ...url,
-            Width: ref.offsetWidth,
-            Height: ref.offsetHeight
-          };
-        }
-        return url;
-      });
-
-      const newUpdateUrl = xyPostion.map((obj, ind) => {
-        if (ind === index) {
-          return { ...obj, pos: addSign };
-        }
-        return obj;
-      });
-      setXyPostion(newUpdateUrl);
-    }
-  };
   const handleAllDelete = () => {
     setXyPostion([]);
   };
@@ -1002,7 +948,6 @@ function SignYourSelf() {
                 nodeRef={nodeRef}
                 handleTabDrag={handleTabDrag}
                 handleStop={handleStop}
-                handleImageResize={handleImageResize}
                 isDragging={isDragging}
                 setIsSignPad={setIsSignPad}
                 setIsStamp={setIsStamp}
@@ -1017,6 +962,8 @@ function SignYourSelf() {
                 pageDetails={pageDetails}
                 setPdfLoadFail={setPdfLoadFail}
                 pdfLoadFail={pdfLoadFail}
+                setXyPostion={setXyPostion}
+                index={index}
               />
             </div>
           </div>

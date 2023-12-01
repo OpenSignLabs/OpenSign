@@ -524,6 +524,87 @@ function PdfRequestFiles() {
         alert("something went wrong");
       });
   };
+
+  //function for resize image and update width and height
+  const handleImageResize = (ref, key, signerId, position) => {
+    const filterSignerPos = signerPos.filter(
+      (data) => data.signerObjId === signerId
+    );
+    if (filterSignerPos.length > 0) {
+      const getPlaceHolder = filterSignerPos[0].placeHolder;
+      const getPageNumer = getPlaceHolder.filter(
+        (data) => data.pageNumber === pageNumber
+      );
+      if (getPageNumer.length > 0) {
+        const getXYdata = getPageNumer[0].pos.filter(
+          (data, ind) => data.key === key && data.Width && data.Height
+        );
+        if (getXYdata.length > 0) {
+          const getXYdata = getPageNumer[0].pos;
+          const getPosData = getXYdata;
+          const addSignPos = getPosData.map((url, ind) => {
+            if (url.key === key) {
+              return {
+                ...url,
+                Width: ref.offsetWidth,
+                Height: ref.offsetHeight,
+                xPosition: position.x
+              };
+            }
+            return url;
+          });
+
+          const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+            if (obj.pageNumber === pageNumber) {
+              return { ...obj, pos: addSignPos };
+            }
+            return obj;
+          });
+
+          const newUpdateSigner = signerPos.map((obj, ind) => {
+            if (obj.signerObjId === signerId) {
+              return { ...obj, placeHolder: newUpdateSignPos };
+            }
+            return obj;
+          });
+
+          setSignerPos(newUpdateSigner);
+        } else {
+          const getXYdata = getPageNumer[0].pos;
+
+          const getPosData = getXYdata;
+
+          const addSignPos = getPosData.map((url, ind) => {
+            if (url.key === key) {
+              return {
+                ...url,
+                Width: ref.offsetWidth,
+                Height: ref.offsetHeight
+              };
+            }
+            return url;
+          });
+
+          const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+            if (obj.pageNumber === pageNumber) {
+              return { ...obj, pos: addSignPos };
+            }
+            return obj;
+          });
+
+          const newUpdateSigner = signerPos.map((obj, ind) => {
+            if (obj.signerObjId === signerId) {
+              return { ...obj, placeHolder: newUpdateSignPos };
+            }
+            return obj;
+          });
+
+          setSignerPos(newUpdateSigner);
+        }
+      }
+    }
+  };
+
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     const load = {
@@ -956,6 +1037,7 @@ function PdfRequestFiles() {
                 setCurrentSigner={setCurrentSigner}
                 setPdfLoadFail={setPdfLoadFail}
                 pdfLoadFail={pdfLoadFail}
+                setSignerPos={setSignerPos}
               />
             </div>
             <div>
