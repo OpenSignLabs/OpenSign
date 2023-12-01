@@ -517,7 +517,7 @@ function EmbedPdfImage() {
       if (isMobile) {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (pos.isMobile) {
-          const y = pos.yPosition * (pos.scale / scale);
+          const y = pos.yBottom * (pos.scale / scale);
           yPosition = pos.isDrag
             ? y * scale - height
             : pos.firstYPos
@@ -812,6 +812,60 @@ function EmbedPdfImage() {
     );
   };
 
+  // //function for resize image and update width and height
+  // const handleImageResize = (ref, key, direction, position) => {
+  //   const updateFilter = xyPostion[index].pos.filter(
+  //     (data, ind) => data.key === key && data.Width && data.Height
+  //   );
+
+  //   if (updateFilter.length > 0) {
+  //     const getXYdata = xyPostion[index].pos;
+  //     const getPosData = getXYdata;
+  //     const addSign = getPosData.map((url, ind) => {
+  //       if (url.key === key) {
+  //         return {
+  //           ...url,
+  //           Width: ref.offsetWidth,
+  //           Height: ref.offsetHeight,
+  //           xPosition: position.x
+  //         };
+  //       }
+  //       return url;
+  //     });
+
+  //     const newUpdateUrl = xyPostion.map((obj, ind) => {
+  //       if (ind === index) {
+  //         return { ...obj, pos: addSign };
+  //       }
+  //       return obj;
+  //     });
+
+  //     setXyPostion(newUpdateUrl);
+  //   } else {
+  //     const getXYdata = xyPostion[index].pos;
+
+  //     const getPosData = getXYdata;
+
+  //     const addSign = getPosData.map((url, ind) => {
+  //       if (url.key === key) {
+  //         return {
+  //           ...url,
+  //           Width: ref.offsetWidth,
+  //           Height: ref.offsetHeight
+  //         };
+  //       }
+  //       return url;
+  //     });
+
+  //     const newUpdateUrl = xyPostion.map((obj, ind) => {
+  //       if (ind === index) {
+  //         return { ...obj, pos: addSign };
+  //       }
+  //       return obj;
+  //     });
+  //     setXyPostion(newUpdateUrl);
+  //   }
+  // };
   return (
     <DndProvider backend={HTML5Backend}>
       {isLoading.isLoad ? (
@@ -966,6 +1020,8 @@ function EmbedPdfImage() {
               isAlreadySign={isAlreadySign}
               setPdfLoadFail={setPdfLoadFail}
               pdfLoadFail={pdfLoadFail}
+              setXyPostion={setXyPostion}
+              index={index}
             />
           </div>
 
