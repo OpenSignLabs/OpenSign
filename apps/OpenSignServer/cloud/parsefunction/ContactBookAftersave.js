@@ -16,6 +16,7 @@ async function ContactbookAftersave(request) {
       acl.setWriteAccess(object.get('UserId'), true);
 
       object.setACL(acl);
+      object.set('IsDeleted', false)
       // Continue saving the object
       return object.save(null, { useMasterKey: true });
     }
