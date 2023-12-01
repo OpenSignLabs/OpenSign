@@ -19,6 +19,7 @@ import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
+import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 
 const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 // console.log("configuration ", configuration);
@@ -161,6 +162,9 @@ if (!process.env.TESTING) {
 }
 // Mount your custom express app
 app.use('/', customRoute);
+
+// Mount v1
+app.use('/v1', v1);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
