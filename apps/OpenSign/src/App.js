@@ -15,6 +15,7 @@ import ForgetPassword from "./routes/ForgetPassword";
 import ChangePassword from "./routes/ChangePassword";
 import ReportMicroapp from "./components/ReportMicroapp";
 import LoadMf from "./routes/LoadMf";
+import GenerateToken from "./routes/GenerateToken";
 
 function App() {
   const [isloading, setIsLoading] = useState(true);
@@ -135,6 +136,14 @@ function App() {
               element={
                 <HomeLayout>
                   <UserProfile />
+                </HomeLayout>
+              }
+            />
+            <Route
+              path="/generatetoken"
+              element={
+                <HomeLayout>
+                  <GenerateToken />
                 </HomeLayout>
               }
             />
