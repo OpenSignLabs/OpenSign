@@ -700,7 +700,7 @@ const TreeWidget = (props) => {
                 ))}
               <hr />
             </div>
-            {editable && (
+            {/* {editable && (
               <TreeEditForm
                 FormId={props.schema.data.FormId}
                 objectId={editId}
@@ -709,7 +709,7 @@ const TreeWidget = (props) => {
                   selectFolderHandle();
                 }}
               />
-            )}
+            )} */}
             {isAddField && !loader && !editable && (
               <TreeFormComponent
                 Id={props.schema.data.FormId}
@@ -797,7 +797,7 @@ const TreeWidget = (props) => {
                               </a>
                             </div>
 
-                            {fldr[props.schema.data.FolderTypeField] ===
+                            {/* {fldr[props.schema.data.FolderTypeField] ===
                               props.schema.data.FolderTypeValue && (
                               <a
                                 className="float-right"
@@ -817,7 +817,7 @@ const TreeWidget = (props) => {
                                   aria-hidden="true"
                                 ></i>
                               </a>
-                            )}
+                            )} */}
                           </li>
                         )
                     )}
