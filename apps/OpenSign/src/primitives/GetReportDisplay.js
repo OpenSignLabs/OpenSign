@@ -224,7 +224,7 @@ const ReportTable = ({
                               {act?.btnIcon && (
                                 <i
                                   className={
-                                    actLoader
+                                    actLoader[item.objectId]
                                       ? "fa-solid fa-spinner fa-spin-pulse"
                                       : act.btnIcon
                                   }
