@@ -44,7 +44,6 @@ function PdfFile() {
     };
     setIsLoading(load);
     const driveDetails = await getDrive();
-
     if (driveDetails) {
       if (driveDetails.length > 0) {
         setPdfData(driveDetails);

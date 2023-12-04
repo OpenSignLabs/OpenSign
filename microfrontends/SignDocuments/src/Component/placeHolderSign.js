@@ -57,6 +57,7 @@ function PlaceHolderSign() {
   const [noData, setNoData] = useState(false);
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [contractName, setContractName] = useState("");
+  const [containerWH, setContainerWH] = useState();
   const { docId } = useParams();
   const signRef = useRef(null);
   const dragRef = useRef(null);
@@ -82,8 +83,6 @@ function PlaceHolderSign() {
     "#ffffcc"
   ];
   const isMobile = window.innerWidth < 767;
-  const newWidth = window.innerWidth;
-  const scale = pdfOriginalWidth / newWidth;
   const [{ isOver }, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
@@ -170,6 +169,10 @@ function PlaceHolderSign() {
     if (divRef.current) {
       const pdfWidth = pdfNewWidthFun(divRef);
       setPdfNewWidth(pdfWidth);
+      setContainerWH({
+        width: divRef.current.offsetWidth,
+        height: divRef.current.offsetHeight
+      });
     }
   }, [divRef.current]);
   //function for get document details
@@ -254,6 +257,8 @@ function PlaceHolderSign() {
   };
 
   const getSignerPos = (item, monitor) => {
+    const newWidth = containerWH.width;
+    const scale = pdfOriginalWidth / newWidth;
     const key = Math.floor(1000 + Math.random() * 9000);
     let filterSignerPos = signerPos.filter(
       (data) => data.signerObjId === signerObjId
@@ -753,7 +758,7 @@ function PlaceHolderSign() {
       ) : noData ? (
         <Nodata />
       ) : (
-        <div className="signatureContainer" ref={divRef}>
+        <div className="signatureContainer">
           {/* this component used for UI interaction and show their functionality */}
           {!checkTourStatus && (
             //this tour component used in your html component where you want to put
@@ -780,9 +785,10 @@ function PlaceHolderSign() {
           {/* pdf render view */}
           <div
             style={{
-              marginLeft: pdfOriginalWidth > 500 && "20px",
-              marginRight: pdfOriginalWidth > 500 && "20px"
+              marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
+              marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
+            ref={divRef}
           >
             {/* this modal is used show alert set placeholder for all signers before send mail */}
 
@@ -929,25 +935,28 @@ function PlaceHolderSign() {
               dataTut4="reactourFour"
             />
             <div data-tut="reactourThird">
-              <RenderPdf
-                pageNumber={pageNumber}
-                pdfOriginalWidth={pdfOriginalWidth}
-                pdfNewWidth={pdfNewWidth}
-                pdfDetails={pdfDetails}
-                signerPos={signerPos}
-                successEmail={false}
-                numPages={numPages}
-                pageDetails={pageDetails}
-                placeholder={true}
-                drop={drop}
-                handleDeleteSign={handleDeleteSign}
-                handleTabDrag={handleTabDrag}
-                handleStop={handleStop}
-                // handleImageResize={handleImageResize}
-                setPdfLoadFail={setPdfLoadFail}
-                pdfLoadFail={pdfLoadFail}
-                setSignerPos={setSignerPos}
-              />
+              {containerWH && (
+                <RenderPdf
+                  pageNumber={pageNumber}
+                  pdfOriginalWidth={pdfOriginalWidth}
+                  pdfNewWidth={pdfNewWidth}
+                  pdfDetails={pdfDetails}
+                  signerPos={signerPos}
+                  successEmail={false}
+                  numPages={numPages}
+                  pageDetails={pageDetails}
+                  placeholder={true}
+                  drop={drop}
+                  handleDeleteSign={handleDeleteSign}
+                  handleTabDrag={handleTabDrag}
+                  handleStop={handleStop}
+                  // handleImageResize={handleImageResize}
+                  setPdfLoadFail={setPdfLoadFail}
+                  pdfLoadFail={pdfLoadFail}
+                  setSignerPos={setSignerPos}
+                  containerWH={containerWH}
+                />
+              )}
             </div>
           </div>
 

@@ -44,13 +44,15 @@ function RenderPdf({
   pdfLoadFail,
   setSignerPos,
   setXyPostion,
-  index
+  index,
+  containerWH
 }) {
   const isMobile = window.innerWidth < 767;
-  const newWidth = window.innerWidth;
+  const newWidth = containerWH.width;
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
+
   // handle signature block width and height according to screen
   const posWidth = (pos) => {
     let width;
@@ -96,7 +98,7 @@ function RenderPdf({
       if (isMobile) {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (!pos.isMobile) {
-          return pos.xPosition / scale - 20;
+          return pos.xPosition / scale - 32;
         }
         //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
         else {
@@ -106,7 +108,7 @@ function RenderPdf({
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
         if (pos.isMobile) {
-          return pos.scale && pos.xPosition * pos.scale + 50;
+          return pos.scale && pos.xPosition * pos.scale;
         }
         //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
         else {
@@ -129,7 +131,7 @@ function RenderPdf({
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
         if (pos.isMobile) {
-          return pos.scale && pos.yPosition * pos.scale + 50;
+          return pos.scale && pos.yPosition * pos.scale;
         }
         //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
         else {
@@ -181,7 +183,9 @@ function RenderPdf({
                             position,
                             signerPos,
                             pageNumber,
-                            setSignerPos
+                            setSignerPos,
+                            pdfOriginalWidth,
+                            containerWH
                           );
                         }}
                         lockAspectRatio={pos.Width && 2.5}
@@ -245,6 +249,16 @@ function RenderPdf({
         );
       })
     );
+  };
+
+  //handled x-position in mobile view saved from big screen or small screen
+  const xPos = (pos) => {
+    //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+    if (!pos.isMobile) {
+      return pos.xPosition / scale;
+    } else {
+      return pos.xPosition * (pos.scale / scale);
+    }
   };
 
   return (
@@ -318,7 +332,9 @@ function RenderPdf({
                                     position,
                                     xyPostion,
                                     index,
-                                    setXyPostion
+                                    setXyPostion,
+                                    pdfOriginalWidth,
+                                    containerWH
                                   );
                                 }}
                                 size={{
@@ -331,10 +347,7 @@ function RenderPdf({
                                 //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
                                 //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
                                 default={{
-                                  x: !pos.isMobile
-                                    ? pos.xPosition / scale
-                                    : pos.xPosition * (pos.scale / scale) - 50,
-
+                                  x: xPos(pos),
                                   y: !pos.isMobile
                                     ? pos.yPosition / scale
                                     : pos.yPosition * (pos.scale / scale)
@@ -398,6 +411,16 @@ function RenderPdf({
                                   placeData.pos.map((pos) => {
                                     return (
                                       <Rnd
+                                        enableResizing={{
+                                          top: false,
+                                          right: false,
+                                          bottom: false,
+                                          left: false,
+                                          topRight: false,
+                                          bottomRight: true,
+                                          bottomLeft: false,
+                                          topLeft: false
+                                        }}
                                         key={pos.key}
                                         bounds="parent"
                                         style={{
@@ -446,7 +469,9 @@ function RenderPdf({
                                             position,
                                             signerPos,
                                             pageNumber,
-                                            setSignerPos
+                                            setSignerPos,
+                                            pdfOriginalWidth,
+                                            containerWH
                                           );
                                         }}
                                       >
@@ -540,7 +565,9 @@ function RenderPdf({
                                         position,
                                         xyPostion,
                                         index,
-                                        setXyPostion
+                                        setXyPostion,
+                                        pdfOriginalWidth,
+                                        containerWH
                                       );
                                     }}
                                   >
@@ -634,8 +661,8 @@ function RenderPdf({
                 <Page
                   key={index}
                   pageNumber={pageNumber}
-                  width={window.innerWidth - 32}
-                  height={window.innerHeight - 32}
+                  width={containerWH.width}
+                  height={containerWH.height}
                   renderAnnotationLayer={false}
                   renderTextLayer={false}
                   onGetAnnotationsError={(error) => {
@@ -719,7 +746,9 @@ function RenderPdf({
                                       position,
                                       xyPostion,
                                       index,
-                                      setXyPostion
+                                      setXyPostion,
+                                      pdfOriginalWidth,
+                                      containerWH
                                     );
                                   }}
                                   key={pos.key}
@@ -738,8 +767,7 @@ function RenderPdf({
 
                                   default={{
                                     x: pos.isMobile
-                                      ? pos.scale &&
-                                        pos.xPosition * pos.scale + 20
+                                      ? pos.scale && pos.xPosition * pos.scale
                                       : pos.xPosition,
                                     y: pos.isMobile
                                       ? pos.scale && pos.yPosition * pos.scale
@@ -781,69 +809,6 @@ function RenderPdf({
                                     )}
                                   </div>
                                 </Rnd>
-                                // ) : (
-                                //   <Rnd
-                                //     data-tut="reactourSecond"
-                                //     enableResizing={{
-                                //       top: false,
-                                //       right: false,
-                                //       bottom: false,
-                                //       left: false,
-                                //       topRight: false,
-                                //       bottomRight: false,
-                                //       bottomLeft: false,
-                                //       topLeft: false
-                                //     }}
-                                //     key={pos.key}
-                                //     bounds="parent"
-                                //     style={{
-                                //       padding: "0px",
-                                //       cursor: "all-scroll",
-                                //       zIndex: 1,
-                                //       position: "absolute",
-                                //       borderStyle: "dashed",
-                                //       width: "150px",
-                                //       height: "60px",
-                                //       borderColor: themeColor(),
-                                //       background: "#c1dee0",
-                                //       textAlign: "center",
-                                //       justifyContent: "center",
-                                //       borderWidth: "0.2px"
-                                //     }}
-                                //     size={{
-                                //       width: pos.Width ? pos.Width : 150,
-                                //       height: pos.Height ? pos.Height : 60
-                                //     }}
-                                //     disableDragging={true}
-                                //     //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
-
-                                //     default={{
-                                //       x: pos.isMobile
-                                //         ? pos.scale &&
-                                //           pos.xPosition * pos.scale + 20
-                                //         : pos.xPosition,
-                                //       y: pos.isMobile
-                                //         ? pos.scale && pos.yPosition * pos.scale
-                                //         : pos.yPosition
-                                //     }}
-                                //     onClick={() => {
-                                //       setIsSignPad(true);
-                                //       setSignKey(pos.key);
-                                //       setIsStamp(pos.isStamp);
-                                //     }}
-                                //   >
-                                //     <div
-                                //       style={{
-                                //         fontSize: "12px",
-                                //         color: "black",
-                                //         fontWeight: "600",
-                                //         justifyContent: "center",
-                                //         marginTop: "0px"
-                                //       }}
-                                //     >
-                                //       {pos.isStamp ? "stamp" : "signature"}
-                                //     </div>
-                                //   </Rnd>
                               )
                             );
                           })}
@@ -927,7 +892,9 @@ function RenderPdf({
                                               position,
                                               signerPos,
                                               pageNumber,
-                                              setSignerPos
+                                              setSignerPos,
+                                              pdfOriginalWidth,
+                                              containerWH
                                             );
                                           }}
                                         >
@@ -1022,7 +989,9 @@ function RenderPdf({
                                           position,
                                           xyPostion,
                                           index,
-                                          setXyPostion
+                                          setXyPostion,
+                                          pdfOriginalWidth,
+                                          containerWH
                                         );
                                       }}
                                       onClick={() => {
