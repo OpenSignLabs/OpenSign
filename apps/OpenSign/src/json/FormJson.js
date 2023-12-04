@@ -147,7 +147,7 @@ export const formJson = (id) => {
               class: "contracts_Contactbook",
               displayKey: "Name",
               valueKey: "objectId",
-              query: `where={"CreatedBy":${userPtr}}&keys=Name`,
+              query: `where={"CreatedBy":${userPtr},"IsDeleted":{"$ne":true}}&keys=Name`,
               isPointer: true,
               helpbody: "",
               helplink: "",
@@ -582,4 +582,3 @@ export const formJson = (id) => {
     return formData;
   }
 };
-
