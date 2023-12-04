@@ -25,8 +25,15 @@ function PdfFile() {
   });
   const [docId, setDocId] = useState();
   const [handleError, setHandleError] = useState();
-
   const [folderName, setFolderName] = useState([]);
+  const currentUser =
+    localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    ) &&
+    localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+  const jsonCurrentUser = JSON.parse(currentUser);
 
   useEffect(() => {
     if (docId) {
@@ -151,22 +158,32 @@ function PdfFile() {
       setIsFolderLoader(true);
 
       const getParentObjId = folderName[folderName.length - 1];
-      const isParentId = getParentObjId && getParentObjId.objectId;
+      const parentId = getParentObjId && getParentObjId.objectId;
       let data;
-      if (isParentId) {
+      if (parentId) {
         data = {
           Name: newFolderName,
           Type: "Folder",
           Folder: {
             __type: "Pointer",
             className: `${localStorage.getItem("_appName")}_Document`,
-            objectId: isParentId
+            objectId: parentId
+          },
+          CreatedBy: {
+            __type: "Pointer",
+            className: "_User",
+            objectId: jsonCurrentUser.objectId
           }
         };
       } else {
         data = {
           Name: newFolderName,
-          Type: "Folder"
+          Type: "Folder",
+          CreatedBy: {
+            __type: "Pointer",
+            className: "_User",
+            objectId: jsonCurrentUser.objectId
+          }
         };
       }
 
