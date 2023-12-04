@@ -472,6 +472,8 @@ const TreeWidget = (props) => {
         props.schema.data.FolderTypeField,
         props.schema.data.FolderTypeValue
       );
+      const currentUser = Parse.User.current();
+      folder.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
       if (tabList.length > 0) {
         let len = tabList.length - 1;
         folder.set(props.schema.data.ParentFolderField, {
