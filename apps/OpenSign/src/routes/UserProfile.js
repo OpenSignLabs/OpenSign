@@ -247,7 +247,7 @@ function UserProfile() {
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="rounded bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-2 mr-4"
+                  className="rounded shadow focus:outline-none border-[2px] border-[#15b4e9] bg-white text-[#15b4e9] px-4 py-2 mr-4"
                 >
                   Save
                 </button>
@@ -257,7 +257,7 @@ function UserProfile() {
                   onClick={() => {
                     setEditMode(true);
                   }}
-                  className="rounded shadow text-white bg-[#e7505a] px-4 py-2 mr-4"
+                  className="rounded shadow focus:outline-none text-white bg-[#e7505a] px-4 py-2 mr-4"
                 >
                   Edit
                 </button>
@@ -271,7 +271,7 @@ function UserProfile() {
                     navigate("/changepassword");
                   }
                 }}
-                className={`rounded shadow text-white bg-[#3598dc]  ${
+                className={`rounded shadow focus:outline-none text-white bg-[#3598dc]  ${
                   editmode ? "px-4 py-2 " : "p-2"
                 }`}
               >
