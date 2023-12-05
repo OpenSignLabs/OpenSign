@@ -158,124 +158,126 @@ function UserProfile() {
           ></div>
         </div>
       ) : (
-        <div className="bg-white flex flex-col justify-center shadow rounded">
-          <div className="flex flex-col justify-center items-center my-4">
-            <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
-              <img
-                className="object-contain w-full h-full"
-                src={Image === "" ? dp : Image}
-                alt="dp"
-              />
-            </div>
-            {editmode && (
-              <input
-                type="file"
-                className="max-w-[270px] text-sm py-1 px-2 mt-4 border-[1px] border-[#15b4e9] text-black rounded"
-                accept="image/png, image/gif, image/jpeg"
-                onChange={(e) => {
-                  let files = e.target.files;
-                  fileUpload(files[0]);
-                }}
-              />
-            )}
-            {percentage !== 0 && (
-              <div className="flex items-center gap-x-2">
-                <div className="h-2 rounded-full w-[200px] md:w-[400px] bg-gray-200">
-                  <div
-                    className="h-2 rounded-full bg-blue-500"
-                    style={{ width: `${percentage}%` }}
-                  ></div>
-                </div>
-                <span className="text-black text-sm">{percentage}%</span>
+        <div className="flex justify-center items-center w-full">
+          <div className="bg-white flex flex-col justify-center shadow rounded w-[450px]">
+            <div className="flex flex-col justify-center items-center my-4">
+              <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
+                <img
+                  className="object-contain w-full h-full"
+                  src={Image === "" ? dp : Image}
+                  alt="dp"
+                />
               </div>
-            )}
-            <div className="text-base font-semibold pt-4">
-              {localStorage.getItem("_user_role")}
+              {editmode && (
+                <input
+                  type="file"
+                  className="max-w-[270px] text-sm py-1 px-2 mt-4 border-[1px] border-[#15b4e9] text-black rounded"
+                  accept="image/png, image/gif, image/jpeg"
+                  onChange={(e) => {
+                    let files = e.target.files;
+                    fileUpload(files[0]);
+                  }}
+                />
+              )}
+              {percentage !== 0 && (
+                <div className="flex items-center gap-x-2">
+                  <div className="h-2 rounded-full w-[200px] md:w-[400px] bg-gray-200">
+                    <div
+                      className="h-2 rounded-full bg-blue-500"
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-black text-sm">{percentage}%</span>
+                </div>
+              )}
+              <div className="text-base font-semibold pt-4">
+                {localStorage.getItem("_user_role")}
+              </div>
             </div>
-          </div>
-          <ul className="w-full flex flex-col p-2 text-sm">
-            <li
-              className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
-                editmode ? "py-1" : "py-2"
-              }`}
-            >
-              <span>Name:</span>{" "}
-              {editmode ? (
-                <input
-                  type="text"
-                  value={name}
-                  className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
-                  onChange={(e) => SetName(e.target.value)}
-                />
-              ) : (
-                <span>{localStorage.getItem("username")}</span>
-              )}
-            </li>
-            <li
-              className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
-                editmode ? "py-1" : "py-2"
-              }`}
-            >
-              <span>Phone:</span>{" "}
-              {editmode ? (
-                <input
-                  type="text"
-                  className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
-                  onChange={(e) => SetPhone(e.target.value)}
-                  value={Phone}
-                />
-              ) : (
-                <span>{UserProfile && UserProfile.phone}</span>
-              )}
-            </li>
-            <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-              <span>Email:</span>{" "}
-              <span>{UserProfile && UserProfile.email}</span>
-            </li>
-            <li className="flex justify-between items-center border-y-[1px] border-gray-300 py-2 break-all">
-              <span>Is Email verified:</span>{" "}
-              <span>
-                {UserProfile && UserProfile.emailVerified
-                  ? "Verified"
-                  : "Not verified"}
-              </span>
-            </li>
-          </ul>
-          <div className="flex justify-center pb-4">
-            {editmode ? (
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="rounded  bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-2 mr-4"
+            <ul className="w-full flex flex-col p-2 text-sm">
+              <li
+                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                  editmode ? "py-1" : "py-2"
+                }`}
               >
-                Save
-              </button>
-            ) : (
+                <span className="font-semibold">Name:</span>{" "}
+                {editmode ? (
+                  <input
+                    type="text"
+                    value={name}
+                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    onChange={(e) => SetName(e.target.value)}
+                  />
+                ) : (
+                  <span>{localStorage.getItem("username")}</span>
+                )}
+              </li>
+              <li
+                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                  editmode ? "py-1" : "py-2"
+                }`}
+              >
+                <span className="font-semibold">Phone:</span>{" "}
+                {editmode ? (
+                  <input
+                    type="text"
+                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    onChange={(e) => SetPhone(e.target.value)}
+                    value={Phone}
+                  />
+                ) : (
+                  <span>{UserProfile && UserProfile.phone}</span>
+                )}
+              </li>
+              <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
+                <span className="font-semibold">Email:</span>{" "}
+                <span>{UserProfile && UserProfile.email}</span>
+              </li>
+              <li className="flex justify-between items-center border-y-[1px] border-gray-300 py-2 break-all">
+                <span className="font-semibold">Is Email verified:</span>{" "}
+                <span>
+                  {UserProfile && UserProfile.emailVerified
+                    ? "Verified"
+                    : "Not verified"}
+                </span>
+              </li>
+            </ul>
+            <div className="flex justify-center pt-2 pb-3 md:pt-3 md:pb-4">
+              {editmode ? (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="rounded bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-2 mr-4"
+                >
+                  Save
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditMode(true);
+                  }}
+                  className="rounded shadow text-white bg-[#e7505a] px-4 py-2 mr-4"
+                >
+                  Edit
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => {
-                  setEditMode(true);
+                  if (editmode) {
+                    setEditMode(false);
+                  } else {
+                    navigate("/changepassword");
+                  }
                 }}
-                className="rounded shadow text-white bg-[#e7505a] px-4 py-2 mr-4"
+                className={`rounded shadow text-white bg-[#3598dc]  ${
+                  editmode ? "px-4 py-2 " : "p-2"
+                }`}
               >
-                Edit
+                {editmode ? "Cancel" : "Change Password"}
               </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                if (editmode) {
-                  setEditMode(false);
-                } else {
-                  navigate("/changepassword");
-                }
-              }}
-              className={`rounded shadow text-white bg-[#3598dc]  ${
-                editmode ? "px-4 py-2 " : "p-2"
-              }`}
-            >
-              {editmode ? "Cancel" : "Change Password"}
-            </button>
+            </div>
           </div>
         </div>
       )}
