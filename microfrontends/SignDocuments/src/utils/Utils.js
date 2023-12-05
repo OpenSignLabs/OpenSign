@@ -348,7 +348,8 @@ export const multiSignEmbed = async (
   pngUrl,
   pdfDoc,
   pdfOriginalWidth,
-  signyourself
+  signyourself,
+  containerWH
 ) => {
   for (let i = 0; i < pngUrl.length; i++) {
     const pageNo = pngUrl[i].pageNumber;
@@ -385,12 +386,12 @@ export const multiSignEmbed = async (
       const imgHeight = imgUrlList[id].Height ? imgUrlList[id].Height : 60;
       const imgWidth = imgUrlList[id].Width ? imgUrlList[id].Width : 150;
       const isMobile = window.innerWidth < 767;
-      const newWidth = window.innerWidth - 32;
+      const newWidth = containerWH.width;
       const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
       const xPos = (pos) => {
         if (signyourself) {
           if (isMobile) {
-            return imgUrlList[id].xPosition * scale + 43;
+            return imgUrlList[id].xPosition * scale;
           } else {
             return imgUrlList[id].xPosition;
           }
@@ -400,7 +401,7 @@ export const multiSignEmbed = async (
             //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
             if (pos.isMobile) {
               const x = pos.xPosition * (pos.scale / scale);
-              return x * scale + 50;
+              return x * scale;
             } else {
               const x = pos.xPosition / scale;
               return x * scale;
@@ -408,7 +409,7 @@ export const multiSignEmbed = async (
           } else {
             //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
             if (pos.isMobile) {
-              const x = pos.xPosition * pos.scale + 50;
+              const x = pos.xPosition * pos.scale;
               return x;
             } else {
               return pos.xPosition;
@@ -435,9 +436,9 @@ export const multiSignEmbed = async (
             //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
             if (pos.isMobile) {
               const y = pos.yPosition * (pos.scale / scale);
-              return page.getHeight() - y * scale - imgHeight;
+              return page.getHeight() - y * scale - imgHeight * scale;
             } else {
-              return page.getHeight() - y * scale - imgHeight;
+              return page.getHeight() - y * scale - imgHeight * scale;
             }
           } else {
             //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
@@ -519,6 +520,7 @@ export const handleImageResize = (
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((url, ind) => {
           if (url.key === key) {
+            console.log("url", url);
             return {
               ...url,
               Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
@@ -592,22 +594,29 @@ export const handleSignYourselfImageResize = (
   position,
   xyPostion,
   index,
-  setXyPostion
+  setXyPostion,
+  pdfOriginalWidth,
+  containerWH
 ) => {
   const updateFilter = xyPostion[index].pos.filter(
     (data) => data.key === key && data.Width && data.Height
   );
+  // console.log(" position.x", position.x)
+  const isMobile = window.innerWidth < 767;
+  const newWidth = containerWH;
+  const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
 
   if (updateFilter.length > 0) {
     const getXYdata = xyPostion[index].pos;
     const getPosData = getXYdata;
     const addSign = getPosData.map((url, ind) => {
       if (url.key === key) {
+        console.log("url", url);
         return {
           ...url,
-          Width: ref.offsetWidth,
-          Height: ref.offsetHeight,
-          xPosition: position.x
+          Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
+          Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight,
+          xPosition: position.xpos
         };
       }
       return url;
@@ -630,8 +639,8 @@ export const handleSignYourselfImageResize = (
       if (url.key === key) {
         return {
           ...url,
-          Width: ref.offsetWidth,
-          Height: ref.offsetHeight
+          Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
+          Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight
         };
       }
       return url;
