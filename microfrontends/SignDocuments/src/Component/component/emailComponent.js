@@ -67,13 +67,13 @@ function EmailComponent({
     }
 
     if (sendMail.data.result.status === "success") {
-      setIsEmail(false);
-      setEmailValue("");
-      setEmailList([]);
       setSuccessEmail(true);
       setTimeout(() => {
         setSuccessEmail(false);
-      }, 1000);
+        setIsEmail(false);
+        setEmailValue("");
+        setEmailList([]);
+      }, 1500);
 
       setIsLoading(false);
     } else if (sendMail.data.result.status === "error") {

@@ -1,6 +1,5 @@
 import React from "react";
 import RSC from "react-scrollbars-custom";
-import Toast from "react-bootstrap/Toast";
 import { Rnd } from "react-rnd";
 import { themeColor } from "../../utils/ThemeColor/backColor";
 import { Document, Page, pdfjs } from "react-pdf";
