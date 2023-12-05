@@ -68,10 +68,13 @@ function EmailComponent({
 
     if (sendMail.data.result.status === "success") {
       setIsEmail(false);
+      setEmailValue("");
+      setEmailCount("");
       setSuccessEmail(true);
       setTimeout(() => {
         setSuccessEmail(false);
-      }, 3000);
+      }, 1000);
+
       setIsLoading(false);
     } else if (sendMail.data.result.status === "error") {
       setIsLoading(false);
@@ -81,6 +84,7 @@ function EmailComponent({
       alert("Something went wrong!");
     }
   };
+
   //function for remove email
   const removeChip = (index) => {
     const updateEmailCount = emailCount.filter((data, key) => key !== index);
@@ -363,7 +367,11 @@ function EmailComponent({
             }}
             type="button"
             className="finishBtn"
-            onClick={() => setIsEmail(false)}
+            onClick={() => {
+              setIsEmail(false);
+              setEmailValue("");
+              setEmailCount("");
+            }}
           >
             Close
           </button>
