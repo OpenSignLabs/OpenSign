@@ -136,8 +136,13 @@ const PlanSubscriptions = () => {
                           <p>{item.subtitle}</p>
                         </div>
                       </div>
+
                       <NavLink
-                        to={item.url + details}
+                        to={
+                          item.btnText === "Subscribe"
+                            ? item.url + details
+                            : item.url
+                        }
                         className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white"
                         target={item.target}
                       >

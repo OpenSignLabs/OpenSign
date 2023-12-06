@@ -1,6 +1,5 @@
 import React from "react";
 import RSC from "react-scrollbars-custom";
-import Toast from "react-bootstrap/Toast";
 import { Rnd } from "react-rnd";
 import { themeColor } from "../../utils/ThemeColor/backColor";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -9,6 +8,8 @@ import {
   handleImageResize,
   handleSignYourselfImageResize
 } from "../../utils/Utils";
+import EmailToast from "./emailToast";
+ 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -272,20 +273,7 @@ function RenderPdf({
           ref={drop}
           id="container"
         >
-          <div className="d-flex justify-content-center">
-            <Toast
-              show={successEmail}
-              delay={3000}
-              autohide
-              className="d-inline-block m-1"
-              bg="success"
-              style={{ background: "#348545" }}
-            >
-              <Toast.Body className={"text-white"}>
-                Email sent successful!
-              </Toast.Body>
-            </Toast>
-          </div>
+          <EmailToast isShow={successEmail} />
           {pdfLoadFail.status &&
             (recipient
               ? !pdfUrl &&
@@ -693,20 +681,7 @@ function RenderPdf({
             ref={drop}
             id="container"
           >
-            <div className="d-flex justify-content-center">
-              <Toast
-                show={successEmail}
-                delay={3000}
-                autohide
-                className="d-inline-block m-1"
-                bg="success"
-                style={{ background: "#348545" }}
-              >
-                <Toast.Body className={"text-white"}>
-                  Email sent successful!
-                </Toast.Body>
-              </Toast>
-            </div>
+            <EmailToast isShow={successEmail} />
             {pdfLoadFail.status &&
               (recipient
                 ? !pdfUrl &&

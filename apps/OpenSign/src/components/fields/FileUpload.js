@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { SaveFileSize } from "../../constant/saveFileSize";
 import Parse from "parse";
 import sanitizeFileName from "../../primitives/sanitizeFileName";
-
+import DropboxChooser from "./DropboxChoose";
 const FileUpload = (props) => {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [_fileupload, setFileUpload] = useState("");
   const [fileload, setfileload] = useState(false);
-
-  const [localValue, setLocalValue] = useState("");
   const [Message] = useState(false);
   const [percentage, setpercentage] = useState(0);
 
@@ -25,7 +23,6 @@ const FileUpload = (props) => {
   const onChange = (e) => {
     try {
       let files = e.target.files;
-      setLocalValue(e.target.files);
       if (typeof files[0] !== "undefined") {
         if (props.schema.filetypes && props.schema.filetypes.length > 0) {
           var fileName = files[0].name;
@@ -105,6 +102,56 @@ const FileUpload = (props) => {
       setpercentage(0);
       console.error("Error uploading file:", error);
     }
+  };
+
+  const dropboxSuccess = async (files) => {
+    // console.log("file ", files);
+    setfileload(true);
+    const file = files[0];
+    const url = file.link;
+    const size = file.bytes;
+    const mb = Math.round(file.bytes / Math.pow(1024, 2));
+
+    if (mb > 10) {
+      setTimeout(() => {
+        alert(
+          `The selected file size is too large. Please select a file less than 10 MB`
+        );
+      }, 500);
+      return;
+    } else {
+      const name = sanitizeFileName(file.name);
+
+      const parseFile = new Parse.File(name, { uri: url });
+
+      try {
+        const response = await parseFile.save({
+          progress: (progressValue, loaded, total, { type }) => {
+            if (type === "upload" && progressValue !== null) {
+              const percentCompleted = Math.round((loaded * 100) / total);
+              // console.log("percentCompleted ", percentCompleted);
+              setpercentage(percentCompleted);
+            }
+          }
+        });
+        // console.log("response.url() ", response.url());
+        setFileUpload(response.url());
+        props.onChange(response.url());
+        setfileload(false);
+
+        if (response.url()) {
+          SaveFileSize(size, response.url());
+          return response.url();
+        }
+      } catch (error) {
+        setfileload(false);
+        setpercentage(0);
+        console.error("Error uploading file:", error);
+      }
+    }
+  };
+  const dropboxCancel = async () => {
+    console.log("cancel clicked ");
   };
   let fileView =
     props.formData &&
@@ -207,55 +254,51 @@ const FileUpload = (props) => {
       </div>
 
       <>
-        {localValue ? (
-          <input
-            type="file"
-            id="hashfile"
-            style={{
-              border: "1px solid #ccc",
-              color: "gray",
-              backgroundColor: "white",
-              padding: "5px 10px",
-              borderRadius: "4px",
-              fontSize: "13px",
-              width: "100%",
-              fontWeight: "bold"
-            }}
-            accept="application/pdf,application/vnd.ms-excel"
-            onChange={onChange}
-          />
-        ) : props.formData ? (
-          <div
-            style={{
-              border: "1px solid #ccc",
-              color: "gray",
-              backgroundColor: "white",
-              padding: "5px 10px",
-              borderRadius: "4px",
-              fontSize: "13px",
-              width: "100%",
-              fontWeight: "bold"
-            }}
-          >
-            file selected : {props.formData.split("/")[3]}
+        {props.formData ? (
+          <div className="flex gap-2 justify-center items-center">
+            <div className="flex justify-between items-center px-2 py-[3px] w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
+              <div className="break-all">
+                file selected : {props.formData.split("/")[3]}
+              </div>
+              <div
+                onClick={() => {
+                  console.log("clicked");
+                  setFileUpload([]);
+                  props.onChange(undefined);
+                }}
+                className="cursor-pointer px-[10px] text-[20px] font-bold bg-white text-red-500"
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </div>
+            </div>
+            <DropboxChooser
+              onSuccess={dropboxSuccess}
+              onCancel={dropboxCancel}
+            />
           </div>
         ) : (
-          <input
-            type="file"
-            id="hashfile"
-            style={{
-              border: "1px solid #ccc",
-              color: "gray",
-              backgroundColor: "white",
-              padding: "5px 10px",
-              borderRadius: "4px",
-              fontSize: "13px",
-              width: "100%",
-              fontWeight: "bold"
-            }}
-            accept="application/pdf,application/vnd.ms-excel"
-            onChange={onChange}
-          />
+          <div className="flex gap-2 justify-center items-center">
+            <input
+              type="file"
+              id="hashfile"
+              style={{
+                border: "1px solid #ccc",
+                color: "gray",
+                backgroundColor: "white",
+                padding: "5px 10px",
+                borderRadius: "4px",
+                fontSize: "13px",
+                width: "100%",
+                fontWeight: "bold"
+              }}
+              accept="application/pdf,application/vnd.ms-excel"
+              onChange={onChange}
+            />
+            <DropboxChooser
+              onSuccess={dropboxSuccess}
+              onCancel={dropboxCancel}
+            />
+          </div>
         )}
       </>
     </React.Fragment>

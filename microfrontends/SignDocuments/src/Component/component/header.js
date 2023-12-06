@@ -33,7 +33,8 @@ function Header({
   currentSigner,
   dataTut4,
   alreadySign,
-  isSignYourself
+  isSignYourself,
+  setIsEmail
 }) {
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
@@ -329,9 +330,29 @@ function Header({
                       </DropdownMenu.Item>
                     ) : (
                       isSignYourself && (
-                        <DropdownMenu.Item className="DropdownMenuItem">
-                          <CertificateDropDown />
-                        </DropdownMenu.Item>
+                        <>
+                          <DropdownMenu.Item className="DropdownMenuItem">
+                            <CertificateDropDown />
+                          </DropdownMenu.Item>
+                          <DropdownMenu.Item
+                            className="DropdownMenuItem"
+                            onClick={() => setIsEmail(true)}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row"
+                              }}
+                            >
+                              <i
+                                class="fa fa-envelope"
+                                style={{ marginRight: "2px" }}
+                                aria-hidden="true"
+                              ></i>
+                              Mail
+                            </div>
+                          </DropdownMenu.Item>
+                        </>
                       )
                     )}
                     <DropdownMenu.Item
@@ -689,6 +710,28 @@ function Header({
                   aria-hidden="true"
                 ></i>
                 Download
+              </button>
+              <button
+                type="button"
+                className="defaultBtn mailBtn"
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: "10px"
+                }}
+                onClick={() => setIsEmail(true)}
+              >
+                <i
+                  class="fa fa-envelope"
+                  style={{
+                    color: "white",
+                    fontSize: "15px",
+                    marginRight: "3px"
+                  }}
+                  aria-hidden="true"
+                ></i>
+                Mail
               </button>
             </div>
           ) : (

@@ -937,6 +937,7 @@ function SignYourSelf() {
               currentSigner={true}
               alreadySign={pdfUrl ? true : false}
               isSignYourself={true}
+              setIsEmail={setIsEmail}
             />
 
             <div data-tut="reactourSecond" ref={divRef}>
