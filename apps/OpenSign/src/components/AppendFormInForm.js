@@ -32,6 +32,7 @@ const AppendFormInForm = (props) => {
     try {
       const query = new Parse.Query("contracts_Contactbook");
       query.equalTo("CreatedBy", user);
+      query.notEqualTo("IsDeleted", true);
       query.equalTo("Email", user.getEmail());
       const res = await query.first();
       // console.log(res);

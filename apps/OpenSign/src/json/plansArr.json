@@ -52,7 +52,7 @@
         "subtitle": "Customization available Priority support.",
         "btnText": "Contact us",
         "url": "https://www.opensignlabs.com/contact-us",
-        "target": "_self",
+        "target": "_blank",
         "benefits": [
             "All features",
             "Custom domain",
