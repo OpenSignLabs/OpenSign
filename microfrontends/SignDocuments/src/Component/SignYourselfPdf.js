@@ -75,6 +75,7 @@ function SignYourSelf() {
   const [tourStatus, setTourStatus] = useState([]);
   const [noData, setNoData] = useState(false);
   const [contractName, setContractName] = useState("");
+  const [containerWH, setContainerWH] = useState({});
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
@@ -91,6 +92,7 @@ function SignYourSelf() {
       isOver: !!monitor.isOver()
     })
   });
+  const isMobile = window.innerWidth < 767;
 
   const pdfRef = useRef();
 
@@ -178,6 +180,10 @@ function SignYourSelf() {
     if (divRef.current) {
       const pdfWidth = pdfNewWidthFun(divRef);
       setPdfNewWidth(pdfWidth);
+      setContainerWH({
+        width: divRef.current.offsetWidth,
+        height: divRef.current.offsetHeight
+      });
     }
   }, [divRef.current]);
 
@@ -470,8 +476,10 @@ function SignYourSelf() {
           pngUrl,
           pdfDoc,
           pdfOriginalWidth,
-          true
+          true,
+          containerWH
         );
+
         signPdfFun(pdfBytes, documentId);
       }
       setIsSignPad(false);
@@ -490,9 +498,7 @@ function SignYourSelf() {
     pageNo
   ) => {
     let singleSign;
-
-    const isMobile = window.innerWidth < 767;
-    const newWidth = window.innerWidth - 32;
+    const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const imgWidth = xyPosData ? xyPosData.Width : 150;
     if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
@@ -508,9 +514,7 @@ function SignYourSelf() {
         docId: documentId,
         sign: {
           Base64: base64Url,
-          Left: isMobile
-            ? xyPosData.xPosition * scale + 43
-            : xyPosData.xPosition,
+          Left: isMobile ? xyPosData.xPosition * scale : xyPosData.xPosition,
           Bottom: bottomY,
           Width: xyPosData.Width ? xyPosData.Width * scale : 150 * scale,
           Height: height * scale,
@@ -534,14 +538,13 @@ function SignYourSelf() {
       })
       .then((Listdata) => {
         const json = Listdata.data;
-        // console.log("json ", json);
+
         setPdfUrl(json.result.data);
         if (json.result.data) {
           getDocumentDetails(false);
         }
       })
       .catch((err) => {
-        // this.setState({ loading: false });
         console.log("axois err ", err);
       });
   };
@@ -692,60 +695,6 @@ function SignYourSelf() {
     setSignBtnPosition([xySignature]);
   };
 
-  //function for resize image and update width and height
-  const handleImageResize = (ref, key, direction, position) => {
-    const updateFilter = xyPostion[index].pos.filter(
-      (data, ind) => data.key === key && data.Width && data.Height
-    );
-
-    if (updateFilter.length > 0) {
-      const getXYdata = xyPostion[index].pos;
-      const getPosData = getXYdata;
-      const addSign = getPosData.map((url, ind) => {
-        if (url.key === key) {
-          return {
-            ...url,
-            Width: ref.offsetWidth,
-            Height: ref.offsetHeight,
-            xPosition: position.x
-          };
-        }
-        return url;
-      });
-
-      const newUpdateUrl = xyPostion.map((obj, ind) => {
-        if (ind === index) {
-          return { ...obj, pos: addSign };
-        }
-        return obj;
-      });
-
-      setXyPostion(newUpdateUrl);
-    } else {
-      const getXYdata = xyPostion[index].pos;
-
-      const getPosData = getXYdata;
-
-      const addSign = getPosData.map((url, ind) => {
-        if (url.key === key) {
-          return {
-            ...url,
-            Width: ref.offsetWidth,
-            Height: ref.offsetHeight
-          };
-        }
-        return url;
-      });
-
-      const newUpdateUrl = xyPostion.map((obj, ind) => {
-        if (ind === index) {
-          return { ...obj, pos: addSign };
-        }
-        return obj;
-      });
-      setXyPostion(newUpdateUrl);
-    }
-  };
   const handleAllDelete = () => {
     setXyPostion([]);
   };
@@ -903,8 +852,8 @@ function SignYourSelf() {
           {/* pdf render view */}
           <div
             style={{
-              marginLeft: pdfOriginalWidth > 500 && "20px",
-              marginRight: pdfOriginalWidth > 500 && "20px"
+              marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
+              marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
           >
             {/* this modal is used show this document is already sign */}
@@ -992,33 +941,36 @@ function SignYourSelf() {
               setIsEmail={setIsEmail}
             />
 
-            {/* className="hidePdf" */}
             <div data-tut="reactourSecond">
-              <RenderPdf
-                pageNumber={pageNumber}
-                pdfOriginalWidth={pdfOriginalWidth}
-                pdfNewWidth={pdfNewWidth}
-                drop={drop}
-                successEmail={successEmail}
-                nodeRef={nodeRef}
-                handleTabDrag={handleTabDrag}
-                handleStop={handleStop}
-                handleImageResize={handleImageResize}
-                isDragging={isDragging}
-                setIsSignPad={setIsSignPad}
-                setIsStamp={setIsStamp}
-                handleDeleteSign={handleDeleteSign}
-                setSignKey={setSignKey}
-                pdfDetails={pdfDetails}
-                setIsDragging={setIsDragging}
-                xyPostion={xyPostion}
-                pdfRef={pdfRef}
-                pdfUrl={pdfUrl}
-                numPages={numPages}
-                pageDetails={pageDetails}
-                setPdfLoadFail={setPdfLoadFail}
-                pdfLoadFail={pdfLoadFail}
-              />
+              {containerWH && (
+                <RenderPdf
+                  pageNumber={pageNumber}
+                  pdfOriginalWidth={pdfOriginalWidth}
+                  pdfNewWidth={pdfNewWidth}
+                  drop={drop}
+                  successEmail={successEmail}
+                  nodeRef={nodeRef}
+                  handleTabDrag={handleTabDrag}
+                  handleStop={handleStop}
+                  isDragging={isDragging}
+                  setIsSignPad={setIsSignPad}
+                  setIsStamp={setIsStamp}
+                  handleDeleteSign={handleDeleteSign}
+                  setSignKey={setSignKey}
+                  pdfDetails={pdfDetails}
+                  setIsDragging={setIsDragging}
+                  xyPostion={xyPostion}
+                  pdfRef={pdfRef}
+                  pdfUrl={pdfUrl}
+                  numPages={numPages}
+                  pageDetails={pageDetails}
+                  setPdfLoadFail={setPdfLoadFail}
+                  pdfLoadFail={pdfLoadFail}
+                  setXyPostion={setXyPostion}
+                  index={index}
+                  containerWH={containerWH}
+                />
+              )}
             </div>
           </div>
 

@@ -57,12 +57,14 @@ function PlaceHolderSign() {
   const [noData, setNoData] = useState(false);
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [contractName, setContractName] = useState("");
+  const [containerWH, setContainerWH] = useState();
   const { docId } = useParams();
   const signRef = useRef(null);
   const dragRef = useRef(null);
   const divRef = useRef(null);
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
+  const [isResize, setIsResize] = useState(false);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -82,8 +84,6 @@ function PlaceHolderSign() {
     "#ffffcc"
   ];
   const isMobile = window.innerWidth < 767;
-  const newWidth = window.innerWidth;
-  const scale = pdfOriginalWidth / newWidth;
   const [{ isOver }, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
@@ -170,6 +170,10 @@ function PlaceHolderSign() {
     if (divRef.current) {
       const pdfWidth = pdfNewWidthFun(divRef);
       setPdfNewWidth(pdfWidth);
+      setContainerWH({
+        width: divRef.current.offsetWidth,
+        height: divRef.current.offsetHeight
+      });
     }
   }, [divRef.current]);
   //function for get document details
@@ -254,6 +258,8 @@ function PlaceHolderSign() {
   };
 
   const getSignerPos = (item, monitor) => {
+    const newWidth = containerWH.width;
+    const scale = pdfOriginalWidth / newWidth;
     const key = Math.floor(1000 + Math.random() * 9000);
     let filterSignerPos = signerPos.filter(
       (data) => data.signerObjId === signerObjId
@@ -397,56 +403,58 @@ function PlaceHolderSign() {
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
-    const containerRect = document
-      .getElementById("container")
-      .getBoundingClientRect();
-    const signId = signerId ? signerId : signerObjId;
-    const keyValue = key ? key : dragKey;
-    const ybottom = containerRect.height - dragElement.y;
+    if (!isResize) {
+      const containerRect = document
+        .getElementById("container")
+        .getBoundingClientRect();
+      const signId = signerId ? signerId : signerObjId;
+      const keyValue = key ? key : dragKey;
+      const ybottom = containerRect.height - dragElement.y;
 
-    if (keyValue >= 0) {
-      const filterSignerPos = signerPos.filter(
-        (data) => data.signerObjId === signId
-      );
-
-      if (filterSignerPos.length > 0) {
-        const getPlaceHolder = filterSignerPos[0].placeHolder;
-
-        const getPageNumer = getPlaceHolder.filter(
-          (data) => data.pageNumber === pageNumber
+      if (keyValue >= 0) {
+        const filterSignerPos = signerPos.filter(
+          (data) => data.signerObjId === signId
         );
 
-        if (getPageNumer.length > 0) {
-          const getXYdata = getPageNumer[0].pos;
+        if (filterSignerPos.length > 0) {
+          const getPlaceHolder = filterSignerPos[0].placeHolder;
 
-          const getPosData = getXYdata;
-          const addSignPos = getPosData.map((url, ind) => {
-            if (url.key === keyValue) {
-              return {
-                ...url,
-                xPosition: dragElement.x,
-                yPosition: dragElement.y,
-                isDrag: true,
-                yBottom: ybottom
-              };
-            }
-            return url;
-          });
+          const getPageNumer = getPlaceHolder.filter(
+            (data) => data.pageNumber === pageNumber
+          );
 
-          const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-            if (obj.pageNumber === pageNumber) {
-              return { ...obj, pos: addSignPos };
-            }
-            return obj;
-          });
-          const newUpdateSigner = signerPos.map((obj, ind) => {
-            if (obj.signerObjId === signId) {
-              return { ...obj, placeHolder: newUpdateSignPos };
-            }
-            return obj;
-          });
+          if (getPageNumer.length > 0) {
+            const getXYdata = getPageNumer[0].pos;
 
-          setSignerPos(newUpdateSigner);
+            const getPosData = getXYdata;
+            const addSignPos = getPosData.map((url, ind) => {
+              if (url.key === keyValue) {
+                return {
+                  ...url,
+                  xPosition: dragElement.x,
+                  yPosition: dragElement.y,
+                  isDrag: true,
+                  yBottom: ybottom
+                };
+              }
+              return url;
+            });
+
+            const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+              if (obj.pageNumber === pageNumber) {
+                return { ...obj, pos: addSignPos };
+              }
+              return obj;
+            });
+            const newUpdateSigner = signerPos.map((obj, ind) => {
+              if (obj.signerObjId === signId) {
+                return { ...obj, placeHolder: newUpdateSignPos };
+              }
+              return obj;
+            });
+
+            setSignerPos(newUpdateSigner);
+          }
         }
       }
     }
@@ -513,86 +521,6 @@ function PlaceHolderSign() {
           } else {
             setSignerPos(updateFilter);
           }
-        }
-      }
-    }
-  };
-
-  //function for resize image and update width and height
-  const handleImageResize = (ref, key, signerId, position) => {
-    const filterSignerPos = signerPos.filter(
-      (data) => data.signerObjId === signerId
-    );
-    if (filterSignerPos.length > 0) {
-      const getPlaceHolder = filterSignerPos[0].placeHolder;
-      const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-      if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos.filter(
-          (data, ind) => data.key === key && data.Width && data.Height
-        );
-        if (getXYdata.length > 0) {
-          const getXYdata = getPageNumer[0].pos;
-          const getPosData = getXYdata;
-          const addSignPos = getPosData.map((url, ind) => {
-            if (url.key === key) {
-              return {
-                ...url,
-                Width: ref.offsetWidth,
-                Height: ref.offsetHeight,
-                xPosition: position.x
-              };
-            }
-            return url;
-          });
-
-          const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-            if (obj.pageNumber === pageNumber) {
-              return { ...obj, pos: addSignPos };
-            }
-            return obj;
-          });
-
-          const newUpdateSigner = signerPos.map((obj, ind) => {
-            if (obj.signerObjId === signerId) {
-              return { ...obj, placeHolder: newUpdateSignPos };
-            }
-            return obj;
-          });
-
-          setSignerPos(newUpdateSigner);
-        } else {
-          const getXYdata = getPageNumer[0].pos;
-
-          const getPosData = getXYdata;
-
-          const addSignPos = getPosData.map((url, ind) => {
-            if (url.key === key) {
-              return {
-                ...url,
-                Width: ref.offsetWidth,
-                Height: ref.offsetHeight
-              };
-            }
-            return url;
-          });
-
-          const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-            if (obj.pageNumber === pageNumber) {
-              return { ...obj, pos: addSignPos };
-            }
-            return obj;
-          });
-
-          const newUpdateSigner = signerPos.map((obj, ind) => {
-            if (obj.signerObjId === signerId) {
-              return { ...obj, placeHolder: newUpdateSignPos };
-            }
-            return obj;
-          });
-
-          setSignerPos(newUpdateSigner);
         }
       }
     }
@@ -860,8 +788,8 @@ function PlaceHolderSign() {
           {/* pdf render view */}
           <div
             style={{
-              marginLeft: pdfOriginalWidth > 500 && "20px",
-              marginRight: pdfOriginalWidth > 500 && "20px"
+              marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
+              marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
           >
             {/* this modal is used show alert set placeholder for all signers before send mail */}
@@ -1009,24 +937,28 @@ function PlaceHolderSign() {
               dataTut4="reactourFour"
             />
             <div data-tut="reactourThird">
-              <RenderPdf
-                pageNumber={pageNumber}
-                pdfOriginalWidth={pdfOriginalWidth}
-                pdfNewWidth={pdfNewWidth}
-                pdfDetails={pdfDetails}
-                signerPos={signerPos}
-                successEmail={false}
-                numPages={numPages}
-                pageDetails={pageDetails}
-                placeholder={true}
-                drop={drop}
-                handleDeleteSign={handleDeleteSign}
-                handleTabDrag={handleTabDrag}
-                handleStop={handleStop}
-                handleImageResize={handleImageResize}
-                setPdfLoadFail={setPdfLoadFail}
-                pdfLoadFail={pdfLoadFail}
-              />
+              {containerWH && (
+                <RenderPdf
+                  pageNumber={pageNumber}
+                  pdfOriginalWidth={pdfOriginalWidth}
+                  pdfNewWidth={pdfNewWidth}
+                  pdfDetails={pdfDetails}
+                  signerPos={signerPos}
+                  successEmail={false}
+                  numPages={numPages}
+                  pageDetails={pageDetails}
+                  placeholder={true}
+                  drop={drop}
+                  handleDeleteSign={handleDeleteSign}
+                  handleTabDrag={handleTabDrag}
+                  handleStop={handleStop}
+                  setPdfLoadFail={setPdfLoadFail}
+                  pdfLoadFail={pdfLoadFail}
+                  setSignerPos={setSignerPos}
+                  containerWH={containerWH}
+                  setIsResize={setIsResize}
+                />
+              )}
             </div>
           </div>
 
