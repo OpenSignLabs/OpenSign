@@ -476,8 +476,10 @@ function SignYourSelf() {
           pngUrl,
           pdfDoc,
           pdfOriginalWidth,
-          true
+          true,
+          containerWH
         );
+
         signPdfFun(pdfBytes, documentId);
       }
       setIsSignPad(false);
@@ -536,14 +538,13 @@ function SignYourSelf() {
       })
       .then((Listdata) => {
         const json = Listdata.data;
-        // console.log("json ", json);
+
         setPdfUrl(json.result.data);
         if (json.result.data) {
           getDocumentDetails(false);
         }
       })
       .catch((err) => {
-        // this.setState({ loading: false });
         console.log("axois err ", err);
       });
   };
@@ -825,7 +826,7 @@ function SignYourSelf() {
       ) : noData ? (
         <Nodata />
       ) : (
-        <div className="signatureContainer">
+        <div className="signatureContainer" ref={divRef}>
           {/* this component used for UI interaction and show their functionality */}
           {pdfLoadFail && !checkTourStatus && (
             <Tour
@@ -940,7 +941,7 @@ function SignYourSelf() {
               setIsEmail={setIsEmail}
             />
 
-            <div data-tut="reactourSecond" ref={divRef}>
+            <div data-tut="reactourSecond">
               {containerWH && (
                 <RenderPdf
                   pageNumber={pageNumber}

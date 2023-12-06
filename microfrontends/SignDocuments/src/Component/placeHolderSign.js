@@ -64,6 +64,7 @@ function PlaceHolderSign() {
   const divRef = useRef(null);
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
+  const [isResize, setIsResize] = useState(false);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -402,56 +403,58 @@ function PlaceHolderSign() {
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
-    const containerRect = document
-      .getElementById("container")
-      .getBoundingClientRect();
-    const signId = signerId ? signerId : signerObjId;
-    const keyValue = key ? key : dragKey;
-    const ybottom = containerRect.height - dragElement.y;
+    if (!isResize) {
+      const containerRect = document
+        .getElementById("container")
+        .getBoundingClientRect();
+      const signId = signerId ? signerId : signerObjId;
+      const keyValue = key ? key : dragKey;
+      const ybottom = containerRect.height - dragElement.y;
 
-    if (keyValue >= 0) {
-      const filterSignerPos = signerPos.filter(
-        (data) => data.signerObjId === signId
-      );
-
-      if (filterSignerPos.length > 0) {
-        const getPlaceHolder = filterSignerPos[0].placeHolder;
-
-        const getPageNumer = getPlaceHolder.filter(
-          (data) => data.pageNumber === pageNumber
+      if (keyValue >= 0) {
+        const filterSignerPos = signerPos.filter(
+          (data) => data.signerObjId === signId
         );
 
-        if (getPageNumer.length > 0) {
-          const getXYdata = getPageNumer[0].pos;
+        if (filterSignerPos.length > 0) {
+          const getPlaceHolder = filterSignerPos[0].placeHolder;
 
-          const getPosData = getXYdata;
-          const addSignPos = getPosData.map((url, ind) => {
-            if (url.key === keyValue) {
-              return {
-                ...url,
-                xPosition: dragElement.x,
-                yPosition: dragElement.y,
-                isDrag: true,
-                yBottom: ybottom
-              };
-            }
-            return url;
-          });
+          const getPageNumer = getPlaceHolder.filter(
+            (data) => data.pageNumber === pageNumber
+          );
 
-          const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-            if (obj.pageNumber === pageNumber) {
-              return { ...obj, pos: addSignPos };
-            }
-            return obj;
-          });
-          const newUpdateSigner = signerPos.map((obj, ind) => {
-            if (obj.signerObjId === signId) {
-              return { ...obj, placeHolder: newUpdateSignPos };
-            }
-            return obj;
-          });
+          if (getPageNumer.length > 0) {
+            const getXYdata = getPageNumer[0].pos;
 
-          setSignerPos(newUpdateSigner);
+            const getPosData = getXYdata;
+            const addSignPos = getPosData.map((url, ind) => {
+              if (url.key === keyValue) {
+                return {
+                  ...url,
+                  xPosition: dragElement.x,
+                  yPosition: dragElement.y,
+                  isDrag: true,
+                  yBottom: ybottom
+                };
+              }
+              return url;
+            });
+
+            const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+              if (obj.pageNumber === pageNumber) {
+                return { ...obj, pos: addSignPos };
+              }
+              return obj;
+            });
+            const newUpdateSigner = signerPos.map((obj, ind) => {
+              if (obj.signerObjId === signId) {
+                return { ...obj, placeHolder: newUpdateSignPos };
+              }
+              return obj;
+            });
+
+            setSignerPos(newUpdateSigner);
+          }
         }
       }
     }
@@ -758,7 +761,7 @@ function PlaceHolderSign() {
       ) : noData ? (
         <Nodata />
       ) : (
-        <div className="signatureContainer">
+        <div className="signatureContainer" ref={divRef}>
           {/* this component used for UI interaction and show their functionality */}
           {!checkTourStatus && (
             //this tour component used in your html component where you want to put
@@ -788,7 +791,6 @@ function PlaceHolderSign() {
               marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
               marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
-            ref={divRef}
           >
             {/* this modal is used show alert set placeholder for all signers before send mail */}
 
@@ -950,11 +952,11 @@ function PlaceHolderSign() {
                   handleDeleteSign={handleDeleteSign}
                   handleTabDrag={handleTabDrag}
                   handleStop={handleStop}
-                  // handleImageResize={handleImageResize}
                   setPdfLoadFail={setPdfLoadFail}
                   pdfLoadFail={pdfLoadFail}
                   setSignerPos={setSignerPos}
                   containerWH={containerWH}
+                  setIsResize={setIsResize}
                 />
               )}
             </div>

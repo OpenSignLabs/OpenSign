@@ -487,8 +487,10 @@ function EmbedPdfImage() {
           pngUrl,
           pdfDoc,
           pdfOriginalWidth,
-          false
+          false,
+          containerWH
         );
+
         //function for embed signature in pdf and get digital signature pdf
         signPdfFun(
           pdfBytes,
@@ -513,129 +515,6 @@ function EmbedPdfImage() {
       setXyPostion([]);
     }
   }
-
-  //function for call cloud function signPdf and generate digital signature
-  // const signPdfFun = async (
-  //   base64Url,
-  //   docId,
-  //   xyPosData,
-  //   pdfBase64Url,
-  //   pageNo
-  // ) => {
-  //   let singleSign;
-  //   const isMobile = window.innerWidth < 767;
-  //   const newWidth = window.innerWidth;
-  //   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-  //   const height = xyPosData ? xyPosData.Height : 60;
-  //   const xPos = (pos) => {
-  //     //checking both condition mobile and desktop view
-  //     if (isMobile) {
-  //       //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-  //       if (pos.isMobile) {
-  //         const x = pos.xPosition * (pos.scale / scale);
-  //         return x * scale + 50;
-  //       } else {
-  //         const x = pos.xPosition / scale;
-  //         return x * scale;
-  //       }
-  //     } else {
-  //       //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-  //       if (pos.isMobile) {
-  //         const x = pos.xPosition * pos.scale + 50;
-  //         return x;
-  //       } else {
-  //         return pos.xPosition;
-  //       }
-  //     }
-  //   };
-
-  //   const yBottom = (pos) => {
-  //     let yPosition;
-  //     //checking both condition mobile and desktop view
-
-  //     if (isMobile) {
-  //       //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-  //       if (pos.isMobile) {
-  //         const y = pos.yBottom * (pos.scale / scale);
-  //         yPosition = pos.isDrag
-  //           ? y * scale - height
-  //           : pos.firstYPos
-  //             ? y * scale - height + pos.firstYPos
-  //             : y * scale - height;
-  //         return yPosition;
-  //       } else {
-  //         const y = pos.yBottom / scale;
-
-  //         yPosition = pos.isDrag
-  //           ? y * scale - height
-  //           : pos.firstYPos
-  //             ? y * scale - height + pos.firstYPos
-  //             : y * scale - height;
-  //         return yPosition;
-  //       }
-  //     } else {
-  //       //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-  //       if (pos.isMobile) {
-  //         const y = pos.yBottom * pos.scale;
-
-  //         yPosition = pos.isDrag
-  //           ? y - height
-  //           : pos.firstYPos
-  //             ? y - height + pos.firstYPos
-  //             : y - height;
-  //         return yPosition;
-  //       } else {
-  //         yPosition = pos.isDrag
-  //           ? pos.yBottom - height
-  //           : pos.firstYPos
-  //             ? pos.yBottom - height + pos.firstYPos
-  //             : pos.yBottom - height;
-  //         return yPosition;
-  //       }
-  //     }
-  //   };
-  //   if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
-  //     const bottomY = yBottom(xyPosData);
-  //     singleSign = {
-  //       pdfFile: pdfBase64Url,
-  //       docId: docId,
-  //       userId: signerUserId,
-  //       sign: {
-  //         Base64: base64Url,
-  //         Left: xPos(xyPosData),
-  //         Bottom: bottomY,
-  //         Width: xyPosData.Width ? xyPosData.Width : 150,
-  //         Height: height,
-  //         Page: pageNo
-  //       }
-  //     };
-  //   } else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-  //     singleSign = {
-  //       pdfFile: base64Url,
-  //       docId: docId,
-  //       userId: signerUserId
-  //     };
-  //   }
-
-  //   await axios
-  //     .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-  //         sessionToken: localStorage.getItem("accesstoken")
-  //       }
-  //     })
-  //     .then((Listdata) => {
-  //       const json = Listdata.data;
-
-  //       if (json.result.data) {
-  //         getDocumentDetails();
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       alert("something went wrong");
-  //     });
-  // };
 
   //function for change page
   function changePage(offset) {
@@ -851,60 +730,6 @@ function EmbedPdfImage() {
     );
   };
 
-  // //function for resize image and update width and height
-  // const handleImageResize = (ref, key, direction, position) => {
-  //   const updateFilter = xyPostion[index].pos.filter(
-  //     (data, ind) => data.key === key && data.Width && data.Height
-  //   );
-
-  //   if (updateFilter.length > 0) {
-  //     const getXYdata = xyPostion[index].pos;
-  //     const getPosData = getXYdata;
-  //     const addSign = getPosData.map((url, ind) => {
-  //       if (url.key === key) {
-  //         return {
-  //           ...url,
-  //           Width: ref.offsetWidth,
-  //           Height: ref.offsetHeight,
-  //           xPosition: position.x
-  //         };
-  //       }
-  //       return url;
-  //     });
-
-  //     const newUpdateUrl = xyPostion.map((obj, ind) => {
-  //       if (ind === index) {
-  //         return { ...obj, pos: addSign };
-  //       }
-  //       return obj;
-  //     });
-
-  //     setXyPostion(newUpdateUrl);
-  //   } else {
-  //     const getXYdata = xyPostion[index].pos;
-
-  //     const getPosData = getXYdata;
-
-  //     const addSign = getPosData.map((url, ind) => {
-  //       if (url.key === key) {
-  //         return {
-  //           ...url,
-  //           Width: ref.offsetWidth,
-  //           Height: ref.offsetHeight
-  //         };
-  //       }
-  //       return url;
-  //     });
-
-  //     const newUpdateUrl = xyPostion.map((obj, ind) => {
-  //       if (ind === index) {
-  //         return { ...obj, pos: addSign };
-  //       }
-  //       return obj;
-  //     });
-  //     setXyPostion(newUpdateUrl);
-  //   }
-  // };
   return (
     <DndProvider backend={HTML5Backend}>
       {isLoading.isLoad ? (

@@ -455,8 +455,8 @@ export const multiSignEmbed = async (
       page.drawImage(img, {
         x: xPos(imgUrlList[id]),
         y: yPos(imgUrlList[id]),
-        width: signyourself ? imgWidth * scale : imgWidth,
-        height: signyourself ? imgHeight * scale : imgHeight
+        width: imgWidth * scale,
+        height: imgHeight * scale
       });
     });
   }
@@ -498,7 +498,8 @@ export const handleImageResize = (
   pageNumber,
   setSignerPos,
   pdfOriginalWidth,
-  containerWH
+  containerWH,
+  setIsResize
 ) => {
   const filterSignerPos = signerPos.filter(
     (data) => data.signerObjId === signerId
@@ -520,14 +521,13 @@ export const handleImageResize = (
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((url, ind) => {
           if (url.key === key) {
-            console.log("url", url);
             return {
               ...url,
               Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
               Height: !url.isMobile
                 ? ref.offsetHeight * scale
-                : ref.offsetHeight,
-              xPosition: position.x
+                : ref.offsetHeight
+              // xPosition: position.x
             };
           }
           return url;
@@ -584,6 +584,7 @@ export const handleImageResize = (
       }
     }
   }
+  setIsResize && setIsResize(false);
 };
 
 //function for resize image and update width and height for sign-yourself
@@ -601,7 +602,6 @@ export const handleSignYourselfImageResize = (
   const updateFilter = xyPostion[index].pos.filter(
     (data) => data.key === key && data.Width && data.Height
   );
-  // console.log(" position.x", position.x)
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH;
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
@@ -611,12 +611,13 @@ export const handleSignYourselfImageResize = (
     const getPosData = getXYdata;
     const addSign = getPosData.map((url, ind) => {
       if (url.key === key) {
-        console.log("url", url);
         return {
           ...url,
-          Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
-          Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight,
-          xPosition: position.xpos
+          // Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
+          // Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight,
+          Width: ref.offsetWidth,
+          Height: ref.offsetHeight
+          //  xPosition: position.xpos
         };
       }
       return url;
@@ -639,8 +640,10 @@ export const handleSignYourselfImageResize = (
       if (url.key === key) {
         return {
           ...url,
-          Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
-          Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight
+          // Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
+          // Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight
+          Width: ref.offsetWidth,
+          Height: ref.offsetHeight
         };
       }
       return url;
@@ -740,6 +743,8 @@ export const signPdfFun = async (
         }
       }
     };
+    const imgWidth = xyPosData.Width ? xyPosData.Width * scale : 150 * scale;
+    const imgHeight = height * scale;
     const bottomY = yBottom(xyPosData);
     signgleSign = {
       pdfFile: pdfBase64Url,
@@ -749,8 +754,8 @@ export const signPdfFun = async (
         Base64: base64Url,
         Left: xPos(xyPosData),
         Bottom: bottomY,
-        Width: xyPosData.Width ? xyPosData.Width : 150,
-        Height: height,
+        Width: imgWidth,
+        Height: imgHeight,
         Page: pageNo
       }
     };
@@ -777,7 +782,7 @@ export const signPdfFun = async (
     .then((Listdata) => {
       const json = Listdata.data;
       const res = json.result;
-      console.log("res", res);
+      // console.log("res", res);
       return res;
     })
     .catch((err) => {

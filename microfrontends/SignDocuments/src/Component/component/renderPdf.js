@@ -9,7 +9,6 @@ import {
   handleSignYourselfImageResize
 } from "../../utils/Utils";
 import EmailToast from "./emailToast";
- 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -46,7 +45,8 @@ function RenderPdf({
   setSignerPos,
   setXyPostion,
   index,
-  containerWH
+  containerWH,
+  setIsResize
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -443,13 +443,17 @@ function RenderPdf({
                                           x: pos.xPosition,
                                           y: pos.yPosition
                                         }}
-                                        onResize={(
+                                        onResizeStart={() => {
+                                          setIsResize(true);
+                                        }}
+                                        onResizeStop={(
                                           e,
                                           direction,
                                           ref,
                                           delta,
                                           position
                                         ) => {
+                                          e.stopPropagation();
                                           handleImageResize(
                                             ref,
                                             pos.key,
@@ -459,7 +463,8 @@ function RenderPdf({
                                             pageNumber,
                                             setSignerPos,
                                             pdfOriginalWidth,
-                                            containerWH
+                                            containerWH,
+                                            setIsResize
                                           );
                                         }}
                                       >
@@ -853,7 +858,10 @@ function RenderPdf({
                                             x: pos.xPosition,
                                             y: pos.yPosition
                                           }}
-                                          onResize={(
+                                          onResizeStart={() => {
+                                            setIsResize(true);
+                                          }}
+                                          onResizeStop={(
                                             e,
                                             direction,
                                             ref,
@@ -869,7 +877,8 @@ function RenderPdf({
                                               pageNumber,
                                               setSignerPos,
                                               pdfOriginalWidth,
-                                              containerWH
+                                              containerWH,
+                                              setIsResize
                                             );
                                           }}
                                         >
