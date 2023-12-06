@@ -989,6 +989,7 @@ function SignYourSelf() {
               currentSigner={true}
               alreadySign={pdfUrl ? true : false}
               isSignYourself={true}
+              setIsEmail={setIsEmail}
             />
 
             {/* className="hidePdf" */}

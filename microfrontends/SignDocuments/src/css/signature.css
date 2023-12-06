@@ -8,7 +8,24 @@
 .penContainer {
   width: 460px;
 }
-
+.mailBtn{
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+    padding: 3px 15px !important;
+    background-color: rgb(79 190 241);
+    border: none !important;
+    color: white !important;
+}
+.mailBtn:hover {
+  box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+.emailToast{
+  position: absolute;
+  z-index: 10;
+  background: #aeedae;
+  padding: 0 3px 3px 3px;
+  margin: 2px;
+  border-radius: 2px;
+}
 .signatureBtn {
   border: 1.5px solid #47a3ad;
   margin-bottom: 10px;
