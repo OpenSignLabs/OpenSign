@@ -21,7 +21,8 @@ import {
   contractDocument,
   urlValidator,
   multiSignEmbed,
-  embedDocId
+  embedDocId,
+  signPdfFun
 } from "../utils/Utils";
 import Tour from "reactour";
 import Signedby from "./component/signedby";
@@ -448,8 +449,28 @@ function EmbedPdfImage() {
                   ""
                 );
 
-                //function for call to embed signature in pdf and get digital signature pdf
-                signPdfFun(newImgUrl, docId, data, pdfBase64, pageNo);
+                //function for embed signature in pdf and get digital signature pdf
+                signPdfFun(
+                  newImgUrl,
+                  docId,
+                  signerUserId,
+                  pdfOriginalWidth,
+                  xyPostion,
+                  data,
+                  pdfBase64,
+                  pageNo,
+                  containerWH
+                )
+                  .then((res) => {
+                    if (res && res.status === "success") {
+                      getDocumentDetails();
+                    } else {
+                      alert("something went wrong");
+                    }
+                  })
+                  .catch((err) => {
+                    alert("something went wrong!");
+                  });
               })
               .catch((error) => {
                 console.error("Error:", error);
@@ -466,137 +487,34 @@ function EmbedPdfImage() {
           pngUrl,
           pdfDoc,
           pdfOriginalWidth,
-          false
+          false,
+          containerWH
         );
-        signPdfFun(pdfBytes, docId);
+
+        //function for embed signature in pdf and get digital signature pdf
+        signPdfFun(
+          pdfBytes,
+          docId,
+          signerUserId,
+          pdfOriginalWidth,
+          xyPostion,
+          containerWH
+        )
+          .then((res) => {
+            if (res && res.status === "success") {
+              getDocumentDetails();
+            } else {
+              alert("something went wrong!");
+            }
+          })
+          .catch((err) => {
+            alert("something went wrong in query");
+          });
       }
       setIsSignPad(false);
       setXyPostion([]);
     }
   }
-
-  //function for call cloud function signPdf and generate digital signature
-  const signPdfFun = async (
-    base64Url,
-    docId,
-    xyPosData,
-    pdfBase64Url,
-    pageNo
-  ) => {
-    let singleSign;
-    const isMobile = window.innerWidth < 767;
-    const newWidth = window.innerWidth;
-    const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-    const height = xyPosData ? xyPosData.Height : 60;
-    const xPos = (pos) => {
-      //checking both condition mobile and desktop view
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (pos.isMobile) {
-          const x = pos.xPosition * (pos.scale / scale);
-          return x * scale + 50;
-        } else {
-          const x = pos.xPosition / scale;
-          return x * scale;
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-        if (pos.isMobile) {
-          const x = pos.xPosition * pos.scale + 50;
-          return x;
-        } else {
-          return pos.xPosition;
-        }
-      }
-    };
-
-    const yBottom = (pos) => {
-      let yPosition;
-      //checking both condition mobile and desktop view
-
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (pos.isMobile) {
-          const y = pos.yPosition * (pos.scale / scale);
-          yPosition = pos.isDrag
-            ? y * scale - height
-            : pos.firstYPos
-              ? y * scale - height + pos.firstYPos
-              : y * scale - height;
-          return yPosition;
-        } else {
-          const y = pos.yBottom / scale;
-
-          yPosition = pos.isDrag
-            ? y * scale - height
-            : pos.firstYPos
-              ? y * scale - height + pos.firstYPos
-              : y * scale - height;
-          return yPosition;
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-        if (pos.isMobile) {
-          const y = pos.yBottom * pos.scale;
-
-          yPosition = pos.isDrag
-            ? y - height
-            : pos.firstYPos
-              ? y - height + pos.firstYPos
-              : y - height;
-          return yPosition;
-        } else {
-          yPosition = pos.isDrag
-            ? pos.yBottom - height
-            : pos.firstYPos
-              ? pos.yBottom - height + pos.firstYPos
-              : pos.yBottom - height;
-          return yPosition;
-        }
-      }
-    };
-    if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
-      const bottomY = yBottom(xyPosData);
-      singleSign = {
-        pdfFile: pdfBase64Url,
-        docId: docId,
-        userId: signerUserId,
-        sign: {
-          Base64: base64Url,
-          Left: xPos(xyPosData),
-          Bottom: bottomY,
-          Width: xyPosData.Width ? xyPosData.Width : 150,
-          Height: height,
-          Page: pageNo
-        }
-      };
-    } else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-      singleSign = {
-        pdfFile: base64Url,
-        docId: docId,
-        userId: signerUserId
-      };
-    }
-
-    await axios
-      .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          sessionToken: localStorage.getItem("accesstoken")
-        }
-      })
-      .then((Listdata) => {
-        const json = Listdata.data;
-
-        if (json.result.data) {
-          getDocumentDetails();
-        }
-      })
-      .catch((err) => {
-        alert("something went wrong");
-      });
-  };
 
   //function for change page
   function changePage(offset) {
@@ -870,9 +788,10 @@ function EmbedPdfImage() {
           {/* pdf render view */}
           <div
             style={{
-              marginLeft: !isGuestSigner && pdfOriginalWidth > 500 && "20px",
-              marginRight: !isGuestSigner && pdfOriginalWidth > 500 && "20px"
+              marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
+              marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
+            ref={divRef}
           >
             {/* this modal is used show this document is already sign */}
             <Modal
@@ -948,25 +867,29 @@ function EmbedPdfImage() {
               decline={true}
               alreadySign={pdfUrl ? true : false}
             />
-
-            <RenderPdf
-              pageNumber={pageNumber}
-              pdfOriginalWidth={pdfOriginalWidth}
-              pdfNewWidth={pdfNewWidth}
-              setIsSignPad={setIsSignPad}
-              setIsStamp={setIsStamp}
-              setSignKey={setSignKey}
-              pdfDetails={signedPdfData}
-              xyPostion={xyPostion}
-              successEmail={false}
-              pdfUrl={pdfUrl}
-              numPages={numPages}
-              pageDetails={pageDetails}
-              recipient={true}
-              isAlreadySign={isAlreadySign}
-              setPdfLoadFail={setPdfLoadFail}
-              pdfLoadFail={pdfLoadFail}
-            />
+            {containerWH && (
+              <RenderPdf
+                pageNumber={pageNumber}
+                pdfOriginalWidth={pdfOriginalWidth}
+                pdfNewWidth={pdfNewWidth}
+                setIsSignPad={setIsSignPad}
+                setIsStamp={setIsStamp}
+                setSignKey={setSignKey}
+                pdfDetails={signedPdfData}
+                xyPostion={xyPostion}
+                successEmail={false}
+                pdfUrl={pdfUrl}
+                numPages={numPages}
+                pageDetails={pageDetails}
+                recipient={true}
+                isAlreadySign={isAlreadySign}
+                setPdfLoadFail={setPdfLoadFail}
+                pdfLoadFail={pdfLoadFail}
+                setXyPostion={setXyPostion}
+                index={index}
+                containerWH={containerWH}
+              />
+            )}
           </div>
 
           {!pdfUrl ? (
