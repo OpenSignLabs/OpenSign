@@ -296,7 +296,7 @@ function PdfRequestFiles() {
         }
       }
 
-      if (checkSignUrl && checkSignUrl.length > 0) {
+      if (checkSignUrl && checkSignUrl.length == 0) {
         alert("Please complete your signature!");
       } else {
         setIsUiLoading(true);
@@ -348,17 +348,16 @@ function PdfRequestFiles() {
                   );
 
                   //function for call to embed signature in pdf and get digital signature pdf
-
                   signPdfFun(
                     newImgUrl,
                     documentId,
                     signerObjectId,
                     pdfOriginalWidth,
                     pngUrl,
+                    containerWH,
                     data,
                     pdfBase64,
-                    pageNo,
-                    containerWH
+                    pageNo
                   )
                     .then((res) => {
                       if (res && res.status === "success") {
@@ -390,9 +389,10 @@ function PdfRequestFiles() {
             pngUrl,
             pdfDoc,
             pdfOriginalWidth,
-            false
+            false,
+            containerWH
           );
-
+          // console.log(pdfBytes)
           //function for call to embed signature in pdf and get digital signature pdf
           signPdfFun(
             pdfBytes,

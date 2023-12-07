@@ -1,6 +1,7 @@
 import axios from "axios";
 import { $ } from "select-dom";
 import { rgb } from "pdf-lib";
+const isMobile = window.innerWidth < 767;
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
   const blob = await data.blob();
@@ -342,7 +343,83 @@ export function modalAlign() {
     modal.style.top = window.innerHeight / 3 + "px";
   }
 }
+export const containerWidth = (pos, scale, signyourself) => {
+  let width;
+  if (signyourself) {
+    if (isMobile) {
+      return pos.Width * scale;
+    } else {
+      return pos.Width;
+    }
+  } else {
+    if (isMobile) {
+      if (pos.isMobile) {
+        width = pos.Width ? pos.Width * scale : 150 * scale;
+        return width;
+      } else {
+        if (pos.IsResize) {
+          width = pos.Width ? pos.Width * scale : 150 * scale;
+          return width;
+        } else {
+          width = pos.Width ? pos.Width : 150;
+          return width;
+        }
+      }
+    } else {
+      if (pos.isMobile) {
+        if (pos.IsResize) {
+          width = pos.Width ? pos.Width : 150;
+          return width;
+        } else {
+          width = pos.Width ? pos.Width * pos.scale : 150 * pos.scale;
 
+          return width;
+        }
+      } else {
+        width = pos.Width ? pos.Width : 150;
+        return width;
+      }
+    }
+  }
+};
+export const containerHeight = (pos, scale, signyourself) => {
+  let height;
+  if (signyourself) {
+    if (isMobile) {
+      return pos.Height * scale;
+    } else {
+      return pos.Height;
+    }
+  } else {
+    if (isMobile) {
+      if (pos.isMobile) {
+        height = pos.Height ? pos.Height * scale : 60 * scale;
+        return height;
+      } else {
+        if (pos.IsResize) {
+          height = pos.Height ? pos.Height * scale : 60 * scale;
+          return height;
+        } else {
+          height = pos.Height ? pos.Height : 60;
+          return height;
+        }
+      }
+    } else {
+      if (pos.isMobile) {
+        if (pos.IsResize) {
+          height = pos.Height ? pos.Height : 60;
+          return height;
+        } else {
+          height = pos.Height ? pos.Height * pos.scale : 60 * pos.scale;
+          return height;
+        }
+      } else {
+        height = pos.Height ? pos.Height : 60;
+        return height;
+      }
+    }
+  }
+};
 //function for embed multiple signature using pdf-lib
 export const multiSignEmbed = async (
   pngUrl,
@@ -352,6 +429,9 @@ export const multiSignEmbed = async (
   containerWH
 ) => {
   for (let i = 0; i < pngUrl.length; i++) {
+    const isMobile = window.innerWidth < 767;
+    const newWidth = containerWH.width;
+    const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const pageNo = pngUrl[i].pageNumber;
     const imgUrlList = pngUrl[i].pos;
     const pages = pdfDoc.getPages();
@@ -384,10 +464,9 @@ export const multiSignEmbed = async (
         img = await pdfDoc.embedPng(imgData);
       }
       const imgHeight = imgUrlList[id].Height ? imgUrlList[id].Height : 60;
-      const imgWidth = imgUrlList[id].Width ? imgUrlList[id].Width : 150;
-      const isMobile = window.innerWidth < 767;
-      const newWidth = containerWH.width;
-      const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+      const scaleWidth = containerWidth(imgUrlList[id], scale, signyourself);
+      const scaleHeight = containerHeight(imgUrlList[id], scale, signyourself);
+
       const xPos = (pos) => {
         if (signyourself) {
           if (isMobile) {
@@ -438,13 +517,22 @@ export const multiSignEmbed = async (
               const y = pos.yPosition * (pos.scale / scale);
               return page.getHeight() - y * scale - imgHeight * scale;
             } else {
-              return page.getHeight() - y * scale - imgHeight * scale;
+              if (pos.IsResize) {
+                return page.getHeight() - y * scale - imgHeight * scale;
+              } else {
+                return page.getHeight() - y * scale - imgHeight;
+              }
             }
           } else {
             //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
             if (pos.isMobile) {
-              const y = pos.yPosition * pos.scale;
-              return page.getHeight() - y - imgHeight;
+              if (pos.IsResize) {
+                const y = pos.yPosition * pos.scale;
+                return page.getHeight() - y - imgHeight;
+              } else {
+                const y = pos.yPosition * pos.scale;
+                return page.getHeight() - y - imgHeight * pos.scale;
+              }
             } else {
               return page.getHeight() - pos.yPosition - imgHeight;
             }
@@ -455,12 +543,14 @@ export const multiSignEmbed = async (
       page.drawImage(img, {
         x: xPos(imgUrlList[id]),
         y: yPos(imgUrlList[id]),
-        width: imgWidth * scale,
-        height: imgHeight * scale
+        width: scaleWidth,
+        height: scaleHeight
       });
     });
   }
+
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+
   return pdfBytes;
 };
 //function for embed document id
@@ -499,6 +589,7 @@ export const handleImageResize = (
   setSignerPos,
   pdfOriginalWidth,
   containerWH,
+  showResize,
   setIsResize
 ) => {
   const filterSignerPos = signerPos.filter(
@@ -523,11 +614,9 @@ export const handleImageResize = (
           if (url.key === key) {
             return {
               ...url,
-              Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
-              Height: !url.isMobile
-                ? ref.offsetHeight * scale
-                : ref.offsetHeight
-              // xPosition: position.x
+              Width: ref.offsetWidth,
+              Height: ref.offsetHeight,
+              IsResize: showResize ? true : false
             };
           }
           return url;
@@ -550,17 +639,14 @@ export const handleImageResize = (
         setSignerPos(newUpdateSigner);
       } else {
         const getXYdata = getPageNumer[0].pos;
-
         const getPosData = getXYdata;
-
         const addSignPos = getPosData.map((url, ind) => {
           if (url.key === key) {
             return {
               ...url,
-              Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
-              Height: !url.isMobile
-                ? ref.offsetHeight * scale
-                : ref.offsetHeight
+              Width: ref.offsetWidth,
+              Height: ref.offsetHeight,
+              IsResize: showResize ? true : false
             };
           }
           return url;
@@ -603,7 +689,8 @@ export const handleSignYourselfImageResize = (
     (data) => data.key === key && data.Width && data.Height
   );
   const isMobile = window.innerWidth < 767;
-  const newWidth = containerWH;
+  const newWidth = containerWH.width;
+
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
 
   if (updateFilter.length > 0) {
@@ -613,11 +700,11 @@ export const handleSignYourselfImageResize = (
       if (url.key === key) {
         return {
           ...url,
-          // Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
-          // Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight,
+          // Width: !url.isMobile ? scaleWidth : ref.offsetWidth,
+          // Height: !url.isMobile ? scaleHeight : ref.offsetHeight,
           Width: ref.offsetWidth,
-          Height: ref.offsetHeight
-          //  xPosition: position.xpos
+          Height: ref.offsetHeight,
+          IsResize: true
         };
       }
       return url;
@@ -643,7 +730,8 @@ export const handleSignYourselfImageResize = (
           // Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
           // Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight
           Width: ref.offsetWidth,
-          Height: ref.offsetHeight
+          Height: ref.offsetHeight,
+          IsResize: true
         };
       }
       return url;
@@ -666,14 +754,15 @@ export const signPdfFun = async (
   signerObjectId,
   pdfOriginalWidth,
   signerData,
+  containerWH,
   xyPosData,
   pdfBase64Url,
-  pageNo,
-  containerWH
+  pageNo
 ) => {
   let signgleSign;
-  const isMobile = window.innerWidth < 767;
+
   const newWidth = containerWH.width;
+
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
   if (signerData && signerData.length === 1 && signerData[0].pos.length === 1) {
     const height = xyPosData.Height ? xyPosData.Height : 60;
@@ -715,24 +804,41 @@ export const signPdfFun = async (
           return yPosition;
         } else {
           const y = pos.yBottom / scale;
-
-          yPosition = pos.isDrag
-            ? y * scale - height
-            : pos.firstYPos
-              ? y * scale - height + pos.firstYPos
-              : y * scale - height;
-          return yPosition;
+          if (pos.IsResize) {
+            yPosition = pos.isDrag
+              ? y * scale - height * scale
+              : pos.firstYPos
+                ? y * scale - height * scale + pos.firstYPos
+                : y * scale - height * scale;
+            return yPosition;
+          } else {
+            yPosition = pos.isDrag
+              ? y * scale - height
+              : pos.firstYPos
+                ? y * scale - height + pos.firstYPos
+                : y * scale - height;
+            return yPosition;
+          }
         }
       } else {
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
         if (pos.isMobile) {
           const y = pos.yBottom * pos.scale;
-          yPosition = pos.isDrag
-            ? y - height
-            : pos.firstYPos
-              ? y - height + pos.firstYPos
-              : y - height;
-          return yPosition;
+          if (pos.IsResize) {
+            yPosition = pos.isDrag
+              ? y - height
+              : pos.firstYPos
+                ? y - height + pos.firstYPos
+                : y - height;
+            return yPosition;
+          } else {
+            yPosition = pos.isDrag
+              ? y - height * pos.scale
+              : pos.firstYPos
+                ? y - height * pos.scale + pos.firstYPos
+                : y - height * pos.scale;
+            return yPosition;
+          }
         } else {
           yPosition = pos.isDrag
             ? pos.yBottom - height
@@ -743,8 +849,7 @@ export const signPdfFun = async (
         }
       }
     };
-    const imgWidth = xyPosData.Width ? xyPosData.Width * scale : 150 * scale;
-    const imgHeight = height * scale;
+
     const bottomY = yBottom(xyPosData);
     signgleSign = {
       pdfFile: pdfBase64Url,
@@ -754,8 +859,8 @@ export const signPdfFun = async (
         Base64: base64Url,
         Left: xPos(xyPosData),
         Bottom: bottomY,
-        Width: imgWidth,
-        Height: imgHeight,
+        Width: containerWidth(xyPosData, scale),
+        Height: containerHeight(xyPosData, scale),
         Page: pageNo
       }
     };

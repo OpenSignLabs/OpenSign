@@ -59,30 +59,64 @@ function RenderPdf({
     let width;
     if (isMobile) {
       if (!pos.isMobile) {
-        width = pos.Width / scale ? pos.Width / scale : 150 / scale;
-        return width;
+        if (pos.IsResize) {
+          width = pos.Width ? pos.Width : 150;
+          return width;
+        } else {
+          width = pos.Width / scale ? pos.Width / scale : 150 / scale;
+          // width =
+          //   pos.Width * pos.scale ? pos.Width * pos.scale : 150 * pos.scale;
+          return width;
+        }
       } else {
         width = pos.Width ? pos.Width : 150;
         return width;
       }
     } else {
-      width = pos.Width ? pos.Width : 150;
-      return width;
+      if (pos.isMobile) {
+        if (pos.IsResize) {
+          width = pos.Width ? pos.Width : 150;
+          return width;
+        } else {
+          width = pos.Width ? pos.Width * pos.scale : 150 * pos.scale;
+          return width;
+        }
+      } else {
+        width = pos.Width ? pos.Width : 150;
+        return width;
+      }
     }
   };
   const posHeight = (pos) => {
-    let width;
+    let height;
     if (isMobile) {
       if (!pos.isMobile) {
-        width = pos.Height / scale ? pos.Height / scale : 60 / scale;
-        return width;
+        if (pos.IsResize) {
+          // height = pos.Height ? pos.Height / scale : 60 / scale;
+          height = pos.Height ? pos.Height : 60;
+          return height;
+        } else {
+          height = pos.Height ? pos.Height / scale : 60 / scale;
+          // height = pos.Height ? pos.Height * pos.scale : 60 * pos.scale;
+          return height;
+        }
       } else {
-        width = pos.Height ? pos.Height : 60;
-        return width;
+        height = pos.Height ? pos.Height : 60;
+        return height;
       }
     } else {
-      width = pos.Height ? pos.Height : 60;
-      return width;
+      if (pos.isMobile) {
+        if (pos.IsResize) {
+          height = pos.Height ? pos.Height : 60;
+          return height;
+        } else {
+          height = pos.Height ? pos.Height * pos.scale : 60 * pos.scale;
+          return height;
+        }
+      } else {
+        height = pos.Height ? pos.Height : 60;
+        return height;
+      }
     }
   };
 
@@ -99,7 +133,7 @@ function RenderPdf({
       if (isMobile) {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (!pos.isMobile) {
-          return pos.xPosition / scale - 32;
+          return pos.xPosition / scale;
         }
         //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
         else {
@@ -169,7 +203,8 @@ function RenderPdf({
                             data.signerObjId === signerObjectId
                               ? "pointer"
                               : "not-allowed",
-                          borderColor: themeColor()
+                          borderColor: themeColor(),
+                          background: data.blockColor
                         }}
                         className="placeholderBlock"
                         size={{
@@ -186,7 +221,8 @@ function RenderPdf({
                             pageNumber,
                             setSignerPos,
                             pdfOriginalWidth,
-                            containerWH
+                            containerWH,
+                            true
                           );
                         }}
                         lockAspectRatio={pos.Width && 2.5}
@@ -262,6 +298,46 @@ function RenderPdf({
     }
   };
 
+  const calculateWidth = (pos) => {
+    let width;
+    if (isMobile) {
+      width = pos.Width ? pos.Width * scale : 150 * scale;
+      return width;
+    } else {
+      if (pos.isMobile) {
+        if (pos.IsResize) {
+          width = pos.Width ? pos.Width : 150;
+          return width;
+        } else {
+          width = pos.Width ? pos.Width * pos.scale : 150 * pos.scale;
+          return width;
+        }
+      } else {
+        width = pos.Width ? pos.Width : 150;
+        return width;
+      }
+    }
+  };
+  const calculateHeight = (pos) => {
+    let height;
+    if (isMobile) {
+      height = pos.Height ? pos.Height * scale : 60 * scale;
+      return height;
+    } else {
+      if (pos.isMobile) {
+        if (pos.IsResize) {
+          height = pos.Height ? pos.Height : 60;
+          return height;
+        } else {
+          height = pos.Height ? pos.Height * pos.scale : 60 * pos.scale;
+          return height;
+        }
+      } else {
+        height = pos.Height ? pos.Height : 60;
+        return height;
+      }
+    }
+  };
   return (
     <>
       {isMobile && scale ? (
@@ -413,7 +489,8 @@ function RenderPdf({
                                         bounds="parent"
                                         style={{
                                           cursor: "all-scroll",
-                                          borderColor: themeColor()
+                                          borderColor: themeColor(),
+                                          background: data.blockColor
                                         }}
                                         className="placeholderBlock"
                                         onDrag={() =>
@@ -464,6 +541,7 @@ function RenderPdf({
                                             setSignerPos,
                                             pdfOriginalWidth,
                                             containerWH,
+                                            false,
                                             setIsResize
                                           );
                                         }}
@@ -739,8 +817,8 @@ function RenderPdf({
                                   }}
                                   className="placeholderBlock"
                                   size={{
-                                    width: pos.Width ? pos.Width : 150,
-                                    height: pos.Height ? pos.Height : 60
+                                    width: calculateWidth(pos),
+                                    height: calculateHeight(pos)
                                   }}
                                   lockAspectRatio={pos.Width && 2.5}
                                   //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
@@ -828,6 +906,7 @@ function RenderPdf({
                                           bounds="parent"
                                           style={{
                                             cursor: "all-scroll",
+                                            background: data.blockColor,
                                             borderColor: themeColor()
                                           }}
                                           className="placeholderBlock"
@@ -878,6 +957,7 @@ function RenderPdf({
                                               setSignerPos,
                                               pdfOriginalWidth,
                                               containerWH,
+                                              false,
                                               setIsResize
                                             );
                                           }}

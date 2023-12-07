@@ -396,7 +396,7 @@ function EmbedPdfImage() {
       }
     }
 
-    if (checkSignUrl && checkSignUrl.length > 0) {
+    if (checkSignUrl && checkSignUrl.length == 0) {
       alert("Please complete your signature!");
     } else {
       const loadObj = {
@@ -456,10 +456,10 @@ function EmbedPdfImage() {
                   signerUserId,
                   pdfOriginalWidth,
                   xyPostion,
+                  containerWH,
                   data,
                   pdfBase64,
-                  pageNo,
-                  containerWH
+                  pageNo
                 )
                   .then((res) => {
                     if (res && res.status === "success") {
@@ -508,7 +508,7 @@ function EmbedPdfImage() {
             }
           })
           .catch((err) => {
-            alert("something went wrong in query");
+            alert("something went wrong in query", err);
           });
       }
       setIsSignPad(false);
