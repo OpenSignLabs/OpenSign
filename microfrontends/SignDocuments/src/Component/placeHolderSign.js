@@ -65,6 +65,7 @@ function PlaceHolderSign() {
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
   const [isResize, setIsResize] = useState(false);
+  const [isAlreadyPlace, setIsAlreadyPlace] = useState(false);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -181,8 +182,12 @@ function PlaceHolderSign() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      const alreadyPlaceholder =
+        documentData[0].Placeholders && documentData[0].Placeholders;
+      if (alreadyPlaceholder && alreadyPlaceholder.length > 0) {
+        setIsAlreadyPlace(true);
+      }
       setPdfDetails(documentData);
-
       const currEmail = documentData[0].ExtUserPtr.Email;
       const filterCurrEmail = documentData[0].Signers.filter(
         (data) => data.Email === currEmail
@@ -916,6 +921,7 @@ function PlaceHolderSign() {
                 )}
               </Modal.Footer>
             </Modal>
+            <ModalComponent isShow={isAlreadyPlace} type={"alreadyPlace"} />
             <ModalComponent
               isShow={isShowEmail}
               type={"signersAlert"}

@@ -407,7 +407,7 @@ function SignYourSelf() {
       }
     }
 
-    if (checkSignUrl && checkSignUrl.length > 0) {
+    if (checkSignUrl && checkSignUrl.length == 0) {
       alert("Please complete your signature!");
     } else {
       setIsCeleb(true);
@@ -479,7 +479,7 @@ function SignYourSelf() {
           true,
           containerWH
         );
-
+        //function for call to embed signature in pdf and get digital signature pdf
         signPdfFun(pdfBytes, documentId);
       }
       setIsSignPad(false);
