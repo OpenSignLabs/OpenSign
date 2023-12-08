@@ -34,6 +34,7 @@ import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
 import { modalAlign } from "../utils/Utils";
+import AlertComponent from "./component/alertComponent";
 function EmbedPdfImage() {
   const { id, contactBookId } = useParams();
   const [isSignPad, setIsSignPad] = useState(false);
@@ -65,7 +66,6 @@ function EmbedPdfImage() {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [signerUserId, setSignerUserId] = useState();
   const [tourStatus, setTourStatus] = useState([]);
-  const [completePdfData, setCompletePdfData] = useState([]);
   const [isExpired, setIsExpired] = useState(false);
   const [noData, setNoData] = useState(false);
   const [contractName, setContractName] = useState("");
@@ -77,6 +77,7 @@ function EmbedPdfImage() {
     type: "load"
   });
   const [containerWH, setContainerWH] = useState({});
+  const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const docId = id && id;
   const isMobile = window.innerWidth < 767;
   const index = xyPostion.findIndex((object) => {
@@ -92,8 +93,7 @@ function EmbedPdfImage() {
     : `${localStorage.getItem("UserInformation")}` &&
       `${localStorage.getItem("UserInformation")}`;
   const jsonSender = JSON.parse(senderUser);
-  //check isGuestSigner is present in local if yes than handle login flow header in mobile view
-  const isGuestSigner = localStorage.getItem("isGuestSigner");
+
   useEffect(() => {
     getDocumentDetails();
   }, []);
@@ -202,7 +202,6 @@ function EmbedPdfImage() {
         setIsAlreadySign(alreadySign);
         setPdfUrl(documentData[0].SignedUrl);
         setSignedPdfData(documentData);
-        setCompletePdfData(documentData);
       } else if (declined) {
         const currentDecline = {
           currnt: "another",
@@ -396,8 +395,11 @@ function EmbedPdfImage() {
       }
     }
 
-    if (checkSignUrl && checkSignUrl.length == 0) {
-      alert("Please complete your signature!");
+    if (checkSignUrl && checkSignUrl.length > 0) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
     } else {
       const loadObj = {
         isLoad: true,
@@ -428,9 +430,10 @@ function EmbedPdfImage() {
           await embedDocId(pdfDoc, docId, allPages);
           pdfBase64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
         }
-        for (let i = 0; i < xyPostion.length; i++) {
-          const imgUrlList = pngUrl[i].pos;
-          const pageNo = pngUrl[i].pageNumber;
+
+        for (let xyData of xyPostion) {
+          const imgUrlList = xyData.pos;
+          const pageNo = xyData.pageNumber;
           imgUrlList.map(async (data) => {
             //cheking signUrl is defau;t signature url of custom url
             let ImgUrl = data.SignUrl;
@@ -457,6 +460,7 @@ function EmbedPdfImage() {
                   pdfOriginalWidth,
                   xyPostion,
                   containerWH,
+                  setIsAlert,
                   data,
                   pdfBase64,
                   pageNo
@@ -465,11 +469,17 @@ function EmbedPdfImage() {
                     if (res && res.status === "success") {
                       getDocumentDetails();
                     } else {
-                      alert("something went wrong");
+                      setIsAlert({
+                        isShow: true,
+                        alertMessage: "something went wrong"
+                      });
                     }
                   })
                   .catch((err) => {
-                    alert("something went wrong!");
+                    setIsAlert({
+                      isShow: true,
+                      alertMessage: "something went wrong"
+                    });
                   });
               })
               .catch((error) => {
@@ -480,6 +490,7 @@ function EmbedPdfImage() {
       }
       //else if signature is more than one then embed all sign with the use of pdf-lib
       else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
+        const flag = false;
         //embed document's object id to all pages in pdf document
         await embedDocId(pdfDoc, docId, allPages);
         //embed multi signature in pdf
@@ -487,29 +498,35 @@ function EmbedPdfImage() {
           pngUrl,
           pdfDoc,
           pdfOriginalWidth,
-          false,
+          flag,
           containerWH
         );
 
         //function for embed signature in pdf and get digital signature pdf
-        signPdfFun(
-          pdfBytes,
-          docId,
-          signerUserId,
-          pdfOriginalWidth,
-          xyPostion,
-          containerWH
-        )
-          .then((res) => {
-            if (res && res.status === "success") {
-              getDocumentDetails();
-            } else {
-              alert("something went wrong!");
-            }
-          })
-          .catch((err) => {
-            alert("something went wrong in query", err);
+        try {
+          const res = await signPdfFun(
+            pdfBytes,
+            docId,
+            signerUserId,
+            pdfOriginalWidth,
+            xyPostion,
+            containerWH,
+            setIsAlert
+          );
+          if (res && res.status === "success") {
+            getDocumentDetails();
+          } else {
+            setIsAlert({
+              isShow: true,
+              alertMessage: "something went wrong"
+            });
+          }
+        } catch (err) {
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
           });
+        }
       }
       setIsSignPad(false);
       setXyPostion([]);
@@ -762,6 +779,11 @@ function EmbedPdfImage() {
             footerMessage={isDecline.currnt === "Sure"}
             declineDoc={declineDoc}
             setIsDecline={setIsDecline}
+          />
+          <AlertComponent
+            isShow={isAlert.isShow}
+            alertMessage={isAlert.alertMessage}
+            setIsAlert={setIsAlert}
           />
           {/* this modal is used for show expired alert */}
           <CustomModal

@@ -63,9 +63,7 @@ function RenderPdf({
           width = pos.Width ? pos.Width : 150;
           return width;
         } else {
-          width = pos.Width / scale ? pos.Width / scale : 150 / scale;
-          // width =
-          //   pos.Width * pos.scale ? pos.Width * pos.scale : 150 * pos.scale;
+          width = (pos.Width || 150) / scale;
           return width;
         }
       } else {
@@ -78,7 +76,7 @@ function RenderPdf({
           width = pos.Width ? pos.Width : 150;
           return width;
         } else {
-          width = pos.Width ? pos.Width * pos.scale : 150 * pos.scale;
+          width = (pos.Width || 150) * pos.scale;
           return width;
         }
       } else {
@@ -92,12 +90,10 @@ function RenderPdf({
     if (isMobile) {
       if (!pos.isMobile) {
         if (pos.IsResize) {
-          // height = pos.Height ? pos.Height / scale : 60 / scale;
           height = pos.Height ? pos.Height : 60;
           return height;
         } else {
-          height = pos.Height ? pos.Height / scale : 60 / scale;
-          // height = pos.Height ? pos.Height * pos.scale : 60 * pos.scale;
+          height = (pos.Height || 60) / scale;
           return height;
         }
       } else {
@@ -110,7 +106,7 @@ function RenderPdf({
           height = pos.Height ? pos.Height : 60;
           return height;
         } else {
-          height = pos.Height ? pos.Height * pos.scale : 60 * pos.scale;
+          height = (pos.Height || 60) * pos.scale;
           return height;
         }
       } else {
@@ -298,46 +294,6 @@ function RenderPdf({
     }
   };
 
-  const calculateWidth = (pos) => {
-    let width;
-    if (isMobile) {
-      width = pos.Width ? pos.Width * scale : 150 * scale;
-      return width;
-    } else {
-      if (pos.isMobile) {
-        if (pos.IsResize) {
-          width = pos.Width ? pos.Width : 150;
-          return width;
-        } else {
-          width = pos.Width ? pos.Width * pos.scale : 150 * pos.scale;
-          return width;
-        }
-      } else {
-        width = pos.Width ? pos.Width : 150;
-        return width;
-      }
-    }
-  };
-  const calculateHeight = (pos) => {
-    let height;
-    if (isMobile) {
-      height = pos.Height ? pos.Height * scale : 60 * scale;
-      return height;
-    } else {
-      if (pos.isMobile) {
-        if (pos.IsResize) {
-          height = pos.Height ? pos.Height : 60;
-          return height;
-        } else {
-          height = pos.Height ? pos.Height * pos.scale : 60 * pos.scale;
-          return height;
-        }
-      } else {
-        height = pos.Height ? pos.Height : 60;
-        return height;
-      }
-    }
-  };
   return (
     <>
       {isMobile && scale ? (
@@ -817,8 +773,8 @@ function RenderPdf({
                                   }}
                                   className="placeholderBlock"
                                   size={{
-                                    width: calculateWidth(pos),
-                                    height: calculateHeight(pos)
+                                    width: posWidth(pos),
+                                    height: posHeight(pos)
                                   }}
                                   lockAspectRatio={pos.Width && 2.5}
                                   //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale

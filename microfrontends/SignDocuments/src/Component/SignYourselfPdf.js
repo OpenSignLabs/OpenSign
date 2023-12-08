@@ -33,6 +33,7 @@ import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
 import { modalAlign } from "../utils/Utils";
+import AlertComponent from "./component/alertComponent";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -83,6 +84,7 @@ function SignYourSelf() {
     status: false,
     type: "load"
   });
+  const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
@@ -401,14 +403,22 @@ function SignYourSelf() {
 
     for (let i = 0; i < xyPostion.length; i++) {
       const posData = xyPostion[i].pos.filter((pos) => !pos.SignUrl);
-
       if (posData && posData.length > 0) {
         checkSignUrl.push(posData);
       }
     }
-
-    if (checkSignUrl && checkSignUrl.length == 0) {
-      alert("Please complete your signature!");
+    if (xyPostion.length === 0) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
+      return;
+    } else if (xyPostion.length > 0 && checkSignUrl.length > 0) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
+      return;
     } else {
       setIsCeleb(true);
       setTimeout(() => {
@@ -429,7 +439,7 @@ function SignYourSelf() {
       const pdfDoc = await PDFDocument.load(existingPdfBytes, {
         ignoreEncryption: true
       });
-      const pngUrl = xyPostion;
+
       //checking if signature is only one then send image url in jpeg formate to server
       if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
         //embed document's object id to all pages in pdf document
@@ -437,15 +447,14 @@ function SignYourSelf() {
         const pdfBase64 = await pdfDoc.saveAsBase64({
           useObjectStreams: false
         });
-        for (let i = 0; i < xyPostion.length; i++) {
-          const imgUrlList = xyPostion[i].pos;
-          const pageNo = xyPostion[i].pageNumber;
 
+        for (let xyData of xyPostion) {
+          const imgUrlList = xyData.pos;
+          const pageNo = xyData.pageNumber;
           imgUrlList.map(async (data) => {
             let ImgUrl = data.SignUrl;
             //cheking signUrl is defau;t signature url of custom url
             const checkUrl = urlValidator(ImgUrl);
-
             //if default signature url then convert it in base 64
             if (checkUrl) {
               ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
@@ -469,14 +478,16 @@ function SignYourSelf() {
       }
       //else if signature is more than one then embed all sign with the use of pdf-lib
       else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
+        const flag = false;
         //embed document's object id to all pages in pdf document
         await embedDocId(pdfDoc, documentId, allPages);
+
         //embed multi signature in pdf
         const pdfBytes = await multiSignEmbed(
-          pngUrl,
+          xyPostion,
           pdfDoc,
           pdfOriginalWidth,
-          true,
+          flag,
           containerWH
         );
         //function for call to embed signature in pdf and get digital signature pdf
@@ -500,7 +511,7 @@ function SignYourSelf() {
     let singleSign;
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-    const imgWidth = xyPosData ? xyPosData.Width : 150;
+
     if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
       const height = xyPosData.Height ? xyPosData.Height : 60;
       const bottomY = xyPosData.isDrag
@@ -856,8 +867,12 @@ function SignYourSelf() {
               marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
           >
+            <AlertComponent
+              isShow={isAlert.isShow}
+              alertMessage={isAlert.alertMessage}
+              setIsAlert={setIsAlert}
+            />
             {/* this modal is used show this document is already sign */}
-
             <Modal
               show={showAlreadySignDoc.status}
               onShow={() => modalAlign()}
@@ -921,9 +936,9 @@ function SignYourSelf() {
               isCeleb={isCeleb}
               setIsEmail={setIsEmail}
               pdfName={pdfDetails[0] && pdfDetails[0].Name}
-              signObjId={documentId}
               setSuccessEmail={setSuccessEmail}
               sender={jsonSender}
+              setIsAlert={setIsAlert}
             />
             {/* pdf header which contain funish back button */}
             <Header
