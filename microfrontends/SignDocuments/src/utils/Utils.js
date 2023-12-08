@@ -1,7 +1,9 @@
 import axios from "axios";
 import { $ } from "select-dom";
 import { rgb } from "pdf-lib";
+
 const isMobile = window.innerWidth < 767;
+
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
   const blob = await data.blob();
@@ -428,12 +430,11 @@ export const multiSignEmbed = async (
   signyourself,
   containerWH
 ) => {
-  for (let i = 0; i < pngUrl.length; i++) {
-    const isMobile = window.innerWidth < 767;
+  for (let item of pngUrl) {
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-    const pageNo = pngUrl[i].pageNumber;
-    const imgUrlList = pngUrl[i].pos;
+    const pageNo = item.pageNumber;
+    const imgUrlList = item.pos;
     const pages = pdfDoc.getPages();
     const page = pages[pageNo - 1];
     const images = await Promise.all(
@@ -595,9 +596,7 @@ export const handleImageResize = (
   const filterSignerPos = signerPos.filter(
     (data) => data.signerObjId === signerId
   );
-  const isMobile = window.innerWidth < 767;
-  const newWidth = containerWH;
-  const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+
   if (filterSignerPos.length > 0) {
     const getPlaceHolder = filterSignerPos[0].placeHolder;
     const getPageNumer = getPlaceHolder.filter(
@@ -688,10 +687,6 @@ export const handleSignYourselfImageResize = (
   const updateFilter = xyPostion[index].pos.filter(
     (data) => data.key === key && data.Width && data.Height
   );
-  const isMobile = window.innerWidth < 767;
-  const newWidth = containerWH.width;
-
-  const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
 
   if (updateFilter.length > 0) {
     const getXYdata = xyPostion[index].pos;
@@ -700,8 +695,6 @@ export const handleSignYourselfImageResize = (
       if (url.key === key) {
         return {
           ...url,
-          // Width: !url.isMobile ? scaleWidth : ref.offsetWidth,
-          // Height: !url.isMobile ? scaleHeight : ref.offsetHeight,
           Width: ref.offsetWidth,
           Height: ref.offsetHeight,
           IsResize: true
@@ -727,8 +720,6 @@ export const handleSignYourselfImageResize = (
       if (url.key === key) {
         return {
           ...url,
-          // Width: !url.isMobile ? ref.offsetWidth * scale : ref.offsetWidth,
-          // Height: !url.isMobile ? ref.offsetHeight * scale : ref.offsetHeight
           Width: ref.offsetWidth,
           Height: ref.offsetHeight,
           IsResize: true
@@ -755,14 +746,14 @@ export const signPdfFun = async (
   pdfOriginalWidth,
   signerData,
   containerWH,
+  setIsAlert,
   xyPosData,
   pdfBase64Url,
   pageNo
 ) => {
-  let signgleSign;
+  let singleSign;
 
   const newWidth = containerWH.width;
-
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
   if (signerData && signerData.length === 1 && signerData[0].pos.length === 1) {
     const height = xyPosData.Height ? xyPosData.Height : 60;
@@ -851,7 +842,7 @@ export const signPdfFun = async (
     };
 
     const bottomY = yBottom(xyPosData);
-    signgleSign = {
+    singleSign = {
       pdfFile: pdfBase64Url,
       docId: documentId,
       userId: signerObjectId,
@@ -869,7 +860,7 @@ export const signPdfFun = async (
     signerData.length > 0 &&
     signerData[0].pos.length > 0
   ) {
-    signgleSign = {
+    singleSign = {
       pdfFile: base64Url,
       docId: documentId,
       userId: signerObjectId
@@ -877,7 +868,7 @@ export const signPdfFun = async (
   }
 
   const response = await axios
-    .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, signgleSign, {
+    .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
       headers: {
         "Content-Type": "application/json",
         "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
@@ -887,12 +878,13 @@ export const signPdfFun = async (
     .then((Listdata) => {
       const json = Listdata.data;
       const res = json.result;
-      // console.log("res", res);
       return res;
     })
     .catch((err) => {
-      console.log("axois err ", err);
-      alert("something went wrong");
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong"
+      });
     });
 
   return response;
