@@ -478,7 +478,7 @@ function SignYourSelf() {
       }
       //else if signature is more than one then embed all sign with the use of pdf-lib
       else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-        const flag = false;
+        const flag = true;
         //embed document's object id to all pages in pdf document
         await embedDocId(pdfDoc, documentId, allPages);
 
