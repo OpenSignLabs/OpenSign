@@ -72,6 +72,10 @@ function EmbedPdfImage() {
   const [isDecline, setIsDecline] = useState({
     isDeclined: false
   });
+  const [addDefaultSign, setAddDefaultSign] = useState({
+    isShow: false,
+    alertMessage: ""
+  });
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -483,7 +487,10 @@ function EmbedPdfImage() {
                   });
               })
               .catch((error) => {
-                console.error("Error:", error);
+                setIsAlert({
+                  isShow: true,
+                  alertMessage: "something went wrong"
+                });
               });
           });
         }
@@ -632,7 +639,10 @@ function EmbedPdfImage() {
         }
       })
       .catch((err) => {
-        console.log("error updating field is decline ", err);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
       });
   };
 
@@ -658,7 +668,10 @@ function EmbedPdfImage() {
     }
 
     setXyPostion(xyDefaultPos);
-    setIsAlreadySign({ status: false });
+    setAddDefaultSign({
+      isShow: false,
+      alertMessage: ""
+    });
   };
 
   //function for update TourStatus
@@ -785,6 +798,15 @@ function EmbedPdfImage() {
             alertMessage={isAlert.alertMessage}
             setIsAlert={setIsAlert}
           />
+          <AlertComponent
+            isShow={addDefaultSign.isShow}
+            alertMessage={addDefaultSign.alertMessage}
+            setIsAlert={setAddDefaultSign}
+            isdefaultSign={true}
+            addDefaultSignature={addDefaultSignature}
+            headBG={themeColor()}
+          />
+
           {/* this modal is used for show expired alert */}
           <CustomModal
             containerWH={containerWH}
@@ -842,18 +864,6 @@ function EmbedPdfImage() {
                 >
                   Close
                 </button>
-                {isAlreadySign.sure && (
-                  <button
-                    onClick={() => addDefaultSignature()}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    className="finishBtn"
-                  >
-                    Yes
-                  </button>
-                )}
               </Modal.Footer>
             </Modal>
             {/* this is modal of signature pad */}
@@ -927,6 +937,7 @@ function EmbedPdfImage() {
                 xyPostion={xyPostion}
                 setXyPostion={setXyPostion}
                 setShowAlreadySignDoc={setIsAlreadySign}
+                setIsAlert={setAddDefaultSign}
               />
             </div>
           ) : (
