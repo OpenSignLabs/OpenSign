@@ -25,6 +25,7 @@ import TreeWidget from "../components/TreeWidget";
 import parse from "html-react-parser";
 import Title from "../components/Title";
 import { formJson } from "../json/FormJson";
+import TemplateForm from "../primitives/TemplateForm";
 const widget = {
   TimeWidget: TimeWidget
 };
@@ -41,15 +42,19 @@ const fields = () => {
 function FormBuilderFn(props) {
   const { id } = useParams();
   const navigate = useNavigate();
-  return (
-    <FormBuilder
-      removeState={props.removeState}
-      removeLevel2State={props.removeLevel2State}
-      removeLevel3State={props.removeLevel3State}
-      id={id}
-      navigate={navigate}
-    />
-  );
+  if (id === "template") {
+    return <TemplateForm />;
+  } else {
+    return (
+      <FormBuilder
+        removeState={props.removeState}
+        removeLevel2State={props.removeLevel2State}
+        removeLevel3State={props.removeLevel3State}
+        id={id}
+        navigate={navigate}
+      />
+    );
+  }
 }
 class FormBuilder extends Component {
   state = {

@@ -46,6 +46,7 @@ const AppendFormInForm = (props) => {
   // Define a function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsLoader(true);
     Parse.serverURL = parseBaseUrl;
     Parse.initialize(parseAppId);

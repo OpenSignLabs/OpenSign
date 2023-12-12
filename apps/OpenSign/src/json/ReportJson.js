@@ -1,7 +1,9 @@
 export default function reportJson(id) {
   // console.log("json ", json);
-  const head = ["Sr.No", "Name", "Note", "Folder", "File", "Owner", "Signers"];
-  const contactbook = ["Sr.No", "Name", "Email", "Phone"];
+  const head = ["Sr.No", "Title", "Note", "Folder", "File", "Owner", "Signers"];
+  const contactbook = ["Sr.No", "Title", "Email", "Phone"];
+  const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
+
   switch (id) {
     // draft documents report
     case "ByHuevtCFY":
@@ -103,7 +105,7 @@ export default function reportJson(id) {
     case "d9k3UfYHBc":
       return {
         reportName: "Recently sent for signatures",
-        heading: head,
+        heading: dashboardReportHead,
         actions: [
           {
             btnLabel: "View",
@@ -119,7 +121,7 @@ export default function reportJson(id) {
     case "5Go51Q7T8r":
       return {
         reportName: "Recent signature requests",
-        heading: head,
+        heading: dashboardReportHead,
         actions: [
           {
             btnLabel: "Sign",
@@ -135,7 +137,7 @@ export default function reportJson(id) {
     case "kC5mfynCi4":
       return {
         reportName: "Drafts",
-        heading: head,
+        heading: ["Title", "Note", "Folder", "File", "Owner", "Signers"],
         actions: [
           {
             btnLabel: "sign",

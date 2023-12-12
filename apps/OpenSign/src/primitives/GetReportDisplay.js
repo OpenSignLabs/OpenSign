@@ -135,7 +135,9 @@ const ReportTable = ({
               {currentLists.map((item, index) =>
                 ReportName === "Contactbook" ? (
                   <tr className="border-y-[1px]" key={index}>
-                    <td className="px-4 py-2">{index + 1}</td>
+                    {heading.includes("Sr.No") && (
+                      <td className="px-4 py-2">{index + 1}</td>
+                    )}
                     <td className="px-4 py-2 font-semibold">{item?.Name} </td>
                     <td className="px-4 py-2">{item?.Email || "-"}</td>
                     <td className="px-4 py-2">{item?.Phone || "-"}</td>
@@ -179,12 +181,18 @@ const ReportTable = ({
                   </tr>
                 ) : (
                   <tr className="border-y-[1px]" key={index}>
-                    <td className="px-4 py-2">{index + 1}</td>
+                    {heading.includes("Sr.No") && (
+                      <td className="px-4 py-2">{index + 1}</td>
+                    )}
                     <td className="px-4 py-2 font-semibold">{item?.Name} </td>
-                    <td className="px-4 py-2">{item?.Note || "-"}</td>
-                    <td className="px-4 py-2">
-                      {item?.Folder?.Name || "OpenSignDrive"}
-                    </td>
+                    {heading.includes("Note") && (
+                      <td className="px-4 py-2">{item?.Note || "-"}</td>
+                    )}
+                    {heading.includes("Folder") && (
+                      <td className="px-4 py-2">
+                        {item?.Folder?.Name || "OpenSignDrive"}
+                      </td>
+                    )}
                     <td className="px-4 py-2">
                       <a
                         target="_blank"
@@ -235,7 +243,6 @@ const ReportTable = ({
                               {act?.btnLabel ? act.btnLabel : "view"}
                             </span>
                           </button>
-                          // )
                         ))}
                     </td>
                   </tr>
