@@ -154,7 +154,7 @@ export default function reportJson(id, userId) {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
         },
-        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: ['Name', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
       };
     //  Recent signature requests report show on dashboard
     case '5Go51Q7T8r':
@@ -169,16 +169,7 @@ export default function reportJson(id, userId) {
           },
           Placeholders: { $ne: null },
         },
-        keys: [
-          'Name',
-          'Note',
-          'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
-          'Signers.Name',
-          'Signers.UserId',
-          'AuditTrail',
-        ],
+        keys: ['Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name', 'Signers.UserId', 'AuditTrail'],
       };
     // Drafts report show on dashboard
     case 'kC5mfynCi4':

@@ -271,10 +271,12 @@ const FileUpload = (props) => {
                 <i className="fa-solid fa-xmark"></i>
               </div>
             </div>
-            <DropboxChooser
-              onSuccess={dropboxSuccess}
-              onCancel={dropboxCancel}
-            />
+            {process.env.DROPBOX_APP_KEY && (
+              <DropboxChooser
+                onSuccess={dropboxSuccess}
+                onCancel={dropboxCancel}
+              />
+            )}
           </div>
         ) : (
           <div className="flex gap-2 justify-center items-center">
@@ -294,10 +296,12 @@ const FileUpload = (props) => {
               accept="application/pdf,application/vnd.ms-excel"
               onChange={onChange}
             />
-            <DropboxChooser
-              onSuccess={dropboxSuccess}
-              onCancel={dropboxCancel}
-            />
+            {process.env.DROPBOX_APP_KEY && (
+              <DropboxChooser
+                onSuccess={dropboxSuccess}
+                onCancel={dropboxCancel}
+              />
+            )}
           </div>
         )}
       </>
