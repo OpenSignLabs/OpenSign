@@ -274,6 +274,7 @@ function PlaceHolderSign() {
     let xyPos = {};
     if (item === "onclick") {
       const dropObj = {
+        //onclick put placeholder center on pdf
         xPosition: window.innerWidth / 2 - 100,
         yPosition: window.innerHeight / 2 - 60,
         isStamp: monitor,
@@ -321,7 +322,6 @@ function PlaceHolderSign() {
 
       xyPosArr.push(xyPos);
     }
-
     //add signers objId first inseretion
     if (filterSignerPos.length > 0) {
       const colorIndex = signerPos
@@ -355,8 +355,15 @@ function PlaceHolderSign() {
             objectId: signerObjId
           }
         };
+        // signerPos.splice(colorIndex, 1, placeHolderPos);
+        const newArry = [placeHolderPos];
+        const newArray = [
+          ...signerPos.slice(0, colorIndex),
+          ...newArry,
+          ...signerPos.slice(colorIndex + 1)
+        ];
 
-        signerPos.splice(colorIndex, 1, placeHolderPos);
+        setSignerPos(newArray);
       } else {
         const newSignPoss = getPlaceHolder.concat(xyPosArr[0]);
 
@@ -371,7 +378,15 @@ function PlaceHolderSign() {
           }
         };
 
-        signerPos.splice(colorIndex, 1, placeHolderPos);
+        // signerPos.splice(colorIndex, 1, placeHolderPos);
+        const newArry = [placeHolderPos];
+        const newArray = [
+          ...signerPos.slice(0, colorIndex),
+          ...newArry,
+          ...signerPos.slice(colorIndex + 1)
+        ];
+
+        setSignerPos(newArray);
       }
     } else {
       let placeHolderPos = {
@@ -400,10 +415,11 @@ function PlaceHolderSign() {
       setPdfOriginalWidth(pageWidth);
     });
   };
+
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key, signerId) => {
     setDragKey(key);
-    setSignerObjId(signerId);
+    // setSignerObjId(signerId);
   };
 
   //function for set and update x and y postion after drag and drop signature tab
@@ -610,7 +626,7 @@ function PlaceHolderSign() {
 
         const hostUrl = window.location.origin + "/loadmf/signmicroapp";
         let signPdf = `${hostUrl}/login/${signersdata.objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
-
+        const openSignUrl = "https://www.opensignlabs.com/";
         const themeBGcolor = themeColor();
         let params = {
           recipient: signerMail[i].Email,
@@ -632,9 +648,11 @@ function PlaceHolderSign() {
             localExpireDate +
             "</td></tr><tr> <td></td> <td> <div style='display: flex; justify-content: center;margin-top: 50px;'><a href=" +
             signPdf +
-            ">  <button style='padding: 12px 20px 12px 20px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold'>Sign here</button></a> </div> </td><td> </td></tr></table> </div><div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from Open Sign. For any queries regarding this email, please contact the sender " +
+            ">  <button style='padding: 12px 20px 12px 20px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold'>Sign here</button></a> </div> </td><td> </td></tr></table> </div><div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign. For any queries regarding this email, please contact the sender " +
             sender +
-            " directly.If you think this email is inappropriate or spam, you may file a complaint with Open Sign here.</p> </div></div></body> </html>"
+            " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign   <a href= " +
+            openSignUrl +
+            " target=_blank>here</a>.</p> </div></div></body> </html>"
         };
         sendMail = await axios.post(url, params, { headers: headers });
       } catch (error) {

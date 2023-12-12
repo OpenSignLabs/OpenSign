@@ -453,8 +453,8 @@ function RenderPdf({
                                         className="placeholderBlock"
                                         onDrag={() =>
                                           handleTabDrag(
-                                            pos.key,
-                                            data.signerObjId
+                                            pos.key
+                                            // data.signerObjId
                                           )
                                         }
                                         size={{
@@ -872,8 +872,8 @@ function RenderPdf({
                                           className="placeholderBlock"
                                           onDrag={() =>
                                             handleTabDrag(
-                                              pos.key,
-                                              data.signerObjId
+                                              pos.key
+                                              // data.signerObjId
                                             )
                                           }
                                           size={{
