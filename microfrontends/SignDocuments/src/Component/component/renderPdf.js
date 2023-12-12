@@ -221,7 +221,9 @@ function RenderPdf({
                             true
                           );
                         }}
-                        lockAspectRatio={pos.Width && 2.5}
+                        lockAspectRatio={
+                          pos.Width ? pos.Width / pos.Height : 2.5
+                        }
                         default={{
                           x: xPos(pos),
                           y: yPos(pos)
@@ -776,7 +778,9 @@ function RenderPdf({
                                     width: posWidth(pos),
                                     height: posHeight(pos)
                                   }}
-                                  lockAspectRatio={pos.Width && 2.5}
+                                  lockAspectRatio={
+                                    pos.Width ? pos.Width / pos.Height : 2.5
+                                  }
                                   //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
 
                                   default={{

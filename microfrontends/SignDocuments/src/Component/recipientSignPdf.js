@@ -22,7 +22,9 @@ import {
   urlValidator,
   multiSignEmbed,
   embedDocId,
-  signPdfFun
+  signPdfFun,
+  addDefaultSignatureImg,
+  onImageSelect
 } from "../utils/Utils";
 import Tour from "reactour";
 import Signedby from "./component/signedby";
@@ -548,60 +550,43 @@ function EmbedPdfImage() {
   //function for image upload or update
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      const imageType = event.target.files[0].type;
-
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-
-      reader.onloadend = function (e) {
-        let width, height;
-        const image = new Image();
-
-        image.src = e.target.result;
-        image.onload = function () {
-          width = image.width;
-          height = image.height;
-          const aspectRatio = 460 / 184;
-          const imgR = width / height;
-
-          if (imgR > aspectRatio) {
-            width = 460;
-            height = 460 / imgR;
-          } else {
-            width = 184 * imgR;
-            height = 184;
-          }
-          setImgWH({ width: width, height: height });
-          imageRef.current.style.width = `${width}px`;
-          imageRef.current.style.height = `${height}px`;
-        };
-
-        image.src = reader.result;
-
-        setImage({ src: image.src, imgType: imageType });
-      };
+      onImageSelect(event, setImgWH, setImage);
     }
   };
 
   //function for save button to save signature or image url
   const saveSign = (isDefaultSign) => {
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
+    const signFlag = true;
+    let imgWH = { width: "", height: "" };
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
 
+    if (isDefaultSign) {
+      const img = new Image();
+      img.src = defaultSignImg;
+      if (img.complete) {
+        imgWH = {
+          width: img.width,
+          height: img.height
+        };
+      }
+    }
     const getUpdatePosition = onSaveSign(
       xyPostion,
       index,
       signKey,
-      signatureImg
+      signatureImg,
+      imgWH,
+      isDefaultSign,
+      signFlag
     );
 
     if (getUpdatePosition) {
       setXyPostion(getUpdatePosition);
     }
   };
-
   //function for upload stamp image
   const saveImage = () => {
     const getImage = onSaveImage(xyPostion, index, signKey, imgWH, image);
@@ -647,27 +632,9 @@ function EmbedPdfImage() {
   };
 
   const addDefaultSignature = () => {
-    let xyDefaultPos = [];
-    for (let i = 0; i < xyPostion.length; i++) {
-      const getXYdata = xyPostion[i].pos;
-      const getPageNo = xyPostion[i].pageNumber;
-      const getPosData = getXYdata;
+    const getXyData = addDefaultSignatureImg(xyPostion, defaultSignImg);
 
-      const addSign = getPosData.map((url, ind) => {
-        if (url) {
-          return { ...url, SignUrl: defaultSignImg };
-        }
-        return url;
-      });
-
-      const newXypos = {
-        pageNumber: getPageNo,
-        pos: addSign
-      };
-      xyDefaultPos.push(newXypos);
-    }
-
-    setXyPostion(xyDefaultPos);
+    setXyPostion(getXyData);
     setAddDefaultSign({
       isShow: false,
       alertMessage: ""

@@ -20,7 +20,9 @@ import {
   multiSignEmbed,
   embedDocId,
   pdfNewWidthFun,
-  signPdfFun
+  signPdfFun,
+  calculateImgAspectRatio,
+  onImageSelect
 } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -476,35 +478,7 @@ function PdfRequestFiles() {
   //function for image upload or update
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      const imageType = event.target.files[0].type;
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-      reader.onloadend = function (e) {
-        let width, height;
-        const image = new Image();
-        image.src = e.target.result;
-        image.onload = function () {
-          width = image.width;
-          height = image.height;
-          const aspectRatio = 460 / 184;
-          const imgR = width / height;
-
-          if (imgR > aspectRatio) {
-            width = 460;
-            height = 460 / imgR;
-          } else {
-            width = 184 * imgR;
-            height = 184;
-          }
-          setImgWH({ width: width, height: height });
-          imageRef.current.style.width = `${width}px`;
-          imageRef.current.style.height = `${height}px`;
-        };
-
-        image.src = reader.result;
-
-        setImage({ src: image.src, imgType: imageType });
-      };
+      onImageSelect(event, setImgWH, setImage);
     }
   };
   //function for upload stamp image
@@ -512,7 +486,6 @@ function PdfRequestFiles() {
     const currentSigner = signerPos.filter(
       (data) => data.signerObjId === signerObjectId
     );
-
     const i = currentSigner[0].placeHolder.findIndex((object) => {
       return object.pageNumber === pageNumber;
     });
@@ -520,34 +493,16 @@ function PdfRequestFiles() {
       (data) =>
         data.key === signKey && data.Width && data.Height && data.SignUrl
     );
-
+    let getIMGWH = calculateImgAspectRatio(imgWH);
     if (updateFilter.length > 0) {
-      let newWidth, nweHeight;
-      const aspectRatio = imgWH.width / imgWH.height;
       const getXYdata = currentSigner[0].placeHolder[i].pos;
-      if (aspectRatio === 1) {
-        newWidth = aspectRatio * 100;
-        nweHeight = aspectRatio * 100;
-      } else if (aspectRatio < 2) {
-        newWidth = aspectRatio * 100;
-        nweHeight = 100;
-      } else if (aspectRatio > 2 && aspectRatio < 4) {
-        newWidth = aspectRatio * 70;
-        nweHeight = 70;
-      } else if (aspectRatio > 4) {
-        newWidth = aspectRatio * 40;
-        nweHeight = 40;
-      } else if (aspectRatio > 5) {
-        newWidth = aspectRatio * 10;
-        nweHeight = 10;
-      }
       const getPosData = getXYdata;
       const addSign = getPosData.map((url, ind) => {
         if (url.key === signKey) {
           return {
             ...url,
-            Width: newWidth,
-            Height: nweHeight,
+            Width: getIMGWH.newWidth,
+            Height: getIMGWH.newHeight,
             SignUrl: image.src,
             ImageType: image.imgType
           };
@@ -571,32 +526,12 @@ function PdfRequestFiles() {
 
       const getPosData = getXYdata;
 
-      const aspectRatio = imgWH.width / imgWH.height;
-
-      let newWidth, nweHeight;
-      if (aspectRatio === 1) {
-        newWidth = aspectRatio * 100;
-        nweHeight = aspectRatio * 100;
-      } else if (aspectRatio < 2) {
-        newWidth = aspectRatio * 100;
-        nweHeight = 100;
-      } else if (aspectRatio > 2 && aspectRatio < 4) {
-        newWidth = aspectRatio * 70;
-        nweHeight = 70;
-      } else if (aspectRatio > 4) {
-        newWidth = aspectRatio * 40;
-        nweHeight = 40;
-      } else if (aspectRatio > 5) {
-        newWidth = aspectRatio * 10;
-        nweHeight = 10;
-      }
-
       const addSign = getPosData.map((url, ind) => {
         if (url.key === signKey) {
           return {
             ...url,
-            Width: newWidth,
-            Height: nweHeight,
+            Width: getIMGWH.newWidth,
+            Height: getIMGWH.newHeight,
             SignUrl: image.src,
             ImageType: image.imgType
           };
@@ -622,10 +557,22 @@ function PdfRequestFiles() {
   //function for save button to save signature or image url
   const onSaveSign = (isDefaultSign) => {
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
+    const isSign = true;
+    let getIMGWH;
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
-
+    if (isDefaultSign) {
+      const img = new Image();
+      img.src = defaultSignImg;
+      if (img.complete) {
+        let imgWH = {
+          width: img.width,
+          height: img.height
+        };
+        getIMGWH = calculateImgAspectRatio(imgWH);
+      }
+    }
     const currentSigner = signerPos.filter(
       (data) => data.signerObjId === signerObjectId
     );
@@ -639,15 +586,36 @@ function PdfRequestFiles() {
     updateFilter = currentSigner[0].placeHolder[i].pos.filter(
       (data) => data.key === signKey && data.SignUrl
     );
-
+    const getXYdata = currentSigner[0].placeHolder[i].pos;
+    const getPosData = getXYdata;
+    const posWidth = isDefaultSign
+      ? getIMGWH.newWidth
+      : isSign && getPosData[0].ImageType
+        ? 150
+        : getPosData[0].Width
+          ? getPosData[0].Width
+          : 150;
+    const posHidth = isDefaultSign
+      ? getIMGWH.newHeight
+      : isSign && getPosData[0].ImageType
+        ? 60
+        : getPosData[0].Height
+          ? getPosData[0].Height
+          : 60;
     if (updateFilter.length > 0) {
       updateFilter[0].SignUrl = signatureImg;
+      updateFilter[0].Width = posWidth;
+      updateFilter[0].Height = posHidth;
     } else {
-      const getXYdata = currentSigner[0].placeHolder[i].pos;
-      const getPosData = getXYdata;
       const addSign = getPosData.map((url, ind) => {
         if (url.key === signKey) {
-          return { ...url, SignUrl: signatureImg };
+          return {
+            ...url,
+            SignUrl: signatureImg,
+            Width: posWidth,
+            Height: posHidth,
+            ImageType: "sign"
+          };
         }
         return url;
       });
