@@ -21,7 +21,9 @@ import {
   getBase64FromIMG,
   embedDocId,
   multiSignEmbed,
-  pdfNewWidthFun
+  pdfNewWidthFun,
+  addDefaultSignatureImg,
+  onImageSelect
 } from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -33,6 +35,7 @@ import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
 import { modalAlign } from "../utils/Utils";
+import AlertComponent from "./component/alertComponent";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -83,6 +86,7 @@ function SignYourSelf() {
     status: false,
     type: "load"
   });
+  const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
@@ -401,14 +405,22 @@ function SignYourSelf() {
 
     for (let i = 0; i < xyPostion.length; i++) {
       const posData = xyPostion[i].pos.filter((pos) => !pos.SignUrl);
-
       if (posData && posData.length > 0) {
         checkSignUrl.push(posData);
       }
     }
-
-    if (checkSignUrl && checkSignUrl.length > 0) {
-      alert("Please complete your signature!");
+    if (xyPostion.length === 0) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
+      return;
+    } else if (xyPostion.length > 0 && checkSignUrl.length > 0) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
+      return;
     } else {
       setIsCeleb(true);
       setTimeout(() => {
@@ -429,7 +441,7 @@ function SignYourSelf() {
       const pdfDoc = await PDFDocument.load(existingPdfBytes, {
         ignoreEncryption: true
       });
-      const pngUrl = xyPostion;
+
       //checking if signature is only one then send image url in jpeg formate to server
       if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
         //embed document's object id to all pages in pdf document
@@ -437,15 +449,14 @@ function SignYourSelf() {
         const pdfBase64 = await pdfDoc.saveAsBase64({
           useObjectStreams: false
         });
-        for (let i = 0; i < xyPostion.length; i++) {
-          const imgUrlList = xyPostion[i].pos;
-          const pageNo = xyPostion[i].pageNumber;
 
+        for (let xyData of xyPostion) {
+          const imgUrlList = xyData.pos;
+          const pageNo = xyData.pageNumber;
           imgUrlList.map(async (data) => {
             let ImgUrl = data.SignUrl;
             //cheking signUrl is defau;t signature url of custom url
             const checkUrl = urlValidator(ImgUrl);
-
             //if default signature url then convert it in base 64
             if (checkUrl) {
               ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
@@ -469,17 +480,20 @@ function SignYourSelf() {
       }
       //else if signature is more than one then embed all sign with the use of pdf-lib
       else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
+        const flag = true;
         //embed document's object id to all pages in pdf document
         await embedDocId(pdfDoc, documentId, allPages);
+
         //embed multi signature in pdf
         const pdfBytes = await multiSignEmbed(
-          pngUrl,
+          xyPostion,
           pdfDoc,
           pdfOriginalWidth,
-          true,
+          flag,
           containerWH
         );
 
+        //function for call to embed signature in pdf and get digital signature pdf
         signPdfFun(pdfBytes, documentId);
       }
       setIsSignPad(false);
@@ -500,7 +514,7 @@ function SignYourSelf() {
     let singleSign;
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-    const imgWidth = xyPosData ? xyPosData.Width : 150;
+
     if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
       const height = xyPosData.Height ? xyPosData.Height : 60;
       const bottomY = xyPosData.isDrag
@@ -623,54 +637,43 @@ function SignYourSelf() {
   //function for image upload or update
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      const imageType = event.target.files[0].type;
-
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-
-      reader.onloadend = function (e) {
-        let width, height;
-        const image = new Image();
-
-        image.src = e.target.result;
-        image.onload = function () {
-          width = image.width;
-          height = image.height;
-          const aspectRatio = 460 / 184;
-          const imgR = width / height;
-
-          if (imgR > aspectRatio) {
-            width = 460;
-            height = 460 / imgR;
-          } else {
-            width = 184 * imgR;
-            height = 184;
-          }
-          setImgWH({ width: width, height: height });
-          imageRef.current.style.width = `${width}px`;
-          imageRef.current.style.height = `${height}px`;
-        };
-
-        image.src = reader.result;
-
-        setImage({ src: image.src, imgType: imageType });
-      };
+      onImageSelect(event, setImgWH, setImage);
     }
+  };
+
+  //function for upload stamp or image
+  const saveImage = () => {
+    const getImage = onSaveImage(xyPostion, index, signKey, imgWH, image);
+    setXyPostion(getImage);
   };
 
   //function for save button to save signature or image url
   const saveSign = (isDefaultSign) => {
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
+    const signFlag = true;
+    let imgWH = { width: "", height: "" };
     setIsSignPad(false);
-
     setIsImageSelect(false);
-
     setImage();
+
+    if (isDefaultSign) {
+      const img = new Image();
+      img.src = defaultSignImg;
+      if (img.complete) {
+        imgWH = {
+          width: img.width,
+          height: img.height
+        };
+      }
+    }
     const getUpdatePosition = onSaveSign(
       xyPostion,
       index,
       signKey,
-      signatureImg
+      signatureImg,
+      imgWH,
+      isDefaultSign,
+      signFlag
     );
 
     setXyPostion(getUpdatePosition);
@@ -729,35 +732,11 @@ function SignYourSelf() {
     }
   };
 
-  //function for upload stamp or image
-  const saveImage = () => {
-    const getImage = onSaveImage(xyPostion, index, signKey, imgWH, image);
-    setXyPostion(getImage);
-  };
-
   //function for add default signature url in local array
   const addDefaultSignature = () => {
-    let xyDefaultPos = [];
-    for (let i = 0; i < xyPostion.length; i++) {
-      const getXYdata = xyPostion[i].pos;
-      const getPageNo = xyPostion[i].pageNumber;
-      const getPosData = getXYdata;
+    const getXyData = addDefaultSignatureImg(xyPostion, defaultSignImg);
 
-      const addSign = getPosData.map((url, ind) => {
-        if (url) {
-          return { ...url, SignUrl: defaultSignImg };
-        }
-        return url;
-      });
-
-      const newXypos = {
-        pageNumber: getPageNo,
-        pos: addSign
-      };
-      xyDefaultPos.push(newXypos);
-    }
-
-    setXyPostion(xyDefaultPos);
+    setXyPostion(getXyData);
     setShowAlreadySignDoc({ status: false });
   };
   const tourConfig = [
@@ -856,8 +835,12 @@ function SignYourSelf() {
               marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
           >
+            <AlertComponent
+              isShow={isAlert.isShow}
+              alertMessage={isAlert.alertMessage}
+              setIsAlert={setIsAlert}
+            />
             {/* this modal is used show this document is already sign */}
-
             <Modal
               show={showAlreadySignDoc.status}
               onShow={() => modalAlign()}
@@ -921,9 +904,9 @@ function SignYourSelf() {
               isCeleb={isCeleb}
               setIsEmail={setIsEmail}
               pdfName={pdfDetails[0] && pdfDetails[0].Name}
-              signObjId={documentId}
               setSuccessEmail={setSuccessEmail}
               sender={jsonSender}
+              setIsAlert={setIsAlert}
             />
             {/* pdf header which contain funish back button */}
             <Header

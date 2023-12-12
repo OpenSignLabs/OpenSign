@@ -7,6 +7,7 @@ import Modal from "react-bootstrap/Modal";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import { themeColor, iconColor } from "../../utils/ThemeColor/backColor";
 import { getDrive } from "../../utils/Utils";
+import AlertComponent from "../component/alertComponent";
 
 function PdfFile() {
   const scrollRef = useRef(null);
@@ -26,6 +27,7 @@ function PdfFile() {
   const [docId, setDocId] = useState();
   const [handleError, setHandleError] = useState();
   const [folderName, setFolderName] = useState([]);
+  const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const currentUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -219,8 +221,10 @@ function PdfFile() {
           }
         })
         .catch((err) => {
-          console.log("axois err ", err);
-          alert("something went wrong");
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
+          });
         });
     } else {
       setError("Please fill out this field");
@@ -324,6 +328,11 @@ function PdfFile() {
   return (
     <div className="folderComponent ">
       <div>
+        <AlertComponent
+          isShow={isAlert.isShow}
+          alertMessage={isAlert.alertMessage}
+          setIsAlert={setIsAlert}
+        />
         <Modal show={isFolder}>
           <ModalHeader style={{ background: themeColor() }}>
             <span style={{ color: "white" }}>Add New Folder</span>

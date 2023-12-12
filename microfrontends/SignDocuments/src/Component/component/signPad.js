@@ -18,11 +18,10 @@ function SignPad({
   isImageSelect,
   imageRef,
   onImageChange,
-
   onSaveImage,
   image,
   defaultSign,
-  setSignature,
+  setSignature
 }) {
   const [penColor, setPenColor] = useState("blue");
   const allColor = [bluePen, redPen, blackPen];
@@ -47,14 +46,12 @@ function SignPad({
 
   //save button component
   const SaveBtn = () => {
-    // console.log("isSign",isSignImg,image)
-
     return (
       <div>
         {!isStamp && !isImageSelect && (
           <button
             style={{
-              color: "black",
+              color: "black"
             }}
             type="button"
             className="finishBtn saveBtn"
@@ -89,7 +86,7 @@ function SignPad({
           }}
           style={{
             background: themeColor(),
-            color: "white",
+            color: "white"
           }}
           disabled={isSignImg || image || isDefaultSign ? false : true}
           type="button"
@@ -109,6 +106,7 @@ function SignPad({
       canvasRef.current.fromDataURL(isSignImg);
     }
   }, [isTab]);
+
   return (
     <div>
       {/*isSignPad  */}
@@ -120,7 +118,7 @@ function SignPad({
             justifyContent: "space-between",
             background: "white",
             borderBottom: "1.6px solid #ebe6e6",
-            marginTop: "15px",
+            marginTop: "15px"
           }}
         >
           <div
@@ -129,7 +127,7 @@ function SignPad({
               flexDirection: "row",
               justifyContent: "space-around",
               alignItems: "end",
-              gap: 10,
+              gap: 10
 
               // background: themeColor(),
             }}
@@ -150,8 +148,7 @@ function SignPad({
                     }}
                     style={{
                       color: isTab === "signature" ? themeColor() : "#515252",
-
-                      marginLeft: "2px",
+                      marginLeft: "2px"
                     }}
                     className="signTab"
                   >
@@ -163,7 +160,7 @@ function SignPad({
                       border:
                         isTab === "signature"
                           ? "1.5px solid #108783"
-                          : "1.5px solid #ffffff",
+                          : "1.5px solid #ffffff"
                     }}
                   ></div>
                 </div>
@@ -175,7 +172,7 @@ function SignPad({
                       setIsTab("uploadImage");
                     }}
                     style={{
-                      color: isTab === "uploadImage" ? themeColor() : "#515252",
+                      color: isTab === "uploadImage" ? themeColor() : "#515252"
                     }}
                     className="signTab"
                   >
@@ -186,7 +183,7 @@ function SignPad({
                       border:
                         isTab === "uploadImage"
                           ? "1.5px solid #108783"
-                          : "1.5px solid #ffffff",
+                          : "1.5px solid #ffffff"
                     }}
                   ></div>
                 </div>
@@ -202,7 +199,7 @@ function SignPad({
                       }}
                       style={{
                         color:
-                          isTab === "mysignature" ? themeColor() : "#515252",
+                          isTab === "mysignature" ? themeColor() : "#515252"
                       }}
                       className="signTab"
                     >
@@ -213,7 +210,7 @@ function SignPad({
                         border:
                           isTab === "mysignature"
                             ? "1.5px solid #108783"
-                            : "1.5px solid #ffffff",
+                            : "1.5px solid #ffffff"
                       }}
                     ></div>
                   </div>
@@ -228,7 +225,7 @@ function SignPad({
               background: "none",
               paddingLeft: "7px",
               paddingRight: "7px",
-              marginRight: "5px",
+              marginRight: "5px"
             }}
             onClick={() => {
               setPenColor("blue");
@@ -251,14 +248,12 @@ function SignPad({
               <div
                 style={{
                   border: "1px solid black",
-
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
                   marginBottom: 6,
-                  cursor: "pointer",
-                  //  background:'rgb(255, 255, 255)'
+                  cursor: "pointer"
                 }}
                 className="signatureCanvas"
               >
@@ -267,8 +262,7 @@ function SignPad({
                   style={{
                     width: "100%",
                     height: "100%",
-                    background: "rgb(255, 255, 255)",
-                    objectFit: "contain",
+                    objectFit: "contain"
                   }}
                   src={defaultSign}
                 />
@@ -282,13 +276,12 @@ function SignPad({
               <div
                 style={{
                   border: "1px solid black",
-
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
                   marginBottom: 6,
-                  cursor: "pointer",
+                  cursor: "pointer"
                 }}
                 className="signatureCanvas"
                 onClick={() => imageRef.current.click()}
@@ -300,7 +293,6 @@ function SignPad({
                   accept="image/*"
                   ref={imageRef}
                   hidden
-                  // style={{ display: "none" }}
                 />
                 <i className="fas fa-cloud-upload-alt uploadImgLogo"></i>
                 <div className="uploadImg">Upload</div>
@@ -309,24 +301,25 @@ function SignPad({
               <>
                 <div
                   style={{
-                    // position: "relative",
-
                     border: "1px solid black",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
                     marginBottom: 6,
-                    // justifyContent:"center"
-                    overflow: "hidden",
+                    cursor: "pointer"
                   }}
                   className="signatureCanvas"
                 >
                   <img
-                    alt="print img"
-                    ref={imageRef}
-                    // alt="preview image"
-                    src={image.src}
+                    alt="stamp img"
                     style={{
-                      //overflow:"hidden",
-                      objectFit: "contain",
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain"
                     }}
+                    ref={imageRef}
+                    src={image.src}
                   />
                 </div>
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -336,36 +329,11 @@ function SignPad({
             )
           ) : (
             <>
-              {/* {isSignImg ? (
-                <div
-                  style={{
-                    position: "relative",
-
-                    border: "2px solid #888",
-                    marginBottom: 6,
-                  }}
-                  className="signatureCanvas"
-                >
-                  <img
-                    alt="preview image"
-                    src={isSignImg}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                    }}
-                  />
-                </div>
-              ) : ( */}
               <SignatureCanvas
                 ref={canvasRef}
                 penColor={penColor}
                 canvasProps={{
-                  // width: "460px",
-                  // height: "184px",
-                  // width:"280px",
-                  // height:"112px",
-                  className: "signatureCanvas",
+                  className: "signatureCanvas"
                 }}
                 backgroundColor="rgb(255, 255, 255)"
                 onEnd={() =>
@@ -373,17 +341,16 @@ function SignPad({
                 }
                 dotSize={1}
               />
-              {/* )} */}
 
               <div
                 style={{
                   display: "flex",
                   flexDirection: "row",
                   justifyContent: "space-between",
-                  marginTop:"4px"
+                  marginTop: "4px"
                 }}
               >
-                <div style={{display:"flex",flexDirection:"row"}}>
+                <div style={{ display: "flex", flexDirection: "row" }}>
                   {allColor.map((data, key) => {
                     return (
                       <img
@@ -396,10 +363,10 @@ function SignPad({
                             key === 0 && penColor === "blue"
                               ? "2px solid blue"
                               : key === 1 && penColor === "red"
-                              ? "2px solid red"
-                              : key === 2 && penColor === "black"
-                              ? "2px solid black"
-                              : "2px solid white",
+                                ? "2px solid red"
+                                : key === 2 && penColor === "black"
+                                  ? "2px solid black"
+                                  : "2px solid white"
                         }}
                         onClick={() => {
                           if (key === 0) {
@@ -414,60 +381,14 @@ function SignPad({
                         width={20}
                         height={20}
                       />
-                      // </button>
                     );
                   })}
                 </div>
-
                 <SaveBtn />
               </div>
             </>
           )}
         </Modal.Body>
-
-        {/* <Modal.Footer>
-          {!isStamp && !isImageSelect && (
-            <button
-              style={{
-                color: "black",
-              }}
-              type="button"
-              className="finishBtn"
-              onClick={() => handleClear()}
-            >
-              Clear
-            </button>
-          )}
-
-          <button
-            onClick={() => {
-              if (!image) {
-                if (isDefaultSign) {
-                  onSaveSign(isDefaultSign);
-                } else {
-                  onSaveSign();
-                }
-
-                setPenColor("blue");
-              } else {
-                onSaveImage();
-              }
-              setIsSignPad(false);
-
-              setIsImageSelect(false);
-              setIsDefaultSign(false);
-              setImage();
-            }}
-            style={{
-              background: themeColor(),
-              color: "white",
-            }}
-            type="button"
-            className="finishBtn"
-          >
-            Save
-          </button>
-        </Modal.Footer> */}
       </Modal>
     </div>
   );
