@@ -22,7 +22,9 @@ import {
   urlValidator,
   multiSignEmbed,
   embedDocId,
-  signPdfFun
+  signPdfFun,
+  addDefaultSignatureImg,
+  onImageSelect
 } from "../utils/Utils";
 import Tour from "reactour";
 import Signedby from "./component/signedby";
@@ -34,6 +36,7 @@ import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
 import { modalAlign } from "../utils/Utils";
+import AlertComponent from "./component/alertComponent";
 function EmbedPdfImage() {
   const { id, contactBookId } = useParams();
   const [isSignPad, setIsSignPad] = useState(false);
@@ -65,18 +68,22 @@ function EmbedPdfImage() {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [signerUserId, setSignerUserId] = useState();
   const [tourStatus, setTourStatus] = useState([]);
-  const [completePdfData, setCompletePdfData] = useState([]);
   const [isExpired, setIsExpired] = useState(false);
   const [noData, setNoData] = useState(false);
   const [contractName, setContractName] = useState("");
   const [isDecline, setIsDecline] = useState({
     isDeclined: false
   });
+  const [addDefaultSign, setAddDefaultSign] = useState({
+    isShow: false,
+    alertMessage: ""
+  });
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
   });
   const [containerWH, setContainerWH] = useState({});
+  const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const docId = id && id;
   const isMobile = window.innerWidth < 767;
   const index = xyPostion.findIndex((object) => {
@@ -92,8 +99,7 @@ function EmbedPdfImage() {
     : `${localStorage.getItem("UserInformation")}` &&
       `${localStorage.getItem("UserInformation")}`;
   const jsonSender = JSON.parse(senderUser);
-  //check isGuestSigner is present in local if yes than handle login flow header in mobile view
-  const isGuestSigner = localStorage.getItem("isGuestSigner");
+
   useEffect(() => {
     getDocumentDetails();
   }, []);
@@ -202,7 +208,6 @@ function EmbedPdfImage() {
         setIsAlreadySign(alreadySign);
         setPdfUrl(documentData[0].SignedUrl);
         setSignedPdfData(documentData);
-        setCompletePdfData(documentData);
       } else if (declined) {
         const currentDecline = {
           currnt: "another",
@@ -397,7 +402,10 @@ function EmbedPdfImage() {
     }
 
     if (checkSignUrl && checkSignUrl.length > 0) {
-      alert("Please complete your signature!");
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
     } else {
       const loadObj = {
         isLoad: true,
@@ -428,9 +436,10 @@ function EmbedPdfImage() {
           await embedDocId(pdfDoc, docId, allPages);
           pdfBase64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
         }
-        for (let i = 0; i < xyPostion.length; i++) {
-          const imgUrlList = pngUrl[i].pos;
-          const pageNo = pngUrl[i].pageNumber;
+
+        for (let xyData of xyPostion) {
+          const imgUrlList = xyData.pos;
+          const pageNo = xyData.pageNumber;
           imgUrlList.map(async (data) => {
             //cheking signUrl is defau;t signature url of custom url
             let ImgUrl = data.SignUrl;
@@ -456,30 +465,41 @@ function EmbedPdfImage() {
                   signerUserId,
                   pdfOriginalWidth,
                   xyPostion,
+                  containerWH,
+                  setIsAlert,
                   data,
                   pdfBase64,
-                  pageNo,
-                  containerWH
+                  pageNo
                 )
                   .then((res) => {
                     if (res && res.status === "success") {
                       getDocumentDetails();
                     } else {
-                      alert("something went wrong");
+                      setIsAlert({
+                        isShow: true,
+                        alertMessage: "something went wrong"
+                      });
                     }
                   })
                   .catch((err) => {
-                    alert("something went wrong!");
+                    setIsAlert({
+                      isShow: true,
+                      alertMessage: "something went wrong"
+                    });
                   });
               })
               .catch((error) => {
-                console.error("Error:", error);
+                setIsAlert({
+                  isShow: true,
+                  alertMessage: "something went wrong"
+                });
               });
           });
         }
       }
       //else if signature is more than one then embed all sign with the use of pdf-lib
       else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
+        const flag = false;
         //embed document's object id to all pages in pdf document
         await embedDocId(pdfDoc, docId, allPages);
         //embed multi signature in pdf
@@ -487,29 +507,35 @@ function EmbedPdfImage() {
           pngUrl,
           pdfDoc,
           pdfOriginalWidth,
-          false,
+          flag,
           containerWH
         );
 
         //function for embed signature in pdf and get digital signature pdf
-        signPdfFun(
-          pdfBytes,
-          docId,
-          signerUserId,
-          pdfOriginalWidth,
-          xyPostion,
-          containerWH
-        )
-          .then((res) => {
-            if (res && res.status === "success") {
-              getDocumentDetails();
-            } else {
-              alert("something went wrong!");
-            }
-          })
-          .catch((err) => {
-            alert("something went wrong in query");
+        try {
+          const res = await signPdfFun(
+            pdfBytes,
+            docId,
+            signerUserId,
+            pdfOriginalWidth,
+            xyPostion,
+            containerWH,
+            setIsAlert
+          );
+          if (res && res.status === "success") {
+            getDocumentDetails();
+          } else {
+            setIsAlert({
+              isShow: true,
+              alertMessage: "something went wrong"
+            });
+          }
+        } catch (err) {
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
           });
+        }
       }
       setIsSignPad(false);
       setXyPostion([]);
@@ -524,60 +550,43 @@ function EmbedPdfImage() {
   //function for image upload or update
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      const imageType = event.target.files[0].type;
-
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-
-      reader.onloadend = function (e) {
-        let width, height;
-        const image = new Image();
-
-        image.src = e.target.result;
-        image.onload = function () {
-          width = image.width;
-          height = image.height;
-          const aspectRatio = 460 / 184;
-          const imgR = width / height;
-
-          if (imgR > aspectRatio) {
-            width = 460;
-            height = 460 / imgR;
-          } else {
-            width = 184 * imgR;
-            height = 184;
-          }
-          setImgWH({ width: width, height: height });
-          imageRef.current.style.width = `${width}px`;
-          imageRef.current.style.height = `${height}px`;
-        };
-
-        image.src = reader.result;
-
-        setImage({ src: image.src, imgType: imageType });
-      };
+      onImageSelect(event, setImgWH, setImage);
     }
   };
 
   //function for save button to save signature or image url
   const saveSign = (isDefaultSign) => {
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
+    const signFlag = true;
+    let imgWH = { width: "", height: "" };
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
 
+    if (isDefaultSign) {
+      const img = new Image();
+      img.src = defaultSignImg;
+      if (img.complete) {
+        imgWH = {
+          width: img.width,
+          height: img.height
+        };
+      }
+    }
     const getUpdatePosition = onSaveSign(
       xyPostion,
       index,
       signKey,
-      signatureImg
+      signatureImg,
+      imgWH,
+      isDefaultSign,
+      signFlag
     );
 
     if (getUpdatePosition) {
       setXyPostion(getUpdatePosition);
     }
   };
-
   //function for upload stamp image
   const saveImage = () => {
     const getImage = onSaveImage(xyPostion, index, signKey, imgWH, image);
@@ -615,33 +624,21 @@ function EmbedPdfImage() {
         }
       })
       .catch((err) => {
-        console.log("error updating field is decline ", err);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
       });
   };
 
   const addDefaultSignature = () => {
-    let xyDefaultPos = [];
-    for (let i = 0; i < xyPostion.length; i++) {
-      const getXYdata = xyPostion[i].pos;
-      const getPageNo = xyPostion[i].pageNumber;
-      const getPosData = getXYdata;
+    const getXyData = addDefaultSignatureImg(xyPostion, defaultSignImg);
 
-      const addSign = getPosData.map((url, ind) => {
-        if (url) {
-          return { ...url, SignUrl: defaultSignImg };
-        }
-        return url;
-      });
-
-      const newXypos = {
-        pageNumber: getPageNo,
-        pos: addSign
-      };
-      xyDefaultPos.push(newXypos);
-    }
-
-    setXyPostion(xyDefaultPos);
-    setIsAlreadySign({ status: false });
+    setXyPostion(getXyData);
+    setAddDefaultSign({
+      isShow: false,
+      alertMessage: ""
+    });
   };
 
   //function for update TourStatus
@@ -763,6 +760,20 @@ function EmbedPdfImage() {
             declineDoc={declineDoc}
             setIsDecline={setIsDecline}
           />
+          <AlertComponent
+            isShow={isAlert.isShow}
+            alertMessage={isAlert.alertMessage}
+            setIsAlert={setIsAlert}
+          />
+          <AlertComponent
+            isShow={addDefaultSign.isShow}
+            alertMessage={addDefaultSign.alertMessage}
+            setIsAlert={setAddDefaultSign}
+            isdefaultSign={true}
+            addDefaultSignature={addDefaultSignature}
+            headBG={themeColor()}
+          />
+
           {/* this modal is used for show expired alert */}
           <CustomModal
             containerWH={containerWH}
@@ -820,18 +831,6 @@ function EmbedPdfImage() {
                 >
                   Close
                 </button>
-                {isAlreadySign.sure && (
-                  <button
-                    onClick={() => addDefaultSignature()}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    className="finishBtn"
-                  >
-                    Yes
-                  </button>
-                )}
               </Modal.Footer>
             </Modal>
             {/* this is modal of signature pad */}
@@ -905,6 +904,7 @@ function EmbedPdfImage() {
                 xyPostion={xyPostion}
                 setXyPostion={setXyPostion}
                 setShowAlreadySignDoc={setIsAlreadySign}
+                setIsAlert={setAddDefaultSign}
               />
             </div>
           ) : (
