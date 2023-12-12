@@ -9,6 +9,11 @@ import getDocument from './routes/getDocument.js';
 import getContact from './routes/getContact.js';
 import deleteContact from './routes/deleteContact.js';
 import getContactList from './routes/getContactList.js';
+import createDocument from './routes/createDocument.js';
+import createTemplate from './routes/createTemplate.js';
+import getTemplate from './routes/getTemplate.js';
+import deletedTemplate from './routes/deleteTemplate.js';
+import getTemplatetList from './routes/getTemplateList.js';
 
 dotenv.config();
 app.use(cors());
@@ -32,3 +37,19 @@ app.delete('/contact/:contact_id', deleteContact);
 
 //  get list of contacts
 app.get('/contactlist', getContactList);
+
+// create Document
+app.post('/createdocument', createDocument);
+
+// create Template
+app.post('/createtemplate', createTemplate);
+
+// get template on the basis of id
+app.get('/template/:template_id', getTemplate);
+
+// get template on the basis of id
+app.delete('/template/:template_id', deletedTemplate);
+
+// get all types of documents on the basis of doctype
+app.get('/templatelist', getTemplatetList);
+
