@@ -1,20 +1,17 @@
 import React from "react";
- 
 
 function DefaultSignature({
   themeColor,
   defaultSignImg,
-  setShowAlreadySignDoc,
-  xyPostion
+  xyPostion,
+  setIsAlert
 }) {
   const confirmToaddDefaultSign = () => {
     if (xyPostion.length > 0) {
-      const alreadySign = {
-        status: true,
-        mssg: "Are you sure you want to sign at requested locations?",
-        sure: true
-      };
-      setShowAlreadySignDoc(alreadySign);
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Are you sure you want to sign at requested locations?"
+      });
     } else {
       alert("please select position!");
     }

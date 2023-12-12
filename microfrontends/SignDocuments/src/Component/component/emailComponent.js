@@ -16,9 +16,9 @@ function EmailComponent({
   isCeleb,
   setIsEmail,
   setSuccessEmail,
-  signObjId,
   pdfName,
-  sender
+  sender,
+  setIsAlert
 }) {
   const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState();
@@ -62,11 +62,15 @@ function EmailComponent({
       } catch (error) {
         console.log("error", error);
         setIsLoading(false);
-        alert("Something went wrong!");
+        setIsEmail(false);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
       }
     }
 
-    if (sendMail.data.result.status === "success") {
+    if (sendMail && sendMail.data.result.status === "success") {
       setSuccessEmail(true);
       setTimeout(() => {
         setSuccessEmail(false);
@@ -76,12 +80,20 @@ function EmailComponent({
       }, 1500);
 
       setIsLoading(false);
-    } else if (sendMail.data.result.status === "error") {
+    } else if (sendMail && sendMail.data.result.status === "error") {
       setIsLoading(false);
-      alert("Something went wrong!");
+      setIsEmail(false);
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong"
+      });
     } else {
       setIsLoading(false);
-      alert("Something went wrong!");
+      setIsEmail(false);
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong"
+      });
     }
   };
 

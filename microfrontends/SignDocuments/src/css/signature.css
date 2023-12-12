@@ -8,6 +8,7 @@
 .penContainer {
   width: 460px;
 }
+
 .borderResize {
   position: absolute;
   display: inline-block;
@@ -15,17 +16,20 @@
   height: 14px;
 
 }
-.mailBtn{
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-    padding: 3px 15px !important;
-    background-color: rgb(79 190 241);
-    border: none !important;
-    color: white !important;
+
+.mailBtn {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  padding: 3px 15px !important;
+  background-color: rgb(79 190 241);
+  border: none !important;
+  color: white !important;
 }
+
 .mailBtn:hover {
   box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
 }
-.emailToast{
+
+.emailToast {
   position: absolute;
   z-index: 10;
   background: #aeedae;
@@ -34,7 +38,7 @@
   border-radius: 2px;
 }
 
- 
+
 .signatureBtn {
   border: 1.5px solid #47a3ad;
   margin-bottom: 10px;
@@ -162,14 +166,15 @@
 
 .placeholdCloseBtn {
   position: absolute;
-  right: -9px;
-  top: -15px;
+  right: -5px;
+  top: -5px;
   border-radius: 100%;
   font-size: 10px;
   cursor: pointer;
-  padding: 0px 5px;
+  padding: 0px 5.1px 1px 5px;
 }
-.placeholderBlock{
+
+.placeholderBlock {
   padding: 0px;
   z-index: 1;
   position: absolute;
@@ -179,7 +184,8 @@
   background: #daebe0;
   text-align: center;
   justify-content: center;
-  border-width: 0.2px
+  border-width: 0.2px;
+  
 }
 
 .finishBtn {
