@@ -377,6 +377,7 @@ function RenderPdf({
                                 onClick={() => {
                                   setIsSignPad(true);
                                   setSignKey(pos.key);
+                                  setIsStamp(false);
                                 }}
                               >
                                 <BorderResize />
@@ -794,6 +795,7 @@ function RenderPdf({
                                   onClick={() => {
                                     setIsSignPad(true);
                                     setSignKey(pos.key);
+                                    setIsStamp(false);
                                   }}
                                 >
                                   <div style={{ pointerEvents: "none" }}>
