@@ -5,6 +5,7 @@ import { themeColor } from "../../utils/ThemeColor/backColor";
 import { Document, Page, pdfjs } from "react-pdf";
 import BorderResize from "./borderResize";
 import {
+  addZIndex,
   handleImageResize,
   handleSignYourselfImageResize
 } from "../../utils/Utils";
@@ -46,7 +47,8 @@ function RenderPdf({
   setXyPostion,
   index,
   containerWH,
-  setIsResize
+  setIsResize,
+  setZIndex
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -200,7 +202,8 @@ function RenderPdf({
                               ? "pointer"
                               : "not-allowed",
                           borderColor: themeColor(),
-                          background: data.blockColor
+                          background: data.blockColor,
+                          zIndex: "1"
                         }}
                         className="placeholderBlock"
                         size={{
@@ -337,7 +340,8 @@ function RenderPdf({
                                 bounds="parent"
                                 style={{
                                   cursor: "all-scroll",
-                                  borderColor: themeColor()
+                                  borderColor: themeColor(),
+                                  zIndex: "1"
                                 }}
                                 className="placeholderBlock"
                                 onResize={(
@@ -449,7 +453,8 @@ function RenderPdf({
                                         style={{
                                           cursor: "all-scroll",
                                           borderColor: themeColor(),
-                                          background: data.blockColor
+                                          background: data.blockColor,
+                                          zIndex: pos.zIndex
                                         }}
                                         className="placeholderBlock"
                                         onDrag={() =>
@@ -482,14 +487,16 @@ function RenderPdf({
                                         onResizeStart={() => {
                                           setIsResize(true);
                                         }}
-                                        onResizeStop={(
+                                        onResizeStop={() => {
+                                          setIsResize && setIsResize(false);
+                                        }}
+                                        onResize={(
                                           e,
                                           direction,
                                           ref,
                                           delta,
                                           position
                                         ) => {
-                                          e.stopPropagation();
                                           handleImageResize(
                                             ref,
                                             pos.key,
@@ -500,37 +507,67 @@ function RenderPdf({
                                             setSignerPos,
                                             pdfOriginalWidth,
                                             containerWH,
-                                            false,
-                                            setIsResize
+                                            false
                                           );
                                         }}
                                       >
-                                        <BorderResize />
-
                                         <div
-                                          onTouchStart={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteSign(
+                                          onTouchEnd={() => {
+                                            const dataNewPlace = addZIndex(
+                                              signerPos,
                                               pos.key,
-                                              data.signerObjId
+                                              setZIndex
                                             );
+                                            setSignerPos((prevState) => {
+                                              const newState = [...prevState];
+                                              newState.splice(
+                                                0,
+                                                signerPos.length,
+                                                ...dataNewPlace
+                                              );
+                                              return newState;
+                                            });
                                           }}
                                           style={{
-                                            background: themeColor()
-                                          }}
-                                          className="placeholdCloseBtn"
-                                        >
-                                          x
-                                        </div>
-                                        <div
-                                          style={{
-                                            fontSize: "12px",
-                                            color: "black",
-                                            fontWeight: "600",
-                                            marginTop: "0px"
+                                            cursor: "all-scroll",
+                                            borderColor: themeColor(),
+                                            background: data.blockColor,
+                                            zIndex: pos.zIndex,
+                                            height: pos.Height
+                                              ? pos.Height
+                                              : 60,
+                                            width: pos.Width ? pos.Width : 150
                                           }}
                                         >
-                                          {pos.isStamp ? "stamp" : "signature"}
+                                          <BorderResize />
+
+                                          <div
+                                            onTouchStart={(e) => {
+                                              e.stopPropagation();
+                                              handleDeleteSign(
+                                                pos.key,
+                                                data.signerObjId
+                                              );
+                                            }}
+                                            style={{
+                                              background: themeColor()
+                                            }}
+                                            className="placeholdCloseBtn"
+                                          >
+                                            x
+                                          </div>
+                                          <div
+                                            style={{
+                                              fontSize: "12px",
+                                              color: "black",
+                                              fontWeight: "600",
+                                              marginTop: "0px"
+                                            }}
+                                          >
+                                            {pos.isStamp
+                                              ? "stamp"
+                                              : "signature"}
+                                          </div>
                                         </div>
                                       </Rnd>
                                     );
@@ -569,7 +606,8 @@ function RenderPdf({
                                     key={pos.key}
                                     style={{
                                       cursor: "all-scroll",
-                                      borderColor: themeColor()
+                                      borderColor: themeColor(),
+                                      zIndex: "1"
                                     }}
                                     size={{
                                       width: pos.Width ? pos.Width : 151,
@@ -772,7 +810,8 @@ function RenderPdf({
                                   bounds="parent"
                                   style={{
                                     cursor: "all-scroll",
-                                    borderColor: themeColor()
+                                    borderColor: themeColor(),
+                                    zIndex: "1"
                                   }}
                                   className="placeholderBlock"
                                   size={{
@@ -854,6 +893,22 @@ function RenderPdf({
                                     placeData.pos.map((pos) => {
                                       return (
                                         <Rnd
+                                          onClick={() => {
+                                            const dataNewPlace = addZIndex(
+                                              signerPos,
+                                              pos.key,
+                                              setZIndex
+                                            );
+                                            setSignerPos((prevState) => {
+                                              const newState = [...prevState];
+                                              newState.splice(
+                                                0,
+                                                signerPos.length,
+                                                ...dataNewPlace
+                                              );
+                                              return newState;
+                                            });
+                                          }}
                                           key={pos.key}
                                           enableResizing={{
                                             top: false,
@@ -869,15 +924,11 @@ function RenderPdf({
                                           style={{
                                             cursor: "all-scroll",
                                             background: data.blockColor,
-                                            borderColor: themeColor()
+                                            borderColor: themeColor(),
+                                            zIndex: pos.zIndex
                                           }}
                                           className="placeholderBlock"
-                                          onDrag={() =>
-                                            handleTabDrag(
-                                              pos.key
-                                              // data.signerObjId
-                                            )
-                                          }
+                                          onDrag={() => handleTabDrag(pos.key)}
                                           size={{
                                             width: pos.Width ? pos.Width : 150,
                                             height: pos.Height ? pos.Height : 60
@@ -902,7 +953,10 @@ function RenderPdf({
                                           onResizeStart={() => {
                                             setIsResize(true);
                                           }}
-                                          onResizeStop={(
+                                          onResizeStop={() => {
+                                            setIsResize && setIsResize(false);
+                                          }}
+                                          onResize={(
                                             e,
                                             direction,
                                             ref,
@@ -919,8 +973,7 @@ function RenderPdf({
                                               setSignerPos,
                                               pdfOriginalWidth,
                                               containerWH,
-                                              false,
-                                              setIsResize
+                                              false
                                             );
                                           }}
                                         >
@@ -988,7 +1041,8 @@ function RenderPdf({
                                       bounds="parent"
                                       style={{
                                         borderColor: themeColor(),
-                                        cursor: "all-scroll"
+                                        cursor: "all-scroll",
+                                        zIndex: "1"
                                       }}
                                       className="placeholderBlock"
                                       onDrag={() => handleTabDrag(pos.key)}

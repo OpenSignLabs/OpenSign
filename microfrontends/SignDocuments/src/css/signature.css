@@ -176,7 +176,6 @@
 
 .placeholderBlock {
   padding: 0px;
-  z-index: 1;
   position: absolute;
   border-style: dashed;
   width: 150px;
@@ -185,7 +184,7 @@
   text-align: center;
   justify-content: center;
   border-width: 0.2px;
-  
+
 }
 
 .finishBtn {
