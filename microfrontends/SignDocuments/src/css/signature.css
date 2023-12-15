@@ -176,7 +176,6 @@
 
 .placeholderBlock {
   padding: 0px;
-  z-index: 1;
   position: absolute;
   border-style: dashed;
   width: 150px;
@@ -185,7 +184,7 @@
   text-align: center;
   justify-content: center;
   border-width: 0.2px;
-  
+
 }
 
 .finishBtn {
@@ -543,6 +542,7 @@ option {
   overflow-y: scroll;
 }
 
+
 .SelectTrigger:hover {
   border: none;
   outline: none;
@@ -648,10 +648,18 @@ option {
 
 }
 
+.dropDownStyle {
+  width: auto;
+}
+
 @media screen and (max-width:766px) {
 
   .showPages {
     display: none;
+  }
+
+  .dropdown-menu {
+    min-width: 0rem !important;
   }
 
   .signatureContainer {
@@ -680,8 +688,7 @@ option {
 
   #navbar {
     overflow: hidden;
-
-    z-index: 10;
+    z-index: 49;
   }
 
   /* Navbar links */
@@ -717,7 +724,7 @@ option {
 
   .stickyfooter {
     position: fixed;
-    z-index: 32 !important;
+    z-index: 99 !important;
     bottom: 0px;
     right: 0rem;
   }
