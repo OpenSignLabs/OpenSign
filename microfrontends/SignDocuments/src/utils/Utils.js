@@ -219,6 +219,36 @@ export function onSaveSign(
   return newUpdateUrl;
 }
 
+export const addZIndex = (signerPos, key, setZIndex) => {
+  return signerPos.map((item) => {
+    if (item.placeHolder && item.placeHolder.length > 0) {
+      // If there is a nested array, recursively add the field to the last object
+      return {
+        ...item,
+        placeHolder: addZIndex(item.placeHolder, key, setZIndex)
+      };
+    } else if (item.pos && item.pos.length > 0) {
+      // If there is no nested array, add the new field
+      return {
+        ...item,
+        pos: addZIndex(item.pos, key, setZIndex)
+        // Adjust this line to add the desired field
+      };
+    } else {
+      if (item.key === key) {
+        setZIndex(item.zIndex);
+        return {
+          ...item,
+          zIndex: item.zIndex ? item.zIndex + 1 : 1
+        };
+      } else {
+        return {
+          ...item
+        };
+      }
+    }
+  });
+};
 //function for add default signature or image for all requested location
 export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
   let imgWH = { width: "", height: "" };
@@ -674,8 +704,7 @@ export const handleImageResize = (
   setSignerPos,
   pdfOriginalWidth,
   containerWH,
-  showResize,
-  setIsResize
+  showResize
 ) => {
   const filterSignerPos = signerPos.filter(
     (data) => data.signerObjId === signerId
@@ -753,7 +782,6 @@ export const handleImageResize = (
       }
     }
   }
-  setIsResize && setIsResize(false);
 };
 
 //function for resize image and update width and height for sign-yourself

@@ -66,6 +66,7 @@ function PlaceHolderSign() {
   const [selectedEmail, setSelectedEmail] = useState(false);
   const [isResize, setIsResize] = useState(false);
   const [isAlreadyPlace, setIsAlreadyPlace] = useState(false);
+  const [zIndex, setZIndex] = useState(1);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -263,6 +264,8 @@ function PlaceHolderSign() {
   };
 
   const getSignerPos = (item, monitor) => {
+    const posZIndex = zIndex + 1;
+    setZIndex(posZIndex);
     const newWidth = containerWH.width;
     const scale = pdfOriginalWidth / newWidth;
     const key = Math.floor(1000 + Math.random() * 9000);
@@ -282,7 +285,8 @@ function PlaceHolderSign() {
         isDrag: false,
         scale: scale,
         isMobile: isMobile,
-        yBottom: window.innerHeight / 2 - 60
+        yBottom: window.innerHeight / 2 - 60,
+        zIndex: posZIndex
       };
       dropData.push(dropObj);
       xyPos = {
@@ -311,9 +315,9 @@ function PlaceHolderSign() {
         firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
         yBottom: ybottom,
         scale: scale,
-        isMobile: isMobile
+        isMobile: isMobile,
+        zIndex: posZIndex
       };
-
       dropData.push(dropObj);
       xyPos = {
         pageNumber: pageNumber,
@@ -322,6 +326,7 @@ function PlaceHolderSign() {
 
       xyPosArr.push(xyPos);
     }
+
     //add signers objId first inseretion
     if (filterSignerPos.length > 0) {
       const colorIndex = signerPos
@@ -403,6 +408,7 @@ function PlaceHolderSign() {
       setSignerPos((prev) => [...prev, placeHolderPos]);
     }
   };
+
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     const load = {
@@ -419,7 +425,6 @@ function PlaceHolderSign() {
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key, signerId) => {
     setDragKey(key);
-    // setSignerObjId(signerId);
   };
 
   //function for set and update x and y postion after drag and drop signature tab
@@ -981,6 +986,7 @@ function PlaceHolderSign() {
                   setSignerPos={setSignerPos}
                   containerWH={containerWH}
                   setIsResize={setIsResize}
+                  setZIndex={setZIndex}
                 />
               )}
             </div>
