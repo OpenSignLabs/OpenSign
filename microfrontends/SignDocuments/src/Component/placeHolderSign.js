@@ -21,7 +21,8 @@ import {
   pdfNewWidthFun,
   contractDocument,
   contractUsers,
-  getHostUrl
+  getHostUrl,
+  addZIndex
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
@@ -430,6 +431,8 @@ function PlaceHolderSign() {
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
     if (!isResize) {
+      const dataNewPlace = addZIndex(signerPos, key, setZIndex);
+      signerPos.splice(0, signerPos.length, ...dataNewPlace);
       const containerRect = document
         .getElementById("container")
         .getBoundingClientRect();

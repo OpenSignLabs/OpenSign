@@ -542,6 +542,7 @@ option {
   overflow-y: scroll;
 }
 
+
 .SelectTrigger:hover {
   border: none;
   outline: none;
@@ -647,10 +648,18 @@ option {
 
 }
 
+.dropDownStyle {
+  width: auto;
+}
+
 @media screen and (max-width:766px) {
 
   .showPages {
     display: none;
+  }
+
+  .dropdown-menu {
+    min-width: 0rem !important;
   }
 
   .signatureContainer {
@@ -679,7 +688,7 @@ option {
 
   #navbar {
     overflow: hidden;
-    z-index: 99;
+    z-index: 49;
   }
 
   /* Navbar links */
