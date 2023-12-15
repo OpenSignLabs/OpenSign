@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import CreateFolder from "./CreateFolder";
-import { templateCls } from "../../constant/const";
 
-const SelectFolder = ({ required, onSuccess }) => {
+const SelectFolder = ({ required, onSuccess, folderCls }) => {
   const [isOpen, SetIsOpen] = useState(false);
   const [clickFolder, setClickFolder] = useState("");
   const [selectFolder, setSelectedFolder] = useState({});
@@ -24,7 +23,7 @@ const SelectFolder = ({ required, onSuccess }) => {
   const fetchFolder = async (folderPtr) => {
     setIsLoader(true);
     try {
-      const fetchFolder = new Parse.Query(templateCls);
+      const fetchFolder = new Parse.Query(folderCls);
       if (folderPtr) {
         fetchFolder.equalTo("Folder", folderPtr);
         fetchFolder.equalTo("Type", "Folder");
@@ -55,7 +54,7 @@ const SelectFolder = ({ required, onSuccess }) => {
         setTabList((tabs) => [...tabs, item]);
         const folderPtr = {
           __type: "Pointer",
-          className: templateCls,
+          className: folderCls,
           objectId: item.objectId
         };
         fetchFolder(folderPtr);
@@ -64,7 +63,7 @@ const SelectFolder = ({ required, onSuccess }) => {
       setTabList((tabs) => [...tabs, item]);
       const folderPtr = {
         __type: "Pointer",
-        className: templateCls,
+        className: folderCls,
         objectId: item.objectId
       };
 
@@ -107,7 +106,7 @@ const SelectFolder = ({ required, onSuccess }) => {
         let _len = list.length - 1;
         folderPtr = {
           __type: "Pointer",
-          className: templateCls,
+          className: folderCls,
           objectId: list[_len].objectId
         };
         setTabList(list);
@@ -128,7 +127,7 @@ const SelectFolder = ({ required, onSuccess }) => {
     if (clickFolder && clickFolder.ObjectId) {
       fetchFolder({
         __type: "Pointer",
-        className: templateCls,
+        className: folderCls,
         objectId: clickFolder.ObjectId
       });
     } else {
@@ -230,7 +229,7 @@ const SelectFolder = ({ required, onSuccess }) => {
               {isAdd && (
                 <CreateFolder
                   parentFolderId={clickFolder && clickFolder.ObjectId}
-                  folderCls={templateCls}
+                  folderCls={folderCls}
                   onSuccess={handleAddFolder}
                 />
               )}

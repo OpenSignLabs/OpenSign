@@ -6,7 +6,11 @@ import Alert from "./Alert";
 import SelectFolder from "../components/fields/SelectFolder";
 import SignersInput from "../components/fields/SignersInput";
 import Title from "../components/Title";
+import { useNavigate } from "react-router-dom";
+import { templateCls } from '../constant/const'
+ 
 const TemplateForm = () => {
+  const navigate = useNavigate()
   const [signers, setSigners] = useState([]);
   const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
   const [formData, setFormData] = useState({
@@ -126,7 +130,7 @@ const TemplateForm = () => {
     e.preventDefault();
     try {
       const currentUser = Parse.User.current();
-      const template = new Parse.Object("contracts_Template");
+      const template = new Parse.Object(templateCls);
       Object.entries(formData).forEach((item) =>
         template.set(item[0], item[1])
       );
@@ -135,13 +139,20 @@ const TemplateForm = () => {
       if (folder && folder.ObjectId) {
         template.set("Folder", {
           __type: "Pointer",
-          className: "contracts_Template",
+          className: templateCls,
           objectId: folder.ObjectId
         });
       }
       if (signers && signers.length > 0) {
         template.set("Signers", signers);
       }
+      const ExtCls = JSON.parse(localStorage.getItem("Extand_Class"));
+      template.set("ExtUserPtr", {
+        __type: "Pointer",
+        className: "contracts_Users",
+        objectId: ExtCls[0].objectId
+      });
+
       const res = await template.save();
       if (res) {
         setIsAlert(true);
@@ -157,6 +168,7 @@ const TemplateForm = () => {
         });
         setFileUpload([]);
         setpercentage(0);
+        navigate('/asmf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/template/' +res.id)
       }
     } catch (err) {
       console.log("err ", err);
@@ -281,7 +293,7 @@ const TemplateForm = () => {
           />
         </div>
         <SignersInput onChange={handleSigners} />
-        <SelectFolder onSuccess={handleFolder} />
+        <SelectFolder onSuccess={handleFolder} folderCls={templateCls}/>
         <div className="flex items-center mt-3 gap-2 text-white">
           <button
             className="px-2 py-2 uppercase rounded shadow-md bg-sky-300 text-xs font-semibold"

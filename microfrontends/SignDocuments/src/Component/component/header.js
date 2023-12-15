@@ -533,17 +533,17 @@ function Header({
           ) : isPlaceholder ? (
             <>
               {!isMailSend &&
-                signersdata.Signers &&
-                signersdata.Signers.length !== signerPos.length && (
+                signersdata.length > 0 &&
+                signersdata.length !== signerPos.length && (
                   <div>
                     {signerPos.length === 0 ? (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add all {signersdata.Signers.length - signerPos.length}{" "}
+                        Add all {signersdata.length - signerPos.length}{" "}
                         recipients signature
                       </span>
                     ) : (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add {signersdata.Signers.length - signerPos.length} more
+                        Add {signersdata.length - signerPos.length} more
                         recipients signature
                       </span>
                     )}

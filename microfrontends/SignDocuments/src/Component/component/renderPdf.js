@@ -1,3 +1,4 @@
+
 import React from "react";
 import RSC from "react-scrollbars-custom";
 import { Rnd } from "react-rnd";
@@ -459,9 +460,13 @@ function RenderPdf({
                                         className="placeholderBlock"
                                         onDrag={() => handleTabDrag(pos.key)}
                                         size={{
-                                          width: pos.Width ? pos.Width : 150,
-                                          height: pos.Height ? pos.Height : 60
+                                          width: posWidth(pos),
+                                          height: posHeight(pos)
                                         }}
+                                        // size={{
+                                        //   width: pos.Width ? pos.Width : 150,
+                                        //   height: pos.Height ? pos.Height : 60
+                                        // }}
                                         lockAspectRatio={
                                           pos.Width
                                             ? pos.Width / pos.Height
@@ -471,14 +476,21 @@ function RenderPdf({
                                           handleStop(
                                             event,
                                             dragElement,
-                                            data.signerObjId,
+                                            data.Id,
                                             pos.key
                                           )
+                                          // data.signerObjId,
                                         }
                                         default={{
-                                          x: pos.xPosition,
-                                          y: pos.yPosition
+                                          x: xPos(pos),
+                                          y: !pos.isMobile
+                                            ? pos.yPosition / scale
+                                            : pos.yPosition * (pos.scale / scale)
                                         }}
+                                        // default={{
+                                        //   x: pos.xPosition,
+                                        //   y: pos.yPosition
+                                        // }}
                                         onResizeStart={() => {
                                           setIsResize(true);
                                         }}
@@ -492,6 +504,7 @@ function RenderPdf({
                                           delta,
                                           position
                                         ) => {
+                                          e.stopPropagation();
                                           handleImageResize(
                                             ref,
                                             pos.key,
@@ -541,8 +554,9 @@ function RenderPdf({
                                               e.stopPropagation();
                                               handleDeleteSign(
                                                 pos.key,
-                                                data.signerObjId
+                                                data.Id
                                               );
+                                              // data.signerObjId
                                             }}
                                             style={{
                                               background: themeColor()
@@ -920,7 +934,7 @@ function RenderPdf({
                                             cursor: "all-scroll",
                                             background: data.blockColor,
                                             borderColor: themeColor(),
-                                            zIndex: pos.zIndex
+                                            zIndex:  pos.zIndex ? pos.zIndex : "1"
                                           }}
                                           className="placeholderBlock"
                                           onDrag={() => handleTabDrag(pos.key)}
@@ -937,9 +951,10 @@ function RenderPdf({
                                             handleStop(
                                               event,
                                               dragElement,
-                                              data.signerObjId,
+                                              data.Id,
                                               pos.key
                                             )
+                                              // data.signerObjId,
                                           }
                                           default={{
                                             x: pos.xPosition,
@@ -978,8 +993,9 @@ function RenderPdf({
                                               e.stopPropagation();
                                               handleDeleteSign(
                                                 pos.key,
-                                                data.signerObjId
+                                                data.Id
                                               );
+                                              // data.signerObjId
                                             }}
                                             style={{
                                               background: themeColor()
