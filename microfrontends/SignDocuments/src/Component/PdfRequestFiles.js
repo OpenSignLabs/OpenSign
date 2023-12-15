@@ -494,6 +494,7 @@ function PdfRequestFiles() {
         data.key === signKey && data.Width && data.Height && data.SignUrl
     );
     let getIMGWH = calculateImgAspectRatio(imgWH);
+
     if (updateFilter.length > 0) {
       const getXYdata = currentSigner[0].placeHolder[i].pos;
       const getPosData = getXYdata;
@@ -516,11 +517,17 @@ function PdfRequestFiles() {
         }
         return obj;
       });
-      currentSigner[0].placeHolder.splice(i, 1, newUpdateUrl[0]);
+      const getPlaceData = currentSigner[0].placeHolder;
+      getPlaceData.splice(0, getPlaceData.length, ...newUpdateUrl);
+
       const indexofSigner = signerPos.findIndex((object) => {
         return object.signerObjId === signerObjectId;
       });
-      signerPos.splice(indexofSigner, 1, currentSigner[0]);
+      setSignerPos((prevState) => {
+        const newState = [...prevState]; // Create a copy of the state
+        newState.splice(indexofSigner, 1, ...currentSigner); // Modify the copy
+        return newState; // Update the state with the modified copy
+      });
     } else {
       const getXYdata = currentSigner[0].placeHolder[i].pos;
 
@@ -546,11 +553,17 @@ function PdfRequestFiles() {
         return obj;
       });
 
-      currentSigner[0].placeHolder.splice(i, 1, newUpdateUrl[0]);
+      const getPlaceData = currentSigner[0].placeHolder;
+      getPlaceData.splice(0, getPlaceData.length, ...newUpdateUrl);
+
       const indexofSigner = signerPos.findIndex((object) => {
         return object.signerObjId === signerObjectId;
       });
-      signerPos.splice(indexofSigner, 1, currentSigner[0]);
+      setSignerPos((prevState) => {
+        const newState = [...prevState]; // Create a copy of the state
+        newState.splice(indexofSigner, 1, ...currentSigner); // Modify the copy
+        return newState; // Update the state with the modified copy
+      });
     }
   };
 
@@ -586,6 +599,7 @@ function PdfRequestFiles() {
     updateFilter = currentSigner[0].placeHolder[i].pos.filter(
       (data) => data.key === signKey && data.SignUrl
     );
+
     const getXYdata = currentSigner[0].placeHolder[i].pos;
     const getPosData = getXYdata;
     const posWidth = isDefaultSign
@@ -633,12 +647,15 @@ function PdfRequestFiles() {
         }
         return obj;
       });
-      let signerupdate = [];
-      signerupdate = signerPos.filter(
-        (data) => data.signerObjId !== signerObjectId
+
+      const index = signerPos.findIndex(
+        (data) => data.signerObjId === signerObjectId
       );
-      signerupdate.push(newUpdatePos[0]);
-      setSignerPos(signerupdate);
+      setSignerPos((prevState) => {
+        const newState = [...prevState]; // Create a copy of the state
+        newState.splice(index, 1, ...newUpdatePos); // Modify the copy
+        return newState; // Update the state with the modified copy
+      });
     }
   };
 
