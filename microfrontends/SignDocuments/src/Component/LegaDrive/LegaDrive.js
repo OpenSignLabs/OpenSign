@@ -8,8 +8,10 @@ import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import { themeColor, iconColor } from "../../utils/ThemeColor/backColor";
 import { getDrive } from "../../utils/Utils";
 import AlertComponent from "../component/alertComponent";
+import { useNavigate } from "react-router-dom";
 
 function PdfFile() {
+  const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [isList, setIsList] = useState(false);
   const [selectedSort, setSelectedSort] = useState("Date");
@@ -28,6 +30,7 @@ function PdfFile() {
   const [handleError, setHandleError] = useState();
   const [folderName, setFolderName] = useState([]);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
+  const [isNewFol, setIsNewFol] = useState(false);
   const currentUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -188,7 +191,6 @@ function PdfFile() {
         };
       }
 
-      // console.log("data", data);
       await axios
         .post(
           `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
@@ -314,6 +316,8 @@ function PdfFile() {
     const closeMenuOnOutsideClick = (e) => {
       if (isShowSort && !e.target.closest("#menu-container")) {
         setIsShowSort(false);
+      } else if (isNewFol && !e.target.closest("#folder-menu")) {
+        setIsNewFol(false);
       }
     };
 
@@ -503,6 +507,69 @@ function PdfFile() {
               </div>
               <div className="dropMenuBD">
                 <div
+                  id="folder-menu"
+                  className={
+                    isNewFol ? "dropdown show dropDownStyle" : "dropdown"
+                  }
+                  onClick={() => setIsNewFol(!isNewFol)}
+                >
+                  <div className="sort">
+                    <i
+                      className="fa fa-plus-square"
+                      aria-hidden="true"
+                      style={{ fontSize: "25px", color: `${iconColor()}` }}
+                    ></i>
+                  </div>
+                  <div
+                    className={
+                      isNewFol ? "dropdown-menu show" : "dropdown-menu"
+                    }
+                    aria-labelledby="dropdownMenuButton"
+                    aria-expanded={isNewFol ? "true" : "false"}
+                  >
+                    {" "}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column"
+                      }}
+                    >
+                      <span
+                        className="dropdown-item itemColor"
+                        onClick={() => getParentFolder()}
+                      >
+                        <i
+                          style={{ marginRight: "5px" }}
+                          className="fa fa-plus"
+                          aria-hidden="true"
+                        ></i>
+                        Create folder
+                      </span>
+                      <span
+                        className="dropdown-item itemColor"
+                        onClick={() => navigate("/form/sHAnZphf69")}
+                      >
+                        <i
+                          style={{ marginRight: "5px" }}
+                          className="fas fa-pen-nib"
+                        ></i>
+                        Sign Yourself
+                      </span>
+                      <span
+                        className="dropdown-item itemColor"
+                        onClick={() => navigate("/form/8mZzFxbG1z")}
+                      >
+                        {" "}
+                        <i
+                          style={{ marginRight: "5px" }}
+                          className="fa fa-file-signature"
+                        ></i>
+                        Request Signatures{" "}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div
                   id="menu-container"
                   className={isShowSort ? "dropdown show" : "dropdown"}
                   onClick={() => setIsShowSort(!isShowSort)}
@@ -644,14 +711,6 @@ function PdfFile() {
                       ></i>
                     </div>
                   )}
-                </div>
-
-                <div className="sort" onClick={() => getParentFolder()}>
-                  <i
-                    className="fa fa-plus-square"
-                    aria-hidden="true"
-                    style={{ fontSize: "25px", color: `${iconColor()}` }}
-                  ></i>
                 </div>
               </div>
             </div>
