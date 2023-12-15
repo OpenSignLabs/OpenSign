@@ -679,8 +679,7 @@ option {
 
   #navbar {
     overflow: hidden;
-
-    z-index: 10;
+    z-index: 99;
   }
 
   /* Navbar links */
@@ -716,7 +715,7 @@ option {
 
   .stickyfooter {
     position: fixed;
-    z-index: 32 !important;
+    z-index: 99 !important;
     bottom: 0px;
     right: 0rem;
   }
