@@ -1001,3 +1001,5 @@ export const signPdfFun = async (
 
   return response;
 };
+
+export const randomId = () => Math.floor(1000 + Math.random() * 9000);

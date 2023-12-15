@@ -163,6 +163,20 @@ export default function reportJson(id) {
           }
         ]
       };
+    // template report
+    case "23jk45slhj":
+      return {
+        reportName: "Templates",
+        heading: contactbook,
+        actions: [
+          {
+            btnLabel: "",
+            btnColor: "#f55a42",
+            textColor: "white",
+            btnIcon: "fa-solid fa-trash"
+          }
+        ]
+      };
     default:
       return null;
   }

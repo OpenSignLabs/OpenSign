@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
-import { templateCls } from "../../constant/const";
 import Alert from "../../primitives/Alert";
 
 const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
@@ -45,7 +44,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
     event.preventDefault();
     if (name) {
       const currentUser = Parse.User.current();
-      const exsitQuery = new Parse.Query(templateCls);
+      const exsitQuery = new Parse.Query(folderCls);
       exsitQuery.equalTo("Name", name);
       exsitQuery.equalTo("Type", "Folder");
       if (parentFolderId) {
@@ -59,7 +58,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
           setIsAlert(false);
         }, 1000);
       } else {
-        const template = new Parse.Object(templateCls);
+        const template = new Parse.Object(folderCls);
         template.set("Name", name);
         template.set("Type", "Folder");
 
