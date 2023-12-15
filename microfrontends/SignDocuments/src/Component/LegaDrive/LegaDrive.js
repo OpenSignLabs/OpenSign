@@ -508,7 +508,9 @@ function PdfFile() {
               <div className="dropMenuBD">
                 <div
                   id="folder-menu"
-                  className={isNewFol ? "dropdown show" : "dropdown"}
+                  className={
+                    isNewFol ? "dropdown show dropDownStyle" : "dropdown"
+                  }
                   onClick={() => setIsNewFol(!isNewFol)}
                 >
                   <div className="sort">

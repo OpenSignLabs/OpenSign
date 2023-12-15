@@ -457,12 +457,7 @@ function RenderPdf({
                                           zIndex: pos.zIndex
                                         }}
                                         className="placeholderBlock"
-                                        onDrag={() =>
-                                          handleTabDrag(
-                                            pos.key
-                                            // data.signerObjId
-                                          )
-                                        }
+                                        onDrag={() => handleTabDrag(pos.key)}
                                         size={{
                                           width: pos.Width ? pos.Width : 150,
                                           height: pos.Height ? pos.Height : 60
