@@ -18,6 +18,7 @@ import getDocument from './parsefunction/getDocument.js';
 import getDrive from './parsefunction/getDrive.js';
 import getReport from './parsefunction/getReport.js';
 import TemplateAfterSave from './parsefunction/TemplateAfterSave.js';
+import GetTemplate from './parsefunction/GetTemplate.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
@@ -35,6 +36,7 @@ Parse.Cloud.define('getUserDetails', getUserDetails);
 Parse.Cloud.define('getDocument', getDocument);
 Parse.Cloud.define('getDrive', getDrive)
 Parse.Cloud.define('getReport', getReport)
+Parse.Cloud.define("getTemplate", GetTemplate)
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
 Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
 Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
