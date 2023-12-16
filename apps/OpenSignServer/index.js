@@ -170,9 +170,6 @@ app.get('/', function (req, res) {
   res.status(200).send('open-sign-server is running !!!');
 });
 
-// There will be a test page available on the /test path of your server url
-// Remove this before launching your app
-
 if (!process.env.TESTING) {
   const port = process.env.PORT || 8080;
   const httpServer = http.createServer(app);
