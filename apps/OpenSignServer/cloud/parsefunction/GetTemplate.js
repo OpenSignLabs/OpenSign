@@ -1,8 +1,6 @@
-import axios from 'axios';
-
-export default async function getDocument(request) {
+export default async function GetTemplate(request) {
   const serverUrl = process.env.SERVER_URL;
-  const docId = request.params.docId;
+  const templateId = request.params.templateId;
 
   try {
     const userRes = await axios.get(serverUrl + '/users/me', {
@@ -12,16 +10,14 @@ export default async function getDocument(request) {
       },
     });
     const userId = userRes.data && userRes.data.objectId;
-    if (docId && userId) {
+    if (templateId && userId) {
       try {
-        const query = new Parse.Query('contracts_Document');
-        query.equalTo('objectId', docId);
-        query.include('ExtUserPtr');
-        query.include('CreatedBy');
-        query.include('Signers');
-        query.include('AuditTrail.UserPtr');
-        query.include('Placeholders');
-        const res = await query.first({ useMasterKey: true });
+        const template = new Parse.Query('contracts_Template');
+        template.equalTo('objectId', templateId);
+        template.include('ExtUserPtr');
+        template.include('Signers');
+        template.include('CreateBy');
+        const res = template.first({ useMasterKey: true });
         if (res) {
           const acl = res.getACL();
           if (acl && acl.getReadAccess(userId)) {

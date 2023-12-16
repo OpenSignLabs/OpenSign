@@ -1003,3 +1003,62 @@ export const signPdfFun = async (
 };
 
 export const randomId = () => Math.floor(1000 + Math.random() * 9000);
+
+export const createDocument = async (template) => {
+  if (template && template.length > 0) {
+    const Doc = template[0];
+    let signers;
+    console.log("Doc.Placholders ", Doc)
+    if (Doc.Signers && Doc.Signers.length > 0) {
+      signers = Doc.Signers.map((x) => ({
+        __type: "Pointer",
+        className: "contracts_Contactbook",
+        objectId: x.objectId
+      }));
+    } else {
+      signers = [];
+    }
+    const data = {
+      Name: Doc.Name,
+      URL: Doc.URL,
+      SignedUrl: Doc.SignedUrl,
+      Description: Doc.Description,
+      Note: Doc.Note,
+      Placeholders: Doc.Placeholders,
+      ExtUserPtr: {
+        __type: "Pointer",
+        className: "contracts_Users",
+        objectId: Doc.ExtUserPtr.objectId
+      },
+      CreatedBy: {
+        __type: "Pointer",
+        className: "_User",
+        objectId: Doc.CreatedBy.objectId
+      },
+      Signers: signers
+    };
+
+    try {
+      const res = await axios.post(
+        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+          "_appName"
+        )}_Document`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      if (res) {
+        console.log("res", res);
+        return { status: "success", id: res.data.objectId };
+      }
+    } catch (err) {
+      console.log("axois err ", err);
+      return { status: "error", id: "Something Went Wrong!" };
+    }
+  }
+};
