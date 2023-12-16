@@ -186,9 +186,9 @@ function PlaceHolderSign() {
     if (documentData && documentData.length > 0) {
       const alreadyPlaceholder =
         documentData[0].Placeholders && documentData[0].Placeholders;
-      if (alreadyPlaceholder && alreadyPlaceholder.length > 0) {
-        setIsAlreadyPlace(true);
-      }
+      // if (alreadyPlaceholder && alreadyPlaceholder.length > 0) {
+      //   setIsAlreadyPlace(true);
+      // }
       setPdfDetails(documentData);
       const currEmail = documentData[0].ExtUserPtr.Email;
       const filterCurrEmail = documentData[0].Signers.filter(
@@ -201,6 +201,12 @@ function PlaceHolderSign() {
       setSignerObjId(documentData[0].Signers[0].objectId);
       setContractName(documentData[0].Signers[0].className);
       setIsSelectId(0);
+      if (documentData[0].Placeholders && documentData[0].Placeholders.length > 0){
+        setSignerPos(documentData[0].Placeholders)
+      }
+      if (documentData[0].Signers && documentData[0].Signers.length > 0){
+        setSignersData(documentData[0].Signers)
+      }
     } else if (
       documentData === "Error: Something went wrong!" ||
       (documentData.result && documentData.result.error)
@@ -947,7 +953,7 @@ function PlaceHolderSign() {
                 )}
               </Modal.Footer>
             </Modal>
-            <ModalComponent isShow={isAlreadyPlace} type={"alreadyPlace"} />
+            {/* <ModalComponent isShow={isAlreadyPlace} type={"alreadyPlace"} /> */}
             <ModalComponent
               isShow={isShowEmail}
               type={"signersAlert"}

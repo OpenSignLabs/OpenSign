@@ -22,7 +22,8 @@ import {
   contractUsers,
   getHostUrl,
   randomId,
-  addZIndex
+  addZIndex,
+  createDocument
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
@@ -171,24 +172,22 @@ const TemplatePlaceholder = () => {
     }
   }, [divRef.current]);
   const fetchTemplate = async () => {
-    const templateDeatils = await axios.get(
-      `${localStorage.getItem("baseUrl")}classes/contracts_Template/` +
-        templateId,
+    const params = { templateId: templateId };
+    const templateDeatils = await axios.post(
+      `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+      params,
       {
         headers: {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-        },
-        params: {
-          include: "ExtUserPtr,Signers,CreatedBy"
         }
       }
     );
-
+    // console.log("templateDeatils.data ", templateDeatils.data);
     const documentData =
-      templateDeatils.data && templateDeatils.data
-        ? [templateDeatils.data]
+      templateDeatils.data && templateDeatils.data.result
+        ? [templateDeatils.data.result]
         : [];
     // console.log("documentData ", documentData)
     if (documentData && documentData.length > 0) {
@@ -802,10 +801,16 @@ const TemplatePlaceholder = () => {
         console.log("axois err ", err);
       });
   };
-  const handleCreateDocModal = () => {
+  const handleCreateDocModal = async () => {
     const hostUrl = getHostUrl();
     // handle create document
-    navigate(`${hostUrl}placeHolderSign/${templateId}`);
+    console.log("template ", pdfDetails);
+    const res = await createDocument(pdfDetails);
+    if (res.status === "success") {
+      navigate(`${hostUrl}placeHolderSign/${res.id}`);
+    } else {
+      setHandleError("Error: Something went wrong!");
+    }
   };
 
   const handleAddSigner = () => {
