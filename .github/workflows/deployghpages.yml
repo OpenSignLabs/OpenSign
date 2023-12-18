@@ -22,6 +22,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
+        run: cd docs
         run: npm ci
       - name: Build website
         run: npm run build
