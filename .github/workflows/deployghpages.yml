@@ -21,9 +21,10 @@ jobs:
           node-version: 18
           cache: npm
 
-      - name: Install dependencies
+      - name: Change dir
         run: cd docs
-             npm ci
+      - name: Install dependencies
+        run: npm ci
       - name: Build website
         run: npm run build
 
