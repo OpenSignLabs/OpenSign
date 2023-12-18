@@ -14,7 +14,8 @@
   --ifm-color-primary-lighter: #0E205F;
   --ifm-color-primary-lightest: #112775;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(215, 16, 16, 0.1);
+  --ifm-color-primary-gradient: linear-gradient(45deg, #c6cde4, #112775); /* created by chatgpt */
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -27,4 +28,11 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* created by chatgpt */
+
+
+.hero.hero--primary.heroBannerGradient {
+  background: var(--ifm-color-primary-gradient); 
 }

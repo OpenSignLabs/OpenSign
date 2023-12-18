@@ -44,14 +44,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/opensignlabs/opensign/tree/staging/docs/docs/tutorials/',
+            'https://github.com/opensignlabs/opensign/tree/feat-docs/docs/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/staging/docs/docs/',
+            'https://github.com/facebook/docusaurus/tree/feat-docs/docs/',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -76,11 +76,34 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Help',
           },
-          {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/facebook/docusaurus',
+            type: 'docSidebar',
+            sidebarId: 'apiSidebar',
+            position: 'left',
+            label: 'APIs',
+          },
+          {
+            type: 'docSidebar',
+            sidebarId: 'contributeSidebar',
+            position: 'left',
+            label: 'Contribute',
+          },
+          {
+            href: 'https://www.opensignlabs.com/plans-pricing',
+            label: 'Cloud Pricing',
+            position: 'left',
+          },
+          //{to: '/blog', label: 'Blog', position: 'left'},
+          {
+            type: 'docSidebar',
+            sidebarId: 'selfhostSidebar',
+            position: 'left',
+            label: 'Self-host',
+          },
+          {
+            href: 'https://github.com/opensignlabs/opensign',
             label: 'GitHub',
             position: 'right',
           },
@@ -93,8 +116,20 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Help',
+                to: '/docs/help/intro',
+              },
+              {
+                label: 'APIs',
+                to: '/docs/API-docs/intro',
+              },
+              {
+                label: 'Contribute',
+                to: '/docs/contribute/intro',
+              },
+              {
+                label: 'Self-host',
+                to: '/docs/self-host/intro',
               },
             ],
           },
@@ -102,34 +137,42 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                label: 'Discord',
+                href: 'https://discord.com/invite/xe9TDuyAyj',
               },
               {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                label: 'LinkedIn',
+                href: 'https://www.linkedin.com/company/opensign%E2%84%A2/',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
+                href: 'https://www.twitter.com/opensignhq',
+              },
+              {
+                label: 'Facebook',
+                href: 'https://www.facebook.com/profile.php?id=61551030403669',
               },
             ],
           },
           {
             title: 'More',
             items: [
+              // {
+              //   label: 'Blog',
+              //   to: '/blog',
+              // },
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'Official Website',
+                href: 'https://www.opensignlabs.com',
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/opensignlabs/opensign',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} OpenSign™. <br>The best Open Source DocuSign alternative.`,
       },
       prism: {
         theme: prismThemes.github,
