@@ -12,7 +12,9 @@ function SignerListPlace({
   setContractName,
   handleAddSigner,
   setUniqueId,
-  setRoleName
+  setRoleName,
+  handleDeleteUser,
+  handleRoleChange
 }) {
   const color = [
     "#93a3db",
@@ -45,7 +47,6 @@ function SignerListPlace({
   ];
   const [isHover, setIsHover] = useState();
 
-  console.log("signerPos", signerPos);
   //function for onhover signer name change background color
   const onHoverStyle = (ind) => {
     const style = {
@@ -108,7 +109,7 @@ function SignerListPlace({
                     setIsSelectId(ind);
                     setContractName(obj?.className);
                     setUniqueId(obj.Id);
-                    setRoleName(obj.Role)
+                    setRoleName(obj.Role);
                   }}
                 >
                   <div
@@ -155,13 +156,36 @@ function SignerListPlace({
                       {obj.Name ? (
                         <span className="userName">{obj.Name}</span>
                       ) : (
-                        <span className="userName">{obj.Role}</span>
+                        <>
+                          {handleRoleChange ? (
+                            <span
+                              className="userName"
+                              contentEditable
+                              onBlur={(e) => handleRoleChange(e, obj.Id)}
+                            >
+                              {obj.Role}
+                            </span>
+                          ) : (
+                            <span className="userName">{obj.Role}</span>
+                          )}
+                        </>
                       )}
                       {obj.Email && (
                         <span className="useEmail">{obj.Email}</span>
                       )}
                     </div>
                   </div>
+                  {handleDeleteUser && (
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteUser(obj.Id);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <i className="fa-regular fa-trash-can"></i>
+                    </div>
+                  )}
                   {signerPos.map((data, key) => {
                     return (
                       data.Id === obj.Id && (
@@ -182,12 +206,12 @@ function SignerListPlace({
             })}
         </>
       </div>
-        {handleAddSigner && (
-          <div className="addSignerBtn" onClick={() => handleAddSigner()}>
-            <i className="fa-solid fa-plus"></i>
-            <span style={{ marginLeft: 2 }}>Add</span>
-          </div>
-        )}
+      {handleAddSigner && (
+        <div className="addSignerBtn" onClick={() => handleAddSigner()}>
+          <i className="fa-solid fa-plus"></i>
+          <span style={{ marginLeft: 2 }}>Add</span>
+        </div>
+      )}
     </div>
   );
 }

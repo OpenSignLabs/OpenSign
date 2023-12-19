@@ -27,6 +27,9 @@ import {
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
+import SelectSigners from "./component/SelectSigners";
+import AddUser from "./component/AddUser";
+import "../css/AddUser.css";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -148,6 +151,8 @@ const TemplatePlaceholder = () => {
   const [uniqueId, setUniqueId] = useState("");
   const [isModalRole, setIsModalRole] = useState(false);
   const [roleName, setRoleName] = useState("");
+  const [isAddUser, setIsAddUser] = useState({});
+
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -172,10 +177,29 @@ const TemplatePlaceholder = () => {
     }
   }, [divRef.current]);
   const fetchTemplate = async () => {
+    // const params = { templateId: templateId };
+    // const templateDeatils = await axios.post(
+    //   `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+    //   params,
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+    //       "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+    //     }
+    //   }
+    // );
+    // // console.log("templateDeatils.data ", templateDeatils.data);
+    // const documentData =
+    //   templateDeatils.data && templateDeatils.data.result
+    //     ? [templateDeatils.data.result]
+    //     : [];
+
     const params = { templateId: templateId };
-    const templateDeatils = await axios.post(
-      `${localStorage.getItem("baseUrl")}functions/getTemplate`,
-      params,
+    const templateDeatils = await axios.get(
+      `${localStorage.getItem("baseUrl")}classes/contracts_Template/` +
+        templateId +
+        "?include=ExtUserPte,Signers,CreatedBy",
       {
         headers: {
           "Content-Type": "application/json",
@@ -186,8 +210,8 @@ const TemplatePlaceholder = () => {
     );
     // console.log("templateDeatils.data ", templateDeatils.data);
     const documentData =
-      templateDeatils.data && templateDeatils.data.result
-        ? [templateDeatils.data.result]
+      templateDeatils.data && templateDeatils.data
+        ? [templateDeatils.data]
         : [];
     // console.log("documentData ", documentData)
     if (documentData && documentData.length > 0) {
@@ -213,20 +237,30 @@ const TemplatePlaceholder = () => {
         ) {
           setSignerPos(documentData[0].Placeholders);
 
-          const arr = documentData[0].Placeholders.filter(
-            (x) => !x.signerObjId
-          );
-          console.log("arr ", arr);
           let updateArr = [...updateSigners];
-          arr.forEach((x) => {
-            const obj = {
-              Role: x.Role,
-              Id: randomId()
-            };
-            updateArr.push(obj);
+          console.log("updateArr ", updateArr);
+          let arr = documentData[0].Placeholders.map((x) => {
+            let matchingSigner = updateArr.find(
+              (y) => x.signerObjId && x.signerObjId === y.objectId
+            );
+
+            if (matchingSigner) {
+              return {
+                ...matchingSigner,
+                Role: x.Role ? x.Role : matchingSigner.Role,
+                Id: x.Id
+              };
+            } else {
+              return {
+                Role: x.Role,
+                Id: x.Id
+              };
+            }
           });
-          console.log("res ", updateArr);
-          setSignersData(updateArr);
+
+          // console.log("res ", updateArr);
+          console.log("updateArray ", arr);
+          setSignersData(arr);
         } else {
           setSignersData(updateSigners);
         }
@@ -694,10 +728,25 @@ const TemplatePlaceholder = () => {
     setIsLoading(loadObj);
     setIsSendAlert(false);
     console.log("signerPos ", signerPos);
+
+    let signers = [];
+    if (signersdata?.length > 0) {
+      signersdata.forEach((x) => {
+        if (x.objectId) {
+          const obj = {
+            __type: "Pointer",
+            className: "contracts_Contactbook",
+            objectId: x.objectId
+          };
+          signers.push(obj);
+        }
+      });
+    }
     try {
       const data = {
         Placeholders: signerPos,
-        SignedUrl: pdfDetails[0].URL
+        SignedUrl: pdfDetails[0].URL,
+        Signers: signers
       };
 
       await axios
@@ -805,7 +854,7 @@ const TemplatePlaceholder = () => {
     const hostUrl = getHostUrl();
     // handle create document
     console.log("template ", pdfDetails);
-    const res = await createDocument(pdfDetails);
+    const res = await createDocument(pdfDetails, signerPos, signersdata);
     if (res.status === "success") {
       navigate(`${hostUrl}placeHolderSign/${res.id}`);
     } else {
@@ -872,6 +921,55 @@ const TemplatePlaceholder = () => {
     setIsModalRole(false);
     setRoleName("");
   };
+  const handleDeleteUser = (Id) => {
+    const removeUser = signersdata.filter((x) => x.Id !== Id);
+    setSignersData(removeUser);
+    const removePlaceholderUser = signerPos.filter((x) => x.Id !== Id);
+    setSignerPos(removePlaceholderUser);
+  };
+
+  const handleLinkUser = (id) => {
+    setIsAddUser({ [id]: true });
+  };
+  const handleAddUser = (data) => {
+    // console.log("hello", data);
+    const signerPtr = {
+      __type: "Pointer",
+      className: "contracts_Contactbook",
+      objectId: data.objectId
+    };
+    const updatePlaceHolder = signerPos.map((x) => {
+      if (x.Id === uniqueId) {
+        return { ...x, signerPtr: signerPtr, signerObjId: data.objectId };
+      }
+      return { ...x };
+    });
+    // console.log("updatePlaceHolder ", updatePlaceHolder);
+    setSignerPos(updatePlaceHolder);
+
+    const updateSigner = signersdata.map((x) => {
+      if (x.Id === uniqueId) {
+        return { ...x, ...data };
+      }
+      return { ...x };
+    });
+    // console.log("updateSigner ", updateSigner);
+
+    setSignersData(updateSigner);
+  };
+
+  const closePopup = () => {
+    setIsAddUser({});
+  };
+  const handleRoleChange = (event, roleId) => {
+    // console.log("event ", event.target.textContent)
+    // Update the role when the content changes
+    const updatedRoles = signersdata.map((role) =>
+      role.Id === roleId ? { ...role, Role: event.target.textContent } : role
+    );
+    setSignersData(updatedRoles);
+  };
+
   return (
     <div>
       <DndProvider backend={HTML5Backend}>
@@ -1019,6 +1117,8 @@ const TemplatePlaceholder = () => {
                     containerWH={containerWH}
                     setIsResize={setIsResize}
                     setZIndex={setZIndex}
+                    handleLinkUser={handleLinkUser}
+                    setUniqueId={setUniqueId}
                   />
                 )}
               </div>
@@ -1073,6 +1173,8 @@ const TemplatePlaceholder = () => {
                     setContractName={setContractName}
                     handleAddSigner={handleAddSigner}
                     setUniqueId={setUniqueId}
+                    handleDeleteUser={handleDeleteUser}
+                    handleRoleChange={handleRoleChange}
                   />
                   <div data-tut="reactourSecond">
                     <FieldsComponent
@@ -1111,15 +1213,23 @@ const TemplatePlaceholder = () => {
               <input
                 value={roleName}
                 onChange={(e) => setRoleName(e.target.value)}
-                style={{ borderRadiu: 20 }}
                 placeholder={
                   signersdata.length > 0
                     ? "User " + (signersdata.length + 1)
                     : "User 1"
                 }
+                className="addUserInput"
               />
               <div>
-                <hr />
+                <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
+                  }}
+                ></div>
                 <button
                   type="submit"
                   style={{
@@ -1143,6 +1253,39 @@ const TemplatePlaceholder = () => {
             </form>
           </Modal.Body>
         </Modal>
+      </div>
+      <div>
+        <div>
+          <Modal show={isAddUser[uniqueId]}>
+            <Modal.Header
+              className={"bg-info"}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
+            >
+              <span style={{ color: "white" }}>Add/choose user</span>
+              <span
+                style={{ color: "white", cursor: "pointer" }}
+                onClick={() => closePopup()}
+              >
+                X
+              </span>
+            </Modal.Header>
+            <Modal.Body>
+              {isAddUser && isAddUser[uniqueId] && (
+                <>
+                  <SelectSigners
+                    details={handleAddUser}
+                    closePopup={closePopup}
+                  />
+                  <AddUser details={handleAddUser} closePopup={closePopup} />
+                </>
+              )}
+            </Modal.Body>
+          </Modal>
+        </div>
       </div>
     </div>
   );

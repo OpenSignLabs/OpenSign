@@ -4,7 +4,7 @@ import Parse from "parse";
 import DropboxChooser from "../components/fields/DropboxChoose";
 import Alert from "./Alert";
 import SelectFolder from "../components/fields/SelectFolder";
-import SignersInput from "../components/fields/SignersInput";
+// import SignersInput from "../components/fields/SignersInput";
 import Title from "../components/Title";
 import { useNavigate } from "react-router-dom";
 import { templateCls } from '../constant/const'
@@ -14,7 +14,7 @@ const TemplateForm = () => {
   const [signers, setSigners] = useState([]);
   const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
   const [formData, setFormData] = useState({
-    Name: "",
+    Name: "Please review and sign this document",
     Description: "",
     Note: ""
   });
@@ -179,16 +179,16 @@ const TemplateForm = () => {
   const handleFolder = (data) => {
     setFolder(data);
   };
-  const handleSigners = (data) => {
-    if (data && data.length > 0) {
-      const updateSigners = data.map((x) => ({
-        __type: "Pointer",
-        className: "contracts_Contactbook",
-        objectId: x
-      }));
-      setSigners(updateSigners);
-    }
-  };
+  // const handleSigners = (data) => {
+  //   if (data && data.length > 0) {
+  //     const updateSigners = data.map((x) => ({
+  //       __type: "Pointer",
+  //       className: "contracts_Contactbook",
+  //       objectId: x
+  //     }));
+  //     setSigners(updateSigners);
+  //   }
+  // };
 
   const handleReset = () => {
     setSigners([]);
@@ -281,6 +281,7 @@ const TemplateForm = () => {
             className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
             value={formData.Note}
             onChange={(e) => handleStrInput(e)}
+            required
           />
         </div>
         <div className="text-xs mt-2">
@@ -292,7 +293,7 @@ const TemplateForm = () => {
             onChange={(e) => handleStrInput(e)}
           />
         </div>
-        <SignersInput onChange={handleSigners} />
+        {/* <SignersInput onChange={handleSigners} /> */}
         <SelectFolder onSuccess={handleFolder} folderCls={templateCls}/>
         <div className="flex items-center mt-3 gap-2 text-white">
           <button

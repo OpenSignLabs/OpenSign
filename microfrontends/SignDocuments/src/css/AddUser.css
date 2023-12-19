@@ -1,0 +1,72 @@
+.addusercontainer {
+    height: 100%;
+    padding: 20px;
+}
+
+.loaderdiv {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
+
+}
+
+.form-wrapper {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 8px;
+}
+
+.form-section {
+    margin-bottom: 0.75rem;
+}
+
+.checkbox-label {
+    margin-left: 0.5rem;
+    color: #4b5563;
+}
+
+.addUserInput {
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    border-width: 1px;
+    border-color: #d1d5db;
+    border-radius: 0.375rem;
+    outline: none;
+    font-size: 0.75rem;
+}
+
+
+.buttoncontainer {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.submitbutton {
+    background-color: #1ab6ce;
+    font-size: 0.875rem;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+    outline: none;
+}
+
+/* For classes: bg-[#188ae2] text-sm text-white px-4 py-2 rounded ml-2 shadow focus:outline-none */
+.resetbutton {
+    background-color: #188ae2;
+    font-size: 0.875rem;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+    margin-left: 0.5rem;
+    outline: none;
+}
