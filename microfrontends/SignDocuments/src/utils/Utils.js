@@ -1004,19 +1004,26 @@ export const signPdfFun = async (
 
 export const randomId = () => Math.floor(1000 + Math.random() * 9000);
 
-export const createDocument = async (template) => {
+export const createDocument = async (template, placeholders, signerData) => {
   if (template && template.length > 0) {
     const Doc = template[0];
-    let signers;
-    console.log("Doc.Placholders ", Doc)
-    if (Doc.Signers && Doc.Signers.length > 0) {
-      signers = Doc.Signers.map((x) => ({
-        __type: "Pointer",
-        className: "contracts_Contactbook",
-        objectId: x.objectId
-      }));
-    } else {
-      signers = [];
+
+    let placeholdersArr = []
+    if(placeholders?.length > 0 ){
+      placeholdersArr=  placeholders
+    }
+    let signers = []
+    if(signerData?.length > 0){
+       signerData.forEach((x) => {
+        if(x.objectId){
+          const obj =  {
+            __type: "Pointer",
+            className: "contracts_Contactbook",
+            objectId: x.objectId
+          };
+          signers.push(obj)
+        }
+      });
     }
     const data = {
       Name: Doc.Name,
@@ -1024,7 +1031,7 @@ export const createDocument = async (template) => {
       SignedUrl: Doc.SignedUrl,
       Description: Doc.Description,
       Note: Doc.Note,
-      Placeholders: Doc.Placeholders,
+      Placeholders: placeholdersArr,
       ExtUserPtr: {
         __type: "Pointer",
         className: "contracts_Users",

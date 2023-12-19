@@ -22,11 +22,14 @@ import {
   contractDocument,
   contractUsers,
   getHostUrl,
-  addZIndex
+  addZIndex,
+  randomId
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
 import { useNavigate } from "react-router-dom";
+import AddUser from "./component/AddUser";
+import SelectSigners from "./component/SelectSigners";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -72,6 +75,9 @@ function PlaceHolderSign() {
     status: false,
     type: "load"
   });
+  const [uniqueId, setUniqueId] = useState("");
+  const [roleName, setRoleName] = useState("");
+  const [isAddUser, setIsAddUser] = useState({});
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -184,28 +190,96 @@ function PlaceHolderSign() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
-      const alreadyPlaceholder =
-        documentData[0].Placeholders && documentData[0].Placeholders;
+      // const alreadyPlaceholder =
+      //   documentData[0].Placeholders && documentData[0].Placeholders;
       // if (alreadyPlaceholder && alreadyPlaceholder.length > 0) {
       //   setIsAlreadyPlace(true);
       // }
       setPdfDetails(documentData);
-      const currEmail = documentData[0].ExtUserPtr.Email;
-      const filterCurrEmail = documentData[0].Signers.filter(
-        (data) => data.Email === currEmail
-      );
 
-      setCurrentEmail(filterCurrEmail);
-      setSignersData(documentData[0]);
+      // setSignersData(documentData[0]);
 
-      setSignerObjId(documentData[0].Signers[0].objectId);
-      setContractName(documentData[0].Signers[0].className);
-      setIsSelectId(0);
-      if (documentData[0].Placeholders && documentData[0].Placeholders.length > 0){
-        setSignerPos(documentData[0].Placeholders)
-      }
-      if (documentData[0].Signers && documentData[0].Signers.length > 0){
-        setSignersData(documentData[0].Signers)
+      // setSignerObjId(documentData[0].Signers[0].objectId);
+      // setContractName(documentData[0].Signers[0].className);
+      // setIsSelectId(0);
+
+      if (documentData[0].Signers && documentData[0].Signers.length > 0) {
+        const currEmail = documentData[0].ExtUserPtr.Email;
+        const filterCurrEmail = documentData[0].Signers.filter(
+          (data) => data.Email === currEmail
+        );
+        setCurrentEmail(filterCurrEmail);
+        // const updateSigners = documentData[0].Signers.map((x, index) => ({
+        //   ...x,
+        //   Id: randomId(),
+        //   Role: "User " + (index + 1)
+        // }));
+        const updateSigners = documentData[0].Signers;
+        // console.log("documentData[0] ", documentData[0]);
+        // console.log("updateSigners ", updateSigners);
+        // setSignersData(updateSigners);
+
+        setUniqueId(updateSigners[0].Id);
+        setSignerObjId(documentData[0].Signers[0].objectId);
+        setContractName(documentData[0].Signers[0].className);
+        setIsSelectId(0);
+        if (
+          documentData[0].Placeholders &&
+          documentData[0].Placeholders.length > 0
+        ) {
+          setSignerPos(documentData[0].Placeholders);
+
+          let updateArr = [...updateSigners];
+          console.log("updateArr ", updateArr);
+          let arr = documentData[0].Placeholders.map((x) => {
+            let matchingSigner = updateArr.find(
+              (y) => x.signerObjId && x.signerObjId === y.objectId
+            );
+
+            if (matchingSigner) {
+              return {
+                ...matchingSigner,
+                Role: x.Role ? x.Role : matchingSigner.Role,
+                Id: x.Id
+              };
+            } else {
+              return {
+                Role: x.Role,
+                Id: x.Id
+              };
+            }
+          });
+          setSignersData(arr);
+        } else {
+          const updateSigners = documentData[0].Signers.map((x, index) => ({
+            ...x,
+            Id: randomId(),
+            Role: "User " + (index + 1)
+          }));
+          setSignersData(updateSigners);
+        }
+      } else {
+        setRoleName("User 1");
+        if (
+          documentData[0].Placeholders &&
+          documentData[0].Placeholders.length > 0
+        ) {
+          const arr = documentData[0].Placeholders?.filter(
+            (x) => !x.signerObjId
+          );
+          // console.log("arr ", arr);
+          let updateArr = [];
+          arr.forEach((x) => {
+            const obj = {
+              Role: x.Role,
+              Id: x.Id
+            };
+            updateArr.push(obj);
+          });
+          setSignerPos(documentData[0].Placeholders);
+          setSignersData(updateArr);
+          setIsSelectId(0);
+        }
       }
     } else if (
       documentData === "Error: Something went wrong!" ||
@@ -276,9 +350,11 @@ function PlaceHolderSign() {
     const newWidth = containerWH.width;
     const scale = pdfOriginalWidth / newWidth;
     const key = Math.floor(1000 + Math.random() * 9000);
-    let filterSignerPos = signerPos.filter(
-      (data) => data.signerObjId === signerObjId
-    );
+    // let filterSignerPos = signerPos.filter(
+    //   (data) => data.signerObjId === signerObjId
+    // );
+    let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+
     let dropData = [];
     let xyPosArr = [];
     let xyPos = {};
@@ -336,9 +412,11 @@ function PlaceHolderSign() {
 
     //add signers objId first inseretion
     if (filterSignerPos.length > 0) {
-      const colorIndex = signerPos
-        .map((e) => e.signerObjId)
-        .indexOf(signerObjId);
+      // const colorIndex = signerPos
+      //   .map((e) => e.signerObjId)
+      //   .indexOf(signerObjId);
+
+      const colorIndex = signerPos.map((e) => e.Id).indexOf(uniqueId);
 
       const getPlaceHolder = filterSignerPos[0].placeHolder;
       const updatePlace = getPlaceHolder.filter(
@@ -357,16 +435,30 @@ function PlaceHolderSign() {
           pos: newSignPos
         };
         updatePlace.push(xyPos);
-        let placeHolderPos = {
-          blockColor: color[isSelectListId],
-          signerObjId: signerObjId,
-          placeHolder: updatePlace,
-          signerPtr: {
-            __type: "Pointer",
-            className: `${contractName}`,
-            objectId: signerObjId
-          }
-        };
+        let placeHolderPos;
+        if (contractName) {
+          placeHolderPos = {
+            blockColor: color[isSelectListId],
+            signerObjId: signerObjId,
+            placeHolder: updatePlace,
+            signerPtr: {
+              __type: "Pointer",
+              className: `${contractName}`,
+              objectId: signerObjId
+            },
+            Role: roleName,
+            Id: uniqueId
+          };
+        } else {
+          placeHolderPos = {
+            blockColor: color[isSelectListId],
+            signerObjId: "",
+            placeHolder: updatePlace,
+            signerPtr: {},
+            Role: roleName,
+            Id: uniqueId
+          };
+        }
         // signerPos.splice(colorIndex, 1, placeHolderPos);
         const newArry = [placeHolderPos];
         const newArray = [
@@ -374,21 +466,33 @@ function PlaceHolderSign() {
           ...newArry,
           ...signerPos.slice(colorIndex + 1)
         ];
-
         setSignerPos(newArray);
       } else {
         const newSignPoss = getPlaceHolder.concat(xyPosArr[0]);
-
-        let placeHolderPos = {
-          blockColor: color[isSelectListId],
-          signerObjId: signerObjId,
-          placeHolder: newSignPoss,
-          signerPtr: {
-            __type: "Pointer",
-            className: `${contractName}`,
-            objectId: signerObjId
-          }
-        };
+        let placeHolderPos;
+        if (contractName) {
+          placeHolderPos = {
+            blockColor: color[isSelectListId],
+            signerObjId: signerObjId,
+            placeHolder: newSignPoss,
+            signerPtr: {
+              __type: "Pointer",
+              className: `${contractName}`,
+              objectId: signerObjId
+            },
+            Role: roleName,
+            Id: uniqueId
+          };
+        } else {
+          placeHolderPos = {
+            blockColor: color[isSelectListId],
+            signerObjId: "",
+            placeHolder: newSignPoss,
+            signerPtr: {},
+            Role: roleName,
+            Id: uniqueId
+          };
+        }
 
         // signerPos.splice(colorIndex, 1, placeHolderPos);
         const newArry = [placeHolderPos];
@@ -401,19 +505,34 @@ function PlaceHolderSign() {
         setSignerPos(newArray);
       }
     } else {
-      let placeHolderPos = {
-        signerPtr: {
-          __type: "Pointer",
-          className: `${contractName}`,
-          objectId: signerObjId
-        },
-        signerObjId: signerObjId,
-        blockColor: color[isSelectListId],
-        placeHolder: xyPosArr
-      };
+      let placeHolderPos;
+      if (contractName) {
+        placeHolderPos = {
+          signerPtr: {
+            __type: "Pointer",
+            className: `${contractName}`,
+            objectId: signerObjId
+          },
+          signerObjId: signerObjId,
+          blockColor: color[isSelectListId],
+          placeHolder: xyPosArr,
+          Role: roleName,
+          Id: uniqueId
+        };
+      } else {
+        placeHolderPos = {
+          signerPtr: {},
+          signerObjId: "",
+          blockColor: color[isSelectListId],
+          placeHolder: xyPosArr,
+          Role: roleName,
+          Id: uniqueId
+        };
+      }
 
       setSignerPos((prev) => [...prev, placeHolderPos]);
     }
+    setIsMailSend(false);
   };
 
   //function for get pdf page details
@@ -438,17 +557,19 @@ function PlaceHolderSign() {
   const handleStop = (event, dragElement, signerId, key) => {
     if (!isResize) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
-      signerPos.splice(0, signerPos.length, ...dataNewPlace);
+      let updateSignPos = [...signerPos];
+      updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
+      // signerPos.splice(0, signerPos.length, ...dataNewPlace);
       const containerRect = document
         .getElementById("container")
         .getBoundingClientRect();
-      const signId = signerId ? signerId : signerObjId;
+      const signId = signerId ? signerId : uniqueId; //? signerId : signerObjId;
       const keyValue = key ? key : dragKey;
       const ybottom = containerRect.height - dragElement.y;
 
       if (keyValue >= 0) {
-        const filterSignerPos = signerPos.filter(
-          (data) => data.signerObjId === signId
+        const filterSignerPos = updateSignPos.filter(
+          (data) => data.Id === signId
         );
 
         if (filterSignerPos.length > 0) {
@@ -481,8 +602,8 @@ function PlaceHolderSign() {
               }
               return obj;
             });
-            const newUpdateSigner = signerPos.map((obj, ind) => {
-              if (obj.signerObjId === signId) {
+            const newUpdateSigner = updateSignPos.map((obj, ind) => {
+              if (obj.Id === signId) {
                 return { ...obj, placeHolder: newUpdateSignPos };
               }
               return obj;
@@ -496,11 +617,13 @@ function PlaceHolderSign() {
   };
 
   //function for delete signature block
-  const handleDeleteSign = (key, signerId) => {
+  const handleDeleteSign = (key, Id) => {
     const updateData = [];
-    const filterSignerPos = signerPos.filter(
-      (data) => data.signerObjId === signerId
-    );
+    // const filterSignerPos = signerPos.filter(
+    //   (data) => data.signerObjId === signerId
+    // );
+
+    const filterSignerPos = signerPos.filter((data) => data.Id === Id);
 
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -524,7 +647,7 @@ function PlaceHolderSign() {
           });
 
           const newUpdateSigner = signerPos.map((obj, ind) => {
-            if (obj.signerObjId === signerId) {
+            if (obj.Id === Id) {
               return { ...obj, placeHolder: newUpdatePos };
             }
             return obj;
@@ -532,24 +655,20 @@ function PlaceHolderSign() {
 
           setSignerPos(newUpdateSigner);
         } else {
-          const updateFilter = signerPos.filter(
-            (data) => data.signerObjId !== signerId
-          );
+          const updateFilter = signerPos.filter((data) => data.Id !== Id);
           const getRemainPage = filterSignerPos[0].placeHolder.filter(
             (data) => data.pageNumber !== pageNumber
           );
 
           if (getRemainPage && getRemainPage.length > 0) {
             const newUpdatePos = filterSignerPos.map((obj, ind) => {
-              if (obj.signerObjId === signerId) {
+              if (obj.Id === Id) {
                 return { ...obj, placeHolder: getRemainPage };
               }
               return obj;
             });
             let signerupdate = [];
-            signerupdate = signerPos.filter(
-              (data) => data.signerObjId !== signerId
-            );
+            signerupdate = signerPos.filter((data) => data.Id !== Id);
             signerupdate.push(newUpdatePos[0]);
 
             setSignerPos(signerupdate);
@@ -587,7 +706,7 @@ function PlaceHolderSign() {
   };
 
   const alertSendEmail = async () => {
-    if (signerPos.length === signersdata.Signers.length) {
+    if (signerPos.length === signersdata.length) {
       const alert = {
         mssg: "confirm",
         alert: true
@@ -611,15 +730,16 @@ function PlaceHolderSign() {
     setIsSendAlert({});
 
     let sendMail;
-    const expireDate = signersdata.ExpiryDate.iso;
+    // console.log("pdfDetails", pdfDetails);
+    const expireDate = pdfDetails?.[0].ExpiryDate.iso;
     const newDate = new Date(expireDate);
     const localExpireDate = newDate.toLocaleDateString("en-US", {
       day: "numeric",
       month: "long",
       year: "numeric"
     });
-    let sender = signersdata.ExtUserPtr.Email;
-    const signerMail = signersdata.Signers;
+    let sender = pdfDetails?.[0].ExtUserPtr.Email;
+    const signerMail = signersdata;
 
     for (let i = 0; i < signerMail.length; i++) {
       try {
@@ -639,12 +759,12 @@ function PlaceHolderSign() {
         )}&${localStorage.getItem("_appName")}`;
 
         const hostUrl = window.location.origin + "/loadmf/signmicroapp";
-        let signPdf = `${hostUrl}/login/${signersdata.objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
+        let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
         const openSignUrl = "https://www.opensignlabs.com/";
         const themeBGcolor = themeColor();
         let params = {
           recipient: signerMail[i].Email,
-          subject: `${signersdata.ExtUserPtr.Name} has requested you to sign ${signersdata.Name}`,
+          subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
           from: sender,
 
           html:
@@ -653,9 +773,9 @@ function PlaceHolderSign() {
             " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
             themeBGcolor +
             ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
-            signersdata.ExtUserPtr.Name +
+            pdfDetails?.[0].ExtUserPtr.Name +
             " has requested you to review and sign " +
-            signersdata.Name +
+            pdfDetails?.[0].Name +
             "</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
             sender +
             "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization Name</td> <td> </td><td style='color:#626363;font-weight:bold'>__</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
@@ -675,10 +795,19 @@ function PlaceHolderSign() {
     }
 
     if (sendMail.data.result.status === "success") {
+      const signers = signersdata?.map((x) => {
+        return {
+          __type: "Pointer",
+          className: "contracts_Contactbook",
+          objectId: x.objectId
+        };
+      });
+      // console.log("signers ", signers);
       try {
         const data = {
           Placeholders: signerPos,
-          SignedUrl: pdfDetails[0].URL
+          SignedUrl: pdfDetails[0].URL,
+          Signers: signers
         };
 
         await axios
@@ -789,125 +918,194 @@ function PlaceHolderSign() {
       `${hostUrl}recipientSignPdf/${documentId}/${currentEmail[0].objectId}`
     );
   };
+
+  const handleLinkUser = (id) => {
+    setIsAddUser({ [id]: true });
+  };
+  const handleAddUser = (data) => {
+    // console.log("hello", data);
+    const signerPtr = {
+      __type: "Pointer",
+      className: "contracts_Contactbook",
+      objectId: data.objectId
+    };
+    const updatePlaceHolder = signerPos.map((x) => {
+      if (x.Id === uniqueId) {
+        return { ...x, signerPtr: signerPtr, signerObjId: data.objectId };
+      }
+      return { ...x };
+    });
+    // console.log("updatePlaceHolder ", updatePlaceHolder);
+    setSignerPos(updatePlaceHolder);
+
+    const updateSigner = signersdata.map((x) => {
+      if (x.Id === uniqueId) {
+        return { ...x, ...data };
+      }
+      return { ...x };
+    });
+    // console.log("updateSigner ", updateSigner);
+
+    setSignersData(updateSigner);
+  };
+
+  const closePopup = () => {
+    setIsAddUser({});
+  };
+
+  // console.log("isAddUser", isAddUser);
+  // console.log("signerdata", signersdata);
+  // console.log("signerPos", signerPos);
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      {isLoading.isLoad ? (
-        <Loader isLoading={isLoading} />
-      ) : handleError ? (
-        <HandleError handleError={handleError} />
-      ) : noData ? (
-        <Nodata />
-      ) : (
-        <div className="signatureContainer" ref={divRef}>
-          {/* this component used for UI interaction and show their functionality */}
-          {!checkTourStatus && (
-            //this tour component used in your html component where you want to put
-            //onRequestClose function to close tour
-            //steps is defined what will be your messages and style also
-            //isOpen is takes boolean value to open
-            <Tour
-              onRequestClose={closeTour}
-              steps={tourConfig}
-              isOpen={placeholderTour}
-              rounded={5}
-              closeWithMask={false}
+    <>
+      <DndProvider backend={HTML5Backend}>
+        {isLoading.isLoad ? (
+          <Loader isLoading={isLoading} />
+        ) : handleError ? (
+          <HandleError handleError={handleError} />
+        ) : noData ? (
+          <Nodata />
+        ) : (
+          <div className="signatureContainer" ref={divRef}>
+            {/* this component used for UI interaction and show their functionality */}
+            {!checkTourStatus && (
+              //this tour component used in your html component where you want to put
+              //onRequestClose function to close tour
+              //steps is defined what will be your messages and style also
+              //isOpen is takes boolean value to open
+              <Tour
+                onRequestClose={closeTour}
+                steps={tourConfig}
+                isOpen={placeholderTour}
+                rounded={5}
+                closeWithMask={false}
+              />
+            )}
+            {/* this component used to render all pdf pages in left side */}
+            <RenderAllPdfPage
+              signPdfUrl={pdfDetails[0].URL}
+              allPages={allPages}
+              setAllPages={setAllPages}
+              setPageNumber={setPageNumber}
+              setSignBtnPosition={setSignBtnPosition}
             />
-          )}
-          {/* this component used to render all pdf pages in left side */}
-          <RenderAllPdfPage
-            signPdfUrl={pdfDetails[0].URL}
-            allPages={allPages}
-            setAllPages={setAllPages}
-            setPageNumber={setPageNumber}
-            setSignBtnPosition={setSignBtnPosition}
-          />
 
-          {/* pdf render view */}
-          <div
-            style={{
-              marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
-              marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
-            }}
-          >
-            {/* this modal is used show alert set placeholder for all signers before send mail */}
+            {/* pdf render view */}
+            <div
+              style={{
+                marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
+                marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
+              }}
+            >
+              {/* this modal is used show alert set placeholder for all signers before send mail */}
 
-            <Modal show={isSendAlert.alert}>
-              <Modal.Header
-                className={
-                  isSendAlert.mssg === "sure"
-                    ? "bg-danger"
-                    : isSendAlert.mssg === "confirm" && "bg-success"
-                }
-              >
-                {isSendAlert.mssg === "sure" ? (
-                  <span style={{ color: "white" }}>Fields required</span>
-                ) : (
-                  isSendAlert.mssg === "confirm" && (
-                    <span style={{ color: "white" }}>Send Mail</span>
-                  )
-                )}
-              </Modal.Header>
-
-              {/* signature modal */}
-              <Modal.Body>
-                {isSendAlert.mssg === "sure" ? (
-                  <p>Please Add field for all recipients.</p>
-                ) : (
-                  isSendAlert.mssg === "confirm" && (
-                    <p>
-                      Are you sure you want to send out this document for
-                      signatures?
-                    </p>
-                  )
-                )}
-              </Modal.Body>
-
-              <Modal.Footer>
-                <button
-                  onClick={() => setIsSendAlert({})}
-                  style={{
-                    color: "black"
-                  }}
-                  type="button"
-                  className="finishBtn"
+              <Modal show={isSendAlert.alert}>
+                <Modal.Header
+                  className={
+                    isSendAlert.mssg === "sure"
+                      ? "bg-danger"
+                      : isSendAlert.mssg === "confirm" && "bg-success"
+                  }
                 >
-                  Close
-                </button>
-                {isSendAlert.mssg === "confirm" && (
+                  {isSendAlert.mssg === "sure" ? (
+                    <span style={{ color: "white" }}>Fields required</span>
+                  ) : (
+                    isSendAlert.mssg === "confirm" && (
+                      <span style={{ color: "white" }}>Send Mail</span>
+                    )
+                  )}
+                </Modal.Header>
+
+                {/* signature modal */}
+                <Modal.Body>
+                  {isSendAlert.mssg === "sure" ? (
+                    <p>Please Add field for all recipients.</p>
+                  ) : (
+                    isSendAlert.mssg === "confirm" && (
+                      <p>
+                        Are you sure you want to send out this document for
+                        signatures?
+                      </p>
+                    )
+                  )}
+                </Modal.Body>
+
+                <Modal.Footer>
                   <button
-                    onClick={() => sendEmailToSigners()}
+                    onClick={() => setIsSendAlert({})}
                     style={{
-                      background: "#24b53a"
+                      color: "black"
                     }}
                     type="button"
                     className="finishBtn"
                   >
-                    Yes
+                    Close
                   </button>
-                )}
-              </Modal.Footer>
-            </Modal>
-            {/* this modal is used show send mail  message and after send mail success message */}
-            <Modal show={isSend}>
-              <Modal.Header
-                style={{
-                  background: themeColor()
-                }}
-              >
-                <span style={{ color: "white" }}>Mails Sent</span>
-              </Modal.Header>
+                  {isSendAlert.mssg === "confirm" && (
+                    <button
+                      onClick={() => sendEmailToSigners()}
+                      style={{
+                        background: "#24b53a"
+                      }}
+                      type="button"
+                      className="finishBtn"
+                    >
+                      Yes
+                    </button>
+                  )}
+                </Modal.Footer>
+              </Modal>
+              {/* this modal is used show send mail  message and after send mail success message */}
+              <Modal show={isSend}>
+                <Modal.Header
+                  style={{
+                    background: themeColor()
+                  }}
+                >
+                  <span style={{ color: "white" }}>Mails Sent</span>
+                </Modal.Header>
 
-              {/* signature modal */}
-              <Modal.Body>
-                <p>You have successfully sent mails to all recipients!</p>
-                {currentEmail.length > 0 && (
-                  <p>Do you want to sign documents right now ?</p>
-                )}
-              </Modal.Body>
+                {/* signature modal */}
+                <Modal.Body>
+                  <p>You have successfully sent mails to all recipients!</p>
+                  {currentEmail?.length > 0 && (
+                    <p>Do you want to sign documents right now ?</p>
+                  )}
+                </Modal.Body>
 
-              <Modal.Footer>
-                {currentEmail.length > 0 ? (
-                  <>
+                <Modal.Footer>
+                  {currentEmail?.length > 0 ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setIsSend(false);
+                          setSignerPos([]);
+                        }}
+                        style={{
+                          color: "black"
+                        }}
+                        type="button"
+                        className="finishBtn"
+                      >
+                        No
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          handleRecipientSign();
+                        }}
+                        style={{
+                          background: themeColor(),
+                          color: "white"
+                        }}
+                        type="button"
+                        className="finishBtn"
+                      >
+                        Yes
+                      </button>
+                    </>
+                  ) : (
                     <button
                       onClick={() => {
                         setIsSend(false);
@@ -919,159 +1117,167 @@ function PlaceHolderSign() {
                       type="button"
                       className="finishBtn"
                     >
-                      No
+                      Close
                     </button>
-
-                    <button
-                      onClick={() => {
-                        handleRecipientSign();
-                      }}
-                      style={{
-                        background: themeColor(),
-                        color: "white"
-                      }}
-                      type="button"
-                      className="finishBtn"
-                    >
-                      Yes
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setIsSend(false);
-                      setSignerPos([]);
-                    }}
-                    style={{
-                      color: "black"
-                    }}
-                    type="button"
-                    className="finishBtn"
-                  >
-                    Close
-                  </button>
-                )}
-              </Modal.Footer>
-            </Modal>
-            {/* <ModalComponent isShow={isAlreadyPlace} type={"alreadyPlace"} /> */}
-            <ModalComponent
-              isShow={isShowEmail}
-              type={"signersAlert"}
-              setIsShowEmail={setIsShowEmail}
-            />
-            {/* pdf header which contain funish back button */}
-            <Header
-              isPlaceholder={true}
-              pageNumber={pageNumber}
-              allPages={allPages}
-              changePage={changePage}
-              pdfDetails={pdfDetails}
-              signerPos={signerPos}
-              signersdata={signersdata}
-              isMailSend={isMailSend}
-              alertSendEmail={alertSendEmail}
-              isShowHeader={true}
-              currentSigner={true}
-              dataTut4="reactourFour"
-            />
-            <div data-tut="reactourThird">
-              {containerWH && (
-                <RenderPdf
-                  pageNumber={pageNumber}
-                  pdfOriginalWidth={pdfOriginalWidth}
-                  pdfNewWidth={pdfNewWidth}
-                  pdfDetails={pdfDetails}
-                  signerPos={signerPos}
-                  successEmail={false}
-                  numPages={numPages}
-                  pageDetails={pageDetails}
-                  placeholder={true}
-                  drop={drop}
-                  handleDeleteSign={handleDeleteSign}
-                  handleTabDrag={handleTabDrag}
-                  handleStop={handleStop}
-                  setPdfLoadFail={setPdfLoadFail}
-                  pdfLoadFail={pdfLoadFail}
-                  setSignerPos={setSignerPos}
-                  containerWH={containerWH}
-                  setIsResize={setIsResize}
-                  setZIndex={setZIndex}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* signature button */}
-          {isMobile ? (
-            <div>
-              <FieldsComponent
-                dataTut="reactourFirst"
-                dataTut2="reactourSecond"
-                pdfUrl={isMailSend}
-                sign={sign}
-                stamp={stamp}
-                dragSignature={dragSignature}
-                signRef={signRef}
-                handleDivClick={handleDivClick}
-                handleMouseLeave={handleMouseLeave}
-                isDragSign={isDragSign}
-                themeColor={themeColor}
-                dragStamp={dragStamp}
-                dragRef={dragRef}
-                isDragStamp={isDragStamp}
-                isSignYourself={true}
-                isDragSignatureSS={isDragSignatureSS}
-                dragSignatureSS={dragSignatureSS}
-                dragStampSS={dragStampSS}
-                addPositionOfSignature={addPositionOfSignature}
+                  )}
+                </Modal.Footer>
+              </Modal>
+              {/* <ModalComponent isShow={isAlreadyPlace} type={"alreadyPlace"} /> */}
+              <ModalComponent
+                isShow={isShowEmail}
+                type={"signersAlert"}
+                setIsShowEmail={setIsShowEmail}
+              />
+              {/* pdf header which contain funish back button */}
+              <Header
+                isPlaceholder={true}
+                pageNumber={pageNumber}
+                allPages={allPages}
+                changePage={changePage}
+                pdfDetails={pdfDetails}
                 signerPos={signerPos}
                 signersdata={signersdata}
-                isSelectListId={isSelectListId}
-                setSignerObjId={setSignerObjId}
-                setIsSelectId={setIsSelectId}
-                setContractName={setContractName}
-                isSigners={true}
-                setIsShowEmail={setIsShowEmail}
                 isMailSend={isMailSend}
-                setSelectedEmail={setSelectedEmail}
-                selectedEmail={selectedEmail}
+                alertSendEmail={alertSendEmail}
+                isShowHeader={true}
+                currentSigner={true}
+                dataTut4="reactourFour"
               />
+              <div data-tut="reactourThird">
+                {containerWH && (
+                  <RenderPdf
+                    pageNumber={pageNumber}
+                    pdfOriginalWidth={pdfOriginalWidth}
+                    pdfNewWidth={pdfNewWidth}
+                    pdfDetails={pdfDetails}
+                    signerPos={signerPos}
+                    successEmail={false}
+                    numPages={numPages}
+                    pageDetails={pageDetails}
+                    placeholder={true}
+                    drop={drop}
+                    handleDeleteSign={handleDeleteSign}
+                    handleTabDrag={handleTabDrag}
+                    handleStop={handleStop}
+                    setPdfLoadFail={setPdfLoadFail}
+                    pdfLoadFail={pdfLoadFail}
+                    setSignerPos={setSignerPos}
+                    containerWH={containerWH}
+                    setIsResize={setIsResize}
+                    setZIndex={setZIndex}
+                    handleLinkUser={handleLinkUser}
+                    setUniqueId={setUniqueId}
+                  />
+                )}
+              </div>
             </div>
-          ) : (
-            <div>
-              <div className="signerComponent">
-                <SignerListPlace
+
+            {/* signature button */}
+            {isMobile ? (
+              <div>
+                <FieldsComponent
+                  dataTut="reactourFirst"
+                  dataTut2="reactourSecond"
+                  pdfUrl={isMailSend}
+                  sign={sign}
+                  stamp={stamp}
+                  dragSignature={dragSignature}
+                  signRef={signRef}
+                  handleDivClick={handleDivClick}
+                  handleMouseLeave={handleMouseLeave}
+                  isDragSign={isDragSign}
+                  themeColor={themeColor}
+                  dragStamp={dragStamp}
+                  dragRef={dragRef}
+                  isDragStamp={isDragStamp}
+                  isSignYourself={true}
+                  isDragSignatureSS={isDragSignatureSS}
+                  dragSignatureSS={dragSignatureSS}
+                  dragStampSS={dragStampSS}
+                  addPositionOfSignature={addPositionOfSignature}
                   signerPos={signerPos}
                   signersdata={signersdata}
                   isSelectListId={isSelectListId}
                   setSignerObjId={setSignerObjId}
                   setIsSelectId={setIsSelectId}
                   setContractName={setContractName}
+                  isSigners={true}
+                  setIsShowEmail={setIsShowEmail}
+                  isMailSend={isMailSend}
+                  setSelectedEmail={setSelectedEmail}
+                  selectedEmail={selectedEmail}
                 />
-                <div data-tut="reactourSecond">
-                  <FieldsComponent
-                    pdfUrl={isMailSend}
-                    sign={sign}
-                    stamp={stamp}
-                    dragSignature={dragSignature}
-                    signRef={signRef}
-                    handleDivClick={handleDivClick}
-                    handleMouseLeave={handleMouseLeave}
-                    isDragSign={isDragSign}
-                    themeColor={themeColor}
-                    dragStamp={dragStamp}
-                    dragRef={dragRef}
-                    isDragStamp={isDragStamp}
-                    isSignYourself={false}
-                    addPositionOfSignature={addPositionOfSignature}
+              </div>
+            ) : (
+              <div>
+                <div className="signerComponent">
+                  <SignerListPlace
+                    signerPos={signerPos}
+                    signersdata={signersdata}
+                    isSelectListId={isSelectListId}
+                    setSignerObjId={setSignerObjId}
+                    setIsSelectId={setIsSelectId}
+                    setContractName={setContractName}
+                    setUniqueId={setUniqueId}
+                    setRoleName={setRoleName}
+                    // handleAddSigner={handleAddSigner}
                   />
+                  <div data-tut="reactourSecond">
+                    <FieldsComponent
+                      pdfUrl={isMailSend}
+                      sign={sign}
+                      stamp={stamp}
+                      dragSignature={dragSignature}
+                      signRef={signRef}
+                      handleDivClick={handleDivClick}
+                      handleMouseLeave={handleMouseLeave}
+                      isDragSign={isDragSign}
+                      themeColor={themeColor}
+                      dragStamp={dragStamp}
+                      dragRef={dragRef}
+                      isDragStamp={isDragStamp}
+                      isSignYourself={false}
+                      addPositionOfSignature={addPositionOfSignature}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
-    </DndProvider>
+            )}
+          </div>
+        )}
+      </DndProvider>
+      <div>
+        <Modal show={isAddUser[uniqueId]}>
+          <Modal.Header
+            className={"bg-info"}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+          >
+            <span style={{ color: "white" }}>Add/choose user</span>
+            <span
+              style={{ color: "white", cursor: "pointer" }}
+              onClick={() => closePopup()}
+            >
+              X
+            </span>
+          </Modal.Header>
+          <Modal.Body>
+            {isAddUser && isAddUser[uniqueId] && (
+              <>
+                <SelectSigners
+                  details={handleAddUser}
+                  closePopup={closePopup}
+                />
+                <AddUser details={handleAddUser} closePopup={closePopup} />
+              </>
+            )}
+          </Modal.Body>
+        </Modal>
+      </div>
+    </>
   );
 }
 

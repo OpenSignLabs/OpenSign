@@ -1,4 +1,3 @@
-
 import React from "react";
 import RSC from "react-scrollbars-custom";
 import { Rnd } from "react-rnd";
@@ -49,7 +48,9 @@ function RenderPdf({
   index,
   containerWH,
   setIsResize,
-  setZIndex
+  setZIndex,
+  handleLinkUser,
+  setUniqueId
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -472,20 +473,22 @@ function RenderPdf({
                                             ? pos.Width / pos.Height
                                             : 2.5
                                         }
-                                        onDragStop={(event, dragElement) =>
-                                          handleStop(
-                                            event,
-                                            dragElement,
-                                            data.Id,
-                                            pos.key
-                                          )
+                                        onDragStop={
+                                          (event, dragElement) =>
+                                            handleStop(
+                                              event,
+                                              dragElement,
+                                              data.Id,
+                                              pos.key
+                                            )
                                           // data.signerObjId,
                                         }
                                         default={{
                                           x: xPos(pos),
                                           y: !pos.isMobile
                                             ? pos.yPosition / scale
-                                            : pos.yPosition * (pos.scale / scale)
+                                            : pos.yPosition *
+                                              (pos.scale / scale)
                                         }}
                                         // default={{
                                         //   x: pos.xPosition,
@@ -932,11 +935,13 @@ function RenderPdf({
                                           bounds="parent"
                                           style={{
                                             cursor: "all-scroll",
-                                            background: data.blockColor,
+                                            // background: data.blockColor,
                                             borderColor: themeColor(),
-                                            zIndex:  pos.zIndex ? pos.zIndex : "1"
+                                            zIndex: pos.zIndex
+                                              ? pos.zIndex
+                                              : "1"
                                           }}
-                                          className="placeholderBlock"
+                                          className="signWidgetblock"
                                           onDrag={() => handleTabDrag(pos.key)}
                                           size={{
                                             width: pos.Width ? pos.Width : 150,
@@ -947,14 +952,15 @@ function RenderPdf({
                                               ? pos.Width / pos.Height
                                               : 2.5
                                           }
-                                          onDragStop={(event, dragElement) =>
-                                            handleStop(
-                                              event,
-                                              dragElement,
-                                              data.Id,
-                                              pos.key
-                                            )
-                                              // data.signerObjId,
+                                          onDragStop={
+                                            (event, dragElement) =>
+                                              handleStop(
+                                                event,
+                                                dragElement,
+                                                data.Id,
+                                                pos.key
+                                              )
+                                            // data.signerObjId,
                                           }
                                           default={{
                                             x: pos.xPosition,
@@ -989,33 +995,70 @@ function RenderPdf({
                                         >
                                           <BorderResize />
                                           <div
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleDeleteSign(
-                                                pos.key,
-                                                data.Id
-                                              );
-                                              // data.signerObjId
-                                            }}
                                             style={{
-                                              background: themeColor()
+                                              borderColor: themeColor(),
+                                              background: data.blockColor,
+                                              width: pos.Width
+                                                ? pos.Width - 20
+                                                : 130,
+                                              height: pos.Height
+                                                ? pos.Height - 8
+                                                : 52,
+                                              border: "1px solid red",
+                                              overflow: "hidden"
                                             }}
-                                            className="placeholdCloseBtn"
                                           >
-                                            x
-                                          </div>
-                                          <div
-                                            style={{
-                                              fontSize: "12px",
-                                              color: "black",
-                                              fontWeight: "600",
+                                             <i
+                                            
+                                              className="fa-regular fa-user signCopy"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleLinkUser(data.Id)
+                                                setUniqueId(data.Id)
+                                              }}
+                                              style={{
+                                                color: "#188ae2",
+                                                right: 45
 
-                                              marginTop: "0px"
-                                            }}
-                                          >
-                                            {pos.isStamp
-                                              ? "stamp"
-                                              : "signature"}
+                                              }}
+                                            ></i>
+                                            <i
+                                              className="fa-regular fa-copy signCopy"
+                                              // onClick={(e) => {
+                                              //   e.stopPropagation();
+                                              //   setIsPageCopy(true);
+                                              //   setSignKey(pos.key);
+                                              // }}
+                                              style={{
+                                                color: "#188ae2"
+                                              }}
+                                            ></i>
+                                            <i
+                                              className="fa-regular fa-circle-xmark signCloseBtn"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteSign(
+                                                  pos.key,
+                                                  data.Id
+                                                  );
+                                                  // data.signerObjId
+                                              }}
+                                              style={{
+                                                color: "#188ae2"
+                                              }}
+                                            ></i>
+
+                                            <div
+                                              style={{
+                                                fontSize: "12px",
+                                                color: themeColor(),
+                                                justifyContent: "center"
+                                              }}
+                                            >
+                                              {pos.isStamp
+                                                ? "stamp"
+                                                : "signature"}
+                                            </div>
                                           </div>
                                         </Rnd>
                                       );
