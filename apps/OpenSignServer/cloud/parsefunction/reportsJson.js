@@ -193,6 +193,7 @@ export default function reportJson(id, userId) {
     case '5KhaPr482K':
       return {
         reportName: 'Contactbook',
+        reportClass: 'contracts_Contactbook',
         params: {
           CreatedBy: {
             __type: 'Pointer',
@@ -202,6 +203,21 @@ export default function reportJson(id, userId) {
           IsDeleted: { $ne: true },
         },
         keys: ['Name', 'Email', 'Phone'],
+      };
+    // Templates report
+    case '6TeaPr321t':
+      return {
+        reportName: 'Templates',
+        reportClass: 'contracts_Template',
+        params: {
+          Type: { $ne: 'Folder' },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
+        },
+        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
       };
     default:
       return null;

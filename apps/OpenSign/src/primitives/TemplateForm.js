@@ -7,16 +7,16 @@ import SelectFolder from "../components/fields/SelectFolder";
 // import SignersInput from "../components/fields/SignersInput";
 import Title from "../components/Title";
 import { useNavigate } from "react-router-dom";
-import { templateCls } from '../constant/const'
- 
+import { templateCls } from "../constant/const";
+
 const TemplateForm = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [signers, setSigners] = useState([]);
   const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
   const [formData, setFormData] = useState({
-    Name: "Please review and sign this document",
+    Name: "",
     Description: "",
-    Note: ""
+    Note: "Please review and sign this document"
   });
   const [fileupload, setFileUpload] = useState([]);
   const [fileload, setfileload] = useState(false);
@@ -168,7 +168,10 @@ const TemplateForm = () => {
         });
         setFileUpload([]);
         setpercentage(0);
-        navigate('/asmf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/template/' +res.id)
+        navigate(
+          "/asmf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/template/" +
+            res.id
+        );
       }
     } catch (err) {
       console.log("err ", err);
@@ -275,7 +278,9 @@ const TemplateForm = () => {
           />
         </div>
         <div className="text-xs mt-2">
-          <label className="block">Note</label>
+          <label className="block">
+            Note<span className="text-red-500 text-[13px]">*</span>
+          </label>
           <input
             name="Note"
             className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
@@ -294,7 +299,7 @@ const TemplateForm = () => {
           />
         </div>
         {/* <SignersInput onChange={handleSigners} /> */}
-        <SelectFolder onSuccess={handleFolder} folderCls={templateCls}/>
+        <SelectFolder onSuccess={handleFolder} folderCls={templateCls} />
         <div className="flex items-center mt-3 gap-2 text-white">
           <button
             className="px-2 py-2 uppercase rounded shadow-md bg-sky-300 text-xs font-semibold"

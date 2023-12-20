@@ -164,16 +164,26 @@ export default function reportJson(id) {
         ]
       };
     // template report
-    case "23jk45slhj":
+    case "6TeaPr321t":
       return {
         reportName: "Templates",
-        heading: contactbook,
+        heading: head,
         actions: [
           {
-            btnLabel: "",
-            btnColor: "#f55a42",
+            btnLabel: "Use",
+            btnColor: "#4bd396",
             textColor: "white",
-            btnIcon: "fa-solid fa-trash"
+            btnIcon: "fa fa-plus",
+            redirectUrl:
+              "remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/placeHolderSign"
+          },
+          {
+            btnLabel: "Edit",
+            btnColor: "#00c9d5",
+            textColor: "white",
+            btnIcon: "fa fa-plus",
+            redirectUrl:
+              "remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/template"
           }
         ]
       };

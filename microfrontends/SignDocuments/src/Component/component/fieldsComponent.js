@@ -91,7 +91,7 @@ function FieldsComponent({
                   justifyContent: "center"
                 }}
               >
-                <span style={{ fontSize: "18px", fontWeight: "500" }}>
+                <span style={{ fontSize: "13px", fontWeight: "700" }}>
                   Signer :
                 </span>
 
@@ -158,14 +158,10 @@ function FieldsComponent({
                                 value={`${ind}|${JSON.stringify(obj)}`}
                                 // value={(obj)}
                               >
-                                {" "}
-                                {obj.Email}
+                                {obj.Role ?obj.Role : obj.Email}
                               </SelectItem>
                             );
                           })}
-                          {/* <SelectItem value="orange">Orange</SelectItem>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="grape"></SelectItem> */}
                         </Select.Group>
                       </Select.Viewport>
                       <Select.ScrollDownButton className="SelectScrollButton">
@@ -177,7 +173,7 @@ function FieldsComponent({
                             fontSize: "20px"
                           }}
                           className="fa fa-angle-down"
-                          aria-hidden="true"
+                          aria-hidden="false"
                         ></i>
                       </Select.ScrollDownButton>
                     </Select.Content>
@@ -223,15 +219,6 @@ function FieldsComponent({
                   paddingBottom: "2.2rem"
                 }}
               >
-                {/* <img
-                alt="sign img"
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  background: themeColor(),
-                }}
-                src={sign}
-              /> */}
                 <span
                   style={{
                     color: "white",

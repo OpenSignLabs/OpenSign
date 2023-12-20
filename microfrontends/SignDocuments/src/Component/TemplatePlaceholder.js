@@ -60,7 +60,6 @@ const TemplatePlaceholder = () => {
   const [signerUserId, setSignerUserId] = useState();
   const [noData, setNoData] = useState(false);
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
-  const [pdfOriginalHeight, setPdfOriginalHeight] = useState();
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const signRef = useRef(null);
@@ -185,7 +184,7 @@ const TemplatePlaceholder = () => {
     //     headers: {
     //       "Content-Type": "application/json",
     //       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-    //       "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+    //       "sessiontoken": localStorage.getItem("accesstoken")
     //     }
     //   }
     // );
@@ -195,7 +194,6 @@ const TemplatePlaceholder = () => {
     //     ? [templateDeatils.data.result]
     //     : [];
 
-    const params = { templateId: templateId };
     const templateDeatils = await axios.get(
       `${localStorage.getItem("baseUrl")}classes/contracts_Template/` +
         templateId +
@@ -216,18 +214,8 @@ const TemplatePlaceholder = () => {
     // console.log("documentData ", documentData)
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
-      const currEmail = documentData[0].ExtUserPtr.Email;
+      setIsSigners(true);
       if (documentData[0].Signers && documentData[0].Signers.length > 0) {
-        const updateSigners = documentData[0].Signers.map((x, index) => ({
-          ...x,
-          Id: randomId(),
-          Role: "User " + (index + 1)
-        }));
-        console.log("documentData[0] ", documentData[0]);
-        // console.log("updateSigners ", updateSigners);
-        // setSignersData(updateSigners);
-        setIsSigners(true);
-        setUniqueId(updateSigners[0].Id);
         setSignerObjId(documentData[0].Signers[0].objectId);
         setContractName(documentData[0].Signers[0].className);
         setIsSelectId(0);
@@ -236,11 +224,9 @@ const TemplatePlaceholder = () => {
           documentData[0].Placeholders.length > 0
         ) {
           setSignerPos(documentData[0].Placeholders);
-
-          let updateArr = [...updateSigners];
-          console.log("updateArr ", updateArr);
-          let arr = documentData[0].Placeholders.map((x) => {
-            let matchingSigner = updateArr.find(
+          let signers = [...signersdata];
+          let updatedSigners = documentData[0].Placeholders.map((x) => {
+            let matchingSigner = signers.find(
               (y) => x.signerObjId && x.signerObjId === y.objectId
             );
 
@@ -248,21 +234,27 @@ const TemplatePlaceholder = () => {
               return {
                 ...matchingSigner,
                 Role: x.Role ? x.Role : matchingSigner.Role,
-                Id: x.Id
+                Id: x.Id,
+                blockColor: x.blockColor
               };
             } else {
               return {
                 Role: x.Role,
-                Id: x.Id
+                Id: x.Id,
+                blockColor: x.blockColor
               };
             }
           });
-
-          // console.log("res ", updateArr);
-          console.log("updateArray ", arr);
-          setSignersData(arr);
+          setSignersData(updatedSigners);
+          setUniqueId(updatedSigners[0].Id);
         } else {
-          setSignersData(updateSigners);
+          const updatedSigners = documentData[0].Signers.map((x, index) => ({
+            ...x,
+            Id: randomId(),
+            Role: "User " + (index + 1)
+          }));
+          setSignersData(updatedSigners);
+          setUniqueId(updatedSigners[0].Id);
         }
       } else {
         setRoleName("User 1");
@@ -270,20 +262,17 @@ const TemplatePlaceholder = () => {
           documentData[0].Placeholders &&
           documentData[0].Placeholders.length > 0
         ) {
-          const arr = documentData[0].Placeholders?.filter(
-            (x) => !x.signerObjId
-          );
-          console.log("arr ", arr);
-          let updateArr = [];
-          arr.forEach((x) => {
-            const obj = {
-              Role: x.Role,
-              Id: randomId()
-            };
-            updateArr.push(obj);
+          let updatedSigners = documentData[0].Placeholders.map((x) => {
+              return {
+                Role: x.Role,
+                Id: x.Id,
+                blockColor: x.blockColor
+              };
+            
           });
           setSignerPos(documentData[0].Placeholders);
-          setSignersData(updateArr);
+          setUniqueId(updatedSigners[0].Id);
+          setSignersData(updatedSigners);
           setIsSelectId(0);
         }
       }
@@ -306,7 +295,6 @@ const TemplatePlaceholder = () => {
     }
     const res = await contractUsers(jsonSender.email);
     if (res[0] && res.length) {
-      console.log("res[0] ", res);
       setSignerUserId(res[0].objectId);
       setCurrentEmail(res[0].Email);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;
@@ -351,6 +339,7 @@ const TemplatePlaceholder = () => {
       getSignerPos(item, monitor);
     }
   };
+  console.log("signerdata ", signersdata)
 
   const getSignerPos = (item, monitor) => {
     console.log("item ", item);
@@ -550,9 +539,7 @@ const TemplatePlaceholder = () => {
     setPdfLoadFail(load);
     pdf.getPage(1).then((pdfPage) => {
       const pageWidth = pdfPage.view[2];
-      const pageHeight = pdfPage.view[3];
       setPdfOriginalWidth(pageWidth);
-      setPdfOriginalHeight(pageHeight);
     });
   };
   //function for save x and y position and show signature  tab on that position
@@ -876,48 +863,6 @@ const TemplatePlaceholder = () => {
       Id: Id
     };
     setSignersData((prevArr) => [...prevArr, obj]);
-    // const newWidth = containerWH.width;
-    // const scale = pdfOriginalWidth / newWidth;
-    // const posZIndex = zIndex + 1;
-    // setZIndex(posZIndex);
-    // const key = randomId();
-    // let dropData = [];
-    // let xyPosArr = [];
-    // console.log("width ", pdfOriginalWidth);
-    // console.log("height ", pdfOriginalHeight);
-    // console.log("width ", pdfOriginalWidth / 2);
-    // console.log("height ", pdfOriginalHeight / 2);
-    // const dropObj = {
-    //   xPosition: pdfOriginalWidth / 2, // 213.453125, // newWidth / 2 ,
-    //   yPosition: pdfOriginalHeight / 2, //513.953125,//containerWH.height / 2 ,
-    //   isStamp: false,
-    //   key: key,
-    //   isDrag: false,
-    //   scale: scale,
-    //   isMobile: isMobile,
-    //   yBottom: pdfOriginalHeight / 2, //648.046875 // containerWH.height / 2
-    //   zIndex: posZIndex
-    // };
-    // dropData.push(dropObj);
-    // const xyPos = {
-    //   pageNumber: pageNumber,
-    //   pos: dropData
-    // };
-
-    // xyPosArr.push(xyPos);
-
-    // const placeHolderPos = {
-    //   signerPtr: {},
-    //   signerObjId: "",
-    //   blockColor: color[isSelectListId],
-    //   placeHolder: xyPosArr,
-    //   Role: roleName,
-    //   Id: Id
-    // };
-
-    // console.log("uniqueId ", uniqueId);
-
-    // setSignerPos((prev) => [...prev, placeHolderPos]);
     setIsModalRole(false);
     setRoleName("");
   };
@@ -932,7 +877,6 @@ const TemplatePlaceholder = () => {
     setIsAddUser({ [id]: true });
   };
   const handleAddUser = (data) => {
-    // console.log("hello", data);
     const signerPtr = {
       __type: "Pointer",
       className: "contracts_Contactbook",
@@ -944,7 +888,6 @@ const TemplatePlaceholder = () => {
       }
       return { ...x };
     });
-    // console.log("updatePlaceHolder ", updatePlaceHolder);
     setSignerPos(updatePlaceHolder);
 
     const updateSigner = signersdata.map((x) => {
@@ -953,8 +896,6 @@ const TemplatePlaceholder = () => {
       }
       return { ...x };
     });
-    // console.log("updateSigner ", updateSigner);
-
     setSignersData(updateSigner);
   };
 
@@ -962,7 +903,6 @@ const TemplatePlaceholder = () => {
     setIsAddUser({});
   };
   const handleRoleChange = (event, roleId) => {
-    // console.log("event ", event.target.textContent)
     // Update the role when the content changes
     const updatedRoles = signersdata.map((role) =>
       role.Id === roleId ? { ...role, Role: event.target.textContent } : role

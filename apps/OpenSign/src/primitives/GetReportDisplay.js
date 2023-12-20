@@ -55,10 +55,109 @@ const ReportTable = ({
   }, [isMoreDocs, pageNumbers, currentPage, setIsNextRecord]);
 
   // `handlemicroapp` is used to open microapp
-  const handlemicroapp = (item, url) => {
-    localStorage.removeItem("rowlevel");
-    navigate("/rpmf/" + url);
-    localStorage.setItem("rowlevel", JSON.stringify(item));
+  const handlemicroapp = async (item, url, btnLabel) => {
+    if (ReportName === "Templates") {
+      if(btnLabel === "Edit"){
+        navigate(`/asmf/${url}/${item.objectId}`);
+      }else{
+        setActLoader({ [item.objectId]: true });
+        try {
+          const params = {
+            templateId: item.objectId
+          };
+          const templateDeatils = await axios.post(
+            `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+            params,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                sessionToken: localStorage.getItem("accesstoken")
+              }
+            }
+          );
+  
+          console.log("templateDeatils.data ", templateDeatils.data);
+          const templateData =
+            templateDeatils.data && templateDeatils.data.result;
+          if (!templateData.error) {
+            const Doc = templateData;
+  
+            let placeholdersArr = [];
+            if (Doc.Placeholders?.length > 0) {
+              placeholdersArr = Doc.Placeholders;
+            }
+            let signers = [];
+            if (Doc.Signers?.length > 0) {
+              Doc.Signers?.forEach((x) => {
+                if (x.objectId) {
+                  const obj = {
+                    __type: "Pointer",
+                    className: "contracts_Contactbook",
+                    objectId: x.objectId
+                  };
+                  signers.push(obj);
+                }
+              });
+            }
+            const data = {
+              Name: Doc.Name,
+              URL: Doc.URL,
+              SignedUrl: Doc.SignedUrl,
+              Description: Doc.Description,
+              Note: Doc.Note,
+              Placeholders: placeholdersArr,
+              ExtUserPtr: {
+                __type: "Pointer",
+                className: "contracts_Users",
+                objectId: Doc.ExtUserPtr.objectId
+              },
+              CreatedBy: {
+                __type: "Pointer",
+                className: "_User",
+                objectId: Doc.CreatedBy.objectId
+              },
+              Signers: signers
+            };
+  
+            const res = await axios.post(
+              `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+                "_appName"
+              )}_Document`,
+              data,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                  "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+                }
+              }
+            );
+  
+            // console.log("Res ", res.data);
+            if (res.data && res.data.objectId) {
+              setActLoader({});
+              setIsAlert(true);
+              navigate(`/asmf/${url}/${res.data.objectId}`);
+            }
+          } else {
+            setIsAlert(true);
+            setIsErr(true);
+            setActLoader({});
+          }
+        } catch (err) {
+          console.log("err", err);
+          setIsAlert(true);
+          setIsErr(true);
+          setActLoader({});
+        }
+      }
+    } else {
+      localStorage.removeItem("rowlevel");
+      navigate("/rpmf/" + url);
+      localStorage.setItem("rowlevel", JSON.stringify(item));
+    }
+
     // localStorage.setItem("rowlevelMicro");
   };
   const handlebtn = async (item) => {
@@ -217,7 +316,7 @@ const ReportTable = ({
                             key={index}
                             onClick={() =>
                               act?.redirectUrl
-                                ? handlemicroapp(item, act.redirectUrl)
+                                ? handlemicroapp(item, act.redirectUrl, act.btnLabel)
                                 : handlebtn(item)
                             }
                             className={`flex justify-center items-center w-full gap-1 px-2 py-1 rounded shadow`}
