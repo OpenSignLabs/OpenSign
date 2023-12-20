@@ -195,13 +195,11 @@ function PlaceHolderSign() {
       // if (alreadyPlaceholder && alreadyPlaceholder.length > 0) {
       //   setIsAlreadyPlace(true);
       // }
-      setPdfDetails(documentData);
-
       // setSignersData(documentData[0]);
-
+      // setIsSelectId(0);
       // setSignerObjId(documentData[0].Signers[0].objectId);
       // setContractName(documentData[0].Signers[0].className);
-      // setIsSelectId(0);
+      setPdfDetails(documentData);
 
       if (documentData[0].Signers && documentData[0].Signers.length > 0) {
         const currEmail = documentData[0].ExtUserPtr.Email;
@@ -209,17 +207,6 @@ function PlaceHolderSign() {
           (data) => data.Email === currEmail
         );
         setCurrentEmail(filterCurrEmail);
-        // const updateSigners = documentData[0].Signers.map((x, index) => ({
-        //   ...x,
-        //   Id: randomId(),
-        //   Role: "User " + (index + 1)
-        // }));
-        const updateSigners = documentData[0].Signers;
-        // console.log("documentData[0] ", documentData[0]);
-        // console.log("updateSigners ", updateSigners);
-        // setSignersData(updateSigners);
-
-        setUniqueId(updateSigners[0].Id);
         setSignerObjId(documentData[0].Signers[0].objectId);
         setContractName(documentData[0].Signers[0].className);
         setIsSelectId(0);
@@ -228,11 +215,9 @@ function PlaceHolderSign() {
           documentData[0].Placeholders.length > 0
         ) {
           setSignerPos(documentData[0].Placeholders);
-
-          let updateArr = [...updateSigners];
-          console.log("updateArr ", updateArr);
-          let arr = documentData[0].Placeholders.map((x) => {
-            let matchingSigner = updateArr.find(
+          let signers = [...signersdata];
+          let updatedSigners = documentData[0].Placeholders.map((x) => {
+            let matchingSigner = signers.find(
               (y) => x.signerObjId && x.signerObjId === y.objectId
             );
 
@@ -240,23 +225,27 @@ function PlaceHolderSign() {
               return {
                 ...matchingSigner,
                 Role: x.Role ? x.Role : matchingSigner.Role,
-                Id: x.Id
+                Id: x.Id,
+                blockColor: x.blockColor
               };
             } else {
               return {
                 Role: x.Role,
-                Id: x.Id
+                Id: x.Id,
+                blockColor: x.blockColor
               };
             }
           });
-          setSignersData(arr);
+          setSignersData(updatedSigners);
+          setUniqueId(updatedSigners[0].Id);
         } else {
-          const updateSigners = documentData[0].Signers.map((x, index) => ({
+          const updatedSigners = documentData[0].Signers.map((x, index) => ({
             ...x,
             Id: randomId(),
             Role: "User " + (index + 1)
           }));
-          setSignersData(updateSigners);
+          setSignersData(updatedSigners);
+          setUniqueId(updatedSigners[0].Id);
         }
       } else {
         setRoleName("User 1");
@@ -264,21 +253,18 @@ function PlaceHolderSign() {
           documentData[0].Placeholders &&
           documentData[0].Placeholders.length > 0
         ) {
-          const arr = documentData[0].Placeholders?.filter(
-            (x) => !x.signerObjId
-          );
-          // console.log("arr ", arr);
-          let updateArr = [];
-          arr.forEach((x) => {
-            const obj = {
-              Role: x.Role,
-              Id: x.Id
-            };
-            updateArr.push(obj);
+          let updatedSigners = documentData[0].Placeholders.map((x) => {
+              return {
+                Role: x.Role,
+                Id: x.Id,
+                blockColor: x.blockColor
+              };
+            
           });
           setSignerPos(documentData[0].Placeholders);
-          setSignersData(updateArr);
+          setSignersData(updatedSigners);
           setIsSelectId(0);
+          setUniqueId(updatedSigners[0].Id);
         }
       }
     } else if (

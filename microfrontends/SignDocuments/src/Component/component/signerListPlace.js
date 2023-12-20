@@ -48,9 +48,10 @@ function SignerListPlace({
   const [isHover, setIsHover] = useState();
 
   //function for onhover signer name change background color
-  const onHoverStyle = (ind) => {
+  const onHoverStyle = (ind, blockColor) => {
+    console.log("blockColor ", blockColor)
     const style = {
-      background: color[ind % color.length],
+      background: blockColor ? blockColor : color[ind % color.length],
       padding: "10px",
       marginTop: "2px",
       display: "flex",
@@ -78,6 +79,22 @@ function SignerListPlace({
     return firstLetter;
   };
 
+  const darkenColor = ( color, factor ) => {
+    // Remove '#' from the color code and parse it to get RGB values
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+  
+    // Darken the color by reducing each RGB component
+    const darkerR = Math.floor(r * (1 - factor));
+    const darkerG = Math.floor(g * (1 - factor));
+    const darkerB = Math.floor(b * (1 - factor));
+  
+    // Convert the darkened RGB components back to hex
+    return `#${(darkerR << 16 | darkerG << 8 | darkerB).toString(16).padStart(6, '0')}`;
+  }  
+
   return (
     <div>
       <div
@@ -101,7 +118,7 @@ function SignerListPlace({
                   key={ind}
                   style={
                     isHover === ind || isSelectListId === ind
-                      ? onHoverStyle(ind)
+                      ? onHoverStyle(ind, obj.blockColor)
                       : nonHoverStyle(ind)
                   }
                   onClick={() => {
@@ -121,11 +138,13 @@ function SignerListPlace({
                     <div
                       className="signerStyle"
                       style={{
-                        background: nameColor[ind % nameColor.length],
+                        background: obj.blockColor
+                          ? darkenColor(obj.blockColor, 0.4)
+                          : nameColor[ind % nameColor.length],
                         width: 20,
                         height: 20,
                         display: "flex",
-                        borderRadius: 30 / 2,
+                        borderRadius : 30 / 2,
                         justifyContent: "center",
                         alignItems: "center",
                         marginRight: "20px",
