@@ -782,6 +782,7 @@ function PdfRequestFiles() {
               allPages={allPages}
               setAllPages={setAllPages}
               setPageNumber={setPageNumber}
+              pageNumber={pageNumber}
             />
 
             {/* pdf render view */}
