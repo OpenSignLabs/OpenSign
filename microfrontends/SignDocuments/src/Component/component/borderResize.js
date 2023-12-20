@@ -1,12 +1,12 @@
 import React from "react";
 
-function BorderResize() {
+function BorderResize({ right, top }) {
   return (
     <div
       className="borderResize"
       style={{
-        right: "-1px",
-        bottom: "-1px",
+        right: right ? right + "px" : "-1px",
+        bottom: top ? top + "px" : "-1px",
         borderRight: "3px solid  #188ae2",
         borderBottom: "3px solid #188ae2"
       }}
