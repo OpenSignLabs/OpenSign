@@ -28,8 +28,8 @@ import {
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
 import { useNavigate } from "react-router-dom";
-import AddUser from "./component/AddUser";
-import SelectSigners from "./component/SelectSigners";
+import LinkUserModal from "./component/LinkUserModal";
+import Title from "./component/Title";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -69,7 +69,6 @@ function PlaceHolderSign() {
   const [isShowEmail, setIsShowEmail] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState(false);
   const [isResize, setIsResize] = useState(false);
-  const [isAlreadyPlace, setIsAlreadyPlace] = useState(false);
   const [zIndex, setZIndex] = useState(1);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
@@ -78,6 +77,7 @@ function PlaceHolderSign() {
   const [uniqueId, setUniqueId] = useState("");
   const [roleName, setRoleName] = useState("");
   const [isAddUser, setIsAddUser] = useState({});
+  const [signerExistModal, setSignerExistModal] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -215,7 +215,7 @@ function PlaceHolderSign() {
           documentData[0].Placeholders.length > 0
         ) {
           setSignerPos(documentData[0].Placeholders);
-          let signers = [...signersdata];
+          let signers = [...documentData[0].Signers];
           let updatedSigners = documentData[0].Placeholders.map((x) => {
             let matchingSigner = signers.find(
               (y) => x.signerObjId && x.signerObjId === y.objectId
@@ -254,12 +254,11 @@ function PlaceHolderSign() {
           documentData[0].Placeholders.length > 0
         ) {
           let updatedSigners = documentData[0].Placeholders.map((x) => {
-              return {
-                Role: x.Role,
-                Id: x.Id,
-                blockColor: x.blockColor
-              };
-            
+            return {
+              Role: x.Role,
+              Id: x.Id,
+              blockColor: x.blockColor
+            };
           });
           setSignerPos(documentData[0].Placeholders);
           setSignersData(updatedSigners);
@@ -693,11 +692,16 @@ function PlaceHolderSign() {
 
   const alertSendEmail = async () => {
     if (signerPos.length === signersdata.length) {
-      const alert = {
-        mssg: "confirm",
-        alert: true
-      };
-      setIsSendAlert(alert);
+      const IsSignerNotExist = signerPos?.some((x) => !x.signerObjId);
+      if (IsSignerNotExist) {
+        setSignerExistModal(true);
+      } else {
+        const alert = {
+          mssg: "confirm",
+          alert: true
+        };
+        setIsSendAlert(alert);
+      }
     } else {
       const alert = {
         mssg: "sure",
@@ -938,13 +942,9 @@ function PlaceHolderSign() {
   const closePopup = () => {
     setIsAddUser({});
   };
-
-  // console.log("isAddUser", isAddUser);
-  // console.log("signerdata", signersdata);
-  // console.log("signerPos", signerPos);
-
   return (
     <>
+      <Title title={"placeholder"} />
       <DndProvider backend={HTML5Backend}>
         {isLoading.isLoad ? (
           <Loader isLoading={isLoading} />
@@ -1006,7 +1006,7 @@ function PlaceHolderSign() {
                 {/* signature modal */}
                 <Modal.Body>
                   {isSendAlert.mssg === "sure" ? (
-                    <p>Please Add field for all recipients.</p>
+                    <p>Please add field for all recipients.</p>
                   ) : (
                     isSendAlert.mssg === "confirm" && (
                       <p>
@@ -1233,35 +1233,34 @@ function PlaceHolderSign() {
         )}
       </DndProvider>
       <div>
-        <Modal show={isAddUser[uniqueId]}>
-          <Modal.Header
-            className={"bg-info"}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}
-          >
-            <span style={{ color: "white" }}>Add/choose user</span>
-            <span
-              style={{ color: "white", cursor: "pointer" }}
-              onClick={() => closePopup()}
-            >
-              X
-            </span>
+        <Modal show={signerExistModal}>
+          <Modal.Header className="bg-danger">
+            <span style={{ color: "white" }}>Users required</span>
           </Modal.Header>
+
+          {/* signature modal */}
           <Modal.Body>
-            {isAddUser && isAddUser[uniqueId] && (
-              <>
-                <SelectSigners
-                  details={handleAddUser}
-                  closePopup={closePopup}
-                />
-                <AddUser details={handleAddUser} closePopup={closePopup} />
-              </>
-            )}
+            <p>Please attach users to all fields</p>
           </Modal.Body>
+          <Modal.Footer>
+            <button
+              onClick={() => setSignerExistModal(false)}
+              style={{
+                color: "black"
+              }}
+              type="button"
+              className="finishBtn"
+            >
+              Close
+            </button>
+          </Modal.Footer>
         </Modal>
+        <LinkUserModal
+          handleAddUser={handleAddUser}
+          isAddUser={isAddUser}
+          uniqueId={uniqueId}
+          closePopup={closePopup}
+        />
       </div>
     </>
   );

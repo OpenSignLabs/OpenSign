@@ -1060,7 +1060,6 @@ export const createDocument = async (template, placeholders, signerData) => {
         }
       );
       if (res) {
-        console.log("res", res);
         return { status: "success", id: res.data.objectId };
       }
     } catch (err) {
