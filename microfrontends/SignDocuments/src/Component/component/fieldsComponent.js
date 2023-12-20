@@ -32,7 +32,8 @@ function FieldsComponent({
   setIsShowEmail,
   isMailSend,
   selectedEmail,
-  setSelectedEmail
+  setSelectedEmail,
+  handleAddSigner
 }) {
   const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
 
@@ -158,7 +159,7 @@ function FieldsComponent({
                                 value={`${ind}|${JSON.stringify(obj)}`}
                                 // value={(obj)}
                               >
-                                {obj.Role ?obj.Role : obj.Email}
+                                {obj.Role ? obj.Role : obj.Email}
                               </SelectItem>
                             );
                           })}
@@ -179,6 +180,20 @@ function FieldsComponent({
                     </Select.Content>
                   </Select.Portal>
                 </Select.Root>
+              </div>
+            )}
+            {handleAddSigner && (
+              <div
+                style={{
+                  margin: "5px 0 5px 0",
+                  backgroundColor: themeColor(),
+                  color: "white"
+                }}
+                className="addSignerBtn"
+                onClick={() => handleAddSigner()}
+              >
+                <i className="fa-solid fa-plus"></i>
+                <span style={{ marginLeft: 2 }}>Add</span>
               </div>
             )}
             <div

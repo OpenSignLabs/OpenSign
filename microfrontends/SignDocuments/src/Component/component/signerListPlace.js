@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import check from "../../assests/checkBox.png";
 import { themeColor } from "../../utils/ThemeColor/backColor";
 import "../../css/signerListPlace.css";
 
@@ -49,27 +48,26 @@ function SignerListPlace({
 
   //function for onhover signer name change background color
   const onHoverStyle = (ind, blockColor) => {
-    console.log("blockColor ", blockColor)
     const style = {
       background: blockColor ? blockColor : color[ind % color.length],
       padding: "10px",
       marginTop: "2px",
       display: "flex",
       flexDirection: "row",
-      borderBottom: "1px solid #e3e1e1"
+      borderBottom: "1px solid #e3e1e1",
+      alignItems: "center"
     };
     return style;
   };
   //function for onhover signer name remove background color
   const nonHoverStyle = (ind) => {
     const style = {
-      // width:"250px",
       padding: "10px",
       marginTop: "2px",
       display: "flex",
       flexDirection: "row",
       borderBottom: "1px solid #e3e1e1",
-      justifyContent: "space-between"
+      alignItems: "center"
     };
     return style;
   };
@@ -79,21 +77,27 @@ function SignerListPlace({
     return firstLetter;
   };
 
-  const darkenColor = ( color, factor ) => {
+  const darkenColor = (color, factor) => {
     // Remove '#' from the color code and parse it to get RGB values
-    const hex = color.replace('#', '');
+    const hex = color.replace("#", "");
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
-  
+
     // Darken the color by reducing each RGB component
     const darkerR = Math.floor(r * (1 - factor));
     const darkerG = Math.floor(g * (1 - factor));
     const darkerB = Math.floor(b * (1 - factor));
-  
+
     // Convert the darkened RGB components back to hex
-    return `#${(darkerR << 16 | darkerG << 8 | darkerB).toString(16).padStart(6, '0')}`;
-  }  
+    return `#${((darkerR << 16) | (darkerG << 8) | darkerB)
+      .toString(16)
+      .padStart(6, "0")}`;
+  };
+
+  const isWidgetExist = (Id) => {
+    return signerPos.some((x) => x.Id === Id);
+  };
 
   return (
     <div>
@@ -132,7 +136,8 @@ function SignerListPlace({
                   <div
                     style={{
                       display: "flex",
-                      flexDirection: "row"
+                      flexDirection: "row",
+                      alignItems: "center"
                     }}
                   >
                     <div
@@ -141,28 +146,33 @@ function SignerListPlace({
                         background: obj.blockColor
                           ? darkenColor(obj.blockColor, 0.4)
                           : nameColor[ind % nameColor.length],
-                        width: 20,
-                        height: 20,
+                        width: 30,
+                        height: 30,
                         display: "flex",
-                        borderRadius : 30 / 2,
+                        borderRadius: 30 / 2,
                         justifyContent: "center",
                         alignItems: "center",
-                        marginRight: "20px",
-                        marginTop: "5px"
+                        marginRight: "12px"
                       }}
                     >
                       <span
                         style={{
-                          fontSize: "8px",
+                          fontSize: "12px",
                           textAlign: "center",
                           fontWeight: "bold",
                           color: "white",
                           textTransform: "uppercase"
                         }}
                       >
-                        {obj.Name
-                          ? getFirstLetter(obj.Name)
-                          : getFirstLetter(obj.Role)}
+                        {isWidgetExist(obj.Id) ? (
+                          <i className="fa-solid fa-check"></i>
+                        ) : (
+                          <>
+                            {obj.Name
+                              ? getFirstLetter(obj.Name)
+                              : getFirstLetter(obj.Role)}
+                          </>
+                        )}
                       </span>
                     </div>
                     <div
@@ -205,20 +215,6 @@ function SignerListPlace({
                       <i className="fa-regular fa-trash-can"></i>
                     </div>
                   )}
-                  {signerPos.map((data, key) => {
-                    return (
-                      data.Id === obj.Id && (
-                        <div key={key}>
-                          <img
-                            alt="no img"
-                            src={check}
-                            width={20}
-                            height={20}
-                          />
-                        </div>
-                      )
-                    );
-                  })}
                   <hr />
                 </div>
               );
