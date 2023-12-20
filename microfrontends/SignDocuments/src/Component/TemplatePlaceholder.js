@@ -27,9 +27,9 @@ import {
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
-import SelectSigners from "./component/SelectSigners";
-import AddUser from "./component/AddUser";
 import "../css/AddUser.css";
+import Title from "./component/Title";
+import LinkUserModal from "./component/LinkUserModal";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -151,6 +151,7 @@ const TemplatePlaceholder = () => {
   const [isModalRole, setIsModalRole] = useState(false);
   const [roleName, setRoleName] = useState("");
   const [isAddUser, setIsAddUser] = useState({});
+  const [isCreateDoc, setIsCreateDoc] = useState(false);
 
   const senderUser =
     localStorage.getItem(
@@ -206,12 +207,10 @@ const TemplatePlaceholder = () => {
         }
       }
     );
-    // console.log("templateDeatils.data ", templateDeatils.data);
     const documentData =
       templateDeatils.data && templateDeatils.data
         ? [templateDeatils.data]
         : [];
-    // console.log("documentData ", documentData)
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
       setIsSigners(true);
@@ -224,7 +223,7 @@ const TemplatePlaceholder = () => {
           documentData[0].Placeholders.length > 0
         ) {
           setSignerPos(documentData[0].Placeholders);
-          let signers = [...signersdata];
+          let signers = [...documentData[0].Signers];
           let updatedSigners = documentData[0].Placeholders.map((x) => {
             let matchingSigner = signers.find(
               (y) => x.signerObjId && x.signerObjId === y.objectId
@@ -263,12 +262,11 @@ const TemplatePlaceholder = () => {
           documentData[0].Placeholders.length > 0
         ) {
           let updatedSigners = documentData[0].Placeholders.map((x) => {
-              return {
-                Role: x.Role,
-                Id: x.Id,
-                blockColor: x.blockColor
-              };
-            
+            return {
+              Role: x.Role,
+              Id: x.Id,
+              blockColor: x.blockColor
+            };
           });
           setSignerPos(documentData[0].Placeholders);
           setUniqueId(updatedSigners[0].Id);
@@ -339,10 +337,8 @@ const TemplatePlaceholder = () => {
       getSignerPos(item, monitor);
     }
   };
-  console.log("signerdata ", signersdata)
 
   const getSignerPos = (item, monitor) => {
-    console.log("item ", item);
     const posZIndex = zIndex + 1;
     setZIndex(posZIndex);
     const newWidth = containerWH.width;
@@ -714,8 +710,6 @@ const TemplatePlaceholder = () => {
     };
     setIsLoading(loadObj);
     setIsSendAlert(false);
-    console.log("signerPos ", signerPos);
-
     let signers = [];
     if (signersdata?.length > 0) {
       signersdata.forEach((x) => {
@@ -838,14 +832,17 @@ const TemplatePlaceholder = () => {
       });
   };
   const handleCreateDocModal = async () => {
+    setIsCreateDocModal(false);
+    setIsCreateDoc(true);
     const hostUrl = getHostUrl();
     // handle create document
-    console.log("template ", pdfDetails);
     const res = await createDocument(pdfDetails, signerPos, signersdata);
     if (res.status === "success") {
       navigate(`${hostUrl}placeHolderSign/${res.id}`);
+      setIsCreateDoc(false);
     } else {
       setHandleError("Error: Something went wrong!");
+      setIsCreateDoc(false);
     }
   };
 
@@ -855,7 +852,6 @@ const TemplatePlaceholder = () => {
   };
   const handleAddRole = (e) => {
     e.preventDefault();
-    console.log("signerArr", signersdata.length);
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
     const Id = randomId();
     const obj = {
@@ -912,6 +908,7 @@ const TemplatePlaceholder = () => {
 
   return (
     <div>
+      <Title title={"Template"} />
       <DndProvider backend={HTML5Backend}>
         {isLoading.isLoad ? (
           <Loader isLoading={isLoading} />
@@ -960,7 +957,7 @@ const TemplatePlaceholder = () => {
 
                 {/* signature modal */}
                 <Modal.Body>
-                  <p>Please Add field for all recipients.</p>
+                  <p>Please add field for all recipients.</p>
                 </Modal.Body>
 
                 <Modal.Footer>
@@ -1015,6 +1012,7 @@ const TemplatePlaceholder = () => {
                   )}
                 </Modal.Footer>
               </Modal>
+              {isCreateDoc && <Loader isLoading={isLoading} />}
               <ModalComponent
                 isShow={isShowEmail}
                 type={"signersAlert"}
@@ -1022,6 +1020,7 @@ const TemplatePlaceholder = () => {
               />
               {/* pdf header which contain funish back button */}
               <Header
+                completeBtnTitle={"Save"}
                 isPlaceholder={true}
                 pageNumber={pageNumber}
                 allPages={allPages}
@@ -1098,6 +1097,7 @@ const TemplatePlaceholder = () => {
                   isMailSend={isMailSend}
                   setSelectedEmail={setSelectedEmail}
                   selectedEmail={selectedEmail}
+                  handleAddSigner={handleAddSigner}
                 />
               </div>
             ) : (
@@ -1160,13 +1160,21 @@ const TemplatePlaceholder = () => {
                 }
                 className="addUserInput"
               />
+              <p
+                style={{
+                  color: "grey",
+                  fontSize: 11,
+                  margin: "2px 0 10px 5px"
+                }}
+              >
+                e.g: Account, Hr, Director, Manager, New joinee etc...
+              </p>
               <div>
                 <div
                   style={{
                     height: "1px",
                     backgroundColor: "#9f9f9f",
                     width: "100%",
-                    marginTop: "15px",
                     marginBottom: "15px"
                   }}
                 ></div>
@@ -1195,37 +1203,12 @@ const TemplatePlaceholder = () => {
         </Modal>
       </div>
       <div>
-        <div>
-          <Modal show={isAddUser[uniqueId]}>
-            <Modal.Header
-              className={"bg-info"}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}
-            >
-              <span style={{ color: "white" }}>Add/choose user</span>
-              <span
-                style={{ color: "white", cursor: "pointer" }}
-                onClick={() => closePopup()}
-              >
-                X
-              </span>
-            </Modal.Header>
-            <Modal.Body>
-              {isAddUser && isAddUser[uniqueId] && (
-                <>
-                  <SelectSigners
-                    details={handleAddUser}
-                    closePopup={closePopup}
-                  />
-                  <AddUser details={handleAddUser} closePopup={closePopup} />
-                </>
-              )}
-            </Modal.Body>
-          </Modal>
-        </div>
+        <LinkUserModal
+          handleAddUser={handleAddUser}
+          isAddUser={isAddUser}
+          uniqueId={uniqueId}
+          closePopup={closePopup}
+        />
       </div>
     </div>
   );
