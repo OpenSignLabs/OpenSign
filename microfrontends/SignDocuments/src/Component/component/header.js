@@ -34,7 +34,8 @@ function Header({
   dataTut4,
   alreadySign,
   isSignYourself,
-  setIsEmail
+  setIsEmail,
+  completeBtnTitle
 }) {
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
@@ -415,7 +416,7 @@ function Header({
                         }}
                         data-tut={dataTut4}
                       >
-                        Send
+                        {completeBtnTitle ? completeBtnTitle : "Send"}
                       </div>
                     ) : (
                       <div
@@ -573,7 +574,7 @@ function Header({
                   }}
                   className={isMailSend ? "sendMail" : "sendMail sendHover"}
                 >
-                  Send
+                  {completeBtnTitle ? completeBtnTitle : "Send"}
                 </button>
               </div>
             </>
