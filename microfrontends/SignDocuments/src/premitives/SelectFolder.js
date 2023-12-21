@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import CreateFolder from "./CreateFolder";
-import ModalUi from "../../primitives/ModalUi";
+import ModalUi from './ModalUi'
 
 const SelectFolder = ({ required, onSuccess, folderCls }) => {
   const [isOpen, SetIsOpen] = useState(false);
@@ -20,7 +20,6 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
       setTabList([]);
       fetchFolder();
     }
-    // eslint-disable-next-line
   }, [isOpen]);
   const fetchFolder = async (folderPtr) => {
     setIsLoader(true);
@@ -137,11 +136,11 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
     }
   };
   return (
-    <div className="text-xs mt-2 ">
+    <div className="text-xs mt-2">
       <div>
         <label className="block">
           Select Folder
-          {required && <span className="text-red-500 text-[13px]">*</span>}
+          {required && <span style={{ color: "red", fontSize: 13 }}> *</span>}
         </label>
       </div>
       <div className="rounded px-[20px] py-[20px] bg-white border border-gray-200 shadow flex max-w-sm gap-8 items-center">
@@ -170,8 +169,7 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
           </p>
         </div>
       </div>
-      <ModalUi title={"Select Folder"} isOpen={isOpen} handleClose={handleCancel}>
-      <div className="w-full min-w-[300px] md:min-w-[500px] px-3">
+      <ModalUi id="asd" title={"Select Folder"} isOpen={isOpen} handleClose={handleCancel}>          <div className="w-full min-w-[300px] md:min-w-[500px] px-3">
             <div className="py-2 text-[#ac4848] text-[14px] font-[500]">
               <span
                 className="cursor-pointer"
@@ -247,8 +245,7 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
             >
               <i className="fas fa-save" aria-hidden="true"></i>
             </div>
-          </div>
-      </ModalUi>
+          </div></ModalUi>
       {/* {isOpen && (
         <div
           className={`fixed z-40 top-20 left-1/2 transform -translate-x-1/2 border-[1px] text-sm bg-white rounded `}

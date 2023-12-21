@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
-import Alert from "../../primitives/Alert";
+import Alert from "./Alert";
 
 const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   const folderPtr = {
@@ -20,7 +20,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
 
   const fetchFolder = async () => {
     try {
-      const FolderQuery = new Parse.Query(folderCls);
+    const FolderQuery = new Parse.Query(folderCls);
       if (parentFolderId) {
         FolderQuery.equalTo("Folder", folderPtr);
         FolderQuery.equalTo("Type", "Folder");
@@ -105,7 +105,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         <h1 className="text-base font-semibold">Create Folder</h1>
         <div className="text-xs mt-2">
           <label className="block">
-            Name<span className="text-red-500 text-[13px]">*</span>
+            Name<span style={{ color: "red", fontSize: 13 }}> *</span>
           </label>
           <input
             className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
