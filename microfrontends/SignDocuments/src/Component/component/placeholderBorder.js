@@ -6,16 +6,6 @@ function PlaceholderBorder(props) {
 
   return (
     <div
-      // onTouchStart={(e) => {
-      //   if (!props.isDragging && props.isMobile) {
-      //     setTimeout(() => {
-      //       e.stopPropagation();
-      //       props.setIsSignPad(true);
-      //       props.setSignKey(props.pos.key);
-      //       props.setIsStamp(props.pos.isStamp);
-      //     }, 500);
-      //   }
-      // }}
       className="borderResize"
       style={{
         borderColor: themeColor(),
