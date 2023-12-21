@@ -38,7 +38,7 @@ import RenderPdf from "./component/renderPdf";
 import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
 import { modalAlign } from "../utils/Utils";
 import AlertComponent from "./component/alertComponent";
-import CopyAllPage from "./component/copyAllPage";
+import PlaceholderCopy from "./component/PlaceholderCopy";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -891,7 +891,7 @@ function SignYourSelf() {
                 )}
               </Modal.Footer>
             </Modal>
-            <CopyAllPage
+            <PlaceholderCopy
               isPageCopy={isPageCopy}
               setIsPageCopy={setIsPageCopy}
               xyPostion={xyPostion}

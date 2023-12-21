@@ -301,11 +301,11 @@ function RenderPdf({
     );
   };
 
-  const BlockDesign = ({ pos, data }) => {
+  const PlaceholderDesign = ({ pos, data }) => {
     return (
       <div>
         <i
-          class="fa-regular fa-copy signCopy"
+          className="fa-regular fa-copy signCopy"
           onClick={(e) => {
             console.log("hello console");
             e.stopPropagation();
@@ -317,7 +317,7 @@ function RenderPdf({
           }}
         ></i>
         <i
-          class="fa-regular fa-circle-xmark signCloseBtn"
+          className="fa-regular fa-circle-xmark signCloseBtn"
           onClick={(e) => {
             e.stopPropagation();
             if (data) {
@@ -1189,8 +1189,7 @@ function RenderPdf({
                                     >
                                       <BorderResize right={-12} top={-11} />
                                       <PlaceholderBorder pos={pos} />
-
-                                      <BlockDesign pos={pos} />
+                                      <PlaceholderDesign pos={pos} />
                                     </Rnd>
                                   )
                                 );

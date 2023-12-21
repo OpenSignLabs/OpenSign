@@ -27,7 +27,7 @@ import {
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
 import { useNavigate } from "react-router-dom";
-import CopyAllPage from "./component/copyAllPage";
+import PlaceholderCopy from "./component/PlaceholderCopy";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -953,7 +953,7 @@ function PlaceHolderSign() {
               type={"signersAlert"}
               setIsShowEmail={setIsShowEmail}
             />
-            <CopyAllPage
+            <PlaceholderCopy
               isPageCopy={isPageCopy}
               setIsPageCopy={setIsPageCopy}
               xyPostion={signerPos}
