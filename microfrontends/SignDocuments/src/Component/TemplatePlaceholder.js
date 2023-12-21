@@ -30,6 +30,9 @@ import ModalComponent from "./component/modalComponent";
 import "../css/AddUser.css";
 import Title from "./component/Title";
 import LinkUserModal from "./component/LinkUserModal";
+import EditTemplate from "./component/EditTemplate";
+import ModalUi from "../premitives/ModalUi";
+import AddRoleModal from "./component/AddRoleModal";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -152,7 +155,7 @@ const TemplatePlaceholder = () => {
   const [roleName, setRoleName] = useState("");
   const [isAddUser, setIsAddUser] = useState({});
   const [isCreateDoc, setIsCreateDoc] = useState(false);
-
+  const [isEditTemplate, setIsEditTemplate] = useState(false);
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -176,6 +179,8 @@ const TemplatePlaceholder = () => {
       });
     }
   }, [divRef.current]);
+
+  // `fetchTemplate` function in used to get Template from server and setPlaceholder ,setSigner if present
   const fetchTemplate = async () => {
     // const params = { templateId: templateId };
     // const templateDeatils = await axios.post(
@@ -338,6 +343,7 @@ const TemplatePlaceholder = () => {
     }
   };
 
+  // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor) => {
     const posZIndex = zIndex + 1;
     setZIndex(posZIndex);
@@ -831,6 +837,8 @@ const TemplatePlaceholder = () => {
         console.log("axois err ", err);
       });
   };
+
+  // `handleCreateDocModal` is used to create Document from template when user click on yes from modal
   const handleCreateDocModal = async () => {
     setIsCreateDocModal(false);
     setIsCreateDoc(true);
@@ -846,10 +854,14 @@ const TemplatePlaceholder = () => {
     }
   };
 
+  // `handleAddSigner` is used to open Add Role Modal
   const handleAddSigner = () => {
     setIsModalRole(true);
     setRoleName("");
   };
+
+  // `handleAddRole` function is called when use click on add button in addRole modal
+  // save Role in entry in signerList and user
   const handleAddRole = (e) => {
     e.preventDefault();
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
@@ -861,14 +873,20 @@ const TemplatePlaceholder = () => {
     setSignersData((prevArr) => [...prevArr, obj]);
     setIsModalRole(false);
     setRoleName("");
+    setUniqueId(Id);
+    setIsMailSend(false);
   };
+  // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
   const handleDeleteUser = (Id) => {
     const removeUser = signersdata.filter((x) => x.Id !== Id);
     setSignersData(removeUser);
     const removePlaceholderUser = signerPos.filter((x) => x.Id !== Id);
     setSignerPos(removePlaceholderUser);
+    setIsMailSend(false);
   };
 
+  //  `handleLinkUser` is used to open Add/Choose Signer Modal when user can link existing or new User with placeholder
+  // and update entry in signersList
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
   };
@@ -893,19 +911,56 @@ const TemplatePlaceholder = () => {
       return { ...x };
     });
     setSignersData(updateSigner);
+    setIsMailSend(false);
   };
 
+  // `closePopup` is used to close Add/Choose signer modal
   const closePopup = () => {
     setIsAddUser({});
   };
+
+  //  `handleRoleChange` function is call when user update Role name from recipients list
   const handleRoleChange = (event, roleId) => {
     // Update the role when the content changes
     const updatedRoles = signersdata.map((role) =>
-      role.Id === roleId ? { ...role, Role: event.target.textContent } : role
+      role.Id === roleId ? { ...role, Role: event.target.value } : role
     );
     setSignersData(updatedRoles);
+    setIsMailSend(false);
   };
 
+  //  `handleOnBlur` function is call when user click outside input box
+  const handleOnBlur = (updateRole, roleId) => {
+    // Update the role when the content changes
+    if (!updateRole) {
+      const updatedRoles = signersdata.map((role) =>
+        role.Id === roleId ? { ...role, Role: roleName } : role
+      );
+      setSignersData(updatedRoles);
+    }
+  };
+
+  const handleEditTemplateModal = () => {
+    setIsEditTemplate(!isEditTemplate);
+  };
+
+  const handleEditTemplateForm = (data) => {
+    console.log("data", data);
+    setIsEditTemplate(false);
+    const updateTemplate = pdfDetails.map((x) => {
+      return { ...x, ...data };
+    });
+    console.log("updateTemplate ", updateTemplate);
+    setPdfDetails(updateTemplate);
+    setIsMailSend(false);
+  };
+
+  const handleCloseRoleModal = () => {
+    setIsModalRole(false);
+  };
+
+  console.log("pdfDetails ", pdfDetails)
+  console.log("signerPos ", signerPos)
   return (
     <div>
       <Title title={"Template"} />
@@ -949,52 +1004,34 @@ const TemplatePlaceholder = () => {
               }}
             >
               {/* this modal is used show alert set placeholder for all signers before send mail */}
-
-              <Modal show={isSendAlert}>
-                <Modal.Header className="bg-danger">
-                  <span style={{ color: "white" }}>Fields required</span>
-                </Modal.Header>
-
-                {/* signature modal */}
-                <Modal.Body>
+              <ModalUi
+                headerColor={"#dc3545"}
+                isOpen={isSendAlert}
+                title={"Fields required"}
+                handleClose={() => setIsSendAlert(false)}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
                   <p>Please add field for all recipients.</p>
-                </Modal.Body>
-
-                <Modal.Footer>
-                  <button
-                    onClick={() => setIsSendAlert(false)}
-                    style={{
-                      color: "black"
-                    }}
-                    type="button"
-                    className="finishBtn"
-                  >
-                    Close
-                  </button>
-                </Modal.Footer>
-              </Modal>
+                </div>
+              </ModalUi>
               {/* this modal is used show send mail  message and after send mail success message */}
-              <Modal show={isCreateDocModal}>
-                {/* signature modal */}
-                <Modal.Body>
+              <ModalUi
+                isOpen={isCreateDocModal}
+                title={"Create Document"}
+                handleClose={() => setIsCreateDocModal(false)}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
                   <p>Do you want to create document right now ?</p>
-                </Modal.Body>
-                <Modal.Footer>
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
                   {currentEmail.length > 0 && (
                     <>
-                      <button
-                        onClick={() => {
-                          setIsCreateDocModal(false);
-                        }}
-                        style={{
-                          color: "black"
-                        }}
-                        type="button"
-                        className="finishBtn"
-                      >
-                        No
-                      </button>
-
                       <button
                         onClick={() => {
                           handleCreateDocModal();
@@ -1008,16 +1045,22 @@ const TemplatePlaceholder = () => {
                       >
                         Yes
                       </button>
+                      <button
+                        onClick={() => {
+                          setIsCreateDocModal(false);
+                        }}
+                        style={{
+                          color: "black"
+                        }}
+                        type="button"
+                        className="finishBtn"
+                      >
+                        No
+                      </button>
                     </>
                   )}
-                </Modal.Footer>
-              </Modal>
-              {isCreateDoc && <Loader isLoading={isLoading} />}
-              <ModalComponent
-                isShow={isShowEmail}
-                type={"signersAlert"}
-                setIsShowEmail={setIsShowEmail}
-              />
+                </div>
+              </ModalUi>
               {/* pdf header which contain funish back button */}
               <Header
                 completeBtnTitle={"Save"}
@@ -1032,6 +1075,7 @@ const TemplatePlaceholder = () => {
                 alertSendEmail={alertSendEmail}
                 isShowHeader={true}
                 currentSigner={true}
+                setIsEditTemplate={handleEditTemplateModal}
                 dataTut4="reactourFour"
               />
               <div data-tut="reactourThird">
@@ -1115,6 +1159,7 @@ const TemplatePlaceholder = () => {
                     setUniqueId={setUniqueId}
                     handleDeleteUser={handleDeleteUser}
                     handleRoleChange={handleRoleChange}
+                    handleOnBlur={handleOnBlur}
                   />
                   <div data-tut="reactourSecond">
                     <FieldsComponent
@@ -1141,66 +1186,14 @@ const TemplatePlaceholder = () => {
         )}
       </DndProvider>
       <div>
-        <Modal show={isModalRole}>
-          <Modal.Header className={"bg-info"}>
-            <span style={{ color: "white" }}>Add Role</span>
-          </Modal.Header>
-          <Modal.Body>
-            <form
-              style={{ display: "flex", flexDirection: "column" }}
-              onSubmit={handleAddRole}
-            >
-              <input
-                value={roleName}
-                onChange={(e) => setRoleName(e.target.value)}
-                placeholder={
-                  signersdata.length > 0
-                    ? "User " + (signersdata.length + 1)
-                    : "User 1"
-                }
-                className="addUserInput"
-              />
-              <p
-                style={{
-                  color: "grey",
-                  fontSize: 11,
-                  margin: "2px 0 10px 5px"
-                }}
-              >
-                e.g: Account, Hr, Director, Manager, New joinee etc...
-              </p>
-              <div>
-                <div
-                  style={{
-                    height: "1px",
-                    backgroundColor: "#9f9f9f",
-                    width: "100%",
-                    marginBottom: "15px"
-                  }}
-                ></div>
-                <button
-                  type="submit"
-                  style={{
-                    background: "#00a2b7"
-                  }}
-                  className="finishBtn"
-                >
-                  Add
-                </button>
-                <button
-                  onClick={() => setIsModalRole(false)}
-                  style={{
-                    color: "black"
-                  }}
-                  type="button"
-                  className="finishBtn"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </Modal.Body>
-        </Modal>
+        <AddRoleModal
+          isModalRole={isModalRole}
+          roleName={roleName}
+          signersdata={signersdata}
+          setRoleName={setRoleName}
+          handleAddRole={handleAddRole}
+          handleCloseRoleModal={handleCloseRoleModal}
+        />
       </div>
       <div>
         <LinkUserModal
@@ -1210,6 +1203,16 @@ const TemplatePlaceholder = () => {
           closePopup={closePopup}
         />
       </div>
+      <ModalUi
+        title={"Edit Template"}
+        isOpen={isEditTemplate}
+        handleClose={handleEditTemplateModal}
+      >
+        <EditTemplate
+          template={pdfDetails?.[0]}
+          onSuccess={handleEditTemplateForm}
+        />
+      </ModalUi>
     </div>
   );
 };

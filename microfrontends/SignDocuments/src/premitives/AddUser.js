@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
-import "../../css/AddUser.css";
+import "../css/AddUser.css";
 const AddUser = (props) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -209,7 +209,7 @@ const AddUser = (props) => {
         </div>
       )}
       <div className="form-wrapper">
-        <div style={{ fontSize: 14 }}>Add User</div>
+        <div style={{ fontSize: 14, fontWeight: "700" }}>Add User</div>
 
         {isUserExist && (
           <div className="form-section">

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Parse from "parse";
-import "../../css/AddUser.css";
+import "../css/AddUser.css";
 import AsyncSelect from "react-select/async";
 
 const customStyles = {
@@ -68,7 +68,7 @@ const SelectSigners = (props) => {
     <div className="addusercontainer">
       <div className="form-wrapper">
         <div className="form-section">
-          <label style={{ fontSize: 14 }}>Choose User</label>
+          <label style={{ fontSize: 14 , fontWeight: "700"}}>Choose User</label>
           <AsyncSelect
             cacheOptions
             defaultOptions

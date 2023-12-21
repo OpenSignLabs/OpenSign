@@ -302,13 +302,13 @@ const TemplateForm = () => {
         <SelectFolder onSuccess={handleFolder} folderCls={templateCls} />
         <div className="flex items-center mt-3 gap-2 text-white">
           <button
-            className="px-2 py-2 uppercase rounded shadow-md bg-sky-300 text-xs font-semibold"
+            className="bg-[#1ab6ce] rounded-sm shadow-md text-[14px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none"
             type="submit"
           >
             Submit
           </button>
           <div
-            className="px-2 py-2 uppercase rounded shadow-md bg-blue-500 text-xs font-semibold"
+            className="bg-[#188ae2] rounded-sm shadow-md text-[14px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
             onClick={() => handleReset()}
           >
             Reset

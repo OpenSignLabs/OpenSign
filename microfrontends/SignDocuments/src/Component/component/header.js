@@ -35,7 +35,8 @@ function Header({
   alreadySign,
   isSignYourself,
   setIsEmail,
-  completeBtnTitle
+  completeBtnTitle,
+  setIsEditTemplate
 }) {
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
@@ -346,7 +347,7 @@ function Header({
                               }}
                             >
                               <i
-                                class="fa fa-envelope"
+                                className="fa fa-envelope"
                                 style={{ marginRight: "2px" }}
                                 aria-hidden="true"
                               ></i>
@@ -552,6 +553,11 @@ function Header({
                 )}
 
               <div>
+                {setIsEditTemplate && (
+                  <button onClick={() => setIsEditTemplate(true)} style={{border:"none", outline:"none", textAlign:"center"}}>
+                    <i className="fa-solid fa-gear fa-lg"></i>
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     navigate(-1);
@@ -724,7 +730,7 @@ function Header({
                 onClick={() => setIsEmail(true)}
               >
                 <i
-                  class="fa fa-envelope"
+                  className="fa fa-envelope"
                   style={{
                     color: "white",
                     fontSize: "15px",

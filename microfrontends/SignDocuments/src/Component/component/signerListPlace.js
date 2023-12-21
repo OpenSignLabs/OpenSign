@@ -13,7 +13,8 @@ function SignerListPlace({
   setUniqueId,
   setRoleName,
   handleDeleteUser,
-  handleRoleChange
+  handleRoleChange,
+  handleOnBlur
 }) {
   const color = [
     "#93a3db",
@@ -45,7 +46,7 @@ function SignerListPlace({
     "#cc9900"
   ];
   const [isHover, setIsHover] = useState();
-
+  const [isEdit, setIsEdit] = useState(false);
   //function for onhover signer name change background color
   const onHoverStyle = (ind, blockColor) => {
     const style = {
@@ -107,7 +108,7 @@ function SignerListPlace({
           padding: "5px"
         }}
       >
-        <span className="signedStyle">Reicipents</span>
+        <span className="signedStyle">Recipients</span>
       </div>
 
       <div className="signerList">
@@ -183,24 +184,47 @@ function SignerListPlace({
                       }}
                     >
                       {obj.Name ? (
-                        <span className="userName">{obj.Name}</span>
+                        <span
+                          className="userName"
+                          style={{ cursor: "default" }}
+                        >
+                          {obj.Name}
+                        </span>
                       ) : (
                         <>
-                          {handleRoleChange ? (
-                            <span
-                              className="userName"
-                              contentEditable
-                              onBlur={(e) => handleRoleChange(e, obj.Id)}
-                            >
-                              {obj.Role}
-                            </span>
-                          ) : (
-                            <span className="userName">{obj.Role}</span>
-                          )}
+                          <span
+                            className="userName"
+                            onClick={() => {
+                              setIsEdit({ [obj.Id]: true });
+                              setRoleName(obj.Role);
+                            }}
+                          >
+                            {isEdit?.[obj.Id] && handleRoleChange ? (
+                              <input
+                                style={{
+                                  backgroundColor: "transparent",
+                                  width: "inherit"
+                                }}
+                                value={obj.Role}
+                                onChange={(e) => handleRoleChange(e, obj.Id)}
+                                onBlur={() => {
+                                  setIsEdit({});
+                                  handleOnBlur(obj.Role, obj.Id);
+                                }}
+                              />
+                            ) : (
+                              obj.Role
+                            )}
+                          </span>
                         </>
                       )}
                       {obj.Email && (
-                        <span className="useEmail">{obj.Email}</span>
+                        <span
+                          className="useEmail"
+                          style={{ cursor: "default" }}
+                        >
+                          {obj.Email}
+                        </span>
                       )}
                     </div>
                   </div>

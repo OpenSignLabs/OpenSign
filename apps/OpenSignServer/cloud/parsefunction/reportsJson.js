@@ -32,6 +32,18 @@ export default function reportJson(id, userId) {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
           Placeholders: { $ne: null },
+          Signers: {
+            $inQuery: {
+              where: {
+                UserId: {
+                  __type: 'Pointer',
+                  className: '_User',
+                  objectId: currentUserId,
+                },
+              },
+              className: 'contracts_Contactbook',
+            },
+          },
         },
         keys: [
           'Name',
@@ -168,6 +180,18 @@ export default function reportJson(id, userId) {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
           Placeholders: { $ne: null },
+          Signers: {
+            $inQuery: {
+              where: {
+                UserId: {
+                  __type: 'Pointer',
+                  className: '_User',
+                  objectId: currentUserId,
+                },
+              },
+              className: 'contracts_Contactbook',
+            },
+          },
         },
         keys: ['Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name', 'Signers.UserId', 'AuditTrail'],
       };
