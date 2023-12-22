@@ -92,60 +92,31 @@ export const calculateImgAspectRatio = (imgWH, pos) => {
 
 //function for upload stamp or image
 export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
-  const updateFilter = xyPostion[index].pos.filter(
-    (data, ind) =>
-      data.key === signKey && data.Width && data.Height && data.SignUrl
-  );
   let getIMGWH;
-  const getXYdata = xyPostion[index].pos;
-  if (updateFilter.length > 0) {
-    const addSign = getXYdata.map((url, ind) => {
-      if (url.key === signKey) {
-        getIMGWH = calculateImgAspectRatio(imgWH, url);
+  //get current page position
+  const getXYData = xyPostion[index].pos;
+  const updateXYData = getXYData.map((url) => {
+    if (url.key === signKey) {
+      getIMGWH = calculateImgAspectRatio(imgWH, url);
 
-        return {
-          ...url,
-          Width: getIMGWH.newWidth,
-          Height: getIMGWH.newHeight,
-          SignUrl: image.src,
-          ImageType: image.imgType
-        };
-      }
-      return url;
-    });
+      return {
+        ...url,
+        Width: getIMGWH.newWidth,
+        Height: getIMGWH.newHeight,
+        SignUrl: image.src,
+        ImageType: image.imgType
+      };
+    }
+    return url;
+  });
 
-    const newUpdateUrl = xyPostion.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: addSign };
-      }
-      return obj;
-    });
-    return newUpdateUrl;
-  } else {
-    const getXYdata = xyPostion[index].pos;
-    const addSign = getXYdata.map((url, ind) => {
-      if (url.key === signKey) {
-        getIMGWH = calculateImgAspectRatio(imgWH, url);
-
-        return {
-          ...url,
-          Width: getIMGWH.newWidth,
-          Height: getIMGWH.newHeight,
-          SignUrl: image.src,
-          ImageType: image.imgType
-        };
-      }
-      return url;
-    });
-
-    const newUpdateUrl = xyPostion.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: addSign };
-      }
-      return obj;
-    });
-    return newUpdateUrl;
-  }
+  const updateXYposition = xyPostion.map((obj, ind) => {
+    if (ind === index) {
+      return { ...obj, pos: updateXYData };
+    }
+    return obj;
+  });
+  return updateXYposition;
 }
 
 //function for save button to save signature or image url
@@ -155,53 +126,47 @@ export function onSaveSign(
   signKey,
   signatureImg,
   imgWH,
-  isDefaultSign,
-  isSign
+  isDefaultSign
 ) {
-  let getXYdata = xyPostion[index].pos;
-  let getPosData = xyPostion[index].pos.filter((data) => data.key === signKey);
-
   let getIMGWH;
-
-  const addSign = getXYdata.map((url, ind) => {
-    if (url.key === signKey) {
+  let getXYdata = xyPostion[index].pos;
+  const updateXYData = getXYdata.map((position) => {
+    if (position.key === signKey) {
       if (isDefaultSign) {
-        getIMGWH = calculateImgAspectRatio(imgWH, url);
+        getIMGWH = calculateImgAspectRatio(imgWH, position);
       }
-
       const getSignImgWH = calculateImgAspectRatio(
         { width: 150, height: 60 },
-        url
+        position
       );
       const posWidth = isDefaultSign
         ? getIMGWH.newWidth
-        : getPosData[0].Width
+        : position.Width
           ? getSignImgWH.newWidth
           : 150;
       const posHeight = isDefaultSign
         ? getIMGWH.newHeight
-        : getPosData[0].Height
+        : position.Height
           ? getSignImgWH.newHeight
           : 60;
 
       return {
-        ...url,
+        ...position,
         Width: posWidth,
         Height: posHeight,
-        SignUrl: signatureImg,
-        ImageType: "sign"
+        SignUrl: signatureImg
       };
     }
-    return url;
+    return position;
   });
 
-  const newUpdateUrl = xyPostion.map((obj, ind) => {
+  const updateXYposition = xyPostion.map((obj, ind) => {
     if (ind === index) {
-      return { ...obj, pos: addSign };
+      return { ...obj, pos: updateXYData };
     }
     return obj;
   });
-  return newUpdateUrl;
+  return updateXYposition;
 }
 
 export const addZIndex = (signerPos, key, setZIndex) => {
