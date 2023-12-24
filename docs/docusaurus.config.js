@@ -146,11 +146,11 @@ const config = {
             items: [
               {
                 label: 'Help',
-                to: '/docs/help/opensign-api-v-1',
+                to: '/docs/help/intro',
               },
               {
                 label: 'APIs',
-                to: '/docs/API-docs/intro',
+                to: '/docs/API-docs/opensign-api-v-1',
               },
               {
                 label: 'Contribute',
