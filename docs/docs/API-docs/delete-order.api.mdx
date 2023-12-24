@@ -1,0 +1,101 @@
+---
+id: delete-order
+title: "Delete purchase order by ID"
+description: "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors"
+sidebar_label: "Delete purchase order by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJzFVFFr2zAQ/iuHnlpI44SVPYQ9LCxZCStLWTo2aEOR7XMsakuuJKcLwf99nxxnydJtbE+DQOTTd7q777u7rfBy5cToTnguq0J6dmLZEym7xKrKK6PFSLw3ltayUClZdpXRjsnbDSntecWWZhNHz8rnAVMzvaHhYDDo01hvfK70imRs1twaCQ9pozvH4FUUtGLNFoFpfDMjttZYJ3rCVMGI+LMUGaRcsOe5TdnirpJWlvi2IfGt0PgAZl/Ag0qBUSHxSvpcnFYzm5DJyOeMbPAeTtKTZk4deUMx0y5YeMTyU60sjiNva+4Jl+RcSjHaCr+pQsyuEkAzY0vpd6bXl6JplsF9x5YLHpeDQfg7yUXveEVOrq6qQiFW0wP28iW2rR70ecpMrYEDECzk5kBQyw1KHoloz0a0PeKlAcCxXe+Zq20BbO595UZRJKuqD9q1UytdyNj1E1PCqKL1UIRyHCe1VX6zCCzsisLtwyNvjhiB5QMMvb0qXy9upHV8Md7bW2FylkHKUILSmWn9lS+CwxwZLJBB2w6IfCrfba4c4ReuU5PUJWvfNgposXTiTbF0nBIug97hMthf9YfkKk5UppLWtU/3+l4vTMlUO87qggqlH93oXl/Q3TwDTMmCvnDslOfl2Z6w5+fnF4Sdtz5XGIc6xrhU5gBftcaW1WOvHx/nqBVNXbp5toBIKuFOnN+EilpwBK/EgIPEBxrRnyqI2pnenjqF9irwNNoywDuVxlc316BlgLcOPfEXKUfXs3fTj4tpeDV01U6iYX+Ap2CqjPOl1EeBJm2fUlXbJIc03QjGG0zAqdLbtgao+582UNfQnr/5CAOEvm06drbdlB2WJuCj4/2DaclRe4Bst6EHP9uiaYL5qWaLebnDcS2tknFoeoxiqlw4Y5YzWTj+Axdnn7qtdE7/sMp+Wc1+ZnUYzJY7fOHYjvRPC7VZHm+byfR6egvRm+8IziRL
+sidebar_class_name: "delete api-method"
+info_path: docs/API-docs/opensign-api-v-1
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import TabItem from "@theme/TabItem";
+
+<h1
+  className={"openapi__heading"}
+>
+  Delete purchase order by ID
+</h1>
+
+<MethodEndpoint
+  method={"delete"}
+  path={"/template/{template_id}"}
+>
+  
+</MethodEndpoint>
+
+
+
+For valid response try integer IDs with value &lt; 1000. Anything above 1000 or nonintegers will generate API errors
+
+## Request
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"template_id","in":"path","description":"ID of the order that needs to be deleted","required":true,"schema":{"type":"integer","format":"int64"}}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs>
+      <TabItem
+        label={"400"}
+        value={"400"}
+      >
+        <div>
+          
+          
+          Invalid ID supplied
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem><TabItem
+        label={"404"}
+        value={"404"}
+      >
+        <div>
+          
+          
+          Order not found
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

@@ -6,6 +6,7 @@
 
 import {themes as prismThemes} from 'prism-react-renderer';
 
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'OpenSign™',
@@ -45,6 +46,7 @@ const config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/opensignlabs/opensign/tree/feat-docs/docs/',
+            docItemComponent: "@theme/ApiItem" // derived from docusaurus-theme-openapi-docs
         },
         blog: {
           showReadingTime: true,
@@ -60,11 +62,38 @@ const config = {
     ],
   ],
 
+  plugins: [
+    [
+      "docusaurus-plugin-openapi-docs",
+      {
+        id: "openapi",
+        docsPluginId: "default", // e.g. "classic" or the plugin-content-docs id
+        config: {
+          opensign: { // "petstore" is considered the <id> that you will reference in the CLI
+            specPath: "docs/API-docs/opensign.yaml", // path or URL to the OpenAPI spec
+            outputDir: "docs/API-docs", // output directory for generated *.mdx and sidebar.js files
+            sidebarOptions: {
+              groupPathsBy: "tag", // generate a sidebar.js slice that groups operations by tag
+            },
+          }
+        }
+      },
+    ]
+  ],
+  themes: ["docusaurus-theme-openapi-docs"], // exports ApiItem and ApiDemoPanel
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      announcementBar: {
+        id: 'support_us',
+        content:
+          'Help use spread the word - ⭐ OpenSign on <a target="_blank" rel="noopener" href="https://github.com/opensignlabs/opensign">GitHub</a>',
+        backgroundColor: '#cae4fa',
+        textColor: '#091E42',
+        isCloseable: false,
+      },
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/docusaurus-social-card.png',
       navbar: {
         title: 'OpenSign™',
         logo: {

@@ -1,0 +1,183 @@
+---
+id: upload-file
+title: "uploads an image"
+description: ""
+sidebar_label: "uploads an image"
+hide_title: true
+hide_table_of_contents: true
+api: eJyNVG1P2zAQ/iuW+TKktinwrZqmdYghNLRWK9MmQTU5zqUxJLZnO0BV9b/vzklKKFRaVbXJvT5399xteBArzye3XBodhAyeLwc8Ay+dskEZzSecD7ix4AS9XmUoqG1pRPZVlYAqB39r8OGLydZ8solhQAd6FNaWSka3xMgAYeiDA1GRzssCKkFPYW0BY6JK6RXGy42rBPrzVGnh1nyLH8rirdEePLmcjsf09xqlr6UE7/O6ZDu0GO4AnntPTu/gMOk9yICO1lGYoJqU0mTQs1IYdAWuDxdFZ6ccoTYm+4WhokJ4YvWeDpXPVUkKLSpSHB1lkIu6DDGgCiUJp1b9aNsQu4IqD7J2KmDnb6k+9ecB6Hm5XVK6UBgalzU+FiRCgW9JO+hSRakH9wjOxwC1Qwy8CMH6SZJgu0bYAu3VSpci9SNpKhSq5PGEU/wu94Ja2HRph2BXIUq+oWDQFfZ7OBfOw3DayRXNrgCRYTepIqVzE/3bomeIYIEI2HR+xTDzPjlvCuUZfkmdGVlXOOw4YoaTYXveLBUeMobKUEBUkvxsdMK8Banylh0jdqfv9MJUwGoPxKhS6Qc/udNDdjvL0UyJkv2C1KsAyw9dw56ent407Dj6XKpQ1ClzYM2L+SoKY1f7XruXY6w1gKv8LF/gkJSEdjgHUiXROGk5jxOmNiK5FQ21FX3edyJ+4VIAceqFftPL+TW2ZYyxXjjxH5CT66vzi++LC4pKrGpGdDIaYygUEREroXuJmkvimdBMVbQbe+Pt3RM6Qy2pAjyHxJYCubNtEW5aeu/uWKQ3srQg8qN4s6HZ/3TldktivFkubgoCFU6JlMiGezPouEj7EKnMzxsEwxtKTuZl3TD7wHXbDjrPKV4kGw74xAv0ak/ns8UNGqftJa3iyeE5nVnEJWqqr79YD3GB2gfC26n0upfzzcY12OiXkL7r85HWAq0/7cwbzUGHtmmdNQ1miQfqH+T/LPc=
+sidebar_class_name: "post api-method"
+info_path: docs/API-docs/opensign-api-v-1
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import TabItem from "@theme/TabItem";
+
+<h1
+  className={"openapi__heading"}
+>
+  uploads an image
+</h1>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/contactlist"}
+>
+  
+</MethodEndpoint>
+
+
+
+
+
+## Request
+
+<MimeTabs
+  className={"openapi-tabs__mime"}
+>
+  <TabItem
+    label={"application/octet-stream"}
+    value={"application/octet-stream-schema"}
+  >
+    <details
+      style={{}}
+      className={"openapi-markdown__details mime"}
+      data-collapsed={false}
+      open={true}
+    >
+      <summary
+        style={{}}
+        className={"openapi-markdown__details-summary-mime"}
+      >
+        <h3
+          className={"openapi-markdown__details-summary-header-body"}
+        >
+          Body
+        </h3>
+      </summary><div
+        style={{"textAlign":"left","marginLeft":"1rem"}}
+      >
+        
+      </div><ul
+        style={{"marginLeft":"1rem"}}
+      >
+        <div
+          style={{"marginTop":".5rem","marginBottom":".5rem","marginLeft":"1rem"}}
+        >
+          
+          
+          string
+          
+          
+        </div>
+      </ul>
+    </details>
+  </TabItem>
+</MimeTabs><div>
+  <div>
+    <ApiTabs>
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          successful operation
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"code"}
+                        required={false}
+                        schemaName={"int32"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"integer","format":"int32"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"type"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"message"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"code\": 0,\n  \"type\": \"string\",\n  \"message\": \"string\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      
