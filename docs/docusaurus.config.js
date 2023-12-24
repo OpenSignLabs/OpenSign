@@ -146,7 +146,7 @@ const config = {
             items: [
               {
                 label: 'Help',
-                to: '/docs/help/intro',
+                to: '/docs/help/opensign-api-v-1',
               },
               {
                 label: 'APIs',
