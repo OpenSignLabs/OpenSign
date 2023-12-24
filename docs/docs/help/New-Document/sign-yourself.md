@@ -7,14 +7,14 @@ sidebar_position: 1
 This lets you sign documents that dont need to be sent to anybody.
 
 ## Navigate to "Sign yourself" from main menu
-<img width="251" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/4bc203a8-67e8-4887-9ca7-d21cfa26ce9f">
+<img width="251" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/4bc203a8-67e8-4887-9ca7-d21cfa26ce9f" />
 
 ## Step-by-Step Instructions
 
 
 # How to Sign a Document for Yourself with OpenSign
 
-<img width="750" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/ebcdc08e-81be-4ba2-9e02-b199014b5946">
+<img width="750" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/ebcdc08e-81be-4ba2-9e02-b199014b5946" />
 
 ### Step 1: Uploading Your Document
 
