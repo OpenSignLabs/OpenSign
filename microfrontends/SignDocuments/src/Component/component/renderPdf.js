@@ -598,7 +598,7 @@ function RenderPdf({
                                         }}
                                       >
                                         <BorderResize right={-12} top={-11} />
-                                        <PlaceholderBorder pos={pos} />
+                                        <PlaceholderBorder pos={pos} posWidth={posWidth} posHeight={posHeight}/>
                                         <div
                                           onTouchEnd={() => {
                                             const dataNewPlace = addZIndex(
@@ -617,6 +617,17 @@ function RenderPdf({
                                             });
                                           }}
                                         >
+                                          <i
+                                              className="fa-regular fa-user signUserIcon"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleLinkUser(data.Id);
+                                                setUniqueId(data.Id);
+                                              }}
+                                              style={{
+                                                color: "#188ae2"                                
+                                              }}
+                                            ></i>
                                           <i
                                             className="fa-regular fa-copy signCopy"
                                             onTouchEnd={(e) => {
@@ -748,7 +759,7 @@ function RenderPdf({
                                     }}
                                   >
                                     <BorderResize right={-12} top={-11} />
-                                    <PlaceholderBorder pos={pos} />
+                                    <PlaceholderBorder pos={pos} posWidth={posWidth} posHeight={posHeight}/>
                                     <div
                                       onTouchEnd={(e) => {
                                         if (!isDragging && isMobile) {
@@ -761,6 +772,17 @@ function RenderPdf({
                                         }
                                       }}
                                     >
+                                        <i
+                                          className="fa-regular fa-user signUserIcon"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }}
+                                          style={{
+                                            color: "#188ae2"                                
+                                          }}
+                                        ></i>
                                       <i
                                         className="fa-regular fa-copy signCopy"
                                         onTouchEnd={(e) => {
@@ -1053,7 +1075,6 @@ function RenderPdf({
                                           style={{
                                             cursor: "all-scroll",
                                             background: data.blockColor,
-
                                             zIndex: pos.zIndex
                                           }}
                                           className="signYourselfBlock"
@@ -1110,7 +1131,7 @@ function RenderPdf({
                                           }}
                                         >
                                           <BorderResize right={-12} top={-11} />
-                                          <PlaceholderBorder pos={pos} />
+                                          <PlaceholderBorder pos={pos} posWidth={posWidth} posHeight={posHeight}/>
                                           <div>
                                           <i
                                               className="fa-regular fa-user signUserIcon"
@@ -1247,7 +1268,7 @@ function RenderPdf({
                                       }}
                                     >
                                       <BorderResize right={-12} top={-11} />
-                                      <PlaceholderBorder pos={pos} />
+                                      <PlaceholderBorder pos={pos} posWidth={posWidth} posHeight={posHeight}/>
                                       <PlaceholderDesign pos={pos} />
                                     </Rnd>
                                   )
