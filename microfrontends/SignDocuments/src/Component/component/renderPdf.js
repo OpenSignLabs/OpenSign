@@ -50,7 +50,8 @@ function RenderPdf({
   setIsResize,
   setZIndex,
   handleLinkUser,
-  setUniqueId
+  setUniqueId,
+  signersdata
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -300,6 +301,20 @@ function RenderPdf({
     }
   };
 
+  const handleUserName = (signerId, Role) => {
+    if (signerId) {
+      const checkSign = signersdata.filter(
+        (sign) => sign.objectId === signerId
+      );
+      if (checkSign.length > 0) {
+        return <p style={{ color: "black" }}> {checkSign[0].Name} </p>;
+      } else {
+        return <p style={{ color: "black" }}> {Role} </p>;
+      }
+    } else {
+      return <p style={{ color: "black" }}> {Role} </p>;
+    }
+  };
   return (
     <>
       {isMobile && scale ? (
@@ -411,9 +426,10 @@ function RenderPdf({
                                     }}
                                   >
                                     {pos.isStamp ? "stamp" : "signature"}
-                                    {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
-                                              {data.Role}
-                                            </p>)}
+                                    {handleUserName(
+                                      data.signerObjId,
+                                      data.Role
+                                    )}
                                   </div>
                                 )}
                               </Rnd>
@@ -581,9 +597,10 @@ function RenderPdf({
                                             {pos.isStamp
                                               ? "stamp"
                                               : "signature"}
-                                            {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
-                                              {data.Role}
-                                            </p>)}
+                                            {handleUserName(
+                                              data.signerObjId,
+                                              data.Role
+                                            )}
                                           </div>
                                         </div>
                                       </Rnd>
@@ -707,9 +724,10 @@ function RenderPdf({
                                           }}
                                         >
                                           {pos.isStamp ? "stamp" : "signature"}
-                                          {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
-                                              {data.Role}
-                                            </p>)}
+                                          {handleUserName(
+                                            data.signerObjId,
+                                            data.Role
+                                          )}
                                         </div>
                                       )}
                                     </div>
@@ -884,9 +902,10 @@ function RenderPdf({
                                         }}
                                       >
                                         {pos.isStamp ? "stamp" : "signature"}
-                                        {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
-                                              {data.Role}
-                                        </p>)}
+                                        {handleUserName(
+                                          data.signerObjId,
+                                          data.Role
+                                        )}
                                       </div>
                                     )}
                                   </div>
@@ -1019,18 +1038,16 @@ function RenderPdf({
                                               overflow: "hidden"
                                             }}
                                           >
-                                             <i
-                                            
+                                            <i
                                               className="fa-regular fa-user signCopy"
                                               onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleLinkUser(data.Id)
-                                                setUniqueId(data.Id)
+                                                handleLinkUser(data.Id);
+                                                setUniqueId(data.Id);
                                               }}
                                               style={{
                                                 color: "#188ae2",
                                                 right: 45
-
                                               }}
                                             ></i>
                                             <i
@@ -1051,8 +1068,8 @@ function RenderPdf({
                                                 handleDeleteSign(
                                                   pos.key,
                                                   data.Id
-                                                  );
-                                                  // data.signerObjId
+                                                );
+                                                // data.signerObjId
                                               }}
                                               style={{
                                                 color: "#188ae2"
@@ -1069,9 +1086,10 @@ function RenderPdf({
                                               {pos.isStamp
                                                 ? "stamp"
                                                 : "signature"}
-                                            {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
-                                              {data.Role}
-                                            </p>)}
+                                              {handleUserName(
+                                                data.signerObjId,
+                                                data.Role
+                                              )}
                                             </div>
                                           </div>
                                         </Rnd>
