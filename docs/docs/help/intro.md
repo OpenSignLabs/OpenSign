@@ -8,6 +8,8 @@ Let's discover **OpenSign** in detail. This section will walk you through each a
 
 ## Getting Started
 
-Get started by deploying a new instance of **OpenSign**.
+**try OpenSign on cloud** at **[OpenSignLabs](https://app.opensignlabs.com)**.
 
-Or **try OpenSign on cloud** at **[OpenSignLabs](https://app.opensignlabs.com)**.
+Or 
+
+Get started by deploying a new instance of **OpenSign**.

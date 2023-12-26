@@ -1,8 +1,9 @@
 ---
 sidebar_position: 1
+title: Sign yourself
 ---
 
-# Sign yourself
+# OpenSign™ Sign yourself interface
 
 This lets you sign documents that dont need to be sent to anybody.
 
