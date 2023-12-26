@@ -3,7 +3,6 @@ import RenderAllPdfPage from "./component/renderAllPdfPage";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../css/./signature.css";
-import Modal from "react-bootstrap/Modal";
 import sign from "../assests/sign3.png";
 import stamp from "../assests/stamp2.png";
 import { themeColor } from "../utils/ThemeColor/backColor";
@@ -32,6 +31,8 @@ import LinkUserModal from "./component/LinkUserModal";
 import EditTemplate from "./component/EditTemplate";
 import ModalUi from "../premitives/ModalUi";
 import AddRoleModal from "./component/AddRoleModal";
+import PlaceholderCopy from "./component/PlaceholderCopy";
+
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -155,6 +156,8 @@ const TemplatePlaceholder = () => {
   const [isAddUser, setIsAddUser] = useState({});
   const [isCreateDoc, setIsCreateDoc] = useState(false);
   const [isEditTemplate, setIsEditTemplate] = useState(false);
+  const [isPageCopy, setIsPageCopy] = useState(false);
+  const [signKey, setSignKey] = useState();
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -1010,7 +1013,8 @@ const TemplatePlaceholder = () => {
               setAllPages={setAllPages}
               setPageNumber={setPageNumber}
               setSignBtnPosition={setSignBtnPosition}
-            />
+              pageNumber={pageNumber}
+           />
 
             {/* pdf render view */}
             <div
@@ -1078,6 +1082,16 @@ const TemplatePlaceholder = () => {
                   )}
                 </div>
               </ModalUi>
+              <PlaceholderCopy
+                isPageCopy={isPageCopy}
+                setIsPageCopy={setIsPageCopy}
+                xyPostion={signerPos}
+                setXyPostion={setSignerPos}
+                allPages={allPages}
+                pageNumber={pageNumber}
+                signKey={signKey}
+                signerObjId={signerObjId}
+              />
               {/* pdf header which contain funish back button */}
               <Header
                 completeBtnTitle={"Save"}
@@ -1120,6 +1134,9 @@ const TemplatePlaceholder = () => {
                     handleLinkUser={handleLinkUser}
                     setUniqueId={setUniqueId}
                     signersdata={signersdata}
+                    setIsPageCopy={setIsPageCopy}
+                    setSignKey={setSignKey}
+                    setSignerObjId={setSignerObjId}
                   />
                 )}
               </div>

@@ -10,6 +10,7 @@ import {
   handleSignYourselfImageResize
 } from "../../utils/Utils";
 import EmailToast from "./emailToast";
+import PlaceholderBorder from "./placeholderBorder";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -51,7 +52,9 @@ function RenderPdf({
   setZIndex,
   handleLinkUser,
   setUniqueId,
-  signersdata
+  signersdata,
+  setIsPageCopy,
+  setSignerObjId
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -61,62 +64,115 @@ function RenderPdf({
 
   // handle signature block width and height according to screen
   const posWidth = (pos) => {
+    const defaultWidth = 150;
+    const posWidth = pos.Width ? pos.Width : defaultWidth;
     let width;
     if (isMobile) {
       if (!pos.isMobile) {
         if (pos.IsResize) {
-          width = pos.Width ? pos.Width : 150;
+          width = posWidth ? posWidth : defaultWidth;
           return width;
         } else {
-          width = (pos.Width || 150) / scale;
+          width = (posWidth || defaultWidth) / scale;
           return width;
         }
       } else {
-        width = pos.Width ? pos.Width : 150;
+        width = posWidth ? posWidth : defaultWidth;
         return width;
       }
     } else {
       if (pos.isMobile) {
         if (pos.IsResize) {
-          width = pos.Width ? pos.Width : 150;
+          width = posWidth ? posWidth : defaultWidth;
           return width;
         } else {
-          width = (pos.Width || 150) * pos.scale;
+          width = (posWidth || defaultWidth) * pos.scale;
           return width;
         }
       } else {
-        width = pos.Width ? pos.Width : 150;
+        width = posWidth ? posWidth : defaultWidth;
         return width;
       }
     }
   };
   const posHeight = (pos) => {
     let height;
+    const posHeight = pos.Height;
+    const defaultHeight = 60;
     if (isMobile) {
       if (!pos.isMobile) {
         if (pos.IsResize) {
-          height = pos.Height ? pos.Height : 60;
+          height = posHeight ? posHeight : defaultHeight;
           return height;
         } else {
-          height = (pos.Height || 60) / scale;
+          height = (posHeight || defaultHeight) / scale;
           return height;
         }
       } else {
-        height = pos.Height ? pos.Height : 60;
+        height = posHeight ? posHeight : defaultHeight;
         return height;
       }
     } else {
       if (pos.isMobile) {
         if (pos.IsResize) {
-          height = pos.Height ? pos.Height : 60;
+          height = posHeight ? posHeight : defaultHeight;
           return height;
         } else {
-          height = (pos.Height || 60) * pos.scale;
+          height = (posHeight || defaultHeight) * pos.scale;
           return height;
         }
       } else {
-        height = pos.Height ? pos.Height : 60;
+        height = posHeight ? posHeight : defaultHeight;
         return height;
+      }
+    }
+  };
+
+  const xPos = (pos) => {
+    const resizePos = pos.xPosition;
+    //checking both condition mobile and desktop view
+    if (isMobile) {
+      //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+      if (!pos.isMobile) {
+        return resizePos / scale;
+      }
+      //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
+      else {
+        return resizePos * (pos.scale / scale);
+      }
+    } else {
+      //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+
+      if (pos.isMobile) {
+        return pos.scale && resizePos * pos.scale;
+      }
+      //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
+      else {
+        return resizePos;
+      }
+    }
+  };
+  const yPos = (pos) => {
+    const resizePos = pos.yPosition;
+    //checking both condition mobile and desktop view
+    if (isMobile) {
+      //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+      if (!pos.isMobile) {
+        return resizePos / scale;
+      }
+      //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
+      else {
+        return resizePos * (pos.scale / scale);
+      }
+    } else {
+      //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+
+      if (pos.isMobile) {
+        return pos.scale && resizePos * pos.scale;
+      }
+      //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
+      else {
+        return resizePos;
       }
     }
   };
@@ -128,52 +184,7 @@ function RenderPdf({
     if (data.signerObjId === signerObjectId) {
       setCurrentSigner(true);
     }
-    const xPos = (pos) => {
-      //checking both condition mobile and desktop view
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (!pos.isMobile) {
-          return pos.xPosition / scale;
-        }
-        //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
-        else {
-          return pos.xPosition * (pos.scale / scale);
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
-        if (pos.isMobile) {
-          return pos.scale && pos.xPosition * pos.scale;
-        }
-        //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
-        else {
-          return pos.xPosition;
-        }
-      }
-    };
-    const yPos = (pos) => {
-      //checking both condition mobile and desktop view
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (!pos.isMobile) {
-          return pos.yPosition / scale;
-        }
-        //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
-        else {
-          return pos.yPosition * (pos.scale / scale);
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-
-        if (pos.isMobile) {
-          return pos.scale && pos.yPosition * pos.scale;
-        }
-        //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
-        else {
-          return pos.yPosition;
-        }
-      }
-    };
     return (
       checkSign.length === 0 &&
       data.placeHolder.map((placeData, key) => {
@@ -203,11 +214,13 @@ function RenderPdf({
                             data.signerObjId === signerObjectId
                               ? "pointer"
                               : "not-allowed",
-                          borderColor: themeColor(),
                           background: data.blockColor,
+                          borderColor: themeColor(),
+                          borderStyle: "dashed",
+                          borderWidth: "0.1px",
                           zIndex: "1"
                         }}
-                        className="placeholderBlock"
+                        className="signYourselfBlock"
                         size={{
                           width: posWidth(pos),
                           height: posHeight(pos)
@@ -291,16 +304,63 @@ function RenderPdf({
     );
   };
 
-  //handled x-position in mobile view saved from big screen or small screen
-  const xPos = (pos) => {
-    //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-    if (!pos.isMobile) {
-      return pos.xPosition / scale;
-    } else {
-      return pos.xPosition * (pos.scale / scale);
-    }
-  };
+  const PlaceholderDesign = ({ pos, data }) => {
+    return (
+      <div>
+        <i
+          className="fa-regular fa-copy signCopy"
+          onClick={(e) => {
+            console.log("hello console");
+            e.stopPropagation();
+            setIsPageCopy(true);
+            setSignKey(pos.key);
+          }}
+          style={{
+            color: "#188ae2"
+          }}
+        ></i>
+        <i
+          className="fa-regular fa-circle-xmark signCloseBtn"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (data) {
+              handleDeleteSign(pos.key, data.signerObjId);
+            } else {
+              handleDeleteSign(pos.key);
+              setIsStamp(false);
+            }
+          }}
+          style={{
+            color: "#188ae2"
+          }}
+        ></i>
 
+        {pos.SignUrl ? (
+          <div style={{ pointerEvents: "none" }}>
+            <img
+              alt="signimg"
+              src={pos.SignUrl}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain"
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            style={{
+              fontSize: "12px",
+              color: "black",
+              justifyContent: "center"
+            }}
+          >
+            {pos.isStamp ? "stamp" : "signature"}
+          </div>
+        )}
+      </div>
+    );
+  };
   const handleUserName = (signerId, Role) => {
     if (signerId) {
       const checkSign = signersdata.filter(
@@ -357,9 +417,14 @@ function RenderPdf({
                                 style={{
                                   cursor: "all-scroll",
                                   borderColor: themeColor(),
-                                  zIndex: "1"
+                                  borderStyle: "dashed",
+                                  borderWidth: "0.1px",
+                                  zIndex: "1",
+                                  background: data.blockColor
+                                    ? data.blockColor
+                                    : "#daebe0"
                                 }}
-                                className="placeholderBlock"
+                                className="signYourselfBlock"
                                 onResize={(
                                   e,
                                   direction,
@@ -390,9 +455,7 @@ function RenderPdf({
                                 //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
                                 default={{
                                   x: xPos(pos),
-                                  y: !pos.isMobile
-                                    ? pos.yPosition / scale
-                                    : pos.yPosition * (pos.scale / scale)
+                                  y: yPos(pos)
                                 }}
                                 onClick={() => {
                                   setIsSignPad(true);
@@ -469,23 +532,18 @@ function RenderPdf({
                                           topLeft: false
                                         }}
                                         key={pos.key}
-                                        bounds="parent"
                                         style={{
                                           cursor: "all-scroll",
-                                          borderColor: themeColor(),
                                           background: data.blockColor,
+                                          borderColor: data.bac,
                                           zIndex: pos.zIndex
                                         }}
-                                        className="placeholderBlock"
+                                        className="signYourselfBlock"
                                         onDrag={() => handleTabDrag(pos.key)}
                                         size={{
-                                          width: posWidth(pos),
-                                          height: posHeight(pos)
+                                          width: pos.Width ? pos.Width : 150,
+                                          height: pos.Height ? pos.Height : 60
                                         }}
-                                        // size={{
-                                        //   width: pos.Width ? pos.Width : 150,
-                                        //   height: pos.Height ? pos.Height : 60
-                                        // }}
                                         lockAspectRatio={
                                           pos.Width
                                             ? pos.Width / pos.Height
@@ -502,16 +560,9 @@ function RenderPdf({
                                           // data.signerObjId,
                                         }
                                         default={{
-                                          x: xPos(pos),
-                                          y: !pos.isMobile
-                                            ? pos.yPosition / scale
-                                            : pos.yPosition *
-                                              (pos.scale / scale)
+                                          x: pos.xPosition,
+                                          y: pos.yPosition
                                         }}
-                                        // default={{
-                                        //   x: pos.xPosition,
-                                        //   y: pos.yPosition
-                                        // }}
                                         onResizeStart={() => {
                                           setIsResize(true);
                                         }}
@@ -525,7 +576,6 @@ function RenderPdf({
                                           delta,
                                           position
                                         ) => {
-                                          e.stopPropagation();
                                           handleImageResize(
                                             ref,
                                             pos.key,
@@ -540,6 +590,8 @@ function RenderPdf({
                                           );
                                         }}
                                       >
+                                        <BorderResize right={-12} top={-11} />
+                                        <PlaceholderBorder pos={pos} />
                                         <div
                                           onTouchEnd={() => {
                                             const dataNewPlace = addZIndex(
@@ -557,20 +609,26 @@ function RenderPdf({
                                               return newState;
                                             });
                                           }}
-                                          style={{
-                                            cursor: "all-scroll",
-                                            borderColor: themeColor(),
-                                            background: data.blockColor,
-                                            zIndex: pos.zIndex,
-                                            height: pos.Height
-                                              ? pos.Height
-                                              : 60,
-                                            width: pos.Width ? pos.Width : 150
-                                          }}
                                         >
-                                          <BorderResize />
-
-                                          <div
+                                          <i
+                                            className="fa-regular fa-copy signCopy"
+                                            onTouchEnd={(e) => {
+                                              e.stopPropagation();
+                                              setIsPageCopy(true);
+                                              setSignKey(pos.key);
+                                              setSignerObjId(data.signerObjId);
+                                            }}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setIsPageCopy(true);
+                                              setSignKey(pos.key);
+                                            }}
+                                            style={{
+                                              color: "#188ae2"
+                                            }}
+                                          ></i>
+                                          <i
+                                            className="fa-regular fa-circle-xmark signCloseBtn"
                                             onTouchStart={(e) => {
                                               e.stopPropagation();
                                               handleDeleteSign(
@@ -580,12 +638,10 @@ function RenderPdf({
                                               // data.signerObjId
                                             }}
                                             style={{
-                                              background: themeColor()
+                                              color: "#188ae2"
                                             }}
-                                            className="placeholdCloseBtn"
-                                          >
-                                            x
-                                          </div>
+                                          ></i>
+
                                           <div
                                             style={{
                                               fontSize: "12px",
@@ -634,18 +690,19 @@ function RenderPdf({
                                     lockAspectRatio={
                                       pos.Width ? pos.Width / pos.Height : 2.5
                                     }
-                                    className="placeholderBlock"
                                     bounds="parent"
                                     ref={nodeRef}
                                     key={pos.key}
+                                    className="signYourselfBlock"
                                     style={{
+                                      border: "1px solid red",
                                       cursor: "all-scroll",
-                                      borderColor: themeColor(),
-                                      zIndex: "1"
+                                      zIndex: "1",
+                                      background: "#daebe0"
                                     }}
                                     size={{
-                                      width: pos.Width ? pos.Width : 151,
-                                      height: pos.Height ? pos.Height : 61
+                                      width: pos.Width ? pos.Width : 150,
+                                      height: pos.Height ? pos.Height : 60
                                     }}
                                     default={{
                                       x: pos.xPosition,
@@ -672,11 +729,24 @@ function RenderPdf({
                                         containerWH
                                       );
                                     }}
+                                    onTouchEnd={(e) => {
+                                      console.log("go here");
+                                      if (!isDragging && isMobile) {
+                                        setTimeout(() => {
+                                          e.stopPropagation();
+                                          setIsSignPad(true);
+                                          setSignKey(pos.key);
+                                          setIsStamp(pos.isStamp);
+                                        }, 500);
+                                      }
+                                    }}
                                   >
-                                    {" "}
+                                    <BorderResize right={-12} top={-11} />
+                                    <PlaceholderBorder pos={pos} />
                                     <div
                                       onTouchEnd={(e) => {
-                                        if (!isDragging) {
+                                        console.log("go here");
+                                        if (!isDragging && isMobile) {
                                           setTimeout(() => {
                                             e.stopPropagation();
                                             setIsSignPad(true);
@@ -685,41 +755,54 @@ function RenderPdf({
                                           }, 500);
                                         }
                                       }}
-                                      style={{
-                                        height: "100%"
-                                      }}
                                     >
-                                      <BorderResize />
-                                      <div
-                                        ref={nodeRef}
-                                        onTouchStart={(e) => {
+                                      <i
+                                        className="fa-regular fa-copy signCopy"
+                                        onTouchEnd={(e) => {
                                           e.stopPropagation();
-                                          handleDeleteSign(pos.key);
-                                          setIsStamp(false);
+                                          setIsPageCopy(true);
+                                          setSignKey(pos.key);
                                         }}
                                         style={{
-                                          background: themeColor()
+                                          color: "#188ae2"
                                         }}
-                                        className="placeholdCloseBtn"
-                                      >
-                                        x
-                                      </div>
+                                      ></i>
+                                      <i
+                                        className="fa-regular fa-circle-xmark signCloseBtn"
+                                        onTouchEnd={(e) => {
+                                          e.stopPropagation();
+                                          if (data) {
+                                            handleDeleteSign(
+                                              pos.key,
+                                              data.signerObjId
+                                            );
+                                          } else {
+                                            handleDeleteSign(pos.key);
+                                            setIsStamp(false);
+                                          }
+                                        }}
+                                        style={{
+                                          color: "#188ae2"
+                                        }}
+                                      ></i>
+
                                       {pos.SignUrl ? (
-                                        <img
-                                          alt="signimg"
-                                          src={pos.SignUrl}
-                                          style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "contain"
-                                          }}
-                                        />
+                                        <div style={{ pointerEvents: "none" }}>
+                                          <img
+                                            alt="signimg"
+                                            src={pos.SignUrl}
+                                            style={{
+                                              width: "100%",
+                                              height: "100%",
+                                              objectFit: "contain"
+                                            }}
+                                          />
+                                        </div>
                                       ) : (
                                         <div
-                                          cancel=".dragElm"
                                           style={{
                                             fontSize: "12px",
-                                            color: themeColor(),
+                                            color: "black",
                                             justifyContent: "center"
                                           }}
                                         >
@@ -849,9 +932,14 @@ function RenderPdf({
                                   style={{
                                     cursor: "all-scroll",
                                     borderColor: themeColor(),
-                                    zIndex: "1"
+                                    borderStyle: "dashed",
+                                    borderWidth: "0.1px",
+                                    zIndex: "1",
+                                    background: data.blockColor
+                                      ? data.blockColor
+                                      : "#daebe0"
                                   }}
-                                  className="placeholderBlock"
+                                  className="signYourselfBlock"
                                   size={{
                                     width: posWidth(pos),
                                     height: posHeight(pos)
@@ -859,15 +947,9 @@ function RenderPdf({
                                   lockAspectRatio={
                                     pos.Width ? pos.Width / pos.Height : 2.5
                                   }
-                                  //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
-
                                   default={{
-                                    x: pos.isMobile
-                                      ? pos.scale && pos.xPosition * pos.scale
-                                      : pos.xPosition,
-                                    y: pos.isMobile
-                                      ? pos.scale && pos.yPosition * pos.scale
-                                      : pos.yPosition
+                                    x: xPos(pos),
+                                    y: yPos(pos)
                                   }}
                                   onClick={() => {
                                     setIsSignPad(true);
@@ -965,13 +1047,11 @@ function RenderPdf({
                                           bounds="parent"
                                           style={{
                                             cursor: "all-scroll",
-                                            // background: data.blockColor,
-                                            borderColor: themeColor(),
+                                            background: data.blockColor,
+
                                             zIndex: pos.zIndex
-                                              ? pos.zIndex
-                                              : "1"
                                           }}
-                                          className="signWidgetblock"
+                                          className="signYourselfBlock"
                                           onDrag={() => handleTabDrag(pos.key)}
                                           size={{
                                             width: pos.Width ? pos.Width : 150,
@@ -984,13 +1064,13 @@ function RenderPdf({
                                           }
                                           onDragStop={
                                             (event, dragElement) =>
-                                              handleStop(
-                                                event,
-                                                dragElement,
-                                                data.Id,
-                                                pos.key
-                                              )
-                                            // data.signerObjId,
+                                            handleStop(
+                                              event,
+                                              dragElement,
+                                              data.Id,
+                                              pos.key
+                                            )
+                                          // data.signerObjId,
                                           }
                                           default={{
                                             x: pos.xPosition,
@@ -1023,40 +1103,30 @@ function RenderPdf({
                                             );
                                           }}
                                         >
-                                          <BorderResize />
-                                          <div
-                                            style={{
-                                              borderColor: themeColor(),
-                                              background: data.blockColor,
-                                              width: pos.Width
-                                                ? pos.Width - 20
-                                                : 130,
-                                              height: pos.Height
-                                                ? pos.Height - 8
-                                                : 52,
-                                              border: "1px solid red",
-                                              overflow: "hidden"
-                                            }}
-                                          >
-                                            <i
-                                              className="fa-regular fa-user signCopy"
+                                          <BorderResize right={-12} top={-11} />
+                                          <PlaceholderBorder pos={pos} />
+                                          <div>
+                                          <i
+                                              className="fa-regular fa-user signUserIcon"
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleLinkUser(data.Id);
                                                 setUniqueId(data.Id);
                                               }}
                                               style={{
-                                                color: "#188ae2",
-                                                right: 45
+                                                color: "#188ae2"                                
                                               }}
                                             ></i>
                                             <i
                                               className="fa-regular fa-copy signCopy"
-                                              // onClick={(e) => {
-                                              //   e.stopPropagation();
-                                              //   setIsPageCopy(true);
-                                              //   setSignKey(pos.key);
-                                              // }}
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                setIsPageCopy(true);
+                                                setSignKey(pos.key);
+                                                setSignerObjId(
+                                                  data.signerObjId
+                                                );
+                                              }}
                                               style={{
                                                 color: "#188ae2"
                                               }}
@@ -1079,7 +1149,7 @@ function RenderPdf({
                                             <div
                                               style={{
                                                 fontSize: "12px",
-                                                color: themeColor(),
+                                                color: "black",
                                                 justifyContent: "center"
                                               }}
                                             >
@@ -1125,12 +1195,13 @@ function RenderPdf({
                                         topLeft: false
                                       }}
                                       bounds="parent"
+                                      className="signYourselfBlock"
                                       style={{
-                                        borderColor: themeColor(),
+                                        border: "1px solid red",
                                         cursor: "all-scroll",
-                                        zIndex: "1"
+                                        zIndex: "1",
+                                        background: "#daebe0"
                                       }}
-                                      className="placeholderBlock"
                                       onDrag={() => handleTabDrag(pos.key)}
                                       size={{
                                         width: pos.Width ? pos.Width : 150,
@@ -1168,46 +1239,9 @@ function RenderPdf({
                                         }
                                       }}
                                     >
-                                      <BorderResize />
-
-                                      <span
-                                        ref={nodeRef}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleDeleteSign(pos.key);
-                                          setIsStamp(false);
-                                        }}
-                                        style={{
-                                          background: themeColor()
-                                        }}
-                                        className="placeholdCloseBtn"
-                                      >
-                                        x
-                                      </span>
-
-                                      {pos.SignUrl ? (
-                                        <div style={{ pointerEvents: "none" }}>
-                                          <img
-                                            alt="signimg"
-                                            src={pos.SignUrl}
-                                            style={{
-                                              width: "100%",
-                                              height: "100%",
-                                              objectFit: "contain"
-                                            }}
-                                          />
-                                        </div>
-                                      ) : (
-                                        <div
-                                          style={{
-                                            fontSize: "12px",
-                                            color: themeColor(),
-                                            justifyContent: "center"
-                                          }}
-                                        >
-                                          {pos.isStamp ? "stamp" : "signature"}
-                                        </div>
-                                      )}
+                                      <BorderResize right={-12} top={-11} />
+                                      <PlaceholderBorder pos={pos} />
+                                      <PlaceholderDesign pos={pos} />
                                     </Rnd>
                                   )
                                 );
