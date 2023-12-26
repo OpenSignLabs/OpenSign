@@ -808,7 +808,7 @@ function PdfRequestFiles() {
                       }}
                       className="signedStyle"
                     >
-                      Signed By
+                      Signed by
                     </div>
                     <div style={{ marginTop: "2px" }}>
                       {signedSigners.map((obj, ind) => {
@@ -817,8 +817,8 @@ function PdfRequestFiles() {
                             style={{
                               display: "flex",
                               flexDirection: "row",
-                              padding: "10px",
-
+                              alignItems: "center",
+                              padding: "10px 0",
                               background: checkSignerBackColor(obj)
                             }}
                             key={ind}
@@ -833,17 +833,18 @@ function PdfRequestFiles() {
                                 borderRadius: 30 / 2,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginRight: "20px"
+                                margin: "0 10px 0 5px"
                               }}
                             >
                               <span
                                 style={{
-                                  fontSize: "10px",
+                                  fontSize: "12px",
                                   textAlign: "center",
-                                  fontWeight: "bold"
+                                  fontWeight: "bold",
+                                  color: "black",
+                                  textTransform: "uppercase"
                                 }}
                               >
-                                {" "}
                                 {getFirstLetter(obj.Name)}
                               </span>
                             </div>
@@ -874,7 +875,7 @@ function PdfRequestFiles() {
                         marginTop: signedSigners.length > 0 && "20px"
                       }}
                     >
-                      Yet To Sign
+                      Yet to sign
                     </div>
                     <div style={{ marginTop: "5px" }}>
                       {unsignedSigners.map((obj, ind) => {
@@ -883,7 +884,8 @@ function PdfRequestFiles() {
                             style={{
                               display: "flex",
                               flexDirection: "row",
-                              padding: "10px",
+                              alignItems: "center",
+                              padding:"10px 0",
                               background: checkSignerBackColor(obj)
                             }}
                             key={ind}
@@ -892,23 +894,24 @@ function PdfRequestFiles() {
                               className="signerStyle"
                               style={{
                                 background: "#abd1d0",
-                                width: 20,
-                                height: 20,
+                                width: 30,
+                                height: 30,
                                 display: "flex",
                                 borderRadius: 30 / 2,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginRight: "20px"
+                                margin: "0 10px 0 5px"
                               }}
                             >
                               <span
                                 style={{
-                                  fontSize: "8px",
+                                  fontSize: "12px",
                                   textAlign: "center",
-                                  fontWeight: "bold"
+                                  fontWeight: "bold",
+                                  color: "black",
+                                  textTransform: "uppercase"
                                 }}
                               >
-                                {" "}
                                 {getFirstLetter(obj.Name)}
                               </span>
                             </div>

@@ -1122,7 +1122,8 @@ function PlaceHolderSign() {
                 allPages={allPages}
                 pageNumber={pageNumber}
                 signKey={signKey}
-                signerObjId={signerObjId}
+                // signerObjId={signerObjId}
+                Id={uniqueId}
               />
               {/* pdf header which contain funish back button */}
               <Header
@@ -1162,6 +1163,7 @@ function PlaceHolderSign() {
                     setIsResize={setIsResize}
                     setZIndex={setZIndex}
                     setIsPageCopy={setIsPageCopy}
+                    signersdata={signersdata}
                     setSignKey={setSignKey}
                     setSignerObjId={setSignerObjId}
                     handleLinkUser={handleLinkUser}

@@ -66,21 +66,30 @@ function PlaceholderCopy(props) {
     let newPlaceholderPosition = [];
     let newPageNumber = 1;
     const signerPosition = props.xyPostion;
-
+    const signerId = props.signerObjId ? props.signerObjId : props.Id
     //handle placeholder array and copy for multiple signers placeholder at requested location
-    if (props.signerObjId) {
+    if (signerId) {
       //get current signers data
-      const filterSignerPosition = signerPosition.filter(
-        (data) => data.signerObjId === props.signerObjId
-      );
+      let filterSignerPosition;
+      if(props?.signerObjId){
+         filterSignerPosition = signerPosition.filter(
+          (data) => data.signerObjId === signerId
+        );
+      }else{
+         filterSignerPosition = signerPosition.filter((item)=> item.Id === signerId)
+      }
+      console.log("filterSignerPosition ", filterSignerPosition)
       //get current pagenumber's all placeholder position data
       const placeholderPosition = filterSignerPosition[0].placeHolder.filter(
         (data) => data.pageNumber === props.pageNumber
       );
+      console.log("placeholderPosition ", placeholderPosition)
+      console.log("props.signKey ", props.signKey)
       //get current placeholder position data which user want to copy
       const currentPlaceholder = placeholderPosition[0].pos.filter(
         (position) => position.key === props.signKey
       );
+      console.log("currentPlaceholder ", currentPlaceholder)
       const { key, ...rest } = currentPlaceholder[0];
       for (let i = 0; i < props.allPages; i++) {
         const newId = randomKey();
@@ -104,18 +113,43 @@ function PlaceholderCopy(props) {
         }
         newPageNumber++;
       }
-
-      const updatedSignerPlaceholder = signerPosition.map(
-        (signersData, ind) => {
-          if (signersData.signerObjId === props.signerObjId) {
-            return {
-              ...signersData,
-              placeHolder: newPlaceholderPosition
-            };
+      let updatedSignerPlaceholder;
+      if(props?.signerObjId){
+        updatedSignerPlaceholder = signerPosition.map(
+            (signersData, ind) => {
+              if (signersData.signerObjId === props.signerObjId) {
+                return {
+                  ...signersData,
+                  placeHolder: newPlaceholderPosition
+                };
+              }
+              return signersData;
+            }
+          );
+     }else{
+      updatedSignerPlaceholder = signerPosition.map(
+          (signersData, ind) => {
+            if (signersData.Id === props.Id) {
+              return {
+                ...signersData,
+                placeHolder: newPlaceholderPosition
+              };
+            }
+            return signersData;
           }
-          return signersData;
-        }
-      );
+        );
+     }
+      // const updatedSignerPlaceholder = signerPosition.map(
+      //   (signersData, ind) => {
+      //     if (signersData.signerObjId === props.signerObjId) {
+      //       return {
+      //         ...signersData,
+      //         placeHolder: newPlaceholderPosition
+      //       };
+      //     }
+      //     return signersData;
+      //   }
+      // );
 
       const signersData = signerPosition;
       signersData.splice(0, signerPosition.length, ...updatedSignerPlaceholder);
@@ -174,7 +208,7 @@ function PlaceholderCopy(props) {
   return (
     <Modal show={props.isPageCopy}>
       <ModalHeader style={{ background: themeColor() }}>
-        <span style={{ color: "white" }}>Place All pages</span>
+        <span style={{ color: "white" }}>Copy to all pages</span>
       </ModalHeader>
 
       <Modal.Body>
