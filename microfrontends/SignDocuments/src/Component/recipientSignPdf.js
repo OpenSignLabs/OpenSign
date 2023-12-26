@@ -794,8 +794,9 @@ function EmbedPdfImage() {
             allPages={allPages}
             setAllPages={setAllPages}
             setPageNumber={setPageNumber}
+            pageNumber={pageNumber}
           />
-          {/* <div style={{width:"160px",border:"1px solid red"}}>kebjke</div> */}
+
           {/* pdf render view */}
           <div
             style={{

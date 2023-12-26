@@ -4,6 +4,9 @@ import { rgb } from "pdf-lib";
 
 const isMobile = window.innerWidth < 767;
 
+export const resizeBorderExtraWidth = () => {
+  return 20;
+};
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
   const blob = await data.blob();
@@ -77,91 +80,43 @@ export function getHostUrl() {
   }
 }
 
-export const calculateImgAspectRatio = (imgWH) => {
+export const calculateImgAspectRatio = (imgWH, pos) => {
   let newWidth, newHeight;
+  const placeholderHeight = pos && pos.Width ? pos.Height : 60;
   const aspectRatio = imgWH.width / imgWH.height;
-  if (aspectRatio === "2.533333333333333") {
-    newWidth = 150;
-    newHeight = 60;
-  } else if (aspectRatio === 1) {
-    newWidth = aspectRatio * 100;
-    newHeight = aspectRatio * 100;
-  } else if (aspectRatio < 1) {
-    newWidth = aspectRatio * 70;
-    newHeight = 70;
-  } else if (aspectRatio < 2) {
-    newWidth = aspectRatio * 100;
-    newHeight = 100;
-  } else if (aspectRatio > 2 && aspectRatio < 4) {
-    newWidth = aspectRatio * 70;
-    newHeight = 70;
-  } else if (aspectRatio > 4) {
-    newWidth = aspectRatio * 40;
-    newHeight = 40;
-  } else if (aspectRatio > 5) {
-    newWidth = aspectRatio * 10;
-    newHeight = 10;
-  }
+  newWidth = aspectRatio * placeholderHeight;
+  newHeight = placeholderHeight;
+
   return { newHeight, newWidth };
 };
 
 //function for upload stamp or image
 export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
-  const updateFilter = xyPostion[index].pos.filter(
-    (data, ind) =>
-      data.key === signKey && data.Width && data.Height && data.SignUrl
-  );
-  let getIMGWH = calculateImgAspectRatio(imgWH);
-  const getXYdata = xyPostion[index].pos;
-  if (updateFilter.length > 0) {
-    const addSign = getXYdata.map((url, ind) => {
-      if (url.key === signKey) {
-        return {
-          ...url,
-          Width: getIMGWH.newWidth,
-          Height: getIMGWH.newHeight,
-          SignUrl: image.src,
-          ImageType: image.imgType
-        };
-      }
-      return url;
-    });
+  let getIMGWH;
+  //get current page position
+  const getXYData = xyPostion[index].pos;
+  const updateXYData = getXYData.map((url) => {
+    if (url.key === signKey) {
+      getIMGWH = calculateImgAspectRatio(imgWH, url);
 
-    const newUpdateUrl = xyPostion.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: addSign };
-      }
-      return obj;
-    });
-    return newUpdateUrl;
-  } else {
-    const getXYdata = xyPostion[index].pos;
+      return {
+        ...url,
+        Width: getIMGWH.newWidth,
+        Height: getIMGWH.newHeight,
+        SignUrl: image.src,
+        ImageType: image.imgType
+      };
+    }
+    return url;
+  });
 
-    let getPosData = xyPostion[index].pos.filter(
-      (data) => data.key === signKey
-    );
-
-    const addSign = getXYdata.map((url, ind) => {
-      if (url.key === signKey) {
-        return {
-          ...url,
-          Width: getIMGWH.newWidth,
-          Height: getIMGWH.newHeight,
-          SignUrl: image.src,
-          ImageType: image.imgType
-        };
-      }
-      return url;
-    });
-
-    const newUpdateUrl = xyPostion.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: addSign };
-      }
-      return obj;
-    });
-    return newUpdateUrl;
-  }
+  const updateXYposition = xyPostion.map((obj, ind) => {
+    if (ind === index) {
+      return { ...obj, pos: updateXYData };
+    }
+    return obj;
+  });
+  return updateXYposition;
 }
 
 //function for save button to save signature or image url
@@ -171,52 +126,47 @@ export function onSaveSign(
   signKey,
   signatureImg,
   imgWH,
-  isDefaultSign,
-  isSign
+  isDefaultSign
 ) {
-  let getXYdata = xyPostion[index].pos;
-  let getPosData = xyPostion[index].pos.filter((data) => data.key === signKey);
-
   let getIMGWH;
-  if (isDefaultSign) {
-    getIMGWH = calculateImgAspectRatio(imgWH);
-  }
+  let getXYdata = xyPostion[index].pos;
+  const updateXYData = getXYdata.map((position) => {
+    if (position.key === signKey) {
+      if (isDefaultSign) {
+        getIMGWH = calculateImgAspectRatio(imgWH, position);
+      }
+      const getSignImgWH = calculateImgAspectRatio(
+        { width: 150, height: 60 },
+        position
+      );
+      const posWidth = isDefaultSign
+        ? getIMGWH.newWidth
+        : position.Width
+          ? getSignImgWH.newWidth
+          : 150;
+      const posHeight = isDefaultSign
+        ? getIMGWH.newHeight
+        : position.Height
+          ? getSignImgWH.newHeight
+          : 60;
 
-  const posWidth = isDefaultSign
-    ? getIMGWH.newWidth
-    : isSign && getPosData[0].ImageType
-      ? 150
-      : getPosData[0].Width
-        ? getPosData[0].Width
-        : 150;
-  const posHidth = isDefaultSign
-    ? getIMGWH.newHeight
-    : isSign && getPosData[0].ImageType
-      ? 60
-      : getPosData[0].Height
-        ? getPosData[0].Height
-        : 60;
-
-  const addSign = getXYdata.map((url, ind) => {
-    if (url.key === signKey) {
       return {
-        ...url,
+        ...position,
         Width: posWidth,
-        Height: posHidth,
-        SignUrl: signatureImg,
-        ImageType: "sign"
+        Height: posHeight,
+        SignUrl: signatureImg
       };
     }
-    return url;
+    return position;
   });
 
-  const newUpdateUrl = xyPostion.map((obj, ind) => {
+  const updateXYposition = xyPostion.map((obj, ind) => {
     if (ind === index) {
-      return { ...obj, pos: addSign };
+      return { ...obj, pos: updateXYData };
     }
     return obj;
   });
-  return newUpdateUrl;
+  return updateXYposition;
 }
 
 export const addZIndex = (signerPos, key, setZIndex) => {
@@ -260,14 +210,16 @@ export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
       height: img.height
     };
   }
-  const getIMGWH = calculateImgAspectRatio(imgWH);
+
   let xyDefaultPos = [];
   for (let i = 0; i < xyPostion.length; i++) {
+    let getIMGWH;
     const getXYdata = xyPostion[i].pos;
     const getPageNo = xyPostion[i].pageNumber;
     const getPosData = getXYdata;
 
     const addSign = getPosData.map((url, ind) => {
+      getIMGWH = calculateImgAspectRatio(imgWH, url);
       if (url) {
         return {
           ...url,
@@ -459,78 +411,87 @@ export function modalAlign() {
     modal.style.top = window.innerHeight / 3 + "px";
   }
 }
-export const containerWidth = (pos, scale, signyourself) => {
+
+export const placeholderWidth = (pos, scale, signyourself) => {
   let width;
+  const defaultWidth = 150;
+  const posWidth = pos.Width ? pos.Width : defaultWidth;
+
   if (signyourself) {
     if (isMobile) {
-      return pos.Width * scale;
+      return posWidth * scale;
     } else {
-      return pos.Width;
+      return posWidth;
     }
   } else {
     if (isMobile) {
       if (pos.isMobile) {
-        width = pos.Width ? pos.Width * scale : 150 * scale;
+        width = posWidth ? posWidth * scale : defaultWidth * scale;
         return width;
       } else {
         if (pos.IsResize) {
-          width = pos.Width ? pos.Width * scale : 150 * scale;
+          width = posWidth ? posWidth * scale : defaultWidth * scale;
           return width;
         } else {
-          width = pos.Width ? pos.Width : 150;
+          width = posWidth ? posWidth : defaultWidth;
           return width;
         }
       }
     } else {
       if (pos.isMobile) {
         if (pos.IsResize) {
-          width = pos.Width ? pos.Width : 150;
+          width = posWidth ? posWidth : defaultWidth;
           return width;
         } else {
-          width = pos.Width ? pos.Width * pos.scale : 150 * pos.scale;
+          width = posWidth ? posWidth * pos.scale : defaultWidth * pos.scale;
 
           return width;
         }
       } else {
-        width = pos.Width ? pos.Width : 150;
+        width = posWidth ? posWidth : defaultWidth;
         return width;
       }
     }
   }
 };
-export const containerHeight = (pos, scale, signyourself) => {
+export const placeholderHeight = (pos, scale, signyourself) => {
   let height;
+  const posHeight = pos.Height;
+  const defaultHeight = 60;
   if (signyourself) {
     if (isMobile) {
-      return pos.Height * scale;
+      return posHeight * scale;
     } else {
-      return pos.Height;
+      return posHeight;
     }
   } else {
     if (isMobile) {
       if (pos.isMobile) {
-        height = pos.Height ? pos.Height * scale : 60 * scale;
+        height = posHeight ? posHeight * scale : defaultHeight * scale;
         return height;
       } else {
         if (pos.IsResize) {
-          height = pos.Height ? pos.Height * scale : 60 * scale;
+          height = posHeight ? posHeight * scale : defaultHeight * scale;
           return height;
         } else {
-          height = pos.Height ? pos.Height : 60;
+          height = posHeight ? posHeight : defaultHeight;
+
           return height;
         }
       }
     } else {
       if (pos.isMobile) {
         if (pos.IsResize) {
-          height = pos.Height ? pos.Height : 60;
+          height = posHeight ? posHeight : defaultHeight;
           return height;
         } else {
-          height = pos.Height ? pos.Height * pos.scale : 60 * pos.scale;
+          height = posHeight
+            ? posHeight * pos.scale
+            : defaultHeight * pos.scale;
           return height;
         }
       } else {
-        height = pos.Height ? pos.Height : 60;
+        height = posHeight ? posHeight : defaultHeight;
         return height;
       }
     }
@@ -578,78 +539,80 @@ export const multiSignEmbed = async (
       } else {
         img = await pdfDoc.embedPng(imgData);
       }
-      const imgHeight = imgUrlList[id].Height ? imgUrlList[id].Height : 60;
-      const scaleWidth = containerWidth(imgUrlList[id], scale, signyourself);
-      const scaleHeight = containerHeight(imgUrlList[id], scale, signyourself);
+
+      const scaleWidth = placeholderWidth(imgUrlList[id], scale, signyourself);
+      const scaleHeight = placeholderHeight(
+        imgUrlList[id],
+        scale,
+        signyourself
+      );
 
       const xPos = (pos) => {
+        const resizePos = pos.xPosition;
         if (signyourself) {
           if (isMobile) {
-            return imgUrlList[id].xPosition * scale;
+            return resizePos * scale;
           } else {
-            return imgUrlList[id].xPosition;
+            return resizePos;
           }
         } else {
           //checking both condition mobile and desktop view
           if (isMobile) {
             //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
             if (pos.isMobile) {
-              const x = pos.xPosition * (pos.scale / scale);
+              const x = resizePos * (pos.scale / scale);
               return x * scale;
             } else {
-              const x = pos.xPosition / scale;
+              const x = resizePos / scale;
               return x * scale;
             }
           } else {
             //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
             if (pos.isMobile) {
-              const x = pos.xPosition * pos.scale;
+              const x = resizePos * pos.scale;
               return x;
             } else {
-              return pos.xPosition;
+              return resizePos;
             }
           }
         }
       };
 
       const yPos = (pos) => {
+        const resizePos = imgUrlList[id].yPosition;
         if (signyourself) {
           if (isMobile) {
-            return (
-              page.getHeight() -
-              imgUrlList[id].yPosition * scale -
-              imgHeight * scale
-            );
+            return page.getHeight() - resizePos * scale - scaleHeight;
           } else {
-            return page.getHeight() - imgUrlList[id].yPosition - imgHeight;
+            return page.getHeight() - resizePos - scaleHeight;
           }
         } else {
           //checking both condition mobile and desktop view
-          const y = pos.yPosition / scale;
+          const y = resizePos / scale;
           if (isMobile) {
             //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
             if (pos.isMobile) {
-              const y = pos.yPosition * (pos.scale / scale);
-              return page.getHeight() - y * scale - imgHeight * scale;
+              const y = resizePos * (pos.scale / scale);
+              return page.getHeight() - y * scale - scaleHeight;
             } else {
               if (pos.IsResize) {
-                return page.getHeight() - y * scale - imgHeight * scale;
+                return page.getHeight() - y * scale - scaleHeight;
               } else {
-                return page.getHeight() - y * scale - imgHeight;
+                return page.getHeight() - y * scale - scaleHeight;
               }
             }
           } else {
             //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
             if (pos.isMobile) {
               if (pos.IsResize) {
-                const y = pos.yPosition * pos.scale;
-                return page.getHeight() - y - imgHeight;
+                const y = resizePos * pos.scale;
+                return page.getHeight() - y - scaleHeight;
               } else {
-                const y = pos.yPosition * pos.scale;
-                return page.getHeight() - y - imgHeight * pos.scale;
+                const y = resizePos * pos.scale;
+                return page.getHeight() - y - scaleHeight;
               }
             } else {
-              return page.getHeight() - pos.yPosition - imgHeight;
+              return page.getHeight() - resizePos - scaleHeight;
             }
           }
         }
@@ -871,34 +834,36 @@ export const signPdfFun = async (
     const height = xyPosData.Height ? xyPosData.Height : 60;
 
     const xPos = (pos) => {
+      const resizePos = pos.xPosition;
       //checking both condition mobile and desktop view
       if (isMobile) {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (pos.isMobile) {
-          const x = pos.xPosition * (pos.scale / scale);
+          const x = resizePos * (pos.scale / scale);
           return x * scale;
         } else {
-          const x = pos.xPosition / scale;
+          const x = resizePos / scale;
           return x * scale;
         }
       } else {
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
         if (pos.isMobile) {
-          const x = pos.xPosition * pos.scale;
+          const x = resizePos * pos.scale;
           return x;
         } else {
-          return pos.xPosition;
+          return resizePos;
         }
       }
     };
     const yBottom = (pos) => {
+      const resizePos = pos.yBottom;
       let yPosition;
       //checking both condition mobile and desktop view
 
       if (isMobile) {
         //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
         if (pos.isMobile) {
-          const y = pos.yBottom * (pos.scale / scale);
+          const y = resizePos * (pos.scale / scale);
           yPosition = pos.isDrag
             ? y * scale - height * scale
             : pos.firstYPos
@@ -906,7 +871,7 @@ export const signPdfFun = async (
               : y * scale - height * scale;
           return yPosition;
         } else {
-          const y = pos.yBottom / scale;
+          const y = resizePos / scale;
           if (pos.IsResize) {
             yPosition = pos.isDrag
               ? y * scale - height * scale
@@ -926,7 +891,7 @@ export const signPdfFun = async (
       } else {
         //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
         if (pos.isMobile) {
-          const y = pos.yBottom * pos.scale;
+          const y = resizePos * pos.scale;
           if (pos.IsResize) {
             yPosition = pos.isDrag
               ? y - height
@@ -944,16 +909,15 @@ export const signPdfFun = async (
           }
         } else {
           yPosition = pos.isDrag
-            ? pos.yBottom - height
+            ? resizePos - height
             : pos.firstYPos
-              ? pos.yBottom - height + pos.firstYPos
-              : pos.yBottom - height;
+              ? resizePos - height + pos.firstYPos
+              : resizePos - height;
           return yPosition;
         }
       }
     };
 
-    const bottomY = yBottom(xyPosData);
     singleSign = {
       pdfFile: pdfBase64Url,
       docId: documentId,
@@ -961,9 +925,9 @@ export const signPdfFun = async (
       sign: {
         Base64: base64Url,
         Left: xPos(xyPosData),
-        Bottom: bottomY,
-        Width: containerWidth(xyPosData, scale),
-        Height: containerHeight(xyPosData, scale),
+        Bottom: yBottom(xyPosData),
+        Width: placeholderWidth(xyPosData, scale),
+        Height: placeholderHeight(xyPosData, scale),
         Page: pageNo
       }
     };
