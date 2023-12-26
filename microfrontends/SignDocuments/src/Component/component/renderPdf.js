@@ -310,7 +310,6 @@ function RenderPdf({
         <i
           className="fa-regular fa-copy signCopy"
           onClick={(e) => {
-            console.log("hello console");
             e.stopPropagation();
             setIsPageCopy(true);
             setSignKey(pos.key);
@@ -738,7 +737,6 @@ function RenderPdf({
                                       );
                                     }}
                                     onTouchEnd={(e) => {
-                                      console.log("go here");
                                       if (!isDragging && isMobile) {
                                         setTimeout(() => {
                                           e.stopPropagation();
@@ -753,7 +751,6 @@ function RenderPdf({
                                     <PlaceholderBorder pos={pos} />
                                     <div
                                       onTouchEnd={(e) => {
-                                        console.log("go here");
                                         if (!isDragging && isMobile) {
                                           setTimeout(() => {
                                             e.stopPropagation();
@@ -1131,7 +1128,6 @@ function RenderPdf({
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 setIsPageCopy(true);
-                                                console.log("pos.key) ", pos.key)
                                                 setSignKey(pos.key);
                                                 setUniqueId(data.Id)
                                                 setSignerObjId(

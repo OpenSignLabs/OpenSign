@@ -3,21 +3,20 @@ import "../../css/AddUser.css";
 // import SelectFolder from "../../premitives/SelectFolder";
 
 const EditTemplate = ({ template, onSuccess }) => {
-  const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
+  // const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
   const [formData, setFormData] = useState({
     Name: template?.Name || "",
     Note: template?.Note || "",
     Description: template?.Description || ""
   });
 
-  console.log("template", template);
   const handleStrInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const handleFolder = (data) => {
-    console.log("handleFolder ", data)
-    setFolder(data);
-  };
+  // const handleFolder = (data) => {
+  //   console.log("handleFolder ", data)
+  //   setFolder(data);
+  // };
 
   // Define a function to handle form submission
   const handleSubmit = async (e) => {

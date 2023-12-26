@@ -78,18 +78,14 @@ function PlaceholderCopy(props) {
       }else{
          filterSignerPosition = signerPosition.filter((item)=> item.Id === signerId)
       }
-      console.log("filterSignerPosition ", filterSignerPosition)
       //get current pagenumber's all placeholder position data
       const placeholderPosition = filterSignerPosition[0].placeHolder.filter(
         (data) => data.pageNumber === props.pageNumber
       );
-      console.log("placeholderPosition ", placeholderPosition)
-      console.log("props.signKey ", props.signKey)
       //get current placeholder position data which user want to copy
       const currentPlaceholder = placeholderPosition[0].pos.filter(
         (position) => position.key === props.signKey
       );
-      console.log("currentPlaceholder ", currentPlaceholder)
       const { key, ...rest } = currentPlaceholder[0];
       for (let i = 0; i < props.allPages; i++) {
         const newId = randomKey();
