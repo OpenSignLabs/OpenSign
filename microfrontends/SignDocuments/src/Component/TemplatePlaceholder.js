@@ -1090,7 +1090,8 @@ const TemplatePlaceholder = () => {
                 allPages={allPages}
                 pageNumber={pageNumber}
                 signKey={signKey}
-                signerObjId={signerObjId}
+                // signerObjId={signerObjId}
+                Id={uniqueId}
               />
               {/* pdf header which contain funish back button */}
               <Header
@@ -1141,7 +1142,6 @@ const TemplatePlaceholder = () => {
                 )}
               </div>
             </div>
-
             {/* signature button */}
             {isMobile ? (
               <div>

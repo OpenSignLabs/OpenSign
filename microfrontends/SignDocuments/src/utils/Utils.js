@@ -669,10 +669,13 @@ export const handleImageResize = (
   containerWH,
   showResize
 ) => {
-  const filterSignerPos = signerPos.filter(
-    (data) => data.signerObjId === signerId
-  );
+  // const filterSignerPos = signerPos.filter(
+  //   (data) => data.signerObjId === signerId
+  // );
 
+  const filterSignerPos = signerPos.filter(
+    (data) => data.Id === signerId
+  );
   if (filterSignerPos.length > 0) {
     const getPlaceHolder = filterSignerPos[0].placeHolder;
     const getPageNumer = getPlaceHolder.filter(
@@ -704,13 +707,19 @@ export const handleImageResize = (
           return obj;
         });
 
+        // const newUpdateSigner = signerPos.map((obj, ind) => {
+        //   if (obj.signerObjId === signerId) {
+        //     return { ...obj, placeHolder: newUpdateSignPos };
+        //   }
+        //   return obj;
+        // });
+
         const newUpdateSigner = signerPos.map((obj, ind) => {
-          if (obj.signerObjId === signerId) {
+          if (obj.Id === signerId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
           return obj;
         });
-
         setSignerPos(newUpdateSigner);
       } else {
         const getXYdata = getPageNumer[0].pos;
@@ -734,8 +743,14 @@ export const handleImageResize = (
           return obj;
         });
 
+        // const newUpdateSigner = signerPos.map((obj, ind) => {
+        //   if (obj.signerObjId === signerId) {
+        //     return { ...obj, placeHolder: newUpdateSignPos };
+        //   }
+        //   return obj;
+        // });
         const newUpdateSigner = signerPos.map((obj, ind) => {
-          if (obj.signerObjId === signerId) {
+          if (obj.Id === signerId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
           return obj;

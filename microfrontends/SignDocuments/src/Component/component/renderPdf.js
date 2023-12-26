@@ -510,7 +510,7 @@ function RenderPdf({
                       </React.Fragment>
                     );
                   })
-                : placeholder
+                : placeholder // placeholder mobile
                   ? signerPos.map((data, ind) => {
                       return (
                         <React.Fragment key={ind}>
@@ -541,9 +541,13 @@ function RenderPdf({
                                         className="signYourselfBlock"
                                         onDrag={() => handleTabDrag(pos.key)}
                                         size={{
-                                          width: pos.Width ? pos.Width : 150,
-                                          height: pos.Height ? pos.Height : 60
+                                          width: posWidth(pos),
+                                          height: posHeight(pos)
                                         }}
+                                        // size={{
+                                        //   width: pos.Width ? pos.Width : 150,
+                                        //   height: pos.Height ? pos.Height : 60
+                                        // }}
                                         lockAspectRatio={
                                           pos.Width
                                             ? pos.Width / pos.Height
@@ -559,9 +563,13 @@ function RenderPdf({
                                             )
                                           // data.signerObjId,
                                         }
+                                        // default={{
+                                        //   x: pos.xPosition,
+                                        //   y: pos.yPosition
+                                        // }}
                                         default={{
-                                          x: pos.xPosition,
-                                          y: pos.yPosition
+                                          x: xPos(pos),
+                                          y: yPos(pos)
                                         }}
                                         onResizeStart={() => {
                                           setIsResize(true);
@@ -1089,10 +1097,11 @@ function RenderPdf({
                                             delta,
                                             position
                                           ) => {
+                                            e.stopPropagation()
                                             handleImageResize(
                                               ref,
                                               pos.key,
-                                              data.signerObjId,
+                                              data.Id,//data.signerObjId,
                                               position,
                                               signerPos,
                                               pageNumber,
@@ -1122,7 +1131,9 @@ function RenderPdf({
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 setIsPageCopy(true);
+                                                console.log("pos.key) ", pos.key)
                                                 setSignKey(pos.key);
+                                                setUniqueId(data.Id)
                                                 setSignerObjId(
                                                   data.signerObjId
                                                 );
