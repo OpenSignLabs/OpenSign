@@ -23,7 +23,9 @@ import {
   multiSignEmbed,
   pdfNewWidthFun,
   addDefaultSignatureImg,
-  onImageSelect
+  onImageSelect,
+  placeholderHeight,
+  placeholderWidth
 } from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -36,6 +38,7 @@ import RenderPdf from "./component/renderPdf";
 import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
 import { modalAlign } from "../utils/Utils";
 import AlertComponent from "./component/alertComponent";
+import PlaceholderCopy from "./component/PlaceholderCopy";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -79,6 +82,7 @@ function SignYourSelf() {
   const [noData, setNoData] = useState(false);
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState({});
+  const [isPageCopy, setIsPageCopy] = useState(false);
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
@@ -102,7 +106,6 @@ function SignYourSelf() {
 
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 1,
@@ -115,7 +118,6 @@ function SignYourSelf() {
 
   const [{ isDragStamp }, dragStamp] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 2,
@@ -140,7 +142,6 @@ function SignYourSelf() {
 
   const [{ isDragStampSS }, dragStampSS] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 4,
@@ -329,7 +330,6 @@ function SignYourSelf() {
         isDrag: false,
         key: key,
         isStamp: monitor,
-
         yBottom: window.innerHeight / 2 - 60
       };
 
@@ -516,22 +516,31 @@ function SignYourSelf() {
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
 
     if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
+      const xPos = () => {
+        const resizePos = xyPosData.xPosition;
+        if (isMobile) {
+          return resizePos * scale;
+        } else {
+          return resizePos;
+        }
+      };
       const height = xyPosData.Height ? xyPosData.Height : 60;
+      const resizePos = xyPosData.yBottom;
       const bottomY = xyPosData.isDrag
-        ? xyPosData.yBottom * scale - height * scale
+        ? resizePos * scale - height * scale
         : xyPosData.firstYPos
-          ? xyPosData.yBottom * scale - height * scale + xyPosData.firstYPos
-          : xyPosData.yBottom * scale - height * scale;
+          ? resizePos * scale - height * scale + xyPosData.firstYPos
+          : resizePos * scale - height * scale;
 
       singleSign = {
         pdfFile: pdfBase64Url,
         docId: documentId,
         sign: {
           Base64: base64Url,
-          Left: isMobile ? xyPosData.xPosition * scale : xyPosData.xPosition,
+          Left: xPos(),
           Bottom: bottomY,
-          Width: xyPosData.Width ? xyPosData.Width * scale : 150 * scale,
-          Height: height * scale,
+          Width: placeholderWidth(xyPosData, scale),
+          Height: placeholderHeight(xyPosData, scale),
           Page: pageNo
         }
       };
@@ -650,7 +659,7 @@ function SignYourSelf() {
   //function for save button to save signature or image url
   const saveSign = (isDefaultSign) => {
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
-    const signFlag = true;
+
     let imgWH = { width: "", height: "" };
     setIsSignPad(false);
     setIsImageSelect(false);
@@ -672,8 +681,7 @@ function SignYourSelf() {
       signKey,
       signatureImg,
       imgWH,
-      isDefaultSign,
-      signFlag
+      isDefaultSign
     );
 
     setXyPostion(getUpdatePosition);
@@ -826,6 +834,7 @@ function SignYourSelf() {
             setAllPages={setAllPages}
             setPageNumber={setPageNumber}
             setSignBtnPosition={setSignBtnPosition}
+            pageNumber={pageNumber}
           />
 
           {/* pdf render view */}
@@ -881,6 +890,15 @@ function SignYourSelf() {
                 )}
               </Modal.Footer>
             </Modal>
+            <PlaceholderCopy
+              isPageCopy={isPageCopy}
+              setIsPageCopy={setIsPageCopy}
+              xyPostion={xyPostion}
+              setXyPostion={setXyPostion}
+              allPages={allPages}
+              pageNumber={pageNumber}
+              signKey={signKey}
+            />
             {/* this is modal of signature pad */}
             <SignPad
               isSignPad={isSignPad}
@@ -952,6 +970,7 @@ function SignYourSelf() {
                   setXyPostion={setXyPostion}
                   index={index}
                   containerWH={containerWH}
+                  setIsPageCopy={setIsPageCopy}
                 />
               )}
             </div>

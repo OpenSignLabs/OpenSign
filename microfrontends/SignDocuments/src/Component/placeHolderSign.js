@@ -28,6 +28,7 @@ import {
 import RenderPdf from "./component/renderPdf";
 import ModalComponent from "./component/modalComponent";
 import { useNavigate } from "react-router-dom";
+import PlaceholderCopy from "./component/PlaceholderCopy";
 import LinkUserModal from "./component/LinkUserModal";
 import Title from "./component/Title";
 
@@ -70,10 +71,12 @@ function PlaceHolderSign() {
   const [selectedEmail, setSelectedEmail] = useState(false);
   const [isResize, setIsResize] = useState(false);
   const [zIndex, setZIndex] = useState(1);
+  const [signKey, setSignKey] = useState();
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
   });
+  const [isPageCopy, setIsPageCopy] = useState(false);
   const [uniqueId, setUniqueId] = useState("");
   const [roleName, setRoleName] = useState("");
   const [isAddUser, setIsAddUser] = useState({});
@@ -102,7 +105,6 @@ function PlaceHolderSign() {
   });
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 1,
@@ -114,7 +116,6 @@ function PlaceHolderSign() {
   });
   const [{ isDragStamp }, dragStamp] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 2,
@@ -127,7 +128,6 @@ function PlaceHolderSign() {
 
   const [{ isDragSignatureSS }, dragSignatureSS] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 3,
@@ -140,7 +140,6 @@ function PlaceHolderSign() {
 
   const [{ isDragStampSS }, dragStampSS] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 4,
@@ -975,6 +974,7 @@ function PlaceHolderSign() {
               setAllPages={setAllPages}
               setPageNumber={setPageNumber}
               setSignBtnPosition={setSignBtnPosition}
+              pageNumber={pageNumber}
             />
 
             {/* pdf render view */}
@@ -1114,6 +1114,16 @@ function PlaceHolderSign() {
                 type={"signersAlert"}
                 setIsShowEmail={setIsShowEmail}
               />
+              <PlaceholderCopy
+                isPageCopy={isPageCopy}
+                setIsPageCopy={setIsPageCopy}
+                xyPostion={signerPos}
+                setXyPostion={setSignerPos}
+                allPages={allPages}
+                pageNumber={pageNumber}
+                signKey={signKey}
+                signerObjId={signerObjId}
+              />
               {/* pdf header which contain funish back button */}
               <Header
                 isPlaceholder={true}
@@ -1151,6 +1161,9 @@ function PlaceHolderSign() {
                     containerWH={containerWH}
                     setIsResize={setIsResize}
                     setZIndex={setZIndex}
+                    setIsPageCopy={setIsPageCopy}
+                    setSignKey={setSignKey}
+                    setSignerObjId={setSignerObjId}
                     handleLinkUser={handleLinkUser}
                     setUniqueId={setUniqueId}
                   />

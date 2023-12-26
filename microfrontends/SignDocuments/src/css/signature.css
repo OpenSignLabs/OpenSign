@@ -174,51 +174,44 @@
   padding: 0px 5.1px 1px 5px;
 }
 
-.signCloseBtn{
+.signCloseBtn {
   position: absolute;
-  right: -1px;
-  top: -9px;
-  border-radius: 100%;
+  right: -8px;
+  top: -18px;
   font-size: 14px;
   cursor: pointer;
-  padding: 0px 5.1px 1px 5px;
   z-index: 2;
+  background: white;
 }
-
 .signCopy {
   position: absolute;
-  right: 24px;
-  top: -9px;
+  right: 12px;
+  top: -18px;
   font-size: 13px;
   cursor: pointer;
   z-index: 2;
-
+  background: white;
 }
 
-
-.placeholderBlock {
-  padding: 0px;
+.signUserIcon {
   position: absolute;
-  border-style: dashed;
-  width: 150px;
-  height: 60px;
-  background: #daebe0;
-  text-align: center;
-  justify-content: center;
-  border-width: 0.2px;
-
+  right: 32px;
+  top: -18px;
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 2;
+  background: white;
 }
-.signWidgetblock {
+.ScrollbarsCustom-Track {
+  width: 4px !important;
+}
+.signYourselfBlock {
   padding: 0px;
-  border-style: dashed;
-  display: flex !important;
+ display: flex !important;
   text-align: center !important;
   justify-content: center !important;
   align-items: center !important;
-  border-width: 0.2px;
-
 }
-
 .finishBtn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
   padding: 3px 30px;
@@ -563,7 +556,6 @@
   gap: 5px;
   border: none;
   background-color: #887abf;
-
   width: 200px;
   white-space: nowrap;
   overflow: hidden !important;

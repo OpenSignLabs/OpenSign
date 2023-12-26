@@ -9,7 +9,8 @@ function RenderAllPdfPage({
   allPages,
   setAllPages,
   setPageNumber,
-  setSignBtnPosition
+  setSignBtnPosition,
+  pageNumber
 }) {
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -58,7 +59,10 @@ function RenderAllPdfPage({
                     key={index}
                     style={{
                       width: "100px",
-                      border: "2px solid #878787",
+                      border:
+                        pageNumber - 1 === index
+                          ? "2px solid red"
+                          : "2px solid #878787",
                       // padding: "5px",
                       margin: "10px",
 
