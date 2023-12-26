@@ -912,7 +912,6 @@ function PlaceHolderSign() {
     setIsAddUser({ [id]: true });
   };
   const handleAddUser = (data) => {
-    // console.log("hello", data);
     const signerPtr = {
       __type: "Pointer",
       className: "contracts_Contactbook",

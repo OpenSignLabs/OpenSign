@@ -889,13 +889,15 @@ const TemplatePlaceholder = () => {
   };
   // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
   const handleDeleteUser = (Id) => {
-    const removeUser = signersdata.filter((x) => x.Id !== Id);
-    console.log("removeUser ", removeUser)
-
-    setSignersData(removeUser);
-    const removePlaceholderUser = signerPos.filter((x) => x.Id !== Id);
-    console.log("removePlaceholderUser ", removePlaceholderUser)
-    setSignerPos(removePlaceholderUser);
+    const updateSigner = signersdata
+      .filter((x) => x.Id !== Id)
+      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    setSignersData(updateSigner);
+    const updatePlaceholderUser = signerPos
+      .filter((x) => x.Id !== Id)
+      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    // console.log("removePlaceholderUser ", removePlaceholderUser)
+    setSignerPos(updatePlaceholderUser);
     setIsMailSend(false);
   };
 
@@ -940,6 +942,10 @@ const TemplatePlaceholder = () => {
       role.Id === roleId ? { ...role, Role: event.target.value } : role
     );
     setSignersData(updatedRoles);
+    const updatedPlaceholder = signerPos.map((role) =>
+      role.Id === roleId ? { ...role, Role: event.target.value } : role
+    );
+    setSignerPos(updatedPlaceholder);
     setIsMailSend(false);
   };
 
@@ -951,11 +957,10 @@ const TemplatePlaceholder = () => {
         role.Id === roleId ? { ...role, Role: roleName } : role
       );
       setSignersData(updatedRoles);
-      //   const updatedSignerPosition = signerPos.map((role) =>
-      //   role.Id === roleId ? { ...role, Role: roleName } : role
-      // );
-      // console.log("updatedSignerPosition ", updatedSignerPosition)
-      // setSignerPos(updatedSignerPosition);
+      const updatedPlaceholder = signerPos?.map((role) =>
+        role.Id === roleId ? { ...role, Role: roleName } : role
+      );
+      setSignerPos(updatedPlaceholder);
     }
   };
 
@@ -964,12 +969,10 @@ const TemplatePlaceholder = () => {
   };
 
   const handleEditTemplateForm = (data) => {
-    console.log("data", data);
     setIsEditTemplate(false);
     const updateTemplate = pdfDetails.map((x) => {
       return { ...x, ...data };
     });
-    console.log("updateTemplate ", updateTemplate);
     setPdfDetails(updateTemplate);
     setIsMailSend(false);
   };
@@ -978,8 +981,7 @@ const TemplatePlaceholder = () => {
     setIsModalRole(false);
   };
 
-  console.log("pdfDetails ", pdfDetails);
-  console.log("signerPos ", signerPos);
+
   return (
     <div>
       <Title title={"Template"} />
@@ -1014,7 +1016,7 @@ const TemplatePlaceholder = () => {
               setPageNumber={setPageNumber}
               setSignBtnPosition={setSignBtnPosition}
               pageNumber={pageNumber}
-           />
+            />
 
             {/* pdf render view */}
             <div

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { themeColor } from "../../utils/ThemeColor/backColor";
 import "../../css/signerListPlace.css";
 
@@ -48,6 +48,7 @@ function SignerListPlace({
   const [isHover, setIsHover] = useState();
   const [isEdit, setIsEdit] = useState(false);
   //function for onhover signer name change background color
+  const inputRef = useRef(null);
   const onHoverStyle = (ind, blockColor) => {
     const style = {
       background: blockColor ? blockColor : color[ind % color.length],
@@ -201,6 +202,7 @@ function SignerListPlace({
                           >
                             {isEdit?.[obj.Id] && handleRoleChange ? (
                               <input
+                                ref={inputRef}
                                 style={{
                                   backgroundColor: "transparent",
                                   width: "inherit"
@@ -210,6 +212,12 @@ function SignerListPlace({
                                 onBlur={() => {
                                   setIsEdit({});
                                   handleOnBlur(obj.Role, obj.Id);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    inputRef.current.blur();
+                                  }
                                 }}
                               />
                             ) : (
