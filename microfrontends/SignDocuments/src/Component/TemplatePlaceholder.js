@@ -26,7 +26,6 @@ import {
   createDocument
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
-import ModalComponent from "./component/modalComponent";
 import "../css/AddUser.css";
 import Title from "./component/Title";
 import LinkUserModal from "./component/LinkUserModal";
@@ -182,119 +181,128 @@ const TemplatePlaceholder = () => {
 
   // `fetchTemplate` function in used to get Template from server and setPlaceholder ,setSigner if present
   const fetchTemplate = async () => {
-    // const params = { templateId: templateId };
-    // const templateDeatils = await axios.post(
-    //   `${localStorage.getItem("baseUrl")}functions/getTemplate`,
-    //   params,
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-    //       "sessiontoken": localStorage.getItem("accesstoken")
-    //     }
-    //   }
-    // );
-    // // console.log("templateDeatils.data ", templateDeatils.data);
-    // const documentData =
-    //   templateDeatils.data && templateDeatils.data.result
-    //     ? [templateDeatils.data.result]
-    //     : [];
+    try {
+      // const params = { templateId: templateId };
+      // const templateDeatils = await axios.post(
+      //   `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+      //   params,
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+      //       "sessiontoken": localStorage.getItem("accesstoken")
+      //     }
+      //   }
+      // );
+      // // console.log("templateDeatils.data ", templateDeatils.data);
+      // const documentData =
+      //   templateDeatils.data && templateDeatils.data.result
+      //     ? [templateDeatils.data.result]
+      //     : [];
 
-    const templateDeatils = await axios.get(
-      `${localStorage.getItem("baseUrl")}classes/contracts_Template/` +
-        templateId +
-        "?include=ExtUserPte,Signers,CreatedBy",
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+      const templateDeatils = await axios.get(
+        `${localStorage.getItem("baseUrl")}classes/contracts_Template/` +
+          templateId +
+          "?include=ExtUserPte,Signers,CreatedBy",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
-      }
-    );
-    const documentData =
-      templateDeatils.data && templateDeatils.data
-        ? [templateDeatils.data]
-        : [];
-    if (documentData && documentData.length > 0) {
-      setPdfDetails(documentData);
-      setIsSigners(true);
-      if (documentData[0].Signers && documentData[0].Signers.length > 0) {
-        setSignerObjId(documentData[0].Signers[0].objectId);
-        setContractName(documentData[0].Signers[0].className);
-        setIsSelectId(0);
-        if (
-          documentData[0].Placeholders &&
-          documentData[0].Placeholders.length > 0
-        ) {
-          setSignerPos(documentData[0].Placeholders);
-          let signers = [...documentData[0].Signers];
-          let updatedSigners = documentData[0].Placeholders.map((x) => {
-            let matchingSigner = signers.find(
-              (y) => x.signerObjId && x.signerObjId === y.objectId
-            );
+      );
+      const documentData =
+        templateDeatils.data && templateDeatils.data
+          ? [templateDeatils.data]
+          : [];
+      if (documentData && documentData.length > 0) {
+        setPdfDetails(documentData);
+        setIsSigners(true);
+        if (documentData[0].Signers && documentData[0].Signers.length > 0) {
+          setSignerObjId(documentData[0].Signers[0].objectId);
+          setContractName(documentData[0].Signers[0].className);
+          setIsSelectId(0);
+          if (
+            documentData[0].Placeholders &&
+            documentData[0].Placeholders.length > 0
+          ) {
+            setSignerPos(documentData[0].Placeholders);
+            let signers = [...documentData[0].Signers];
+            let updatedSigners = documentData[0].Placeholders.map((x) => {
+              let matchingSigner = signers.find(
+                (y) => x.signerObjId && x.signerObjId === y.objectId
+              );
 
-            if (matchingSigner) {
-              return {
-                ...matchingSigner,
-                Role: x.Role ? x.Role : matchingSigner.Role,
-                Id: x.Id,
-                blockColor: x.blockColor
-              };
-            } else {
+              if (matchingSigner) {
+                return {
+                  ...matchingSigner,
+                  Role: x.Role ? x.Role : matchingSigner.Role,
+                  Id: x.Id,
+                  blockColor: x.blockColor
+                };
+              } else {
+                return {
+                  Role: x.Role,
+                  Id: x.Id,
+                  blockColor: x.blockColor
+                };
+              }
+            });
+            setSignersData(updatedSigners);
+            setUniqueId(updatedSigners[0].Id);
+          } else {
+            const updatedSigners = documentData[0].Signers.map((x, index) => ({
+              ...x,
+              Id: randomId(),
+              Role: "User " + (index + 1)
+            }));
+            setSignersData(updatedSigners);
+            setUniqueId(updatedSigners[0].Id);
+          }
+        } else {
+          setRoleName("User 1");
+          if (
+            documentData[0].Placeholders &&
+            documentData[0].Placeholders.length > 0
+          ) {
+            let updatedSigners = documentData[0].Placeholders.map((x) => {
               return {
                 Role: x.Role,
                 Id: x.Id,
                 blockColor: x.blockColor
               };
-            }
-          });
-          setSignersData(updatedSigners);
-          setUniqueId(updatedSigners[0].Id);
-        } else {
-          const updatedSigners = documentData[0].Signers.map((x, index) => ({
-            ...x,
-            Id: randomId(),
-            Role: "User " + (index + 1)
-          }));
-          setSignersData(updatedSigners);
-          setUniqueId(updatedSigners[0].Id);
+            });
+            setSignerPos(documentData[0].Placeholders);
+            setUniqueId(updatedSigners[0].Id);
+            setSignersData(updatedSigners);
+            setIsSelectId(0);
+          }
         }
+      } else if (
+        documentData === "Error: Something went wrong!" ||
+        (documentData.result && documentData.result.error)
+      ) {
+        const loadObj = {
+          isLoad: false
+        };
+        setHandleError("Error: Something went wrong!");
+        setIsLoading(loadObj);
       } else {
-        setRoleName("User 1");
-        if (
-          documentData[0].Placeholders &&
-          documentData[0].Placeholders.length > 0
-        ) {
-          let updatedSigners = documentData[0].Placeholders.map((x) => {
-            return {
-              Role: x.Role,
-              Id: x.Id,
-              blockColor: x.blockColor
-            };
-          });
-          setSignerPos(documentData[0].Placeholders);
-          setUniqueId(updatedSigners[0].Id);
-          setSignersData(updatedSigners);
-          setIsSelectId(0);
-        }
-      }
-    } else if (
-      documentData === "Error: Something went wrong!" ||
-      (documentData.result && documentData.result.error)
-    ) {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
-      setIsLoading(loadObj);
-    } else {
-      setNoData(true);
+        setNoData(true);
 
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
+      }
+    } catch (err) {
+      console.log("err ", err);
+      if (err?.response?.data?.code === 101) {
+        setHandleError("Error: Template not found!");
+      } else {
+        setHandleError("Error: Something went wrong!");
+      }
     }
     const res = await contractUsers(jsonSender.email);
     if (res[0] && res.length) {
@@ -879,8 +887,11 @@ const TemplatePlaceholder = () => {
   // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
   const handleDeleteUser = (Id) => {
     const removeUser = signersdata.filter((x) => x.Id !== Id);
+    console.log("removeUser ", removeUser)
+
     setSignersData(removeUser);
     const removePlaceholderUser = signerPos.filter((x) => x.Id !== Id);
+    console.log("removePlaceholderUser ", removePlaceholderUser)
     setSignerPos(removePlaceholderUser);
     setIsMailSend(false);
   };
@@ -937,11 +948,11 @@ const TemplatePlaceholder = () => {
         role.Id === roleId ? { ...role, Role: roleName } : role
       );
       setSignersData(updatedRoles);
-    //   const updatedSignerPosition = signerPos.map((role) =>
-    //   role.Id === roleId ? { ...role, Role: roleName } : role
-    // );      
-    // console.log("updatedSignerPosition ", updatedSignerPosition)
-    // setSignerPos(updatedSignerPosition);
+      //   const updatedSignerPosition = signerPos.map((role) =>
+      //   role.Id === roleId ? { ...role, Role: roleName } : role
+      // );
+      // console.log("updatedSignerPosition ", updatedSignerPosition)
+      // setSignerPos(updatedSignerPosition);
     }
   };
 
@@ -964,8 +975,8 @@ const TemplatePlaceholder = () => {
     setIsModalRole(false);
   };
 
-  console.log("pdfDetails ", pdfDetails)
-  console.log("signerPos ", signerPos)
+  console.log("pdfDetails ", pdfDetails);
+  console.log("signerPos ", signerPos);
   return (
     <div>
       <Title title={"Template"} />
@@ -1108,6 +1119,7 @@ const TemplatePlaceholder = () => {
                     setZIndex={setZIndex}
                     handleLinkUser={handleLinkUser}
                     setUniqueId={setUniqueId}
+                    signersdata={signersdata}
                   />
                 )}
               </div>
