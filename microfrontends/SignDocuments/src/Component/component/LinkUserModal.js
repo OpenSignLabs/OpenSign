@@ -10,7 +10,7 @@ const LinkUserModal = (props) => {
           details={props.handleAddUser}
           closePopup={props.closePopup}
         />
-         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+         <div style={{ display: "flex", alignItems: "center", gap: 5, margin:"0px 25px" }}>
           <span
             style={{
               height: 1,
@@ -18,7 +18,7 @@ const LinkUserModal = (props) => {
               backgroundColor: "grey"
             }}
           ></span>
-          <span>OR</span>
+          <span>or</span>
           <span
             style={{
               height: 1,
