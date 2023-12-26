@@ -937,6 +937,11 @@ const TemplatePlaceholder = () => {
         role.Id === roleId ? { ...role, Role: roleName } : role
       );
       setSignersData(updatedRoles);
+    //   const updatedSignerPosition = signerPos.map((role) =>
+    //   role.Id === roleId ? { ...role, Role: roleName } : role
+    // );      
+    // console.log("updatedSignerPosition ", updatedSignerPosition)
+    // setSignerPos(updatedSignerPosition);
     }
   };
 
@@ -1027,6 +1032,7 @@ const TemplatePlaceholder = () => {
                       height: "1px",
                       backgroundColor: "#9f9f9f",
                       width: "100%",
+                      marginTop: "15px",
                       marginBottom: "15px"
                     }}
                   ></div>

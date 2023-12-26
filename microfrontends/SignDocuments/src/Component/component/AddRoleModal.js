@@ -27,10 +27,10 @@ const AddRoleModal = (props) => {
             style={{
               color: "grey",
               fontSize: 11,
-              margin: "2px 0 10px 5px"
+              margin: "10px 0 10px 5px"
             }}
           >
-            e.g: Account, Hr, Director, Manager, New joinee etc...
+            e.g: Hr, Director, Manager, New joinee, Accountant, etc...
           </p>
           <div>
             <div

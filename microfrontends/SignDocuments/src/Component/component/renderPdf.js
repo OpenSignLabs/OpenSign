@@ -119,7 +119,6 @@ function RenderPdf({
       }
     }
   };
-
   //function for render placeholder block over pdf document
   const checkSignedSignes = (data) => {
     const checkSign = signedSigners.filter(
@@ -412,6 +411,9 @@ function RenderPdf({
                                     }}
                                   >
                                     {pos.isStamp ? "stamp" : "signature"}
+                                    {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
+                                              {data.Role}
+                                            </p>)}
                                   </div>
                                 )}
                               </Rnd>
@@ -579,6 +581,9 @@ function RenderPdf({
                                             {pos.isStamp
                                               ? "stamp"
                                               : "signature"}
+                                            {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
+                                              {data.Role}
+                                            </p>)}
                                           </div>
                                         </div>
                                       </Rnd>
@@ -702,6 +707,9 @@ function RenderPdf({
                                           }}
                                         >
                                           {pos.isStamp ? "stamp" : "signature"}
+                                          {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
+                                              {data.Role}
+                                            </p>)}
                                         </div>
                                       )}
                                     </div>
@@ -876,6 +884,9 @@ function RenderPdf({
                                         }}
                                       >
                                         {pos.isStamp ? "stamp" : "signature"}
+                                        {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
+                                              {data.Role}
+                                        </p>)}
                                       </div>
                                     )}
                                   </div>
@@ -1058,6 +1069,9 @@ function RenderPdf({
                                               {pos.isStamp
                                                 ? "stamp"
                                                 : "signature"}
+                                            {data.Role  && (<p style={{color:"black"}} onClick={()=> console.log("pos ", pos)}> 
+                                              {data.Role}
+                                            </p>)}
                                             </div>
                                           </div>
                                         </Rnd>
