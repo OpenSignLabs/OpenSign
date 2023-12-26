@@ -12,4 +12,4 @@ Welcome to the [OpenSign™](https://app.opensignlabs.com) Help Center! This sec
 
 Or 
 
-Get started by deploying a new instance of **OpenSign**.
+Get started by deploying a new instance of **OpenSign** by following these [instructions](https://docs.opensignlabs.com/docs/self-host/intro).
