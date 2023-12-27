@@ -69,6 +69,6 @@ Engage with the community on our [Gitter Channel](https://gitter.im/OpenSignLabs
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under its [MIT License](LICENSE).
+By contributing, you agree that your contributions will be licensed under its [AGPL v3 License](https://github.com/OpenSignLabs/OpenSign/LICENSE).
 
 ---
