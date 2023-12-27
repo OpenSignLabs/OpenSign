@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import check from "../../assests/checkBox.png";
+import React, { useRef, useState } from "react";
 import { themeColor } from "../../utils/ThemeColor/backColor";
+import "../../css/signerListPlace.css";
 
 function SignerListPlace({
   signerPos,
@@ -8,7 +8,13 @@ function SignerListPlace({
   isSelectListId,
   setSignerObjId,
   setIsSelectId,
-  setContractName
+  setContractName,
+  handleAddSigner,
+  setUniqueId,
+  setRoleName,
+  handleDeleteUser,
+  handleRoleChange,
+  handleOnBlur
 }) {
   const color = [
     "#93a3db",
@@ -22,7 +28,7 @@ function SignerListPlace({
     "#cc99ff",
     "#ffcc99",
     "#66ccff",
-    "#ffffcc",
+    "#ffffcc"
   ];
 
   const nameColor = [
@@ -37,125 +43,222 @@ function SignerListPlace({
     "#cc00ff",
     "#ff9900",
     "#336699",
-    "#cc9900",
+    "#cc9900"
   ];
   const [isHover, setIsHover] = useState();
-
+  const [isEdit, setIsEdit] = useState(false);
   //function for onhover signer name change background color
-  const onHoverStyle = (ind) => {
+  const inputRef = useRef(null);
+  const onHoverStyle = (ind, blockColor) => {
     const style = {
-      background: color[ind % color.length],
+      background: blockColor ? blockColor : color[ind % color.length],
       padding: "10px",
       marginTop: "2px",
       display: "flex",
       flexDirection: "row",
       borderBottom: "1px solid #e3e1e1",
+      alignItems: "center"
     };
     return style;
   };
   //function for onhover signer name remove background color
   const nonHoverStyle = (ind) => {
     const style = {
-      // width:"250px",
       padding: "10px",
       marginTop: "2px",
       display: "flex",
       flexDirection: "row",
-
-      justifyContent: "space-between",
+      borderBottom: "1px solid #e3e1e1",
+      alignItems: "center"
     };
     return style;
   };
 
   const getFirstLetter = (name) => {
-    const firstLetter = name.charAt(0);
+    const firstLetter = name?.charAt(0);
     return firstLetter;
   };
 
+  const darkenColor = (color, factor) => {
+    // Remove '#' from the color code and parse it to get RGB values
+    const hex = color.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // Darken the color by reducing each RGB component
+    const darkerR = Math.floor(r * (1 - factor));
+    const darkerG = Math.floor(g * (1 - factor));
+    const darkerB = Math.floor(b * (1 - factor));
+
+    // Convert the darkened RGB components back to hex
+    return `#${((darkerR << 16) | (darkerG << 8) | darkerB)
+      .toString(16)
+      .padStart(6, "0")}`;
+  };
+
+  const isWidgetExist = (Id) => {
+    return signerPos.some((x) => x.Id === Id);
+  };
+
   return (
-    <div  >
+    <div>
       <div
         style={{
           background: themeColor(),
-
-          padding: "5px",
+          padding: "5px"
         }}
       >
-        <span className="signedStyle">Reicipents</span>
+        <span className="signedStyle">Recipients</span>
       </div>
-       
+
       <div className="signerList">
-        {signersdata.Signers &&
-          signersdata.Signers.map((obj, ind) => {
-            return (
-              <div
-                data-tut="reactourFirst"
-                onMouseEnter={() => setIsHover(ind)}
-                onMouseLeave={() => setIsHover(null)}
-                key={ind}
-                style={
-                  isHover === ind || isSelectListId === ind
-                    ? onHoverStyle(ind)
-                    : nonHoverStyle(ind)
-                }
-                onClick={() => {
-                  setSignerObjId(obj.objectId);
-                  setIsSelectId(ind);
-                  setContractName(obj.className)
-                }}
-              >
+        <>
+          {signersdata.length > 0 &&
+            signersdata.map((obj, ind) => {
+              return (
                 <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
+                  data-tut="reactourFirst"
+                  onMouseEnter={() => setIsHover(ind)}
+                  onMouseLeave={() => setIsHover(null)}
+                  key={ind}
+                  style={
+                    isHover === ind || isSelectListId === ind
+                      ? onHoverStyle(ind, obj.blockColor)
+                      : nonHoverStyle(ind)
+                  }
+                  onClick={() => {
+                    setSignerObjId(obj?.objectId);
+                    setIsSelectId(ind);
+                    setContractName(obj?.className);
+                    setUniqueId(obj.Id);
+                    setRoleName(obj.Role);
                   }}
                 >
                   <div
-                    className="signerStyle"
                     style={{
-                      background: nameColor[ind % nameColor.length],
-                      width: 20,
-                      height: 20,
                       display: "flex",
-                      borderRadius: 30 / 2,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginRight: "20px",
-                      marginTop: "5px",
+                      flexDirection: "row",
+                      alignItems: "center"
                     }}
                   >
-                    <span
+                    <div
+                      className="signerStyle"
                       style={{
-                        fontSize: "8px",
-                        textAlign: "center",
-                        fontWeight: "bold",
+                        background: obj.blockColor
+                          ? darkenColor(obj.blockColor, 0.4)
+                          : nameColor[ind % nameColor.length],
+                        width: 30,
+                        height: 30,
+                        display: "flex",
+                        borderRadius: 30 / 2,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginRight: "12px"
                       }}
                     >
-                      {" "}
-                      {getFirstLetter(obj.Name)}
-                    </span>
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          textAlign: "center",
+                          fontWeight: "bold",
+                          color: "white",
+                          textTransform: "uppercase"
+                        }}
+                      >
+                        {isWidgetExist(obj.Id) ? (
+                          <i className="fa-solid fa-check"></i>
+                        ) : (
+                          <>
+                            {obj.Name
+                              ? getFirstLetter(obj.Name)
+                              : getFirstLetter(obj.Role)}
+                          </>
+                        )}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: obj.Name ? "column" : "row",
+                        alignItems: "center"
+                      }}
+                    >
+                      {obj.Name ? (
+                        <span
+                          className="userName"
+                          style={{ cursor: "default" }}
+                        >
+                          {obj.Name}
+                        </span>
+                      ) : (
+                        <>
+                          <span
+                            className="userName"
+                            onClick={() => {
+                              setIsEdit({ [obj.Id]: true });
+                              setRoleName(obj.Role);
+                            }}
+                          >
+                            {isEdit?.[obj.Id] && handleRoleChange ? (
+                              <input
+                                ref={inputRef}
+                                style={{
+                                  backgroundColor: "transparent",
+                                  width: "inherit"
+                                }}
+                                value={obj.Role}
+                                onChange={(e) => handleRoleChange(e, obj.Id)}
+                                onBlur={() => {
+                                  setIsEdit({});
+                                  handleOnBlur(obj.Role, obj.Id);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    inputRef.current.blur();
+                                  }
+                                }}
+                              />
+                            ) : (
+                              obj.Role
+                            )}
+                          </span>
+                        </>
+                      )}
+                      {obj.Email && (
+                        <span
+                          className="useEmail"
+                          style={{ cursor: "default" }}
+                        >
+                          {obj.Email}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <span className="userName">{obj.Name}</span>
-                    <span className="useEmail">{obj.Email}</span>
-                  </div>
+                  {handleDeleteUser && (
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteUser(obj.Id);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <i className="fa-regular fa-trash-can"></i>
+                    </div>
+                  )}
+                  <hr />
                 </div>
-                {signerPos.map((data, key) => {
-                  return (
-                    data.signerObjId === obj.objectId && (
-                      <div key={key}>
-                        <img alt="no img" src={check} width={20} height={20} />
-                      </div>
-                    )
-                  );
-                })}
-
-                <hr />
-              </div>
-            );
-          })}
+              );
+            })}
+        </>
       </div>
-    
+      {handleAddSigner && (
+        <div data-tut="reactourAddbtn" className="addSignerBtn" onClick={() => handleAddSigner()}>
+          <i className="fa-solid fa-plus"></i>
+          <span style={{ marginLeft: 2 }}>Add</span>
+        </div>
+      )}
     </div>
   );
 }

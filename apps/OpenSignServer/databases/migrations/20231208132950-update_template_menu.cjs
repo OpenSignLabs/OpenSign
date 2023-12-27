@@ -38,8 +38,24 @@ exports.up = async Parse => {
           pageType: 'form',
           description: '',
           objectId: '8mZzFxbG1z',
-        }
+        },
+        {
+          icon: 'fas fa-file-signature',
+          title: 'New template',
+          target: '_self',
+          pageType: 'form',
+          description: '',
+          objectId: 'template',
+        },
       ],
+    },
+    {
+      icon: 'fas fa-file-signature',
+      title: 'Templates',
+      target: '_self',
+      pageType: 'report',
+      description: '',
+      objectId: '6TeaPr321t',
     },
     {
       icon: 'fas fa-folder',

@@ -10,12 +10,14 @@ function PlaceholderBorder(props) {
       style={{
         borderColor: themeColor(),
         borderStyle: "dashed",
-        width: props.pos.Width
-          ? props.pos.Width + getResizeBorderExtraWidth
-          : 150 + getResizeBorderExtraWidth,
-        height: props.pos.Height
-          ? props.pos.Height + getResizeBorderExtraWidth
-          : 60 + getResizeBorderExtraWidth,
+        // width: props.pos.Width
+        //   ? props.pos.Width + getResizeBorderExtraWidth
+        //   : 150 + getResizeBorderExtraWidth,
+        // height: props.pos.Height
+        //   ? props.pos.Height + getResizeBorderExtraWidth
+        //   : 60 + getResizeBorderExtraWidth,
+        width: props?.posWidth(props.pos) + getResizeBorderExtraWidth,
+        height: props?.posHeight(props.pos) + getResizeBorderExtraWidth,
         borderWidth: "0.2px",
         overflow: "hidden"
       }}

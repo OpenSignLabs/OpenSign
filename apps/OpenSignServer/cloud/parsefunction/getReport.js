@@ -19,7 +19,7 @@ export default async function getReport(request) {
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
       const json = reportId && reportJson(reportId, userId);
-      const clsName = reportId === '5KhaPr482K' ? 'contracts_Contactbook' : 'contracts_Document';
+      const clsName = json?.reportClass ? json.reportClass : 'contracts_Document';
       if (json) {
         const { params, keys } = json;
         const orderBy = '-updatedAt';

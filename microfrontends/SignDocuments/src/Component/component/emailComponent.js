@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { saveAs } from "file-saver";
 import celebration from "../../assests/newCeleb.gif";
-import close from "../../assests/close.png";
 import Modal from "react-bootstrap/Modal";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import axios from "axios";
@@ -297,16 +296,18 @@ function EmailComponent({
                         >
                           {data}
                         </span>
-
-                        <img
-                          alt="print img"
+                        <span
+                          style={{
+                            color: "white",
+                            fontSize: 13,
+                            fontWeight: 600,
+                            marginLeft: 7,
+                            cursor: "pointer"
+                          }}
                           onClick={() => removeChip(ind)}
-                          src={close}
-                          width={10}
-                          height={10}
-                          style={{ fontWeight: "600", marginLeft: "7px" }}
-                          className="emailChipClose"
-                        />
+                        >
+                          <i className="fa-solid fa-xmark"></i>
+                        </span>
                       </div>
                     );
                   })}

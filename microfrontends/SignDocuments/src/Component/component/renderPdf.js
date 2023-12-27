@@ -50,6 +50,9 @@ function RenderPdf({
   containerWH,
   setIsResize,
   setZIndex,
+  handleLinkUser,
+  setUniqueId,
+  signersdata,
   setIsPageCopy,
   setSignerObjId
 }) {
@@ -307,7 +310,6 @@ function RenderPdf({
         <i
           className="fa-regular fa-copy signCopy"
           onClick={(e) => {
-            console.log("hello console");
             e.stopPropagation();
             setIsPageCopy(true);
             setSignKey(pos.key);
@@ -358,7 +360,20 @@ function RenderPdf({
       </div>
     );
   };
-
+  const handleUserName = (signerId, Role) => {
+    if (signerId) {
+      const checkSign = signersdata.filter(
+        (sign) => sign.objectId === signerId
+      );
+      if (checkSign.length > 0) {
+        return <p style={{ color: "black" }}> {checkSign[0].Name} </p>;
+      } else {
+        return <p style={{ color: "black" }}> {Role} </p>;
+      }
+    } else {
+      return <p style={{ color: "black" }}> {Role} </p>;
+    }
+  };
   return (
     <>
       {isMobile && scale ? (
@@ -473,6 +488,10 @@ function RenderPdf({
                                     }}
                                   >
                                     {pos.isStamp ? "stamp" : "signature"}
+                                    {handleUserName(
+                                      data.signerObjId,
+                                      data.Role
+                                    )}
                                   </div>
                                 )}
                               </Rnd>
@@ -490,7 +509,7 @@ function RenderPdf({
                       </React.Fragment>
                     );
                   })
-                : placeholder
+                : placeholder // placeholder mobile
                   ? signerPos.map((data, ind) => {
                       return (
                         <React.Fragment key={ind}>
@@ -521,25 +540,35 @@ function RenderPdf({
                                         className="signYourselfBlock"
                                         onDrag={() => handleTabDrag(pos.key)}
                                         size={{
-                                          width: pos.Width ? pos.Width : 150,
-                                          height: pos.Height ? pos.Height : 60
+                                          width: posWidth(pos),
+                                          height: posHeight(pos)
                                         }}
+                                        // size={{
+                                        //   width: pos.Width ? pos.Width : 150,
+                                        //   height: pos.Height ? pos.Height : 60
+                                        // }}
                                         lockAspectRatio={
                                           pos.Width
                                             ? pos.Width / pos.Height
                                             : 2.5
                                         }
-                                        onDragStop={(event, dragElement) =>
-                                          handleStop(
-                                            event,
-                                            dragElement,
-                                            data.signerObjId,
-                                            pos.key
-                                          )
+                                        onDragStop={
+                                          (event, dragElement) =>
+                                            handleStop(
+                                              event,
+                                              dragElement,
+                                              data.Id,
+                                              pos.key
+                                            )
+                                          // data.signerObjId,
                                         }
+                                        // default={{
+                                        //   x: pos.xPosition,
+                                        //   y: pos.yPosition
+                                        // }}
                                         default={{
-                                          x: pos.xPosition,
-                                          y: pos.yPosition
+                                          x: xPos(pos),
+                                          y: yPos(pos)
                                         }}
                                         onResizeStart={() => {
                                           setIsResize(true);
@@ -569,8 +598,7 @@ function RenderPdf({
                                         }}
                                       >
                                         <BorderResize right={-12} top={-11} />
-                                        <PlaceholderBorder pos={pos} />
-
+                                        <PlaceholderBorder pos={pos} posWidth={posWidth} posHeight={posHeight}/>
                                         <div
                                           onTouchEnd={() => {
                                             const dataNewPlace = addZIndex(
@@ -590,7 +618,18 @@ function RenderPdf({
                                           }}
                                         >
                                           <i
-                                            class="fa-regular fa-copy signCopy"
+                                              className="fa-regular fa-user signUserIcon"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleLinkUser(data.Id);
+                                                setUniqueId(data.Id);
+                                              }}
+                                              style={{
+                                                color: "#188ae2"                                
+                                              }}
+                                            ></i>
+                                          <i
+                                            className="fa-regular fa-copy signCopy"
                                             onTouchEnd={(e) => {
                                               e.stopPropagation();
                                               setIsPageCopy(true);
@@ -607,13 +646,14 @@ function RenderPdf({
                                             }}
                                           ></i>
                                           <i
-                                            class="fa-regular fa-circle-xmark signCloseBtn"
+                                            className="fa-regular fa-circle-xmark signCloseBtn"
                                             onTouchStart={(e) => {
                                               e.stopPropagation();
                                               handleDeleteSign(
                                                 pos.key,
-                                                data.signerObjId
+                                                data.Id
                                               );
+                                              // data.signerObjId
                                             }}
                                             style={{
                                               color: "#188ae2"
@@ -631,6 +671,10 @@ function RenderPdf({
                                             {pos.isStamp
                                               ? "stamp"
                                               : "signature"}
+                                            {handleUserName(
+                                              data.signerObjId,
+                                              data.Role
+                                            )}
                                           </div>
                                         </div>
                                       </Rnd>
@@ -704,7 +748,6 @@ function RenderPdf({
                                       );
                                     }}
                                     onTouchEnd={(e) => {
-                                      console.log("go here");
                                       if (!isDragging && isMobile) {
                                         setTimeout(() => {
                                           e.stopPropagation();
@@ -716,10 +759,9 @@ function RenderPdf({
                                     }}
                                   >
                                     <BorderResize right={-12} top={-11} />
-                                    <PlaceholderBorder pos={pos} />
+                                    <PlaceholderBorder pos={pos} posWidth={posWidth} posHeight={posHeight}/>
                                     <div
                                       onTouchEnd={(e) => {
-                                        console.log("go here");
                                         if (!isDragging && isMobile) {
                                           setTimeout(() => {
                                             e.stopPropagation();
@@ -730,8 +772,19 @@ function RenderPdf({
                                         }
                                       }}
                                     >
+                                        <i
+                                          className="fa-regular fa-user signUserIcon"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }}
+                                          style={{
+                                            color: "#188ae2"                                
+                                          }}
+                                        ></i>
                                       <i
-                                        class="fa-regular fa-copy signCopy"
+                                        className="fa-regular fa-copy signCopy"
                                         onTouchEnd={(e) => {
                                           e.stopPropagation();
                                           setIsPageCopy(true);
@@ -742,7 +795,7 @@ function RenderPdf({
                                         }}
                                       ></i>
                                       <i
-                                        class="fa-regular fa-circle-xmark signCloseBtn"
+                                        className="fa-regular fa-circle-xmark signCloseBtn"
                                         onTouchEnd={(e) => {
                                           e.stopPropagation();
                                           if (data) {
@@ -781,6 +834,10 @@ function RenderPdf({
                                           }}
                                         >
                                           {pos.isStamp ? "stamp" : "signature"}
+                                          {handleUserName(
+                                            data.signerObjId,
+                                            data.Role
+                                          )}
                                         </div>
                                       )}
                                     </div>
@@ -954,6 +1011,10 @@ function RenderPdf({
                                         }}
                                       >
                                         {pos.isStamp ? "stamp" : "signature"}
+                                        {handleUserName(
+                                          data.signerObjId,
+                                          data.Role
+                                        )}
                                       </div>
                                     )}
                                   </div>
@@ -1014,7 +1075,6 @@ function RenderPdf({
                                           style={{
                                             cursor: "all-scroll",
                                             background: data.blockColor,
-
                                             zIndex: pos.zIndex
                                           }}
                                           className="signYourselfBlock"
@@ -1028,13 +1088,15 @@ function RenderPdf({
                                               ? pos.Width / pos.Height
                                               : 2.5
                                           }
-                                          onDragStop={(event, dragElement) =>
+                                          onDragStop={
+                                            (event, dragElement) =>
                                             handleStop(
                                               event,
                                               dragElement,
-                                              data.signerObjId,
+                                              data.Id,
                                               pos.key
                                             )
+                                          // data.signerObjId,
                                           }
                                           default={{
                                             x: pos.xPosition,
@@ -1053,10 +1115,11 @@ function RenderPdf({
                                             delta,
                                             position
                                           ) => {
+                                            e.stopPropagation()
                                             handleImageResize(
                                               ref,
                                               pos.key,
-                                              data.signerObjId,
+                                              data.Id,//data.signerObjId,
                                               position,
                                               signerPos,
                                               pageNumber,
@@ -1068,14 +1131,26 @@ function RenderPdf({
                                           }}
                                         >
                                           <BorderResize right={-12} top={-11} />
-                                          <PlaceholderBorder pos={pos} />
+                                          <PlaceholderBorder pos={pos} posWidth={posWidth} posHeight={posHeight}/>
                                           <div>
+                                          <i
+                                              className="fa-regular fa-user signUserIcon"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleLinkUser(data.Id);
+                                                setUniqueId(data.Id);
+                                              }}
+                                              style={{
+                                                color: "#188ae2"                                
+                                              }}
+                                            ></i>
                                             <i
-                                              class="fa-regular fa-copy signCopy"
+                                              className="fa-regular fa-copy signCopy"
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 setIsPageCopy(true);
                                                 setSignKey(pos.key);
+                                                setUniqueId(data.Id)
                                                 setSignerObjId(
                                                   data.signerObjId
                                                 );
@@ -1085,13 +1160,14 @@ function RenderPdf({
                                               }}
                                             ></i>
                                             <i
-                                              class="fa-regular fa-circle-xmark signCloseBtn"
+                                              className="fa-regular fa-circle-xmark signCloseBtn"
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleDeleteSign(
                                                   pos.key,
-                                                  data.signerObjId
+                                                  data.Id
                                                 );
+                                                // data.signerObjId
                                               }}
                                               style={{
                                                 color: "#188ae2"
@@ -1108,6 +1184,10 @@ function RenderPdf({
                                               {pos.isStamp
                                                 ? "stamp"
                                                 : "signature"}
+                                              {handleUserName(
+                                                data.signerObjId,
+                                                data.Role
+                                              )}
                                             </div>
                                           </div>
                                         </Rnd>
@@ -1188,7 +1268,7 @@ function RenderPdf({
                                       }}
                                     >
                                       <BorderResize right={-12} top={-11} />
-                                      <PlaceholderBorder pos={pos} />
+                                      <PlaceholderBorder pos={pos} posWidth={posWidth} posHeight={posHeight}/>
                                       <PlaceholderDesign pos={pos} />
                                     </Rnd>
                                   )
@@ -1197,7 +1277,6 @@ function RenderPdf({
                           </React.Fragment>
                         );
                       }))}
-
             {/* this component for render pdf document is in middle of the component */}
             <Document
               onLoadError={(e) => {
