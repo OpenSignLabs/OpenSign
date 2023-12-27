@@ -66,17 +66,19 @@ function PlaceholderCopy(props) {
     let newPlaceholderPosition = [];
     let newPageNumber = 1;
     const signerPosition = props.xyPostion;
-    const signerId = props.signerObjId ? props.signerObjId : props.Id
+    const signerId = props.signerObjId ? props.signerObjId : props.Id;
     //handle placeholder array and copy for multiple signers placeholder at requested location
     if (signerId) {
       //get current signers data
       let filterSignerPosition;
-      if(props?.signerObjId){
-         filterSignerPosition = signerPosition.filter(
+      if (props?.signerObjId) {
+        filterSignerPosition = signerPosition.filter(
           (data) => data.signerObjId === signerId
         );
-      }else{
-         filterSignerPosition = signerPosition.filter((item)=> item.Id === signerId)
+      } else {
+        filterSignerPosition = signerPosition.filter(
+          (item) => item.Id === signerId
+        );
       }
       //get current pagenumber's all placeholder position data
       const placeholderPosition = filterSignerPosition[0].placeHolder.filter(
@@ -92,7 +94,7 @@ function PlaceholderCopy(props) {
         rest.key = newId;
         //get exist placeholder position for particular page
         const existPlaceholder = filterSignerPosition[0].placeHolder.filter(
-          (data) => data.pageNumber == newPageNumber
+          (data) => data.pageNumber === newPageNumber
         );
         const existPlaceholderPosition =
           existPlaceholder[0] && existPlaceholder[0].pos;
@@ -110,31 +112,27 @@ function PlaceholderCopy(props) {
         newPageNumber++;
       }
       let updatedSignerPlaceholder;
-      if(props?.signerObjId){
-        updatedSignerPlaceholder = signerPosition.map(
-            (signersData, ind) => {
-              if (signersData.signerObjId === props.signerObjId) {
-                return {
-                  ...signersData,
-                  placeHolder: newPlaceholderPosition
-                };
-              }
-              return signersData;
-            }
-          );
-     }else{
-      updatedSignerPlaceholder = signerPosition.map(
-          (signersData, ind) => {
-            if (signersData.Id === props.Id) {
-              return {
-                ...signersData,
-                placeHolder: newPlaceholderPosition
-              };
-            }
-            return signersData;
+      if (props?.signerObjId) {
+        updatedSignerPlaceholder = signerPosition.map((signersData, ind) => {
+          if (signersData.signerObjId === props.signerObjId) {
+            return {
+              ...signersData,
+              placeHolder: newPlaceholderPosition
+            };
           }
-        );
-     }
+          return signersData;
+        });
+      } else {
+        updatedSignerPlaceholder = signerPosition.map((signersData, ind) => {
+          if (signersData.Id === props.Id) {
+            return {
+              ...signersData,
+              placeHolder: newPlaceholderPosition
+            };
+          }
+          return signersData;
+        });
+      }
       // const updatedSignerPlaceholder = signerPosition.map(
       //   (signersData, ind) => {
       //     if (signersData.signerObjId === props.signerObjId) {
@@ -166,7 +164,7 @@ function PlaceholderCopy(props) {
       for (let i = 0; i < props.allPages; i++) {
         //get exist placeholder position for particular page
         const existPlaceholder = xyPostion.filter(
-          (data) => data.pageNumber == newPageNumber
+          (data) => data.pageNumber === newPageNumber
         );
         const existPlaceholderPosition =
           existPlaceholder[0] && existPlaceholder[0].pos;
