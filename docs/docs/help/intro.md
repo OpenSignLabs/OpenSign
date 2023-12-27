@@ -12,4 +12,4 @@ Try OpenSign on cloud at **[OpenSignLabs](https://app.opensignlabs.com)**.
 
 Or 
 
-Get started by deploying a new instance of **OpenSign** by following the [installation guide](https://docs.opensignlabs.com/docs/self-host/intro).
+Get started by deploying a new instance of **OpenSign** by following the **[installation guide]**(https://docs.opensignlabs.com/docs/self-host/intro).
