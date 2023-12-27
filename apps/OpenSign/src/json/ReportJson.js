@@ -161,7 +161,8 @@ export default function reportJson(id) {
             textColor: "white",
             btnIcon: "fa-solid fa-trash"
           }
-        ]
+        ],
+        form:"ContactBook"
       };
     // template report
     case "6TeaPr321t":

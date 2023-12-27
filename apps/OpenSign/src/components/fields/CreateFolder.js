@@ -133,7 +133,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         <div>
           <button
             onClick={handleCreateFolder}
-            className="flex items-center rounded p-2 bg-[#33bbff] text-white mt-3"
+            className="flex items-center rounded p-2 bg-[#32a3ac] text-white mt-3"
           >
             <i className="fa-solid fa-plus mr-1"></i>
             <span>Create</span>
