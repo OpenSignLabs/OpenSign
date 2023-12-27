@@ -170,84 +170,88 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
           </p>
         </div>
       </div>
-      <ModalUi title={"Select Folder"} isOpen={isOpen} handleClose={handleCancel}>
-      <div className="w-full min-w-[300px] md:min-w-[500px] px-3">
-            <div className="py-2 text-[#ac4848] text-[14px] font-[500]">
-              <span
-                className="cursor-pointer"
-                title="Root"
-                onClick={(e) => removeTabListItem(e)}
-              >
-                Root /{" "}
-              </span>
-              {tabList &&
-                tabList.map((tab, i) => (
-                  <React.Fragment key={`${tab.objectId}-${i}`}>
-                    <span
-                      className="cursor-pointer"
-                      title={tab.Name}
-                      onClick={(e) => removeTabListItem(e, i)}
-                    >
-                      {tab.Name}
-                    </span>
-                    {" / "}
-                  </React.Fragment>
-                ))}
-              <hr />
-            </div>
-            <div className="mt-2 mb-3">
-              {!isAdd &&
-                folderList.length > 0 &&
-                folderList.map((folder) => (
-                  <div
-                    key={folder.Name}
-                    className="border-[1px] border-[#8a8a8a] px-2 py-2 mb-2 cursor-pointer"
-                    onClick={() => handleSelect(folder)}
+      <ModalUi
+        title={"Select Folder"}
+        isOpen={isOpen}
+        handleClose={handleCancel}
+      >
+        <div className="w-full min-w-[300px] md:min-w-[500px] px-3">
+          <div className="py-2 text-[#ac4848] text-[14px] font-[500]">
+            <span
+              className="cursor-pointer"
+              title="Root"
+              onClick={(e) => removeTabListItem(e)}
+            >
+              Root /{" "}
+            </span>
+            {tabList &&
+              tabList.map((tab, i) => (
+                <React.Fragment key={`${tab.objectId}-${i}`}>
+                  <span
+                    className="cursor-pointer"
+                    title={tab.Name}
+                    onClick={(e) => removeTabListItem(e, i)}
                   >
-                    <div className="flex items-center gap-2">
-                      <i
-                        className="fa fa-folder text-[#33bbff] text-[1.4rem]"
-                        aria-hidden="true"
-                      ></i>
-                      <span className="font-semibold">{folder.Name}</span>
-                    </div>
+                    {tab.Name}
+                  </span>
+                  {" / "}
+                </React.Fragment>
+              ))}
+            <hr />
+          </div>
+          <div className="mt-2 mb-3">
+            {!isAdd &&
+              folderList.length > 0 &&
+              folderList.map((folder) => (
+                <div
+                  key={folder.Name}
+                  className="border-[1px] border-[#8a8a8a] px-2 py-2 mb-2 cursor-pointer"
+                  onClick={() => handleSelect(folder)}
+                >
+                  <div className="flex items-center gap-2">
+                    <i
+                      className="fa fa-folder text-[#33bbff] text-[1.4rem]"
+                      aria-hidden="true"
+                    ></i>
+                    <span className="font-semibold">{folder.Name}</span>
                   </div>
-                ))}
-              {isAdd && (
-                <CreateFolder
-                  parentFolderId={clickFolder && clickFolder.ObjectId}
-                  folderCls={folderCls}
-                  onSuccess={handleAddFolder}
-                />
-              )}
-              {isLoader && (
-                <div className="flex justify-center">
-                  <i className="fa-solid fa-spinner fa-spin-pulse text-[30px]"></i>
                 </div>
-              )}
-            </div>
+              ))}
+            {isAdd && (
+              <CreateFolder
+                parentFolderId={clickFolder && clickFolder.ObjectId}
+                folderCls={folderCls}
+                onSuccess={handleAddFolder}
+              />
+            )}
+            {isLoader && (
+              <div className="flex justify-center">
+                <i className="fa-solid fa-spinner fa-spin-pulse text-[30px]"></i>
+              </div>
+            )}
           </div>
-          <hr />
-          <div className="flex justify-between items-center py-[.75rem] px-[1.25rem]">
-            <div
-              className="text-[30px] cursor-pointer text-[#33bbff]"
-              title="Save Here"
-              onClick={handleCreate}
-            >
-              {isAdd ? (
-                <i className="fa-solid fa-arrow-left" aria-hidden="true"></i>
-              ) : (
-                <i className="fa-solid fa-square-plus" aria-hidden="true"></i>
-              )}
-            </div>
-            <div
-              className="text-[30px] cursor-pointer"
-              title="Save Here"
-              onClick={handleSubmit}
-            >
-              <i className="fas fa-save" aria-hidden="true"></i>
-            </div>
+        </div>
+        <hr />
+        <div className="flex justify-between items-center py-[.75rem] px-[1.25rem]">
+          <div
+            className="text-[30px] cursor-pointer text-[#32a3ac]"
+            title="Save Here"
+            onClick={handleCreate}
+          >
+            {isAdd ? (
+              <i className="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            ) : (
+              <i className="fa-solid fa-square-plus" aria-hidden="true"></i>
+            )}
           </div>
+          <div
+            className="text-[30px] cursor-pointer"
+            title="Save Here"
+            onClick={handleSubmit}
+          >
+            <i className="fas fa-save" aria-hidden="true"></i>
+          </div>
+        </div>
       </ModalUi>
       {/* {isOpen && (
         <div

@@ -3,6 +3,8 @@ import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/report.css";
+import ModalUi from "./ModalUi";
+import AppendFormInForm from "../components/AppendFormInForm";
 const ReportTable = ({
   ReportName,
   List,
@@ -11,13 +13,15 @@ const ReportTable = ({
   heading,
   setIsNextRecord,
   isMoreDocs,
-  docPerPage
+  docPerPage,
+  form
 }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
   const [isErr, setIsErr] = useState(false);
+  const [isPopup, setIsPopup] = useState(false);
   // For loop is used to calculate page numbers visible below table
   // Initialize pageNumbers using useMemo to avoid unnecessary re-creation
   const pageNumbers = useMemo(() => {
@@ -57,9 +61,9 @@ const ReportTable = ({
   // `handlemicroapp` is used to open microapp
   const handlemicroapp = async (item, url, btnLabel) => {
     if (ReportName === "Templates") {
-      if(btnLabel === "Edit"){
+      if (btnLabel === "Edit") {
         navigate(`/asmf/${url}/${item.objectId}`);
-      }else{
+      } else {
         setActLoader({ [item.objectId]: true });
         try {
           const params = {
@@ -76,13 +80,13 @@ const ReportTable = ({
               }
             }
           );
-  
+
           // console.log("templateDeatils.data ", templateDeatils.data);
           const templateData =
             templateDeatils.data && templateDeatils.data.result;
           if (!templateData.error) {
             const Doc = templateData;
-  
+
             let placeholdersArr = [];
             if (Doc.Placeholders?.length > 0) {
               placeholdersArr = Doc.Placeholders;
@@ -119,7 +123,7 @@ const ReportTable = ({
               },
               Signers: signers
             };
-  
+
             const res = await axios.post(
               `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
                 "_appName"
@@ -133,7 +137,7 @@ const ReportTable = ({
                 }
               }
             );
-  
+
             // console.log("Res ", res.data);
             if (res.data && res.data.objectId) {
               setActLoader({});
@@ -200,6 +204,13 @@ const ReportTable = ({
   const paginateFront = () => setCurrentPage(currentPage + 1);
   const paginateBack = () => setCurrentPage(currentPage - 1);
 
+  const handlePopup = () => {
+    setIsPopup(!isPopup);
+  };
+
+  const handleUserData = (data) => {
+    setList((prevData) => [data, ...prevData]);
+  };
   return (
     <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
       {isAlert && (
@@ -214,7 +225,14 @@ const ReportTable = ({
         </div>
       )}
 
-      <h2 className="text-[23px] font-light my-2">{ReportName}</h2>
+      <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
+        <div className="font-light">{ReportName}</div>
+        {form && (
+          <div className="cursor-pointer" onClick={() => handlePopup()}>
+            <i className="fa-solid fa-square-plus text-sky-400 text-[25px]"></i>
+          </div>
+        )}
+      </div>
       <table className="table-auto w-full border-collapse">
         <thead className="text-[14px]">
           <tr className="border-y-[1px]">
@@ -316,7 +334,11 @@ const ReportTable = ({
                             key={index}
                             onClick={() =>
                               act?.redirectUrl
-                                ? handlemicroapp(item, act.redirectUrl, act.btnLabel)
+                                ? handlemicroapp(
+                                    item,
+                                    act.redirectUrl,
+                                    act.btnLabel
+                                  )
                                 : handlebtn(item)
                             }
                             className={`flex justify-center items-center w-full gap-1 px-2 py-1 rounded shadow`}
@@ -399,6 +421,12 @@ const ReportTable = ({
           <div className="text-sm font-semibold">No Data Available</div>
         </div>
       )}
+      <ModalUi title={"Add Contact"} isOpen={isPopup} handleClose={handlePopup}>
+        <AppendFormInForm
+          handleUserData={handleUserData}
+          closePopup={handlePopup}
+        />
+      </ModalUi>
     </div>
   );
 };

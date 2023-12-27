@@ -113,7 +113,7 @@ export const formJson = (id) => {
     });
     formData = {
       jsonSchema: {
-        title: "New Document",
+        title: "Request signatures",
         description: "",
         type: "object",
         required: ["URL", "Name", "Note", "TimeToCompleteDays", "Signers"],
