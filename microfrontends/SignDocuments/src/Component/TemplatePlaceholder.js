@@ -187,40 +187,24 @@ const TemplatePlaceholder = () => {
   // `fetchTemplate` function in used to get Template from server and setPlaceholder ,setSigner if present
   const fetchTemplate = async () => {
     try {
-      // const params = { templateId: templateId };
-      // const templateDeatils = await axios.post(
-      //   `${localStorage.getItem("baseUrl")}functions/getTemplate`,
-      //   params,
-      //   {
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-      //       "sessiontoken": localStorage.getItem("accesstoken")
-      //     }
-      //   }
-      // );
-      // // console.log("templateDeatils.data ", templateDeatils.data);
-      // const documentData =
-      //   templateDeatils.data && templateDeatils.data.result
-      //     ? [templateDeatils.data.result]
-      //     : [];
-
-      const templateDeatils = await axios.get(
-        `${localStorage.getItem("baseUrl")}classes/contracts_Template/` +
-          templateId +
-          "?include=ExtUserPte,Signers,CreatedBy",
+      const params = { templateId: templateId };
+      const templateDeatils = await axios.post(
+        `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+        params,
         {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            sessiontoken: localStorage.getItem("accesstoken")
           }
         }
       );
+      // console.log("templateDeatils.data ", templateDeatils.data);
       const documentData =
-        templateDeatils.data && templateDeatils.data
-          ? [templateDeatils.data]
+        templateDeatils.data && templateDeatils.data.result
+          ? [templateDeatils.data.result]
           : [];
+
       if (documentData && documentData.length > 0) {
         setPdfDetails(documentData);
         setIsSigners(true);
