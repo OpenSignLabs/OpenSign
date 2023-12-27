@@ -12,8 +12,8 @@ export default async function GetTemplate(request) {
       },
     });
     const userId = userRes.data && userRes.data.objectId;
-    console.log("templateId ", templateId)
-    console.log("userId ",userId)
+    // console.log("templateId ", templateId)
+    // console.log("userId ",userId)
     if (templateId && userId) {
       try {
         const template = new Parse.Query('contracts_Template');
@@ -22,9 +22,9 @@ export default async function GetTemplate(request) {
         template.include('Signers');
         template.include('CreateBy');
         const res = await template.first({ useMasterKey: true });
-        console.log("res ", res)
+        // console.log("res ", res)
         if (res) {
-          console.log("res ",res)
+          // console.log("res ",res)
           const acl = res.getACL();
           console.log("acl", acl.getReadAccess(userId))
           if (acl && acl.getReadAccess(userId)) {

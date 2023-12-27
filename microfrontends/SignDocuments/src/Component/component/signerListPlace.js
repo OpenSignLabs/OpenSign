@@ -254,7 +254,7 @@ function SignerListPlace({
         </>
       </div>
       {handleAddSigner && (
-        <div className="addSignerBtn" onClick={() => handleAddSigner()}>
+        <div data-tut="reactourAddbtn" className="addSignerBtn" onClick={() => handleAddSigner()}>
           <i className="fa-solid fa-plus"></i>
           <span style={{ marginLeft: 2 }}>Add</span>
         </div>

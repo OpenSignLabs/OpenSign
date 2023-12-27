@@ -20,7 +20,6 @@ function FieldsComponent({
   isDragSignatureSS,
   isSignYourself,
   addPositionOfSignature,
-
   signersdata,
   isSelectListId,
   setSignerObjId,
@@ -184,6 +183,7 @@ function FieldsComponent({
             )}
             {handleAddSigner && (
               <div
+                data-tut="reactourAddbtn"
                 style={{
                   margin: "5px 0 5px 0",
                   backgroundColor: themeColor(),
