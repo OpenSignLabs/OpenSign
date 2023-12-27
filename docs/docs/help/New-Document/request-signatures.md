@@ -20,6 +20,7 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
 ### Step 2: Uploading Your Document
 
 - **[2] Choose File**: Click here to select and upload the document file from your computer that needs to be signed.
+- **[2] Choose File from Dropbox**: Click the dropbox icon to select the document file from your dropbox account.
 
 ### Step 3: Entering Document Details
 
