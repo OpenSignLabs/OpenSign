@@ -40,6 +40,6 @@ This feature lets you sign documents that dont need to be sent to anybody.
 - Make sure your document is in PDF format.
 - You can access your signed documents in the folder you've selected by visiting OpenSign™ Drive anytime. You can also access the socuments from reports section.
 
-If you require more help, feel free to reach out to our customer support on support@opensognlabs.com.
+If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
 Happy signing with OpenSign™!
