@@ -3,7 +3,6 @@
   background-color: rgb(255, 255, 255);
   width: 460px;
   height: 184px;
-
 }
 
 .penContainer {
@@ -111,10 +110,6 @@
   padding: 5px 10px;
 }
 
-.emailChipClose:hover {
-  cursor: pointer;
-}
-
 .addEmailInput {
   padding: 10px;
   border-radius: 4px;
@@ -184,10 +179,19 @@
   z-index: 2;
   background: white;
 }
-
 .signCopy {
   position: absolute;
   right: 12px;
+  top: -18px;
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 2;
+  background: white;
+}
+
+.signUserIcon {
+  position: absolute;
+  right: 32px;
   top: -18px;
   font-size: 13px;
   cursor: pointer;

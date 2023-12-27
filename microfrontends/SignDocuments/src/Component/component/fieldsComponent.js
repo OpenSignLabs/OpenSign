@@ -20,7 +20,6 @@ function FieldsComponent({
   isDragSignatureSS,
   isSignYourself,
   addPositionOfSignature,
-
   signersdata,
   isSelectListId,
   setSignerObjId,
@@ -33,11 +32,12 @@ function FieldsComponent({
   isMailSend,
   selectedEmail,
   setSelectedEmail,
+  handleAddSigner
 }) {
   const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
 
-  const isMobile = window.innerWidth <767;
-  
+  const isMobile = window.innerWidth < 767;
+
   const SelectItem = React.forwardRef(
     ({ children, className, ...props }, forwardedRef) => {
       return (
@@ -65,7 +65,7 @@ function FieldsComponent({
     "#cc99ff",
     "#ffcc99",
     "#66ccff",
-    "#ffffcc",
+    "#ffffcc"
   ];
 
   return (
@@ -88,10 +88,10 @@ function FieldsComponent({
                   padding: "10px 20px",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
+                  justifyContent: "center"
                 }}
               >
-                <span style={{ fontSize: "18px", fontWeight: "500" }}>
+                <span style={{ fontSize: "13px", fontWeight: "700" }}>
                   Signer :
                 </span>
 
@@ -107,30 +107,29 @@ function FieldsComponent({
                   }}
                 >
                   <Select.Trigger
-                    className={selectedEmail ? "selectEmail": "SelectTrigger"}
+                    className={selectedEmail ? "selectEmail" : "SelectTrigger"}
                     style={{
                       background: isSelectListId
                         ? color[isSelectListId % color.length]
-                        : color[0],
+                        : color[0]
                     }}
                     aria-label="Food"
                   >
-                    <Select.Value
-                    
-                    placeholder="Select signer.." />
-                    {!selectedEmail && 
-                    <Select.Icon className="SelectIcon">
-                      <i
-                        style={{
-                          marginTop: "5px",
-                          marginLeft: "5px",
-                          color: "#3b15d1",
-                          fontSize: "20px",
-                        }}
-                        className="fa fa-angle-down"
-                        aria-hidden="true"
-                      ></i>
-                    </Select.Icon>}
+                    <Select.Value placeholder="Select signer.." />
+                    {!selectedEmail && (
+                      <Select.Icon className="SelectIcon">
+                        <i
+                          style={{
+                            marginTop: "5px",
+                            marginLeft: "5px",
+                            color: "#3b15d1",
+                            fontSize: "20px"
+                          }}
+                          className="fa fa-angle-down"
+                          aria-hidden="true"
+                        ></i>
+                      </Select.Icon>
+                    )}
                   </Select.Trigger>
                   <Select.Portal>
                     <Select.Content
@@ -143,7 +142,7 @@ function FieldsComponent({
                             marginTop: "5px",
                             marginLeft: "5px",
                             color: "#3b15d1",
-                            fontSize: "20px",
+                            fontSize: "20px"
                           }}
                           className="fa fa-angle-down"
                           aria-hidden="true"
@@ -151,7 +150,7 @@ function FieldsComponent({
                       </Select.ScrollUpButton>
                       <Select.Viewport className="SelectViewport">
                         <Select.Group>
-                          {signersdata.Signers.map((obj, ind) => {
+                          {signersdata.map((obj, ind) => {
                             return (
                               <SelectItem
                                 selected
@@ -159,14 +158,10 @@ function FieldsComponent({
                                 value={`${ind}|${JSON.stringify(obj)}`}
                                 // value={(obj)}
                               >
-                                {" "}
-                                {obj.Email}
+                                {obj.Role ? obj.Role : obj.Email}
                               </SelectItem>
                             );
                           })}
-                          {/* <SelectItem value="orange">Orange</SelectItem>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="grape"></SelectItem> */}
                         </Select.Group>
                       </Select.Viewport>
                       <Select.ScrollDownButton className="SelectScrollButton">
@@ -175,15 +170,30 @@ function FieldsComponent({
                             marginTop: "5px",
                             marginLeft: "5px",
                             color: "#3b15d1",
-                            fontSize: "20px",
+                            fontSize: "20px"
                           }}
                           className="fa fa-angle-down"
-                          aria-hidden="true"
+                          aria-hidden="false"
                         ></i>
                       </Select.ScrollDownButton>
                     </Select.Content>
                   </Select.Portal>
                 </Select.Root>
+              </div>
+            )}
+            {handleAddSigner && (
+              <div
+                data-tut="reactourAddbtn"
+                style={{
+                  margin: "5px 0 5px 0",
+                  backgroundColor: themeColor(),
+                  color: "white"
+                }}
+                className="addSignerBtn"
+                onClick={() => handleAddSigner()}
+              >
+                <i className="fa-solid fa-plus"></i>
+                <span style={{ marginLeft: 2 }}>Add</span>
               </div>
             )}
             <div
@@ -221,24 +231,15 @@ function FieldsComponent({
                   backgroundSize: "70% 70%",
                   backgroundRepeat: "no-repeat",
                   backgroundPosition: "center center",
-                  paddingBottom: "2.2rem",
+                  paddingBottom: "2.2rem"
                 }}
               >
-                {/* <img
-                alt="sign img"
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  background: themeColor(),
-                }}
-                src={sign}
-              /> */}
                 <span
                   style={{
                     color: "white",
                     fontSize: "12px",
                     position: "relative",
-                    top: "2.6rem",
+                    top: "2.6rem"
                   }}
                 >
                   Signature
@@ -261,7 +262,7 @@ function FieldsComponent({
                   backgroundSize: "32px 33px",
                   backgroundRepeat: "no-repeat",
                   backgroundPosition: "center center",
-                  paddingBottom: "2.2rem",
+                  paddingBottom: "2.2rem"
                 }}
               >
                 <span
@@ -269,7 +270,7 @@ function FieldsComponent({
                     color: "white",
                     fontSize: "12px",
                     position: "relative",
-                    top: "2.6rem",
+                    top: "2.6rem"
                   }}
                 >
                   Stamp
@@ -283,8 +284,7 @@ function FieldsComponent({
           <div
             style={{
               background: themeColor(),
-
-              padding: "5px",
+              padding: "5px"
             }}
           >
             <span className="signedStyle">Fields</span>
@@ -299,7 +299,7 @@ function FieldsComponent({
                       fontWeight: "400",
                       fontSize: "15px",
                       padding: "3px 20px 0px 20px",
-                      color: "#bfbfbf",
+                      color: "#bfbfbf"
                     }}
                   >
                     Signature
@@ -310,7 +310,7 @@ function FieldsComponent({
                     style={{
                       width: "30px",
                       height: "28px",
-                      background: "#d3edeb",
+                      background: "#d3edeb"
                     }}
                     src={sign}
                   />
@@ -321,7 +321,7 @@ function FieldsComponent({
                       fontWeight: "400",
                       fontSize: "15px",
                       padding: "3px 0px 0px 35px",
-                      color: "#bfbfbf",
+                      color: "#bfbfbf"
                     }}
                   >
                     Stamp
@@ -332,7 +332,7 @@ function FieldsComponent({
                     style={{
                       width: "25px",
                       height: "28px",
-                      background: "#d3edeb",
+                      background: "#d3edeb"
                     }}
                     src={stamp}
                   />
@@ -355,7 +355,7 @@ function FieldsComponent({
                   style={{
                     opacity: isDragSign ? 0.5 : 1,
                     boxShadow:
-                      "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
+                      "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)"
                   }}
                 >
                   <span
@@ -363,7 +363,7 @@ function FieldsComponent({
                       fontWeight: "400",
                       fontSize: "15px",
                       padding: "3px 20px 0px 20px",
-                      color: "black",
+                      color: "black"
                     }}
                   >
                     Signature
@@ -373,7 +373,7 @@ function FieldsComponent({
                     style={{
                       width: "30px",
                       height: "28px",
-                      background: themeColor(),
+                      background: themeColor()
                     }}
                     src={sign}
                   />
@@ -393,7 +393,7 @@ function FieldsComponent({
                   style={{
                     opacity: isDragStamp ? 0.5 : 1,
                     boxShadow:
-                      "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
+                      "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)"
                   }}
                 >
                   <span
@@ -401,7 +401,7 @@ function FieldsComponent({
                       fontWeight: "400",
                       fontSize: "15px",
                       padding: "3px 0px 0px 35px",
-                      color: !pdfUrl ? "black" : "#bfbfbf",
+                      color: !pdfUrl ? "black" : "#bfbfbf"
                     }}
                   >
                     Stamp
@@ -412,7 +412,7 @@ function FieldsComponent({
                     style={{
                       width: "25px",
                       height: "28px",
-                      background: themeColor(),
+                      background: themeColor()
                     }}
                     src={stamp}
                   />

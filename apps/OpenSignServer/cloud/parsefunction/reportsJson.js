@@ -32,6 +32,18 @@ export default function reportJson(id, userId) {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
           Placeholders: { $ne: null },
+          Signers: {
+            $inQuery: {
+              where: {
+                UserId: {
+                  __type: 'Pointer',
+                  className: '_User',
+                  objectId: currentUserId,
+                },
+              },
+              className: 'contracts_Contactbook',
+            },
+          },
         },
         keys: [
           'Name',
@@ -154,7 +166,7 @@ export default function reportJson(id, userId) {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
         },
-        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: ['Name', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
       };
     //  Recent signature requests report show on dashboard
     case '5Go51Q7T8r':
@@ -168,17 +180,20 @@ export default function reportJson(id, userId) {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
           Placeholders: { $ne: null },
+          Signers: {
+            $inQuery: {
+              where: {
+                UserId: {
+                  __type: 'Pointer',
+                  className: '_User',
+                  objectId: currentUserId,
+                },
+              },
+              className: 'contracts_Contactbook',
+            },
+          },
         },
-        keys: [
-          'Name',
-          'Note',
-          'Folder.Name',
-          'URL',
-          'ExtUserPtr.Name',
-          'Signers.Name',
-          'Signers.UserId',
-          'AuditTrail',
-        ],
+        keys: ['Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name', 'Signers.UserId', 'AuditTrail'],
       };
     // Drafts report show on dashboard
     case 'kC5mfynCi4':
@@ -202,6 +217,7 @@ export default function reportJson(id, userId) {
     case '5KhaPr482K':
       return {
         reportName: 'Contactbook',
+        reportClass: 'contracts_Contactbook',
         params: {
           CreatedBy: {
             __type: 'Pointer',
@@ -211,6 +227,21 @@ export default function reportJson(id, userId) {
           IsDeleted: { $ne: true },
         },
         keys: ['Name', 'Email', 'Phone'],
+      };
+    // Templates report
+    case '6TeaPr321t':
+      return {
+        reportName: 'Templates',
+        reportClass: 'contracts_Template',
+        params: {
+          Type: { $ne: 'Folder' },
+          CreatedBy: {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: currentUserId,
+          },
+        },
+        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
       };
     default:
       return null;

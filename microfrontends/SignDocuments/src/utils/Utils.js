@@ -669,10 +669,13 @@ export const handleImageResize = (
   containerWH,
   showResize
 ) => {
-  const filterSignerPos = signerPos.filter(
-    (data) => data.signerObjId === signerId
-  );
+  // const filterSignerPos = signerPos.filter(
+  //   (data) => data.signerObjId === signerId
+  // );
 
+  const filterSignerPos = signerPos.filter(
+    (data) => data.Id === signerId
+  );
   if (filterSignerPos.length > 0) {
     const getPlaceHolder = filterSignerPos[0].placeHolder;
     const getPageNumer = getPlaceHolder.filter(
@@ -704,13 +707,19 @@ export const handleImageResize = (
           return obj;
         });
 
+        // const newUpdateSigner = signerPos.map((obj, ind) => {
+        //   if (obj.signerObjId === signerId) {
+        //     return { ...obj, placeHolder: newUpdateSignPos };
+        //   }
+        //   return obj;
+        // });
+
         const newUpdateSigner = signerPos.map((obj, ind) => {
-          if (obj.signerObjId === signerId) {
+          if (obj.Id === signerId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
           return obj;
         });
-
         setSignerPos(newUpdateSigner);
       } else {
         const getXYdata = getPageNumer[0].pos;
@@ -734,8 +743,14 @@ export const handleImageResize = (
           return obj;
         });
 
+        // const newUpdateSigner = signerPos.map((obj, ind) => {
+        //   if (obj.signerObjId === signerId) {
+        //     return { ...obj, placeHolder: newUpdateSignPos };
+        //   }
+        //   return obj;
+        // });
         const newUpdateSigner = signerPos.map((obj, ind) => {
-          if (obj.signerObjId === signerId) {
+          if (obj.Id === signerId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
           return obj;
@@ -964,4 +979,71 @@ export const signPdfFun = async (
     });
 
   return response;
+};
+
+export const randomId = () => Math.floor(1000 + Math.random() * 9000);
+
+export const createDocument = async (template, placeholders, signerData) => {
+  if (template && template.length > 0) {
+    const Doc = template[0];
+
+    let placeholdersArr = []
+    if(placeholders?.length > 0 ){
+      placeholdersArr=  placeholders
+    }
+    let signers = []
+    if(signerData?.length > 0){
+       signerData.forEach((x) => {
+        if(x.objectId){
+          const obj =  {
+            __type: "Pointer",
+            className: "contracts_Contactbook",
+            objectId: x.objectId
+          };
+          signers.push(obj)
+        }
+      });
+    }
+    const data = {
+      Name: Doc.Name,
+      URL: Doc.URL,
+      SignedUrl: Doc.SignedUrl,
+      Description: Doc.Description,
+      Note: Doc.Note,
+      Placeholders: placeholdersArr,
+      ExtUserPtr: {
+        __type: "Pointer",
+        className: "contracts_Users",
+        objectId: Doc.ExtUserPtr.objectId
+      },
+      CreatedBy: {
+        __type: "Pointer",
+        className: "_User",
+        objectId: Doc.CreatedBy.objectId
+      },
+      Signers: signers
+    };
+
+    try {
+      const res = await axios.post(
+        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+          "_appName"
+        )}_Document`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      if (res) {
+        return { status: "success", id: res.data.objectId };
+      }
+    } catch (err) {
+      console.log("axois err ", err);
+      return { status: "error", id: "Something Went Wrong!" };
+    }
+  }
 };

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
-
-const AppendFormInForm = (props) => {
+import "../css/AddUser.css";
+const AddUser = (props) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -11,6 +11,8 @@ const AppendFormInForm = (props) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
+  Parse.serverURL = parseBaseUrl;
+  Parse.initialize(parseAppId);
 
   useEffect(() => {
     checkUserExist();
@@ -106,17 +108,9 @@ const AppendFormInForm = (props) => {
           const res = await contactQuery.save();
 
           const parseData = JSON.parse(JSON.stringify(res));
-          if (props.details) {
-            props.details({
-              value: parseData[props.valueKey],
-              label: parseData[props.displayKey]
-            });
-          }
+          props.details(parseData);
           if (props.closePopup) {
             props.closePopup();
-          }
-          if (props.handleUserData) {
-            props.handleUserData(parseData);
           }
 
           setIsLoader(false);
@@ -164,17 +158,12 @@ const AppendFormInForm = (props) => {
           const res = await contactQuery.save();
 
           const parseData = JSON.parse(JSON.stringify(res));
-          if (props.details) {
-            props.details({
-              value: parseData[props.valueKey],
-              label: parseData[props.displayKey]
-            });
-          }
+          props.details({
+            value: parseData[props.valueKey],
+            label: parseData[props.displayKey]
+          });
           if (props.closePopup) {
             props.closePopup();
-          }
-          if (props.handleUserData) {
-            props.handleUserData(parseData);
           }
           setIsLoader(false);
           // Reset the form fields
@@ -207,9 +196,9 @@ const AppendFormInForm = (props) => {
   };
 
   return (
-    <div className="h-full p-[20px]">
+    <div className="addusercontainer">
       {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30">
+        <div className="loaderdiv">
           <div
             style={{
               fontSize: "45px",
@@ -219,9 +208,11 @@ const AppendFormInForm = (props) => {
           ></div>
         </div>
       )}
-      <div className="w-full mx-auto p-2">
+      <div className="form-wrapper">
+        <div style={{ fontSize: 14, fontWeight: "700" }}>Add User</div>
+
         {isUserExist && (
-          <div className="mb-3">
+          <div className="form-section">
             <input
               type="checkbox"
               id="addYourself"
@@ -229,17 +220,14 @@ const AppendFormInForm = (props) => {
               onChange={handleAddYourselfChange}
               className="form-checkbox"
             />
-            <label htmlFor="addYourself" className="ml-2 text-gray-700">
+            <label htmlFor="addYourself" className="checkbox-label ">
               Add Yourself
             </label>
           </div>
         )}
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label
-              htmlFor="name"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+          <div className="form-section">
+            <label htmlFor="name" style={{ fontSize: 13 }}>
               Name
               <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
@@ -250,14 +238,11 @@ const AppendFormInForm = (props) => {
               onChange={(e) => setName(e.target.value)}
               required
               disabled={addYourself}
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+              className="addUserInput"
             />
           </div>
-          <div className="mb-3">
-            <label
-              htmlFor="email"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+          <div className="form-section">
+            <label htmlFor="email" style={{ fontSize: 13 }}>
               Email
               <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
@@ -268,14 +253,11 @@ const AppendFormInForm = (props) => {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={addYourself}
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+              className="addUserInput"
             />
           </div>
-          <div className="mb-3">
-            <label
-              htmlFor="phone"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+          <div className="form-section">
+            <label htmlFor="phone" style={{ fontSize: 13 }}>
               Phone
               <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
@@ -286,21 +268,18 @@ const AppendFormInForm = (props) => {
               onChange={(e) => setPhone(e.target.value)}
               required
               disabled={addYourself}
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+              className="addUserInput"
             />
           </div>
 
-          <div className="mt-4 flex justify-start">
-            <button
-              type="submit"
-              className="bg-[#1ab6ce] text-sm text-white px-4 py-2 rounded shadow focus:outline-none"
-            >
+          <div className="buttoncontainer">
+            <button type="submit" className="submitbutton">
               Submit
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
-              className="bg-[#188ae2] text-sm text-white px-4 py-2 rounded ml-2 shadow focus:outline-none"
+              className="resetbutton"
             >
               Reset
             </button>
@@ -311,4 +290,4 @@ const AppendFormInForm = (props) => {
   );
 };
 
-export default AppendFormInForm;
+export default AddUser;

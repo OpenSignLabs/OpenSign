@@ -34,7 +34,9 @@ function Header({
   dataTut4,
   alreadySign,
   isSignYourself,
-  setIsEmail
+  setIsEmail,
+  completeBtnTitle,
+  setIsEditTemplate
 }) {
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
@@ -345,7 +347,7 @@ function Header({
                               }}
                             >
                               <i
-                                class="fa fa-envelope"
+                                className="fa fa-envelope"
                                 style={{ marginRight: "2px" }}
                                 aria-hidden="true"
                               ></i>
@@ -415,7 +417,7 @@ function Header({
                         }}
                         data-tut={dataTut4}
                       >
-                        Send
+                        {completeBtnTitle ? completeBtnTitle : "Send"}
                       </div>
                     ) : (
                       <div
@@ -533,17 +535,17 @@ function Header({
           ) : isPlaceholder ? (
             <>
               {!isMailSend &&
-                signersdata.Signers &&
-                signersdata.Signers.length !== signerPos.length && (
+                signersdata.length > 0 &&
+                signersdata.length !== signerPos.length && (
                   <div>
                     {signerPos.length === 0 ? (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add all {signersdata.Signers.length - signerPos.length}{" "}
+                        Add all {signersdata.length - signerPos.length}{" "}
                         recipients signature
                       </span>
                     ) : (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add {signersdata.Signers.length - signerPos.length} more
+                        Add {signersdata.length - signerPos.length} more
                         recipients signature
                       </span>
                     )}
@@ -551,6 +553,11 @@ function Header({
                 )}
 
               <div>
+                {setIsEditTemplate && (
+                  <button onClick={() => setIsEditTemplate(true)} style={{border:"none", outline:"none", textAlign:"center"}}>
+                    <i className="fa-solid fa-gear fa-lg"></i>
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     navigate(-1);
@@ -573,7 +580,7 @@ function Header({
                   }}
                   className={isMailSend ? "sendMail" : "sendMail sendHover"}
                 >
-                  Send
+                  {completeBtnTitle ? completeBtnTitle : "Send"}
                 </button>
               </div>
             </>
@@ -723,7 +730,7 @@ function Header({
                 onClick={() => setIsEmail(true)}
               >
                 <i
-                  class="fa fa-envelope"
+                  className="fa fa-envelope"
                   style={{
                     color: "white",
                     fontSize: "15px",
