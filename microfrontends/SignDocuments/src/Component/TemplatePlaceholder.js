@@ -32,6 +32,7 @@ import EditTemplate from "./component/EditTemplate";
 import ModalUi from "../premitives/ModalUi";
 import AddRoleModal from "./component/AddRoleModal";
 import PlaceholderCopy from "./component/PlaceholderCopy";
+import ModalComponent from "./component/modalComponent";
 
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
@@ -169,6 +170,7 @@ const TemplatePlaceholder = () => {
 
   useEffect(() => {
     fetchTemplate();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -427,7 +429,7 @@ const TemplatePlaceholder = () => {
       //   .indexOf(signerObjId);
 
       const colorIndex = signerPos.map((e) => e.Id).indexOf(uniqueId);
-
+      const blockColor = signersdata.find((x) => x.Id === uniqueId)?.blockColor;
       const getPlaceHolder = filterSignerPos[0].placeHolder;
       const updatePlace = getPlaceHolder.filter(
         (data) => data.pageNumber !== pageNumber
@@ -448,7 +450,7 @@ const TemplatePlaceholder = () => {
         let placeHolderPos;
         if (contractName) {
           placeHolderPos = {
-            blockColor: color[isSelectListId],
+            blockColor: blockColor ? blockColor : color[isSelectListId],
             signerObjId: signerObjId,
             placeHolder: updatePlace,
             signerPtr: {
@@ -461,7 +463,7 @@ const TemplatePlaceholder = () => {
           };
         } else {
           placeHolderPos = {
-            blockColor: color[isSelectListId],
+            blockColor: blockColor ? blockColor : color[isSelectListId],
             signerObjId: "",
             placeHolder: updatePlace,
             signerPtr: {},
@@ -515,6 +517,7 @@ const TemplatePlaceholder = () => {
         setSignerPos(newArray);
       }
     } else {
+      const blockColor = signersdata.find((x) => x.Id === uniqueId)?.blockColor;
       let placeHolderPos;
       if (contractName) {
         placeHolderPos = {
@@ -524,7 +527,7 @@ const TemplatePlaceholder = () => {
             objectId: signerObjId
           },
           signerObjId: signerObjId,
-          blockColor: color[isSelectListId],
+          blockColor: blockColor ? blockColor : color[isSelectListId],
           placeHolder: xyPosArr,
           Role: roleName,
           Id: uniqueId
@@ -533,7 +536,7 @@ const TemplatePlaceholder = () => {
         placeHolderPos = {
           signerPtr: {},
           signerObjId: "",
-          blockColor: color[isSelectListId],
+          blockColor: blockColor ? blockColor : color[isSelectListId],
           placeHolder: xyPosArr,
           Role: roleName,
           Id: uniqueId
@@ -981,7 +984,6 @@ const TemplatePlaceholder = () => {
     setIsModalRole(false);
   };
 
-
   return (
     <div>
       <Title title={"Template"} />
@@ -1084,6 +1086,12 @@ const TemplatePlaceholder = () => {
                   )}
                 </div>
               </ModalUi>
+              {isCreateDoc && <Loader isLoading={isLoading} />}
+              <ModalComponent
+                isShow={isShowEmail}
+                type={"signersAlert"}
+                setIsShowEmail={setIsShowEmail}
+              />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}
