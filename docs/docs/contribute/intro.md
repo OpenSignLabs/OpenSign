@@ -6,17 +6,6 @@ sidebar_position: 1
 
 Hello there! Thank you for considering contributing to OpenSign, the open-source alternative to DocuSign. OpenSign is not just a project, but a community endeavor that aims to create a robust, user-friendly, and secure electronic signature solution. Your contributions, irrespective of their size, are valuable in making this vision a reality.
 
-## Hacktoberfest at OpenSign
-
-We are excited to announce that OpenSign is participating in Hacktoberfest! Hacktoberfest is a month-long celebration of open source where contributors can earn swag by contributing to open source projects. It's a fantastic opportunity to contribute, learn, and engage with the community. We welcome contributions of all kinds, and we are looking forward to seeing your contributions!
-
-### Hacktoberfest Guidelines
-
-1. **Registration:** Ensure you have signed up for [Hacktoberfest](https://hacktoberfest.digitalocean.com/) before making contributions to qualify for rewards.
-2. **Quality Standards:** Substantial contributions are encouraged. PRs with minor text edits or that are deemed as low effort by maintainers may be marked as "invalid" or "spam".
-3. **Pull Requests:** Only pull requests submitted between October 1st and October 31st will count towards the event.
-4. **Respect:** Adhere to our [Code of Conduct](CODE_OF_CONDUCT.md) and maintain a respectful and collaborative environment.
-
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
