@@ -77,7 +77,7 @@ const ReportTable = ({
             }
           );
   
-          console.log("templateDeatils.data ", templateDeatils.data);
+          // console.log("templateDeatils.data ", templateDeatils.data);
           const templateData =
             templateDeatils.data && templateDeatils.data.result;
           if (!templateData.error) {

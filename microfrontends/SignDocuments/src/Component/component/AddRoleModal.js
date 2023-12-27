@@ -8,7 +8,9 @@ const AddRoleModal = (props) => {
       isOpen={props.isModalRole}
       handleClose={props.handleCloseRoleModal}
     >
-      <div className="addusercontainer">
+      <div 
+        className="addusercontainer"
+      >
         <form
           style={{ display: "flex", flexDirection: "column" }}
           onSubmit={props.handleAddRole}

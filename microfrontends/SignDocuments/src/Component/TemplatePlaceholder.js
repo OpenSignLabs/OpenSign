@@ -58,7 +58,7 @@ const TemplatePlaceholder = () => {
   const [handleError, setHandleError] = useState();
   const [currentEmail, setCurrentEmail] = useState();
   const [pdfNewWidth, setPdfNewWidth] = useState();
-  const [placeholderTour, setPlaceholderTour] = useState(true);
+  const [templateTour, setTemplateTour] = useState(true);
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
@@ -301,10 +301,10 @@ const TemplatePlaceholder = () => {
       if (tourstatus && tourstatus.length > 0) {
         setTourStatus(tourstatus);
         const checkTourRecipients = tourstatus.filter(
-          (data) => data.placeholder
+          (data) => data.templatetour
         );
         if (checkTourRecipients && checkTourRecipients.length > 0) {
-          setCheckTourStatus(checkTourRecipients[0].placeholder);
+          setCheckTourStatus(checkTourRecipients[0].templatetour);
         }
       }
       const loadObj = {
@@ -767,11 +767,18 @@ const TemplatePlaceholder = () => {
 
   const tourConfig = [
     {
+      selector: '[data-tut="reactourAddbtn"]',
+      content: `Clicking "Add" button will show you popup of Add Role, fill role name or it will take by default name and create new receipent.`,
+      position: "top",
+      observe: '[data-tut="reactourAddbtn--observe"]',
+      style: { fontSize: "13px" }
+    },
+    {
       selector: '[data-tut="reactourFirst"]',
       content: `Select a recipient from this list to add a place-holder where he is supposed to sign.The placeholder will appear in the same colour as the recipient name once you drop it on the document.`,
       position: "top",
-
-      style: { fontSize: "13px" }
+      style: { fontSize: "13px" },
+      action: () => handleCloseRoleModal()
     },
     {
       selector: '[data-tut="reactourSecond"]',
@@ -787,7 +794,7 @@ const TemplatePlaceholder = () => {
     },
     {
       selector: '[data-tut="reactourFour"]',
-      content: `Clicking "Send" button will share the document with all the recipients.It will also send out emails to everyone on the recipients list.`,
+      content: `Clicking "Save" button will save the template and will ask you for creating new document.`,
       position: "top",
       style: { fontSize: "13px" }
     }
@@ -795,21 +802,21 @@ const TemplatePlaceholder = () => {
 
   //function for update TourStatus
   const closeTour = async () => {
-    setPlaceholderTour(false);
+    setTemplateTour(false);
     const extUserClass = localStorage.getItem("extended_class");
     let updatedTourStatus = [];
     if (tourStatus.length > 0) {
       updatedTourStatus = [...tourStatus];
-      const placeholderIndex = tourStatus.findIndex(
-        (obj) => obj["placeholder"] === false || obj["placeholder"] === true
+      const templatetourIndex = tourStatus.findIndex(
+        (obj) => obj["templatetour"] === false || obj["templatetour"] === true
       );
-      if (placeholderIndex !== -1) {
-        updatedTourStatus[placeholderIndex] = { placeholder: true };
+      if (templatetourIndex !== -1) {
+        updatedTourStatus[templatetourIndex] = { templatetour: true };
       } else {
-        updatedTourStatus.push({ placeholder: true });
+        updatedTourStatus.push({ templatetour: true });
       }
     } else {
-      updatedTourStatus = [{ placeholder: true }];
+      updatedTourStatus = [{ templatetour: true }];
     }
     await axios
       .put(
@@ -989,7 +996,7 @@ const TemplatePlaceholder = () => {
               <Tour
                 onRequestClose={closeTour}
                 steps={tourConfig}
-                isOpen={placeholderTour}
+                isOpen={templateTour}
                 rounded={5}
                 closeWithMask={false}
               />
@@ -1214,7 +1221,7 @@ const TemplatePlaceholder = () => {
           </div>
         )}
       </DndProvider>
-      <div>
+      <div data-tut="reactourAddbtn--observe">
         <AddRoleModal
           isModalRole={isModalRole}
           roleName={roleName}
