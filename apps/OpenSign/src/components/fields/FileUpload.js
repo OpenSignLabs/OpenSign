@@ -271,7 +271,7 @@ const FileUpload = (props) => {
                 <i className="fa-solid fa-xmark"></i>
               </div>
             </div>
-            {process.env.DROPBOX_APP_KEY && (
+            {process.env.REACT_APP_DROPBOX_API_KEY && (
               <DropboxChooser
                 onSuccess={dropboxSuccess}
                 onCancel={dropboxCancel}
@@ -296,7 +296,7 @@ const FileUpload = (props) => {
               accept="application/pdf,application/vnd.ms-excel"
               onChange={onChange}
             />
-            {process.env.DROPBOX_APP_KEY && (
+            {process.env.REACT_APP_DROPBOX_API_KEY && (
               <DropboxChooser
                 onSuccess={dropboxSuccess}
                 onCancel={dropboxCancel}
