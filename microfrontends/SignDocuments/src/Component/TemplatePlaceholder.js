@@ -102,7 +102,6 @@ const TemplatePlaceholder = () => {
   });
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 1,
@@ -127,7 +126,6 @@ const TemplatePlaceholder = () => {
 
   const [{ isDragSignatureSS }, dragSignatureSS] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 3,
@@ -140,7 +138,6 @@ const TemplatePlaceholder = () => {
 
   const [{ isDragStampSS }, dragStampSS] = useDrag({
     type: "BOX",
-
     item: {
       type: "BOX",
       id: 4,
@@ -405,15 +402,14 @@ const TemplatePlaceholder = () => {
 
       xyPosArr.push(xyPos);
     }
-
-    //add signers objId first inseretion
+    const { blockColor, Role } = signersdata.find((x) => x.Id === uniqueId);
+    //adding placholder in existing signer pos array (placaholder)
     if (filterSignerPos.length > 0) {
       // const colorIndex = signerPos
       //   .map((e) => e.signerObjId)
       //   .indexOf(signerObjId);
 
       const colorIndex = signerPos.map((e) => e.Id).indexOf(uniqueId);
-      const blockColor = signersdata.find((x) => x.Id === uniqueId)?.blockColor;
       const getPlaceHolder = filterSignerPos[0].placeHolder;
       const updatePlace = getPlaceHolder.filter(
         (data) => data.pageNumber !== pageNumber
@@ -442,7 +438,7 @@ const TemplatePlaceholder = () => {
               className: `${contractName}`,
               objectId: signerObjId
             },
-            Role: roleName,
+            Role: Role ? Role : roleName,
             Id: uniqueId
           };
         } else {
@@ -451,7 +447,7 @@ const TemplatePlaceholder = () => {
             signerObjId: "",
             placeHolder: updatePlace,
             signerPtr: {},
-            Role: roleName,
+            Role: Role ? Role : roleName,
             Id: uniqueId
           };
         }
@@ -476,7 +472,7 @@ const TemplatePlaceholder = () => {
               className: `${contractName}`,
               objectId: signerObjId
             },
-            Role: roleName,
+            Role: Role ? Role : roleName,
             Id: uniqueId
           };
         } else {
@@ -485,12 +481,11 @@ const TemplatePlaceholder = () => {
             signerObjId: "",
             placeHolder: newSignPoss,
             signerPtr: {},
-            Role: roleName,
+            Role: Role ? Role : roleName,
             Id: uniqueId
           };
         }
 
-        // signerPos.splice(colorIndex, 1, placeHolderPos);
         const newArry = [placeHolderPos];
         const newArray = [
           ...signerPos.slice(0, colorIndex),
@@ -501,7 +496,7 @@ const TemplatePlaceholder = () => {
         setSignerPos(newArray);
       }
     } else {
-      const blockColor = signersdata.find((x) => x.Id === uniqueId)?.blockColor;
+      //adding new placeholder for selected signer in pos array (placeholder)
       let placeHolderPos;
       if (contractName) {
         placeHolderPos = {
@@ -513,7 +508,7 @@ const TemplatePlaceholder = () => {
           signerObjId: signerObjId,
           blockColor: blockColor ? blockColor : color[isSelectListId],
           placeHolder: xyPosArr,
-          Role: roleName,
+          Role: Role ? Role : roleName,
           Id: uniqueId
         };
       } else {
@@ -522,7 +517,7 @@ const TemplatePlaceholder = () => {
           signerObjId: "",
           blockColor: blockColor ? blockColor : color[isSelectListId],
           placeHolder: xyPosArr,
-          Role: roleName,
+          Role: Role ? Role : roleName,
           Id: uniqueId
         };
       }
@@ -871,14 +866,17 @@ const TemplatePlaceholder = () => {
     e.preventDefault();
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
     const Id = randomId();
+    const index = signersdata?.length || 0;
     const obj = {
       Role: roleName || "User " + count,
-      Id: Id
+      Id: Id,
+      blockColor: color[index]
     };
     setSignersData((prevArr) => [...prevArr, obj]);
     setIsModalRole(false);
     setRoleName("");
     setUniqueId(Id);
+    setIsSelectId(index);
     setIsMailSend(false);
   };
   // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
