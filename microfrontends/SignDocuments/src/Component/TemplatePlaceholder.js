@@ -156,6 +156,7 @@ const TemplatePlaceholder = () => {
   const [isEditTemplate, setIsEditTemplate] = useState(false);
   const [isPageCopy, setIsPageCopy] = useState(false);
   const [signKey, setSignKey] = useState();
+  const [IsReceipent, setIsReceipent] = useState(true);
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -339,192 +340,198 @@ const TemplatePlaceholder = () => {
 
   // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor) => {
-    const posZIndex = zIndex + 1;
-    setZIndex(posZIndex);
-    const newWidth = containerWH.width;
-    const scale = pdfOriginalWidth / newWidth;
-    const key = randomId();
-    // let filterSignerPos = signerPos.filter(
-    //   (data) => data.signerObjId === signerObjId
-    // );
-    let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-    let dropData = [];
-    let xyPosArr = [];
-    let xyPos = {};
-    if (item === "onclick") {
-      const dropObj = {
-        xPosition: window.innerWidth / 2 - 100,
-        yPosition: window.innerHeight / 2 - 60,
-        isStamp: monitor,
-        key: key,
-        isDrag: false,
-        scale: scale,
-        isMobile: isMobile,
-        yBottom: window.innerHeight / 2 - 60,
-        zIndex: posZIndex
-      };
-      dropData.push(dropObj);
-      xyPos = {
-        pageNumber: pageNumber,
-        pos: dropData
-      };
+    const singer = signersdata.find((x) => x.Id === uniqueId);
 
-      xyPosArr.push(xyPos);
-    } else if (item.type === "BOX") {
-      const offset = monitor.getClientOffset();
-      //adding and updating drop position in array when user drop signature button in div
-      const containerRect = document
-        .getElementById("container")
-        .getBoundingClientRect();
-      const x = offset.x - containerRect.left;
-      const y = offset.y - containerRect.top;
-      const ybottom = containerRect.bottom - offset.y;
-
-      const dropObj = {
-        xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
-        yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
-        isStamp: isDragStamp || isDragStampSS ? true : false,
-        key: key,
-        isDrag: false,
-        firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
-        firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
-        yBottom: ybottom,
-        scale: scale,
-        isMobile: isMobile,
-        zIndex: posZIndex
-      };
-
-      dropData.push(dropObj);
-      xyPos = {
-        pageNumber: pageNumber,
-        pos: dropData
-      };
-
-      xyPosArr.push(xyPos);
-    }
-    const { blockColor, Role } = signersdata.find((x) => x.Id === uniqueId);
-    //adding placholder in existing signer pos array (placaholder)
-    if (filterSignerPos.length > 0) {
-      // const colorIndex = signerPos
-      //   .map((e) => e.signerObjId)
-      //   .indexOf(signerObjId);
-
-      const colorIndex = signerPos.map((e) => e.Id).indexOf(uniqueId);
-      const getPlaceHolder = filterSignerPos[0].placeHolder;
-      const updatePlace = getPlaceHolder.filter(
-        (data) => data.pageNumber !== pageNumber
-      );
-      const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-
-      //add entry of position for same signer on multiple page
-      if (getPageNumer.length > 0) {
-        const getPos = getPageNumer[0].pos;
-        const newSignPos = getPos.concat(dropData);
-        let xyPos = {
+    if (singer) {
+      const posZIndex = zIndex + 1;
+      setZIndex(posZIndex);
+      const newWidth = containerWH.width;
+      const scale = pdfOriginalWidth / newWidth;
+      const key = randomId();
+      // let filterSignerPos = signerPos.filter(
+      //   (data) => data.signerObjId === signerObjId
+      // );
+      let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+      let dropData = [];
+      let xyPosArr = [];
+      let xyPos = {};
+      if (item === "onclick") {
+        const dropObj = {
+          xPosition: window.innerWidth / 2 - 100,
+          yPosition: window.innerHeight / 2 - 60,
+          isStamp: monitor,
+          key: key,
+          isDrag: false,
+          scale: scale,
+          isMobile: isMobile,
+          yBottom: window.innerHeight / 2 - 60,
+          zIndex: posZIndex
+        };
+        dropData.push(dropObj);
+        xyPos = {
           pageNumber: pageNumber,
-          pos: newSignPos
+          pos: dropData
         };
-        updatePlace.push(xyPos);
-        let placeHolderPos;
-        if (contractName) {
-          placeHolderPos = {
-            blockColor: blockColor ? blockColor : color[isSelectListId],
-            signerObjId: signerObjId,
-            placeHolder: updatePlace,
-            signerPtr: {
-              __type: "Pointer",
-              className: `${contractName}`,
-              objectId: signerObjId
-            },
-            Role: Role ? Role : roleName,
-            Id: uniqueId
-          };
-        } else {
-          placeHolderPos = {
-            blockColor: blockColor ? blockColor : color[isSelectListId],
-            signerObjId: "",
-            placeHolder: updatePlace,
-            signerPtr: {},
-            Role: Role ? Role : roleName,
-            Id: uniqueId
-          };
-        }
-        // signerPos.splice(colorIndex, 1, placeHolderPos);
-        const newArry = [placeHolderPos];
-        const newArray = [
-          ...signerPos.slice(0, colorIndex),
-          ...newArry,
-          ...signerPos.slice(colorIndex + 1)
-        ];
-        setSignerPos(newArray);
-      } else {
-        const newSignPoss = getPlaceHolder.concat(xyPosArr[0]);
-        let placeHolderPos;
-        if (contractName) {
-          placeHolderPos = {
-            blockColor: color[isSelectListId],
-            signerObjId: signerObjId,
-            placeHolder: newSignPoss,
-            signerPtr: {
-              __type: "Pointer",
-              className: `${contractName}`,
-              objectId: signerObjId
-            },
-            Role: Role ? Role : roleName,
-            Id: uniqueId
-          };
-        } else {
-          placeHolderPos = {
-            blockColor: color[isSelectListId],
-            signerObjId: "",
-            placeHolder: newSignPoss,
-            signerPtr: {},
-            Role: Role ? Role : roleName,
-            Id: uniqueId
-          };
-        }
 
-        const newArry = [placeHolderPos];
-        const newArray = [
-          ...signerPos.slice(0, colorIndex),
-          ...newArry,
-          ...signerPos.slice(colorIndex + 1)
-        ];
+        xyPosArr.push(xyPos);
+      } else if (item.type === "BOX") {
+        const offset = monitor.getClientOffset();
+        //adding and updating drop position in array when user drop signature button in div
+        const containerRect = document
+          .getElementById("container")
+          .getBoundingClientRect();
+        const x = offset.x - containerRect.left;
+        const y = offset.y - containerRect.top;
+        const ybottom = containerRect.bottom - offset.y;
 
-        setSignerPos(newArray);
+        const dropObj = {
+          xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
+          yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
+          isStamp: isDragStamp || isDragStampSS ? true : false,
+          key: key,
+          isDrag: false,
+          firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
+          firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
+          yBottom: ybottom,
+          scale: scale,
+          isMobile: isMobile,
+          zIndex: posZIndex
+        };
+
+        dropData.push(dropObj);
+        xyPos = {
+          pageNumber: pageNumber,
+          pos: dropData
+        };
+
+        xyPosArr.push(xyPos);
       }
+      const { blockColor, Role } = signersdata.find((x) => x.Id === uniqueId);
+      //adding placholder in existing signer pos array (placaholder)
+      if (filterSignerPos.length > 0) {
+        // const colorIndex = signerPos
+        //   .map((e) => e.signerObjId)
+        //   .indexOf(signerObjId);
+
+        const colorIndex = signerPos.map((e) => e.Id).indexOf(uniqueId);
+        const getPlaceHolder = filterSignerPos[0].placeHolder;
+        const updatePlace = getPlaceHolder.filter(
+          (data) => data.pageNumber !== pageNumber
+        );
+        const getPageNumer = getPlaceHolder.filter(
+          (data) => data.pageNumber === pageNumber
+        );
+
+        //add entry of position for same signer on multiple page
+        if (getPageNumer.length > 0) {
+          const getPos = getPageNumer[0].pos;
+          const newSignPos = getPos.concat(dropData);
+          let xyPos = {
+            pageNumber: pageNumber,
+            pos: newSignPos
+          };
+          updatePlace.push(xyPos);
+          let placeHolderPos;
+          if (contractName) {
+            placeHolderPos = {
+              blockColor: blockColor ? blockColor : color[isSelectListId],
+              signerObjId: signerObjId,
+              placeHolder: updatePlace,
+              signerPtr: {
+                __type: "Pointer",
+                className: `${contractName}`,
+                objectId: signerObjId
+              },
+              Role: Role ? Role : roleName,
+              Id: uniqueId
+            };
+          } else {
+            placeHolderPos = {
+              blockColor: blockColor ? blockColor : color[isSelectListId],
+              signerObjId: "",
+              placeHolder: updatePlace,
+              signerPtr: {},
+              Role: Role ? Role : roleName,
+              Id: uniqueId
+            };
+          }
+          // signerPos.splice(colorIndex, 1, placeHolderPos);
+          const newArry = [placeHolderPos];
+          const newArray = [
+            ...signerPos.slice(0, colorIndex),
+            ...newArry,
+            ...signerPos.slice(colorIndex + 1)
+          ];
+          setSignerPos(newArray);
+        } else {
+          const newSignPoss = getPlaceHolder.concat(xyPosArr[0]);
+          let placeHolderPos;
+          if (contractName) {
+            placeHolderPos = {
+              blockColor: color[isSelectListId],
+              signerObjId: signerObjId,
+              placeHolder: newSignPoss,
+              signerPtr: {
+                __type: "Pointer",
+                className: `${contractName}`,
+                objectId: signerObjId
+              },
+              Role: Role ? Role : roleName,
+              Id: uniqueId
+            };
+          } else {
+            placeHolderPos = {
+              blockColor: color[isSelectListId],
+              signerObjId: "",
+              placeHolder: newSignPoss,
+              signerPtr: {},
+              Role: Role ? Role : roleName,
+              Id: uniqueId
+            };
+          }
+
+          const newArry = [placeHolderPos];
+          const newArray = [
+            ...signerPos.slice(0, colorIndex),
+            ...newArry,
+            ...signerPos.slice(colorIndex + 1)
+          ];
+
+          setSignerPos(newArray);
+        }
+      } else {
+        //adding new placeholder for selected signer in pos array (placeholder)
+        let placeHolderPos;
+        if (contractName) {
+          placeHolderPos = {
+            signerPtr: {
+              __type: "Pointer",
+              className: `${contractName}`,
+              objectId: signerObjId
+            },
+            signerObjId: signerObjId,
+            blockColor: blockColor ? blockColor : color[isSelectListId],
+            placeHolder: xyPosArr,
+            Role: Role ? Role : roleName,
+            Id: uniqueId
+          };
+        } else {
+          placeHolderPos = {
+            signerPtr: {},
+            signerObjId: "",
+            blockColor: blockColor ? blockColor : color[isSelectListId],
+            placeHolder: xyPosArr,
+            Role: Role ? Role : roleName,
+            Id: uniqueId
+          };
+        }
+
+        setSignerPos((prev) => [...prev, placeHolderPos]);
+      }
+      setIsMailSend(false);
     } else {
-      //adding new placeholder for selected signer in pos array (placeholder)
-      let placeHolderPos;
-      if (contractName) {
-        placeHolderPos = {
-          signerPtr: {
-            __type: "Pointer",
-            className: `${contractName}`,
-            objectId: signerObjId
-          },
-          signerObjId: signerObjId,
-          blockColor: blockColor ? blockColor : color[isSelectListId],
-          placeHolder: xyPosArr,
-          Role: Role ? Role : roleName,
-          Id: uniqueId
-        };
-      } else {
-        placeHolderPos = {
-          signerPtr: {},
-          signerObjId: "",
-          blockColor: blockColor ? blockColor : color[isSelectListId],
-          placeHolder: xyPosArr,
-          Role: Role ? Role : roleName,
-          Id: uniqueId
-        };
-      }
-
-      setSignerPos((prev) => [...prev, placeHolderPos]);
+      setIsReceipent(false);
     }
-    setIsMailSend(false);
   };
   //function for get pdf page details
   const pageDetails = async (pdf) => {
@@ -1025,6 +1032,16 @@ const TemplatePlaceholder = () => {
               >
                 <div style={{ height: "100%", padding: 20 }}>
                   <p>Please add field for all recipients.</p>
+                </div>
+              </ModalUi>
+              <ModalUi
+                headerColor={"#dc3545"}
+                isOpen={!IsReceipent}
+                title={"Receipent required"}
+                handleClose={() => setIsReceipent(true)}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
+                  <p>Please add receipent.</p>
                 </div>
               </ModalUi>
               {/* this modal is used show send mail  message and after send mail success message */}
