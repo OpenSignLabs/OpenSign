@@ -673,92 +673,91 @@ export const handleImageResize = (
   //   (data) => data.signerObjId === signerId
   // );
 
-  const filterSignerPos = signerPos.filter(
-    (data) => data.Id === signerId
-  );
+  const filterSignerPos = signerPos.filter((data) => data.Id === signerId);
+
   if (filterSignerPos.length > 0) {
     const getPlaceHolder = filterSignerPos[0].placeHolder;
     const getPageNumer = getPlaceHolder.filter(
       (data) => data.pageNumber === pageNumber
     );
     if (getPageNumer.length > 0) {
-      const getXYdata = getPageNumer[0].pos.filter(
-        (data, ind) => data.key === key && data.Width && data.Height
-      );
-      if (getXYdata.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((url, ind) => {
-          if (url.key === key) {
-            return {
-              ...url,
-              Width: ref.offsetWidth,
-              Height: ref.offsetHeight,
-              IsResize: showResize ? true : false
-            };
-          }
-          return url;
-        });
+      // const getXYdata = getPageNumer[0].pos.filter(
+      //   (data, ind) => data.key === key && data.Width && data.Height
+      // );
+      // if (getXYdata.length > 0) {
+      //   const getXYdata = getPageNumer[0].pos;
+      //   const getPosData = getXYdata;
+      //   const addSignPos = getPosData.map((url, ind) => {
+      //     if (url.key === key) {
+      //       return {
+      //         ...url,
+      //         Width: ref.offsetWidth,
+      //         Height: ref.offsetHeight,
+      //         IsResize: showResize ? true : false
+      //       };
+      //     }
+      //     return url;
+      //   });
 
-        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-          if (obj.pageNumber === pageNumber) {
-            return { ...obj, pos: addSignPos };
-          }
-          return obj;
-        });
+      //   const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+      //     if (obj.pageNumber === pageNumber) {
+      //       return { ...obj, pos: addSignPos };
+      //     }
+      //     return obj;
+      //   });
 
-        // const newUpdateSigner = signerPos.map((obj, ind) => {
-        //   if (obj.signerObjId === signerId) {
-        //     return { ...obj, placeHolder: newUpdateSignPos };
-        //   }
-        //   return obj;
-        // });
+      //   // const newUpdateSigner = signerPos.map((obj, ind) => {
+      //   //   if (obj.signerObjId === signerId) {
+      //   //     return { ...obj, placeHolder: newUpdateSignPos };
+      //   //   }
+      //   //   return obj;
+      //   // });
 
-        const newUpdateSigner = signerPos.map((obj, ind) => {
-          if (obj.Id === signerId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
-          }
-          return obj;
-        });
-        setSignerPos(newUpdateSigner);
-      } else {
-        const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((url, ind) => {
-          if (url.key === key) {
-            return {
-              ...url,
-              Width: ref.offsetWidth,
-              Height: ref.offsetHeight,
-              IsResize: showResize ? true : false
-            };
-          }
-          return url;
-        });
+      //   const newUpdateSigner = signerPos.map((obj, ind) => {
+      //     if (obj.Id === signerId) {
+      //       return { ...obj, placeHolder: newUpdateSignPos };
+      //     }
+      //     return obj;
+      //   });
+      //   setSignerPos(newUpdateSigner);
+      // } else {
+      const getXYdata = getPageNumer[0].pos;
+      const getPosData = getXYdata;
+      const addSignPos = getPosData.map((url, ind) => {
+        if (url.key === key) {
+          return {
+            ...url,
+            Width: ref.offsetWidth,
+            Height: ref.offsetHeight,
+            IsResize: showResize ? true : false
+          };
+        }
+        return url;
+      });
 
-        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-          if (obj.pageNumber === pageNumber) {
-            return { ...obj, pos: addSignPos };
-          }
-          return obj;
-        });
+      const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+        if (obj.pageNumber === pageNumber) {
+          return { ...obj, pos: addSignPos };
+        }
+        return obj;
+      });
 
-        // const newUpdateSigner = signerPos.map((obj, ind) => {
-        //   if (obj.signerObjId === signerId) {
-        //     return { ...obj, placeHolder: newUpdateSignPos };
-        //   }
-        //   return obj;
-        // });
-        const newUpdateSigner = signerPos.map((obj, ind) => {
-          if (obj.Id === signerId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
-          }
-          return obj;
-        });
+      // const newUpdateSigner = signerPos.map((obj, ind) => {
+      //   if (obj.signerObjId === signerId) {
+      //     return { ...obj, placeHolder: newUpdateSignPos };
+      //   }
+      //   return obj;
+      // });
+      const newUpdateSigner = signerPos.map((obj, ind) => {
+        if (obj.Id === signerId) {
+          return { ...obj, placeHolder: newUpdateSignPos };
+        }
+        return obj;
+      });
 
-        setSignerPos(newUpdateSigner);
-      }
+      setSignerPos(newUpdateSigner);
     }
+    // }
   }
 };
 
@@ -987,20 +986,20 @@ export const createDocument = async (template, placeholders, signerData) => {
   if (template && template.length > 0) {
     const Doc = template[0];
 
-    let placeholdersArr = []
-    if(placeholders?.length > 0 ){
-      placeholdersArr=  placeholders
+    let placeholdersArr = [];
+    if (placeholders?.length > 0) {
+      placeholdersArr = placeholders;
     }
-    let signers = []
-    if(signerData?.length > 0){
-       signerData.forEach((x) => {
-        if(x.objectId){
-          const obj =  {
+    let signers = [];
+    if (signerData?.length > 0) {
+      signerData.forEach((x) => {
+        if (x.objectId) {
+          const obj = {
             __type: "Pointer",
             className: "contracts_Contactbook",
             objectId: x.objectId
           };
-          signers.push(obj)
+          signers.push(obj);
         }
       });
     }
