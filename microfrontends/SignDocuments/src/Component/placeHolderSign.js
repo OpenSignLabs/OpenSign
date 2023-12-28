@@ -912,6 +912,7 @@ function PlaceHolderSign() {
     setIsAddUser({ [id]: true });
   };
   const handleAddUser = (data) => {
+    if(data && data.objectId){
     const signerPtr = {
       __type: "Pointer",
       className: "contracts_Contactbook",
@@ -935,6 +936,7 @@ function PlaceHolderSign() {
     // console.log("updateSigner ", updateSigner);
 
     setSignersData(updateSigner);
+  }
   };
 
   const closePopup = () => {
@@ -1206,6 +1208,8 @@ function PlaceHolderSign() {
                   isMailSend={isMailSend}
                   setSelectedEmail={setSelectedEmail}
                   selectedEmail={selectedEmail}
+                  setUniqueId={setUniqueId}
+                  setRoleName={setRoleName}
                 />
               </div>
             ) : (
