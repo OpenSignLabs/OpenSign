@@ -41,7 +41,8 @@ export default function DropboxChooser({ children, onSuccess, onCancel }) {
     [onSuccess, onCancel]
   );
 
-  const handleChoose = useCallback(() => {
+  const handleChoose = useCallback((e) => {
+    e.preventDefault()
     if (window.Dropbox) {
       window.Dropbox.choose(options);
     }

@@ -162,7 +162,7 @@ export default function reportJson(id) {
             btnIcon: "fa-solid fa-trash"
           }
         ],
-        form:"ContactBook"
+        form: "ContactBook"
       };
     // template report
     case "6TeaPr321t":
