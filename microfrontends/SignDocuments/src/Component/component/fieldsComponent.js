@@ -32,7 +32,9 @@ function FieldsComponent({
   isMailSend,
   selectedEmail,
   setSelectedEmail,
-  handleAddSigner
+  handleAddSigner,
+  setUniqueId,
+  setRoleName
 }) {
   const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
 
@@ -104,6 +106,8 @@ function FieldsComponent({
                     setIsSelectId(selectedKey);
                     setContractName(parseData.className);
                     setSelectedEmail(true);
+                    setUniqueId(parseData.Id);
+                    setRoleName(parseData.Role);
                   }}
                 >
                   <Select.Trigger
@@ -158,7 +162,7 @@ function FieldsComponent({
                                 value={`${ind}|${JSON.stringify(obj)}`}
                                 // value={(obj)}
                               >
-                                {obj.Role ? obj.Role : obj.Email}
+                                {obj.Email ?  obj.Email : obj.Role }
                               </SelectItem>
                             );
                           })}
@@ -193,7 +197,7 @@ function FieldsComponent({
                 onClick={() => handleAddSigner()}
               >
                 <i className="fa-solid fa-plus"></i>
-                <span style={{ marginLeft: 2 }}>Add</span>
+                <span style={{ marginLeft: 2 }}>Add role</span>
               </div>
             )}
             <div

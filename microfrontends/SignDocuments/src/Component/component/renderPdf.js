@@ -349,7 +349,7 @@ function RenderPdf({
         ) : (
           <div
             style={{
-              fontSize: "12px",
+              fontSize: "10px",
               color: "black",
               justifyContent: "center"
             }}
@@ -366,12 +366,12 @@ function RenderPdf({
         (sign) => sign.objectId === signerId
       );
       if (checkSign.length > 0) {
-        return <p style={{ color: "black" }}> {checkSign[0].Name} </p>;
+        return <p style={{ color: "black", fontSize: 11 }}> {checkSign[0].Name} </p>;
       } else {
-        return <p style={{ color: "black" }}> {Role} </p>;
+        return <p style={{ color: "black", fontSize: 11 }}> {Role} </p>;
       }
     } else {
-      return <p style={{ color: "black" }}> {Role} </p>;
+      return <p style={{ color: "black", fontSize: 11 }}> {Role} </p>;
     }
   };
   return (
@@ -619,6 +619,11 @@ function RenderPdf({
                                         >
                                           <i
                                               className="fa-regular fa-user signUserIcon"
+                                              onTouchEnd={(e) => {
+                                                e.stopPropagation();
+                                                handleLinkUser(data.Id);
+                                                setUniqueId(data.Id);
+                                              }}
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleLinkUser(data.Id);
@@ -635,11 +640,14 @@ function RenderPdf({
                                               setIsPageCopy(true);
                                               setSignKey(pos.key);
                                               setSignerObjId(data.signerObjId);
+                                              setUniqueId(data.Id)
                                             }}
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               setIsPageCopy(true);
                                               setSignKey(pos.key);
+                                              setSignerObjId(data.signerObjId);
+                                              setUniqueId(data.Id)
                                             }}
                                             style={{
                                               color: "#188ae2"
@@ -647,7 +655,15 @@ function RenderPdf({
                                           ></i>
                                           <i
                                             className="fa-regular fa-circle-xmark signCloseBtn"
-                                            onTouchStart={(e) => {
+                                            onTouchEnd={(e) => {
+                                              e.stopPropagation();
+                                              handleDeleteSign(
+                                                pos.key,
+                                                data.Id
+                                              );
+                                              // data.signerObjId
+                                            }}
+                                            onClick={(e) => {
                                               e.stopPropagation();
                                               handleDeleteSign(
                                                 pos.key,
@@ -662,9 +678,9 @@ function RenderPdf({
 
                                           <div
                                             style={{
-                                              fontSize: "12px",
+                                              fontSize: "10px",
                                               color: "black",
-                                              fontWeight: "600",
+                                              fontWeight: "500",
                                               marginTop: "0px"
                                             }}
                                           >
@@ -772,17 +788,6 @@ function RenderPdf({
                                         }
                                       }}
                                     >
-                                        <i
-                                          className="fa-regular fa-user signUserIcon"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleLinkUser(data.Id);
-                                            setUniqueId(data.Id);
-                                          }}
-                                          style={{
-                                            color: "#188ae2"                                
-                                          }}
-                                        ></i>
                                       <i
                                         className="fa-regular fa-copy signCopy"
                                         onTouchEnd={(e) => {
@@ -828,7 +833,7 @@ function RenderPdf({
                                       ) : (
                                         <div
                                           style={{
-                                            fontSize: "12px",
+                                            fontSize: "10px",
                                             color: "black",
                                             justifyContent: "center"
                                           }}
@@ -1003,7 +1008,7 @@ function RenderPdf({
                                     ) : (
                                       <div
                                         style={{
-                                          fontSize: "12px",
+                                          fontSize: "10px",
                                           color: "black",
                                           fontWeight: "600",
                                           justifyContent: "center",
@@ -1176,7 +1181,7 @@ function RenderPdf({
 
                                             <div
                                               style={{
-                                                fontSize: "12px",
+                                                fontSize: "10px",
                                                 color: "black",
                                                 justifyContent: "center"
                                               }}
