@@ -341,7 +341,6 @@ const TemplatePlaceholder = () => {
   // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor) => {
     const singer = signersdata.find((x) => x.Id === uniqueId);
-
     if (singer) {
       const posZIndex = zIndex + 1;
       setZIndex(posZIndex);
@@ -710,59 +709,64 @@ const TemplatePlaceholder = () => {
     }
   };
   const handleSaveTemplate = async () => {
-    const loadObj = {
-      isLoad: true,
-      message: "This might take some time"
-    };
-    setIsLoading(loadObj);
-    setIsSendAlert(false);
-    let signers = [];
-    if (signersdata?.length > 0) {
-      signersdata.forEach((x) => {
-        if (x.objectId) {
-          const obj = {
-            __type: "Pointer",
-            className: "contracts_Contactbook",
-            objectId: x.objectId
-          };
-          signers.push(obj);
-        }
-      });
-    }
-    try {
-      const data = {
-        Placeholders: signerPos,
-        SignedUrl: pdfDetails[0].URL,
-        Signers: signers
+    const singer = signersdata.find((x) => x.Id === uniqueId);
+    if (singer) {
+      const loadObj = {
+        isLoad: true,
+        message: "This might take some time"
       };
-
-      await axios
-        .put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}_Template/${templateId}`,
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-            }
+      setIsLoading(loadObj);
+      setIsSendAlert(false);
+      let signers = [];
+      if (signersdata?.length > 0) {
+        signersdata.forEach((x) => {
+          if (x.objectId) {
+            const obj = {
+              __type: "Pointer",
+              className: "contracts_Contactbook",
+              objectId: x.objectId
+            };
+            signers.push(obj);
           }
-        )
-        .then((result) => {
-          setIsCreateDocModal(true);
-          setIsMailSend(true);
-          const loadObj = {
-            isLoad: false
-          };
-          setIsLoading(loadObj);
-        })
-        .catch((err) => {
-          console.log("axois err ", err);
         });
-    } catch (e) {
-      console.log("error", e);
+      }
+      try {
+        const data = {
+          Placeholders: signerPos,
+          SignedUrl: pdfDetails[0].URL,
+          Signers: signers
+        };
+
+        await axios
+          .put(
+            `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+              "_appName"
+            )}_Template/${templateId}`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+              }
+            }
+          )
+          .then((result) => {
+            setIsCreateDocModal(true);
+            setIsMailSend(true);
+            const loadObj = {
+              isLoad: false
+            };
+            setIsLoading(loadObj);
+          })
+          .catch((err) => {
+            console.log("axois err ", err);
+          });
+      } catch (e) {
+        console.log("error", e);
+      }
+    } else {
+      setIsReceipent(false);
     }
   };
   //here you can add your messages in content and selector is key of particular steps
@@ -770,7 +774,7 @@ const TemplatePlaceholder = () => {
   const tourConfig = [
     {
       selector: '[data-tut="reactourAddbtn"]',
-      content: `Clicking "Add" button will show you popup of Add Role, fill role name or it will take by default name and create new receipent.`,
+      content: `Clicking "Add role" button will allow you to add various signer roles. You can attach users to each role in subsequent steps.`,
       position: "top",
       observe: '[data-tut="reactourAddbtn--observe"]',
       style: { fontSize: "13px" }
@@ -873,7 +877,7 @@ const TemplatePlaceholder = () => {
     e.preventDefault();
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
     const Id = randomId();
-    const index = signersdata?.length || 0;
+    const index = signersdata.length;
     const obj = {
       Role: roleName || "User " + count,
       Id: Id,
@@ -889,13 +893,19 @@ const TemplatePlaceholder = () => {
   // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
   const handleDeleteUser = (Id) => {
     const updateSigner = signersdata
-      .filter((x) => x.Id !== Id)
-      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    .filter((x) => x.Id !== Id)
+    .map((x, i) => ({ ...x, blockColor: color[i] }));
     setSignersData(updateSigner);
     const updatePlaceholderUser = signerPos
-      .filter((x) => x.Id !== Id)
-      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    .filter((x) => x.Id !== Id)
+    .map((x, i) => ({ ...x, blockColor: color[i] }));
     // console.log("removePlaceholderUser ", removePlaceholderUser)
+    
+    const index = signersdata.findIndex((x)=> x.Id === Id)
+    setUniqueId(updateSigner[index]?.Id ||"");
+    // setIsSelectId(index === -1 ? 0: index);
+    setIsSelectId(0);
+
     setSignerPos(updatePlaceholderUser);
     setIsMailSend(false);
   };
@@ -1051,7 +1061,7 @@ const TemplatePlaceholder = () => {
                 handleClose={() => setIsCreateDocModal(false)}
               >
                 <div style={{ height: "100%", padding: 20 }}>
-                  <p>Do you want to create document right now ?</p>
+                  <p>Do you want to create a document using the template you just created ?</p>
                   <div
                     style={{
                       height: "1px",
@@ -1193,6 +1203,8 @@ const TemplatePlaceholder = () => {
                   setSelectedEmail={setSelectedEmail}
                   selectedEmail={selectedEmail}
                   handleAddSigner={handleAddSigner}
+                  setUniqueId={setUniqueId}
+                  setRoleName={setRoleName}
                 />
               </div>
             ) : (

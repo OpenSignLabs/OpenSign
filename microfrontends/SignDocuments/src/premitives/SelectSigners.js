@@ -17,6 +17,7 @@ const SelectSigners = (props) => {
   const [userList, setUserList] = useState([]);
   const [selected, setSelected] = useState();
   const [userData, setUserData] = useState({});
+  const [isError, setIsError]= useState(false)
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
   Parse.serverURL = parseBaseUrl;
@@ -31,9 +32,14 @@ const SelectSigners = (props) => {
     }
   };
   const handleAdd = () => {
-    props.details(userData);
-    if (props.closePopup) {
-      props.closePopup();
+    if(userData && userData.objectId){
+      props.details(userData);
+      if (props.closePopup) {
+        props.closePopup();
+      }
+    }else{
+      setIsError(true)
+      setTimeout(()=> setIsError(false), 1000)
     }
   };
 
@@ -67,7 +73,7 @@ const SelectSigners = (props) => {
   return (
     <div className="addusercontainer">
       <div className="form-wrapper">
-        <div className="form-section">
+        <div className="form-section" style={{marginBottom: 0}}>
           <label style={{ fontSize: 14 , fontWeight: "700"}}>Choose User</label>
           <AsyncSelect
             cacheOptions
@@ -80,8 +86,9 @@ const SelectSigners = (props) => {
             styles={customStyles}
           />
         </div>
+        {isError ? <p style={{color:'red', fontSize: "12px", margin:"5px"}}>Please select signer</p>: <p style={{color:'transparent', fontSize: "12px",  margin:"5px"}}>.</p>}
 
-        <div className="buttoncontainer">
+        <div >
           <button className="submitbutton" onClick={() => handleAdd()}>
             Add Signer
           </button>
