@@ -386,13 +386,18 @@ function RenderPdf({
       );
       if (checkSign.length > 0) {
         return (
-          <p style={{ color: "black", fontSize: 11 }}> {checkSign[0].Name} </p>
+          <>
+            <div style={{ color: "black", fontSize: 11 }}>
+              {checkSign[0].Name}
+            </div>
+            <div style={{ color: "black", fontSize: 11 }}> {`(${Role})`} </div>
+          </>
         );
       } else {
-        return <p style={{ color: "black", fontSize: 11 }}> {Role} </p>;
+        return <div style={{ color: "black", fontSize: 11 }}> {Role} </div>;
       }
     } else {
-      return <p style={{ color: "black", fontSize: 11 }}> {Role} </p>;
+      return <div style={{ color: "black", fontSize: 11 }}> {Role} </div>;
     }
   };
   return (
@@ -455,13 +460,9 @@ function RenderPdf({
                                   handleSignYourselfImageResize(
                                     ref,
                                     pos.key,
-                                    direction,
-                                    position,
                                     xyPostion,
                                     index,
-                                    setXyPostion,
-                                    pdfOriginalWidth,
-                                    containerWH
+                                    setXyPostion
                                   );
                                 }}
                                 size={{
@@ -506,7 +507,11 @@ function RenderPdf({
                                       marginTop: "0px"
                                     }}
                                   >
-                                    {pos.isStamp ? "stamp" : "signature"}
+                                    {pos.isStamp ? (
+                                      <div>stamp</div>
+                                    ) : (
+                                      <div>signature</div>
+                                    )}
                                     {handleUserName(
                                       data.signerObjId,
                                       data.Role
@@ -708,9 +713,11 @@ function RenderPdf({
                                               marginTop: "0px"
                                             }}
                                           >
-                                            {pos.isStamp
-                                              ? "stamp"
-                                              : "signature"}
+                                            {pos.isStamp ? (
+                                              <div>stamp</div>
+                                            ) : (
+                                              <div>signature</div>
+                                            )}
                                             {handleUserName(
                                               data.signerObjId,
                                               data.Role
@@ -778,24 +785,11 @@ function RenderPdf({
                                       handleSignYourselfImageResize(
                                         ref,
                                         pos.key,
-                                        direction,
-                                        position,
                                         xyPostion,
                                         index,
-                                        setXyPostion,
-                                        pdfOriginalWidth,
-                                        containerWH
+                                        setXyPostion
+                                     
                                       );
-                                    }}
-                                    onTouchEnd={(e) => {
-                                      if (!isDragging && isMobile) {
-                                        setTimeout(() => {
-                                          e.stopPropagation();
-                                          setIsSignPad(true);
-                                          setSignKey(pos.key);
-                                          setIsStamp(pos.isStamp);
-                                        }, 500);
-                                      }
                                     }}
                                   >
                                     <BorderResize right={-12} top={-11} />
@@ -806,6 +800,13 @@ function RenderPdf({
                                       posHeight={posHeight}
                                     />
                                     <div
+                                      style={{
+                                        left: xPos(pos, true),
+                                        top: yPos(pos, true),
+                                        width: posWidth(pos, true),
+                                        height: posHeight(pos, true),
+                                        zIndex: "10"
+                                      }}
                                       onTouchEnd={(e) => {
                                         if (!isDragging && isMobile) {
                                           setTimeout(() => {
@@ -868,10 +869,6 @@ function RenderPdf({
                                           }}
                                         >
                                           {pos.isStamp ? "stamp" : "signature"}
-                                          {handleUserName(
-                                            data.signerObjId,
-                                            data.Role
-                                          )}
                                         </div>
                                       )}
                                     </div>
@@ -979,13 +976,9 @@ function RenderPdf({
                                     handleSignYourselfImageResize(
                                       ref,
                                       pos.key,
-                                      direction,
-                                      position,
                                       xyPostion,
                                       index,
-                                      setXyPostion,
-                                      pdfOriginalWidth,
-                                      containerWH
+                                      setXyPostion
                                     );
                                   }}
                                   key={pos.key}
@@ -1044,7 +1037,11 @@ function RenderPdf({
                                           marginTop: "0px"
                                         }}
                                       >
-                                        {pos.isStamp ? "stamp" : "signature"}
+                                        {pos.isStamp ? (
+                                          <div>stamp</div>
+                                        ) : (
+                                          <div>signature</div>
+                                        )}
                                         {handleUserName(
                                           data.signerObjId,
                                           data.Role
@@ -1223,9 +1220,11 @@ function RenderPdf({
                                                 justifyContent: "center"
                                               }}
                                             >
-                                              {pos.isStamp
-                                                ? "stamp"
-                                                : "signature"}
+                                              {pos.isStamp ? (
+                                                <div>stamp</div>
+                                              ) : (
+                                                <div>signature</div>
+                                              )}
                                               {handleUserName(
                                                 data.signerObjId,
                                                 data.Role
@@ -1300,13 +1299,9 @@ function RenderPdf({
                                         handleSignYourselfImageResize(
                                           ref,
                                           pos.key,
-                                          direction,
-                                          position,
                                           xyPostion,
                                           index,
-                                          setXyPostion,
-                                          pdfOriginalWidth,
-                                          containerWH
+                                          setXyPostion
                                         );
                                       }}
                                     >

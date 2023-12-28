@@ -1,6 +1,6 @@
-import React from "react";
-import * as Select from "@radix-ui/react-select";
-import classnames from "classnames";
+import React, { useState } from "react";
+import ModalUi from "../../premitives/ModalUi";
+import RecipientList from "../../premitives/RecipientList";
 
 function FieldsComponent({
   pdfUrl,
@@ -28,32 +28,19 @@ function FieldsComponent({
   isSigners,
   dataTut,
   dataTut2,
-  setIsShowEmail,
   isMailSend,
-  selectedEmail,
-  setSelectedEmail,
   handleAddSigner,
   setUniqueId,
-  setRoleName
+  setRoleName,
+  handleDeleteUser,
+  signerPos,
+  handleRoleChange,
+  handleOnBlur
 }) {
+  const [isSignersModal, setIsSignersModal] = useState(false);
   const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
 
   const isMobile = window.innerWidth < 767;
-
-  const SelectItem = React.forwardRef(
-    ({ children, className, ...props }, forwardedRef) => {
-      return (
-        <Select.Item
-          className={classnames("SelectItem", className)}
-          {...props}
-          ref={forwardedRef}
-        >
-          <Select.ItemText>{children}</Select.ItemText>
-          <Select.ItemIndicator className="SelectItemIndicator"></Select.ItemIndicator>
-        </Select.Item>
-      );
-    }
-  );
 
   const color = [
     "#93a3db",
@@ -70,6 +57,9 @@ function FieldsComponent({
     "#ffffcc"
   ];
 
+  const handleModal = () => {
+    setIsSignersModal(!isSignersModal);
+  };
   return (
     <>
       {isMobile && isSignYourself ? (
@@ -92,97 +82,24 @@ function FieldsComponent({
                   alignItems: "center",
                   justifyContent: "center"
                 }}
+                onClick={() => {
+                  if (signersdata?.length) {
+                    handleModal();
+                  }
+                }}
               >
                 <span style={{ fontSize: "13px", fontWeight: "700" }}>
-                  Signer :
+                  Recipient
                 </span>
-
-                <Select.Root
-                  onValueChange={(obj) => {
-                    const [selectedKey, selectedData] = obj.split("|");
-                    const parseData = JSON.parse(selectedData);
-
-                    setSignerObjId(parseData.objectId);
-                    setIsSelectId(selectedKey);
-                    setContractName(parseData.className);
-                    setSelectedEmail(true);
-                    setUniqueId(parseData.Id);
-                    setRoleName(parseData.Role);
-                  }}
-                >
-                  <Select.Trigger
-                    className={selectedEmail ? "selectEmail" : "SelectTrigger"}
-                    style={{
-                      background: isSelectListId
-                        ? color[isSelectListId % color.length]
-                        : color[0]
-                    }}
-                    aria-label="Food"
-                  >
-                    <Select.Value placeholder="Select signer.." />
-                    {!selectedEmail && (
-                      <Select.Icon className="SelectIcon">
-                        <i
-                          style={{
-                            marginTop: "5px",
-                            marginLeft: "5px",
-                            color: "#3b15d1",
-                            fontSize: "20px"
-                          }}
-                          className="fa fa-angle-down"
-                          aria-hidden="true"
-                        ></i>
-                      </Select.Icon>
-                    )}
-                  </Select.Trigger>
-                  <Select.Portal>
-                    <Select.Content
-                      className="SelectContent"
-                      style={{ zIndex: "5000" }}
-                    >
-                      <Select.ScrollUpButton className="SelectScrollButton">
-                        <i
-                          style={{
-                            marginTop: "5px",
-                            marginLeft: "5px",
-                            color: "#3b15d1",
-                            fontSize: "20px"
-                          }}
-                          className="fa fa-angle-down"
-                          aria-hidden="true"
-                        ></i>
-                      </Select.ScrollUpButton>
-                      <Select.Viewport className="SelectViewport">
-                        <Select.Group>
-                          {signersdata.map((obj, ind) => {
-                            return (
-                              <SelectItem
-                                selected
-                                key={ind}
-                                value={`${ind}|${JSON.stringify(obj)}`}
-                                // value={(obj)}
-                              >
-                                {obj.Email ?  obj.Email : obj.Role }
-                              </SelectItem>
-                            );
-                          })}
-                        </Select.Group>
-                      </Select.Viewport>
-                      <Select.ScrollDownButton className="SelectScrollButton">
-                        <i
-                          style={{
-                            marginTop: "5px",
-                            marginLeft: "5px",
-                            color: "#3b15d1",
-                            fontSize: "20px"
-                          }}
-                          className="fa fa-angle-down"
-                          aria-hidden="false"
-                        ></i>
-                      </Select.ScrollDownButton>
-                    </Select.Content>
-                  </Select.Portal>
-                </Select.Root>
+                <span style={{ fontSize: "13px", fontWeight: "700" }}>
+                  {signersdata[isSelectListId]?.Role && (
+                    <div>
+                      {signersdata[isSelectListId]?.Name
+                        ? ` : ${signersdata[isSelectListId]?.Name}`
+                        : ` : ${signersdata[isSelectListId]?.Role}`}
+                    </div>
+                  )}
+                </span>
               </div>
             )}
             {handleAddSigner && (
@@ -206,17 +123,7 @@ function FieldsComponent({
               style={{ backgroundColor: themeColor() }}
             >
               <div
-                onClick={() => {
-                  if (isSigners) {
-                    if (selectedEmail) {
-                      addPositionOfSignature("onclick", false);
-                    } else {
-                      setIsShowEmail(true);
-                    }
-                  } else {
-                    addPositionOfSignature("onclick", false);
-                  }
-                }}
+                onClick={() => addPositionOfSignature("onclick", false)}
                 ref={(element) => {
                   dragSignatureSS(element);
                   if (element) {
@@ -426,6 +333,25 @@ function FieldsComponent({
           </div>
         </div>
       )}
+      <ModalUi
+        title={"Recipients"}
+        isOpen={isSignersModal}
+        handleClose={handleModal}
+      >
+        <RecipientList
+          signerPos={signerPos}
+          signersdata={signersdata}
+          isSelectListId={isSelectListId}
+          setSignerObjId={setSignerObjId}
+          setIsSelectId={setIsSelectId}
+          setContractName={setContractName}
+          setUniqueId={setUniqueId}
+          setRoleName={setRoleName}
+          handleDeleteUser={handleDeleteUser}
+          handleRoleChange={handleRoleChange}
+          handleOnBlur={handleOnBlur}
+        />
+      </ModalUi>
     </>
   );
 }

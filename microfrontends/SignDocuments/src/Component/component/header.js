@@ -540,7 +540,7 @@ function Header({
                   <div>
                     {signerPos.length === 0 ? (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add all {signersdata.length - signerPos.length}{" "}
+                        Add {signersdata.length - signerPos.length}{" "}
                         recipients signature
                       </span>
                     ) : (

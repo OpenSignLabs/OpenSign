@@ -61,7 +61,7 @@ const SelectSigners = (props) => {
         // console.log("userList ", res);
         setUserList(res);
         return await res.map((item) => ({
-          label: item.Name,
+          label: item.Email,
           value: item.objectId
         }));
       }

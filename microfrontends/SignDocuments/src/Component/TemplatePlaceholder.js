@@ -327,21 +327,13 @@ const TemplatePlaceholder = () => {
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
-    if (isMobile) {
-      if (selectedEmail) {
         getSignerPos(item, monitor);
-      } else {
-        setIsShowEmail(true);
-      }
-    } else {
-      getSignerPos(item, monitor);
-    }
   };
 
   // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor) => {
-    const singer = signersdata.find((x) => x.Id === uniqueId);
-    if (singer) {
+    const signer = signersdata.find((x) => x.Id === uniqueId);
+    if (signer) {
       const posZIndex = zIndex + 1;
       setZIndex(posZIndex);
       const newWidth = containerWH.width;
@@ -709,8 +701,7 @@ const TemplatePlaceholder = () => {
     }
   };
   const handleSaveTemplate = async () => {
-    const singer = signersdata.find((x) => x.Id === uniqueId);
-    if (singer) {
+    if (signersdata?.length) {
       const loadObj = {
         isLoad: true,
         message: "This might take some time"
@@ -899,12 +890,14 @@ const TemplatePlaceholder = () => {
     const updatePlaceholderUser = signerPos
     .filter((x) => x.Id !== Id)
     .map((x, i) => ({ ...x, blockColor: color[i] }));
-    // console.log("removePlaceholderUser ", removePlaceholderUser)
-    
     const index = signersdata.findIndex((x)=> x.Id === Id)
-    setUniqueId(updateSigner[index]?.Id ||"");
-    // setIsSelectId(index === -1 ? 0: index);
-    setIsSelectId(0);
+    if(index === signersdata.length - 1){
+      setUniqueId(updateSigner[updateSigner.length - 1]?.Id ||"");
+      setIsSelectId(0);
+    }else{
+      setUniqueId(updateSigner[index]?.Id ||"");
+      setIsSelectId(index);
+    }
 
     setSignerPos(updatePlaceholderUser);
     setIsMailSend(false);
@@ -1205,6 +1198,9 @@ const TemplatePlaceholder = () => {
                   handleAddSigner={handleAddSigner}
                   setUniqueId={setUniqueId}
                   setRoleName={setRoleName}
+                  handleDeleteUser={handleDeleteUser}
+                  handleRoleChange={handleRoleChange}
+                  handleOnBlur={handleOnBlur}
                 />
               </div>
             ) : (
