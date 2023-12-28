@@ -16,8 +16,12 @@ function PlaceholderBorder(props) {
         // height: props.pos.Height
         //   ? props.pos.Height + getResizeBorderExtraWidth
         //   : 60 + getResizeBorderExtraWidth,
-        width: props?.posWidth(props.pos) + getResizeBorderExtraWidth,
-        height: props?.posHeight(props.pos) + getResizeBorderExtraWidth,
+        width:
+          props?.posWidth(props.pos, props?.isSignYourself) +
+          getResizeBorderExtraWidth,
+        height:
+          props?.posHeight(props.pos, props?.isSignYourself) +
+          getResizeBorderExtraWidth,
         borderWidth: "0.2px",
         overflow: "hidden"
       }}
