@@ -1046,3 +1046,29 @@ export const createDocument = async (template, placeholders, signerData) => {
     }
   }
 };
+
+export const getFirstLetter = (name) => {
+  const firstLetter = name?.charAt(0);
+  return firstLetter;
+};
+
+
+export const darkenColor = (color, factor) => {
+  // Remove '#' from the color code and parse it to get RGB values
+  const hex = color.replace("#", "");
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  // Darken the color by reducing each RGB component
+  const darkerR = Math.floor(r * (1 - factor));
+  const darkerG = Math.floor(g * (1 - factor));
+  const darkerB = Math.floor(b * (1 - factor));
+
+  // Convert the darkened RGB components back to hex
+  return `#${((darkerR << 16) | (darkerG << 8) | darkerB)
+    .toString(16)
+    .padStart(6, "0")}`;
+};
+
+
