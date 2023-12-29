@@ -123,7 +123,6 @@
 }
 
 .signatureInput {
-  padding: 10px;
   width: 80%;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -134,10 +133,13 @@
   font-variation-settings: inherit;
   font-weight: inherit;
   overflow: visible;
+  height: 30px;
 }
 
 .signatureInput:focus {
   outline: none;
+  border: 1px solid blue;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
 }
 
 .resizable-box-overlay {
@@ -664,7 +666,7 @@ option {
 
 .fontOptionContainer {
   border: 1px solid #d6d3d3;
-  margin: 10px 5px 5px 5px;
+  margin: 10px 0px 5px 0px;
 
 }
 

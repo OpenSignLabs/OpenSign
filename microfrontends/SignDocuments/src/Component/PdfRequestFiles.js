@@ -522,9 +522,10 @@ function PdfRequestFiles() {
   };
 
   //function for save button to save signature or image url
-  const saveSign = (isDefaultSign) => {
+  const saveSign = (isDefaultSign, width, height) => {
+    const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
-    let imgWH = { width: "", height: "" };
+    let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
@@ -558,7 +559,8 @@ function PdfRequestFiles() {
       signKey,
       signatureImg,
       imgWH,
-      isDefaultSign
+      isDefaultSign,
+      isTypeText
     );
 
     const updateSignerData = currentSigner.map((obj, ind) => {
@@ -885,7 +887,7 @@ function PdfRequestFiles() {
                               display: "flex",
                               flexDirection: "row",
                               alignItems: "center",
-                              padding:"10px 0",
+                              padding: "10px 0",
                               background: checkSignerBackColor(obj)
                             }}
                             key={ind}

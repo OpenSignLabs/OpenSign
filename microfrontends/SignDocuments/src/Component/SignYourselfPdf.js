@@ -657,10 +657,10 @@ function SignYourSelf() {
   };
 
   //function for save button to save signature or image url
-  const saveSign = (isDefaultSign) => {
+  const saveSign = (isDefaultSign, width, height) => {
+    const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
-
-    let imgWH = { width: "", height: "" };
+    let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
@@ -681,7 +681,8 @@ function SignYourSelf() {
       signKey,
       signatureImg,
       imgWH,
-      isDefaultSign
+      isDefaultSign,
+      isTypeText
     );
 
     setXyPostion(getUpdatePosition);

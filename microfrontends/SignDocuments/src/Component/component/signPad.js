@@ -27,8 +27,34 @@ function SignPad({
   const allColor = [bluePen, redPen, blackPen];
   const canvasRef = useRef(null);
   const [isDefaultSign, setIsDefaultSign] = useState(false);
-  const [isTab, setIsTab] = useState("signature");
+  const [isTab, setIsTab] = useState("draw");
   const [isSignImg, setIsSignImg] = useState("");
+  const [signValue, setSignValue] = useState("");
+  const [textWidth, setTextWidth] = useState(null);
+  const fontOptions = [
+    { value: "Lucida Handwriting" },
+    { value: "Segoe Script" },
+    { value: "Harrington" },
+    { value: "cursive" }
+
+    // Add more font options as needed
+  ];
+  const [fontSelect, setFontSelect] = useState(fontOptions[0].value);
+
+  useEffect(() => {
+    const senderUser =
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      ) &&
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      );
+    const jsonSender = JSON.parse(senderUser);
+
+    const currentUserName = jsonSender && jsonSender.name;
+    //function for clear signature
+    setSignValue(currentUserName);
+  }, []);
   //function for clear signature
   const handleClear = () => {
     if (canvasRef.current) {
@@ -68,8 +94,13 @@ function SignPad({
                 setIsSignImg("");
                 onSaveSign(isDefaultSign);
               } else {
-                setIsSignImg("");
-                onSaveSign();
+                if (isTab === "type") {
+                  setIsSignImg("");
+                  onSaveSign(false, textWidth, 30);
+                } else {
+                  setIsSignImg("");
+                  onSaveSign();
+                }
               }
 
               setPenColor("blue");
@@ -82,13 +113,15 @@ function SignPad({
             setIsImageSelect(false);
             setIsDefaultSign(false);
             setImage();
-            setIsTab("signature");
+            setIsTab("draw");
           }}
           style={{
             background: themeColor(),
             color: "white"
           }}
-          disabled={isSignImg || image || isDefaultSign ? false : true}
+          disabled={
+            isSignImg || image || isDefaultSign || textWidth ? false : true
+          }
           type="button"
           className={
             isSignImg || image ? "finishBtn saveBtn" : "disabledFinish saveBtn"
@@ -105,8 +138,46 @@ function SignPad({
     if (canvasRef.current) {
       canvasRef.current.fromDataURL(isSignImg);
     }
+    if (isTab === "type") {
+      convertToImg();
+    }
   }, [isTab]);
+  //function for convert input text value in image
+  const convertToImg = async () => {
+    //get text content to convert in image
+    const textContent = signValue;
+    // Calculate the width of the text content
+    const textWidth = getTextWidth(textContent);
+    // Increase pixel ratio for higher resolution
+    const pixelRatio = window.devicePixelRatio || 1;
 
+    // Create a canvas with the calculated width
+    const canvas = document.createElement("canvas");
+    canvas.width = textWidth * pixelRatio + 20 * pixelRatio;
+    canvas.height = 20 * pixelRatio; // You can adjust the height as needed
+    setTextWidth(textWidth * pixelRatio);
+    // Draw the text content on the canvas
+    const context = canvas.getContext("2d");
+    context.scale(pixelRatio, pixelRatio);
+    context.font = `13px ${fontSelect}`; // You can adjust the font size and style
+    context.fillText(textContent, 0, 10); // Adjust the y-coordinate as needed
+
+    // Convert the canvas to image data
+    const dataUrl = canvas.toDataURL("image/png");
+
+    setSignature(dataUrl);
+  };
+
+  //for getting text content width render text in span tag and get width
+  const getTextWidth = (text) => {
+    const tempSpan = document.createElement("span");
+    tempSpan.innerText = text;
+    tempSpan.style.visibility = "hidden";
+    document.body.appendChild(tempSpan);
+    const width = tempSpan.offsetWidth;
+    document.body.removeChild(tempSpan);
+    return width;
+  };
   return (
     <div>
       {/*isSignPad  */}
@@ -143,22 +214,23 @@ function SignPad({
                     onClick={() => {
                       setIsDefaultSign(false);
                       setIsImageSelect(false);
-                      setIsTab("signature");
+                      setIsTab("draw");
                       setImage();
                     }}
                     style={{
-                      color: isTab === "signature" ? themeColor() : "#515252",
+                      color: isTab === "draw" ? themeColor() : "#515252",
+
                       marginLeft: "2px"
                     }}
                     className="signTab"
                   >
-                    Signature
+                    Draw
                   </span>
 
                   <div
                     style={{
                       border:
-                        isTab === "signature"
+                        isTab === "draw"
                           ? "1.5px solid #108783"
                           : "1.5px solid #ffffff"
                     }}
@@ -187,7 +259,33 @@ function SignPad({
                     }}
                   ></div>
                 </div>
+                <div>
+                  <span
+                    onClick={() => {
+                      setIsDefaultSign(false);
+                      setIsImageSelect(false);
+                      setIsTab("type");
+                      setImage();
+                    }}
+                    style={{
+                      color: isTab === "type" ? themeColor() : "#515252",
 
+                      marginLeft: "2px"
+                    }}
+                    className="signTab"
+                  >
+                    Type
+                  </span>
+
+                  <div
+                    style={{
+                      border:
+                        isTab === "type"
+                          ? "1.5px solid #108783"
+                          : "1.5px solid #ffffff"
+                    }}
+                  ></div>
+                </div>
                 {defaultSign && (
                   <div>
                     <span
@@ -234,7 +332,7 @@ function SignPad({
               setIsImageSelect(false);
               setIsDefaultSign(false);
               setImage();
-              setIsTab("signature");
+              setIsTab("draw");
             }}
           >
             X
@@ -254,6 +352,7 @@ function SignPad({
                   alignItems: "center",
                   marginBottom: 6,
                   cursor: "pointer"
+                  //  background:'rgb(255, 255, 255)'
                 }}
                 className="signatureCanvas"
               >
@@ -262,6 +361,7 @@ function SignPad({
                   style={{
                     width: "100%",
                     height: "100%",
+                    background: "rgb(255, 255, 255)",
                     objectFit: "contain"
                   }}
                   src={defaultSign}
@@ -276,6 +376,7 @@ function SignPad({
               <div
                 style={{
                   border: "1px solid black",
+
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -293,6 +394,7 @@ function SignPad({
                   accept="image/*"
                   ref={imageRef}
                   hidden
+                  // style={{ display: "none" }}
                 />
                 <i className="fas fa-cloud-upload-alt uploadImgLogo"></i>
                 <div className="uploadImg">Upload</div>
@@ -301,25 +403,24 @@ function SignPad({
               <>
                 <div
                   style={{
+                    // position: "relative",
+
                     border: "1px solid black",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
                     marginBottom: 6,
-                    cursor: "pointer"
+                    // justifyContent:"center"
+                    overflow: "hidden"
                   }}
                   className="signatureCanvas"
                 >
                   <img
-                    alt="stamp img"
+                    alt="print img"
+                    ref={imageRef}
+                    // alt="preview image"
+                    src={image.src}
                     style={{
-                      width: "100%",
-                      height: "100%",
+                      //overflow:"hidden",
                       objectFit: "contain"
                     }}
-                    ref={imageRef}
-                    src={image.src}
                   />
                 </div>
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -327,6 +428,46 @@ function SignPad({
                 </div>
               </>
             )
+          ) : isTab === "type" ? (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Signature: </span>
+                <input
+                  style={{ fontFamily: fontSelect }}
+                  type="text"
+                  className="signatureInput"
+                  placeholder="Your signature"
+                  value={signValue}
+                  onChange={(e) => {
+                    setSignValue(e.target.value);
+                    convertToImg();
+                  }}
+                />
+              </div>
+              <div className="fontOptionContainer">
+                {fontOptions.map((font, ind) => {
+                  return (
+                    <div
+                      key={ind}
+                      style={{
+                        fontFamily: font.value,
+                        backgroundColor:
+                          fontSelect === font.value && "rgb(206 225 247)"
+                      }}
+                      onClick={() => setFontSelect(font.value)}
+                    >
+                      <div style={{ padding: "5px 10px 5px 10px" }}>
+                        {signValue ? signValue : "Your signature"}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <SaveBtn />
+              </div>
+            </div>
           ) : (
             <>
               <SignatureCanvas
@@ -381,9 +522,11 @@ function SignPad({
                         width={20}
                         height={20}
                       />
+                      // </button>
                     );
                   })}
                 </div>
+
                 <SaveBtn />
               </div>
             </>
