@@ -11,14 +11,23 @@ const ValidateRoute = ({ children }) => {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (!user) {
-          Parse.User.logOut();
+          handlelogout();
         }
       } catch (error) {
-        // Session token is invalid or there was an error
-        Parse.User.logOut();
+        handlelogout();
       }
     })();
   }, []);
+  const handlelogout = async () => {
+    try {
+      Parse.User.logOut();
+      localStorage.removeItem("accesstoken");
+    } catch (err) {
+      console.log("err ", err);
+    } finally {
+      localStorage.removeItem("accesstoken");
+    }
+  };
   return <div>{children}</div>;
 };
 

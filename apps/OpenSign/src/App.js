@@ -15,7 +15,7 @@ import ForgetPassword from "./routes/ForgetPassword";
 import ChangePassword from "./routes/ChangePassword";
 import ReportMicroapp from "./components/ReportMicroapp";
 import LoadMf from "./routes/LoadMf";
-import ValidateRoute from "./layout/ValidateRoute";
+import ValidateRoute from "./primitives/ValidateRoute";
 
 function App() {
   const [isloading, setIsLoading] = useState(true);

@@ -21,7 +21,8 @@ const ReportTable = ({
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
   const [isErr, setIsErr] = useState(false);
-  const [isPopup, setIsPopup] = useState(false);
+  const [isContactform, setIsContactform] = useState(false);
+  const [isDeleteModal, setIsDeleteModal] = useState({});
   // For loop is used to calculate page numbers visible below table
   // Initialize pageNumbers using useMemo to avoid unnecessary re-creation
   const pageNumbers = useMemo(() => {
@@ -166,31 +167,7 @@ const ReportTable = ({
   };
   const handlebtn = async (item) => {
     if (ReportName === "Contactbook") {
-      setActLoader({ [item.objectId]: true });
-      try {
-        const url =
-          process.env.REACT_APP_SERVERURL + "/classes/contracts_Contactbook/";
-        const body = { IsDeleted: true };
-        const res = await axios.put(url + item.objectId, body, {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("AppID12"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
-        });
-        // console.log("Res ", res.data);
-        if (res.data && res.data.updatedAt) {
-          setActLoader({});
-          setIsAlert(true);
-          const upldatedList = List.filter((x) => x.objectId !== item.objectId);
-          setList(upldatedList);
-        }
-      } catch (err) {
-        console.log("err", err);
-        setIsAlert(true);
-        setIsErr(true);
-        setActLoader({});
-      }
+      setIsDeleteModal({ [item.objectId]: true });
     }
   };
 
@@ -204,13 +181,44 @@ const ReportTable = ({
   const paginateFront = () => setCurrentPage(currentPage + 1);
   const paginateBack = () => setCurrentPage(currentPage - 1);
 
-  const handlePopup = () => {
-    setIsPopup(!isPopup);
+  const handleContactFormModal = () => {
+    setIsContactform(!isContactform);
   };
 
   const handleUserData = (data) => {
     setList((prevData) => [data, ...prevData]);
   };
+
+  const handleDelete = async (item) => {
+    setIsDeleteModal({})
+    setActLoader({ [item.objectId]: true });
+    try {
+      const url =
+        process.env.REACT_APP_SERVERURL + "/classes/contracts_Contactbook/";
+      const body = { IsDeleted: true };
+      const res = await axios.put(url + item.objectId, body, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("AppID12"),
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
+      });
+      // console.log("Res ", res.data);
+      if (res.data && res.data.updatedAt) {
+        setActLoader({});
+        setIsAlert(true);
+        const upldatedList = List.filter((x) => x.objectId !== item.objectId);
+        setList(upldatedList);
+      }
+    } catch (err) {
+      console.log("err", err);
+      setIsAlert(true);
+      setIsErr(true);
+      setActLoader({});
+    }
+  };
+  const handleCloseDeleteModal = () => setIsDeleteModal({});
+
   return (
     <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
       {isAlert && (
@@ -228,7 +236,10 @@ const ReportTable = ({
       <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
         <div className="font-light">{ReportName}</div>
         {form && (
-          <div className="cursor-pointer" onClick={() => handlePopup()}>
+          <div
+            className="cursor-pointer"
+            onClick={() => handleContactFormModal()}
+          >
             <i className="fa-solid fa-square-plus text-sky-400 text-[25px]"></i>
           </div>
         )}
@@ -294,6 +305,30 @@ const ReportTable = ({
                             )}
                           </button>
                         ))}
+                      {isDeleteModal[item.objectId] && (
+                        <ModalUi isOpen title={"Delete Contact"} handleClose={handleCloseDeleteModal}>
+                          <div className="m-[20px]">
+                            <div className="text-lg font-normal text-black">
+                              Are you sure you want to delete this contact?
+                            </div>
+                            <hr className="bg-[#ccc] mt-4 " />
+                            <div className="flex items-center mt-3 gap-2 text-white">
+                              <button
+                                onClick={() => handleDelete(item)}
+                                className="bg-[#1ab6ce] rounded-sm shadow-md text-[12px] font-semibold uppercase text-white py-1.5 px-3 focus:outline-none"
+                              >
+                                Yes
+                              </button>
+                              <button
+                                onClick={handleCloseDeleteModal}
+                                className="bg-[#188ae2] rounded-sm shadow-md text-[12px] font-semibold uppercase text-white py-1.5 px-3 text-center ml-[2px] focus:outline-none"
+                              >
+                                No
+                              </button>
+                            </div>
+                          </div>
+                        </ModalUi>
+                      )}
                     </td>
                   </tr>
                 ) : (
@@ -421,10 +456,14 @@ const ReportTable = ({
           <div className="text-sm font-semibold">No Data Available</div>
         </div>
       )}
-      <ModalUi title={"Add Contact"} isOpen={isPopup} handleClose={handlePopup}>
+      <ModalUi
+        title={"Add Contact"}
+        isOpen={isContactform}
+        handleClose={handleContactFormModal}
+      >
         <AppendFormInForm
           handleUserData={handleUserData}
-          closePopup={handlePopup}
+          closePopup={handleContactFormModal}
         />
       </ModalUi>
     </div>
