@@ -87,10 +87,9 @@ const SelectSigners = (props) => {
           />
         </div>
         {isError ? <p style={{color:'red', fontSize: "12px", margin:"5px"}}>Please select signer</p>: <p style={{color:'transparent', fontSize: "12px",  margin:"5px"}}>.</p>}
-
-        <div >
+        <div>
           <button className="submitbutton" onClick={() => handleAdd()}>
-            Add Signer
+            Submit
           </button>
         </div>
       </div>

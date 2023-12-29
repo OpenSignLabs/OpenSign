@@ -43,7 +43,7 @@ const EditTemplate = ({ template, onSuccess }) => {
                 fontWeight: "700"
               }}
             >
-              file selected : {template.URL?.split("/")[3]?.split("_")[1]}
+              {template.URL?.split("/")[3]?.split("_")[1]}
             </div>
           </div>
           <div className="form-section">

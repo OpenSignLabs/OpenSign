@@ -7,10 +7,35 @@ import Tour from "reactour";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import Parse from "parse";
+import ModalUi from "../primitives/ModalUi";
+import { useNavigate } from "react-router-dom";
+
 const HomeLayout = ({ children }) => {
+  const navigate = useNavigate();
   const { width } = useWindowSize();
   const [isOpen, setIsOpen] = useState(true);
   const arr = useSelector((state) => state.TourSteps);
+  const [isUserValid, setIsUserValid] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // Use the session token to validate the user
+        const userQuery = new Parse.Query(Parse.User);
+        const user = await userQuery.get(Parse.User.current().id, {
+          sessionToken: localStorage.getItem("accesstoken")
+        });
+        if (user) {
+          setIsUserValid(true);
+        } else {
+          setIsUserValid(false);
+        }
+      } catch (error) {
+        // Session token is invalid or there was an error
+        setIsUserValid(false);
+      }
+    })();
+  }, []);
 
   // reactour state
   const [isCloseBtn, setIsCloseBtn] = useState(true);
@@ -19,7 +44,7 @@ const HomeLayout = ({ children }) => {
   const [tourConfigs, setTourConfigs] = useState([]);
 
   const showSidebar = () => {
-    setIsOpen(value => !value);
+    setIsOpen((value) => !value);
   };
   useEffect(() => {
     if (width && width <= 768) {
@@ -28,9 +53,7 @@ const HomeLayout = ({ children }) => {
   }, [width]);
 
   useEffect(() => {
-    if (localStorage.getItem("domain") === "sign" && arr && arr.length > 0) {
-      handleDynamicSteps();
-    } else if (
+    if (
       localStorage.getItem("domain") === "contracts" &&
       arr &&
       arr.length > 0
@@ -153,32 +176,58 @@ const HomeLayout = ({ children }) => {
       setIsOpen(false);
     }
   };
+
+  const handleLoginBtn = () => {
+    Parse.User.logOut();
+    navigate("/", { replace: true });
+  };
   return (
     <div>
       <div className="sticky top-0 z-50">
         <Header showSidebar={showSidebar} />
       </div>
-      <div className="flex md:flex-row flex-col z-50">
-        <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
+      {isUserValid ? (
+        <>
+          <div className="flex md:flex-row flex-col z-50">
+            <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
 
-        <div className="relative h-screen flex flex-col justify-between w-full overflow-y-auto">
-          <div className="bg-[#eef1f5] p-3">{children}</div>
-          <div className="z-30">
-            <Footer />
+            <div className="relative h-screen flex flex-col justify-between w-full overflow-y-auto">
+              <div className="bg-[#eef1f5] p-3">{children}</div>
+              <div className="z-30">
+                <Footer />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <Tour
-        onRequestClose={closeTour}
-        steps={tourConfigs}
-        isOpen={isTour}
-        closeWithMask={false}
-        disableKeyboardNavigation={["esc"]}
-        // disableInteraction={true}
-        scrollOffset={-100}
-        rounded={5}
-        showCloseButton={isCloseBtn}
-      />
+          <Tour
+            onRequestClose={closeTour}
+            steps={tourConfigs}
+            isOpen={isTour}
+            closeWithMask={false}
+            disableKeyboardNavigation={["esc"]}
+            // disableInteraction={true}
+            scrollOffset={-100}
+            rounded={5}
+            showCloseButton={isCloseBtn}
+          />
+        </>
+      ) : (
+        <ModalUi
+          title={"Session Expired"}
+          headColor={"#dc3545"}
+          isOpen={true}
+          showClose={false}
+        >
+          <div className="flex flex-col justify-center items-center py-5 gap-5">
+            <p className="text-xl font-semibold ">Your Session has Expired.</p>
+            <button
+              onClick={handleLoginBtn}
+              className="text-base px-3 py-1.5 rounded shadow-md text-white bg-[#1ab6ce]"
+            >
+              Login
+            </button>
+          </div>
+        </ModalUi>
+      )}
     </div>
   );
 };
