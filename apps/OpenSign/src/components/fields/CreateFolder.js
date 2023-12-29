@@ -74,15 +74,15 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         template.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
         const res = await template.save();
         if (res) {
+          setAlert({
+            type: "success",
+            message: "Folder created successfully!"
+          });
+          setIsAlert(true);
+          setTimeout(() => {
+            setIsAlert(false);
+          }, 1000);
           if (onSuccess) {
-            setAlert({
-              type: "success",
-              message: "Folder created successfully!"
-            });
-            setIsAlert(true);
-            setTimeout(() => {
-              setIsAlert(false);
-            }, 1000);
             onSuccess(res);
           }
         }

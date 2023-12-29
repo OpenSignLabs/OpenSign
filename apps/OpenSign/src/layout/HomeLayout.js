@@ -211,14 +211,9 @@ const HomeLayout = ({ children }) => {
           />
         </>
       ) : (
-        <ModalUi
-          title={"Session Expired"}
-          headColor={"#dc3545"}
-          isOpen={true}
-          showClose={false}
-        >
-          <div className="flex flex-col justify-center items-center py-5 gap-5">
-            <p className="text-xl font-semibold ">Your Session has Expired.</p>
+        <ModalUi title={"Session Expired"} isOpen={true} showClose={false}>
+          <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
+            <p className="text-xl font-semibold ">Your session has expired.</p>
             <button
               onClick={handleLoginBtn}
               className="text-base px-3 py-1.5 rounded shadow-md text-white bg-[#1ab6ce]"
