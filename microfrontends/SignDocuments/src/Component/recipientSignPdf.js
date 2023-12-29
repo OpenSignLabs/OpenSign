@@ -555,10 +555,11 @@ function EmbedPdfImage() {
   };
 
   //function for save button to save signature or image url
-  const saveSign = (isDefaultSign) => {
+  const saveSign = (isDefaultSign, width, height) => {
+    const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
-    const signFlag = true;
-    let imgWH = { width: "", height: "" };
+
+    let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
@@ -580,7 +581,7 @@ function EmbedPdfImage() {
       signatureImg,
       imgWH,
       isDefaultSign,
-      signFlag
+      isTypeText
     );
 
     if (getUpdatePosition) {
