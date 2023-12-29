@@ -15,7 +15,7 @@ The OpenSign™ Request signatures interface is designed to streamline the proce
 
 ### Step 1: Begin New Document Creation
 
-- ** Navigate to Request Signatures form**: Start by navigating to 'New Document' -> 'Request Signatures' from the main menu to initiate the creation of a document for signature.
+- **Navigate to Request Signatures form**: Start by navigating to 'New Document' -> 'Request Signatures' from the main menu to initiate the creation of a document for signature.
 
 ### Step 2: Uploading Your Document
 
