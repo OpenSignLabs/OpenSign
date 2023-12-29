@@ -83,22 +83,56 @@ function FieldsComponent({
                   justifyContent: "center"
                 }}
                 onClick={() => {
-                  if (signersdata?.length) {
-                    handleModal();
-                  }
+                  // if (signersdata?.length) {
+                  handleModal();
+                  // }
                 }}
               >
-                <span style={{ fontSize: "13px", fontWeight: "700" }}>
+                <span
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    textAlign: "center"
+                  }}
+                >
                   Recipient
                 </span>
-                <span style={{ fontSize: "13px", fontWeight: "700" }}>
+                <span
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
                   {signersdata[isSelectListId]?.Role && (
                     <div>
-                      {signersdata[isSelectListId]?.Name
-                        ? ` : ${signersdata[isSelectListId]?.Name}`
-                        : ` : ${signersdata[isSelectListId]?.Role}`}
+                      {signersdata[isSelectListId]?.Name ? (
+                        <>
+                          :{" "}
+                          {signersdata[isSelectListId]?.Name?.length > 12
+                            ? `${signersdata[isSelectListId].Name.slice(
+                                0,
+                                12
+                              )}...`
+                            : signersdata[isSelectListId]?.Name}
+                        </>
+                      ) : (
+                        <>
+                          :{" "}
+                          {signersdata[isSelectListId]?.Role?.length > 12
+                            ? `${signersdata[isSelectListId].Role.slice(
+                                0,
+                                12
+                              )}...`
+                            : signersdata[isSelectListId]?.Role}
+                        </>
+                      )}
                     </div>
                   )}
+                  <div style={{ marginLeft: 6, fontSize: 16 }}>
+                    <i className="fa-solid fa-angle-down"></i>
+                  </div>
                 </span>
               </div>
             )}
@@ -333,25 +367,41 @@ function FieldsComponent({
           </div>
         </div>
       )}
-      <ModalUi
-        title={"Recipients"}
-        isOpen={isSignersModal}
-        handleClose={handleModal}
-      >
-        <RecipientList
-          signerPos={signerPos}
-          signersdata={signersdata}
-          isSelectListId={isSelectListId}
-          setSignerObjId={setSignerObjId}
-          setIsSelectId={setIsSelectId}
-          setContractName={setContractName}
-          setUniqueId={setUniqueId}
-          setRoleName={setRoleName}
-          handleDeleteUser={handleDeleteUser}
-          handleRoleChange={handleRoleChange}
-          handleOnBlur={handleOnBlur}
-        />
-      </ModalUi>
+      {isSignersModal && (
+        <ModalUi
+          title={"Recipients"}
+          isOpen={isSignersModal}
+          handleClose={handleModal}
+        >
+          {signersdata.length > 0 ? (
+            <RecipientList
+              signerPos={signerPos}
+              signersdata={signersdata}
+              isSelectListId={isSelectListId}
+              setSignerObjId={setSignerObjId}
+              setIsSelectId={setIsSelectId}
+              setContractName={setContractName}
+              setUniqueId={setUniqueId}
+              setRoleName={setRoleName}
+              handleDeleteUser={handleDeleteUser}
+              handleRoleChange={handleRoleChange}
+              handleOnBlur={handleOnBlur}
+              handleModal={handleModal}
+            />
+          ) : (
+            <div
+              style={{
+                padding: 20,
+                fontSize: 15,
+                fontWeight: "500",
+                textAlign: "center"
+              }}
+            >
+              Please add Recipient
+            </div>
+          )}
+        </ModalUi>
+      )}
     </>
   );
 }

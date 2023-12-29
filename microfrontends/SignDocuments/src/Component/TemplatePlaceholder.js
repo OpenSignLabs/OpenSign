@@ -327,12 +327,12 @@ const TemplatePlaceholder = () => {
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
-        getSignerPos(item, monitor);
+    getSignerPos(item, monitor);
   };
 
   // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor) => {
-    const signer = signersdata.find((x) => x.Id === uniqueId);
+    if(uniqueId){const signer = signersdata.find((x) => x.Id === uniqueId);
     if (signer) {
       const posZIndex = zIndex + 1;
       setZIndex(posZIndex);
@@ -344,8 +344,7 @@ const TemplatePlaceholder = () => {
       // );
       let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
       let dropData = [];
-      let xyPosArr = [];
-      let xyPos = {};
+      let placeHolder ;
       if (item === "onclick") {
         const dropObj = {
           xPosition: window.innerWidth / 2 - 100,
@@ -359,12 +358,11 @@ const TemplatePlaceholder = () => {
           zIndex: posZIndex
         };
         dropData.push(dropObj);
-        xyPos = {
+        placeHolder = {
           pageNumber: pageNumber,
           pos: dropData
         };
 
-        xyPosArr.push(xyPos);
       } else if (item.type === "BOX") {
         const offset = monitor.getClientOffset();
         //adding and updating drop position in array when user drop signature button in div
@@ -390,21 +388,14 @@ const TemplatePlaceholder = () => {
         };
 
         dropData.push(dropObj);
-        xyPos = {
+        placeHolder = {
           pageNumber: pageNumber,
           pos: dropData
         };
-
-        xyPosArr.push(xyPos);
       }
-      const { blockColor, Role } = signersdata.find((x) => x.Id === uniqueId);
+      const { blockColor, Role } = signer
       //adding placholder in existing signer pos array (placaholder)
       if (filterSignerPos.length > 0) {
-        // const colorIndex = signerPos
-        //   .map((e) => e.signerObjId)
-        //   .indexOf(signerObjId);
-
-        const colorIndex = signerPos.map((e) => e.Id).indexOf(uniqueId);
         const getPlaceHolder = filterSignerPos[0].placeHolder;
         const updatePlace = getPlaceHolder.filter(
           (data) => data.pageNumber !== pageNumber
@@ -416,79 +407,21 @@ const TemplatePlaceholder = () => {
         //add entry of position for same signer on multiple page
         if (getPageNumer.length > 0) {
           const getPos = getPageNumer[0].pos;
-          const newSignPos = getPos.concat(dropData);
+          const newSignPos = getPos.concat(dropData); 
           let xyPos = {
             pageNumber: pageNumber,
             pos: newSignPos
           };
           updatePlace.push(xyPos);
-          let placeHolderPos;
-          if (contractName) {
-            placeHolderPos = {
-              blockColor: blockColor ? blockColor : color[isSelectListId],
-              signerObjId: signerObjId,
-              placeHolder: updatePlace,
-              signerPtr: {
-                __type: "Pointer",
-                className: `${contractName}`,
-                objectId: signerObjId
-              },
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          } else {
-            placeHolderPos = {
-              blockColor: blockColor ? blockColor : color[isSelectListId],
-              signerObjId: "",
-              placeHolder: updatePlace,
-              signerPtr: {},
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          }
-          // signerPos.splice(colorIndex, 1, placeHolderPos);
-          const newArry = [placeHolderPos];
-          const newArray = [
-            ...signerPos.slice(0, colorIndex),
-            ...newArry,
-            ...signerPos.slice(colorIndex + 1)
-          ];
-          setSignerPos(newArray);
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
+          );
+          setSignerPos(updatesignerPos);
         } else {
-          const newSignPoss = getPlaceHolder.concat(xyPosArr[0]);
-          let placeHolderPos;
-          if (contractName) {
-            placeHolderPos = {
-              blockColor: color[isSelectListId],
-              signerObjId: signerObjId,
-              placeHolder: newSignPoss,
-              signerPtr: {
-                __type: "Pointer",
-                className: `${contractName}`,
-                objectId: signerObjId
-              },
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          } else {
-            placeHolderPos = {
-              blockColor: color[isSelectListId],
-              signerObjId: "",
-              placeHolder: newSignPoss,
-              signerPtr: {},
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          }
-
-          const newArry = [placeHolderPos];
-          const newArray = [
-            ...signerPos.slice(0, colorIndex),
-            ...newArry,
-            ...signerPos.slice(colorIndex + 1)
-          ];
-
-          setSignerPos(newArray);
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId ? { ...x, placeHolder: [...x.placeHolder, placeHolder] } : x
+          );
+          setSignerPos(updatesignerPos);
         }
       } else {
         //adding new placeholder for selected signer in pos array (placeholder)
@@ -502,7 +435,7 @@ const TemplatePlaceholder = () => {
             },
             signerObjId: signerObjId,
             blockColor: blockColor ? blockColor : color[isSelectListId],
-            placeHolder: xyPosArr,
+            placeHolder: [placeHolder],
             Role: Role ? Role : roleName,
             Id: uniqueId
           };
@@ -511,18 +444,17 @@ const TemplatePlaceholder = () => {
             signerPtr: {},
             signerObjId: "",
             blockColor: blockColor ? blockColor : color[isSelectListId],
-            placeHolder: xyPosArr,
+            placeHolder: [placeHolder],
             Role: Role ? Role : roleName,
             Id: uniqueId
           };
         }
-
         setSignerPos((prev) => [...prev, placeHolderPos]);
       }
       setIsMailSend(false);
     } else {
       setIsReceipent(false);
-    }
+    }}
   };
   //function for get pdf page details
   const pageDetails = async (pdf) => {
@@ -884,18 +816,18 @@ const TemplatePlaceholder = () => {
   // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
   const handleDeleteUser = (Id) => {
     const updateSigner = signersdata
-    .filter((x) => x.Id !== Id)
-    .map((x, i) => ({ ...x, blockColor: color[i] }));
+      .filter((x) => x.Id !== Id)
+      .map((x, i) => ({ ...x, blockColor: color[i] }));
     setSignersData(updateSigner);
     const updatePlaceholderUser = signerPos
-    .filter((x) => x.Id !== Id)
-    .map((x, i) => ({ ...x, blockColor: color[i] }));
-    const index = signersdata.findIndex((x)=> x.Id === Id)
-    if(index === signersdata.length - 1){
-      setUniqueId(updateSigner[updateSigner.length - 1]?.Id ||"");
+      .filter((x) => x.Id !== Id)
+      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    const index = signersdata.findIndex((x) => x.Id === Id);
+    if (index === signersdata.length - 1) {
+      setUniqueId(updateSigner[updateSigner.length - 1]?.Id || "");
       setIsSelectId(0);
-    }else{
-      setUniqueId(updateSigner[index]?.Id ||"");
+    } else {
+      setUniqueId(updateSigner[index]?.Id || "");
       setIsSelectId(index);
     }
 
@@ -924,12 +856,14 @@ const TemplatePlaceholder = () => {
 
     const updateSigner = signersdata.map((x) => {
       if (x.Id === uniqueId) {
-        return { ...x, ...data };
+        return { ...x, ...data, className: "contracts_Contactbook" };
       }
       return { ...x };
     });
     setSignersData(updateSigner);
     setIsMailSend(false);
+    const index = signersdata.findIndex((x)=> x.Id ===uniqueId)
+    setIsSelectId(index)
   };
 
   // `closePopup` is used to close Add/Choose signer modal
@@ -1054,7 +988,10 @@ const TemplatePlaceholder = () => {
                 handleClose={() => setIsCreateDocModal(false)}
               >
                 <div style={{ height: "100%", padding: 20 }}>
-                  <p>Do you want to create a document using the template you just created ?</p>
+                  <p>
+                    Do you want to create a document using the template you just
+                    created ?
+                  </p>
                   <div
                     style={{
                       height: "1px",

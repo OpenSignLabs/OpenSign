@@ -53,7 +53,7 @@ function PlaceHolderSign() {
     message: "This might take some time"
   });
   const [handleError, setHandleError] = useState();
-  const [currentEmail, setCurrentEmail] = useState();
+  const [currentId, setCurrentId] = useState("");
   const [pdfNewWidth, setPdfNewWidth] = useState();
   const [placeholderTour, setPlaceholderTour] = useState(true);
   const [checkTourStatus, setCheckTourStatus] = useState(false);
@@ -202,10 +202,7 @@ function PlaceHolderSign() {
 
       if (documentData[0].Signers && documentData[0].Signers.length > 0) {
         const currEmail = documentData[0].ExtUserPtr.Email;
-        const filterCurrEmail = documentData[0].Signers.filter(
-          (data) => data.Email === currEmail
-        );
-        setCurrentEmail(filterCurrEmail);
+        setCurrentId(currEmail)
         setSignerObjId(documentData[0].Signers[0].objectId);
         setContractName(documentData[0].Signers[0].className);
         setIsSelectId(0);
@@ -329,196 +326,128 @@ function PlaceHolderSign() {
   };
 
   const getSignerPos = (item, monitor) => {
-    const posZIndex = zIndex + 1;
-    setZIndex(posZIndex);
-    const newWidth = containerWH.width;
-    const scale = pdfOriginalWidth / newWidth;
-    const key = Math.floor(1000 + Math.random() * 9000);
-    // let filterSignerPos = signerPos.filter(
-    //   (data) => data.signerObjId === signerObjId
-    // );
-    let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-
-    let dropData = [];
-    let xyPosArr = [];
-    let xyPos = {};
-    if (item === "onclick") {
-      const dropObj = {
-        //onclick put placeholder center on pdf
-        xPosition: window.innerWidth / 2 - 100,
-        yPosition: window.innerHeight / 2 - 60,
-        isStamp: monitor,
-        key: key,
-        isDrag: false,
-        scale: scale,
-        isMobile: isMobile,
-        yBottom: window.innerHeight / 2 - 60,
-        zIndex: posZIndex
-      };
-      dropData.push(dropObj);
-      xyPos = {
-        pageNumber: pageNumber,
-        pos: dropData
-      };
-
-      xyPosArr.push(xyPos);
-    } else if (item.type === "BOX") {
-      const offset = monitor.getClientOffset();
-      //adding and updating drop position in array when user drop signature button in div
-      const containerRect = document
-        .getElementById("container")
-        .getBoundingClientRect();
-      const x = offset.x - containerRect.left;
-      const y = offset.y - containerRect.top;
-      const ybottom = containerRect.bottom - offset.y;
-
-      const dropObj = {
-        xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
-        yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
-        isStamp: isDragStamp || isDragStampSS ? true : false,
-        key: key,
-        isDrag: false,
-        firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
-        firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
-        yBottom: ybottom,
-        scale: scale,
-        isMobile: isMobile,
-        zIndex: posZIndex
-      };
-      dropData.push(dropObj);
-      xyPos = {
-        pageNumber: pageNumber,
-        pos: dropData
-      };
-
-      xyPosArr.push(xyPos);
-    }
-
-    //add signers objId first inseretion
-    if (filterSignerPos.length > 0) {
-      // const colorIndex = signerPos
-      //   .map((e) => e.signerObjId)
-      //   .indexOf(signerObjId);
-
-      const colorIndex = signerPos.map((e) => e.Id).indexOf(uniqueId);
-
-      const getPlaceHolder = filterSignerPos[0].placeHolder;
-      const updatePlace = getPlaceHolder.filter(
-        (data) => data.pageNumber !== pageNumber
-      );
-      const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-
-      //add entry of position for same signer on multiple page
-      if (getPageNumer.length > 0) {
-        const getPos = getPageNumer[0].pos;
-        const newSignPos = getPos.concat(dropData);
-        let xyPos = {
+    const signer = signersdata.find((x) => x.Id === uniqueId);
+    if (signer) {
+      const posZIndex = zIndex + 1;
+      setZIndex(posZIndex);
+      const newWidth = containerWH.width;
+      const scale = pdfOriginalWidth / newWidth;
+      const key = randomId();
+      // let filterSignerPos = signerPos.filter(
+      //   (data) => data.signerObjId === signerObjId
+      // );
+      let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+      let dropData = [];
+      let placeHolder ;
+      if (item === "onclick") {
+        const dropObj = {
+          xPosition: window.innerWidth / 2 - 100,
+          yPosition: window.innerHeight / 2 - 60,
+          isStamp: monitor,
+          key: key,
+          isDrag: false,
+          scale: scale,
+          isMobile: isMobile,
+          yBottom: window.innerHeight / 2 - 60,
+          zIndex: posZIndex
+        };
+        dropData.push(dropObj);
+        placeHolder = {
           pageNumber: pageNumber,
-          pos: newSignPos
+          pos: dropData
         };
-        updatePlace.push(xyPos);
+
+      } else if (item.type === "BOX") {
+        const offset = monitor.getClientOffset();
+        //adding and updating drop position in array when user drop signature button in div
+        const containerRect = document
+          .getElementById("container")
+          .getBoundingClientRect();
+        const x = offset.x - containerRect.left;
+        const y = offset.y - containerRect.top;
+        const ybottom = containerRect.bottom - offset.y;
+
+        const dropObj = {
+          xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
+          yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
+          isStamp: isDragStamp || isDragStampSS ? true : false,
+          key: key,
+          isDrag: false,
+          firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
+          firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
+          yBottom: ybottom,
+          scale: scale,
+          isMobile: isMobile,
+          zIndex: posZIndex
+        };
+
+        dropData.push(dropObj);
+        placeHolder = {
+          pageNumber: pageNumber,
+          pos: dropData
+        };
+      }
+      const { blockColor, Role } = signer
+      //adding placholder in existing signer pos array (placaholder)
+      if (filterSignerPos.length > 0) {
+        const getPlaceHolder = filterSignerPos[0].placeHolder;
+        const updatePlace = getPlaceHolder.filter(
+          (data) => data.pageNumber !== pageNumber
+        );
+        const getPageNumer = getPlaceHolder.filter(
+          (data) => data.pageNumber === pageNumber
+        );
+
+        //add entry of position for same signer on multiple page
+        if (getPageNumer.length > 0) {
+          const getPos = getPageNumer[0].pos;
+          const newSignPos = getPos.concat(dropData); 
+          let xyPos = {
+            pageNumber: pageNumber,
+            pos: newSignPos
+          };
+          updatePlace.push(xyPos);
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
+          );
+          setSignerPos(updatesignerPos);
+        } else {
+          const updatesignerPos = signerPos.map((x) =>
+            x.Id === uniqueId ? { ...x, placeHolder: [...x.placeHolder, placeHolder] } : x
+          );
+          setSignerPos(updatesignerPos);
+        }
+      } else {
+        //adding new placeholder for selected signer in pos array (placeholder)
         let placeHolderPos;
         if (contractName) {
           placeHolderPos = {
-            blockColor: color[isSelectListId],
-            signerObjId: signerObjId,
-            placeHolder: updatePlace,
             signerPtr: {
               __type: "Pointer",
               className: `${contractName}`,
               objectId: signerObjId
             },
-            Role: roleName,
-            Id: uniqueId
-          };
-        } else {
-          placeHolderPos = {
-            blockColor: color[isSelectListId],
-            signerObjId: "",
-            placeHolder: updatePlace,
-            signerPtr: {},
-            Role: roleName,
-            Id: uniqueId
-          };
-        }
-        // signerPos.splice(colorIndex, 1, placeHolderPos);
-        const newArry = [placeHolderPos];
-        const newArray = [
-          ...signerPos.slice(0, colorIndex),
-          ...newArry,
-          ...signerPos.slice(colorIndex + 1)
-        ];
-        setSignerPos(newArray);
-      } else {
-        const newSignPoss = getPlaceHolder.concat(xyPosArr[0]);
-        let placeHolderPos;
-        if (contractName) {
-          placeHolderPos = {
-            blockColor: color[isSelectListId],
             signerObjId: signerObjId,
-            placeHolder: newSignPoss,
-            signerPtr: {
-              __type: "Pointer",
-              className: `${contractName}`,
-              objectId: signerObjId
-            },
-            Role: roleName,
+            blockColor: blockColor ? blockColor : color[isSelectListId],
+            placeHolder: [placeHolder],
+            Role: Role ? Role : roleName,
             Id: uniqueId
           };
         } else {
           placeHolderPos = {
-            blockColor: color[isSelectListId],
-            signerObjId: "",
-            placeHolder: newSignPoss,
             signerPtr: {},
-            Role: roleName,
+            signerObjId: "",
+            blockColor: blockColor ? blockColor : color[isSelectListId],
+            placeHolder: [placeHolder],
+            Role: Role ? Role : roleName,
             Id: uniqueId
           };
         }
-
-        // signerPos.splice(colorIndex, 1, placeHolderPos);
-        const newArry = [placeHolderPos];
-        const newArray = [
-          ...signerPos.slice(0, colorIndex),
-          ...newArry,
-          ...signerPos.slice(colorIndex + 1)
-        ];
-
-        setSignerPos(newArray);
-      }
-    } else {
-      let placeHolderPos;
-      if (contractName) {
-        placeHolderPos = {
-          signerPtr: {
-            __type: "Pointer",
-            className: `${contractName}`,
-            objectId: signerObjId
-          },
-          signerObjId: signerObjId,
-          blockColor: color[isSelectListId],
-          placeHolder: xyPosArr,
-          Role: roleName,
-          Id: uniqueId
-        };
-      } else {
-        placeHolderPos = {
-          signerPtr: {},
-          signerObjId: "",
-          blockColor: color[isSelectListId],
-          placeHolder: xyPosArr,
-          Role: roleName,
-          Id: uniqueId
-        };
+        setSignerPos((prev) => [...prev, placeHolderPos]);
       }
 
-      setSignerPos((prev) => [...prev, placeHolderPos]);
-    }
-    setIsMailSend(false);
+    } 
   };
-
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     const load = {
@@ -791,6 +720,8 @@ function PlaceHolderSign() {
           objectId: x.objectId
         };
       });
+      const currentUser = signersdata.find((x)=> x.Email === currentId)
+      setCurrentId(currentUser?.objectId)
       // console.log("signers ", signers);
       try {
         const data = {
@@ -904,7 +835,7 @@ function PlaceHolderSign() {
   const handleRecipientSign = () => {
     const hostUrl = getHostUrl();
     navigate(
-      `${hostUrl}recipientSignPdf/${documentId}/${currentEmail[0].objectId}`
+      `${hostUrl}recipientSignPdf/${documentId}/${currentId}`
     );
   };
 
@@ -929,13 +860,14 @@ function PlaceHolderSign() {
 
     const updateSigner = signersdata.map((x) => {
       if (x.Id === uniqueId) {
-        return { ...x, ...data };
+        return { ...x, ...data, className: "contracts_Contactbook" };
       }
       return { ...x };
     });
     // console.log("updateSigner ", updateSigner);
-
     setSignersData(updateSigner);
+    const index = signersdata.findIndex((x)=> x.Id ===uniqueId)
+    setIsSelectId(index)
   }
   };
 
@@ -1056,13 +988,13 @@ function PlaceHolderSign() {
                 {/* signature modal */}
                 <Modal.Body>
                   <p>You have successfully sent mails to all recipients!</p>
-                  {currentEmail?.length > 0 && (
+                  {currentId && (
                     <p>Do you want to sign documents right now ?</p>
                   )}
                 </Modal.Body>
 
                 <Modal.Footer>
-                  {currentEmail?.length > 0 ? (
+                  {currentId ? (
                     <>
                       <button
                         onClick={() => {
