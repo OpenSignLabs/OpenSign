@@ -381,14 +381,12 @@ function RenderPdf({
   };
   const handleUserName = (signerId, Role) => {
     if (signerId) {
-      const checkSign = signersdata.filter(
-        (sign) => sign.objectId === signerId
-      );
-      if (checkSign.length > 0) {
+      const checkSign = signersdata.find((sign) => sign.objectId === signerId);
+      if (checkSign?.Name) {
         return (
           <>
             <div style={{ color: "black", fontSize: 11 }}>
-              {checkSign[0].Name}
+              {checkSign?.Name}
             </div>
             <div style={{ color: "black", fontSize: 11 }}> {`(${Role})`} </div>
           </>
@@ -788,7 +786,6 @@ function RenderPdf({
                                         xyPostion,
                                         index,
                                         setXyPostion
-                                     
                                       );
                                     }}
                                   >
