@@ -258,7 +258,7 @@ const FileUpload = (props) => {
           <div className="flex gap-2 justify-center items-center">
             <div className="flex justify-between items-center px-2 py-[3px] w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
               <div className="break-all">
-                file selected : {props.formData.split("/")[3]}
+                file selected : {props.formData?.split("/")[3]?.split("_")[1]}
               </div>
               <div
                 onClick={() => {
@@ -271,10 +271,12 @@ const FileUpload = (props) => {
                 <i className="fa-solid fa-xmark"></i>
               </div>
             </div>
-            <DropboxChooser
-              onSuccess={dropboxSuccess}
-              onCancel={dropboxCancel}
-            />
+            {process.env.REACT_APP_DROPBOX_API_KEY && (
+              <DropboxChooser
+                onSuccess={dropboxSuccess}
+                onCancel={dropboxCancel}
+              />
+            )}
           </div>
         ) : (
           <div className="flex gap-2 justify-center items-center">
@@ -294,10 +296,12 @@ const FileUpload = (props) => {
               accept="application/pdf,application/vnd.ms-excel"
               onChange={onChange}
             />
-            <DropboxChooser
-              onSuccess={dropboxSuccess}
-              onCancel={dropboxCancel}
-            />
+            {process.env.REACT_APP_DROPBOX_API_KEY && (
+              <DropboxChooser
+                onSuccess={dropboxSuccess}
+                onCancel={dropboxCancel}
+              />
+            )}
           </div>
         )}
       </>

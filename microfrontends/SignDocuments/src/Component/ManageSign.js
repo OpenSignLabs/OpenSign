@@ -157,7 +157,7 @@ const ManageSign = () => {
           file = base64StringtoFile(image, `${replaceSpace}.png`);
         }
       }
-      console.log("isUrl ", isUrl);
+      // console.log("isUrl ", isUrl);
       let imgUrl;
       if (!isUrl) {
         imgUrl = await uploadFile(file);

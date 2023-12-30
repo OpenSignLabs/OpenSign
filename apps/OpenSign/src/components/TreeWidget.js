@@ -5,7 +5,7 @@ import Parse from "parse";
 import axios from "axios";
 import "../styles/spinner.css";
 import TreeFormComponent from "./TreeFormComponent";
-import TreeEditForm from "./TreeEditForm";
+// import TreeEditForm from "./TreeEditForm";
 import "../styles/modal.css";
 import Modal from "react-modal";
 
@@ -22,7 +22,7 @@ const TreeWidget = (props) => {
   const [schemaState, setSchemaState] = useState({});
   const [TabURL, setTabURL] = useState("");
   const [editable, setEditable] = useState(false);
-  const [editId, setEditId] = useState("");
+  // const [editId, setEditId] = useState("");
   const [defaultState, setDefaultState] = useState(false);
   const [isShowModal, setIsShowModal] = useState(false);
   const selectFolderHandle = async () => {

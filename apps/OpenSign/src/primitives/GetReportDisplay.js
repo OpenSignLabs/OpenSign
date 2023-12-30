@@ -3,6 +3,8 @@ import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/report.css";
+import ModalUi from "./ModalUi";
+import AppendFormInForm from "../components/AppendFormInForm";
 const ReportTable = ({
   ReportName,
   List,
@@ -11,13 +13,15 @@ const ReportTable = ({
   heading,
   setIsNextRecord,
   isMoreDocs,
-  docPerPage
+  docPerPage,
+  form
 }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
   const [isErr, setIsErr] = useState(false);
+  const [isPopup, setIsPopup] = useState(false);
   // For loop is used to calculate page numbers visible below table
   // Initialize pageNumbers using useMemo to avoid unnecessary re-creation
   const pageNumbers = useMemo(() => {
@@ -55,10 +59,109 @@ const ReportTable = ({
   }, [isMoreDocs, pageNumbers, currentPage, setIsNextRecord]);
 
   // `handlemicroapp` is used to open microapp
-  const handlemicroapp = (item, url) => {
-    localStorage.removeItem("rowlevel");
-    navigate("/rpmf/" + url);
-    localStorage.setItem("rowlevel", JSON.stringify(item));
+  const handlemicroapp = async (item, url, btnLabel) => {
+    if (ReportName === "Templates") {
+      if (btnLabel === "Edit") {
+        navigate(`/asmf/${url}/${item.objectId}`);
+      } else {
+        setActLoader({ [item.objectId]: true });
+        try {
+          const params = {
+            templateId: item.objectId
+          };
+          const templateDeatils = await axios.post(
+            `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+            params,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                sessionToken: localStorage.getItem("accesstoken")
+              }
+            }
+          );
+
+          // console.log("templateDeatils.data ", templateDeatils.data);
+          const templateData =
+            templateDeatils.data && templateDeatils.data.result;
+          if (!templateData.error) {
+            const Doc = templateData;
+
+            let placeholdersArr = [];
+            if (Doc.Placeholders?.length > 0) {
+              placeholdersArr = Doc.Placeholders;
+            }
+            let signers = [];
+            if (Doc.Signers?.length > 0) {
+              Doc.Signers?.forEach((x) => {
+                if (x.objectId) {
+                  const obj = {
+                    __type: "Pointer",
+                    className: "contracts_Contactbook",
+                    objectId: x.objectId
+                  };
+                  signers.push(obj);
+                }
+              });
+            }
+            const data = {
+              Name: Doc.Name,
+              URL: Doc.URL,
+              SignedUrl: Doc.SignedUrl,
+              Description: Doc.Description,
+              Note: Doc.Note,
+              Placeholders: placeholdersArr,
+              ExtUserPtr: {
+                __type: "Pointer",
+                className: "contracts_Users",
+                objectId: Doc.ExtUserPtr.objectId
+              },
+              CreatedBy: {
+                __type: "Pointer",
+                className: "_User",
+                objectId: Doc.CreatedBy.objectId
+              },
+              Signers: signers
+            };
+
+            const res = await axios.post(
+              `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+                "_appName"
+              )}_Document`,
+              data,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                  "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+                }
+              }
+            );
+
+            // console.log("Res ", res.data);
+            if (res.data && res.data.objectId) {
+              setActLoader({});
+              setIsAlert(true);
+              navigate(`/asmf/${url}/${res.data.objectId}`);
+            }
+          } else {
+            setIsAlert(true);
+            setIsErr(true);
+            setActLoader({});
+          }
+        } catch (err) {
+          console.log("err", err);
+          setIsAlert(true);
+          setIsErr(true);
+          setActLoader({});
+        }
+      }
+    } else {
+      localStorage.removeItem("rowlevel");
+      navigate("/rpmf/" + url);
+      localStorage.setItem("rowlevel", JSON.stringify(item));
+    }
+
     // localStorage.setItem("rowlevelMicro");
   };
   const handlebtn = async (item) => {
@@ -101,6 +204,13 @@ const ReportTable = ({
   const paginateFront = () => setCurrentPage(currentPage + 1);
   const paginateBack = () => setCurrentPage(currentPage - 1);
 
+  const handlePopup = () => {
+    setIsPopup(!isPopup);
+  };
+
+  const handleUserData = (data) => {
+    setList((prevData) => [data, ...prevData]);
+  };
   return (
     <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
       {isAlert && (
@@ -115,7 +225,14 @@ const ReportTable = ({
         </div>
       )}
 
-      <h2 className="text-[23px] font-light my-2">{ReportName}</h2>
+      <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
+        <div className="font-light">{ReportName}</div>
+        {form && (
+          <div className="cursor-pointer" onClick={() => handlePopup()}>
+            <i className="fa-solid fa-square-plus text-sky-400 text-[25px]"></i>
+          </div>
+        )}
+      </div>
       <table className="table-auto w-full border-collapse">
         <thead className="text-[14px]">
           <tr className="border-y-[1px]">
@@ -135,7 +252,9 @@ const ReportTable = ({
               {currentLists.map((item, index) =>
                 ReportName === "Contactbook" ? (
                   <tr className="border-y-[1px]" key={index}>
-                    <td className="px-4 py-2">{index + 1}</td>
+                    {heading.includes("Sr.No") && (
+                      <td className="px-4 py-2">{index + 1}</td>
+                    )}
                     <td className="px-4 py-2 font-semibold">{item?.Name} </td>
                     <td className="px-4 py-2">{item?.Email || "-"}</td>
                     <td className="px-4 py-2">{item?.Phone || "-"}</td>
@@ -179,12 +298,18 @@ const ReportTable = ({
                   </tr>
                 ) : (
                   <tr className="border-y-[1px]" key={index}>
-                    <td className="px-4 py-2">{index + 1}</td>
+                    {heading.includes("Sr.No") && (
+                      <td className="px-4 py-2">{index + 1}</td>
+                    )}
                     <td className="px-4 py-2 font-semibold">{item?.Name} </td>
-                    <td className="px-4 py-2">{item?.Note || "-"}</td>
-                    <td className="px-4 py-2">
-                      {item?.Folder?.Name || "OpenSignDrive"}
-                    </td>
+                    {heading.includes("Note") && (
+                      <td className="px-4 py-2">{item?.Note || "-"}</td>
+                    )}
+                    {heading.includes("Folder") && (
+                      <td className="px-4 py-2">
+                        {item?.Folder?.Name || "OpenSignDrive"}
+                      </td>
+                    )}
                     <td className="px-4 py-2">
                       <a
                         target="_blank"
@@ -209,7 +334,11 @@ const ReportTable = ({
                             key={index}
                             onClick={() =>
                               act?.redirectUrl
-                                ? handlemicroapp(item, act.redirectUrl)
+                                ? handlemicroapp(
+                                    item,
+                                    act.redirectUrl,
+                                    act.btnLabel
+                                  )
                                 : handlebtn(item)
                             }
                             className={`flex justify-center items-center w-full gap-1 px-2 py-1 rounded shadow`}
@@ -235,7 +364,6 @@ const ReportTable = ({
                               {act?.btnLabel ? act.btnLabel : "view"}
                             </span>
                           </button>
-                          // )
                         ))}
                     </td>
                   </tr>
@@ -293,6 +421,12 @@ const ReportTable = ({
           <div className="text-sm font-semibold">No Data Available</div>
         </div>
       )}
+      <ModalUi title={"Add Contact"} isOpen={isPopup} handleClose={handlePopup}>
+        <AppendFormInForm
+          handleUserData={handleUserData}
+          closePopup={handlePopup}
+        />
+      </ModalUi>
     </div>
   );
 };

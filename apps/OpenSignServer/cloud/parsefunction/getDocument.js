@@ -40,7 +40,7 @@ export default async function getDocument(request) {
       return { error: 'Please pass required parameters!' };
     }
   } catch (err) {
-    console.log('err');
+    console.log('err', err);
     if (err.code == 209) {
       return { error: 'Invalid session token' };
     } else {

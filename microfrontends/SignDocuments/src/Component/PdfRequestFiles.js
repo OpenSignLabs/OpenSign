@@ -21,8 +21,9 @@ import {
   embedDocId,
   pdfNewWidthFun,
   signPdfFun,
-  calculateImgAspectRatio,
-  onImageSelect
+  onImageSelect,
+  onSaveSign,
+  onSaveImage
 } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -482,181 +483,99 @@ function PdfRequestFiles() {
     }
   };
   //function for upload stamp image
-  const onSaveImage = () => {
+  const saveImage = () => {
+    //get current signers placeholder position data
     const currentSigner = signerPos.filter(
       (data) => data.signerObjId === signerObjectId
     );
-    const i = currentSigner[0].placeHolder.findIndex((object) => {
+    //get current pagenumber placeholder index
+    const getIndex = currentSigner[0].placeHolder.findIndex((object) => {
       return object.pageNumber === pageNumber;
     });
-    const updateFilter = currentSigner[0].placeHolder[i].pos.filter(
-      (data) =>
-        data.key === signKey && data.Width && data.Height && data.SignUrl
+    //get current signer placeholder position data
+    const placeholderPosition = currentSigner[0].placeHolder;
+    //function of save image and get updated position with image url
+    const getUpdatePosition = onSaveImage(
+      placeholderPosition,
+      getIndex,
+      signKey,
+      imgWH,
+      image
     );
-    let getIMGWH = calculateImgAspectRatio(imgWH);
 
-    if (updateFilter.length > 0) {
-      const getXYdata = currentSigner[0].placeHolder[i].pos;
-      const getPosData = getXYdata;
-      const addSign = getPosData.map((url, ind) => {
-        if (url.key === signKey) {
-          return {
-            ...url,
-            Width: getIMGWH.newWidth,
-            Height: getIMGWH.newHeight,
-            SignUrl: image.src,
-            ImageType: image.imgType
-          };
-        }
-        return url;
-      });
-
-      const newUpdateUrl = currentSigner[0].placeHolder.map((obj, ind) => {
-        if (ind === i) {
-          return { ...obj, pos: addSign };
-        }
-        return obj;
-      });
-      const getPlaceData = currentSigner[0].placeHolder;
-      getPlaceData.splice(0, getPlaceData.length, ...newUpdateUrl);
-
-      const indexofSigner = signerPos.findIndex((object) => {
-        return object.signerObjId === signerObjectId;
-      });
-      setSignerPos((prevState) => {
-        const newState = [...prevState]; // Create a copy of the state
-        newState.splice(indexofSigner, 1, ...currentSigner); // Modify the copy
-        return newState; // Update the state with the modified copy
-      });
-    } else {
-      const getXYdata = currentSigner[0].placeHolder[i].pos;
-
-      const getPosData = getXYdata;
-
-      const addSign = getPosData.map((url, ind) => {
-        if (url.key === signKey) {
-          return {
-            ...url,
-            Width: getIMGWH.newWidth,
-            Height: getIMGWH.newHeight,
-            SignUrl: image.src,
-            ImageType: image.imgType
-          };
-        }
-        return url;
-      });
-
-      const newUpdateUrl = currentSigner[0].placeHolder.map((obj, ind) => {
-        if (ind === i) {
-          return { ...obj, pos: addSign };
-        }
-        return obj;
-      });
-
-      const getPlaceData = currentSigner[0].placeHolder;
-      getPlaceData.splice(0, getPlaceData.length, ...newUpdateUrl);
-
-      const indexofSigner = signerPos.findIndex((object) => {
-        return object.signerObjId === signerObjectId;
-      });
-      setSignerPos((prevState) => {
-        const newState = [...prevState]; // Create a copy of the state
-        newState.splice(indexofSigner, 1, ...currentSigner); // Modify the copy
-        return newState; // Update the state with the modified copy
-      });
-    }
+    //replace updated placeholder position with old data
+    placeholderPosition.splice(
+      0,
+      placeholderPosition.length,
+      ...getUpdatePosition
+    );
+    //get current signers placeholder position data index number in array
+    const indexofSigner = signerPos.findIndex((object) => {
+      return object.signerObjId === signerObjectId;
+    });
+    //update current signers data with new placeholder position array data
+    setSignerPos((prevState) => {
+      const newState = [...prevState]; // Create a copy of the state
+      newState.splice(indexofSigner, 1, ...currentSigner); // Modify the copy
+      return newState; // Update the state with the modified copy
+    });
   };
 
   //function for save button to save signature or image url
-  const onSaveSign = (isDefaultSign) => {
+  const saveSign = (isDefaultSign) => {
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
-    const isSign = true;
-    let getIMGWH;
+    let imgWH = { width: "", height: "" };
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
+
+    //get current signers placeholder position data
+    const currentSigner = signerPos.filter(
+      (data) => data.signerObjId === signerObjectId
+    );
+    //get current pagenumber placeholder index
+    const getIndex = currentSigner[0].placeHolder.findIndex((object) => {
+      return object.pageNumber === pageNumber;
+    });
+
+    //set default signature image width and height
     if (isDefaultSign) {
       const img = new Image();
       img.src = defaultSignImg;
       if (img.complete) {
-        let imgWH = {
+        imgWH = {
           width: img.width,
           height: img.height
         };
-        getIMGWH = calculateImgAspectRatio(imgWH);
       }
     }
-    const currentSigner = signerPos.filter(
-      (data) => data.signerObjId === signerObjectId
+    //get current signer placeholder position data
+    const placeholderPosition = currentSigner[0].placeHolder;
+    //function of save signature image and get updated position with signature image url
+    const getUpdatePosition = onSaveSign(
+      placeholderPosition,
+      getIndex,
+      signKey,
+      signatureImg,
+      imgWH,
+      isDefaultSign
     );
 
-    const i = currentSigner[0].placeHolder.findIndex((object) => {
-      return object.pageNumber === pageNumber;
+    const updateSignerData = currentSigner.map((obj, ind) => {
+      if (obj.signerObjId === signerObjectId) {
+        return { ...obj, placeHolder: getUpdatePosition };
+      }
+      return obj;
     });
 
-    let updateFilter;
-
-    updateFilter = currentSigner[0].placeHolder[i].pos.filter(
-      (data) => data.key === signKey && data.SignUrl
+    const index = signerPos.findIndex(
+      (data) => data.signerObjId === signerObjectId
     );
-
-    const getXYdata = currentSigner[0].placeHolder[i].pos;
-    const getPosData = getXYdata;
-    const posWidth = isDefaultSign
-      ? getIMGWH.newWidth
-      : isSign && getPosData[0].ImageType
-        ? 150
-        : getPosData[0].Width
-          ? getPosData[0].Width
-          : 150;
-    const posHidth = isDefaultSign
-      ? getIMGWH.newHeight
-      : isSign && getPosData[0].ImageType
-        ? 60
-        : getPosData[0].Height
-          ? getPosData[0].Height
-          : 60;
-    if (updateFilter.length > 0) {
-      updateFilter[0].SignUrl = signatureImg;
-      updateFilter[0].Width = posWidth;
-      updateFilter[0].Height = posHidth;
-    } else {
-      const addSign = getPosData.map((url, ind) => {
-        if (url.key === signKey) {
-          return {
-            ...url,
-            SignUrl: signatureImg,
-            Width: posWidth,
-            Height: posHidth,
-            ImageType: "sign"
-          };
-        }
-        return url;
-      });
-
-      const newUpdateUrl = currentSigner[0].placeHolder.map((obj, ind) => {
-        if (obj.pageNumber === pageNumber) {
-          return { ...obj, pos: addSign };
-        }
-        return obj;
-      });
-
-      const newUpdatePos = currentSigner.map((obj, ind) => {
-        if (obj.signerObjId === signerObjectId) {
-          return { ...obj, placeHolder: newUpdateUrl };
-        }
-        return obj;
-      });
-
-      const index = signerPos.findIndex(
-        (data) => data.signerObjId === signerObjectId
-      );
-      setSignerPos((prevState) => {
-        const newState = [...prevState]; // Create a copy of the state
-        newState.splice(index, 1, ...newUpdatePos); // Modify the copy
-        return newState; // Update the state with the modified copy
-      });
-    }
+    setSignerPos((prevState) => {
+      const newState = [...prevState];
+      newState.splice(index, 1, ...updateSignerData);
+      return newState;
+    });
   };
 
   const checkSignerBackColor = (obj) => {
@@ -782,6 +701,7 @@ function PdfRequestFiles() {
               allPages={allPages}
               setAllPages={setAllPages}
               setPageNumber={setPageNumber}
+              pageNumber={pageNumber}
             />
 
             {/* pdf render view */}
@@ -831,8 +751,8 @@ function PdfRequestFiles() {
                 onImageChange={onImageChange}
                 setSignature={setSignature}
                 image={image}
-                onSaveImage={onSaveImage}
-                onSaveSign={onSaveSign}
+                onSaveImage={saveImage}
+                onSaveSign={saveSign}
                 defaultSign={defaultSignImg}
               />
               {/* pdf header which contain funish back button */}
@@ -888,7 +808,7 @@ function PdfRequestFiles() {
                       }}
                       className="signedStyle"
                     >
-                      Signed By
+                      Signed by
                     </div>
                     <div style={{ marginTop: "2px" }}>
                       {signedSigners.map((obj, ind) => {
@@ -897,8 +817,8 @@ function PdfRequestFiles() {
                             style={{
                               display: "flex",
                               flexDirection: "row",
-                              padding: "10px",
-
+                              alignItems: "center",
+                              padding: "10px 0",
                               background: checkSignerBackColor(obj)
                             }}
                             key={ind}
@@ -913,17 +833,18 @@ function PdfRequestFiles() {
                                 borderRadius: 30 / 2,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginRight: "20px"
+                                margin: "0 10px 0 5px"
                               }}
                             >
                               <span
                                 style={{
-                                  fontSize: "10px",
+                                  fontSize: "12px",
                                   textAlign: "center",
-                                  fontWeight: "bold"
+                                  fontWeight: "bold",
+                                  color: "black",
+                                  textTransform: "uppercase"
                                 }}
                               >
-                                {" "}
                                 {getFirstLetter(obj.Name)}
                               </span>
                             </div>
@@ -954,7 +875,7 @@ function PdfRequestFiles() {
                         marginTop: signedSigners.length > 0 && "20px"
                       }}
                     >
-                      Yet To Sign
+                      Yet to sign
                     </div>
                     <div style={{ marginTop: "5px" }}>
                       {unsignedSigners.map((obj, ind) => {
@@ -963,7 +884,8 @@ function PdfRequestFiles() {
                             style={{
                               display: "flex",
                               flexDirection: "row",
-                              padding: "10px",
+                              alignItems: "center",
+                              padding:"10px 0",
                               background: checkSignerBackColor(obj)
                             }}
                             key={ind}
@@ -972,23 +894,24 @@ function PdfRequestFiles() {
                               className="signerStyle"
                               style={{
                                 background: "#abd1d0",
-                                width: 20,
-                                height: 20,
+                                width: 30,
+                                height: 30,
                                 display: "flex",
                                 borderRadius: 30 / 2,
                                 justifyContent: "center",
                                 alignItems: "center",
-                                marginRight: "20px"
+                                margin: "0 10px 0 5px"
                               }}
                             >
                               <span
                                 style={{
-                                  fontSize: "8px",
+                                  fontSize: "12px",
                                   textAlign: "center",
-                                  fontWeight: "bold"
+                                  fontWeight: "bold",
+                                  color: "black",
+                                  textTransform: "uppercase"
                                 }}
                               >
-                                {" "}
                                 {getFirstLetter(obj.Name)}
                               </span>
                             </div>
