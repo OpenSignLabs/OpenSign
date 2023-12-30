@@ -46,6 +46,7 @@ const AppendFormInForm = (props) => {
   // Define a function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsLoader(true);
     Parse.serverURL = parseBaseUrl;
     Parse.initialize(parseAppId);
@@ -105,12 +106,17 @@ const AppendFormInForm = (props) => {
           const res = await contactQuery.save();
 
           const parseData = JSON.parse(JSON.stringify(res));
-          props.details({
-            value: parseData[props.valueKey],
-            label: parseData[props.displayKey]
-          });
+          if (props.details) {
+            props.details({
+              value: parseData[props.valueKey],
+              label: parseData[props.displayKey]
+            });
+          }
           if (props.closePopup) {
             props.closePopup();
+          }
+          if (props.handleUserData) {
+            props.handleUserData(parseData);
           }
 
           setIsLoader(false);
@@ -158,12 +164,17 @@ const AppendFormInForm = (props) => {
           const res = await contactQuery.save();
 
           const parseData = JSON.parse(JSON.stringify(res));
-          props.details({
-            value: parseData[props.valueKey],
-            label: parseData[props.displayKey]
-          });
+          if (props.details) {
+            props.details({
+              value: parseData[props.valueKey],
+              label: parseData[props.displayKey]
+            });
+          }
           if (props.closePopup) {
             props.closePopup();
+          }
+          if (props.handleUserData) {
+            props.handleUserData(parseData);
           }
           setIsLoader(false);
           // Reset the form fields

@@ -38,7 +38,7 @@ exports.up = async Parse => {
           pageType: 'form',
           description: '',
           objectId: '8mZzFxbG1z',
-        },
+        }
       ],
     },
     {
