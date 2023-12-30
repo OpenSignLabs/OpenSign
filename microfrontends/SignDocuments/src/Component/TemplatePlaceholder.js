@@ -197,7 +197,6 @@ const TemplatePlaceholder = () => {
           }
         }
       );
-      // console.log("templateDeatils.data ", templateDeatils.data);
       const documentData =
         templateDeatils.data && templateDeatils.data.result
           ? [templateDeatils.data.result]
@@ -780,7 +779,7 @@ const TemplatePlaceholder = () => {
     // handle create document
     const res = await createDocument(pdfDetails, signerPos, signersdata);
     if (res.status === "success") {
-      navigate(`${hostUrl}placeHolderSign/${res.id}`);
+      navigate(`${hostUrl}placeHolderSign/${res.id}`,{state: {title:"Use Template"}});
       setIsCreateDoc(false);
     } else {
       setHandleError("Error: Something went wrong!");
