@@ -11,7 +11,7 @@ import { useDrag, useDrop } from "react-dnd";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import FieldsComponent from "./component/fieldsComponent";
 import Tour from "reactour";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
 import Nodata from "./component/Nodata";
@@ -34,6 +34,7 @@ import Title from "./component/Title";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
+  const {state}= useLocation()
   const [pdfDetails, setPdfDetails] = useState([]);
   const [isMailSend, setIsMailSend] = useState(false);
   const [allPages, setAllPages] = useState(null);
@@ -876,7 +877,7 @@ function PlaceHolderSign() {
   };
   return (
     <>
-      <Title title={"placeholder"} />
+      <Title title={state?.title ? state.title: "New Document"} />
       <DndProvider backend={HTML5Backend}>
         {isLoading.isLoad ? (
           <Loader isLoading={isLoading} />
