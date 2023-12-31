@@ -1,5 +1,8 @@
 
 ---
+sidebar_position: 1
+title: Sign yourself
+---
 
 # Code of Conduct for OpenSign
 
@@ -67,5 +70,3 @@ We expect all community participants (contributors, paid or otherwise; sponsors;
 ## 9. Contact info
 
 [contact@opensignlabs.com](mailto:contact@opensignlabs.com)
-
----
