@@ -1,4 +1,3 @@
-
 ---
 sidebar_position: 1
 title: Code of conduct
