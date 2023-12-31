@@ -86,7 +86,7 @@ const LoginFacebook = ({
             email: userDetails.Email,
             // "passsword":userDetails.Phone,
             phone: userDetails.Phone,
-            role: "contracts_Admin",
+            role: "contracts_User",
             company: userDetails.Company
           }
         };
