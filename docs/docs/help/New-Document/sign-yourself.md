@@ -27,7 +27,7 @@ This feature lets you sign documents that dont need to be sent to anybody.
 ### Step 3: Document Organization
 
 - **[4] Folder**: Select a folder where you want the document to be stored, or leave it to default to the 'Root' folder. You can browse your documents in a beautiful explorer view by navigating to "OpenSign™ Drive".
-- **[5] Root**: This is your default directory. Click the pencil icon to edit or choose a different folder.
+- **[5] Root**: This is your default directory. Click the pencil icon to create or choose a different folder.
 
 ### Step 4: Finalizing the Process
 
@@ -38,7 +38,7 @@ This feature lets you sign documents that dont need to be sent to anybody.
 
 - The fields with an asterisk (*) are mandatory.
 - Make sure your document is in PDF format.
-- You can access your signed documents in the folder you've selected by visiting OpenSign™ Drive anytime. You can also access the socuments from reports section.
+- You can access your signed documents in the folder you've selected by visiting OpenSign™ Drive anytime. You can also access the documents from reports section.
 
 If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
