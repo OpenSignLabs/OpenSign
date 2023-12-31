@@ -1,7 +1,7 @@
 
 ---
 sidebar_position: 1
-title: Sign yourself
+title: Code of conduct
 ---
 
 # Code of Conduct for OpenSign
