@@ -180,8 +180,6 @@ const HomeLayout = ({ children }) => {
   const handleLoginBtn = () => {
     try {
       Parse.User.logOut();
-      localStorage.removeItem("accesstoken");
-      navigate("/", { replace: true });
     } catch (err) {
       console.log("err ", err);
     } finally {
