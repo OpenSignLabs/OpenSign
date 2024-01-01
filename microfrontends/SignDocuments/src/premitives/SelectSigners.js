@@ -26,9 +26,9 @@ const SelectSigners = (props) => {
   // `handleOptions` is used to set just save from quick form to selected option in dropdown
   const handleOptions = (item) => {
     setSelected(item);
-    const userData = userList.filter((x) => x.objectId === item.value);
-    if (userData.length > 0) {
-      setUserData(userData[0]);
+    const userData = userList.find((x) => x.objectId === item.value);
+    if (userData) {
+      setUserData(userData);
     }
   };
   const handleAdd = () => {
