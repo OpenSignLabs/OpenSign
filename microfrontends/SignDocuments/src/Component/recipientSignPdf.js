@@ -37,6 +37,8 @@ import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
 import { modalAlign } from "../utils/Utils";
 import AlertComponent from "./component/alertComponent";
+import TourContentWithBtn from "../premitives/TourContentWithBtn";
+import Title from "./component/Title";
 function EmbedPdfImage() {
   const { id, contactBookId } = useParams();
   const [isSignPad, setIsSignPad] = useState(false);
@@ -84,6 +86,7 @@ function EmbedPdfImage() {
   });
   const [containerWH, setContainerWH] = useState({});
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
+  const [isDontShow, setIsDontShow] = useState(false);
   const docId = id && id;
   const isMobile = window.innerWidth < 767;
   const index = xyPostion.findIndex((object) => {
@@ -644,66 +647,86 @@ function EmbedPdfImage() {
   //function for update TourStatus
   const closeTour = async () => {
     setSignTour(false);
-
-    let updatedTourStatus = [];
-    if (tourStatus.length > 0) {
-      updatedTourStatus = [...tourStatus];
-      const recipientssignIndex = tourStatus.findIndex(
-        (obj) =>
-          obj["recipientssign"] === false || obj["recipientssign"] === true
-      );
-      if (recipientssignIndex !== -1) {
-        updatedTourStatus[recipientssignIndex] = { recipientssign: true };
-      } else {
-        updatedTourStatus.push({ recipientssign: true });
-      }
-    } else {
-      updatedTourStatus = [{ recipientssign: true }];
-    }
-
-    await axios
-      .put(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}${contractName}/${signerUserId}`,
-        {
-          TourStatus: updatedTourStatus
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
+    if (isDontShow) {
+      let updatedTourStatus = [];
+      if (tourStatus.length > 0) {
+        updatedTourStatus = [...tourStatus];
+        const recipientssignIndex = tourStatus.findIndex(
+          (obj) =>
+            obj["recipientssign"] === false || obj["recipientssign"] === true
+        );
+        if (recipientssignIndex !== -1) {
+          updatedTourStatus[recipientssignIndex] = { recipientssign: true };
+        } else {
+          updatedTourStatus.push({ recipientssign: true });
         }
-      )
-      .then((Listdata) => {
-        // const json = Listdata.data;
-        // const res = json.results;
-        // console.log("res", json);
-      })
-      .catch((err) => {
-        console.log("axois err ", err);
-      });
+      } else {
+        updatedTourStatus = [{ recipientssign: true }];
+      }
+
+      await axios
+        .put(
+          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+            "_appName"
+          )}${contractName}/${signerUserId}`,
+          {
+            TourStatus: updatedTourStatus
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
+          }
+        )
+        .then((Listdata) => {
+          // const json = Listdata.data;
+          // const res = json.results;
+          // console.log("res", json);
+        })
+        .catch((err) => {
+          console.log("axois err ", err);
+        });
+    }
+  };
+
+  const handleDontShow = (isChecked) => {
+    setIsDontShow(isChecked);
   };
 
   const tourFunction = () => {
     const tourConfig = [
       {
         selector: '[data-tut="reactourFirst"]',
-        content: `You can click "Auto Sign All" to automatically sign at all the locations meant to be signed by you.Make sure that you review the document properly before you click this button.`,
+        content: () => (
+          <TourContentWithBtn
+            message={`You can click "Auto Sign All" to automatically sign at all the locations meant to be signed by you.Make sure that you review the document properly before you click this button.`}
+            isChecked={handleDontShow}
+          />
+        ),
         position: "top",
         style: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="reactourSecond"]',
-        content: `Click any of such placeholders appearing on the document to sign.You will see the options to draw sign or upload an image once you click here.`,
+        content: () => (
+          <TourContentWithBtn
+            message={`Click any of such placeholders appearing on the document to sign.You will see the options to draw sign or upload an image once you click here.`}
+            isChecked={handleDontShow}
+          />
+        ),
         position: "top",
         style: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="reactourThird"]',
-        content: `Click here to finish & download the signed document.You will also receive a copy on your email.`,
+        content: () => (
+          <TourContentWithBtn
+            message={`Click here to finish & download the signed document.You will also receive a copy on your email.`}
+            isChecked={handleDontShow}
+          />
+        ),
         position: "top",
         style: { fontSize: "13px" }
       }
@@ -729,6 +752,7 @@ function EmbedPdfImage() {
 
   return (
     <DndProvider backend={HTML5Backend}>
+      <Title title={"Sign Document"} />
       {isLoading.isLoad ? (
         <Loader isLoading={isLoading} />
       ) : handleError ? (

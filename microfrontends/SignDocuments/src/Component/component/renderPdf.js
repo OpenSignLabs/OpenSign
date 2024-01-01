@@ -381,14 +381,12 @@ function RenderPdf({
   };
   const handleUserName = (signerId, Role) => {
     if (signerId) {
-      const checkSign = signersdata.filter(
-        (sign) => sign.objectId === signerId
-      );
-      if (checkSign.length > 0) {
+      const checkSign = signersdata.find((sign) => sign.objectId === signerId);
+      if (checkSign?.Name) {
         return (
           <>
             <div style={{ color: "black", fontSize: 11 }}>
-              {checkSign[0].Name}
+              {checkSign?.Name}
             </div>
             <div style={{ color: "black", fontSize: 11 }}> {`(${Role})`} </div>
           </>
@@ -479,7 +477,7 @@ function RenderPdf({
                                 onClick={() => {
                                   setIsSignPad(true);
                                   setSignKey(pos.key);
-                                  setIsStamp(false);
+                                  setIsStamp(pos?.isStamp ? pos.isStamp : false);
                                 }}
                               >
                                 <BorderResize />
@@ -647,6 +645,7 @@ function RenderPdf({
                                           }}
                                         >
                                           <i
+                                            data-tut="reactourLinkUser"
                                             className="fa-regular fa-user signUserIcon"
                                             onTouchEnd={(e) => {
                                               e.stopPropagation();
@@ -788,7 +787,6 @@ function RenderPdf({
                                         xyPostion,
                                         index,
                                         setXyPostion
-                                     
                                       );
                                     }}
                                   >
@@ -1008,7 +1006,7 @@ function RenderPdf({
                                   onClick={() => {
                                     setIsSignPad(true);
                                     setSignKey(pos.key);
-                                    setIsStamp(false);
+                                    setIsStamp(pos?.isStamp ? pos.isStamp : false);
                                   }}
                                 >
                                   <div style={{ pointerEvents: "none" }}>
@@ -1173,6 +1171,7 @@ function RenderPdf({
                                           />
                                           <div>
                                             <i
+                                              data-tut="reactourLinkUser"
                                               className="fa-regular fa-user signUserIcon"
                                               onClick={(e) => {
                                                 e.stopPropagation();
