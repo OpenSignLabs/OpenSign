@@ -477,7 +477,7 @@ function RenderPdf({
                                 onClick={() => {
                                   setIsSignPad(true);
                                   setSignKey(pos.key);
-                                  setIsStamp(false);
+                                  setIsStamp(pos?.isStamp ? pos.isStamp : false);
                                 }}
                               >
                                 <BorderResize />
@@ -645,6 +645,7 @@ function RenderPdf({
                                           }}
                                         >
                                           <i
+                                            data-tut="reactourLinkUser"
                                             className="fa-regular fa-user signUserIcon"
                                             onTouchEnd={(e) => {
                                               e.stopPropagation();
@@ -1005,7 +1006,7 @@ function RenderPdf({
                                   onClick={() => {
                                     setIsSignPad(true);
                                     setSignKey(pos.key);
-                                    setIsStamp(false);
+                                    setIsStamp(pos?.isStamp ? pos.isStamp : false);
                                   }}
                                 >
                                   <div style={{ pointerEvents: "none" }}>
@@ -1170,6 +1171,7 @@ function RenderPdf({
                                           />
                                           <div>
                                             <i
+                                              data-tut="reactourLinkUser"
                                               className="fa-regular fa-user signUserIcon"
                                               onClick={(e) => {
                                                 e.stopPropagation();
