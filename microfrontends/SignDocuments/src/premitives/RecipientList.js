@@ -85,6 +85,9 @@ const RecipientList = (props) => {
                 props.setContractName(obj?.className);
                 props.setUniqueId(obj.Id);
                 props.setRoleName(obj.Role);
+                if(props.handleModal){
+                  props.handleModal()
+                }
               }}
             >
               <div

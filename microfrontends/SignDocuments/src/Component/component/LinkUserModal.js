@@ -10,12 +10,12 @@ const LinkUserModal = (props) => {
           details={props.handleAddUser}
           closePopup={props.closePopup}
         />
-         <div style={{ display: "flex", alignItems: "center", gap: 5, margin:"0px 25px" }}>
+         <div style={{ display: "flex", alignItems: "center", gap: 5, margin:"0 30%", color:"#808080" }}>
           <span
             style={{
               height: 1,
               width: "100%",
-              backgroundColor: "grey"
+              backgroundColor: "#ccc"
             }}
           ></span>
           <span>or</span>
@@ -23,7 +23,7 @@ const LinkUserModal = (props) => {
             style={{
               height: 1,
               width: "100%",
-              backgroundColor: "grey"
+              backgroundColor: "#ccc"
             }}
           ></span>
         </div>
