@@ -1,3 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Fasthand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap');
+
 .signatureCanvas {
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
@@ -810,6 +815,12 @@ option {
   .mobileHead {
     display: flex;
   }
+  .signTab {
+
+    font-weight: 500 !important;
+
+    font-size: 10px !important;
+  }
 
 }
 
@@ -868,7 +879,7 @@ option {
 
     font-weight: 500 !important;
 
-    font-size: 10px !important;
+    font-size: 8px !important;
   }
 
   .uploadImgLogo {

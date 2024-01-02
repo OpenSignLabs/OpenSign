@@ -32,11 +32,10 @@ function SignPad({
   const [signValue, setSignValue] = useState("");
   const [textWidth, setTextWidth] = useState(null);
   const fontOptions = [
-    { value: "Lucida Handwriting" },
-    { value: "Segoe Script" },
-    { value: "Harrington" },
-    { value: "cursive" }
-
+    { value: "Fasthand" },
+    { value: "Dancing Script" },
+    { value: "Cedarville Cursive" },
+    { value: "Delicious Handrawn" }
     // Add more font options as needed
   ];
   const [fontSelect, setFontSelect] = useState(fontOptions[0].value);
@@ -153,7 +152,7 @@ function SignPad({
 
     // Create a canvas with the calculated width
     const canvas = document.createElement("canvas");
-    canvas.width = textWidth * pixelRatio + 20 * pixelRatio;
+    canvas.width = textWidth * pixelRatio + 30 * pixelRatio;
     canvas.height = 20 * pixelRatio; // You can adjust the height as needed
     setTextWidth(textWidth * pixelRatio);
     // Draw the text content on the canvas
@@ -164,7 +163,6 @@ function SignPad({
 
     // Convert the canvas to image data
     const dataUrl = canvas.toDataURL("image/png");
-
     setSignature(dataUrl);
   };
 
@@ -199,8 +197,6 @@ function SignPad({
               justifyContent: "space-around",
               alignItems: "end",
               gap: 10
-
-              // background: themeColor(),
             }}
           >
             {isStamp ? (
