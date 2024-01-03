@@ -764,7 +764,8 @@ export const handleSignYourselfImageResize = (
   key,
   xyPostion,
   index,
-  setXyPostion
+ setXyPostion,
+ 
 ) => {
   // const updateFilter = xyPostion[index].pos.filter(
   //   (data) => data.key === key && data.Width && data.Height

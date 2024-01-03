@@ -39,6 +39,8 @@ import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
 import { modalAlign } from "../utils/Utils";
 import AlertComponent from "./component/alertComponent";
 import PlaceholderCopy from "./component/PlaceholderCopy";
+import TourContentWithBtn from "../premitives/TourContentWithBtn";
+import Title from "./component/Title";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -91,6 +93,7 @@ function SignYourSelf() {
     type: "load"
   });
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
+  const [isDontShow, setIsDontShow] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
@@ -748,16 +751,31 @@ function SignYourSelf() {
     setXyPostion(getXyData);
     setShowAlreadySignDoc({ status: false });
   };
+
+  const handleDontShow = (isChecked) => {
+    setIsDontShow(isChecked);
+  };
+
   const tourConfig = [
     {
       selector: '[data-tut="reactourFirst"]',
-      content: `Drag the signature or stamp placeholder onto the PDF to choose your desired signing location.`,
+      content: () => (
+        <TourContentWithBtn
+          message={`Drag the signature or stamp placeholder onto the PDF to choose your desired signing location.`}
+          isChecked={handleDontShow}
+        />
+      ),
       position: "top",
       style: { fontSize: "13px" }
     },
     {
       selector: '[data-tut="reactourSecond"]',
-      content: `Drag and drop anywhere in this area. You can resize and move it later.`,
+      content: () => (
+        <TourContentWithBtn
+          message={`Drag and drop anywhere in this area. You can resize and move it later.`}
+          isChecked={handleDontShow}
+        />
+      ),
       position: "top",
       style: { fontSize: "13px" }
     }
@@ -766,47 +784,49 @@ function SignYourSelf() {
   //function for update TourStatus
   const closeTour = async () => {
     setSignTour(false);
-
-    let updatedTourStatus = [];
-    if (tourStatus.length > 0) {
-      updatedTourStatus = [...tourStatus];
-      const signyourselfIndex = tourStatus.findIndex(
-        (obj) => obj["signyourself"] === false || obj["signyourself"] === true
-      );
-      if (signyourselfIndex !== -1) {
-        updatedTourStatus[signyourselfIndex] = { signyourself: true };
-      } else {
-        updatedTourStatus.push({ signyourself: true });
-      }
-    } else {
-      updatedTourStatus = [{ signyourself: true }];
-    }
-    await axios
-      .put(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}${contractName}/${signerUserId}`,
-        {
-          TourStatus: updatedTourStatus
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            sessionToken: localStorage.getItem("accesstoken")
-          }
+    if (isDontShow) {
+      let updatedTourStatus = [];
+      if (tourStatus.length > 0) {
+        updatedTourStatus = [...tourStatus];
+        const signyourselfIndex = tourStatus.findIndex(
+          (obj) => obj["signyourself"] === false || obj["signyourself"] === true
+        );
+        if (signyourselfIndex !== -1) {
+          updatedTourStatus[signyourselfIndex] = { signyourself: true };
+        } else {
+          updatedTourStatus.push({ signyourself: true });
         }
-      )
-      .then((Listdata) => {
-        // const json = Listdata.data;
-      })
-      .catch((err) => {
-        console.log("axois err ", err);
-      });
+      } else {
+        updatedTourStatus = [{ signyourself: true }];
+      }
+      await axios
+        .put(
+          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+            "_appName"
+          )}${contractName}/${signerUserId}`,
+          {
+            TourStatus: updatedTourStatus
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              sessionToken: localStorage.getItem("accesstoken")
+            }
+          }
+        )
+        .then((Listdata) => {
+          // const json = Listdata.data;
+        })
+        .catch((err) => {
+          console.log("axois err ", err);
+        });
+    }
   };
 
   return (
     <DndProvider backend={HTML5Backend}>
+      <Title title={"Self Sign"} />
       {isLoading.isLoad ? (
         <Loader isLoading={isLoading} />
       ) : handleError ? (

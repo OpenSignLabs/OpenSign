@@ -74,8 +74,8 @@ const PgSignUp = (props) => {
         const res = await Parse.Cloud.run("getUserDetails", params);
         // console.log("res", res);
         if (res) {
-          const checkUser = new Parse.Query(extClass);
-          const updateQuery = await checkUser.get(res.id);
+          const updateQuery = new Parse.Object(extClass);
+          updateQuery.id = res.id;
           updateQuery.set(
             "Next_billing_date",
             new Date(zohoRes.data.result.nextBillingDate)

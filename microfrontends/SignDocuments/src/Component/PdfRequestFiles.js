@@ -32,6 +32,7 @@ import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
 import AlertComponent from "./component/alertComponent";
+import Title from "./component/Title";
 
 function PdfRequestFiles() {
   const { docId } = useParams();
@@ -625,6 +626,7 @@ function PdfRequestFiles() {
 
   return (
     <DndProvider backend={HTML5Backend}>
+      <Title title={"Request Sign"}/>
       {isLoading.isLoad ? (
         <Loader isLoading={isLoading} />
       ) : handleError ? (
