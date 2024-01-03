@@ -834,6 +834,8 @@ const TemplatePlaceholder = () => {
   // save Role in entry in signerList and user
   const handleAddRole = (e) => {
     e.preventDefault();
+    setSignerObjId('')
+    setContractName('')
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
     const Id = randomId();
     const index = signersdata.length;
@@ -861,7 +863,7 @@ const TemplatePlaceholder = () => {
     const index = signersdata.findIndex((x) => x.Id === Id);
     if (index === signersdata.length - 1) {
       setUniqueId(updateSigner[updateSigner.length - 1]?.Id || "");
-      setIsSelectId(0);
+      setIsSelectId(index - 1|| 0);
     } else {
       setUniqueId(updateSigner[index]?.Id || "");
       setIsSelectId(index);
