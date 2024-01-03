@@ -765,13 +765,9 @@ export const handleImageResize = (
 export const handleSignYourselfImageResize = (
   ref,
   key,
-  direction,
-  position,
   xyPostion,
   index,
   setXyPostion,
-  pdfOriginalWidth,
-  containerWH
 ) => {
   const updateFilter = xyPostion[index].pos.filter(
     (data) => data.key === key && data.Width && data.Height
