@@ -317,18 +317,12 @@ function PlaceHolderSign() {
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
-    if (isMobile) {
-      if (selectedEmail) {
-        getSignerPos(item, monitor);
-      } else {
-        setIsShowEmail(true);
-      }
-    } else {
-      getSignerPos(item, monitor);
-    }
+    getSignerPos(item, monitor);
   };
 
   const getSignerPos = (item, monitor) => {
+    setSignerObjId('')
+    setContractName('')
     if (uniqueId) {
     const signer = signersdata.find((x) => x.Id === uniqueId);
     if (signer) {
