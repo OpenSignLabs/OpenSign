@@ -91,10 +91,6 @@ const ReportTable = ({
           if (!templateData.error) {
             const Doc = templateData;
 
-            let placeholdersArr = [];
-            if (Doc.Placeholders?.length > 0) {
-              placeholdersArr = Doc.Placeholders;
-            }
             let signers = [];
             if (Doc.Signers?.length > 0) {
               Doc.Signers?.forEach((x) => {
@@ -107,6 +103,11 @@ const ReportTable = ({
                   signers.push(obj);
                 }
               });
+            }
+
+            let placeholdersArr = [];
+            if (Doc.Placeholders?.length > 0) {
+              placeholdersArr = Doc.Placeholders;
               const data = {
                 Name: Doc.Name,
                 URL: Doc.URL,
