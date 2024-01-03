@@ -445,60 +445,60 @@ function SignYourSelf() {
         ignoreEncryption: true
       });
 
-      //checking if signature is only one then send image url in jpeg formate to server
-      if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
-        //embed document's object id to all pages in pdf document
-        await embedDocId(pdfDoc, documentId, allPages);
-        const pdfBase64 = await pdfDoc.saveAsBase64({
-          useObjectStreams: false
-        });
+      // //checking if signature is only one then send image url in jpeg formate to server
+      // if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
+      //   //embed document's object id to all pages in pdf document
+      //   await embedDocId(pdfDoc, documentId, allPages);
+      //   const pdfBase64 = await pdfDoc.saveAsBase64({
+      //     useObjectStreams: false
+      //   });
 
-        for (let xyData of xyPostion) {
-          const imgUrlList = xyData.pos;
-          const pageNo = xyData.pageNumber;
-          imgUrlList.map(async (data) => {
-            let ImgUrl = data.SignUrl;
-            //cheking signUrl is defau;t signature url of custom url
-            const checkUrl = urlValidator(ImgUrl);
-            //if default signature url then convert it in base 64
-            if (checkUrl) {
-              ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
-            }
-            //function for convert signature png base64 url to jpeg base64
-            convertPNGtoJPEG(ImgUrl)
-              .then((jpegBase64Data) => {
-                const removeBase64Fromjpeg = "data:image/jpeg;base64,";
-                const newImgUrl = jpegBase64Data.replace(
-                  removeBase64Fromjpeg,
-                  ""
-                );
-                //function for call to embed signature in pdf and get digital signature pdf
-                signPdfFun(newImgUrl, documentId, data, pdfBase64, pageNo);
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-              });
-          });
-        }
-      }
+      //   for (let xyData of xyPostion) {
+      //     const imgUrlList = xyData.pos;
+      //     const pageNo = xyData.pageNumber;
+      //     imgUrlList.map(async (data) => {
+      //       let ImgUrl = data.SignUrl;
+      //       //cheking signUrl is defau;t signature url of custom url
+      //       const checkUrl = urlValidator(ImgUrl);
+      //       //if default signature url then convert it in base 64
+      //       if (checkUrl) {
+      //         ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
+      //       }
+      //       //function for convert signature png base64 url to jpeg base64
+      //       convertPNGtoJPEG(ImgUrl)
+      //         .then((jpegBase64Data) => {
+      //           const removeBase64Fromjpeg = "data:image/jpeg;base64,";
+      //           const newImgUrl = jpegBase64Data.replace(
+      //             removeBase64Fromjpeg,
+      //             ""
+      //           );
+      //           //function for call to embed signature in pdf and get digital signature pdf
+      //           signPdfFun(newImgUrl, documentId, data, pdfBase64, pageNo);
+      //         })
+      //         .catch((error) => {
+      //           console.error("Error:", error);
+      //         });
+      //     });
+      //   }
+      // }
       //else if signature is more than one then embed all sign with the use of pdf-lib
-      else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-        const flag = true;
-        //embed document's object id to all pages in pdf document
-        await embedDocId(pdfDoc, documentId, allPages);
+      // else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
+      const flag = true;
+      //embed document's object id to all pages in pdf document
+      await embedDocId(pdfDoc, documentId, allPages);
 
-        //embed multi signature in pdf
-        const pdfBytes = await multiSignEmbed(
-          xyPostion,
-          pdfDoc,
-          pdfOriginalWidth,
-          flag,
-          containerWH
-        );
+      //embed multi signature in pdf
+      const pdfBytes = await multiSignEmbed(
+        xyPostion,
+        pdfDoc,
+        pdfOriginalWidth,
+        flag,
+        containerWH
+      );
 
-        //function for call to embed signature in pdf and get digital signature pdf
-        signPdfFun(pdfBytes, documentId);
-      }
+      //function for call to embed signature in pdf and get digital signature pdf
+      signPdfFun(pdfBytes, documentId);
+      // }
       setIsSignPad(false);
       setIsEmail(true);
       setXyPostion([]);
@@ -518,41 +518,41 @@ function SignYourSelf() {
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
 
-    if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
-      const xPos = () => {
-        const resizePos = xyPosData.xPosition;
-        if (isMobile) {
-          return resizePos * scale;
-        } else {
-          return resizePos;
-        }
-      };
-      const height = xyPosData.Height ? xyPosData.Height : 60;
-      const resizePos = xyPosData.yBottom;
-      const bottomY = xyPosData.isDrag
-        ? resizePos * scale - height * scale
-        : xyPosData.firstYPos
-          ? resizePos * scale - height * scale + xyPosData.firstYPos
-          : resizePos * scale - height * scale;
+    // if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
+    //   const xPos = () => {
+    //     const resizePos = xyPosData.xPosition;
+    //     if (isMobile) {
+    //       return resizePos * scale;
+    //     } else {
+    //       return resizePos;
+    //     }
+    //   };
+    //   const height = xyPosData.Height ? xyPosData.Height : 60;
+    //   const resizePos = xyPosData.yBottom;
+    //   const bottomY = xyPosData.isDrag
+    //     ? resizePos * scale - height * scale
+    //     : xyPosData.firstYPos
+    //       ? resizePos * scale - height * scale + xyPosData.firstYPos
+    //       : resizePos * scale - height * scale;
 
-      singleSign = {
-        pdfFile: pdfBase64Url,
-        docId: documentId,
-        sign: {
-          Base64: base64Url,
-          Left: xPos(),
-          Bottom: bottomY,
-          Width: placeholderWidth(xyPosData, scale),
-          Height: placeholderHeight(xyPosData, scale),
-          Page: pageNo
-        }
-      };
-    } else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-      singleSign = {
-        pdfFile: base64Url,
-        docId: documentId
-      };
-    }
+    //   singleSign = {
+    //     pdfFile: pdfBase64Url,
+    //     docId: documentId,
+    //     sign: {
+    //       Base64: base64Url,
+    //       Left: xPos(),
+    //       Bottom: bottomY,
+    //       Width: placeholderWidth(xyPosData, scale),
+    //       Height: placeholderHeight(xyPosData, scale),
+    //       Page: pageNo
+    //     }
+    //   };
+    // } else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
+    singleSign = {
+      pdfFile: base64Url,
+      docId: documentId
+      // };
+    };
 
     await axios
       .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
