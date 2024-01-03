@@ -31,6 +31,7 @@ function SignPad({
   const [isSignImg, setIsSignImg] = useState("");
   const [signValue, setSignValue] = useState("");
   const [textWidth, setTextWidth] = useState(null);
+  const [textHeight, setTextHeight] = useState(null);
   const fontOptions = [
     { value: "Fasthand" },
     { value: "Dancing Script" },
@@ -96,7 +97,7 @@ function SignPad({
               } else {
                 if (isTab === "type") {
                   setIsSignImg("");
-                  onSaveSign(false, textWidth, 25);
+                  onSaveSign(false, textWidth, textHeight);
                 } else {
                   setIsSignImg("");
                   onSaveSign();
@@ -155,28 +156,30 @@ function SignPad({
       canvasRef.current.fromDataURL(isSignImg);
     }
     if (isTab === "type") {
-      convertToImg();
+      convertToImg(fontSelect, signValue);
     }
   }, [isTab]);
   //function for convert input text value in image
-  const convertToImg = async (fontStyle) => {
+  const convertToImg = async (fontStyle, text) => {
     //get text content to convert in image
-    const textContent = signValue;
+    const textContent = text;
     const fontfamily = fontStyle
       ? fontStyle
       : fontSelect
         ? fontSelect
         : "Fasthand";
-    console.log("font family", fontfamily);
+
     // Calculate the width of the text content
-    const textWidth = getTextWidth(textContent, fontfamily);
+    const { width, height } = getTextWidth(textContent, fontfamily);
     // Increase pixel ratio for higher resolution
     const pixelRatio = window.devicePixelRatio || 1;
     // Create a canvas with the calculated width
     const canvas = document.createElement("canvas");
-    canvas.width = textWidth * pixelRatio + 10 * pixelRatio;
-    canvas.height = 20 * pixelRatio; // You can adjust the height as needed
-    setTextWidth(textWidth * pixelRatio);
+    canvas.width = width * 2;
+    canvas.height = height;
+    // canvas.height = height; // You can adjust the height as needed
+    setTextWidth(width);
+    setTextHeight(25);
 
     // Draw the text content on the canvas
     const context = canvas.getContext("2d");
@@ -184,11 +187,10 @@ function SignPad({
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.scale(pixelRatio, pixelRatio);
     context.font = `13px ${fontfamily}`; // You can adjust the font size and style
-    context.fillText(textContent, 0, 10); // Adjust the y-coordinate as needed
+    context.fillText(textContent, 4, 10); // Adjust the y-coordinate as needed
 
     // Convert the canvas to image data
     const dataUrl = canvas.toDataURL("image/png");
-
     setSignature(dataUrl);
   };
 
@@ -199,9 +201,10 @@ function SignPad({
     tempSpan.style.visibility = "hidden";
     tempSpan.style.fontFamily = fontfamily;
     document.body.appendChild(tempSpan);
-    const width = tempSpan.getBoundingClientRect().width;
+    const width = tempSpan.offsetWidth;
+    const height = tempSpan.offsetHeight;
     document.body.removeChild(tempSpan);
-    return width;
+    return { width, height };
   };
   return (
     <div>
@@ -228,7 +231,7 @@ function SignPad({
           >
             {isStamp ? (
               <span style={{ color: themeColor() }} className="signTab">
-                Upload Image
+                Upload stamp image
               </span>
             ) : (
               <>
@@ -462,7 +465,7 @@ function SignPad({
               >
                 <span className="signatureText">Signature:</span>
                 <input
-                  maxLength={15}
+                  maxLength={30}
                   style={{ fontFamily: fontSelect }}
                   type="text"
                   className="signatureInput"
@@ -470,7 +473,7 @@ function SignPad({
                   value={signValue}
                   onChange={(e) => {
                     setSignValue(e.target.value);
-                    convertToImg();
+                    convertToImg(fontSelect, e.target.value);
                   }}
                 />
               </div>
@@ -486,7 +489,7 @@ function SignPad({
                       }}
                       onClick={() => {
                         setFontSelect(font.value);
-                        convertToImg(font.value);
+                        convertToImg(font.value, signValue);
                       }}
                     >
                       <div
