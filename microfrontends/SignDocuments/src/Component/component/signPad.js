@@ -53,6 +53,7 @@ function SignPad({
     const currentUserName = jsonSender && jsonSender.name;
     //function for clear signature
     setSignValue(currentUserName);
+    setFontSelect("Fasthand");
   }, []);
   //function for clear signature
   const handleClear = () => {
@@ -133,6 +134,22 @@ function SignPad({
   };
 
   useEffect(() => {
+    const loadFont = async () => {
+      try {
+        await document.fonts.load(`20px ${fontSelect}`);
+        const selectFontSTyle = fontOptions.find(
+          (font) => font.value === fontSelect
+        );
+        setFontSelect(selectFontSTyle?.value || fontOptions[0].value);
+      } catch (error) {
+        console.error("Error loading font:", error);
+      }
+    };
+
+    loadFont();
+  }, [fontSelect]);
+
+  useEffect(() => {
     // Load the default signature after the component mounts
     if (canvasRef.current) {
       canvasRef.current.fromDataURL(isSignImg);
@@ -149,7 +166,8 @@ function SignPad({
       ? fontStyle
       : fontSelect
         ? fontSelect
-        : fontOptions[0].value;
+        : "Fasthand";
+    console.log("font family", fontfamily);
     // Calculate the width of the text content
     const textWidth = getTextWidth(textContent, fontfamily);
     // Increase pixel ratio for higher resolution
