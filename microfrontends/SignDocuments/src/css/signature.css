@@ -130,7 +130,7 @@
 .signatureInput {
   width: 80%;
   border-radius: 4px;
-  font-size: 0.75rem;
+  font-size: 20px;
   border: 1px solid #e2dddd;
   color: black;
   font-family: inherit;
@@ -791,6 +791,10 @@ option {
   .mobileHead {
     display: flex;
   }
+  .signatureText{
+    margin-right: 5px;
+    font-size: 12px;
+  }
 }
 
 @media screen and (max-width:487px) and (min-width:351px) {
@@ -819,7 +823,7 @@ option {
 
     font-weight: 500 !important;
 
-    font-size: 10px !important;
+    font-size: 12px !important;
   }
 
 }

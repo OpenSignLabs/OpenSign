@@ -95,7 +95,7 @@ function SignPad({
               } else {
                 if (isTab === "type") {
                   setIsSignImg("");
-                  onSaveSign(false, textWidth, 30);
+                  onSaveSign(false, textWidth, 25);
                 } else {
                   setIsSignImg("");
                   onSaveSign();
@@ -142,37 +142,42 @@ function SignPad({
     }
   }, [isTab]);
   //function for convert input text value in image
-  const convertToImg = async () => {
+  const convertToImg = async (fontStyle) => {
     //get text content to convert in image
     const textContent = signValue;
+    const fontfamily = fontStyle ? fontStyle : fontSelect;
     // Calculate the width of the text content
-    const textWidth = getTextWidth(textContent);
+    const textWidth = getTextWidth(textContent, fontfamily);
     // Increase pixel ratio for higher resolution
     const pixelRatio = window.devicePixelRatio || 1;
-
     // Create a canvas with the calculated width
     const canvas = document.createElement("canvas");
-    canvas.width = textWidth * pixelRatio + 30 * pixelRatio;
+    canvas.width = textWidth * pixelRatio + 10 * pixelRatio;
     canvas.height = 20 * pixelRatio; // You can adjust the height as needed
     setTextWidth(textWidth * pixelRatio);
+
     // Draw the text content on the canvas
     const context = canvas.getContext("2d");
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
     context.scale(pixelRatio, pixelRatio);
-    context.font = `13px ${fontSelect}`; // You can adjust the font size and style
+    context.font = `13px ${fontfamily}`; // You can adjust the font size and style
     context.fillText(textContent, 0, 10); // Adjust the y-coordinate as needed
 
     // Convert the canvas to image data
     const dataUrl = canvas.toDataURL("image/png");
+
     setSignature(dataUrl);
   };
 
   //for getting text content width render text in span tag and get width
-  const getTextWidth = (text) => {
+  const getTextWidth = (text, fontfamily) => {
     const tempSpan = document.createElement("span");
     tempSpan.innerText = text;
     tempSpan.style.visibility = "hidden";
+    tempSpan.style.fontFamily = fontfamily;
     document.body.appendChild(tempSpan);
-    const width = tempSpan.offsetWidth;
+    const width = tempSpan.getBoundingClientRect().width;
     document.body.removeChild(tempSpan);
     return width;
   };
@@ -426,9 +431,16 @@ function SignPad({
             )
           ) : isTab === "type" ? (
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span>Signature: </span>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                <span className="signatureText">Signature:</span>
                 <input
+                  maxLength={15}
                   style={{ fontFamily: fontSelect }}
                   type="text"
                   className="signatureInput"
@@ -450,9 +462,17 @@ function SignPad({
                         backgroundColor:
                           fontSelect === font.value && "rgb(206 225 247)"
                       }}
-                      onClick={() => setFontSelect(font.value)}
+                      onClick={() => {
+                        setFontSelect(font.value);
+                        convertToImg(font.value);
+                      }}
                     >
-                      <div style={{ padding: "5px 10px 5px 10px" }}>
+                      <div
+                        style={{
+                          padding: "5px 10px 5px 10px",
+                          fontSize: "20px"
+                        }}
+                      >
                         {signValue ? signValue : "Your signature"}
                       </div>
                     </div>
