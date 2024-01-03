@@ -252,6 +252,12 @@ const ReportTable = ({
 
       <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
         <div className="font-light">{ReportName}</div>
+        {ReportName === "Templates" && (
+          <i
+            onClick={() => navigate("/form/template")}
+            className="fa-solid fa-square-plus text-sky-400 text-[25px]"
+          ></i>
+        )}
         {form && (
           <div
             className="cursor-pointer"

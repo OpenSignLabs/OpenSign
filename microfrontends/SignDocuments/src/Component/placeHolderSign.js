@@ -32,6 +32,7 @@ import PlaceholderCopy from "./component/PlaceholderCopy";
 import LinkUserModal from "./component/LinkUserModal";
 import Title from "./component/Title";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
+import ModalUi from "../premitives/ModalUi";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -321,131 +322,131 @@ function PlaceHolderSign() {
   };
 
   const getSignerPos = (item, monitor) => {
-    setSignerObjId('')
-    setContractName('')
+    setSignerObjId("");
+    setContractName("");
     if (uniqueId) {
-    const signer = signersdata.find((x) => x.Id === uniqueId);
-    if (signer) {
-      const posZIndex = zIndex + 1;
-      setZIndex(posZIndex);
-      const newWidth = containerWH.width;
-      const scale = pdfOriginalWidth / newWidth;
-      const key = randomId();
-      // let filterSignerPos = signerPos.filter(
-      //   (data) => data.signerObjId === signerObjId
-      // );
-      let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-      let dropData = [];
-      let placeHolder;
-      if (item === "onclick") {
-        const dropObj = {
-          xPosition: window.innerWidth / 2 - 100,
-          yPosition: window.innerHeight / 2 - 60,
-          isStamp: monitor,
-          key: key,
-          isDrag: false,
-          scale: scale,
-          isMobile: isMobile,
-          yBottom: window.innerHeight / 2 - 60,
-          zIndex: posZIndex
-        };
-        dropData.push(dropObj);
-        placeHolder = {
-          pageNumber: pageNumber,
-          pos: dropData
-        };
-      } else if (item.type === "BOX") {
-        const offset = monitor.getClientOffset();
-        //adding and updating drop position in array when user drop signature button in div
-        const containerRect = document
-          .getElementById("container")
-          .getBoundingClientRect();
-        const x = offset.x - containerRect.left;
-        const y = offset.y - containerRect.top;
-        const ybottom = containerRect.bottom - offset.y;
-
-        const dropObj = {
-          xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
-          yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
-          isStamp: isDragStamp || isDragStampSS ? true : false,
-          key: key,
-          isDrag: false,
-          firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
-          firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
-          yBottom: ybottom,
-          scale: scale,
-          isMobile: isMobile,
-          zIndex: posZIndex
-        };
-
-        dropData.push(dropObj);
-        placeHolder = {
-          pageNumber: pageNumber,
-          pos: dropData
-        };
-      }
-      const { blockColor, Role } = signer;
-      //adding placholder in existing signer pos array (placaholder)
-      if (filterSignerPos.length > 0) {
-        const getPlaceHolder = filterSignerPos[0].placeHolder;
-        const updatePlace = getPlaceHolder.filter(
-          (data) => data.pageNumber !== pageNumber
-        );
-        const getPageNumer = getPlaceHolder.filter(
-          (data) => data.pageNumber === pageNumber
-        );
-
-        //add entry of position for same signer on multiple page
-        if (getPageNumer.length > 0) {
-          const getPos = getPageNumer[0].pos;
-          const newSignPos = getPos.concat(dropData);
-          let xyPos = {
+      const signer = signersdata.find((x) => x.Id === uniqueId);
+      if (signer) {
+        const posZIndex = zIndex + 1;
+        setZIndex(posZIndex);
+        const newWidth = containerWH.width;
+        const scale = pdfOriginalWidth / newWidth;
+        const key = randomId();
+        // let filterSignerPos = signerPos.filter(
+        //   (data) => data.signerObjId === signerObjId
+        // );
+        let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+        let dropData = [];
+        let placeHolder;
+        if (item === "onclick") {
+          const dropObj = {
+            xPosition: window.innerWidth / 2 - 100,
+            yPosition: window.innerHeight / 2 - 60,
+            isStamp: monitor,
+            key: key,
+            isDrag: false,
+            scale: scale,
+            isMobile: isMobile,
+            yBottom: window.innerHeight / 2 - 60,
+            zIndex: posZIndex
+          };
+          dropData.push(dropObj);
+          placeHolder = {
             pageNumber: pageNumber,
-            pos: newSignPos
+            pos: dropData
           };
-          updatePlace.push(xyPos);
-          const updatesignerPos = signerPos.map((x) =>
-            x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
-          );
-          setSignerPos(updatesignerPos);
-        } else {
-          const updatesignerPos = signerPos.map((x) =>
-            x.Id === uniqueId
-              ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-              : x
-          );
-          setSignerPos(updatesignerPos);
-        }
-      } else {
-        //adding new placeholder for selected signer in pos array (placeholder)
-        let placeHolderPos;
-        if (contractName) {
-          placeHolderPos = {
-            signerPtr: {
-              __type: "Pointer",
-              className: `${contractName}`,
-              objectId: signerObjId
-            },
-            signerObjId: signerObjId,
-            blockColor: blockColor ? blockColor : color[isSelectListId],
-            placeHolder: [placeHolder],
-            Role: Role ? Role : roleName,
-            Id: uniqueId
+        } else if (item.type === "BOX") {
+          const offset = monitor.getClientOffset();
+          //adding and updating drop position in array when user drop signature button in div
+          const containerRect = document
+            .getElementById("container")
+            .getBoundingClientRect();
+          const x = offset.x - containerRect.left;
+          const y = offset.y - containerRect.top;
+          const ybottom = containerRect.bottom - offset.y;
+
+          const dropObj = {
+            xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
+            yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
+            isStamp: isDragStamp || isDragStampSS ? true : false,
+            key: key,
+            isDrag: false,
+            firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
+            firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
+            yBottom: ybottom,
+            scale: scale,
+            isMobile: isMobile,
+            zIndex: posZIndex
           };
-        } else {
-          placeHolderPos = {
-            signerPtr: {},
-            signerObjId: "",
-            blockColor: blockColor ? blockColor : color[isSelectListId],
-            placeHolder: [placeHolder],
-            Role: Role ? Role : roleName,
-            Id: uniqueId
+
+          dropData.push(dropObj);
+          placeHolder = {
+            pageNumber: pageNumber,
+            pos: dropData
           };
         }
-        setSignerPos((prev) => [...prev, placeHolderPos]);
+        const { blockColor, Role } = signer;
+        //adding placholder in existing signer pos array (placaholder)
+        if (filterSignerPos.length > 0) {
+          const getPlaceHolder = filterSignerPos[0].placeHolder;
+          const updatePlace = getPlaceHolder.filter(
+            (data) => data.pageNumber !== pageNumber
+          );
+          const getPageNumer = getPlaceHolder.filter(
+            (data) => data.pageNumber === pageNumber
+          );
+
+          //add entry of position for same signer on multiple page
+          if (getPageNumer.length > 0) {
+            const getPos = getPageNumer[0].pos;
+            const newSignPos = getPos.concat(dropData);
+            let xyPos = {
+              pageNumber: pageNumber,
+              pos: newSignPos
+            };
+            updatePlace.push(xyPos);
+            const updatesignerPos = signerPos.map((x) =>
+              x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
+            );
+            setSignerPos(updatesignerPos);
+          } else {
+            const updatesignerPos = signerPos.map((x) =>
+              x.Id === uniqueId
+                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+                : x
+            );
+            setSignerPos(updatesignerPos);
+          }
+        } else {
+          //adding new placeholder for selected signer in pos array (placeholder)
+          let placeHolderPos;
+          if (contractName) {
+            placeHolderPos = {
+              signerPtr: {
+                __type: "Pointer",
+                className: `${contractName}`,
+                objectId: signerObjId
+              },
+              signerObjId: signerObjId,
+              blockColor: blockColor ? blockColor : color[isSelectListId],
+              placeHolder: [placeHolder],
+              Role: Role ? Role : roleName,
+              Id: uniqueId
+            };
+          } else {
+            placeHolderPos = {
+              signerPtr: {},
+              signerObjId: "",
+              blockColor: blockColor ? blockColor : color[isSelectListId],
+              placeHolder: [placeHolder],
+              Role: Role ? Role : roleName,
+              Id: uniqueId
+            };
+          }
+          setSignerPos((prev) => [...prev, placeHolderPos]);
+        }
       }
     }
-  }
   };
   //function for get pdf page details
   const pageDetails = async (pdf) => {
@@ -792,7 +793,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="reactourThird"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag the placeholder for a recipient anywhere on the document.Remember, it will appear in the same colour as the name of the recipient for easy reference.`}
+          message={`The PDF content area already displays the template's existing placeholders. For your convenience, these placeholders will match the color of the recipient's name, making them easily identifiable.`}
           isChecked={handleDontShow}
         />
       ),
@@ -803,7 +804,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="reactourLinkUser"]',
       content: () => (
         <TourContentWithBtn
-          message={`Click to this icon to assign or replace signer for the placeholder.`}
+          message={`Use this icon to assign a new signer or change the existing one for the placeholder.`}
           isChecked={handleDontShow}
         />
       ),
@@ -952,25 +953,21 @@ function PlaceHolderSign() {
             >
               {/* this modal is used show alert set placeholder for all signers before send mail */}
 
-              <Modal show={isSendAlert.alert}>
-                <Modal.Header
-                  className={
-                    isSendAlert.mssg === "sure"
-                      ? "bg-danger"
-                      : isSendAlert.mssg === "confirm" && "bg-success"
-                  }
-                >
-                  {isSendAlert.mssg === "sure" ? (
-                    <span style={{ color: "white" }}>Fields required</span>
-                  ) : (
-                    isSendAlert.mssg === "confirm" && (
-                      <span style={{ color: "white" }}>Send Mail</span>
-                    )
-                  )}
-                </Modal.Header>
-
-                {/* signature modal */}
-                <Modal.Body>
+              <ModalUi
+                headerColor={
+                  isSendAlert.mssg === "sure"
+                    ? "#dc3545"
+                    : isSendAlert.mssg === "confirm" && themeColor()
+                }
+                isOpen={isSendAlert.alert}
+                title={
+                  isSendAlert.mssg === "sure"
+                    ? "Fields required"
+                    : isSendAlert.mssg === "confirm" && "Send Mail"
+                }
+                handleClose={() => setIsSendAlert({})}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
                   {isSendAlert.mssg === "sure" ? (
                     <p>Please add field for all recipients.</p>
                   ) : (
@@ -981,9 +978,15 @@ function PlaceHolderSign() {
                       </p>
                     )
                   )}
-                </Modal.Body>
-
-                <Modal.Footer>
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
                   <button
                     onClick={() => setIsSendAlert({})}
                     style={{
@@ -998,7 +1001,7 @@ function PlaceHolderSign() {
                     <button
                       onClick={() => sendEmailToSigners()}
                       style={{
-                        background: "#24b53a"
+                        background: themeColor()
                       }}
                       type="button"
                       className="finishBtn"
@@ -1006,27 +1009,32 @@ function PlaceHolderSign() {
                       Yes
                     </button>
                   )}
-                </Modal.Footer>
-              </Modal>
-              {/* this modal is used show send mail  message and after send mail success message */}
-              <Modal show={isSend}>
-                <Modal.Header
-                  style={{
-                    background: themeColor()
-                  }}
-                >
-                  <span style={{ color: "white" }}>Mails Sent</span>
-                </Modal.Header>
+                </div>
+              </ModalUi>
 
-                {/* signature modal */}
-                <Modal.Body>
+              {/* this modal is used show send mail  message and after send mail success message */}
+              <ModalUi
+                isOpen={isSend}
+                title={"Mails Sent"}
+                handleClose={() => {
+                  setIsSend(false);
+                  setSignerPos([]);
+                }}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
                   <p>You have successfully sent mails to all recipients!</p>
                   {currentId && (
                     <p>Do you want to sign documents right now ?</p>
                   )}
-                </Modal.Body>
-
-                <Modal.Footer>
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
                   {currentId ? (
                     <>
                       <button
@@ -1072,8 +1080,9 @@ function PlaceHolderSign() {
                       Close
                     </button>
                   )}
-                </Modal.Footer>
-              </Modal>
+                </div>
+              </ModalUi>
+
               {/* <ModalComponent isShow={isAlreadyPlace} type={"alreadyPlace"} /> */}
               <ModalComponent
                 isShow={isShowEmail}
