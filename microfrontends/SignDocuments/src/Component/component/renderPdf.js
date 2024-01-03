@@ -286,7 +286,7 @@ function RenderPdf({
                               }}
                               src={pos.SignUrl}
                               style={{
-                                width: "100%",
+                                width: "99%",
                                 height: "100%",
                                 objectFit: "contain"
                               }}
@@ -477,7 +477,9 @@ function RenderPdf({
                                 onClick={() => {
                                   setIsSignPad(true);
                                   setSignKey(pos.key);
-                                  setIsStamp(pos?.isStamp ? pos.isStamp : false);
+                                  setIsStamp(
+                                    pos?.isStamp ? pos.isStamp : false
+                                  );
                                 }}
                               >
                                 <BorderResize />
@@ -490,7 +492,7 @@ function RenderPdf({
                                     }}
                                     src={pos.SignUrl}
                                     style={{
-                                      width: "100%",
+                                      width: "99%",
                                       height: "100%",
                                       objectFit: "contain"
                                     }}
@@ -1006,7 +1008,9 @@ function RenderPdf({
                                   onClick={() => {
                                     setIsSignPad(true);
                                     setSignKey(pos.key);
-                                    setIsStamp(pos?.isStamp ? pos.isStamp : false);
+                                    setIsStamp(
+                                      pos?.isStamp ? pos.isStamp : false
+                                    );
                                   }}
                                 >
                                   <div style={{ pointerEvents: "none" }}>
@@ -1020,7 +1024,7 @@ function RenderPdf({
                                         }}
                                         src={pos.SignUrl}
                                         style={{
-                                          width: "100%",
+                                          width: "99%",
                                           height: "100%",
                                           objectFit: "contain"
                                         }}
