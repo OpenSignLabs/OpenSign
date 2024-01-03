@@ -80,11 +80,14 @@ const RecipientList = (props) => {
                   : nonHoverStyle(ind)
               }
               onClick={() => {
-                props.setSignerObjId(obj?.objectId);
+                props.setSignerObjId(obj?.objectId || "");
                 props.setIsSelectId(ind);
-                props.setContractName(obj?.className);
+                props.setContractName(obj?.className || "");
                 props.setUniqueId(obj.Id);
                 props.setRoleName(obj.Role);
+                if(props.handleModal){
+                  props.handleModal()
+                }
               }}
             >
               <div

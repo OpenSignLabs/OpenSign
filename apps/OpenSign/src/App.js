@@ -15,6 +15,7 @@ import ForgetPassword from "./routes/ForgetPassword";
 import ChangePassword from "./routes/ChangePassword";
 import ReportMicroapp from "./components/ReportMicroapp";
 import LoadMf from "./routes/LoadMf";
+import ValidateRoute from "./primitives/ValidateRoute";
 
 function App() {
   const [isloading, setIsLoading] = useState(true);
@@ -58,8 +59,24 @@ function App() {
       ) : (
         <BrowserRouter>
           <Routes>
-            <Route exact path="/" element={<Login />} />
-            <Route exact path="/signup" element={<Signup />} />
+            <Route
+              exact
+              path="/"
+              element={
+                <ValidateRoute>
+                  <Login />
+                </ValidateRoute>
+              }
+            />
+            <Route
+              exact
+              path="/signup"
+              element={
+                <ValidateRoute>
+                  <Signup />
+                </ValidateRoute>
+              }
+            />
             <Route exact path="/loadmf/:remoteApp/*" element={<LoadMf />} />
             <Route exact path="/forgetpassword" element={<ForgetPassword />} />
             {process.env.REACT_APP_ENABLE_SUBSCRIPTION && (
