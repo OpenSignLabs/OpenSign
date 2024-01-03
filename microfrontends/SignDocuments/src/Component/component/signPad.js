@@ -145,7 +145,11 @@ function SignPad({
   const convertToImg = async (fontStyle) => {
     //get text content to convert in image
     const textContent = signValue;
-    const fontfamily = fontStyle ? fontStyle : fontSelect;
+    const fontfamily = fontStyle
+      ? fontStyle
+      : fontSelect
+        ? fontSelect
+        : fontOptions[0].value;
     // Calculate the width of the text content
     const textWidth = getTextWidth(textContent, fontfamily);
     // Increase pixel ratio for higher resolution
