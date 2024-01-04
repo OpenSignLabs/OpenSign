@@ -26,6 +26,7 @@ function SignPad({
   const [penColor, setPenColor] = useState("blue");
   const allColor = [bluePen, redPen, blackPen];
   const canvasRef = useRef(null);
+  const spanRef = useRef(null);
   const [isDefaultSign, setIsDefaultSign] = useState(false);
   const [isTab, setIsTab] = useState("draw");
   const [isSignImg, setIsSignImg] = useState("");
@@ -169,43 +170,46 @@ function SignPad({
         ? fontSelect
         : "Fasthand";
 
-    // Calculate the width of the text content
-    const { width, height } = getTextWidth(textContent, fontfamily);
-    // Increase pixel ratio for higher resolution
-    const pixelRatio = window.devicePixelRatio || 1;
-    // Create a canvas with the calculated width
-    const canvas = document.createElement("canvas");
-    canvas.width = width * 2;
-    canvas.height = height;
-    // canvas.height = height; // You can adjust the height as needed
-    setTextWidth(width);
-    setTextHeight(25);
+    //creating span for getting text content width
+    const span = document.createElement("span");
+    span.textContent = textContent;
+    span.style.font = `20px ${fontfamily}`; // here put your text size and font family
+    span.style.display = "hidden";
+    document.body.appendChild(span); // Replace 'container' with the ID of the container element
 
+    //create canvas to render text in canvas and convert in image
+    const canvasElement = document.createElement("canvas");
     // Draw the text content on the canvas
-    const context = canvas.getContext("2d");
+    const ctx = canvasElement.getContext("2d");
+    const pixelRatio = window.devicePixelRatio || 1;
+    const width = span.offsetWidth;
+    const height = span.offsetHeight;
+    setTextWidth(width);
+    setTextHeight(height);
+    const font = span.style["font"];
+    // Set the canvas dimensions to match the span
+    canvasElement.width = width * pixelRatio;
+    canvasElement.height = height * pixelRatio;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.scale(pixelRatio, pixelRatio);
-    context.font = `13px ${fontfamily}`; // You can adjust the font size and style
-    context.fillText(textContent, 4, 10); // Adjust the y-coordinate as needed
+    // Render the content of the span onto the canvas
+    // ctx.fillStyle = "white"; // Set the background color of the canvas
+    // ctx.fillRect(0, 0, width*pixelRatio, height*pixelRatio);
 
+    // You can customize text styles if needed
+    ctx.font = font;
+    ctx.fillStyle = "black"; // Set the text color
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.scale(pixelRatio, pixelRatio);
+    // Draw the content of the span onto the canvas
+    ctx.fillText(span.textContent, width / 2, height / 2); // Adjust the x,y-coordinate as needed
+    //remove span tag
+    document.body.removeChild(span);
     // Convert the canvas to image data
-    const dataUrl = canvas.toDataURL("image/png");
+    const dataUrl = canvasElement.toDataURL("image/png");
     setSignature(dataUrl);
   };
 
-  //for getting text content width render text in span tag and get width
-  const getTextWidth = (text, fontfamily) => {
-    const tempSpan = document.createElement("span");
-    tempSpan.innerText = text;
-    tempSpan.style.visibility = "hidden";
-    tempSpan.style.fontFamily = fontfamily;
-    document.body.appendChild(tempSpan);
-    const width = tempSpan.offsetWidth;
-    const height = tempSpan.offsetHeight;
-    document.body.removeChild(tempSpan);
-    return { width, height };
-  };
   return (
     <div>
       {/*isSignPad  */}
@@ -464,6 +468,7 @@ function SignPad({
                 }}
               >
                 <span className="signatureText">Signature:</span>
+
                 <input
                   maxLength={30}
                   style={{ fontFamily: fontSelect }}
@@ -477,12 +482,14 @@ function SignPad({
                   }}
                 />
               </div>
+              {/* <div ref={spanRef}>nwbfmb</div> */}
               <div className="fontOptionContainer">
                 {fontOptions.map((font, ind) => {
                   return (
                     <div
                       key={ind}
                       style={{
+                        cursor: "pointer",
                         fontFamily: font.value,
                         backgroundColor:
                           fontSelect === font.value && "rgb(206 225 247)"
