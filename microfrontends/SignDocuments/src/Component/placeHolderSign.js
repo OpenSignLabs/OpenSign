@@ -987,16 +987,7 @@ function PlaceHolderSign() {
                       marginBottom: "15px"
                     }}
                   ></div>
-                  <button
-                    onClick={() => setIsSendAlert({})}
-                    style={{
-                      color: "black"
-                    }}
-                    type="button"
-                    className="finishBtn"
-                  >
-                    Close
-                  </button>
+
                   {isSendAlert.mssg === "confirm" && (
                     <button
                       onClick={() => sendEmailToSigners()}
@@ -1009,6 +1000,16 @@ function PlaceHolderSign() {
                       Yes
                     </button>
                   )}
+                  <button
+                    onClick={() => setIsSendAlert({})}
+                    style={{
+                      color: "black"
+                    }}
+                    type="button"
+                    className="finishBtn"
+                  >
+                    Close
+                  </button>
                 </div>
               </ModalUi>
 
@@ -1039,20 +1040,6 @@ function PlaceHolderSign() {
                     <>
                       <button
                         onClick={() => {
-                          setIsSend(false);
-                          setSignerPos([]);
-                        }}
-                        style={{
-                          color: "black"
-                        }}
-                        type="button"
-                        className="finishBtn"
-                      >
-                        No
-                      </button>
-
-                      <button
-                        onClick={() => {
                           handleRecipientSign();
                         }}
                         style={{
@@ -1063,6 +1050,19 @@ function PlaceHolderSign() {
                         className="finishBtn"
                       >
                         Yes
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsSend(false);
+                          setSignerPos([]);
+                        }}
+                        style={{
+                          color: "black"
+                        }}
+                        type="button"
+                        className="finishBtn"
+                      >
+                        No
                       </button>
                     </>
                   ) : (
@@ -1225,16 +1225,26 @@ function PlaceHolderSign() {
         )}
       </DndProvider>
       <div>
-        <Modal show={signerExistModal}>
-          <Modal.Header className="bg-danger">
-            <span style={{ color: "white" }}>Users required</span>
-          </Modal.Header>
+        <ModalUi
+          headerColor={"#dc3545"}
+          isOpen={signerExistModal}
+          title={"Users required"}
+          handleClose={() => {
+            setSignerExistModal(false);
+          }}
+        >
+          <div style={{ height: "100%", padding: 20 }}>
+            <p>Please assign signers to all placeholders</p>
 
-          {/* signature modal */}
-          <Modal.Body>
-            <p>Please attach users to all fields</p>
-          </Modal.Body>
-          <Modal.Footer>
+            <div
+              style={{
+                height: "1px",
+                backgroundColor: "#9f9f9f",
+                width: "100%",
+                marginTop: "15px",
+                marginBottom: "15px"
+              }}
+            ></div>
             <button
               onClick={() => setSignerExistModal(false)}
               style={{
@@ -1245,8 +1255,9 @@ function PlaceHolderSign() {
             >
               Close
             </button>
-          </Modal.Footer>
-        </Modal>
+          </div>
+        </ModalUi>
+
         <LinkUserModal
           handleAddUser={handleAddUser}
           isAddUser={isAddUser}
