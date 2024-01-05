@@ -722,7 +722,7 @@ function PlaceHolderSign() {
       });
       const currentUser = signersdata.find((x) => x.Email === currentId);
       setCurrentId(currentUser?.objectId);
-      // console.log("signers ", signers);
+
       try {
         const data = {
           Placeholders: signerPos,
@@ -898,7 +898,11 @@ function PlaceHolderSign() {
         }
         return { ...x };
       });
-      // console.log("updateSigner ", updateSigner);
+      //  console.log("updateSigner ", updateSigner);
+      if (updateSigner && updateSigner.length > 0) {
+        setCurrentId(updateSigner[0].Email);
+      }
+
       setSignersData(updateSigner);
       const index = signersdata.findIndex((x) => x.Id === uniqueId);
       setIsSelectId(index);
