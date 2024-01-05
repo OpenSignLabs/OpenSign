@@ -25,8 +25,9 @@ function AppRoutes() {
         <Route path="/signaturePdf/:docId" element={<SignYourselfPdf />} />
         {/* recipient signature route with no rowlevel data using docId from url */}
         <Route
-          path="/recipientSignPdf/:id/:contactBookId"
-          element={<RecipientSignPdf />}
+          path="/recipientSignPdf/:docId/:contactBookId"
+          // element={<RecipientSignPdf />
+          element={<PdfRequestFiles />}
         />
         {/* recipient placeholder set route with  rowlevel data */}
         <Route path="/placeHolderSign" element={<PlaceHolderSign />} />{" "}

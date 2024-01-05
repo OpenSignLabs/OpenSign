@@ -225,10 +225,7 @@ function Header({
     );
   };
   return (
-    <div
-      style={{ padding: !isGuestSigner && "5px 0px 5px 0px" }}
-      className="mobileHead"
-    >
+    <div style={{ padding: "5px 0px 5px 0px" }} className="mobileHead">
       {isMobile && isShowHeader ? (
         <div
           id="navbar"
@@ -540,8 +537,8 @@ function Header({
                   <div>
                     {signerPos.length === 0 ? (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add {signersdata.length - signerPos.length}{" "}
-                        recipients signature
+                        Add {signersdata.length - signerPos.length} recipients
+                        signature
                       </span>
                     ) : (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
@@ -554,7 +551,14 @@ function Header({
 
               <div>
                 {setIsEditTemplate && (
-                  <button onClick={() => setIsEditTemplate(true)} style={{border:"none", outline:"none", textAlign:"center"}}>
+                  <button
+                    onClick={() => setIsEditTemplate(true)}
+                    style={{
+                      border: "none",
+                      outline: "none",
+                      textAlign: "center"
+                    }}
+                  >
                     <i className="fa-solid fa-gear fa-lg"></i>
                   </button>
                 )}
