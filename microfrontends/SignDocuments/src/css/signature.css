@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap');
-
 .signatureCanvas {
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
@@ -266,7 +265,7 @@
 
 .defaultSignBox {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  width: 180px;
+  width: 90%;
   height: 111px;
   padding: 8px 20px;
   color: white;
@@ -444,6 +443,7 @@
   width: 180px;
   background-color: white;
   height: 100%;
+ 
 }
 
 .modalBody {
@@ -677,6 +677,12 @@ option {
 
 .dropDownStyle {
   width: auto;
+}
+.autoSignScroll{
+  overflow-y: auto;
+}
+.autoSignScroll::-webkit-scrollbar {
+  display: none;
 }
 
 @media screen and (max-width:766px) {
