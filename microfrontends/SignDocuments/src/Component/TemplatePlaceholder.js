@@ -741,7 +741,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourThird"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag the placeholder for a recipient anywhere on the document.Remember, it will appear in the same colour as the name of the recipient for easy reference.`}
+          message={`The PDF content area already displays the template's existing placeholders. For your convenience, these placeholders will match the color of the recipient's name, making them easily identifiable.`}
           isChecked={handleDontShow}
         />
       ),
@@ -834,8 +834,8 @@ const TemplatePlaceholder = () => {
   // save Role in entry in signerList and user
   const handleAddRole = (e) => {
     e.preventDefault();
-    setSignerObjId('')
-    setContractName('')
+    setSignerObjId("");
+    setContractName("");
     const count = signersdata.length > 0 ? signersdata.length + 1 : 1;
     const Id = randomId();
     const index = signersdata.length;
@@ -863,7 +863,7 @@ const TemplatePlaceholder = () => {
     const index = signersdata.findIndex((x) => x.Id === Id);
     if (index === signersdata.length - 1) {
       setUniqueId(updateSigner[updateSigner.length - 1]?.Id || "");
-      setIsSelectId(index - 1|| 0);
+      setIsSelectId(index - 1 || 0);
     } else {
       setUniqueId(updateSigner[index]?.Id || "");
       setIsSelectId(index);

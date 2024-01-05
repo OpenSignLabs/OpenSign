@@ -315,138 +315,139 @@ function PdfRequestFiles() {
         const pdfDoc = await PDFDocument.load(existingPdfBytes, {
           ignoreEncryption: true
         });
-        let pdfBase64;
+        // let pdfBase64;
 
         //checking if signature is only one then send image url in jpeg formate to server
-        if (pngUrl.length === 1 && pngUrl[0].pos.length === 1) {
-          if (isDocId) {
-            try {
-              pdfBase64 = await getBase64FromUrl(pdfUrl);
-            } catch (err) {
-              console.log(err);
-            }
-          } else {
-            //embed document's object id to all pages in pdf document
-            try {
-              await embedDocId(pdfDoc, documentId, allPages);
-            } catch (err) {
-              console.log(err);
-            }
-            try {
-              pdfBase64 = await pdfDoc.saveAsBase64({
-                useObjectStreams: false
-              });
-            } catch (err) {
-              console.log(err);
-            }
-          }
-          for (let pngData of pngUrl) {
-            const imgUrlList = pngData.pos;
-            const pageNo = pngData.pageNumber;
-            imgUrlList.map(async (data) => {
-              //cheking signUrl is defau;t signature url of custom url
-              let ImgUrl = data.SignUrl;
-              const checkUrl = urlValidator(ImgUrl);
-              //if default signature url then convert it in base 64
-              if (checkUrl) {
-                ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
-              }
-              //function for called convert png signatre to jpeg in base 64
-              convertPNGtoJPEG(ImgUrl)
-                .then((jpegBase64Data) => {
-                  const removeBase64Fromjpeg = "data:image/jpeg;base64,";
-                  const newImgUrl = jpegBase64Data.replace(
-                    removeBase64Fromjpeg,
-                    ""
-                  );
+        // if (pngUrl.length === 1 && pngUrl[0].pos.length === 1) {
+        //   if (isDocId) {
+        //     try {
+        //       pdfBase64 = await getBase64FromUrl(pdfUrl);
+        //     } catch (err) {
+        //       console.log(err);
+        //     }
+        //   } else {
+        //     //embed document's object id to all pages in pdf document
+        //     try {
+        //       await embedDocId(pdfDoc, documentId, allPages);
+        //     } catch (err) {
+        //       console.log(err);
+        //     }
+        //     try {
+        //       pdfBase64 = await pdfDoc.saveAsBase64({
+        //         useObjectStreams: false
+        //       });
+        //     } catch (err) {
+        //       console.log(err);
+        //     }
+        //   }
+        //   for (let pngData of pngUrl) {
+        //     const imgUrlList = pngData.pos;
+        //     const pageNo = pngData.pageNumber;
+        //     imgUrlList.map(async (data) => {
+        //       //cheking signUrl is defau;t signature url of custom url
+        //       let ImgUrl = data.SignUrl;
+        //       const checkUrl = urlValidator(ImgUrl);
+        //       //if default signature url then convert it in base 64
+        //       if (checkUrl) {
+        //         ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
+        //       }
+        //       //function for called convert png signatre to jpeg in base 64
+        //       convertPNGtoJPEG(ImgUrl)
+        //         .then((jpegBase64Data) => {
+        //           const removeBase64Fromjpeg = "data:image/jpeg;base64,";
+        //           const newImgUrl = jpegBase64Data.replace(
+        //             removeBase64Fromjpeg,
+        //             ""
+        //           );
 
-                  //function for call to embed signature in pdf and get digital signature pdf
-                  signPdfFun(
-                    newImgUrl,
-                    documentId,
-                    signerObjectId,
-                    pdfOriginalWidth,
-                    pngUrl,
-                    containerWH,
-                    setIsAlert,
-                    data,
-                    pdfBase64,
-                    pageNo
-                  )
-                    .then((res) => {
-                      if (res && res.status === "success") {
-                        setPdfUrl(res.data);
-                        setIsSigned(true);
-                        setSignedSigners([]);
-                        setUnSignedSigners([]);
-                        getDocumentDetails();
-                      } else {
-                        setIsAlert({
-                          isShow: true,
-                          alertMessage: "something went wrong"
-                        });
-                      }
-                    })
-                    .catch((err) => {
-                      setIsAlert({
-                        isShow: true,
-                        alertMessage: "something went wrong"
-                      });
-                    });
-                })
-                .catch((error) => {
-                  console.error("Error:", error);
-                });
-            });
-          }
-        }
-        //else if signature is more than one then embed all sign with the use of pdf-lib
-        else if (pngUrl.length > 0 && pngUrl[0].pos.length > 0) {
-          const flag = false;
-          //embed document's object id to all pages in pdf document
+        //           //function for call to embed signature in pdf and get digital signature pdf
+        //           signPdfFun(
+        //             newImgUrl,
+        //             documentId,
+        //             signerObjectId,
+        //             pdfOriginalWidth,
+        //             pngUrl,
+        //             containerWH,
+        //             setIsAlert,
+        //             data,
+        //             pdfBase64,
+        //             pageNo
+        //           )
+        //             .then((res) => {
+        //               if (res && res.status === "success") {
+        //                 setPdfUrl(res.data);
+        //                 setIsSigned(true);
+        //                 setSignedSigners([]);
+        //                 setUnSignedSigners([]);
+        //                 getDocumentDetails();
+        //               } else {
+        //                 setIsAlert({
+        //                   isShow: true,
+        //                   alertMessage: "something went wrong"
+        //                 });
+        //               }
+        //             })
+        //             .catch((err) => {
+        //               setIsAlert({
+        //                 isShow: true,
+        //                 alertMessage: "something went wrong"
+        //               });
+        //             });
+        //         })
+        //         .catch((error) => {
+        //           console.error("Error:", error);
+        //         });
+        //     });
+        //   }
+        // }
+        // //else if signature is more than one then embed all sign with the use of pdf-lib
+        // else if (pngUrl.length > 0 && pngUrl[0].pos.length > 0) {
+        const flag = false;
+        //embed document's object id to all pages in pdf document
+        if (!isDocId) {
           await embedDocId(pdfDoc, documentId, allPages);
-          //embed multi signature in pdf
-          const pdfBytes = await multiSignEmbed(
-            pngUrl,
-            pdfDoc,
+        }
+        //embed multi signature in pdf
+        const pdfBytes = await multiSignEmbed(
+          pngUrl,
+          pdfDoc,
+          pdfOriginalWidth,
+          flag,
+          containerWH
+        );
+        //function for call to embed signature in pdf and get digital signature pdf
+        try {
+          const res = await signPdfFun(
+            pdfBytes,
+            documentId,
+            signerObjectId,
             pdfOriginalWidth,
-            flag,
-            containerWH
+            pngUrl,
+            containerWH,
+            setIsAlert
           );
-
-          //function for call to embed signature in pdf and get digital signature pdf
-          try {
-            const res = await signPdfFun(
-              pdfBytes,
-              documentId,
-              signerObjectId,
-              pdfOriginalWidth,
-              pngUrl,
-              containerWH,
-              setIsAlert
-            );
-            if (res && res.status === "success") {
-              setPdfUrl(res.data);
-              setIsSigned(true);
-              setSignedSigners([]);
-              setUnSignedSigners([]);
-              getDocumentDetails();
-            } else {
-              setIsAlert({
-                isShow: true,
-                alertMessage: "something went wrong"
-              });
-            }
-          } catch (err) {
+          if (res && res.status === "success") {
+            setPdfUrl(res.data);
+            setIsSigned(true);
+            setSignedSigners([]);
+            setUnSignedSigners([]);
+            getDocumentDetails();
+          } else {
             setIsAlert({
               isShow: true,
               alertMessage: "something went wrong"
             });
           }
+        } catch (err) {
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
+          });
         }
-
-        setIsSignPad(false);
       }
+
+      setIsSignPad(false);
+      // }
     } else {
       setIsAlert({
         isShow: true,
@@ -626,7 +627,7 @@ function PdfRequestFiles() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Title title={"Request Sign"}/>
+      <Title title={"Request Sign"} />
       {isLoading.isLoad ? (
         <Loader isLoading={isLoading} />
       ) : handleError ? (
