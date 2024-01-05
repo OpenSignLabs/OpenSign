@@ -23,7 +23,8 @@ import {
   signPdfFun,
   onImageSelect,
   onSaveSign,
-  onSaveImage
+  onSaveImage,
+  addDefaultSignatureImg
 } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -33,6 +34,8 @@ import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
 import AlertComponent from "./component/alertComponent";
 import Title from "./component/Title";
+import DefaultSignature from "./component/defaultSignature";
+import ModalUi from "../premitives/ModalUi";
 
 function PdfRequestFiles() {
   const { docId } = useParams();
@@ -67,6 +70,10 @@ function PdfRequestFiles() {
   const [isDecline, setIsDecline] = useState({ isDeclined: false });
   const [currentSigner, setCurrentSigner] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
+  const [defaultSignAlert, setDefaultSignAlert] = useState({
+    isShow: false,
+    alertMessage: ""
+  });
   const [isCompleted, setIsCompleted] = useState({
     isCertificate: false,
     isModal: false
@@ -195,7 +202,7 @@ function PdfRequestFiles() {
           for (let i = 0; i < signerRes.length; i++) {
             const signerId = signerRes[i].objectId;
 
-            let isSigned = false;
+            let isSignedSignature = false;
             for (let j = 0; j < checkDocIdExist.length; j++) {
               const signedExist =
                 checkDocIdExist[j] && checkDocIdExist[j].UserPtr.objectId;
@@ -204,12 +211,12 @@ function PdfRequestFiles() {
 
               if (signerId === signedExist) {
                 signers.push({ ...signerRes[i], ...signerRes[i] });
-                isSigned = true;
+                isSignedSignature = true;
                 break;
               }
               // if does not match then add unsigned data in unSignedSigner array
             }
-            if (!isSigned) {
+            if (!isSignedSignature) {
               unSignedSigner.push({ ...signerRes[i], ...signerRes[i] });
             }
           }
@@ -624,6 +631,27 @@ function PdfRequestFiles() {
         console.log("error updating field is decline ", err);
       });
   };
+  //function to add default signature for all requested placeholder of sign
+  const addDefaultSignature = () => {
+    //get current signers placeholder position data
+    const currentSignerPosition = signerPos.filter(
+      (data) => data.signerObjId === signerObjectId
+    );
+    //function for save default signature url for all placeholder position
+    const updatePlace = addDefaultSignatureImg(
+      currentSignerPosition[0].placeHolder,
+      defaultSignImg
+    );
+
+    const updatesignerPos = signerPos.map((x) =>
+      x.signerObjId === signerObjectId ? { ...x, placeHolder: updatePlace } : x
+    );
+    setSignerPos(updatesignerPos);
+    setDefaultSignAlert({
+      isShow: false,
+      alertMessage: ""
+    });
+  };
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -663,11 +691,47 @@ function PdfRequestFiles() {
           )}
 
           <div className="signatureContainer" ref={divRef}>
-            <AlertComponent
-              isShow={isAlert.isShow}
-              alertMessage={isAlert.alertMessage}
-              setIsAlert={setIsAlert}
-            />
+            <ModalUi
+              headerColor={"#dc3545"}
+              isOpen={isAlert.isShow}
+              title={"Alert message"}
+              handleClose={() => {
+                setIsAlert({
+                  isShow: false,
+                  alertMessage: ""
+                });
+              }}
+            >
+              <div style={{ height: "100%", padding: 20 }}>
+                <p>{isAlert.alertMessage}</p>
+
+                <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
+                  }}
+                ></div>
+
+                <button
+                  onClick={() => {
+                    setIsAlert({
+                      isShow: false,
+                      alertMessage: ""
+                    });
+                  }}
+                  style={{
+                    color: "black"
+                  }}
+                  type="button"
+                  className="finishBtn"
+                >
+                  Ok
+                </button>
+              </div>
+            </ModalUi>
             {/* this modal is used to show decline alert */}
             <CustomModal
               containerWH={containerWH}
@@ -700,6 +764,76 @@ function PdfRequestFiles() {
               headMsg="Document Expired!"
               bodyMssg="This Document is no longer available."
             />
+            <ModalUi
+              headerColor={defaultSignImg ? themeColor() : "#dc3545"}
+              isOpen={defaultSignAlert.isShow}
+              title={"Auto sign"}
+              handleClose={() => {
+                setDefaultSignAlert({
+                  isShow: false,
+                  alertMessage: ""
+                });
+              }}
+            >
+              <div style={{ height: "100%", padding: 20 }}>
+                <p>{defaultSignAlert.alertMessage}</p>
+
+                <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
+                  }}
+                ></div>
+                {defaultSignImg ? (
+                  <>
+                    <button
+                      onClick={() => addDefaultSignature()}
+                      style={{
+                        background: themeColor()
+                      }}
+                      type="button"
+                      className="finishBtn"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDefaultSignAlert({
+                          isShow: false,
+                          alertMessage: ""
+                        });
+                      }}
+                      style={{
+                        color: "black"
+                      }}
+                      type="button"
+                      className="finishBtn"
+                    >
+                      Close
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsAlert({
+                        isShow: false,
+                        alertMessage: ""
+                      });
+                    }}
+                    style={{
+                      color: "black"
+                    }}
+                    type="button"
+                    className="finishBtn"
+                  >
+                    Ok
+                  </button>
+                )}
+              </div>
+            </ModalUi>
             {/* this component used to render all pdf pages in left side */}
             <RenderAllPdfPage
               signPdfUrl={pdfDetails[0].URL}
@@ -805,137 +939,153 @@ function PdfRequestFiles() {
             </div>
             <div>
               <div className="signerComponent">
-                {signedSigners.length > 0 && (
-                  <>
-                    <div
-                      style={{
-                        background: themeColor()
-                      }}
-                      className="signedStyle"
-                    >
-                      Signed by
-                    </div>
-                    <div style={{ marginTop: "2px" }}>
-                      {signedSigners.map((obj, ind) => {
-                        return (
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              padding: "10px 0",
-                              background: checkSignerBackColor(obj)
-                            }}
-                            key={ind}
-                          >
+                <div
+                  style={{ maxHeight: window.innerHeight - 70 + "px" }}
+                  className="autoSignScroll"
+                >
+                  {signedSigners.length > 0 && (
+                    <>
+                      <div
+                        style={{
+                          background: themeColor()
+                        }}
+                        className="signedStyle"
+                      >
+                        Signed by
+                      </div>
+                      <div style={{ marginTop: "2px" }}>
+                        {signedSigners.map((obj, ind) => {
+                          return (
                             <div
-                              className="signerStyle"
                               style={{
-                                background: "#abd1d0",
-                                width: 30,
-                                height: 30,
                                 display: "flex",
-                                borderRadius: 30 / 2,
-                                justifyContent: "center",
+                                flexDirection: "row",
                                 alignItems: "center",
-                                margin: "0 10px 0 5px"
+                                padding: "10px 0",
+                                background: checkSignerBackColor(obj)
                               }}
+                              key={ind}
                             >
-                              <span
+                              <div
+                                className="signerStyle"
                                 style={{
-                                  fontSize: "12px",
-                                  textAlign: "center",
-                                  fontWeight: "bold",
-                                  color: "black",
-                                  textTransform: "uppercase"
+                                  background: "#abd1d0",
+                                  width: 30,
+                                  height: 30,
+                                  display: "flex",
+                                  borderRadius: 30 / 2,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  margin: "0 10px 0 5px"
                                 }}
                               >
-                                {getFirstLetter(obj.Name)}
-                              </span>
+                                <span
+                                  style={{
+                                    fontSize: "12px",
+                                    textAlign: "center",
+                                    fontWeight: "bold",
+                                    color: "black",
+                                    textTransform: "uppercase"
+                                  }}
+                                >
+                                  {getFirstLetter(obj.Name)}
+                                </span>
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column"
+                                }}
+                              >
+                                <span className="userName">{obj.Name}</span>
+                                <span className="useEmail">{obj.Email}</span>
+                              </div>
                             </div>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column"
-                              }}
-                            >
-                              <span className="userName">{obj.Name}</span>
-                              <span className="useEmail">{obj.Email}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
 
-                {unsignedSigners.length > 0 && (
-                  <>
-                    <div
-                      style={{
-                        background: themeColor(),
-                        color: "white",
-                        padding: "5px",
-                        fontFamily: "sans-serif",
-                        marginTop: signedSigners.length > 0 && "20px"
-                      }}
-                    >
-                      Yet to sign
-                    </div>
-                    <div style={{ marginTop: "5px" }}>
-                      {unsignedSigners.map((obj, ind) => {
-                        return (
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              padding: "10px 0",
-                              background: checkSignerBackColor(obj)
-                            }}
-                            key={ind}
-                          >
+                  {unsignedSigners.length > 0 && (
+                    <>
+                      <div
+                        style={{
+                          background: themeColor(),
+                          color: "white",
+                          padding: "5px",
+                          fontFamily: "sans-serif",
+                          marginTop: signedSigners.length > 0 && "20px"
+                        }}
+                      >
+                        Yet to sign
+                      </div>
+                      <div style={{ marginTop: "5px" }}>
+                        {unsignedSigners.map((obj, ind) => {
+                          return (
                             <div
-                              className="signerStyle"
                               style={{
-                                background: "#abd1d0",
-                                width: 30,
-                                height: 30,
                                 display: "flex",
-                                borderRadius: 30 / 2,
-                                justifyContent: "center",
+                                flexDirection: "row",
                                 alignItems: "center",
-                                margin: "0 10px 0 5px"
+                                padding: "10px 0",
+                                background: checkSignerBackColor(obj)
                               }}
+                              key={ind}
                             >
-                              <span
+                              <div
+                                className="signerStyle"
                                 style={{
-                                  fontSize: "12px",
-                                  textAlign: "center",
-                                  fontWeight: "bold",
-                                  color: "black",
-                                  textTransform: "uppercase"
+                                  background: "#abd1d0",
+                                  width: 30,
+                                  height: 30,
+                                  display: "flex",
+                                  borderRadius: 30 / 2,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  margin: "0 10px 0 5px"
                                 }}
                               >
-                                {getFirstLetter(obj.Name)}
-                              </span>
+                                <span
+                                  style={{
+                                    fontSize: "12px",
+                                    textAlign: "center",
+                                    fontWeight: "bold",
+                                    color: "black",
+                                    textTransform: "uppercase"
+                                  }}
+                                >
+                                  {getFirstLetter(obj.Name)}
+                                </span>
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column"
+                                }}
+                              >
+                                <span className="userName">{obj.Name}</span>
+                                <span className="useEmail">{obj.Email}</span>
+                              </div>
+                              <hr />
                             </div>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column"
-                              }}
-                            >
-                              <span className="userName">{obj.Name}</span>
-                              <span className="useEmail">{obj.Email}</span>
-                            </div>
-                            <hr />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                  {defaultSignImg && !alreadySign && (
+                    <DefaultSignature
+                      themeColor={themeColor}
+                      defaultSignImg={defaultSignImg}
+                      setDefaultSignImg={setDefaultSignImg}
+                      userObjectId={signerObjectId}
+                      setIsLoading={setIsLoading}
+                      xyPostion={signerPos}
+                      setDefaultSignAlert={setDefaultSignAlert}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -95,19 +95,19 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
   let getIMGWH;
   //get current page position
   const getXYData = xyPostion[index].pos;
-  const updateXYData = getXYData.map((url) => {
-    if (url.key === signKey) {
-      getIMGWH = calculateImgAspectRatio(imgWH, url);
+  const updateXYData = getXYData.map((position) => {
+    if (position.key === signKey) {
+      getIMGWH = calculateImgAspectRatio(imgWH, position);
 
       return {
-        ...url,
+        ...position,
         Width: getIMGWH.newWidth,
         Height: getIMGWH.newHeight,
         SignUrl: image.src,
         ImageType: image.imgType
       };
     }
-    return url;
+    return position;
   });
 
   const updateXYposition = xyPostion.map((obj, ind) => {
@@ -215,18 +215,18 @@ export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
     const getPageNo = xyPostion[i].pageNumber;
     const getPosData = getXYdata;
 
-    const addSign = getPosData.map((url, ind) => {
-      getIMGWH = calculateImgAspectRatio(imgWH, url);
-      if (url) {
+    const addSign = getPosData.map((position, ind) => {
+      getIMGWH = calculateImgAspectRatio(imgWH, position);
+      if (position && !position.isStamp) {
         return {
-          ...url,
+          ...position,
           SignUrl: defaultSignImg,
           Width: getIMGWH.newWidth,
           Height: getIMGWH.newHeight,
           ImageType: "default"
         };
       }
-      return url;
+      return position;
     });
 
     const newXypos = {
@@ -764,8 +764,7 @@ export const handleSignYourselfImageResize = (
   key,
   xyPostion,
   index,
- setXyPostion
- 
+  setXyPostion
 ) => {
   // const updateFilter = xyPostion[index].pos.filter(
   //   (data) => data.key === key && data.Width && data.Height

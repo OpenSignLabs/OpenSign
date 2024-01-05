@@ -17,7 +17,7 @@ function PdfFileComponent({
   setDocId,
   setIsLoading,
   setPdfData,
-  isList,
+  isList
 }) {
   const [rename, setRename] = useState("");
   const [renameValue, setRenameValue] = useState("");
@@ -39,12 +39,12 @@ function PdfFileComponent({
   const handleOnclikFolder = (data) => {
     const folderData = {
       name: data.Name,
-      objectId: data.objectId,
+      objectId: data.objectId
     };
     setFolderName((prev) => [...prev, folderData]);
     const loadObj = {
       isLoad: true,
-      message: "This might take some time",
+      message: "This might take some time"
     };
 
     setIsLoading(loadObj);
@@ -57,7 +57,7 @@ function PdfFileComponent({
 
     if (trimmedValue.length > 0) {
       const updateName = {
-        Name: renameValue,
+        Name: renameValue
       };
       const docId = data.objectId;
 
@@ -83,8 +83,8 @@ function PdfFileComponent({
             headers: {
               "Content-Type": "application/json",
               "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
-            },
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
           }
         )
         .then((result) => {
@@ -99,7 +99,6 @@ function PdfFileComponent({
 
   //function for navigate user to microapp-signature component
   const checkPdfStatus = async (data) => {
-
     const hostUrl = getHostUrl();
     const expireDate = data.ExpiryDate.iso;
     const expireUpdateDate = new Date(expireDate).getTime();
@@ -116,10 +115,7 @@ function PdfFileComponent({
 
       // window.location.hash = `/pdfRequestFiles/${data.objectId}`;
     } else if (data.IsCompleted && !signerExist) {
-      navigate(
-        `${hostUrl}signaturePdf/${data.objectId}`
-      );
-      // window.location.hash = `/recipientSignPdf/${data.objectId}/${data.ExtUserPtr.Phone}`;
+      navigate(`${hostUrl}signaturePdf/${data.objectId}`);
     }
     //checking if document has declined by someone
     else if (isDecline) {
@@ -231,8 +227,8 @@ function PdfFileComponent({
 
     const sanitizeFileName = (pdfName) => {
       // Replace spaces with underscore
-      return pdfName.replace(/ /g, '_');
-    }
+      return pdfName.replace(/ /g, "_");
+    };
 
     const handleEnterPress = (e, data) => {
       if (e.key === "Enter") {
@@ -312,7 +308,7 @@ function PdfFileComponent({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                cursor: "pointer",
+                cursor: "pointer"
               }}
             >
               <img
@@ -344,7 +340,7 @@ function PdfFileComponent({
                     width: "100px",
                     border: "1.5px solid black",
                     borderRadius: "2px",
-                    fontSize: "10px",
+                    fontSize: "10px"
                   }}
                 />
               ) : (
@@ -385,7 +381,7 @@ function PdfFileComponent({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                cursor: "pointer",
+                cursor: "pointer"
               }}
             >
               <img
@@ -417,7 +413,7 @@ function PdfFileComponent({
                     width: "100px",
                     border: "1.5px solid black",
                     borderRadius: "2px",
-                    fontSize: "10px",
+                    fontSize: "10px"
                   }}
                 />
               ) : (
@@ -484,7 +480,7 @@ function PdfFileComponent({
                         width: "100px",
                         border: "1.5px solid black",
                         borderRadius: "2px",
-                        fontSize: "10px",
+                        fontSize: "10px"
                       }}
                     />
                   ) : (
@@ -576,8 +572,8 @@ function PdfFileComponent({
   //component to handle type of document and render according to type
 
   return isList ? (
-    <div className="container" style={{overflowX:"auto"}}>
-      <Table striped bordered hover  >
+    <div className="container" style={{ overflowX: "auto" }}>
+      <Table striped bordered hover>
         <thead>
           <tr>
             <th>Name</th>
