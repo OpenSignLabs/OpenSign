@@ -900,7 +900,13 @@ function PlaceHolderSign() {
       });
       //  console.log("updateSigner ", updateSigner);
       if (updateSigner && updateSigner.length > 0) {
-        setCurrentId(updateSigner[0].Email);
+        const currEmail = pdfDetails[0].ExtUserPtr.Email;
+        const getCurrentUserDeatils = updateSigner.filter(
+          (x) => x.Email === currEmail
+        );
+        if (getCurrentUserDeatils && getCurrentUserDeatils.length > 0) {
+          setCurrentId(getCurrentUserDeatils[0].Email);
+        }
       }
 
       setSignersData(updateSigner);
