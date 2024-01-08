@@ -9,6 +9,8 @@ import { themeColor, iconColor } from "../../utils/ThemeColor/backColor";
 import { getDrive } from "../../utils/Utils";
 import AlertComponent from "../component/alertComponent";
 import { useNavigate } from "react-router-dom";
+import Title from "../component/Title";
+import Parse from "parse";
 
 function PdfFile() {
   const navigate = useNavigate();
@@ -54,7 +56,9 @@ function PdfFile() {
       isLoad: true,
       message: "This might take some time"
     };
+
     setIsLoading(load);
+
     const driveDetails = await getDrive();
     if (driveDetails) {
       if (driveDetails.length > 0) {
@@ -62,7 +66,7 @@ function PdfFile() {
       }
       const data = [
         {
-          name: "OpenSignDrive™",
+          name: "OpenSign™ Drive",
           objectId: ""
         }
       ];
@@ -85,8 +89,11 @@ function PdfFile() {
       isLoad: true,
       message: "This might take some time"
     };
+
     setIsLoading(load);
+
     const driveDetails = await getDrive(docId);
+
     if (driveDetails) {
       if (driveDetails.length > 0) {
         setPdfData(driveDetails);
@@ -111,43 +118,53 @@ function PdfFile() {
     setIsFolder(true);
   };
   //function for handle folder name path
-  const handleRoute = (data) => {
+  const handleRoute = (index) => {
     let loadObj = {
       isLoad: true,
       message: "This might take some time"
     };
-    if (data.name === "LegaDrive™") {
-      setIsLoading(loadObj);
-      if (docId) {
-        setDocId();
-      } else {
-        setTimeout(() => {
-          const loadObj = {
-            isLoad: false
-          };
-          setIsLoading(loadObj);
-        }, 1000);
+    // if (data.name === "OpenSign™ Drive") {
+    //   setIsLoading(loadObj);
+    //   if (docId) {
+    //     setDocId();
+    //   } else {
+    //     setTimeout(() => {
+    //       const loadObj = {
+    //         isLoad: false
+    //       };
+    //       setIsLoading(loadObj);
+    //     }, 1000);
+    //   }
+    // } else if (data.name === folderName[folderName.length - 1].name) {
+    //   setIsLoading(loadObj);
+    //   setTimeout(() => {
+    //     const loadObj = {
+    //       isLoad: false
+    //     };
+    //     setIsLoading(loadObj);
+    //   }, 1000);
+    // } else {
+    //   const findIndex = folderName.findIndex(
+    //     (fold) => fold.objectId === data.objectId
+    //   );
+    //   const newFolder = folderName.slice(0, findIndex + 1);
+
+    //   setFolderName(newFolder);
+    //   const getLastId = newFolder[newFolder.length - 1];
+
+    //   setDocId(getLastId.objectId);
+    //   setIsLoading(loadObj);
+    // }
+
+    const updateFolderName = folderName.filter((x, i) => {
+      if (i <= index) {
+        return x;
       }
-    } else if (data.name === folderName[folderName.length - 1].name) {
-      setIsLoading(loadObj);
-      setTimeout(() => {
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
-      }, 1000);
-    } else {
-      const findIndex = folderName.findIndex(
-        (fold) => fold.objectId === data.objectId
-      );
-      const newFolder = folderName.slice(0, findIndex + 1);
+    });
 
-      setFolderName(newFolder);
-      const getLastId = newFolder[newFolder.length - 1];
-
-      setDocId(getLastId.objectId);
-      setIsLoading(loadObj);
-    }
+    setFolderName(updateFolderName);
+    const getLastId = updateFolderName[updateFolderName.length - 1];
+    setDocId(getLastId.objectId);
   };
 
   //function for add new folder name
@@ -160,7 +177,6 @@ function PdfFile() {
   const handleAddFolder = async () => {
     if (newFolderName) {
       setIsFolderLoader(true);
-
       const getParentObjId = folderName[folderName.length - 1];
       const parentId = getParentObjId && getParentObjId.objectId;
       let data;
@@ -329,8 +345,38 @@ function PdfFile() {
     };
   }, [isShowSort]);
 
+  const handleFolderTab = (folderData, isMove) => {
+    return folderData.map((data, id) => {
+      return (
+        <>
+          <span
+            key={id}
+            onClick={() => handleRoute(id)}
+            style={{
+              color: "#a64b4e",
+              fontWeight: "400",
+              cursor: "pointer"
+            }}
+          >
+            {data.name}
+            <span
+              style={{
+                color: "#a64b4e",
+                fontWeight: "200",
+                cursor: "pointer",
+                margin: "0 4px"
+              }}
+            >
+              &gt;
+            </span>
+          </span>
+        </>
+      );
+    });
+  };
   return (
     <div className="folderComponent ">
+      <Title title={"OpenSign™ Drive"} drive={true} />
       <div>
         <AlertComponent
           isShow={isAlert.isShow}
@@ -479,31 +525,7 @@ function PdfFile() {
                 }}
                 className="folderPath"
               >
-                {folderName.map((data, id) => {
-                  return (
-                    <span
-                      key={id}
-                      onClick={() => handleRoute(data)}
-                      style={{
-                        color: "#a64b4e",
-                        fontWeight: "400",
-                        cursor: "pointer"
-                      }}
-                    >
-                      {data.name}
-                      <span
-                        style={{
-                          color: "#a64b4e",
-                          fontWeight: "200",
-                          cursor: "pointer",
-                          margin: "0 4px"
-                        }}
-                      >
-                        &gt;
-                      </span>
-                    </span>
-                  );
-                })}
+                {handleFolderTab(folderName)}
               </div>
               <div className="dropMenuBD">
                 <div

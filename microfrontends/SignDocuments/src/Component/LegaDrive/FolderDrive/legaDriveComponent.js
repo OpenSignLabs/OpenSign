@@ -10,6 +10,7 @@ import { getHostUrl } from "../../../utils/Utils";
 import { useNavigate } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
+import SelectFolder from "../../../premitives/SelectFolder";
 
 function PdfFileComponent({
   pdfData,
@@ -22,7 +23,9 @@ function PdfFileComponent({
   const [rename, setRename] = useState("");
   const [renameValue, setRenameValue] = useState("");
   const inputRef = useRef(null);
-
+  const [isOpenMoveModal, setIsOpenMoveModal] = useState(false);
+  const [selectDoc, setSelectDoc] = useState();
+  const contextMenu = ["Download", "Rename", "Delete", "Move"];
   const navigate = useNavigate();
 
   //to focus input box on press rename to change doc name
@@ -212,19 +215,63 @@ function PdfFileComponent({
     };
 
     const handleMenuItemClick = (selectType, data) => {
-      // console.log("data",data)
-      if (selectType === "Download") {
-        // console.log("download")
-        const pdfName = data && data.Name;
-        const pdfUrl = data && data.SignedUrl ? data.SignedUrl : data.URL;
-        saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
-      } else if (selectType === "Rename") {
-        // console.log("rename")
-        setRenameValue(data.Name);
-        setRename(data.objectId);
+      switch (selectType) {
+        case "Download":
+          const pdfName = data && data.Name;
+          const pdfUrl = data && data.SignedUrl ? data.SignedUrl : data.URL;
+          saveAs(
+            pdfUrl,
+            `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`
+          );
+          break;
+        case "Rename":
+          setRenameValue(data.Name);
+          setRename(data.objectId);
+          break;
+        case "Delete":
+          handleDeleteDocument(data);
+          break;
+
+        case "Move":
+          handleMoveDocument(data);
+          break;
       }
     };
 
+    //function for delete document
+    const handleDeleteDocument = async (docData) => {
+      const docId = docData.objectId;
+      const data = {
+        IsArchive: true
+      };
+
+      await axios
+        .put(
+          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+            "_appName"
+          )}_Document/${docId}`,
+          data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
+          }
+        )
+        .then((result) => {
+          const res = result.data;
+          const updatedData = pdfData.filter((x) => x.objectId !== docId);
+          setPdfData(updatedData);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    };
+    const handleMoveDocument = async (docData) => {
+      setIsOpenMoveModal(true);
+      setSelectDoc(docData);
+    };
     const sanitizeFileName = (pdfName) => {
       // Replace spaces with underscore
       return pdfName.replace(/ /g, "_");
@@ -234,6 +281,13 @@ function PdfFileComponent({
       if (e.key === "Enter") {
         handledRenameDoc(data);
       }
+    };
+
+    const signersName = () => {
+      const getSignersName = signerExist.map((data) => data.Name);
+      const signerName = getSignersName.join(",");
+
+      return <span className="statusSpan">{signerName} </span>;
     };
 
     return listType === "table" ? (
@@ -355,14 +409,6 @@ function PdfFileComponent({
               sideOffset={5}
               align="end"
             >
-              {/* <ContextMenu.Item
-                    onClick={() => handleMenuItemClick("Download", data)}
-                    onSelect={(e) => console.log("event", e)}
-                    className="ContextMenuItem"
-                  >
-                    Download
-                  </ContextMenu.Item> */}
-
               <ContextMenu.Item
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
@@ -428,14 +474,6 @@ function PdfFileComponent({
               sideOffset={5}
               align="end"
             >
-              {/* <ContextMenu.Item
-               onClick={() => handleMenuItemClick("Download", data)}
-               onSelect={(e) => console.log("event", e)}
-               className="ContextMenuItem"
-             >
-               Download
-             </ContextMenu.Item> */}
-
               <ContextMenu.Item
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
@@ -447,7 +485,7 @@ function PdfFileComponent({
         </ContextMenu.Root>
       </div>
     ) : (
-      <HoverCard.Root>
+      <HoverCard.Root openDelay={0} closeDelay={100}>
         <HoverCard.Trigger asChild>
           <div>
             <ContextMenu.Root>
@@ -518,9 +556,22 @@ function PdfFileComponent({
                   sideOffset={5}
                   align="end"
                 >
-                  <ContextMenu.Item
+                  {contextMenu.map((menuType, ind) => {
+                    return (
+                      <ContextMenu.Item
+                        key={ind}
+                        onClick={() => handleMenuItemClick(menuType, data)}
+                        // onSelect={(e) => console.log("event", e)}
+                        className="ContextMenuItem"
+                      >
+                        {menuType}
+                      </ContextMenu.Item>
+                    );
+                  })}
+
+                  {/* <ContextMenu.Item
                     onClick={() => handleMenuItemClick("Download", data)}
-                    onSelect={(e) => console.log("event", e)}
+                    // onSelect={(e) => console.log("event", e)}
                     className="ContextMenuItem"
                   >
                     Download
@@ -532,6 +583,18 @@ function PdfFileComponent({
                   >
                     Rename
                   </ContextMenu.Item>
+                  <ContextMenu.Item
+                    onClick={() => handleMenuItemClick("Delete", data)}
+                    className="ContextMenuItem"
+                  >
+                    Delete
+                  </ContextMenu.Item>
+                  <ContextMenu.Item
+                    onClick={() => handleMenuItemClick("Move", data)}
+                    className="ContextMenuItem"
+                  >
+                    Move
+                  </ContextMenu.Item> */}
                 </ContextMenu.Content>
               </ContextMenu.Portal>
             </ContextMenu.Root>
@@ -554,13 +617,7 @@ function PdfFileComponent({
             {signerExist && (
               <>
                 <strong style={{ fontSize: "13px" }}>Signers: </strong>
-                {signerExist.map((data, key) => {
-                  return (
-                    <React.Fragment key={key}>
-                      <span className="statusSpan">{data.Name}, </span>
-                    </React.Fragment>
-                  );
-                })}
+                {signersName()}
               </>
             )}
             <HoverCard.Arrow className="HoverCardArrow" />
@@ -569,41 +626,113 @@ function PdfFileComponent({
       </HoverCard.Root>
     );
   };
-  //component to handle type of document and render according to type
 
-  return isList ? (
-    <div className="container" style={{ overflowX: "auto" }}>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Created Date</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
+  //function for move document from one folder to another folder
+  const handleMoveFolder = async (selectFolderData) => {
+    const selecFolderId = selectDoc?.Folder?.objectId;
+    const moveFolderId = selectFolderData?.ObjectId;
+    let updateDocId = selectDoc?.objectId;
+    let updateData;
+    const checkExist = moveFolderId
+      ? selecFolderId === moveFolderId
+        ? true
+        : false
+      : false;
+
+    if (!checkExist) {
+      if (moveFolderId) {
+        updateData = {
+          Folder: {
+            __type: "Pointer",
+            className: `${localStorage.getItem("_appName")}_Document`,
+            objectId: moveFolderId
+          }
+        };
+      } else {
+        updateData = {
+          Folder: undefined
+        };
+      }
+
+      await axios
+        .put(
+          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+            "_appName"
+          )}_Document/${updateDocId}`,
+          updateData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
+          }
+        )
+
+        .then((Listdata) => {
+          // console.log("Listdata ", Listdata);
+          const json = Listdata.data;
+
+          const updatedData = pdfData.filter((x) => x.objectId !== updateDocId);
+          setPdfData(updatedData);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+
+      setIsOpenMoveModal(false);
+    } else {
+      alert("folder already exist!");
+      setIsOpenMoveModal(false);
+    }
+  };
+
+  //component to handle type of document and render according to type
+  return (
+    <>
+      {isList ? (
+        <div className="container" style={{ overflowX: "auto" }}>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Created Date</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pdfData.map((data, ind) => {
+                return (
+                  <React.Fragment key={ind}>
+                    {handleFolderData(data, ind, "table")}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </Table>
+        </div>
+      ) : (
+        <div className="pdfContainer">
           {pdfData.map((data, ind) => {
             return (
-              <React.Fragment key={ind}>
-                {handleFolderData(data, ind, "table")}
-              </React.Fragment>
+              <div className="box" key={ind}>
+                {handleFolderData(data, ind, "list")}
+              </div>
             );
           })}
-        </tbody>
-      </Table>
-    </div>
-  ) : (
-    <div className="pdfContainer">
-      {pdfData.map((data, ind) => {
-        return (
-          <div className="box" key={ind}>
-            {handleFolderData(data, ind, "list")}
-          </div>
-        );
-      })}
-    </div>
+        </div>
+      )}
+      {isOpenMoveModal && (
+        <SelectFolder
+          onSuccess={handleMoveFolder}
+          isOpenModal={isOpenMoveModal}
+          folderCls={"contracts_Document"}
+          setIsOpenMoveModal={setIsOpenMoveModal}
+        />
+      )}
+    </>
   );
 }
 
