@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1475.0",
-    "axios": "1.3.5",
+    "axios": "1.6.5",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.0.3",
