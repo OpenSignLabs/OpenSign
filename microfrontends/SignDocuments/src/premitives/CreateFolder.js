@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import Alert from "./Alert";
+import { themeColor } from "../utils/ThemeColor/backColor";
 
 const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   const folderPtr = {
@@ -20,7 +21,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
 
   const fetchFolder = async () => {
     try {
-    const FolderQuery = new Parse.Query(folderCls);
+      const FolderQuery = new Parse.Query(folderCls);
       if (parentFolderId) {
         FolderQuery.equalTo("Folder", folderPtr);
         FolderQuery.equalTo("Type", "Folder");
@@ -98,28 +99,39 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   const handleOptions = (e) => {
     setSelectedParent(e.target.value);
   };
+
   return (
     <div>
       {isAlert && <Alert type={alert.type}>{alert.message}</Alert>}
       <div id="createFolder">
-        <h1 className="text-base font-semibold">Create Folder</h1>
-        <div className="text-xs mt-2">
+        <h1 style={{ fontWeight: "500", fontSize: "1rem" }}>Create Folder</h1>
+        <div style={{ fontSize: "15px", marginTop: "2px" }}>
           <label className="block">
             Name<span style={{ color: "red", fontSize: 13 }}> *</span>
           </label>
           <input
-            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+            style={{
+              padding: "2px 3px",
+              width: "100%",
+              border: "1px solid #c3bcbc",
+              borderRadius: "5px"
+            }}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
-        <div className="text-xs mt-2">
+        <div style={{ fontSize: "15px", marginTop: "2px" }}>
           <label className="block">Parent Folder</label>
           <select
             value={selectedParent}
             onChange={handleOptions}
-            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+            style={{
+              padding: "2px 3px",
+              width: "100%",
+              border: "1px solid #c3bcbc",
+              borderRadius: "5px"
+            }}
           >
             <option>select</option>
             {folderList.length > 0 &&
@@ -133,7 +145,17 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         <div>
           <button
             onClick={handleCreateFolder}
-            className="flex items-center rounded p-2 bg-[#33bbff] text-white mt-3"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              borderRadius: "5px",
+              backgroundColor: themeColor(),
+              color: "white",
+              marginTop: "22px",
+              outline: "none",
+              border: "none",
+              padding: "4px 7px"
+            }}
           >
             <i className="fa-solid fa-plus mr-1"></i>
             <span>Create</span>
