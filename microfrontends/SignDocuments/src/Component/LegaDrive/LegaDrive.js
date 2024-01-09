@@ -403,20 +403,19 @@ function PdfFile() {
                       background: themeColor()
                     }}
                     type="button"
-                    className="docDeleteBtn"
+                    className="finishBtn"
                   >
-                    ADD
+                    Add
                   </button>
                   <button
-                    type="submit"
                     style={{
-                      background: "rgb(24 138 226)",
-                      marginLeft: "10px"
+                      color: "black"
                     }}
-                    className="docDeleteBtn"
+                    type="button"
+                    className="finishBtn"
                     onClick={() => setIsFolder(false)}
                   >
-                    CLOSE
+                    Close
                   </button>
                 </div>
               </div>

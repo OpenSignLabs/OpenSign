@@ -396,6 +396,7 @@ a {
   will-change: transform, opacity;
   text-align: center;
   align-items: center;
+ 
 }
 
 .HoverCardContent[data-side='top'] {
