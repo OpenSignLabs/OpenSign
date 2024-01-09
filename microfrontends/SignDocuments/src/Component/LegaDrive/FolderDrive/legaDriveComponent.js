@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import SelectFolder from "../../../premitives/SelectFolder";
+import ModalUi from "../../../premitives/ModalUi";
+import { themeColor } from "../../../utils/ThemeColor/backColor";
 
 function PdfFileComponent({
   pdfData,
@@ -25,6 +27,7 @@ function PdfFileComponent({
   const inputRef = useRef(null);
   const [isOpenMoveModal, setIsOpenMoveModal] = useState(false);
   const [selectDoc, setSelectDoc] = useState();
+  const [isDeleteDoc, setIsDeleteDoc] = useState(false);
   const contextMenu = ["Download", "Rename", "Delete", "Move"];
   const navigate = useNavigate();
 
@@ -163,9 +166,138 @@ function PdfFileComponent({
     }
   };
 
+  const handleMenuItemClick = (selectType, data) => {
+    switch (selectType) {
+      case "Download":
+        const pdfName = data && data.Name;
+        const pdfUrl = data && data.SignedUrl ? data.SignedUrl : data.URL;
+        saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+        break;
+      case "Rename":
+        setRenameValue(data.Name);
+        setRename(data.objectId);
+        break;
+      case "Delete":
+        setIsDeleteDoc(true);
+        setSelectDoc(data);
+        break;
+
+      case "Move":
+        handleMoveDocument(data);
+        break;
+    }
+  };
+  //function for delete document
+  const handleDeleteDocument = async (docData) => {
+    const docId = docData.objectId;
+    const data = {
+      IsArchive: true
+    };
+
+    await axios
+      .put(
+        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+          "_appName"
+        )}_Document/${docId}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      )
+      .then((result) => {
+        const res = result.data;
+        const updatedData = pdfData.filter((x) => x.objectId !== docId);
+        setPdfData(updatedData);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+  const handleMoveDocument = async (docData) => {
+    setIsOpenMoveModal(true);
+    setSelectDoc(docData);
+  };
+  //function for move document from one folder to another folder
+  const handleMoveFolder = async (selectFolderData) => {
+    const selecFolderId = selectDoc?.Folder?.objectId;
+    const moveFolderId = selectFolderData?.ObjectId;
+    let updateDocId = selectDoc?.objectId;
+    let updateData;
+    const checkExist = moveFolderId
+      ? selecFolderId === moveFolderId
+        ? true
+        : false
+      : false;
+
+    if (!checkExist) {
+      if (moveFolderId) {
+        updateData = {
+          Folder: {
+            __type: "Pointer",
+            className: `${localStorage.getItem("_appName")}_Document`,
+            objectId: moveFolderId
+          }
+        };
+      } else {
+        updateData = {
+          Folder: { __op: "Delete" }
+        };
+      }
+
+      await axios
+        .put(
+          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+            "_appName"
+          )}_Document/${updateDocId}`,
+          updateData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
+          }
+        )
+
+        .then((Listdata) => {
+          // console.log("Listdata ", Listdata);
+          const json = Listdata.data;
+
+          const updatedData = pdfData.filter((x) => x.objectId !== updateDocId);
+          setPdfData(updatedData);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+
+      setIsOpenMoveModal(false);
+    } else {
+      alert("folder already exist!");
+      setIsOpenMoveModal(false);
+    }
+  };
+
+  const sanitizeFileName = (pdfName) => {
+    // Replace spaces with underscore
+    return pdfName.replace(/ /g, "_");
+  };
+
+  const handleEnterPress = (e, data) => {
+    if (e.key === "Enter") {
+      handledRenameDoc(data);
+    }
+  };
+
+  const handleDraftDoc = (data) => {
+    window.location.hash = `/mf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9MZWdhR2VuaWUtTWljcm9hcHBWMi9yZW1vdGVFbnRyeS5qcw==&moduleToLoad=AppRoutes&remoteName=legageniemicroapp/legagenie?${data.objectId}`;
+  };
+
   //component to handle type of document and render according to type
   const handleFolderData = (data, ind, listType) => {
-    // console.log("data", data);
     let createddate,
       status,
       isDecline,
@@ -210,86 +342,12 @@ function PdfFileComponent({
       }
     }
 
-    const handleDraftDoc = (data) => {
-      window.location.hash = `/mf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9MZWdhR2VuaWUtTWljcm9hcHBWMi9yZW1vdGVFbnRyeS5qcw==&moduleToLoad=AppRoutes&remoteName=legageniemicroapp/legagenie?${data.objectId}`;
-    };
-
-    const handleMenuItemClick = (selectType, data) => {
-      switch (selectType) {
-        case "Download":
-          const pdfName = data && data.Name;
-          const pdfUrl = data && data.SignedUrl ? data.SignedUrl : data.URL;
-          saveAs(
-            pdfUrl,
-            `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`
-          );
-          break;
-        case "Rename":
-          setRenameValue(data.Name);
-          setRename(data.objectId);
-          break;
-        case "Delete":
-          handleDeleteDocument(data);
-          break;
-
-        case "Move":
-          handleMoveDocument(data);
-          break;
-      }
-    };
-
-    //function for delete document
-    const handleDeleteDocument = async (docData) => {
-      const docId = docData.objectId;
-      const data = {
-        IsArchive: true
-      };
-
-      await axios
-        .put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}_Document/${docId}`,
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-            }
-          }
-        )
-        .then((result) => {
-          const res = result.data;
-          const updatedData = pdfData.filter((x) => x.objectId !== docId);
-          setPdfData(updatedData);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
-    };
-    const handleMoveDocument = async (docData) => {
-      setIsOpenMoveModal(true);
-      setSelectDoc(docData);
-    };
-    const sanitizeFileName = (pdfName) => {
-      // Replace spaces with underscore
-      return pdfName.replace(/ /g, "_");
-    };
-
-    const handleEnterPress = (e, data) => {
-      if (e.key === "Enter") {
-        handledRenameDoc(data);
-      }
-    };
-
     const signersName = () => {
       const getSignersName = signerExist.map((data) => data.Name);
       const signerName = getSignersName.join(",");
 
       return <span className="statusSpan">{signerName} </span>;
     };
-
     return listType === "table" ? (
       data.Type === "Folder" ? (
         <tr onClick={() => handleOnclikFolder(data)}>
@@ -383,7 +441,6 @@ function PdfFileComponent({
                   }}
                   autoFocus={true}
                   type="text"
-                  // onFocus={()=>console.log("focus")}
                   onBlur={() => handledRenameDoc(data)}
                   onKeyDown={(e) => handleEnterPress(e, data)}
                   ref={inputRef}
@@ -448,7 +505,6 @@ function PdfFileComponent({
                   }}
                   autoFocus={true}
                   type="text"
-                  // onFocus={()=>console.log("focus")}
                   onBlur={() => handledRenameDoc(data)}
                   onKeyDown={(e) => handleEnterPress(e, data)}
                   ref={inputRef}
@@ -568,33 +624,6 @@ function PdfFileComponent({
                       </ContextMenu.Item>
                     );
                   })}
-
-                  {/* <ContextMenu.Item
-                    onClick={() => handleMenuItemClick("Download", data)}
-                    // onSelect={(e) => console.log("event", e)}
-                    className="ContextMenuItem"
-                  >
-                    Download
-                  </ContextMenu.Item>
-
-                  <ContextMenu.Item
-                    onClick={() => handleMenuItemClick("Rename", data)}
-                    className="ContextMenuItem"
-                  >
-                    Rename
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    onClick={() => handleMenuItemClick("Delete", data)}
-                    className="ContextMenuItem"
-                  >
-                    Delete
-                  </ContextMenu.Item>
-                  <ContextMenu.Item
-                    onClick={() => handleMenuItemClick("Move", data)}
-                    className="ContextMenuItem"
-                  >
-                    Move
-                  </ContextMenu.Item> */}
                 </ContextMenu.Content>
               </ContextMenu.Portal>
             </ContextMenu.Root>
@@ -625,66 +654,6 @@ function PdfFileComponent({
         </HoverCard.Portal>
       </HoverCard.Root>
     );
-  };
-
-  //function for move document from one folder to another folder
-  const handleMoveFolder = async (selectFolderData) => {
-    const selecFolderId = selectDoc?.Folder?.objectId;
-    const moveFolderId = selectFolderData?.ObjectId;
-    let updateDocId = selectDoc?.objectId;
-    let updateData;
-    const checkExist = moveFolderId
-      ? selecFolderId === moveFolderId
-        ? true
-        : false
-      : false;
-
-    if (!checkExist) {
-      if (moveFolderId) {
-        updateData = {
-          Folder: {
-            __type: "Pointer",
-            className: `${localStorage.getItem("_appName")}_Document`,
-            objectId: moveFolderId
-          }
-        };
-      } else {
-        updateData = {
-          Folder: undefined
-        };
-      }
-
-      await axios
-        .put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}_Document/${updateDocId}`,
-          updateData,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-            }
-          }
-        )
-
-        .then((Listdata) => {
-          // console.log("Listdata ", Listdata);
-          const json = Listdata.data;
-
-          const updatedData = pdfData.filter((x) => x.objectId !== updateDocId);
-          setPdfData(updatedData);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
-
-      setIsOpenMoveModal(false);
-    } else {
-      alert("folder already exist!");
-      setIsOpenMoveModal(false);
-    }
   };
 
   //component to handle type of document and render according to type
@@ -730,8 +699,58 @@ function PdfFileComponent({
           isOpenModal={isOpenMoveModal}
           folderCls={"contracts_Document"}
           setIsOpenMoveModal={setIsOpenMoveModal}
+          setPdfData={setPdfData}
         />
       )}
+      <ModalUi
+        isOpen={isDeleteDoc}
+        headerColor={themeColor()}
+        title={"Delete Document"}
+        handleClose={() => {
+          setIsDeleteDoc(false);
+        }}
+      >
+        <div style={{ height: "100%", padding: 20 }}>
+          <p>Are you sure you want to delete this document?</p>
+
+          <div
+            style={{
+              height: "1px",
+              backgroundColor: "#9f9f9f",
+              width: "100%",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          ></div>
+
+          <button
+            onClick={() => {
+              handleDeleteDocument(selectDoc);
+            }}
+            style={{
+              background: themeColor(),
+              color: "white"
+            }}
+            type="button"
+            className="docDeleteBtn"
+          >
+            YES
+          </button>
+          <button
+            onClick={() => {
+              setIsDeleteDoc(false);
+            }}
+            style={{
+              background: "rgb(24 138 226)",
+              marginLeft: "10px"
+            }}
+            type="button"
+            className="docDeleteBtn"
+          >
+            NO
+          </button>
+        </div>
+      </ModalUi>
     </>
   );
 }
