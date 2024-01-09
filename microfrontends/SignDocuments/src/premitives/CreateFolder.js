@@ -75,6 +75,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         template.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
         const res = await template.save();
         if (res) {
+          const result = JSON.parse(JSON.stringify(res));
           if (onSuccess) {
             setAlert({
               type: "success",
@@ -84,7 +85,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             setTimeout(() => {
               setIsAlert(false);
             }, 1000);
-            onSuccess(res);
+            onSuccess(result);
           }
         }
       }
@@ -105,32 +106,36 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       {isAlert && <Alert type={alert.type}>{alert.message}</Alert>}
       <div id="createFolder">
         <h1 style={{ fontWeight: "500", fontSize: "1rem" }}>Create Folder</h1>
-        <div style={{ fontSize: "15px", marginTop: "2px" }}>
+        <div style={{ fontSize: "12px", marginTop: "11px" }}>
           <label className="block">
-            Name<span style={{ color: "red", fontSize: 13 }}> *</span>
+            Name<span style={{ color: "red", fontSize: "13px" }}> *</span>
           </label>
           <input
             style={{
-              padding: "2px 3px",
+              padding: "8px 11px",
               width: "100%",
-              border: "1px solid #c3bcbc",
-              borderRadius: "5px"
+              border: "1px solid rgb(195, 188, 188)",
+              borderRadius: "5px",
+              outline: "none",
+              fontSize: "12px"
             }}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
-        <div style={{ fontSize: "15px", marginTop: "2px" }}>
+        <div style={{ fontSize: "12px", marginTop: "7px" }}>
           <label className="block">Parent Folder</label>
           <select
             value={selectedParent}
             onChange={handleOptions}
             style={{
-              padding: "2px 3px",
+              padding: "8px 11px",
               width: "100%",
-              border: "1px solid #c3bcbc",
-              borderRadius: "5px"
+              border: "1px solid rgb(195, 188, 188)",
+              borderRadius: "5px",
+              outline: "none",
+              fontSize: "12px"
             }}
           >
             <option>select</option>
@@ -154,7 +159,8 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
               marginTop: "22px",
               outline: "none",
               border: "none",
-              padding: "4px 7px"
+              padding: "10px 8px",
+              fontSize: "14px"
             }}
           >
             <i className="fa-solid fa-plus mr-1"></i>
