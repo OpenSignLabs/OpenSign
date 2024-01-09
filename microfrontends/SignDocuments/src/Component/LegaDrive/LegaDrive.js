@@ -64,6 +64,7 @@ function PdfFile() {
     if (driveDetails) {
       if (driveDetails.length > 0) {
         setPdfData(driveDetails);
+        sortApps(null, null, driveDetails);
       }
       const data = [
         {
@@ -98,6 +99,7 @@ function PdfFile() {
     if (driveDetails) {
       if (driveDetails.length > 0) {
         setPdfData(driveDetails);
+        sortApps(null, null, driveDetails);
       } else {
         setPdfData([]);
       }
@@ -120,11 +122,6 @@ function PdfFile() {
   };
   //function for handle folder name path
   const handleRoute = (index) => {
-    let loadObj = {
-      isLoad: true,
-      message: "This might take some time"
-    };
-
     const updateFolderName = folderName.filter((x, i) => {
       if (i <= index) {
         return x;
@@ -217,11 +214,11 @@ function PdfFile() {
     }
   };
 
-  const sortApps = () => {
-    const selectedSortType = selectedSort;
-    const sortOrder = sortingOrder;
+  const sortApps = (type, order, driveDetails) => {
+    const selectedSortType = type ? type : "Date";
+    const sortOrder = order ? order : "Decending";
 
-    let sortingData = pdfData;
+    let sortingData = pdfData?.length === 0 ? driveDetails : pdfData;
     if (selectedSortType === "Name") {
       sortingApp(sortingData, "Name", sortOrder);
     } else if (selectedSortType === "Date") {
@@ -283,9 +280,9 @@ function PdfFile() {
   useEffect(() => {
     const closeMenuOnOutsideClick = (e) => {
       if (isShowSort && !e.target.closest("#menu-container")) {
-        setIsShowSort(false);
+        setIsShowSort(!isShowSort);
       } else if (isNewFol && !e.target.closest("#folder-menu")) {
-        setIsNewFol(false);
+        setIsNewFol(!isNewFol);
       }
     };
 
@@ -295,14 +292,13 @@ function PdfFile() {
       // Cleanup the event listener when the component unmounts
       document.removeEventListener("click", closeMenuOnOutsideClick);
     };
-  }, [isShowSort]);
+  }, [isShowSort || isNewFol]);
 
   const handleFolderTab = (folderData, isMove) => {
     return folderData.map((data, id) => {
       return (
-        <>
+        <React.Fragment>
           <span
-            key={id}
             onClick={() => handleRoute(id)}
             style={{
               color: "#a64b4e",
@@ -322,7 +318,7 @@ function PdfFile() {
               &gt;
             </span>
           </span>
-        </>
+        </React.Fragment>
       );
     });
   };
@@ -363,7 +359,13 @@ function PdfFile() {
                 </span>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column" }}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAddFolder();
+                }}
+                style={{ display: "flex", flexDirection: "column" }}
+              >
                 <label
                   style={{
                     margin: "10px 0px 10px 0px",
@@ -382,11 +384,7 @@ function PdfFile() {
                   onChange={(e) => handleFolderName(e)}
                   // className="addFolderInput"
                 />
-                <span
-                  style={{ color: "red", fontSize: "12px", marginTop: "6px" }}
-                >
-                  {error}
-                </span>
+
                 <div
                   style={{
                     height: "1px",
@@ -398,11 +396,10 @@ function PdfFile() {
                 ></div>
                 <div style={{ display: "flex", flexDirection: "row" }}>
                   <button
-                    onClick={() => handleAddFolder()}
                     style={{
                       background: themeColor()
                     }}
-                    type="button"
+                    type="submit"
                     className="finishBtn"
                   >
                     Add
@@ -418,7 +415,7 @@ function PdfFile() {
                     Close
                   </button>
                 </div>
-              </div>
+              </form>
             )}
           </div>
         </ModalUi>
@@ -568,7 +565,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSelectedSort("Name");
-                        sortApps();
+                        sortApps("Name");
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -590,7 +587,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSelectedSort("Date");
-                        sortApps();
+                        sortApps("Date");
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -613,7 +610,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSortingOrder("Accending");
-                        sortApps();
+                        sortApps(null, "Accending", null);
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -635,7 +632,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSortingOrder("Decending");
-                        sortApps();
+                        sortApps(null, "Decending", null);
                       }}
                       className="dropdown-item itemColor"
                     >
