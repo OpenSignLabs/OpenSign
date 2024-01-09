@@ -28,7 +28,12 @@ function PdfFileComponent({
   const [isOpenMoveModal, setIsOpenMoveModal] = useState(false);
   const [selectDoc, setSelectDoc] = useState();
   const [isDeleteDoc, setIsDeleteDoc] = useState(false);
-  const contextMenu = ["Download", "Rename", "Move", "Delete"];
+  const contextMenu = [
+    { type: "Download", icon: "fa-solid fa-arrow-down" },
+    { type: "Rename", icon: "fa-solid fa-font" },
+    { type: "Move", icon: "fa-solid fa-file-export" },
+    { type: "Delete", icon: "fa-solid fa-trash" }
+  ];
   const navigate = useNavigate();
 
   //to focus input box on press rename to change doc name
@@ -478,7 +483,8 @@ function PdfFileComponent({
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
               >
-                Rename
+                <i class="fa-solid fa-font"></i>
+                <span style={{ marginLeft: "8px" }}>Rename</span>
               </ContextMenu.Item>
             </ContextMenu.Content>
           </ContextMenu.Portal>
@@ -542,7 +548,8 @@ function PdfFileComponent({
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
               >
-                Rename
+                <i class="fa-solid fa-font"></i>
+                <span style={{ marginLeft: "8px" }}>Rename</span>
               </ContextMenu.Item>
             </ContextMenu.Content>
           </ContextMenu.Portal>
@@ -620,15 +627,15 @@ function PdfFileComponent({
                   sideOffset={5}
                   align="end"
                 >
-                  {contextMenu.map((menuType, ind) => {
+                  {contextMenu.map((menu, ind) => {
                     return (
                       <ContextMenu.Item
                         key={ind}
-                        onClick={() => handleMenuItemClick(menuType, data)}
-                        // onSelect={(e) => console.log("event", e)}
+                        onClick={() => handleMenuItemClick(menu, data)}
                         className="ContextMenuItem"
                       >
-                        {menuType}
+                        <i class={menu.icon}></i>
+                        <span style={{ marginLeft: "8px" }}>{menu.type}</span>
                       </ContextMenu.Item>
                     );
                   })}

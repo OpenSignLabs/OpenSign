@@ -6,7 +6,7 @@
 
 .ContextMenuContent,
 .ContextMenuSubContent {
-  min-width: 150px;
+  min-width: 135px;
   background-color: white;
   border-radius: 6px;
   overflow: hidden;
@@ -28,7 +28,7 @@
   height: 25px;
   padding: 0 5px;
   position: relative;
-  padding-left: 25px;
+  padding-left: 15px;
   user-select: none;
   outline: none;
 }
