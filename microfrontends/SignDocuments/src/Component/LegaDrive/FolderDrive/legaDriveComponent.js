@@ -28,7 +28,7 @@ function PdfFileComponent({
   const [isOpenMoveModal, setIsOpenMoveModal] = useState(false);
   const [selectDoc, setSelectDoc] = useState();
   const [isDeleteDoc, setIsDeleteDoc] = useState(false);
-  const contextMenu = ["Download", "Rename", "Delete", "Move"];
+  const contextMenu = ["Download", "Rename", "Move", "Delete"];
   const navigate = useNavigate();
 
   //to focus input box on press rename to change doc name
@@ -113,56 +113,45 @@ function PdfFileComponent({
     const signUrl = data.SignedUrl && data.SignedUrl;
     const isDecline = data.IsDeclined && data.IsDeclined;
     const isPlaceholder = data.Placeholders && data.Placeholders;
-    //checking and navigate to signyouself page
-    const checkPlaceHolder = data.Placeholders;
+
+    let isExpire = false;
+    if (currDate > expireUpdateDate) {
+      isExpire = true;
+    }
     //checking if document has completed
-    if (data.IsCompleted && signerExist) {
+    if (data?.IsCompleted && signerExist?.length > 0) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
 
       // window.location.hash = `/pdfRequestFiles/${data.objectId}`;
-    } else if (data.IsCompleted && !signerExist) {
+    } else if (data?.IsCompleted && signerExist?.length === 0) {
       navigate(`${hostUrl}signaturePdf/${data.objectId}`);
     }
     //checking if document has declined by someone
     else if (isDecline) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
-      // window.location.hash = `/pdfRequestFiles/${data.objectId}`;
-    } else if (currDate > expireUpdateDate && signerExist && !isPlaceholder) {
-      // window.location.hash = `/placeHolderSign/${data.objectId}`;
-      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
+      //checking draft type document
     } else if (
-      currDate > expireUpdateDate &&
-      !signerExist &&
-      !isPlaceholder &&
+      isExpire &&
+      signerExist?.length === 0 &&
+      isPlaceholder?.length === 0 &&
       !signUrl
     ) {
       navigate(`${hostUrl}signaturePdf/${data.objectId}`);
-      // window.location.hash = `/signaturePdf/${data.objectId}`;
-    }
-    //checking if document has expired
-    else if (currDate > expireUpdateDate) {
-      navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
-      // window.location.hash = `/pdfRequestFiles/${data.objectId}`;
-    } //checking if document is draft signers type and signers placeholder does not placed yet
-    else if (!signUrl && signerExist) {
-      // window.location.hash = `/placeHolderSign/${data.objectId}`;
-      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
-    }
-    //checking if document is request type and signers placeholder exist and does not completed yet
-    //then user can check progress of document and sign also
-    else if (
-      checkPlaceHolder &&
-      checkPlaceHolder.length > 0 &&
-      !data.IsCompleted
+    } else if (
+      (isExpire || !isExpire) &&
+      isPlaceholder?.length > 0 &&
+      signerExist?.length > 0
     ) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
-      // window.location.hash = `/pdfRequestFiles/${data.objectId}`;
+    } else if (signerExist?.length > 0 && isPlaceholder?.length === 0) {
+      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
+      //checking draft type document
+    } else if (signerExist?.length === 0 && isPlaceholder?.length > 0) {
+      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
     //checking document is draft and signyourself type then user can sign document
     else {
       navigate(`${hostUrl}signaturePdf/${data.objectId}`);
-      // navigate(`/signaturePdf/${data.objectId}`);
-      // window.location.hash = `/signaturePdf/${data.objectId}`;
     }
   };
 
@@ -189,6 +178,7 @@ function PdfFileComponent({
   };
   //function for delete document
   const handleDeleteDocument = async (docData) => {
+    setIsDeleteDoc(false);
     const docId = docData.objectId;
     const data = {
       IsArchive: true
@@ -302,7 +292,6 @@ function PdfFileComponent({
       status,
       isDecline,
       signerExist,
-      isExpire,
       isComplete,
       signUrl,
       isPlaceholder;
@@ -317,28 +306,40 @@ function PdfFileComponent({
       signUrl = data.SignedUrl && data.SignedUrl;
       const expireUpdateDate = new Date(expireDate).getTime();
       const currDate = new Date().getTime();
-
+      let isExpire = false;
       if (currDate > expireUpdateDate) {
         isExpire = true;
-      } else {
-        isExpire = false;
       }
+
       if (isComplete) {
         status = "Completed";
       } else if (isDecline) {
         status = "Declined";
-      } else if (isExpire && !isPlaceholder && signerExist) {
-        // status = "Expired";
+      } else if (
+        !isExpire &&
+        isPlaceholder?.length === 0 &&
+        signerExist?.length > 0
+      ) {
         status = "Draft";
-      } else if (isExpire && !isPlaceholder && !signerExist && !signUrl) {
-        // status = "Expired";
+      } else if (
+        !isExpire &&
+        isPlaceholder?.length > 0 &&
+        signerExist?.length === 0
+      ) {
+        status = "Draft";
+      } else if (
+        !isExpire &&
+        isPlaceholder?.length === 0 &&
+        signerExist?.length > 0 &&
+        !signUrl
+      ) {
         status = "Draft";
       } else if (isExpire) {
         status = "Expired";
       } else if (!signUrl) {
         status = "Draft";
       } else {
-        status = "InComplete";
+        status = "In Progress";
       }
     }
 
@@ -346,7 +347,14 @@ function PdfFileComponent({
       const getSignersName = signerExist.map((data) => data.Name);
       const signerName = getSignersName.join(",");
 
-      return <span className="statusSpan">{signerName} </span>;
+      return (
+        <span
+          className="statusSpan"
+          style={{ width: "90%", wordWrap: "break-word" }}
+        >
+          {signerName}{" "}
+        </span>
+      );
     };
     return listType === "table" ? (
       data.Type === "Folder" ? (
@@ -598,7 +606,7 @@ function PdfFileComponent({
                     <i className="fa fa-file"></i>
                   </div>
                 ) : (
-                  status === "InComplete" && (
+                  status === "In Progress" && (
                     <div className="status-badge in-progress">
                       <i className="fa fa-paper-plane"></i>
                     </div>
@@ -646,9 +654,11 @@ function PdfFileComponent({
             {signerExist && (
               <>
                 <strong style={{ fontSize: "13px" }}>Signers: </strong>
+                {/* <span className="statusSpan">kjefjjnejkfnkbjs bbfjkdsbjbfjkbjk kscbjkbjkb</span> */}
                 {signersName()}
               </>
             )}
+
             <HoverCard.Arrow className="HoverCardArrow" />
           </HoverCard.Content>
         </HoverCard.Portal>
@@ -732,22 +742,21 @@ function PdfFileComponent({
               color: "white"
             }}
             type="button"
-            className="docDeleteBtn"
+            className="finishBtn"
           >
-            YES
+            Yes
           </button>
           <button
             onClick={() => {
               setIsDeleteDoc(false);
             }}
             style={{
-              background: "rgb(24 138 226)",
-              marginLeft: "10px"
+              color: "black"
             }}
             type="button"
-            className="docDeleteBtn"
+            className="finishBtn"
           >
-            NO
+            No
           </button>
         </div>
       </ModalUi>

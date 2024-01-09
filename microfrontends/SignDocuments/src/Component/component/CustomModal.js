@@ -25,39 +25,41 @@ function CustomModal({
           <div className="modalHeadDiv bg-danger">{headMsg && headMsg}</div>
           <div className="modalBodyDIv">
             <p className="pTagBody">{bodyMssg && bodyMssg}</p>
-            <div
-              style={{
-                height: "1px",
-                backgroundColor: "#9f9f9f",
-                width: "100%",
-                marginTop: "15px",
-                marginBottom: "15px"
-              }}
-            ></div>
 
             {footerMessage && (
-              <div className="modalFooterDiv">
-                <button
+              <>
+                <div
                   style={{
-                    background: "#de4337"
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
                   }}
-                  type="button"
-                  className="finishBtn"
-                  onClick={() => declineDoc()}
-                >
-                  Yes
-                </button>
-                <button
-                  style={{
-                    color: "black"
-                  }}
-                  type="button"
-                  className="finishBtn"
-                  onClick={() => setIsDecline({ isDeclined: false })}
-                >
-                  Close
-                </button>
-              </div>
+                ></div>
+                <div className="modalFooterDiv">
+                  <button
+                    style={{
+                      background: "#de4337"
+                    }}
+                    type="button"
+                    className="finishBtn"
+                    onClick={() => declineDoc()}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    style={{
+                      color: "black"
+                    }}
+                    type="button"
+                    className="finishBtn"
+                    onClick={() => setIsDecline({ isDeclined: false })}
+                  >
+                    Close
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </div>
