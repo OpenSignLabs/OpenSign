@@ -631,7 +631,7 @@ function PdfFileComponent({
                     return (
                       <ContextMenu.Item
                         key={ind}
-                        onClick={() => handleMenuItemClick(menu, data)}
+                        onClick={() => handleMenuItemClick(menu.type, data)}
                         className="ContextMenuItem"
                       >
                         <i class={menu.icon}></i>
