@@ -61,8 +61,11 @@ function DraftDocument() {
       isExpire = true;
     }
     //checking if document has completed
+    //checking if document has completed
     if (data?.IsCompleted && signerExist?.length > 0) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
+
+      // window.location.hash = `/pdfRequestFiles/${data.objectId}`;
     } else if (data?.IsCompleted && signerExist?.length === 0) {
       navigate(`${hostUrl}signaturePdf/${data.objectId}`);
     }
@@ -71,22 +74,30 @@ function DraftDocument() {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
       //checking draft type document
     } else if (
-      isExpire &&
-      signerExist?.length === 0 &&
-      isPlaceholder?.length === 0 &&
+      (isExpire || !isExpire) &&
+      !signerExist &&
+      !isPlaceholder &&
       !signUrl
     ) {
       navigate(`${hostUrl}signaturePdf/${data.objectId}`);
     } else if (
       (isExpire || !isExpire) &&
-      isPlaceholder?.length > 0 &&
+      isPlaceholder &&
       signerExist?.length > 0
     ) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
-    } else if (signerExist?.length > 0 && isPlaceholder?.length === 0) {
+    } else if (
+      (isExpire || !isExpire) &&
+      signerExist?.length > 0 &&
+      !isPlaceholder
+    ) {
       navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
       //checking draft type document
-    } else if (signerExist?.length === 0 && isPlaceholder?.length > 0) {
+    } else if (
+      (isExpire || !isExpire) &&
+      signerExist?.length === 0 &&
+      isPlaceholder
+    ) {
       navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
     //checking document is draft and signyourself type then user can sign document

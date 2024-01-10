@@ -118,11 +118,11 @@ function PdfFileComponent({
     const signUrl = data.SignedUrl && data.SignedUrl;
     const isDecline = data.IsDeclined && data.IsDeclined;
     const isPlaceholder = data.Placeholders && data.Placeholders;
-
     let isExpire = false;
     if (currDate > expireUpdateDate) {
       isExpire = true;
     }
+
     //checking if document has completed
     if (data?.IsCompleted && signerExist?.length > 0) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
@@ -136,22 +136,30 @@ function PdfFileComponent({
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
       //checking draft type document
     } else if (
-      isExpire &&
-      signerExist?.length === 0 &&
-      isPlaceholder?.length === 0 &&
+      (isExpire || !isExpire) &&
+      !signerExist &&
+      !isPlaceholder &&
       !signUrl
     ) {
       navigate(`${hostUrl}signaturePdf/${data.objectId}`);
     } else if (
       (isExpire || !isExpire) &&
-      isPlaceholder?.length > 0 &&
+      isPlaceholder &&
       signerExist?.length > 0
     ) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
-    } else if (signerExist?.length > 0 && isPlaceholder?.length === 0) {
+    } else if (
+      (isExpire || !isExpire) &&
+      signerExist?.length > 0 &&
+      !isPlaceholder
+    ) {
       navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
       //checking draft type document
-    } else if (signerExist?.length === 0 && isPlaceholder?.length > 0) {
+    } else if (
+      (isExpire || !isExpire) &&
+      signerExist?.length === 0 &&
+      isPlaceholder
+    ) {
       navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
     //checking document is draft and signyourself type then user can sign document
