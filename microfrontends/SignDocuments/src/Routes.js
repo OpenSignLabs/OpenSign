@@ -10,7 +10,9 @@ import PdfRequestFiles from "./Component/PdfRequestFiles";
 import LegaDrive from "./Component/LegaDrive/LegaDrive";
 import PageNotFound from "./Component/PageNotFound";
 import TemplatePlaceHolder from "./Component/TemplatePlaceholder";
-
+import Parse from "parse";
+Parse.serverURL = localStorage.getItem("baseUrl");
+Parse.initialize(localStorage.getItem("parseAppId"));
 // `AppRoutes` is used to define route path of app and
 // it expose to host app, check moduleFederation.config.js for more
 function AppRoutes() {

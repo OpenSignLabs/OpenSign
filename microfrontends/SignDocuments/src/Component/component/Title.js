@@ -1,10 +1,10 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 
-function Title({ title }) {
+function Title({ title, drive }) {
   return (
     <Helmet>
-      <title>{`${title} - OpenSign™`}</title>
+      <title>{drive ? title : `${title} - OpenSign™`}</title>
       <meta name="description" content={`${title} - OpenSign™`} />
       <link
         rel="icon"
