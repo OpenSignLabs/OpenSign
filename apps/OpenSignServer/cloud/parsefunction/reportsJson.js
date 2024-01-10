@@ -11,7 +11,7 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          $or: [{ Signers: null }, { Signers: { $exists: true }, Placeholders: null }],
+          $or: [{Signers:{$eq:[]}}, { Signers: null }, { Signers: { $exists: true }, Placeholders: null }],
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
@@ -211,7 +211,7 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          $or: [{ Signers: null }, { Signers: { $exists: true }, Placeholders: null }],
+          $or: [{Signers:{$eq:[]}}, { Signers: null }, { Signers: { $exists: true }, Placeholders: null }],
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
