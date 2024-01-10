@@ -91,11 +91,8 @@ function PdfFile() {
       isLoad: true,
       message: "This might take some time"
     };
-
     setIsLoading(load);
-
     const driveDetails = await getDrive(docId);
-
     if (driveDetails) {
       if (driveDetails.length > 0) {
         setPdfData(driveDetails);
@@ -215,10 +212,10 @@ function PdfFile() {
   };
 
   const sortApps = (type, order, driveDetails) => {
-    const selectedSortType = type ? type : "Date";
-    const sortOrder = order ? order : "Decending";
+    const selectedSortType = type ? type : selectedSort ? selectedSort : "Date";
+    const sortOrder = order ? order : sortingOrder ? sortingOrder : "Decending";
 
-    let sortingData = pdfData?.length === 0 ? driveDetails : pdfData;
+    let sortingData = driveDetails;
     if (selectedSortType === "Name") {
       sortingApp(sortingData, "Name", sortOrder);
     } else if (selectedSortType === "Date") {
@@ -322,6 +319,11 @@ function PdfFile() {
       );
     });
   };
+  const oncloseFolder = () => {
+    setIsFolder(false);
+    setNewFolderName("");
+    setError("");
+  };
   return (
     <div className="folderComponent ">
       <Title title={"OpenSign™ Drive"} drive={true} />
@@ -334,9 +336,7 @@ function PdfFile() {
         <ModalUi
           isOpen={isFolder}
           title={"Add New Folder"}
-          handleClose={() => {
-            setIsFolder(false);
-          }}
+          handleClose={oncloseFolder}
         >
           <div style={{ height: "100%", padding: 20 }}>
             {folderLoader ? (
@@ -384,7 +384,11 @@ function PdfFile() {
                   onChange={(e) => handleFolderName(e)}
                   // className="addFolderInput"
                 />
-
+                <span
+                  style={{ color: "red", fontSize: "12px", marginTop: "6px" }}
+                >
+                  {error}
+                </span>
                 <div
                   style={{
                     height: "1px",
@@ -410,7 +414,7 @@ function PdfFile() {
                     }}
                     type="button"
                     className="finishBtn"
-                    onClick={() => setIsFolder(false)}
+                    onClick={oncloseFolder}
                   >
                     Close
                   </button>
@@ -565,7 +569,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSelectedSort("Name");
-                        sortApps("Name");
+                        sortApps("Name", null, pdfData);
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -587,7 +591,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSelectedSort("Date");
-                        sortApps("Date");
+                        sortApps("Date", null, pdfData);
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -610,7 +614,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSortingOrder("Accending");
-                        sortApps(null, "Accending", null);
+                        sortApps(null, "Accending", pdfData);
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -632,7 +636,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSortingOrder("Decending");
-                        sortApps(null, "Decending", null);
+                        sortApps(null, "Decending", pdfData);
                       }}
                       className="dropdown-item itemColor"
                     >
