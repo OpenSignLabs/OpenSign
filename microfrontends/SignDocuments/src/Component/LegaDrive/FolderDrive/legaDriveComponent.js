@@ -226,8 +226,9 @@ function PdfFileComponent({
       ? selecFolderId === moveFolderId
         ? true
         : false
-      : false;
-
+      : selecFolderId
+        ? false
+        : true;
     if (!checkExist) {
       if (moveFolderId) {
         updateData = {
