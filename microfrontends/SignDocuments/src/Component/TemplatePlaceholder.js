@@ -660,7 +660,10 @@ const TemplatePlaceholder = () => {
         const data = {
           Placeholders: signerPos,
           SignedUrl: pdfDetails[0].URL,
-          Signers: signers
+          Signers: signers,
+          Name: pdfDetails[0]?.Name || "",
+          Note: pdfDetails[0]?.Note || "",
+          Description: pdfDetails[0]?.Description || ""
         };
 
         await axios
