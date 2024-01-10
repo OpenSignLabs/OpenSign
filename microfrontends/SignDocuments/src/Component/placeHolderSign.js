@@ -721,15 +721,17 @@ function PlaceHolderSign() {
           objectId: x.objectId
         };
       });
+      const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
+        ? pdfDetails[0].TimeToCompleteDays
+        : 15;
       const currentUser = signersdata.find((x) => x.Email === currentId);
       setCurrentId(currentUser?.objectId);
-
       const expiryTime = new Date(expireDate).getTime();
       const currDate = new Date().getTime();
       let updateExpiryDate, data;
       if (currDate > expiryTime) {
         updateExpiryDate = new Date(expireDate);
-        updateExpiryDate.setDate(updateExpiryDate.getDate() + 15);
+        updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
       }
 
       try {
