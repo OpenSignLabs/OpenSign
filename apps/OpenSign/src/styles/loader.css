@@ -2211,7 +2211,5 @@
       background-position: -2em 0;
     }
   }
-  .box:nth-of-type(n + 43) {
-    display: none;
-  }
+
   

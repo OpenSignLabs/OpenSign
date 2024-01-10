@@ -639,6 +639,7 @@ function PlaceHolderSign() {
       setIsSendAlert(alert);
     }
   };
+
   const sendEmailToSigners = async () => {
     const loadObj = {
       isLoad: true,
@@ -720,15 +721,33 @@ function PlaceHolderSign() {
           objectId: x.objectId
         };
       });
+      const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
+        ? pdfDetails[0].TimeToCompleteDays
+        : 15;
       const currentUser = signersdata.find((x) => x.Email === currentId);
       setCurrentId(currentUser?.objectId);
+      let updateExpiryDate, data;
+      updateExpiryDate = new Date();
+      updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
 
       try {
-        const data = {
-          Placeholders: signerPos,
-          SignedUrl: pdfDetails[0].URL,
-          Signers: signers
-        };
+        if (updateExpiryDate) {
+          data = {
+            Placeholders: signerPos,
+            SignedUrl: pdfDetails[0].URL,
+            Signers: signers,
+            ExpiryDate: {
+              iso: updateExpiryDate,
+              __type: "Date"
+            }
+          };
+        } else {
+          data = {
+            Placeholders: signerPos,
+            SignedUrl: pdfDetails[0].URL,
+            Signers: signers
+          };
+        }
 
         await axios
           .put(

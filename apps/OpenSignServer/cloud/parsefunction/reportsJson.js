@@ -7,11 +7,11 @@ export default function reportJson(id, userId) {
       return {
         reportName: 'Draft Documents',
         params: {
-          Type: null,
-          $or: [
-            { Signers: null, SignedUrl: null },
-            { Signers: { $exists: true }, Placeholders: null },
-          ],
+          Type: { $ne: 'Folder' },
+          IsCompleted: { $ne: true },
+          IsDeclined: { $ne: true },
+          IsArchive: { $ne: true },
+          $or: [{ Signers: null }, { Signers: { $exists: true }, Placeholders: null }],
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
@@ -28,6 +28,7 @@ export default function reportJson(id, userId) {
           Type: { $ne: 'Folder' },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
+          IsArchive: { $ne: true },
           ExpiryDate: {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
@@ -66,6 +67,7 @@ export default function reportJson(id, userId) {
           Placeholders: { $ne: null },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
+          IsArchive: { $ne: true },
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
@@ -82,7 +84,7 @@ export default function reportJson(id, userId) {
       return {
         reportName: 'Completed Documents',
         params: {
-          Type: null,
+          Type: { $ne: 'Folder' },
           IsCompleted: true,
           CreatedBy: {
             __type: 'Pointer',
@@ -90,6 +92,7 @@ export default function reportJson(id, userId) {
             objectId: currentUserId,
           },
           IsDeclined: { $ne: true },
+          IsArchive: { $ne: true },
         },
         keys: [
           'Name',
@@ -108,6 +111,7 @@ export default function reportJson(id, userId) {
         reportName: 'Declined Documents',
         params: {
           Type: null,
+          IsArchive: { $ne: true },
           IsDeclined: true,
           CreatedBy: {
             __type: 'Pointer',
@@ -125,6 +129,7 @@ export default function reportJson(id, userId) {
         params: {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
+          IsArchive: { $ne: true },
           Type: { $ne: 'Folder' },
           $and: [
             {
@@ -157,6 +162,7 @@ export default function reportJson(id, userId) {
           Placeholders: { $ne: null },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
+          IsArchive: { $ne: true },
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
@@ -176,6 +182,7 @@ export default function reportJson(id, userId) {
           Type: { $ne: 'Folder' },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
+          IsArchive: { $ne: true },
           ExpiryDate: {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
@@ -200,11 +207,11 @@ export default function reportJson(id, userId) {
       return {
         reportName: 'Drafts',
         params: {
-          Type: null,
-          $or: [
-            { Signers: null, SignedUrl: null },
-            { Signers: { $exists: true }, Placeholders: null },
-          ],
+          Type: { $ne: 'Folder' },
+          IsCompleted: { $ne: true },
+          IsDeclined: { $ne: true },
+          IsArchive: { $ne: true },
+          $or: [{ Signers: null }, { Signers: { $exists: true }, Placeholders: null }],
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
@@ -235,6 +242,7 @@ export default function reportJson(id, userId) {
         reportClass: 'contracts_Template',
         params: {
           Type: { $ne: 'Folder' },
+          IsArchive: { $ne: true },
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',

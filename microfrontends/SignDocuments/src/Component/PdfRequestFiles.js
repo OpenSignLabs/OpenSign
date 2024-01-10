@@ -736,7 +736,7 @@ function PdfRequestFiles() {
             <CustomModal
               containerWH={containerWH}
               show={isDecline.isDeclined}
-              headMsg="Document Declined Alert!"
+              headMsg="Document Declined"
               bodyMssg={
                 isDecline.currnt === "Sure" ? (
                   <p className="pTagBody">

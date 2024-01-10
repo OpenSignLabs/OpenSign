@@ -9,6 +9,9 @@ import { themeColor, iconColor } from "../../utils/ThemeColor/backColor";
 import { getDrive } from "../../utils/Utils";
 import AlertComponent from "../component/alertComponent";
 import { useNavigate } from "react-router-dom";
+import Title from "../component/Title";
+import Parse from "parse";
+import ModalUi from "../../premitives/ModalUi";
 
 function PdfFile() {
   const navigate = useNavigate();
@@ -27,7 +30,7 @@ function PdfFile() {
     message: "This might take some time"
   });
   const [docId, setDocId] = useState();
-  const [handleError, setHandleError] = useState();
+  const [handleError, setHandleError] = useState("");
   const [folderName, setFolderName] = useState([]);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isNewFol, setIsNewFol] = useState(false);
@@ -54,15 +57,18 @@ function PdfFile() {
       isLoad: true,
       message: "This might take some time"
     };
+
     setIsLoading(load);
+
     const driveDetails = await getDrive();
     if (driveDetails) {
       if (driveDetails.length > 0) {
         setPdfData(driveDetails);
+        sortApps(null, null, driveDetails);
       }
       const data = [
         {
-          name: "OpenSignDrive™",
+          name: "OpenSign™ Drive",
           objectId: ""
         }
       ];
@@ -90,6 +96,7 @@ function PdfFile() {
     if (driveDetails) {
       if (driveDetails.length > 0) {
         setPdfData(driveDetails);
+        sortApps(null, null, driveDetails);
       } else {
         setPdfData([]);
       }
@@ -111,43 +118,16 @@ function PdfFile() {
     setIsFolder(true);
   };
   //function for handle folder name path
-  const handleRoute = (data) => {
-    let loadObj = {
-      isLoad: true,
-      message: "This might take some time"
-    };
-    if (data.name === "LegaDrive™") {
-      setIsLoading(loadObj);
-      if (docId) {
-        setDocId();
-      } else {
-        setTimeout(() => {
-          const loadObj = {
-            isLoad: false
-          };
-          setIsLoading(loadObj);
-        }, 1000);
+  const handleRoute = (index) => {
+    const updateFolderName = folderName.filter((x, i) => {
+      if (i <= index) {
+        return x;
       }
-    } else if (data.name === folderName[folderName.length - 1].name) {
-      setIsLoading(loadObj);
-      setTimeout(() => {
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
-      }, 1000);
-    } else {
-      const findIndex = folderName.findIndex(
-        (fold) => fold.objectId === data.objectId
-      );
-      const newFolder = folderName.slice(0, findIndex + 1);
+    });
 
-      setFolderName(newFolder);
-      const getLastId = newFolder[newFolder.length - 1];
-
-      setDocId(getLastId.objectId);
-      setIsLoading(loadObj);
-    }
+    setFolderName(updateFolderName);
+    const getLastId = updateFolderName[updateFolderName.length - 1];
+    setDocId(getLastId.objectId);
   };
 
   //function for add new folder name
@@ -156,78 +136,60 @@ function PdfFile() {
     const value = e.target.value;
     setNewFolderName(value);
   };
-  //function for add folder
+  //function for create folder
   const handleAddFolder = async () => {
     if (newFolderName) {
       setIsFolderLoader(true);
-
       const getParentObjId = folderName[folderName.length - 1];
       const parentId = getParentObjId && getParentObjId.objectId;
-      let data;
-      if (parentId) {
-        data = {
-          Name: newFolderName,
-          Type: "Folder",
-          Folder: {
-            __type: "Pointer",
-            className: `${localStorage.getItem("_appName")}_Document`,
-            objectId: parentId
-          },
-          CreatedBy: {
-            __type: "Pointer",
-            className: "_User",
-            objectId: jsonCurrentUser.objectId
-          }
-        };
-      } else {
-        data = {
-          Name: newFolderName,
-          Type: "Folder",
-          CreatedBy: {
-            __type: "Pointer",
-            className: "_User",
-            objectId: jsonCurrentUser.objectId
-          }
-        };
-      }
+      const foldercls = `${localStorage.getItem("_appName")}_Document`;
+      const folderPtr = {
+        __type: "Pointer",
+        className: foldercls,
+        objectId: parentId
+      };
+      const CreatedBy = {
+        __type: "Pointer",
+        className: "_User",
+        objectId: jsonCurrentUser.objectId
+      };
 
-      await axios
-        .post(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}_Document`,
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-            }
-          }
-        )
+      try {
+        const exsitQuery = new Parse.Query(foldercls);
+        exsitQuery.equalTo("Name", newFolderName);
+        exsitQuery.equalTo("Type", "Folder");
+        if (parentId) {
+          exsitQuery.equalTo("Folder", folderPtr);
+        }
+        const templExist = await exsitQuery.first();
+        if (templExist) {
+          setError("Folder already exist!");
+          setIsFolderLoader(false);
+        } else {
+          const template = new Parse.Object(foldercls);
+          template.set("Name", newFolderName);
+          template.set("Type", "Folder");
 
-        .then((Listdata) => {
-          // console.log("Listdata ", Listdata);
-          const json = Listdata.data;
-          // console.log("json ", json);
-          if (json) {
+          if (parentId) {
+            template.set("Folder", folderPtr);
+          }
+          template.set("CreatedBy", CreatedBy);
+          const res = await template.save();
+          if (res) {
+            const result = JSON.parse(JSON.stringify(res));
+
+            setPdfData((prev) => [...prev, result]);
             setNewFolderName();
-
             setIsFolderLoader(false);
             setIsFolder(false);
-            if (docId) {
-              getPdfFolderDocumentList();
-            } else {
-              getPdfDocumentList();
-            }
           }
-        })
-        .catch((err) => {
-          setIsAlert({
-            isShow: true,
-            alertMessage: "something went wrong"
-          });
+        }
+      } catch (e) {
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
         });
+      }
     } else {
       setError("Please fill out this field");
     }
@@ -249,11 +211,11 @@ function PdfFile() {
     }
   };
 
-  const sortApps = () => {
-    const selectedSortType = selectedSort;
-    const sortOrder = sortingOrder;
+  const sortApps = (type, order, driveDetails) => {
+    const selectedSortType = type ? type : selectedSort ? selectedSort : "Date";
+    const sortOrder = order ? order : sortingOrder ? sortingOrder : "Decending";
 
-    let sortingData = pdfData;
+    let sortingData = driveDetails;
     if (selectedSortType === "Name") {
       sortingApp(sortingData, "Name", sortOrder);
     } else if (selectedSortType === "Date") {
@@ -315,9 +277,9 @@ function PdfFile() {
   useEffect(() => {
     const closeMenuOnOutsideClick = (e) => {
       if (isShowSort && !e.target.closest("#menu-container")) {
-        setIsShowSort(false);
+        setIsShowSort(!isShowSort);
       } else if (isNewFol && !e.target.closest("#folder-menu")) {
-        setIsNewFol(false);
+        setIsNewFol(!isNewFol);
       }
     };
 
@@ -327,33 +289,56 @@ function PdfFile() {
       // Cleanup the event listener when the component unmounts
       document.removeEventListener("click", closeMenuOnOutsideClick);
     };
-  }, [isShowSort]);
+  }, [isShowSort || isNewFol]);
 
+  const handleFolderTab = (folderData, isMove) => {
+    return folderData.map((data, id) => {
+      return (
+        <React.Fragment key={id}>
+          <span
+            onClick={() => handleRoute(id)}
+            style={{
+              color: "#a64b4e",
+              fontWeight: "400",
+              cursor: "pointer"
+            }}
+          >
+            {data.name}
+            <span
+              style={{
+                color: "#a64b4e",
+                fontWeight: "200",
+                cursor: "pointer",
+                margin: "0 4px"
+              }}
+            >
+              &gt;
+            </span>
+          </span>
+        </React.Fragment>
+      );
+    });
+  };
+  const oncloseFolder = () => {
+    setIsFolder(false);
+    setNewFolderName("");
+    setError("");
+  };
   return (
     <div className="folderComponent ">
+      <Title title={"OpenSign™ Drive"} drive={true} />
       <div>
         <AlertComponent
           isShow={isAlert.isShow}
           alertMessage={isAlert.alertMessage}
           setIsAlert={setIsAlert}
         />
-        <Modal show={isFolder}>
-          <ModalHeader style={{ background: themeColor() }}>
-            <span style={{ color: "white" }}>Add New Folder</span>
-            {!folderLoader && (
-              <span
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  setNewFolderName("");
-                  setIsFolder(false);
-                }}
-              >
-                X
-              </span>
-            )}
-          </ModalHeader>
-
-          <Modal.Body>
+        <ModalUi
+          isOpen={isFolder}
+          title={"Add New Folder"}
+          handleClose={oncloseFolder}
+        >
+          <div style={{ height: "100%", padding: 20 }}>
             {folderLoader ? (
               <div
                 style={{
@@ -374,7 +359,13 @@ function PdfFile() {
                 </span>
               </div>
             ) : (
-              <form style={{ display: "flex", flexDirection: "column" }}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAddFolder();
+                }}
+                style={{ display: "flex", flexDirection: "column" }}
+              >
                 <label
                   style={{
                     margin: "10px 0px 10px 0px",
@@ -393,46 +384,45 @@ function PdfFile() {
                   onChange={(e) => handleFolderName(e)}
                   // className="addFolderInput"
                 />
-                <span style={{ color: "red", fontSize: "12px" }}>{error}</span>
-
+                <span
+                  style={{ color: "red", fontSize: "12px", marginTop: "6px" }}
+                >
+                  {error}
+                </span>
                 <div
                   style={{
-                    margin: "20px 10px 10px 10px ",
-                    display: "flex",
-                    alignItems: "flex-end",
-                    justifyContent: "flex-end",
-                    alignContent: "flex-end"
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
                   }}
-                >
+                ></div>
+                <div style={{ display: "flex", flexDirection: "row" }}>
                   <button
-                    type="submit"
-                    style={{
-                      borderRadius: "0px",
-                      border: "1.5px solid #e3e2e1",
-                      fontWeight: "600",
-                      color: "black"
-                    }}
-                    className="finishBtn"
-                    onClick={() => setIsFolder(false)}
-                  >
-                    Close
-                  </button>
-
-                  <button
-                    onClick={() => handleAddFolder()}
                     style={{
                       background: themeColor()
                     }}
-                    type="button"
+                    type="submit"
                     className="finishBtn"
                   >
                     Add
                   </button>
+                  <button
+                    style={{
+                      color: "black"
+                    }}
+                    type="button"
+                    className="finishBtn"
+                    onClick={oncloseFolder}
+                  >
+                    Close
+                  </button>
                 </div>
               </form>
             )}
-          </Modal.Body>
-        </Modal>
+          </div>
+        </ModalUi>
 
         {isLoading.isLoad ? (
           <div
@@ -479,31 +469,7 @@ function PdfFile() {
                 }}
                 className="folderPath"
               >
-                {folderName.map((data, id) => {
-                  return (
-                    <span
-                      key={id}
-                      onClick={() => handleRoute(data)}
-                      style={{
-                        color: "#a64b4e",
-                        fontWeight: "400",
-                        cursor: "pointer"
-                      }}
-                    >
-                      {data.name}
-                      <span
-                        style={{
-                          color: "#a64b4e",
-                          fontWeight: "200",
-                          cursor: "pointer",
-                          margin: "0 4px"
-                        }}
-                      >
-                        &gt;
-                      </span>
-                    </span>
-                  );
-                })}
+                {handleFolderTab(folderName)}
               </div>
               <div className="dropMenuBD">
                 <div
@@ -603,7 +569,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSelectedSort("Name");
-                        sortApps();
+                        sortApps("Name", null, pdfData);
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -625,7 +591,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSelectedSort("Date");
-                        sortApps();
+                        sortApps("Date", null, pdfData);
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -648,7 +614,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSortingOrder("Accending");
-                        sortApps();
+                        sortApps(null, "Accending", pdfData);
                       }}
                       className="dropdown-item itemColor"
                     >
@@ -670,7 +636,7 @@ function PdfFile() {
                     <span
                       onClick={() => {
                         setSortingOrder("Decending");
-                        sortApps();
+                        sortApps(null, "Decending", pdfData);
                       }}
                       className="dropdown-item itemColor"
                     >
