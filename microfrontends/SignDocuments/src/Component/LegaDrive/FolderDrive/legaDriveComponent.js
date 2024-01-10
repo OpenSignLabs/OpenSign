@@ -134,8 +134,9 @@ function PdfFileComponent({
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
     } //placeholder draft document
     else if (
-      (signerExist?.length > 0 && !isPlaceholder) ||
-      (!signerExist && isPlaceholder?.length > 0)
+      (signerExist?.length > 0 &&
+        (!isPlaceholder || isPlaceholder?.length === 0)) ||
+      ((!signerExist || signerExist?.length === 0) && isPlaceholder?.length > 0)
     ) {
       navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
