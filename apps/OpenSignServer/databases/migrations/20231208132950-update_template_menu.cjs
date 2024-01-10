@@ -59,7 +59,7 @@ exports.up = async Parse => {
     },
     {
       icon: 'fas fa-folder',
-      title: 'OpenSignDrive™',
+      title: 'OpenSign™ Drive',
       target: '_self',
       pageType: 'mf',
       description: '',
@@ -205,6 +205,15 @@ exports.up = async Parse => {
       pageType: 'report',
       description: '',
       objectId: '6TeaPr321t',
+    },
+    {
+      icon: 'fas fa-folder',
+      title: 'OpenSign™ Drive',
+      target: '_self',
+      pageType: 'mf',
+      description: '',
+      objectId:
+        'remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/legadrive',
     },
     {
       icon: 'fas fa-address-card',
