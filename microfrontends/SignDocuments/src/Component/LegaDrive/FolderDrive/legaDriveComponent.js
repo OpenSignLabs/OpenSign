@@ -333,7 +333,9 @@ function PdfFileComponent({
     return listType === "table" ? (
       data.Type === "Folder" ? (
         <tr onClick={() => handleOnclikFolder(data)}>
-          <td>
+          <td
+            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+          >
             <i
               className="fa fa-folder"
               aria-hidden="true"
@@ -351,7 +353,9 @@ function PdfFileComponent({
         </tr>
       ) : data.Type === "AIDoc" ? (
         <tr onClick={() => handleDraftDoc(data)}>
-          <td>
+          <td
+            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+          >
             <i
               className="fa fa-file-text"
               style={{ color: "#0ea3ed", marginRight: "8px", fontSize: "26px" }}
@@ -368,7 +372,9 @@ function PdfFileComponent({
         </tr>
       ) : (
         <tr onClick={() => checkPdfStatus(data)}>
-          <td>
+          <td
+            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+          >
             <i
               className="fa fa-file-pdf"
               style={{ color: "#ed4d0e", marginRight: "8px", fontSize: "26px" }}
