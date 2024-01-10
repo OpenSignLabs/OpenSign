@@ -111,60 +111,33 @@ function PdfFileComponent({
   //function for navigate user to microapp-signature component
   const checkPdfStatus = async (data) => {
     const hostUrl = getHostUrl();
-    const expireDate = data.ExpiryDate.iso;
-    const expireUpdateDate = new Date(expireDate).getTime();
-    const currDate = new Date().getTime();
+
     const signerExist = data.Signers && data.Signers;
-    const signUrl = data.SignedUrl && data.SignedUrl;
     const isDecline = data.IsDeclined && data.IsDeclined;
     const isPlaceholder = data.Placeholders && data.Placeholders;
-    let isExpire = false;
-    if (currDate > expireUpdateDate) {
-      isExpire = true;
-    }
 
-    //checking if document has completed
+    //checking if document has completed and request signature flow
     if (data?.IsCompleted && signerExist?.length > 0) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
-
-      // window.location.hash = `/pdfRequestFiles/${data.objectId}`;
-    } else if (data?.IsCompleted && signerExist?.length === 0) {
+    }
+    //checking if document has completed and signyour-self flow
+    else if (!signerExist && !isPlaceholder) {
       navigate(`${hostUrl}signaturePdf/${data.objectId}`);
     }
     //checking if document has declined by someone
     else if (isDecline) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
       //checking draft type document
-    } else if (
-      (isExpire || !isExpire) &&
-      !signerExist &&
-      !isPlaceholder &&
-      !signUrl
-    ) {
-      navigate(`${hostUrl}signaturePdf/${data.objectId}`);
-    } else if (
-      (isExpire || !isExpire) &&
-      isPlaceholder &&
-      signerExist?.length > 0
-    ) {
-      navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
-    } else if (
-      (isExpire || !isExpire) &&
-      signerExist?.length > 0 &&
-      !isPlaceholder
-    ) {
-      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
-      //checking draft type document
-    } else if (
-      (isExpire || !isExpire) &&
-      signerExist?.length === 0 &&
-      isPlaceholder
-    ) {
-      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
-    //checking document is draft and signyourself type then user can sign document
-    else {
-      navigate(`${hostUrl}signaturePdf/${data.objectId}`);
+    //Inprogress document
+    else if (isPlaceholder?.length > 0 && signerExist?.length > 0) {
+      navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
+    } //placeholder draft document
+    else if (
+      (signerExist?.length > 0 && !isPlaceholder) ||
+      (!signerExist && isPlaceholder?.length > 0)
+    ) {
+      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
   };
 
@@ -329,29 +302,15 @@ function PdfFileComponent({
         status = "Completed";
       } else if (isDecline) {
         status = "Declined";
-      } else if (
-        !isExpire &&
-        isPlaceholder?.length === 0 &&
-        signerExist?.length > 0
-      ) {
+      } else if (!signerExist || signerExist?.length === 0) {
         status = "Draft";
       } else if (
-        !isExpire &&
-        isPlaceholder?.length > 0 &&
-        signerExist?.length === 0
-      ) {
-        status = "Draft";
-      } else if (
-        !isExpire &&
-        isPlaceholder?.length === 0 &&
         signerExist?.length > 0 &&
-        !signUrl
+        (!isPlaceholder || isPlaceholder?.length === 0)
       ) {
         status = "Draft";
       } else if (isExpire) {
         status = "Expired";
-      } else if (!signUrl) {
-        status = "Draft";
       } else {
         status = "In Progress";
       }

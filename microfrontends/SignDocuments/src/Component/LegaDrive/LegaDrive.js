@@ -294,7 +294,7 @@ function PdfFile() {
   const handleFolderTab = (folderData, isMove) => {
     return folderData.map((data, id) => {
       return (
-        <React.Fragment>
+        <React.Fragment key={id}>
           <span
             onClick={() => handleRoute(id)}
             style={{
