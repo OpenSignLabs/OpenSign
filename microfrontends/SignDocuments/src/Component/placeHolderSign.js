@@ -726,13 +726,9 @@ function PlaceHolderSign() {
         : 15;
       const currentUser = signersdata.find((x) => x.Email === currentId);
       setCurrentId(currentUser?.objectId);
-      const expiryTime = new Date(expireDate).getTime();
-      const currDate = new Date().getTime();
       let updateExpiryDate, data;
-      if (currDate > expiryTime) {
-        updateExpiryDate = new Date(expireDate);
-        updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
-      }
+      updateExpiryDate = new Date();
+      updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
 
       try {
         if (updateExpiryDate) {
