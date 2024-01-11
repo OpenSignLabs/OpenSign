@@ -14,7 +14,7 @@ export const formJson = (id) => {
             type: "string",
             title: "Select Document",
             filetypes: [],
-            maxfilesizeKB: "5000",
+            maxfilesizeKB: "10000",
             uploadtype: "regular",
             helpbody: "",
             helplink: ""
@@ -113,7 +113,7 @@ export const formJson = (id) => {
     });
     formData = {
       jsonSchema: {
-        title: "New Document",
+        title: "Request signatures",
         description: "",
         type: "object",
         required: ["URL", "Name", "Note", "TimeToCompleteDays", "Signers"],
@@ -147,7 +147,7 @@ export const formJson = (id) => {
               class: "contracts_Contactbook",
               displayKey: "Name",
               valueKey: "objectId",
-              query: `where={"CreatedBy":${userPtr}}&keys=Name`,
+              query: `where={"CreatedBy":${userPtr},"IsDeleted":{"$ne":true}}&keys=Name`,
               isPointer: true,
               helpbody: "",
               helplink: "",
@@ -582,4 +582,3 @@ export const formJson = (id) => {
     return formData;
   }
 };
-

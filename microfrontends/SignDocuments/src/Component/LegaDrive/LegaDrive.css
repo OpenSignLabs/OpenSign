@@ -6,12 +6,13 @@
 
 .ContextMenuContent,
 .ContextMenuSubContent {
-  min-width: 150px;
+  min-width: 135px;
   background-color: white;
   border-radius: 6px;
   overflow: hidden;
   padding: 5px;
   box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+  z-index: 99;
 }
 
 .ContextMenuItem,
@@ -27,7 +28,7 @@
   height: 25px;
   padding: 0 5px;
   position: relative;
-  padding-left: 25px;
+  padding-left: 15px;
   user-select: none;
   outline: none;
 }
@@ -84,13 +85,9 @@
   color: var(--mauve-8);
 }
 
-
 .dropdown-menu {
-
   min-width: 10rem;
-
 }
-
 
 .dropdown-item {
   display: block;
@@ -103,20 +100,17 @@
   white-space: nowrap;
   background-color: transparent;
   border: 0;
+  cursor: pointer;
 }
-
 
 .dropdown-item:hover {
   background-color: #dad9db;
   color: var(--violet-11);
-
 }
 
 .itemColor {
   font-size: 13px !important;
 }
-
-
 
 .folderComponent {
   margin: 30px;
@@ -402,6 +396,7 @@ a {
   will-change: transform, opacity;
   text-align: center;
   align-items: center;
+ 
 }
 
 .HoverCardContent[data-side='top'] {
@@ -490,41 +485,74 @@ a {
   display: none;
 }
 
- .folderPath{
+.folderPath {
   overflow-x: auto;
   white-space: nowrap;
 
   cursor: pointer;
   user-select: none;
- }
- .folderPath::-webkit-scrollbar {
+}
+
+.folderPath::-webkit-scrollbar {
   display: none;
   /* for Chrome, Safari, and Opera */
 }
 
+.docDeleteBtn {
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18); */
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  padding: 7px 17px;
+  color: white;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  border: none;
+  border-radius: 2px;
+}
+
+.docDeleteBtn:focus {
+  border: none;
+  outline: none;
+}
+
+.docDeleteBtn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+  color: white;
+}
+
+@media screen and (max-width:766px) {
+  .itemColor {
+    font-size: 10px !important;
+  }
+
+}
+
 @media (min-width: 310px) and (max-width:550px) {
-  
+
   .pdfContainer {
     justify-content: space-around;
   }
+
   .sort {
-padding: 2px;
+    padding: 2px;
   }
-  .folderComponent{
+
+  .folderComponent {
     margin: 10px;
   }
-  
+
 }
 
-@media screen and  (max-width:309px) {
- 
+@media screen and (max-width:309px) {
+
   .pdfContainer {
     justify-content: center;
   }
+
   .sort {
     padding: 2px;
-      }
-      .folderComponent{
-        margin: 10px;
-      }
+  }
+
+  .folderComponent {
+    margin: 10px;
+  }
 }

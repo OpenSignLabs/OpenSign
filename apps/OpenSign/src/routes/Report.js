@@ -15,6 +15,7 @@ const Report = () => {
   const [heading, setHeading] = useState([]);
   const [isNextRecord, setIsNextRecord] = useState(false);
   const [isMoreDocs, setIsMoreDocs] = useState(true);
+  const [form, setForm]= useState("")
   const abortController = new AbortController();
   const docPerPage = 10;
 
@@ -50,6 +51,7 @@ const Report = () => {
       setActions(json.actions);
       setHeading(json.heading);
       setReportName(json.reportName);
+      setForm(json.form)
       Parse.serverURL = localStorage.getItem("BaseUrl12");
       Parse.initialize(localStorage.getItem("AppID12"));
       const currentUser = Parse.User.current().id;
@@ -154,6 +156,7 @@ const Report = () => {
               setIsNextRecord={setIsNextRecord}
               isMoreDocs={isMoreDocs}
               docPerPage={docPerPage}
+              form={form}
             />
           ) : (
             <div className="flex items-center justify-center h-screen w-full bg-white rounded">

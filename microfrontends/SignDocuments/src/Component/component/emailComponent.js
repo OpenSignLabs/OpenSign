@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { saveAs } from "file-saver";
 import celebration from "../../assests/newCeleb.gif";
-import close from "../../assests/close.png";
 import Modal from "react-bootstrap/Modal";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import axios from "axios";
@@ -16,18 +15,18 @@ function EmailComponent({
   isCeleb,
   setIsEmail,
   setSuccessEmail,
-  signObjId,
   pdfName,
-  sender
+  sender,
+  setIsAlert
 }) {
-  const [emailCount, setEmailCount] = useState([]);
+  const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState();
   const [isLoading, setIsLoading] = useState(false);
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
     let sendMail;
-    for (let i = 0; i < emailCount.length; i++) {
+    for (let i = 0; i < emailList.length; i++) {
       try {
         const imgPng =
           "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
@@ -39,12 +38,12 @@ function EmailComponent({
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           sessionToken: localStorage.getItem("accesstoken")
         };
-
+        const openSignUrl = "https://www.opensignlabs.com/contact-us";
         const themeBGcolor = themeColor();
         let params = {
           pdfName: pdfName,
           url: pdfUrl,
-          recipient: emailCount[i],
+          recipient: emailList[i],
           subject: `${sender.name} has signed the doc - ${pdfName}`,
           from: sender.email,
           html:
@@ -52,39 +51,57 @@ function EmailComponent({
             imgPng +
             "  height='50' style='padding:20px,width:170px,height:40px'/> </div><div style='padding:2px;font-family:system-ui; background-color:" +
             themeBGcolor +
-            ";'>    <p style='font-size:20px;font-weight:400;color:white;padding-left:20px',>  Document Copy</p></div><div><p style='padding:20px;font-family:system-ui;font-size:14px'>A copy of the document " +
+            ";'>    <p style='font-size:20px;font-weight:400;color:white;padding-left:20px',>  Document Copy</p></div><div><p style='padding:20px;font-family:system-ui;font-size:14px'>A copy of the document <strong>" +
             pdfName +
-            " Standard is attached to this email. Kindly download the document from the attachment.</p></div> </div><div><p>This is an automated email from Open Sign. For any queries regarding this email, please contact the sender " +
+            " </strong>is attached to this email. Kindly download the document from the attachment.</p></div> </div><div><p>This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
             sender.email +
-            " directly. If you think this email is inappropriate or spam, you may file a complaint with Open Sign here.</p></div></div></body></html>"
+            " directly. If you think this email is inappropriate or spam, you may file a complaint with OpenSign™  <a href= " +
+            openSignUrl +
+            " target=_blank>here</a> </p></div></div></body></html>"
         };
         sendMail = await axios.post(url, params, { headers: headers });
       } catch (error) {
         console.log("error", error);
         setIsLoading(false);
-        alert("Something went wrong!");
+        setIsEmail(false);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
       }
     }
 
-    if (sendMail.data.result.status === "success") {
-      setIsEmail(false);
+    if (sendMail && sendMail.data.result.status === "success") {
       setSuccessEmail(true);
       setTimeout(() => {
         setSuccessEmail(false);
-      }, 3000);
+        setIsEmail(false);
+        setEmailValue("");
+        setEmailList([]);
+      }, 1500);
+
       setIsLoading(false);
-    } else if (sendMail.data.result.status === "error") {
+    } else if (sendMail && sendMail.data.result.status === "error") {
       setIsLoading(false);
-      alert("Something went wrong!");
+      setIsEmail(false);
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong"
+      });
     } else {
       setIsLoading(false);
-      alert("Something went wrong!");
+      setIsEmail(false);
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong"
+      });
     }
   };
+
   //function for remove email
   const removeChip = (index) => {
-    const updateEmailCount = emailCount.filter((data, key) => key !== index);
-    setEmailCount(updateEmailCount);
+    const updateEmailCount = emailList.filter((data, key) => key !== index);
+    setEmailList(updateEmailCount);
   };
   //function for get email value
   const handleEmailValue = (e) => {
@@ -95,10 +112,10 @@ function EmailComponent({
   //function for save email in array after press enter
   const handleEnterPress = (e) => {
     if (e.key === "Enter" && emailValue) {
-      setEmailCount((prev) => [...prev, emailValue]);
+      setEmailList((prev) => [...prev, emailValue]);
       setEmailValue("");
     } else if (e === "add" && emailValue) {
-      setEmailCount((prev) => [...prev, emailValue]);
+      setEmailList((prev) => [...prev, emailValue]);
       setEmailValue("");
     }
   };
@@ -249,7 +266,7 @@ function EmailComponent({
           >
             Recipients added here will get a copy of the signed document.
           </p>
-          {emailCount.length > 0 ? (
+          {emailList.length > 0 ? (
             <>
               <div className="addEmail">
                 <div
@@ -260,7 +277,7 @@ function EmailComponent({
                     flexWrap: "wrap"
                   }}
                 >
-                  {emailCount.map((data, ind) => {
+                  {emailList.map((data, ind) => {
                     return (
                       <div
                         className="emailChip"
@@ -279,21 +296,23 @@ function EmailComponent({
                         >
                           {data}
                         </span>
-
-                        <img
-                          alt="print img"
+                        <span
+                          style={{
+                            color: "white",
+                            fontSize: 13,
+                            fontWeight: 600,
+                            marginLeft: 7,
+                            cursor: "pointer"
+                          }}
                           onClick={() => removeChip(ind)}
-                          src={close}
-                          width={10}
-                          height={10}
-                          style={{ fontWeight: "600", marginLeft: "7px" }}
-                          className="emailChipClose"
-                        />
+                        >
+                          <i className="fa-solid fa-xmark"></i>
+                        </span>
                       </div>
                     );
                   })}
                 </div>
-                {emailCount.length <= 9 && (
+                {emailList.length <= 9 && (
                   <input
                     type="text"
                     value={emailValue}
@@ -363,18 +382,22 @@ function EmailComponent({
             }}
             type="button"
             className="finishBtn"
-            onClick={() => setIsEmail(false)}
+            onClick={() => {
+              setIsEmail(false);
+              setEmailValue("");
+              setEmailList([]);
+            }}
           >
             Close
           </button>
           <button
-            disabled={emailCount.length === 0 && true}
+            disabled={emailList.length === 0 && true}
             style={{
               background: themeColor(),
               color: "white"
             }}
             type="button"
-            className={emailCount.length === 0 ? "defaultBtn" : "finishBtn"}
+            className={emailList.length === 0 ? "defaultBtn" : "finishBtn"}
             onClick={() => sendEmail()}
           >
             Send

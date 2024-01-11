@@ -103,7 +103,12 @@ function Login() {
           setLoading(false);
         } else {
           let _user = user.data.result;
+          const parseId = localStorage.getItem("parseAppId");
           localStorage.setItem("UserInformation", JSON.stringify(_user));
+          localStorage.setItem(
+            `Parse/${parseId}/currentUser`,
+            JSON.stringify(_user)
+          );
           localStorage.setItem("username", _user.name);
           localStorage.setItem("accesstoken", _user.sessionToken);
           //save isGuestSigner true in local to handle login flow header in mobile view

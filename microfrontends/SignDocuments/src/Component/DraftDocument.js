@@ -47,65 +47,34 @@ function DraftDocument() {
   //check document type and render on signyour self and placeholder route
   const handleDraftDoc = () => {
     const data = pdfDetails[0];
-    const checkSignerExist =
-      pdfDetails[0] && pdfDetails[0].Signers && pdfDetails[0].Signers;
-    const isPlaceholder =
-      pdfDetails[0].Placeholders && pdfDetails[0].Placeholders;
-    const isDecline = data.IsDeclined && data.IsDeclined;
-    const signUrl = data.SignedUrl && data.SignedUrl;
-    const expireDate =
-      pdfDetails[0] &&
-      pdfDetails[0].ExpiryDate.iso &&
-      pdfDetails[0].ExpiryDate.iso;
-    const expireUpdateDate = new Date(expireDate).getTime();
-    const currDate = new Date().getTime();
     const hostUrl = getHostUrl();
+    const signerExist = data.Signers && data.Signers;
+    const isDecline = data.IsDeclined && data.IsDeclined;
+    const isPlaceholder = data.Placeholders && data.Placeholders;
 
-    //checking document is completed and signer exist then navigate to pdfRequestFiles file
-    if (data.IsCompleted && checkSignerExist) {
-      navigate(`${hostUrl}pdfRequestFiles`);
+    //checking if document has completed and request signature flow
+    if (data?.IsCompleted && signerExist?.length > 0) {
+      navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
     }
-    //checking document is completed and signer does not exist then navigate to recipientSignPdf file
-    else if (data.IsCompleted && !checkSignerExist) {
-      navigate(`${hostUrl}signaturePdf`);
+    //checking if document has completed and signyour-self flow
+    else if (!signerExist && !isPlaceholder) {
+      navigate(`${hostUrl}signaturePdf/${data.objectId}`);
     }
-    //checking document is declined by someone then navigate to pdfRequestFiles file
+    //checking if document has declined by someone
     else if (isDecline) {
-      navigate(`${hostUrl}pdfRequestFiles`);
+      navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
+      //checking draft type document
     }
-    //checking document has expired and signers exist and placeholder does not set yet then navigate to pdfRequestFiles file
-    //draft type request sign document
+    //Inprogress document
+    else if (isPlaceholder?.length > 0 && signerExist?.length > 0) {
+      navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
+    } //placeholder draft document
     else if (
-      currDate > expireUpdateDate &&
-      checkSignerExist &&
-      !isPlaceholder
+      (signerExist?.length > 0 &&
+        (!isPlaceholder || isPlaceholder?.length === 0)) ||
+      ((!signerExist || signerExist?.length === 0) && isPlaceholder?.length > 0)
     ) {
-      navigate(`${hostUrl}placeHolderSign`);
-    }
-    //checking document has expired and signers does not exist and document not signed yet then navigate to pdfRequestFiles file
-    //draft type signyouselfdocument
-    else if (
-      currDate > expireUpdateDate &&
-      !checkSignerExist &&
-      !isPlaceholder &&
-      !signUrl
-    ) {
-      // window.location.hash = `/signaturePdf`;
-      navigate(`${hostUrl}signaturePdf`);
-    }
-    //checking document has expired and signers exist and document then navigate to pdfRequestFiles file
-    else if (currDate > expireUpdateDate) {
-      // window.location.hash = `/pdfRequestFiles`;
-      navigate(`${hostUrl}pdfRequestFiles`);
-    }
-    //checking document has expired not been expired yet and signers exist and placeholder does not set yet then navigate to pdfRequestFiles file
-    //draft type request sign document
-    else if (!signUrl && checkSignerExist) {
-      navigate(`${hostUrl}placeHolderSign`);
-      // window.location.hash = `/placeHolderSign`;
-    } else {
-      // window.location.hash = `/signaturePdf/`;
-      navigate(`${hostUrl}signaturePdf`);
+      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
   };
 

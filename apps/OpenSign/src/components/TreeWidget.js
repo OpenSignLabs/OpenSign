@@ -5,7 +5,7 @@ import Parse from "parse";
 import axios from "axios";
 import "../styles/spinner.css";
 import TreeFormComponent from "./TreeFormComponent";
-import TreeEditForm from "./TreeEditForm";
+// import TreeEditForm from "./TreeEditForm";
 import "../styles/modal.css";
 import Modal from "react-modal";
 
@@ -22,7 +22,7 @@ const TreeWidget = (props) => {
   const [schemaState, setSchemaState] = useState({});
   const [TabURL, setTabURL] = useState("");
   const [editable, setEditable] = useState(false);
-  const [editId, setEditId] = useState("");
+  // const [editId, setEditId] = useState("");
   const [defaultState, setDefaultState] = useState(false);
   const [isShowModal, setIsShowModal] = useState(false);
   const selectFolderHandle = async () => {
@@ -472,6 +472,8 @@ const TreeWidget = (props) => {
         props.schema.data.FolderTypeField,
         props.schema.data.FolderTypeValue
       );
+      const currentUser = Parse.User.current();
+      folder.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
       if (tabList.length > 0) {
         let len = tabList.length - 1;
         folder.set(props.schema.data.ParentFolderField, {
@@ -698,7 +700,7 @@ const TreeWidget = (props) => {
                 ))}
               <hr />
             </div>
-            {editable && (
+            {/* {editable && (
               <TreeEditForm
                 FormId={props.schema.data.FormId}
                 objectId={editId}
@@ -707,7 +709,7 @@ const TreeWidget = (props) => {
                   selectFolderHandle();
                 }}
               />
-            )}
+            )} */}
             {isAddField && !loader && !editable && (
               <TreeFormComponent
                 Id={props.schema.data.FormId}
@@ -795,7 +797,7 @@ const TreeWidget = (props) => {
                               </a>
                             </div>
 
-                            {fldr[props.schema.data.FolderTypeField] ===
+                            {/* {fldr[props.schema.data.FolderTypeField] ===
                               props.schema.data.FolderTypeValue && (
                               <a
                                 className="float-right"
@@ -815,7 +817,7 @@ const TreeWidget = (props) => {
                                   aria-hidden="true"
                                 ></i>
                               </a>
-                            )}
+                            )} */}
                           </li>
                         )
                     )}
