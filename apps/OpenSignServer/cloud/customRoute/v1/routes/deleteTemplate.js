@@ -16,8 +16,8 @@ export default async function deletedTemplate(request, response) {
       template.equalTo('CreatedBy', userId);
       const res = await template.first({ useMasterKey: true });
       if (res) {
-        const isDeleted = res.get('IsArchive');
-        if (isDeleted && isDeleted) {
+        const isArchive = res.get('IsArchive');
+        if (isArchive && isArchive) {
           return response.json({ code: 404, message: 'Record not found!' });
         } else {
           const template = Parse.Object.extend('contracts_Template');
