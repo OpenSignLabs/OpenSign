@@ -323,56 +323,73 @@ paths:
     post:
       tags:
       - templates
-      summary: Place an order for a pet
-      description: Place a new order in the store
-      operationId: placeOrder
+      summary: Template Creation API
+      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template."
+      operationId: createtemplate
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Order'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Order'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Order'
+              $ref: '#/components/schemas/createtemplate'
+      responses:
+        "200":
+          description: Template created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createTemplateResponse'
+        "404":
+          description: Invalid API Token!
+  /template/{template_id}:
+    get:
+      tags:
+      - templates
+      summary: Get template by ID
+      description: ""
+      operationId: getTemplate
+      parameters:
+      - name: template_id
+        in: path
+        description: ID of template that needs to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: strng
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        "405":
-          description: Invalid input
-  /template/{template_id}:
-    get:
+                $ref: '#/components/schemas/createtemplate'
+        "400":
+          description: Template not found!
+        "404":
+          description: Invalid API Token!'
+    put:
       tags:
       - templates
-      summary: Find purchase order by ID
-      description: For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.
-      operationId: getOrderById
+      summary: update template by ID
+      operationId: updateTemplate
       parameters:
       - name: template_id
         in: path
-        description: ID of order that needs to be fetched
+        description: ID of the order that needs to be updated
         required: true
         style: simple
         explode: false
         schema:
           type: integer
           format: int64
+      requestBody:
+        description: provide below parameter to update templates (at least one parameter required)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/template_template_id_body'
       responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Order'
         "400":
           description: Invalid ID supplied
         "404":
@@ -380,13 +397,12 @@ paths:
     delete:
       tags:
       - templates
-      summary: Delete purchase order by ID
-      description: For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
-      operationId: deleteOrder
+      summary: Delete template by ID
+      operationId: deleteTemplate
       parameters:
       - name: template_id
         in: path
-        description: ID of the order that needs to be deleted
+        description: ID of the template that needs to be deleted
         required: true
         style: simple
         explode: false
@@ -402,63 +418,114 @@ paths:
     post:
       tags:
       - templates
-      summary: Create user
-      description: This can only be done by the logged in user.
-      operationId: createUser
+      summary: Get template list
+      operationId: templateList
       requestBody:
-        description: Created user object
+        description: provide below parameter to get number of templates
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/listbody'
       responses:
         default:
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/template'
 components:
   schemas:
-    Order:
+    createtemplate:
+      type: object
+      properties:
+        Name:
+          type: string
+          format: string
+          example: sample template
+        Note:
+          type: string
+          format: string
+          example: Please review and sign this document
+        Description:
+          type: string
+          format: string
+          example: template description
+        URL:
+          type: string
+          format: string
+          example: https://yourimage.com
+        signers:
+          type: array
+          example:
+          - joe@gmail.com
+          - john@gmail.com
+          xml:
+            name: signers
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/signers'
+        folderId:
+          type: string
+          format: string
+          example: xjsba1GaxP
+      xml:
+        name: createtemplate
+    createTemplateResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+    template:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
-          example: 10
-        petId:
-          type: integer
-          format: int64
-          example: 198772
-        quantity:
+          type: string
+          format: string
+          example: x1Hbnms2Pg
+        URL:
+          type: string
+          example: https://templateuser.com
+        Name:
+          type: string
+          example: sample template
+        Note:
+          type: string
+          example: template note
+        Description:
+          type: string
+          example: template name
+        Folder:
+          type: string
+          example: folder name
+        Signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers'
+        CreateBy:
+          type: string
+          example: template creator name
+      xml:
+        name: template
+    listbody:
+      type: object
+      properties:
+        limit:
           type: integer
           format: int32
-          example: 7
-        shipDate:
-          type: string
-          format: date-time
-        status:
-          type: string
-          description: Order Status
-          example: approved
-          enum:
-          - placed
-          - approved
-          - delivered
-        complete:
-          type: boolean
+          example: 10
+        skip:
+          type: integer
+          format: int32
+          example: 0
       xml:
-        name: order
+        name: listbody
     Customer:
       type: object
       properties:
@@ -475,26 +542,14 @@ components:
             name: addresses
             wrapped: true
           items:
-            $ref: '#/components/schemas/Address'
+            $ref: '#/components/schemas/signers'
       xml:
         name: customer
-    Address:
-      type: object
-      properties:
-        street:
-          type: string
-          example: 437 Lytton
-        city:
-          type: string
-          example: Palo Alto
-        state:
-          type: string
-          example: CA
-        zip:
-          type: string
-          example: "94301"
+    signers:
+      type: string
+      example: joe@example.com
       xml:
-        name: address
+        name: signers
     Category:
       type: object
       properties:
@@ -599,6 +654,34 @@ components:
           type: string
       xml:
         name: '##default'
+    template_template_id_body:
+      type: object
+      properties:
+        Name:
+          type: string
+          format: string
+          example: sample template
+        Note:
+          type: string
+          format: string
+          example: Please review and sign this document
+        Description:
+          type: string
+          format: string
+          example: template description
+        FolderId:
+          type: string
+          format: string
+          example: xjsba1GaxP
+    template_Signers:
+      type: object
+      properties:
+        objectId:
+          type: integer
+          format: int64
+        Name:
+          type: string
+          example: joe
   requestBodies:
     Pet:
       description: Pet object that needs to be added to the store
@@ -620,5 +703,5 @@ components:
   securitySchemes:
     api_key:
       type: apiKey
-      name: X-Parse-ApiKey
+      name: x-api-token
       in: header
