@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap');
+
 .signatureCanvas {
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
@@ -185,6 +186,7 @@
   z-index: 2;
   background: white;
 }
+
 .signCopy {
   position: absolute;
   right: 12px;
@@ -204,16 +206,19 @@
   z-index: 2;
   background: white;
 }
+
 .ScrollbarsCustom-Track {
   width: 4px !important;
 }
+
 .signYourselfBlock {
   padding: 0px;
- display: flex !important;
+  display: flex !important;
   text-align: center !important;
   justify-content: center !important;
   align-items: center !important;
 }
+
 .finishBtn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
   padding: 3px 30px;
@@ -276,6 +281,14 @@
   margin-left: 10px;
 }
 
+.backBtn {
+  background-color: white;
+}
+
+.backBtn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
 .defaultBtn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
   padding: 3px 26px;
@@ -285,14 +298,7 @@
   border: 1px solid gray;
   border-radius: 2px;
   margin-left: 10px;
-}
-
-.backBtn {
-  background-color: white;
-}
-
-.backBtn:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
+  border: "none";
 }
 
 .defaultBtn:focus {
@@ -443,7 +449,7 @@
   width: 180px;
   background-color: white;
   height: 100%;
- 
+
 }
 
 .modalBody {
@@ -678,9 +684,11 @@ option {
 .dropDownStyle {
   width: auto;
 }
-.autoSignScroll{
+
+.autoSignScroll {
   overflow-y: auto;
 }
+
 .autoSignScroll::-webkit-scrollbar {
   display: none;
 }
@@ -797,7 +805,8 @@ option {
   .mobileHead {
     display: flex;
   }
-  .signatureText{
+
+  .signatureText {
     margin-right: 5px;
     font-size: 12px;
   }
@@ -825,6 +834,7 @@ option {
   .mobileHead {
     display: flex;
   }
+
   .signTab {
 
     font-weight: 500 !important;

@@ -16,9 +16,7 @@ import FieldsComponent from "./component/fieldsComponent";
 import Modal from "react-bootstrap/Modal";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import {
-  convertPNGtoJPEG,
   contractDocument,
-  getBase64FromIMG,
   embedDocId,
   multiSignEmbed,
   pdfNewWidthFun,
@@ -41,6 +39,7 @@ import AlertComponent from "./component/alertComponent";
 import PlaceholderCopy from "./component/PlaceholderCopy";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import Title from "./component/Title";
+import ModalUi from "../premitives/ModalUi";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -865,26 +864,67 @@ function SignYourSelf() {
               marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
           >
-            <AlertComponent
-              isShow={isAlert.isShow}
-              alertMessage={isAlert.alertMessage}
-              setIsAlert={setIsAlert}
-            />
-            {/* this modal is used show this document is already sign */}
-            <Modal
-              show={showAlreadySignDoc.status}
-              onShow={() => modalAlign()}
-              backdropClassName="signature-backdrop"
+            <ModalUi
+              headerColor={"#dc3545"}
+              isOpen={isAlert.isShow}
+              title={"Alert"}
+              handleClose={() => {
+                setIsAlert({
+                  isShow: false,
+                  alertMessage: ""
+                });
+              }}
             >
-              <ModalHeader style={{ background: themeColor() }}>
-                <span style={{ color: "white" }}> Sign Documents</span>
-              </ModalHeader>
+              <div style={{ height: "100%", padding: 20 }}>
+                <p>{isAlert.alertMessage}</p>
 
-              <Modal.Body>
+                <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
+                  }}
+                ></div>
+                <button
+                  onClick={() => {
+                    setIsAlert({
+                      isShow: false,
+                      alertMessage: ""
+                    });
+                  }}
+                  style={{
+                    color: "black"
+                  }}
+                  type="button"
+                  className="finishBtn"
+                >
+                  Ok
+                </button>
+              </div>
+            </ModalUi>
+
+            {/* this modal is used show this document is already sign */}
+            <ModalUi
+              isOpen={showAlreadySignDoc.status}
+              title={"Sign Documents"}
+              handleClose={() => {
+                setShowAlreadySignDoc({ status: false });
+              }}
+            >
+              <div style={{ height: "100%", padding: 20 }}>
                 <p>{showAlreadySignDoc.mssg}</p>
-              </Modal.Body>
 
-              <Modal.Footer>
+                <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
+                  }}
+                ></div>
                 <button
                   style={{
                     borderRadius: "0px",
@@ -897,20 +937,9 @@ function SignYourSelf() {
                 >
                   Close
                 </button>
-                {showAlreadySignDoc.sure && (
-                  <button
-                    onClick={() => addDefaultSignature()}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    className="finishBtn"
-                  >
-                    Yes
-                  </button>
-                )}
-              </Modal.Footer>
-            </Modal>
+              </div>
+            </ModalUi>
+
             <PlaceholderCopy
               isPageCopy={isPageCopy}
               setIsPageCopy={setIsPageCopy}
