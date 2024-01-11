@@ -23,6 +23,9 @@ jobs:
       - name: Install dependencies
         working-directory: ./docs
         run: npm ci
+      - name: Clean api-docs
+        working-directory: ./docs
+        run: npm run docusaurus clean-api-docs all
       - name: Build api-docs
         working-directory: ./docs
         run: npm run docusaurus gen-api-docs all
