@@ -12,9 +12,9 @@ export default async function getUser(request, response) {
   if (token !== undefined) {
     // Valid Token then proceed request
     const userId = token.get('Id');
-    const query = new Parse.Query(Parse.User);
-    query.equalTo('objectId', userId);
-    query.exclude('authData');
+    const query = new Parse.Query('contracts_Users');
+    query.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
+    query.exclude('IsContactEntry,TourStatus,UserRole,TenantId,UserId,CreatedBy,Plan');
     let user = await query.first({ useMasterKey: true });
     const result = user;
     if (result) {
@@ -23,5 +23,5 @@ export default async function getUser(request, response) {
       return response.json({ code: 404, message: 'Record not found!' });
     }
   }
-  return response.json({ code: 404, message: 'Invalid API Token!' });
+  return response.json({ code: 405, message: 'Invalid API Token!' });
 }

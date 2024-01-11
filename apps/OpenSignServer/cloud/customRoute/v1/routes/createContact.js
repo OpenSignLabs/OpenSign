@@ -70,9 +70,13 @@ export default async function createContact(request, response) {
 
           contactQuery.setACL(acl);
 
-          await contactQuery.save();
+          const contactRes = await contactQuery.save();
           // const parseData = JSON.parse(JSON.stringify(res));
-          return response.json({ code: 200, message: 'Contact create sucessfully!' });
+          return response.json({
+            code: 200,
+            message: 'Contact created sucessfully!',
+            result: { id: contactRes.id },
+          });
         }
       } catch (err) {
         console.log('err ', err);
@@ -106,8 +110,12 @@ export default async function createContact(request, response) {
           acl.setWriteAccess(userRes.id, true);
 
           contactQuery.setACL(acl);
-          await contactQuery.save();
-          return response.json({ code: 200, message: 'Contact create sucessfully!' });
+          const contactRes = await contactQuery.save();
+          return response.json({
+            code: 200,
+            message: 'Contact created sucessfully!',
+            result: { id: contactRes.id },
+          });
           //   const parseData = JSON.parse(JSON.stringify(res));
         }
       }
@@ -115,6 +123,6 @@ export default async function createContact(request, response) {
       return response.json({ code: 404, message: 'Something went wrong, please try again later!' });
     }
   } else {
-    return response.json({ code: 404, message: 'Invalid API Token!' });
+    return response.json({ code: 405, message: 'Invalid API Token!' });
   }
 }

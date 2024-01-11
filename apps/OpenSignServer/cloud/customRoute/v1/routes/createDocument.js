@@ -5,6 +5,7 @@ export default async function createDocument(request, response) {
   const signers = request.body.signer;
   const folderId = request.body.folderId;
   const file = request.body.file;
+  const url = process.env.SERVER_URL;
 
   try {
     const reqToken = request.headers['x-api-token'];
@@ -44,9 +45,13 @@ export default async function createDocument(request, response) {
         object.set('Folder', folderPtr);
       }
       const res = await object.save(null, { useMasterKey: true });
-      return response.json({ code: 200, result: res });
+      return response.json({
+        code: 200,
+        message: 'Document created successfully!',
+        result: { id: res.id, url: url },
+      });
     } else {
-      return response.json({ code: 404, message: 'Invalid API Token!' });
+      return response.json({ code: 405, message: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);

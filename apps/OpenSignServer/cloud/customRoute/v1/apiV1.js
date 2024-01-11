@@ -14,6 +14,7 @@ import createTemplate from './routes/createTemplate.js';
 import getTemplate from './routes/getTemplate.js';
 import deletedTemplate from './routes/deleteTemplate.js';
 import getTemplatetList from './routes/getTemplateList.js';
+import updateTemplate from './routes/updateTemplate.js';
 
 dotenv.config();
 app.use(cors());
@@ -48,8 +49,10 @@ app.post('/createtemplate', createTemplate);
 app.get('/template/:template_id', getTemplate);
 
 // get template on the basis of id
+app.put('/template/:template_id', updateTemplate);
+
+// get template on the basis of id
 app.delete('/template/:template_id', deletedTemplate);
 
 // get all types of documents on the basis of doctype
 app.get('/templatelist', getTemplatetList);
-

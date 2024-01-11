@@ -63,5 +63,5 @@ export default async function getDocumentList(request, response) {
       return response.json({ code: 404, message: 'Report is not available!' });
     }
   }
-  return response.json({ code: 404, message: 'Invalid API Token!' });
+  return response.json({ code: 405, message: 'Invalid API Token!' });
 }

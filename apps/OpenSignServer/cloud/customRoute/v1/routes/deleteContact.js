@@ -26,14 +26,14 @@ export default async function deleteContact(request, response) {
           deleteQuery.set('IsDeleted', true);
           const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
           if (deleteRes) {
-            return response.json({ code: 200, result: 'Record delete successfully!' });
+            return response.json({ code: 200, message: 'Record delete successfully!' });
           }
         }
       } else {
         return response.json({ code: 404, message: 'Record not found!' });
       }
     } else {
-      return response.json({ code: 404, message: 'Invalid API Token!' });
+      return response.json({ code: 405, message: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);
