@@ -21,7 +21,10 @@ import {
   contractDocument,
   urlValidator,
   multiSignEmbed,
-  embedDocId
+  embedDocId,
+  signPdfFun,
+  addDefaultSignatureImg,
+  onImageSelect
 } from "../utils/Utils";
 import Tour from "reactour";
 import Signedby from "./component/signedby";
@@ -33,6 +36,9 @@ import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
 import { modalAlign } from "../utils/Utils";
+import AlertComponent from "./component/alertComponent";
+import TourContentWithBtn from "../premitives/TourContentWithBtn";
+import Title from "./component/Title";
 function EmbedPdfImage() {
   const { id, contactBookId } = useParams();
   const [isSignPad, setIsSignPad] = useState(false);
@@ -64,18 +70,23 @@ function EmbedPdfImage() {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [signerUserId, setSignerUserId] = useState();
   const [tourStatus, setTourStatus] = useState([]);
-  const [completePdfData, setCompletePdfData] = useState([]);
   const [isExpired, setIsExpired] = useState(false);
   const [noData, setNoData] = useState(false);
   const [contractName, setContractName] = useState("");
   const [isDecline, setIsDecline] = useState({
     isDeclined: false
   });
+  const [addDefaultSign, setAddDefaultSign] = useState({
+    isShow: false,
+    alertMessage: ""
+  });
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
   });
   const [containerWH, setContainerWH] = useState({});
+  const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
+  const [isDontShow, setIsDontShow] = useState(false);
   const docId = id && id;
   const isMobile = window.innerWidth < 767;
   const index = xyPostion.findIndex((object) => {
@@ -91,8 +102,7 @@ function EmbedPdfImage() {
     : `${localStorage.getItem("UserInformation")}` &&
       `${localStorage.getItem("UserInformation")}`;
   const jsonSender = JSON.parse(senderUser);
-  //check isGuestSigner is present in local if yes than handle login flow header in mobile view
-  const isGuestSigner = localStorage.getItem("isGuestSigner");
+
   useEffect(() => {
     getDocumentDetails();
   }, []);
@@ -201,7 +211,6 @@ function EmbedPdfImage() {
         setIsAlreadySign(alreadySign);
         setPdfUrl(documentData[0].SignedUrl);
         setSignedPdfData(documentData);
-        setCompletePdfData(documentData);
       } else if (declined) {
         const currentDecline = {
           currnt: "another",
@@ -396,7 +405,10 @@ function EmbedPdfImage() {
     }
 
     if (checkSignUrl && checkSignUrl.length > 0) {
-      alert("Please complete your signature!");
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
     } else {
       const loadObj = {
         isLoad: true,
@@ -417,186 +429,123 @@ function EmbedPdfImage() {
 
       const pngUrl = xyPostion;
 
-      let pdfBase64;
+      // let pdfBase64;
       //checking if signature is only one then send image url in jpeg formate to server
-      if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
-        if (isDocId) {
-          pdfBase64 = await getBase64FromUrl(url);
+      // if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
+      //   if (isDocId) {
+      //     pdfBase64 = await getBase64FromUrl(url);
+      //   } else {
+      //     //embed document's object id to all pages in pdf document
+      //     await embedDocId(pdfDoc, docId, allPages);
+      //     pdfBase64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+      //   }
+
+      //   for (let xyData of xyPostion) {
+      //     const imgUrlList = xyData.pos;
+      //     const pageNo = xyData.pageNumber;
+      //     imgUrlList.map(async (data) => {
+      //       //cheking signUrl is defau;t signature url of custom url
+      //       let ImgUrl = data.SignUrl;
+      //       const checkUrl = urlValidator(ImgUrl);
+
+      //       //if default signature url then convert it in base 64
+      //       if (checkUrl) {
+      //         ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
+      //       }
+      //       //function for convert signature png base64 url to jpeg base64
+      //       convertPNGtoJPEG(ImgUrl)
+      //         .then((jpegBase64Data) => {
+      //           const removeBase64Fromjpeg = "data:image/jpeg;base64,";
+      //           const newImgUrl = jpegBase64Data.replace(
+      //             removeBase64Fromjpeg,
+      //             ""
+      //           );
+
+      //           //function for embed signature in pdf and get digital signature pdf
+      //           signPdfFun(
+      //             newImgUrl,
+      //             docId,
+      //             signerUserId,
+      //             pdfOriginalWidth,
+      //             xyPostion,
+      //             containerWH,
+      //             setIsAlert,
+      //             data,
+      //             pdfBase64,
+      //             pageNo
+      //           )
+      //             .then((res) => {
+      //               if (res && res.status === "success") {
+      //                 getDocumentDetails();
+      //               } else {
+      //                 setIsAlert({
+      //                   isShow: true,
+      //                   alertMessage: "something went wrong"
+      //                 });
+      //               }
+      //             })
+      //             .catch((err) => {
+      //               setIsAlert({
+      //                 isShow: true,
+      //                 alertMessage: "something went wrong"
+      //               });
+      //             });
+      //         })
+      //         .catch((error) => {
+      //           setIsAlert({
+      //             isShow: true,
+      //             alertMessage: "something went wrong"
+      //           });
+      //         });
+      //     });
+      //   }
+      // }
+      // //else if signature is more than one then embed all sign with the use of pdf-lib
+      // else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
+      const flag = false;
+      //embed document's object id to all pages in pdf document
+      if (!isDocId) {
+        await embedDocId(pdfDoc, docId, allPages);
+      }
+      //embed multi signature in pdf
+      const pdfBytes = await multiSignEmbed(
+        pngUrl,
+        pdfDoc,
+        pdfOriginalWidth,
+        flag,
+        containerWH
+      );
+
+      //function for embed signature in pdf and get digital signature pdf
+      try {
+        const res = await signPdfFun(
+          pdfBytes,
+          docId,
+          signerUserId,
+          pdfOriginalWidth,
+          xyPostion,
+          containerWH,
+          setIsAlert
+        );
+        if (res && res.status === "success") {
+          getDocumentDetails();
         } else {
-          //embed document's object id to all pages in pdf document
-          await embedDocId(pdfDoc, docId, allPages);
-          pdfBase64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-        }
-        for (let i = 0; i < xyPostion.length; i++) {
-          const imgUrlList = pngUrl[i].pos;
-          const pageNo = pngUrl[i].pageNumber;
-          imgUrlList.map(async (data) => {
-            //cheking signUrl is defau;t signature url of custom url
-            let ImgUrl = data.SignUrl;
-            const checkUrl = urlValidator(ImgUrl);
-
-            //if default signature url then convert it in base 64
-            if (checkUrl) {
-              ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
-            }
-            //function for convert signature png base64 url to jpeg base64
-            convertPNGtoJPEG(ImgUrl)
-              .then((jpegBase64Data) => {
-                const removeBase64Fromjpeg = "data:image/jpeg;base64,";
-                const newImgUrl = jpegBase64Data.replace(
-                  removeBase64Fromjpeg,
-                  ""
-                );
-
-                //function for call to embed signature in pdf and get digital signature pdf
-                signPdfFun(newImgUrl, docId, data, pdfBase64, pageNo);
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-              });
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
           });
         }
+      } catch (err) {
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
       }
-      //else if signature is more than one then embed all sign with the use of pdf-lib
-      else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-        //embed document's object id to all pages in pdf document
-        await embedDocId(pdfDoc, docId, allPages);
-        //embed multi signature in pdf
-        const pdfBytes = await multiSignEmbed(
-          pngUrl,
-          pdfDoc,
-          pdfOriginalWidth,
-          false
-        );
-        signPdfFun(pdfBytes, docId);
-      }
-      setIsSignPad(false);
-      setXyPostion([]);
     }
+    setIsSignPad(false);
+    setXyPostion([]);
+    // }
   }
-
-  //function for call cloud function signPdf and generate digital signature
-  const signPdfFun = async (
-    base64Url,
-    docId,
-    xyPosData,
-    pdfBase64Url,
-    pageNo
-  ) => {
-    let singleSign;
-    const isMobile = window.innerWidth < 767;
-    const newWidth = window.innerWidth;
-    const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-    const height = xyPosData ? xyPosData.Height : 60;
-    const xPos = (pos) => {
-      //checking both condition mobile and desktop view
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (pos.isMobile) {
-          const x = pos.xPosition * (pos.scale / scale);
-          return x * scale + 50;
-        } else {
-          const x = pos.xPosition / scale;
-          return x * scale;
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-        if (pos.isMobile) {
-          const x = pos.xPosition * pos.scale + 50;
-          return x;
-        } else {
-          return pos.xPosition;
-        }
-      }
-    };
-
-    const yBottom = (pos) => {
-      let yPosition;
-      //checking both condition mobile and desktop view
-
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (pos.isMobile) {
-          const y = pos.yPosition * (pos.scale / scale);
-          yPosition = pos.isDrag
-            ? y * scale - height
-            : pos.firstYPos
-              ? y * scale - height + pos.firstYPos
-              : y * scale - height;
-          return yPosition;
-        } else {
-          const y = pos.yBottom / scale;
-
-          yPosition = pos.isDrag
-            ? y * scale - height
-            : pos.firstYPos
-              ? y * scale - height + pos.firstYPos
-              : y * scale - height;
-          return yPosition;
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-        if (pos.isMobile) {
-          const y = pos.yBottom * pos.scale;
-
-          yPosition = pos.isDrag
-            ? y - height
-            : pos.firstYPos
-              ? y - height + pos.firstYPos
-              : y - height;
-          return yPosition;
-        } else {
-          yPosition = pos.isDrag
-            ? pos.yBottom - height
-            : pos.firstYPos
-              ? pos.yBottom - height + pos.firstYPos
-              : pos.yBottom - height;
-          return yPosition;
-        }
-      }
-    };
-    if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
-      const bottomY = yBottom(xyPosData);
-      singleSign = {
-        pdfFile: pdfBase64Url,
-        docId: docId,
-        userId: signerUserId,
-        sign: {
-          Base64: base64Url,
-          Left: xPos(xyPosData),
-          Bottom: bottomY,
-          Width: xyPosData.Width ? xyPosData.Width : 150,
-          Height: height,
-          Page: pageNo
-        }
-      };
-    } else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-      singleSign = {
-        pdfFile: base64Url,
-        docId: docId,
-        userId: signerUserId
-      };
-    }
-
-    await axios
-      .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          sessionToken: localStorage.getItem("accesstoken")
-        }
-      })
-      .then((Listdata) => {
-        const json = Listdata.data;
-
-        if (json.result.data) {
-          getDocumentDetails();
-        }
-      })
-      .catch((err) => {
-        alert("something went wrong");
-      });
-  };
 
   //function for change page
   function changePage(offset) {
@@ -606,60 +555,44 @@ function EmbedPdfImage() {
   //function for image upload or update
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      const imageType = event.target.files[0].type;
-
-      const reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-
-      reader.onloadend = function (e) {
-        let width, height;
-        const image = new Image();
-
-        image.src = e.target.result;
-        image.onload = function () {
-          width = image.width;
-          height = image.height;
-          const aspectRatio = 460 / 184;
-          const imgR = width / height;
-
-          if (imgR > aspectRatio) {
-            width = 460;
-            height = 460 / imgR;
-          } else {
-            width = 184 * imgR;
-            height = 184;
-          }
-          setImgWH({ width: width, height: height });
-          imageRef.current.style.width = `${width}px`;
-          imageRef.current.style.height = `${height}px`;
-        };
-
-        image.src = reader.result;
-
-        setImage({ src: image.src, imgType: imageType });
-      };
+      onImageSelect(event, setImgWH, setImage);
     }
   };
 
   //function for save button to save signature or image url
-  const saveSign = (isDefaultSign) => {
+  const saveSign = (isDefaultSign, width, height) => {
+    const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign ? defaultSignImg : signature;
+
+    let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsSignPad(false);
     setIsImageSelect(false);
     setImage();
 
+    if (isDefaultSign) {
+      const img = new Image();
+      img.src = defaultSignImg;
+      if (img.complete) {
+        imgWH = {
+          width: img.width,
+          height: img.height
+        };
+      }
+    }
     const getUpdatePosition = onSaveSign(
       xyPostion,
       index,
       signKey,
-      signatureImg
+      signatureImg,
+      imgWH,
+      isDefaultSign,
+      isTypeText
     );
 
     if (getUpdatePosition) {
       setXyPostion(getUpdatePosition);
     }
   };
-
   //function for upload stamp image
   const saveImage = () => {
     const getImage = onSaveImage(xyPostion, index, signKey, imgWH, image);
@@ -697,98 +630,106 @@ function EmbedPdfImage() {
         }
       })
       .catch((err) => {
-        console.log("error updating field is decline ", err);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
       });
   };
 
   const addDefaultSignature = () => {
-    let xyDefaultPos = [];
-    for (let i = 0; i < xyPostion.length; i++) {
-      const getXYdata = xyPostion[i].pos;
-      const getPageNo = xyPostion[i].pageNumber;
-      const getPosData = getXYdata;
+    const getXyData = addDefaultSignatureImg(xyPostion, defaultSignImg);
 
-      const addSign = getPosData.map((url, ind) => {
-        if (url) {
-          return { ...url, SignUrl: defaultSignImg };
-        }
-        return url;
-      });
-
-      const newXypos = {
-        pageNumber: getPageNo,
-        pos: addSign
-      };
-      xyDefaultPos.push(newXypos);
-    }
-
-    setXyPostion(xyDefaultPos);
-    setIsAlreadySign({ status: false });
+    setXyPostion(getXyData);
+    setAddDefaultSign({
+      isShow: false,
+      alertMessage: ""
+    });
   };
 
   //function for update TourStatus
   const closeTour = async () => {
     setSignTour(false);
-
-    let updatedTourStatus = [];
-    if (tourStatus.length > 0) {
-      updatedTourStatus = [...tourStatus];
-      const recipientssignIndex = tourStatus.findIndex(
-        (obj) =>
-          obj["recipientssign"] === false || obj["recipientssign"] === true
-      );
-      if (recipientssignIndex !== -1) {
-        updatedTourStatus[recipientssignIndex] = { recipientssign: true };
-      } else {
-        updatedTourStatus.push({ recipientssign: true });
-      }
-    } else {
-      updatedTourStatus = [{ recipientssign: true }];
-    }
-
-    await axios
-      .put(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}${contractName}/${signerUserId}`,
-        {
-          TourStatus: updatedTourStatus
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
+    if (isDontShow) {
+      let updatedTourStatus = [];
+      if (tourStatus.length > 0) {
+        updatedTourStatus = [...tourStatus];
+        const recipientssignIndex = tourStatus.findIndex(
+          (obj) =>
+            obj["recipientssign"] === false || obj["recipientssign"] === true
+        );
+        if (recipientssignIndex !== -1) {
+          updatedTourStatus[recipientssignIndex] = { recipientssign: true };
+        } else {
+          updatedTourStatus.push({ recipientssign: true });
         }
-      )
-      .then((Listdata) => {
-        // const json = Listdata.data;
-        // const res = json.results;
-        // console.log("res", json);
-      })
-      .catch((err) => {
-        console.log("axois err ", err);
-      });
+      } else {
+        updatedTourStatus = [{ recipientssign: true }];
+      }
+
+      await axios
+        .put(
+          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+            "_appName"
+          )}${contractName}/${signerUserId}`,
+          {
+            TourStatus: updatedTourStatus
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
+          }
+        )
+        .then((Listdata) => {
+          // const json = Listdata.data;
+          // const res = json.results;
+          // console.log("res", json);
+        })
+        .catch((err) => {
+          console.log("axois err ", err);
+        });
+    }
+  };
+
+  const handleDontShow = (isChecked) => {
+    setIsDontShow(isChecked);
   };
 
   const tourFunction = () => {
     const tourConfig = [
       {
         selector: '[data-tut="reactourFirst"]',
-        content: `You can click "Auto Sign All" to automatically sign at all the locations meant to be signed by you.Make sure that you review the document properly before you click this button.`,
+        content: () => (
+          <TourContentWithBtn
+            message={`You can click "Auto Sign All" to automatically sign at all the locations meant to be signed by you.Make sure that you review the document properly before you click this button.`}
+            isChecked={handleDontShow}
+          />
+        ),
         position: "top",
         style: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="reactourSecond"]',
-        content: `Click any of such placeholders appearing on the document to sign.You will see the options to draw sign or upload an image once you click here.`,
+        content: () => (
+          <TourContentWithBtn
+            message={`Click any of such placeholders appearing on the document to sign.You will see the options to draw sign or upload an image once you click here.`}
+            isChecked={handleDontShow}
+          />
+        ),
         position: "top",
         style: { fontSize: "13px" }
       },
       {
         selector: '[data-tut="reactourThird"]',
-        content: `Click here to finish & download the signed document.You will also receive a copy on your email.`,
+        content: () => (
+          <TourContentWithBtn
+            message={`Click here to finish & download the signed document.You will also receive a copy on your email.`}
+            isChecked={handleDontShow}
+          />
+        ),
         position: "top",
         style: { fontSize: "13px" }
       }
@@ -814,6 +755,7 @@ function EmbedPdfImage() {
 
   return (
     <DndProvider backend={HTML5Backend}>
+      <Title title={"Sign Document"} />
       {isLoading.isLoad ? (
         <Loader isLoading={isLoading} />
       ) : handleError ? (
@@ -845,6 +787,20 @@ function EmbedPdfImage() {
             declineDoc={declineDoc}
             setIsDecline={setIsDecline}
           />
+          <AlertComponent
+            isShow={isAlert.isShow}
+            alertMessage={isAlert.alertMessage}
+            setIsAlert={setIsAlert}
+          />
+          <AlertComponent
+            isShow={addDefaultSign.isShow}
+            alertMessage={addDefaultSign.alertMessage}
+            setIsAlert={setAddDefaultSign}
+            isdefaultSign={true}
+            addDefaultSignature={addDefaultSignature}
+            headBG={themeColor()}
+          />
+
           {/* this modal is used for show expired alert */}
           <CustomModal
             containerWH={containerWH}
@@ -865,14 +821,16 @@ function EmbedPdfImage() {
             allPages={allPages}
             setAllPages={setAllPages}
             setPageNumber={setPageNumber}
+            pageNumber={pageNumber}
           />
-          {/* <div style={{width:"160px",border:"1px solid red"}}>kebjke</div> */}
+
           {/* pdf render view */}
           <div
             style={{
-              marginLeft: !isGuestSigner && pdfOriginalWidth > 500 && "20px",
-              marginRight: !isGuestSigner && pdfOriginalWidth > 500 && "20px"
+              marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
+              marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
+            ref={divRef}
           >
             {/* this modal is used show this document is already sign */}
             <Modal
@@ -901,18 +859,6 @@ function EmbedPdfImage() {
                 >
                   Close
                 </button>
-                {isAlreadySign.sure && (
-                  <button
-                    onClick={() => addDefaultSignature()}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    className="finishBtn"
-                  >
-                    Yes
-                  </button>
-                )}
               </Modal.Footer>
             </Modal>
             {/* this is modal of signature pad */}
@@ -948,25 +894,29 @@ function EmbedPdfImage() {
               decline={true}
               alreadySign={pdfUrl ? true : false}
             />
-
-            <RenderPdf
-              pageNumber={pageNumber}
-              pdfOriginalWidth={pdfOriginalWidth}
-              pdfNewWidth={pdfNewWidth}
-              setIsSignPad={setIsSignPad}
-              setIsStamp={setIsStamp}
-              setSignKey={setSignKey}
-              pdfDetails={signedPdfData}
-              xyPostion={xyPostion}
-              successEmail={false}
-              pdfUrl={pdfUrl}
-              numPages={numPages}
-              pageDetails={pageDetails}
-              recipient={true}
-              isAlreadySign={isAlreadySign}
-              setPdfLoadFail={setPdfLoadFail}
-              pdfLoadFail={pdfLoadFail}
-            />
+            {containerWH && (
+              <RenderPdf
+                pageNumber={pageNumber}
+                pdfOriginalWidth={pdfOriginalWidth}
+                pdfNewWidth={pdfNewWidth}
+                setIsSignPad={setIsSignPad}
+                setIsStamp={setIsStamp}
+                setSignKey={setSignKey}
+                pdfDetails={signedPdfData}
+                xyPostion={xyPostion}
+                successEmail={false}
+                pdfUrl={pdfUrl}
+                numPages={numPages}
+                pageDetails={pageDetails}
+                recipient={true}
+                isAlreadySign={isAlreadySign}
+                setPdfLoadFail={setPdfLoadFail}
+                pdfLoadFail={pdfLoadFail}
+                setXyPostion={setXyPostion}
+                index={index}
+                containerWH={containerWH}
+              />
+            )}
           </div>
 
           {!pdfUrl ? (
@@ -982,6 +932,7 @@ function EmbedPdfImage() {
                 xyPostion={xyPostion}
                 setXyPostion={setXyPostion}
                 setShowAlreadySignDoc={setIsAlreadySign}
+                setIsAlert={setAddDefaultSign}
               />
             </div>
           ) : (

@@ -131,6 +131,9 @@ We would like to thank all our contributors and users for their support and feed
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Govinda04"><img src="https://avatars.githubusercontent.com/u/50038172?v=4?s=100" width="100px;" alt="Govinda Kocharekar"/><br /><sub><b>Govinda Kocharekar</b></sub></a><br /><a href="#code-Govinda04" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://bilal.cc"><img src="https://avatars.githubusercontent.com/u/55330484?v=4?s=100" width="100px;" alt="Bilal Ahmad Bhat"/><br /><sub><b>Bilal Ahmad Bhat</b></sub></a><br /><a href="#code-crediblebilal" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/VikramNagwal"><img src="https://avatars.githubusercontent.com/u/123088024?v=4?s=100" width="100px;" alt="Vikram"/><br /><sub><b>Vikram</b></sub></a><br /><a href="#code-VikramNagwal" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 

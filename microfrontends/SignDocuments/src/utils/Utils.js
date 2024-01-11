@@ -1,6 +1,12 @@
 import axios from "axios";
 import { $ } from "select-dom";
 import { rgb } from "pdf-lib";
+
+const isMobile = window.innerWidth < 767;
+
+export const resizeBorderExtraWidth = () => {
+  return 20;
+};
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
   const blob = await data.blob();
@@ -74,136 +80,196 @@ export function getHostUrl() {
   }
 }
 
+export const calculateImgAspectRatio = (imgWH, pos) => {
+  let newWidth, newHeight;
+  const placeholderHeight = pos && pos.Width ? pos.Height : 60;
+  const aspectRatio = imgWH.width / imgWH.height;
+  newWidth = aspectRatio * placeholderHeight;
+  newHeight = placeholderHeight;
+
+  return { newHeight, newWidth };
+};
+
 //function for upload stamp or image
 export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
-  const updateFilter = xyPostion[index].pos.filter(
-    (data, ind) =>
-      data.key === signKey && data.Width && data.Height && data.SignUrl
-  );
+  let getIMGWH;
+  //get current page position
+  const getXYData = xyPostion[index].pos;
+  const updateXYData = getXYData.map((position) => {
+    if (position.key === signKey) {
+      getIMGWH = calculateImgAspectRatio(imgWH, position);
 
-  if (updateFilter.length > 0) {
-    let newWidth, newHeight;
-    const aspectRatio = imgWH.width / imgWH.height;
-
-    const getXYdata = xyPostion[index].pos;
-
-    if (aspectRatio === 1) {
-      newWidth = aspectRatio * 100;
-      newHeight = aspectRatio * 100;
-    } else if (aspectRatio < 2) {
-      newWidth = aspectRatio * 100;
-      newHeight = 100;
-    } else if (aspectRatio > 2 && aspectRatio < 4) {
-      newWidth = aspectRatio * 70;
-      newHeight = 70;
-    } else if (aspectRatio > 4) {
-      newWidth = aspectRatio * 40;
-      newHeight = 40;
-    } else if (aspectRatio > 5) {
-      newWidth = aspectRatio * 10;
-      newHeight = 10;
-    }
-
-    let getPosData = xyPostion[index].pos.filter(
-      (data) => data.key === signKey
-    );
-
-    const addSign = getXYdata.map((url, ind) => {
-      if (url.key === signKey) {
-        return {
-          ...url,
-          Width: getPosData[0].Width ? getPosData[0].Width : newWidth,
-          Height: getPosData[0].Height ? getPosData[0].Height : newHeight,
-          SignUrl: image.src,
-          ImageType: image.imgType
-        };
-      }
-      return url;
-    });
-
-    const newUpdateUrl = xyPostion.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: addSign };
-      }
-      return obj;
-    });
-    return newUpdateUrl;
-    // setXyPostion(newUpdateUrl);
-  } else {
-    const getXYdata = xyPostion[index].pos;
-
-    let getPosData = xyPostion[index].pos.filter(
-      (data) => data.key === signKey
-    );
-    const aspectRatio = imgWH.width / imgWH.height;
-
-    let newWidth, newHeight;
-    if (aspectRatio === 1) {
-      newWidth = aspectRatio * 100;
-      newHeight = aspectRatio * 100;
-    } else if (aspectRatio < 2) {
-      newWidth = aspectRatio * 100;
-      newHeight = 100;
-    } else if (aspectRatio > 2 && aspectRatio < 4) {
-      newWidth = aspectRatio * 70;
-      newHeight = 70;
-    } else if (aspectRatio > 4) {
-      newWidth = aspectRatio * 40;
-      newHeight = 40;
-    } else if (aspectRatio > 5) {
-      newWidth = aspectRatio * 10;
-      newHeight = 10;
-    }
-
-    const addSign = getXYdata.map((url, ind) => {
-      if (url.key === signKey) {
-        return {
-          ...url,
-          Width: getPosData[0].Width ? getPosData[0].Width : newWidth,
-          Height: getPosData[0].Height ? getPosData[0].Height : newHeight,
-          SignUrl: image.src,
-          ImageType: image.imgType
-        };
-      }
-      return url;
-    });
-
-    const newUpdateUrl = xyPostion.map((obj, ind) => {
-      if (ind === index) {
-        return { ...obj, pos: addSign };
-      }
-      return obj;
-    });
-    return newUpdateUrl;
-  }
-}
-
-//function for save button to save signature or image url
-export function onSaveSign(xyPostion, index, signKey, signatureImg) {
-  let getXYdata = xyPostion[index].pos;
-  let getPosData = xyPostion[index].pos.filter((data) => data.key === signKey);
-
-  const addSign = getXYdata.map((url, ind) => {
-    if (url.key === signKey) {
       return {
-        ...url,
-        Width: getPosData[0].Width ? getPosData[0].Width : 150,
-        Height: getPosData[0].Height ? getPosData[0].Height : 60,
-        SignUrl: signatureImg
+        ...position,
+        Width: getIMGWH.newWidth,
+        Height: getIMGWH.newHeight,
+        SignUrl: image.src,
+        ImageType: image.imgType
       };
     }
-    return url;
+    return position;
   });
 
-  const newUpdateUrl = xyPostion.map((obj, ind) => {
+  const updateXYposition = xyPostion.map((obj, ind) => {
     if (ind === index) {
-      return { ...obj, pos: addSign };
+      return { ...obj, pos: updateXYData };
     }
     return obj;
   });
-  return newUpdateUrl;
+  return updateXYposition;
 }
 
+//function for save button to save signature or image url
+export function onSaveSign(
+  xyPostion,
+  index,
+  signKey,
+  signatureImg,
+  imgWH,
+  isDefaultSign,
+  isTypeText
+) {
+  let getIMGWH;
+  let getXYdata = xyPostion[index].pos;
+  const updateXYData = getXYdata.map((position) => {
+    if (position.key === signKey) {
+      if (isDefaultSign) {
+        getIMGWH = calculateImgAspectRatio(imgWH, position);
+      } else if (isTypeText) {
+        getIMGWH = { newWidth: imgWH.width, newHeight: imgWH.height };
+      } else {
+        getIMGWH = calculateImgAspectRatio(
+          { width: 150, height: 60 },
+          position
+        );
+      }
+
+      const posWidth = getIMGWH ? getIMGWH.newWidth : 150;
+      const posHeight = getIMGWH ? getIMGWH.newHeight : 60;
+
+      return {
+        ...position,
+        Width: posWidth,
+        Height: posHeight,
+        SignUrl: signatureImg
+      };
+    }
+    return position;
+  });
+
+  const updateXYposition = xyPostion.map((obj, ind) => {
+    if (ind === index) {
+      return { ...obj, pos: updateXYData };
+    }
+    return obj;
+  });
+  return updateXYposition;
+}
+
+export const addZIndex = (signerPos, key, setZIndex) => {
+  return signerPos.map((item) => {
+    if (item.placeHolder && item.placeHolder.length > 0) {
+      // If there is a nested array, recursively add the field to the last object
+      return {
+        ...item,
+        placeHolder: addZIndex(item.placeHolder, key, setZIndex)
+      };
+    } else if (item.pos && item.pos.length > 0) {
+      // If there is no nested array, add the new field
+      return {
+        ...item,
+        pos: addZIndex(item.pos, key, setZIndex)
+        // Adjust this line to add the desired field
+      };
+    } else {
+      if (item.key === key) {
+        setZIndex(item.zIndex);
+        return {
+          ...item,
+          zIndex: item.zIndex ? item.zIndex + 1 : 1
+        };
+      } else {
+        return {
+          ...item
+        };
+      }
+    }
+  });
+};
+//function for add default signature or image for all requested location
+export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
+  let imgWH = { width: "", height: "" };
+  const img = new Image();
+  img.src = defaultSignImg;
+  if (img.complete) {
+    imgWH = {
+      width: img.width,
+      height: img.height
+    };
+  }
+
+  let xyDefaultPos = [];
+  for (let i = 0; i < xyPostion.length; i++) {
+    let getIMGWH;
+    const getXYdata = xyPostion[i].pos;
+    const getPageNo = xyPostion[i].pageNumber;
+    const getPosData = getXYdata;
+
+    const addSign = getPosData.map((position, ind) => {
+      getIMGWH = calculateImgAspectRatio(imgWH, position);
+      if (position && !position.isStamp) {
+        return {
+          ...position,
+          SignUrl: defaultSignImg,
+          Width: getIMGWH.newWidth,
+          Height: getIMGWH.newHeight,
+          ImageType: "default"
+        };
+      }
+      return position;
+    });
+
+    const newXypos = {
+      pageNumber: getPageNo,
+      pos: addSign
+    };
+    xyDefaultPos.push(newXypos);
+  }
+  return xyDefaultPos;
+};
+
+//function for select image and upload image
+export const onImageSelect = (event, setImgWH, setImage) => {
+  const imageType = event.target.files[0].type;
+  const reader = new FileReader();
+  reader.readAsDataURL(event.target.files[0]);
+
+  reader.onloadend = function (e) {
+    let width, height;
+    const image = new Image();
+
+    image.src = e.target.result;
+    image.onload = function () {
+      width = image.width;
+      height = image.height;
+      const aspectRatio = 460 / 184;
+      const imgR = width / height;
+
+      if (imgR > aspectRatio) {
+        width = 460;
+        height = 460 / imgR;
+      } else {
+        width = 184 * imgR;
+        height = 184;
+      }
+      setImgWH({ width: width, height: height });
+    };
+
+    image.src = reader.result;
+
+    setImage({ src: image.src, imgType: imageType });
+  };
+};
 //function for getting document details from contract_Documents class
 export const contractDocument = async (documentId) => {
   const data = {
@@ -343,16 +409,104 @@ export function modalAlign() {
   }
 }
 
+export const placeholderWidth = (pos, scale, signyourself) => {
+  let width;
+  const defaultWidth = 150;
+  const posWidth = pos.Width ? pos.Width : defaultWidth;
+
+  if (signyourself) {
+    if (isMobile) {
+      return posWidth * scale;
+    } else {
+      return posWidth;
+    }
+  } else {
+    if (isMobile) {
+      if (pos.isMobile) {
+        width = posWidth ? posWidth * scale : defaultWidth * scale;
+        return width;
+      } else {
+        if (pos.IsResize) {
+          width = posWidth ? posWidth * scale : defaultWidth * scale;
+          return width;
+        } else {
+          width = posWidth ? posWidth : defaultWidth;
+          return width;
+        }
+      }
+    } else {
+      if (pos.isMobile) {
+        if (pos.IsResize) {
+          width = posWidth ? posWidth : defaultWidth;
+          return width;
+        } else {
+          width = posWidth ? posWidth * pos.scale : defaultWidth * pos.scale;
+
+          return width;
+        }
+      } else {
+        width = posWidth ? posWidth : defaultWidth;
+        return width;
+      }
+    }
+  }
+};
+export const placeholderHeight = (pos, scale, signyourself) => {
+  let height;
+  const posHeight = pos.Height;
+  const defaultHeight = 60;
+  if (signyourself) {
+    if (isMobile) {
+      return posHeight * scale;
+    } else {
+      return posHeight;
+    }
+  } else {
+    if (isMobile) {
+      if (pos.isMobile) {
+        height = posHeight ? posHeight * scale : defaultHeight * scale;
+        return height;
+      } else {
+        if (pos.IsResize) {
+          height = posHeight ? posHeight * scale : defaultHeight * scale;
+          return height;
+        } else {
+          height = posHeight ? posHeight : defaultHeight;
+
+          return height;
+        }
+      }
+    } else {
+      if (pos.isMobile) {
+        if (pos.IsResize) {
+          height = posHeight ? posHeight : defaultHeight;
+          return height;
+        } else {
+          height = posHeight
+            ? posHeight * pos.scale
+            : defaultHeight * pos.scale;
+          return height;
+        }
+      } else {
+        height = posHeight ? posHeight : defaultHeight;
+        return height;
+      }
+    }
+  }
+};
 //function for embed multiple signature using pdf-lib
 export const multiSignEmbed = async (
   pngUrl,
   pdfDoc,
   pdfOriginalWidth,
-  signyourself
+  signyourself,
+  containerWH
 ) => {
-  for (let i = 0; i < pngUrl.length; i++) {
-    const pageNo = pngUrl[i].pageNumber;
-    const imgUrlList = pngUrl[i].pos;
+  for (let item of pngUrl) {
+    const newWidth = containerWH.width;
+    const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+    const pageNo = item.pageNumber;
+    const imgUrlList = item.pos;
     const pages = pdfDoc.getPages();
     const page = pages[pageNo - 1];
     const images = await Promise.all(
@@ -382,70 +536,80 @@ export const multiSignEmbed = async (
       } else {
         img = await pdfDoc.embedPng(imgData);
       }
-      const imgHeight = imgUrlList[id].Height ? imgUrlList[id].Height : 60;
-      const imgWidth = imgUrlList[id].Width ? imgUrlList[id].Width : 150;
-      const isMobile = window.innerWidth < 767;
-      const newWidth = window.innerWidth - 32;
-      const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+
+      const scaleWidth = placeholderWidth(imgUrlList[id], scale, signyourself);
+      const scaleHeight = placeholderHeight(
+        imgUrlList[id],
+        scale,
+        signyourself
+      );
+
       const xPos = (pos) => {
+        const resizePos = pos.xPosition;
         if (signyourself) {
           if (isMobile) {
-            return imgUrlList[id].xPosition * scale + 43;
+            return resizePos * scale;
           } else {
-            return imgUrlList[id].xPosition;
+            return resizePos;
           }
         } else {
           //checking both condition mobile and desktop view
           if (isMobile) {
             //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
             if (pos.isMobile) {
-              const x = pos.xPosition * (pos.scale / scale);
-              return x * scale + 50;
+              const x = resizePos * (pos.scale / scale);
+              return x * scale;
             } else {
-              const x = pos.xPosition / scale;
+              const x = resizePos / scale;
               return x * scale;
             }
           } else {
             //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
             if (pos.isMobile) {
-              const x = pos.xPosition * pos.scale + 50;
+              const x = resizePos * pos.scale;
               return x;
             } else {
-              return pos.xPosition;
+              return resizePos;
             }
           }
         }
       };
 
       const yPos = (pos) => {
+        const resizePos = imgUrlList[id].yPosition;
         if (signyourself) {
           if (isMobile) {
-            return (
-              page.getHeight() -
-              imgUrlList[id].yPosition * scale -
-              imgHeight * scale
-            );
+            return page.getHeight() - resizePos * scale - scaleHeight;
           } else {
-            return page.getHeight() - imgUrlList[id].yPosition - imgHeight;
+            return page.getHeight() - resizePos - scaleHeight;
           }
         } else {
           //checking both condition mobile and desktop view
-          const y = pos.yPosition / scale;
+          const y = resizePos / scale;
           if (isMobile) {
             //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
             if (pos.isMobile) {
-              const y = pos.yPosition * (pos.scale / scale);
-              return page.getHeight() - y * scale - imgHeight;
+              const y = resizePos * (pos.scale / scale);
+              return page.getHeight() - y * scale - scaleHeight;
             } else {
-              return page.getHeight() - y * scale - imgHeight;
+              if (pos.IsResize) {
+                return page.getHeight() - y * scale - scaleHeight;
+              } else {
+                return page.getHeight() - y * scale - scaleHeight;
+              }
             }
           } else {
             //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
             if (pos.isMobile) {
-              const y = pos.yPosition * pos.scale;
-              return page.getHeight() - y - imgHeight;
+              if (pos.IsResize) {
+                const y = resizePos * pos.scale;
+                return page.getHeight() - y - scaleHeight;
+              } else {
+                const y = resizePos * pos.scale;
+                return page.getHeight() - y - scaleHeight;
+              }
             } else {
-              return page.getHeight() - pos.yPosition - imgHeight;
+              return page.getHeight() - resizePos - scaleHeight;
             }
           }
         }
@@ -454,12 +618,14 @@ export const multiSignEmbed = async (
       page.drawImage(img, {
         x: xPos(imgUrlList[id]),
         y: yPos(imgUrlList[id]),
-        width: signyourself ? imgWidth * scale : imgWidth,
-        height: signyourself ? imgHeight * scale : imgHeight
+        width: scaleWidth,
+        height: scaleHeight
       });
     });
   }
+
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+
   return pdfBytes;
 };
 //function for embed document id
@@ -485,4 +651,414 @@ export const pdfNewWidthFun = (divRef) => {
   const pdfWidth = clientWidth - 160 - 200;
   //160 is width of left side, 200 is width of right side component
   return pdfWidth;
+};
+
+//function for resize image and update width and height for mulitisigners
+export const handleImageResize = (
+  ref,
+  key,
+  signerId,
+  position,
+  signerPos,
+  pageNumber,
+  setSignerPos,
+  pdfOriginalWidth,
+  containerWH,
+  showResize
+) => {
+  // const filterSignerPos = signerPos.filter(
+  //   (data) => data.signerObjId === signerId
+  // );
+
+  const filterSignerPos = signerPos.filter((data) => data.Id === signerId);
+
+  if (filterSignerPos.length > 0) {
+    const getPlaceHolder = filterSignerPos[0].placeHolder;
+    const getPageNumer = getPlaceHolder.filter(
+      (data) => data.pageNumber === pageNumber
+    );
+    if (getPageNumer.length > 0) {
+      // const getXYdata = getPageNumer[0].pos.filter(
+      //   (data, ind) => data.key === key && data.Width && data.Height
+      // );
+      // if (getXYdata.length > 0) {
+      //   const getXYdata = getPageNumer[0].pos;
+      //   const getPosData = getXYdata;
+      //   const addSignPos = getPosData.map((url, ind) => {
+      //     if (url.key === key) {
+      //       return {
+      //         ...url,
+      //         Width: ref.offsetWidth,
+      //         Height: ref.offsetHeight,
+      //         IsResize: showResize ? true : false
+      //       };
+      //     }
+      //     return url;
+      //   });
+
+      //   const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+      //     if (obj.pageNumber === pageNumber) {
+      //       return { ...obj, pos: addSignPos };
+      //     }
+      //     return obj;
+      //   });
+
+      //   // const newUpdateSigner = signerPos.map((obj, ind) => {
+      //   //   if (obj.signerObjId === signerId) {
+      //   //     return { ...obj, placeHolder: newUpdateSignPos };
+      //   //   }
+      //   //   return obj;
+      //   // });
+
+      //   const newUpdateSigner = signerPos.map((obj, ind) => {
+      //     if (obj.Id === signerId) {
+      //       return { ...obj, placeHolder: newUpdateSignPos };
+      //     }
+      //     return obj;
+      //   });
+      //   setSignerPos(newUpdateSigner);
+      // } else {
+      const getXYdata = getPageNumer[0].pos;
+      const getPosData = getXYdata;
+      const addSignPos = getPosData.map((url, ind) => {
+        if (url.key === key) {
+          return {
+            ...url,
+            Width: ref.offsetWidth,
+            Height: ref.offsetHeight,
+            IsResize: showResize ? true : false
+          };
+        }
+        return url;
+      });
+
+      const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+        if (obj.pageNumber === pageNumber) {
+          return { ...obj, pos: addSignPos };
+        }
+        return obj;
+      });
+
+      // const newUpdateSigner = signerPos.map((obj, ind) => {
+      //   if (obj.signerObjId === signerId) {
+      //     return { ...obj, placeHolder: newUpdateSignPos };
+      //   }
+      //   return obj;
+      // });
+      const newUpdateSigner = signerPos.map((obj, ind) => {
+        if (obj.Id === signerId) {
+          return { ...obj, placeHolder: newUpdateSignPos };
+        }
+        return obj;
+      });
+
+      setSignerPos(newUpdateSigner);
+    }
+    // }
+  }
+};
+
+//function for resize image and update width and height for sign-yourself
+export const handleSignYourselfImageResize = (
+  ref,
+  key,
+  xyPostion,
+  index,
+  setXyPostion
+) => {
+  // const updateFilter = xyPostion[index].pos.filter(
+  //   (data) => data.key === key && data.Width && data.Height
+  // );
+
+  // if (updateFilter.length > 0) {
+  //   const getXYdata = xyPostion[index].pos;
+  //   const getPosData = getXYdata;
+  //   const addSign = getPosData.map((url, ind) => {
+  //     if (url.key === key) {
+  //       return {
+  //         ...url,
+  //         Width: ref.offsetWidth,
+  //         Height: ref.offsetHeight,
+  //         IsResize: true
+  //       };
+  //     }
+  //     return url;
+  //   });
+
+  //   const newUpdateUrl = xyPostion.map((obj, ind) => {
+  //     if (ind === index) {
+  //       return { ...obj, pos: addSign };
+  //     }
+  //     return obj;
+  //   });
+
+  //   setXyPostion(newUpdateUrl);
+  // } else {
+  const getXYdata = xyPostion[index].pos;
+
+  const getPosData = getXYdata;
+
+  const addSign = getPosData.map((url, ind) => {
+    if (url.key === key) {
+      return {
+        ...url,
+        Width: ref.offsetWidth,
+        Height: ref.offsetHeight,
+        IsResize: true
+      };
+    }
+    return url;
+  });
+
+  const newUpdateUrl = xyPostion.map((obj, ind) => {
+    if (ind === index) {
+      return { ...obj, pos: addSign };
+    }
+    return obj;
+  });
+  setXyPostion(newUpdateUrl);
+  // }
+};
+
+//function for call cloud function signPdf and generate digital signature
+export const signPdfFun = async (
+  base64Url,
+  documentId,
+  signerObjectId,
+  pdfOriginalWidth,
+  signerData,
+  containerWH,
+  setIsAlert,
+  xyPosData,
+  pdfBase64Url,
+  pageNo
+) => {
+  let singleSign;
+
+  // const newWidth = containerWH.width;
+  // const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
+  // if (signerData && signerData.length === 1 && signerData[0].pos.length === 1) {
+  //   const height = xyPosData.Height ? xyPosData.Height : 60;
+
+  //   const xPos = (pos) => {
+  //     const resizePos = pos.xPosition;
+  //     //checking both condition mobile and desktop view
+  //     if (isMobile) {
+  //       //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+  //       if (pos.isMobile) {
+  //         const x = resizePos * (pos.scale / scale);
+  //         return x * scale;
+  //       } else {
+  //         const x = resizePos / scale;
+  //         return x * scale;
+  //       }
+  //     } else {
+  //       //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+  //       if (pos.isMobile) {
+  //         const x = resizePos * pos.scale;
+  //         return x;
+  //       } else {
+  //         return resizePos;
+  //       }
+  //     }
+  //   };
+  //   const yBottom = (pos) => {
+  //     const resizePos = pos.yBottom;
+  //     let yPosition;
+  //     //checking both condition mobile and desktop view
+
+  //     if (isMobile) {
+  //       //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+  //       if (pos.isMobile) {
+  //         const y = resizePos * (pos.scale / scale);
+  //         yPosition = pos.isDrag
+  //           ? y * scale - height * scale
+  //           : pos.firstYPos
+  //             ? y * scale - height * scale + pos.firstYPos
+  //             : y * scale - height * scale;
+  //         return yPosition;
+  //       } else {
+  //         const y = resizePos / scale;
+  //         if (pos.IsResize) {
+  //           yPosition = pos.isDrag
+  //             ? y * scale - height * scale
+  //             : pos.firstYPos
+  //               ? y * scale - height * scale + pos.firstYPos
+  //               : y * scale - height * scale;
+  //           return yPosition;
+  //         } else {
+  //           yPosition = pos.isDrag
+  //             ? y * scale - height
+  //             : pos.firstYPos
+  //               ? y * scale - height + pos.firstYPos
+  //               : y * scale - height;
+  //           return yPosition;
+  //         }
+  //       }
+  //     } else {
+  //       //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+  //       if (pos.isMobile) {
+  //         const y = resizePos * pos.scale;
+  //         if (pos.IsResize) {
+  //           yPosition = pos.isDrag
+  //             ? y - height
+  //             : pos.firstYPos
+  //               ? y - height + pos.firstYPos
+  //               : y - height;
+  //           return yPosition;
+  //         } else {
+  //           yPosition = pos.isDrag
+  //             ? y - height * pos.scale
+  //             : pos.firstYPos
+  //               ? y - height * pos.scale + pos.firstYPos
+  //               : y - height * pos.scale;
+  //           return yPosition;
+  //         }
+  //       } else {
+  //         yPosition = pos.isDrag
+  //           ? resizePos - height
+  //           : pos.firstYPos
+  //             ? resizePos - height + pos.firstYPos
+  //             : resizePos - height;
+  //         return yPosition;
+  //       }
+  //     }
+  //   };
+
+  //   singleSign = {
+  //     pdfFile: pdfBase64Url,
+  //     docId: documentId,
+  //     userId: signerObjectId,
+  //     sign: {
+  //       Base64: base64Url,
+  //       Left: xPos(xyPosData),
+  //       Bottom: yBottom(xyPosData),
+  //       Width: placeholderWidth(xyPosData, scale),
+  //       Height: placeholderHeight(xyPosData, scale),
+  //       Page: pageNo
+  //     }
+  //   };
+  // } else if (
+  //   signerData &&
+  //   signerData.length > 0 &&
+  //   signerData[0].pos.length > 0
+  // ) {
+  singleSign = {
+    pdfFile: base64Url,
+    docId: documentId,
+    userId: signerObjectId
+    // };
+  };
+
+  const response = await axios
+    .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: localStorage.getItem("accesstoken")
+      }
+    })
+    .then((Listdata) => {
+      const json = Listdata.data;
+      const res = json.result;
+      return res;
+    })
+    .catch((err) => {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong"
+      });
+    });
+
+  return response;
+};
+
+export const randomId = () => Math.floor(1000 + Math.random() * 9000);
+
+export const createDocument = async (template, placeholders, signerData) => {
+  if (template && template.length > 0) {
+    const Doc = template[0];
+
+    let placeholdersArr = [];
+    if (placeholders?.length > 0) {
+      placeholdersArr = placeholders;
+    }
+    let signers = [];
+    if (signerData?.length > 0) {
+      signerData.forEach((x) => {
+        if (x.objectId) {
+          const obj = {
+            __type: "Pointer",
+            className: "contracts_Contactbook",
+            objectId: x.objectId
+          };
+          signers.push(obj);
+        }
+      });
+    }
+    const data = {
+      Name: Doc.Name,
+      URL: Doc.URL,
+      SignedUrl: Doc.SignedUrl,
+      Description: Doc.Description,
+      Note: Doc.Note,
+      Placeholders: placeholdersArr,
+      ExtUserPtr: {
+        __type: "Pointer",
+        className: "contracts_Users",
+        objectId: Doc.ExtUserPtr.objectId
+      },
+      CreatedBy: {
+        __type: "Pointer",
+        className: "_User",
+        objectId: Doc.CreatedBy.objectId
+      },
+      Signers: signers
+    };
+
+    try {
+      const res = await axios.post(
+        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+          "_appName"
+        )}_Document`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      if (res) {
+        return { status: "success", id: res.data.objectId };
+      }
+    } catch (err) {
+      console.log("axois err ", err);
+      return { status: "error", id: "Something Went Wrong!" };
+    }
+  }
+};
+
+export const getFirstLetter = (name) => {
+  const firstLetter = name?.charAt(0);
+  return firstLetter;
+};
+
+export const darkenColor = (color, factor) => {
+  // Remove '#' from the color code and parse it to get RGB values
+  const hex = color.replace("#", "");
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  // Darken the color by reducing each RGB component
+  const darkerR = Math.floor(r * (1 - factor));
+  const darkerG = Math.floor(g * (1 - factor));
+  const darkerB = Math.floor(b * (1 - factor));
+
+  // Convert the darkened RGB components back to hex
+  return `#${((darkerR << 16) | (darkerG << 8) | darkerB)
+    .toString(16)
+    .padStart(6, "0")}`;
 };

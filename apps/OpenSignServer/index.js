@@ -70,7 +70,9 @@ if (process.env.SMTP_ENABLE) {
 export const config = {
   databaseURI:
     process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
-  cloud: process.env.CLOUD || __dirname + '/cloud/main.js',
+  cloud: function () {
+    import('./cloud/main.js');
+  },
   appId: process.env.APP_ID || 'myAppId',
   masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::1'], // '::1'
@@ -172,12 +174,6 @@ app.get('/', function (req, res) {
   // res.setHeader('Content-Type', 'text/plain');
   // res.end('I dream of being a website.  Please star the parse-server repo on GitHub!');
   res.status(200).send('open-sign-server is running !!!');
-});
-
-// There will be a test page available on the /test path of your server url
-// Remove this before launching your app
-app.get('/test', function (req, res) {
-  res.sendFile(path.join(__dirname, '/public/test.html'));
 });
 
 if (!process.env.TESTING) {

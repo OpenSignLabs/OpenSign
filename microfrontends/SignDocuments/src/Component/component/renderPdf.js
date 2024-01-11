@@ -1,9 +1,16 @@
 import React from "react";
 import RSC from "react-scrollbars-custom";
-import Toast from "react-bootstrap/Toast";
 import { Rnd } from "react-rnd";
 import { themeColor } from "../../utils/ThemeColor/backColor";
 import { Document, Page, pdfjs } from "react-pdf";
+import BorderResize from "./borderResize";
+import {
+  addZIndex,
+  handleImageResize,
+  handleSignYourselfImageResize
+} from "../../utils/Utils";
+import EmailToast from "./emailToast";
+import PlaceholderBorder from "./placeholderBorder";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -17,7 +24,6 @@ function RenderPdf({
   nodeRef,
   handleTabDrag,
   handleStop,
-  handleImageResize,
   isDragging,
   setIsSignPad,
   setIsStamp,
@@ -29,53 +35,163 @@ function RenderPdf({
   pdfUrl,
   numPages,
   pageDetails,
-  recipient,
-  isAlreadySign,
   pdfRequest,
   setCurrentSigner,
   signerObjectId,
   signedSigners,
   setPdfLoadFail,
   placeholder,
-  pdfLoadFail
+  pdfLoadFail,
+  setSignerPos,
+  setXyPostion,
+  index,
+  containerWH,
+  setIsResize,
+  setZIndex,
+  handleLinkUser,
+  setUniqueId,
+  signersdata,
+  setIsPageCopy,
+  setSignerObjId
 }) {
   const isMobile = window.innerWidth < 767;
-  const newWidth = window.innerWidth;
+  const newWidth = containerWH.width;
   const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
+
   // handle signature block width and height according to screen
-  const posWidth = (pos) => {
+  const posWidth = (pos, signYourself) => {
+    const defaultWidth = 150;
+    const posWidth = pos.Width ? pos.Width : defaultWidth;
     let width;
-    if (isMobile) {
-      if (!pos.isMobile) {
-        width = pos.Width / scale ? pos.Width / scale : 150 / scale;
-        return width;
-      } else {
-        width = pos.Width ? pos.Width : 150;
-        return width;
-      }
-    } else {
-      width = pos.Width ? pos.Width : 150;
+    if (signYourself) {
+      width = posWidth;
       return width;
+    } else {
+      if (isMobile) {
+        if (!pos.isMobile) {
+          if (pos.IsResize) {
+            width = posWidth ? posWidth : defaultWidth;
+            return width;
+          } else {
+            width = (posWidth || defaultWidth) / scale;
+            return width;
+          }
+        } else {
+          width = posWidth;
+          return width;
+        }
+      } else {
+        if (pos.isMobile) {
+          if (pos.IsResize) {
+            width = posWidth ? posWidth : defaultWidth;
+            return width;
+          } else {
+            width = (posWidth || defaultWidth) * pos.scale;
+            return width;
+          }
+        } else {
+          width = posWidth ? posWidth : defaultWidth;
+          return width;
+        }
+      }
     }
   };
-  const posHeight = (pos) => {
-    let width;
-    if (isMobile) {
-      if (!pos.isMobile) {
-        width = pos.Height / scale ? pos.Height / scale : 60 / scale;
-        return width;
-      } else {
-        width = pos.Height ? pos.Height : 60;
-        return width;
-      }
+  const posHeight = (pos, signYourself) => {
+    let height;
+    const posHeight = pos.Height;
+    const defaultHeight = 60;
+    if (signYourself) {
+      height = posHeight ? posHeight : defaultHeight;
+      return height;
     } else {
-      width = pos.Height ? pos.Height : 60;
-      return width;
+      if (isMobile) {
+        if (!pos.isMobile) {
+          if (pos.IsResize) {
+            height = posHeight ? posHeight : defaultHeight;
+            return height;
+          } else {
+            height = (posHeight || defaultHeight) / scale;
+            return height;
+          }
+        } else {
+          height = posHeight ? posHeight : defaultHeight;
+          return height;
+        }
+      } else {
+        if (pos.isMobile) {
+          if (pos.IsResize) {
+            height = posHeight ? posHeight : defaultHeight;
+            return height;
+          } else {
+            height = (posHeight || defaultHeight) * pos.scale;
+            return height;
+          }
+        } else {
+          height = posHeight ? posHeight : defaultHeight;
+          return height;
+        }
+      }
     }
   };
 
+  const xPos = (pos, signYourself) => {
+    const resizePos = pos.xPosition;
+    if (signYourself) {
+      return resizePos;
+    } else {
+      //checking both condition mobile and desktop view
+      if (isMobile) {
+        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+        if (!pos.isMobile) {
+          return resizePos / scale;
+        }
+        //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
+        else {
+          return resizePos * (pos.scale / scale);
+        }
+      } else {
+        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+
+        if (pos.isMobile) {
+          return pos.scale && resizePos * pos.scale;
+        }
+        //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
+        else {
+          return resizePos;
+        }
+      }
+    }
+  };
+  const yPos = (pos, signYourself) => {
+    const resizePos = pos.yPosition;
+    if (signYourself) {
+      return resizePos;
+    } else {
+      //checking both condition mobile and desktop view
+      if (isMobile) {
+        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+        if (!pos.isMobile) {
+          return resizePos / scale;
+        }
+        //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
+        else {
+          return resizePos * (pos.scale / scale);
+        }
+      } else {
+        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+
+        if (pos.isMobile) {
+          return pos.scale && resizePos * pos.scale;
+        }
+        //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
+        else {
+          return resizePos;
+        }
+      }
+    }
+  };
   //function for render placeholder block over pdf document
   const checkSignedSignes = (data) => {
     const checkSign = signedSigners.filter(
@@ -84,52 +200,7 @@ function RenderPdf({
     if (data.signerObjId === signerObjectId) {
       setCurrentSigner(true);
     }
-    const xPos = (pos) => {
-      //checking both condition mobile and desktop view
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (!pos.isMobile) {
-          return pos.xPosition / scale - 20;
-        }
-        //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
-        else {
-          return pos.xPosition * (pos.scale / scale);
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
-        if (pos.isMobile) {
-          return pos.scale && pos.xPosition * pos.scale + 50;
-        }
-        //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
-        else {
-          return pos.xPosition;
-        }
-      }
-    };
-    const yPos = (pos) => {
-      //checking both condition mobile and desktop view
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (!pos.isMobile) {
-          return pos.yPosition / scale;
-        }
-        //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
-        else {
-          return pos.yPosition * (pos.scale / scale);
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-
-        if (pos.isMobile) {
-          return pos.scale && pos.yPosition * pos.scale + 50;
-        }
-        //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
-        else {
-          return pos.yPosition;
-        }
-      }
-    };
     return (
       checkSign.length === 0 &&
       data.placeHolder.map((placeData, key) => {
@@ -137,124 +208,120 @@ function RenderPdf({
           <React.Fragment key={key}>
             {placeData.pageNumber === pageNumber &&
               placeData.pos.map((pos, index) => {
-                return pos && pos.SignUrl ? (
-                  <React.Fragment key={pos.key}>
-                    <Rnd
-                      disableDragging={true}
-                      enableResizing={{
-                        top: false,
-                        right: false,
-                        bottom: false,
-                        left: false,
-                        topRight: false,
-                        bottomRight: false,
-                        bottomLeft: false,
-                        topLeft: false
-                      }}
-                      bounds="parent"
-                      style={{
-                        padding: "0px",
-                        cursor: "all-scroll",
-                        zIndex: 1,
-                        position: "absolute",
-                        borderStyle: "dashed",
-                        width: "150px",
-                        height: "60px",
-                        borderColor: themeColor(),
-                        background: "#daebe0",
-                        textAlign: "center",
-                        justifyContent: "center",
-                        borderWidth: "0.2px"
-                      }}
-                      size={{
-                        width: posWidth(pos),
-                        height: posHeight(pos)
-                      }}
-                      lockAspectRatio={pos.Width && 2.5}
-                      default={{
-                        x: xPos(pos),
-                        y: yPos(pos)
-                      }}
-                      onClick={() => {
-                        setIsSignPad(true);
-                        setSignKey(pos.key);
-                      }}
-                    >
-                      <div style={{ pointerEvents: "none" }}>
-                        <img
-                          alt="no img"
-                          onClick={() => {
+                return (
+                  pos && (
+                    <React.Fragment key={pos.key}>
+                      <Rnd
+                        disableDragging={true}
+                        enableResizing={{
+                          top: false,
+                          right: false,
+                          bottom: false,
+                          left: false,
+                          topRight: false,
+                          bottomRight:
+                            data.signerObjId === signerObjectId && true,
+                          bottomLeft: false,
+                          topLeft: false
+                        }}
+                        bounds="parent"
+                        style={{
+                          cursor:
+                            data.signerObjId === signerObjectId
+                              ? "pointer"
+                              : "not-allowed",
+                          background: data.blockColor,
+                          borderColor: themeColor(),
+                          borderStyle: "dashed",
+                          borderWidth: "0.1px",
+                          zIndex: "1"
+                        }}
+                        className="signYourselfBlock"
+                        size={{
+                          width: posWidth(pos),
+                          height: posHeight(pos)
+                        }}
+                        onClick={() => {
+                          if (data.signerObjId === signerObjectId) {
                             setIsSignPad(true);
                             setSignKey(pos.key);
-                          }}
-                          src={pos.SignUrl}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "contain"
-                          }}
-                        />
-                      </div>
-                    </Rnd>
-                  </React.Fragment>
-                ) : (
-                  <Rnd
-                    disableDragging={true}
-                    enableResizing={{
-                      top: false,
-                      right: false,
-                      bottom: false,
-                      left: false,
-                      topRight: false,
-                      bottomRight: false,
-                      bottomLeft: false,
-                      topLeft: false
-                    }}
-                    key={pos.key}
-                    bounds="parent"
-                    onClick={() => {
-                      if (data.signerObjId === signerObjectId) {
-                        setIsSignPad(true);
-                        setSignKey(pos.key);
-                        setIsStamp(pos.isStamp);
-                      }
-                    }}
-                    style={{
-                      padding: "0px",
-                      cursor: "all-scroll",
-                      zIndex: 1,
-                      position: "absolute",
-                      borderStyle: "dashed",
-                      width: "200px",
-                      height: "30px",
-                      borderColor: themeColor(),
-                      background: data.blockColor,
-                      textAlign: "center",
-                      justifyContent: "center",
-                      borderWidth: "0.2px"
-                    }}
-                    default={{
-                      x: xPos(pos),
-                      y: yPos(pos)
-                    }}
-                    size={{
-                      width: posWidth(pos),
-                      height: posHeight(pos)
-                    }}
-                    lockAspectRatio={pos.Width ? pos.Width / pos.Height : 2.5}
-                  >
-                    <div
-                      style={{
-                        fontSize: "12px",
-                        color: "black",
-                        fontWeight: "600",
+                            setIsStamp(pos.isStamp);
+                          }
+                        }}
+                        onResize={(e, direction, ref, delta, position) => {
+                          e.stopPropagation();
+                          handleImageResize(
+                            ref,
+                            pos.key,
+                            data.Id,
+                            position,
+                            signerPos,
+                            pageNumber,
+                            setSignerPos,
+                            pdfOriginalWidth,
+                            containerWH,
+                            true
+                          );
+                        }}
+                        lockAspectRatio={
+                          pos.Width ? pos.Width / pos.Height : 2.5
+                        }
+                        default={{
+                          x: xPos(pos),
+                          y: yPos(pos)
+                        }}
+                      >
+                        <div style={{ pointerEvents: "none" }}>
+                          {data.signerObjId === signerObjectId && (
+                            <BorderResize />
+                          )}
+                          {pos.SignUrl ? (
+                            <img
+                              alt="no img"
+                              onClick={() => {
+                                setIsSignPad(true);
+                                setSignKey(pos.key);
+                              }}
+                              src={pos.SignUrl}
+                              style={{
+                                width: "99%",
+                                height: "100%",
+                                objectFit: "contain"
+                              }}
+                            />
+                          ) : (
+                            pdfDetails[0].Signers.map((signerData, key) => {
+                              return (
+                                signerData.objectId === data.signerObjId && (
+                                  <div
+                                    key={key}
+                                    style={{
+                                      fontSize: "12px",
+                                      color: "black",
+                                      fontWeight: "600",
 
-                        marginTop: "0px"
-                      }}
-                    >
-                      {pos.isStamp ? "stamp" : "signature"}
-                    </div>
-                  </Rnd>
+                                      marginTop: "0px"
+                                    }}
+                                  >
+                                    {signerData.Name}
+                                    <div
+                                      style={{
+                                        fontSize: "10px",
+                                        color: "black",
+                                        justifyContent: "center"
+                                      }}
+                                    >
+                                      {pos.isStamp ? "stamp" : "signature"}
+                                    </div>
+                                  </div>
+                                )
+                              );
+                            })
+                          )}
+                        </div>
+                      </Rnd>
+                    </React.Fragment>
+                  )
                 );
               })}
           </React.Fragment>
@@ -263,6 +330,81 @@ function RenderPdf({
     );
   };
 
+  const PlaceholderDesign = ({ pos, data }) => {
+    return (
+      <div>
+        <i
+          className="fa-regular fa-copy signCopy"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsPageCopy(true);
+            setSignKey(pos.key);
+          }}
+          style={{
+            color: "#188ae2"
+          }}
+        ></i>
+        <i
+          className="fa-regular fa-circle-xmark signCloseBtn"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (data) {
+              handleDeleteSign(pos.key, data.signerObjId);
+            } else {
+              handleDeleteSign(pos.key);
+              setIsStamp(false);
+            }
+          }}
+          style={{
+            color: "#188ae2"
+          }}
+        ></i>
+
+        {pos.SignUrl ? (
+          <div style={{ pointerEvents: "none" }}>
+            <img
+              alt="signimg"
+              src={pos.SignUrl}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain"
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            style={{
+              fontSize: "10px",
+              color: "black",
+              justifyContent: "center"
+            }}
+          >
+            {pos.isStamp ? "stamp" : "signature"}
+          </div>
+        )}
+      </div>
+    );
+  };
+  const handleUserName = (signerId, Role) => {
+    if (signerId) {
+      const checkSign = signersdata.find((sign) => sign.objectId === signerId);
+      if (checkSign?.Name) {
+        return (
+          <>
+            <div style={{ color: "black", fontSize: 11 }}>
+              {checkSign?.Name}
+            </div>
+            <div style={{ color: "black", fontSize: 11 }}> {`(${Role})`} </div>
+          </>
+        );
+      } else {
+        return <div style={{ color: "black", fontSize: 11 }}> {Role} </div>;
+      }
+    } else {
+      return <div style={{ color: "black", fontSize: 11 }}> {Role} </div>;
+    }
+  };
   return (
     <>
       {isMobile && scale ? (
@@ -274,322 +416,248 @@ function RenderPdf({
           ref={drop}
           id="container"
         >
-          <div className="d-flex justify-content-center">
-            <Toast
-              show={successEmail}
-              delay={3000}
-              autohide
-              className="d-inline-block m-1"
-              bg="success"
-              style={{ background: "#348545" }}
-            >
-              <Toast.Body className={"text-white"}>
-                Email sent successful!
-              </Toast.Body>
-            </Toast>
-          </div>
+          <EmailToast isShow={successEmail} />
           {pdfLoadFail.status &&
-            (recipient
-              ? !pdfUrl &&
-                !isAlreadySign.mssg &&
-                xyPostion.length > 0 &&
-                xyPostion.map((data, ind) => {
+            (pdfRequest
+              ? signerPos.map((data, key) => {
                   return (
-                    <React.Fragment key={ind}>
-                      {data.pageNumber === pageNumber &&
-                        data.pos.map((pos) => {
-                          return pos && pos.SignUrl ? (
-                            <Rnd
-                              disableDragging={true}
-                              enableResizing={{
-                                top: false,
-                                right: false,
-                                bottom: false,
-                                left: false,
-                                topRight: false,
-                                bottomRight: false,
-                                bottomLeft: false,
-                                topLeft: false
-                              }}
-                              key={pos.key}
-                              bounds="parent"
-                              style={{
-                                padding: "0px",
-                                cursor: "all-scroll",
-                                zIndex: 1,
-                                position: "absolute",
-                                borderStyle: "dashed",
-                                width: "150px",
-                                height: "60px",
-                                borderColor: themeColor(),
-                                background: "#daebe0",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                borderWidth: "0.2px"
-                              }}
-                              size={{
-                                width: posWidth(pos),
-                                height: posHeight(pos)
-                              }}
-                              lockAspectRatio={pos.Width && 2.5}
-                              //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
-                              //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-                              default={{
-                                x: !pos.isMobile
-                                  ? pos.xPosition / scale
-                                  : pos.xPosition * (pos.scale / scale) - 50,
-
-                                y: !pos.isMobile
-                                  ? pos.yPosition / scale
-                                  : pos.yPosition * (pos.scale / scale)
-                              }}
-                              onClick={() => {
-                                setIsSignPad(true);
-                                setSignKey(pos.key);
-                              }}
-                            >
-                              <div style={{ pointerEvents: "none" }}>
-                                <img
-                                  alt="no img"
-                                  onClick={() => {
-                                    setIsSignPad(true);
-                                    setSignKey(pos.key);
-                                  }}
-                                  src={pos.SignUrl}
-                                  style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "contain"
-                                  }}
-                                />
-                              </div>
-                            </Rnd>
-                          ) : (
-                            <Rnd
-                              data-tut="reactourSecond"
-                              enableResizing={{
-                                top: false,
-                                right: false,
-                                bottom: false,
-                                left: false,
-                                topRight: false,
-                                bottomRight: false,
-                                bottomLeft: false,
-                                topLeft: false
-                              }}
-                              key={pos.key}
-                              bounds="parent"
-                              style={{
-                                padding: "0px",
-                                cursor: "all-scroll",
-                                zIndex: 1,
-                                position: "absolute",
-                                borderStyle: "dashed",
-                                width: "150px",
-                                height: "60px",
-                                borderColor: themeColor(),
-                                background: "#c1dee0",
-                                textAlign: "center",
-                                justifyContent: "center",
-                                borderWidth: "0.2px"
-                              }}
-                              size={{
-                                width: posWidth(pos),
-                                height: posHeight(pos)
-                              }}
-                              disableDragging={true}
-                              default={{
-                                //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
-                                //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-                                x: !pos.isMobile
-                                  ? pos.xPosition / scale
-                                  : pos.xPosition * (pos.scale / scale) - 50,
-
-                                y: !pos.isMobile
-                                  ? pos.yPosition / scale
-                                  : pos.yPosition * (pos.scale / scale)
-                              }}
-                              onClick={() => {
-                                setIsSignPad(true);
-                                setSignKey(pos.key);
-                                setIsStamp(pos.isStamp);
-                              }}
-                            >
-                              <div
-                                style={{
-                                  fontSize: "12px",
-                                  color: "black",
-                                  fontWeight: "600",
-                                  justifyContent: "center",
-                                  marginTop: "0px"
-                                }}
-                              >
-                                {pos.isStamp ? "stamp" : "signature"}
-                              </div>
-                            </Rnd>
-                          );
-                        })}
+                    <React.Fragment key={key}>
+                      {checkSignedSignes(data)}
                     </React.Fragment>
                   );
                 })
-              : pdfRequest
-                ? signerPos.map((data, key) => {
+              : placeholder // placeholder mobile
+                ? signerPos.map((data, ind) => {
                     return (
-                      <React.Fragment key={key}>
-                        {checkSignedSignes(data)}
-                      </React.Fragment>
-                    );
-                  })
-                : placeholder
-                  ? signerPos.map((data, ind) => {
-                      return (
-                        <React.Fragment key={ind}>
-                          {data.placeHolder.map((placeData, index) => {
-                            return (
-                              <React.Fragment key={index}>
-                                {placeData.pageNumber === pageNumber &&
-                                  placeData.pos.map((pos) => {
-                                    return (
-                                      <Rnd
-                                        key={pos.key}
-                                        bounds="parent"
-                                        style={{
-                                          padding: "0px",
-                                          cursor: "all-scroll",
-                                          zIndex: 1,
-                                          position: "absolute",
-                                          borderStyle: "dashed",
-                                          width: "200px",
-                                          height: "30px",
-                                          borderColor: themeColor(),
-                                          background: data.blockColor,
-                                          textAlign: "center",
-                                          justifyContent: "center",
-                                          borderWidth: "0.2px"
-                                        }}
-                                        onDrag={() =>
-                                          handleTabDrag(
-                                            pos.key,
-                                            data.signerObjId
-                                          )
-                                        }
-                                        size={{
-                                          width: pos.Width ? pos.Width : 150,
-                                          height: pos.Height ? pos.Height : 60
-                                        }}
-                                        lockAspectRatio={
-                                          pos.Width
-                                            ? pos.Width / pos.Height
-                                            : 2.5
-                                        }
-                                        resizeHandleStyles={{
-                                          bottom: { display: "none" },
-                                          right: { display: "none" },
-                                          bottomRight: { display: "block" }
-                                        }}
-                                        onDragStop={(event, dragElement) =>
+                      <React.Fragment key={ind}>
+                        {data.placeHolder.map((placeData, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              {placeData.pageNumber === pageNumber &&
+                                placeData.pos.map((pos) => {
+                                  return (
+                                    <Rnd
+                                      bounds="parent"
+                                      enableResizing={{
+                                        top: false,
+                                        right: false,
+                                        bottom: false,
+                                        left: false,
+                                        topRight: false,
+                                        bottomRight: true,
+                                        bottomLeft: false,
+                                        topLeft: false
+                                      }}
+                                      key={pos.key}
+                                      style={{
+                                        cursor: "all-scroll",
+                                        background: data.blockColor,
+                                        borderColor: data.bac,
+                                        zIndex: pos.zIndex
+                                      }}
+                                      className="signYourselfBlock"
+                                      onDrag={() => handleTabDrag(pos.key)}
+                                      size={{
+                                        width: posWidth(pos),
+                                        height: posHeight(pos)
+                                      }}
+                                      // size={{
+                                      //   width: pos.Width ? pos.Width : 150,
+                                      //   height: pos.Height ? pos.Height : 60
+                                      // }}
+                                      lockAspectRatio={
+                                        pos.Width ? pos.Width / pos.Height : 2.5
+                                      }
+                                      onDragStop={
+                                        (event, dragElement) =>
                                           handleStop(
                                             event,
                                             dragElement,
-                                            data.signerObjId,
+                                            data.Id,
                                             pos.key
                                           )
-                                        }
-                                        default={{
-                                          x: pos.xPosition,
-                                          y: pos.yPosition
-                                        }}
-                                        onResize={(
-                                          e,
-                                          direction,
+                                        // data.signerObjId,
+                                      }
+                                      // default={{
+                                      //   x: pos.xPosition,
+                                      //   y: pos.yPosition
+                                      // }}
+                                      default={{
+                                        x: xPos(pos),
+                                        y: yPos(pos)
+                                      }}
+                                      onResizeStart={() => {
+                                        setIsResize(true);
+                                      }}
+                                      onResizeStop={() => {
+                                        setIsResize && setIsResize(false);
+                                      }}
+                                      onResize={(
+                                        e,
+                                        direction,
+                                        ref,
+                                        delta,
+                                        position
+                                      ) => {
+                                        handleImageResize(
                                           ref,
-                                          delta,
-                                          position
-                                        ) => {
-                                          handleImageResize(
-                                            ref,
+                                          pos.key,
+                                          data.Id,
+                                          position,
+                                          signerPos,
+                                          pageNumber,
+                                          setSignerPos,
+                                          pdfOriginalWidth,
+                                          containerWH,
+                                          true
+                                        );
+                                      }}
+                                    >
+                                      <BorderResize right={-12} top={-11} />
+                                      <PlaceholderBorder
+                                        pos={pos}
+                                        posWidth={posWidth}
+                                        posHeight={posHeight}
+                                      />
+                                      <div
+                                        onTouchEnd={() => {
+                                          const dataNewPlace = addZIndex(
+                                            signerPos,
                                             pos.key,
-                                            data.signerObjId,
-                                            position
+                                            setZIndex
                                           );
+                                          setSignerPos((prevState) => {
+                                            const newState = [...prevState];
+                                            newState.splice(
+                                              0,
+                                              signerPos.length,
+                                              ...dataNewPlace
+                                            );
+                                            return newState;
+                                          });
                                         }}
                                       >
-                                        <div
-                                          onTouchStart={(e) => {
+                                        <i
+                                          data-tut="reactourLinkUser"
+                                          className="fa-regular fa-user signUserIcon"
+                                          onTouchEnd={(e) => {
                                             e.stopPropagation();
-                                            handleDeleteSign(
-                                              pos.key,
-                                              data.signerObjId
-                                            );
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
                                           }}
                                           style={{
-                                            position: "absolute",
-                                            right: 0,
-                                            display: "inline-block",
-                                            background: themeColor(),
-                                            cursor: "pointer",
-                                            padding: "0px 10px",
-                                            zIndex: 10
+                                            color: "#188ae2"
                                           }}
-                                        >
-                                          x
-                                        </div>
+                                        ></i>
+                                        <i
+                                          className="fa-regular fa-copy signCopy"
+                                          onTouchEnd={(e) => {
+                                            e.stopPropagation();
+                                            setIsPageCopy(true);
+                                            setSignKey(pos.key);
+                                            setSignerObjId(data.signerObjId);
+                                            setUniqueId(data.Id);
+                                          }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsPageCopy(true);
+                                            setSignKey(pos.key);
+                                            setSignerObjId(data.signerObjId);
+                                            setUniqueId(data.Id);
+                                          }}
+                                          style={{
+                                            color: "#188ae2"
+                                          }}
+                                        ></i>
+                                        <i
+                                          className="fa-regular fa-circle-xmark signCloseBtn"
+                                          onTouchEnd={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteSign(pos.key, data.Id);
+                                            // data.signerObjId
+                                          }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteSign(pos.key, data.Id);
+                                            // data.signerObjId
+                                          }}
+                                          style={{
+                                            color: "#188ae2"
+                                          }}
+                                        ></i>
+
                                         <div
                                           style={{
-                                            fontSize: "12px",
+                                            fontSize: "10px",
                                             color: "black",
-                                            fontWeight: "600",
-
+                                            fontWeight: "500",
                                             marginTop: "0px"
                                           }}
                                         >
-                                          {pos.isStamp ? "stamp" : "signature"}
+                                          {pos.isStamp ? (
+                                            <div>stamp</div>
+                                          ) : (
+                                            <div>signature</div>
+                                          )}
+                                          {handleUserName(
+                                            data.signerObjId,
+                                            data.Role
+                                          )}
                                         </div>
-                                      </Rnd>
-                                    );
-                                  })}
-                              </React.Fragment>
-                            );
-                          })}
-                        </React.Fragment>
-                      );
-                    })
-                  : xyPostion.map((data, ind) => {
-                      return (
-                        <React.Fragment key={ind}>
-                          {data.pageNumber === pageNumber &&
-                            data.pos.map((pos) => {
-                              return pos && pos.SignUrl ? (
+                                      </div>
+                                    </Rnd>
+                                  );
+                                })}
+                            </React.Fragment>
+                          );
+                        })}
+                      </React.Fragment>
+                    );
+                  })
+                : xyPostion.map((data, ind) => {
+                    return (
+                      <React.Fragment key={ind}>
+                        {data.pageNumber === pageNumber &&
+                          data.pos.map((pos) => {
+                            return (
+                              pos && (
                                 <Rnd
+                                  allowAnyClick
+                                  enableResizing={{
+                                    top: false,
+                                    right: false,
+                                    bottom: false,
+                                    left: false,
+                                    topRight: false,
+                                    bottomRight: true,
+                                    bottomLeft: false,
+                                    topLeft: false
+                                  }}
                                   lockAspectRatio={
                                     pos.Width ? pos.Width / pos.Height : 2.5
                                   }
                                   bounds="parent"
                                   ref={nodeRef}
                                   key={pos.key}
+                                  className="signYourselfBlock"
                                   style={{
-                                    padding: "0px",
+                                    border: "1px solid red",
                                     cursor: "all-scroll",
-                                    zIndex: 1,
-                                    position: "absolute",
-                                    borderStyle: "dashed",
-                                    width: "150px",
-                                    height: "60px",
-                                    borderColor: themeColor(),
-                                    background: "#daebe0",
-                                    textAlign: "center",
-                                    justifyContent: "center",
-                                    borderWidth: "0.2px",
-                                    overflow: "hidden",
-                                    userSelect: "none"
+                                    zIndex: "1",
+                                    background: "#daebe0"
                                   }}
                                   size={{
-                                    width: pos.Width ? pos.Width : 151,
-                                    height: pos.Height ? pos.Height : 61
+                                    width: posWidth(pos, true),
+                                    height: posHeight(pos, true)
                                   }}
                                   default={{
-                                    x: pos.xPosition,
-                                    y: pos.yPosition
+                                    x: xPos(pos, true),
+                                    y: yPos(pos, true)
                                   }}
                                   onDrag={() => handleTabDrag(pos.key)}
                                   onDragStop={handleStop}
@@ -600,18 +668,32 @@ function RenderPdf({
                                     delta,
                                     position
                                   ) => {
-                                    handleImageResize(
+                                    handleSignYourselfImageResize(
                                       ref,
                                       pos.key,
-                                      direction,
-                                      position
+                                      xyPostion,
+                                      index,
+                                      setXyPostion
                                     );
                                   }}
                                 >
-                                  {" "}
+                                  <BorderResize right={-12} top={-11} />
+                                  <PlaceholderBorder
+                                    pos={pos}
+                                    posWidth={posWidth}
+                                    isSignYourself={true}
+                                    posHeight={posHeight}
+                                  />
                                   <div
+                                    style={{
+                                      left: xPos(pos, true),
+                                      top: yPos(pos, true),
+                                      width: posWidth(pos, true),
+                                      height: posHeight(pos, true),
+                                      zIndex: "10"
+                                    }}
                                     onTouchEnd={(e) => {
-                                      if (!isDragging) {
+                                      if (!isDragging && isMobile) {
                                         setTimeout(() => {
                                           e.stopPropagation();
                                           setIsSignPad(true);
@@ -621,149 +703,67 @@ function RenderPdf({
                                       }
                                     }}
                                   >
-                                    <div
-                                      ref={nodeRef}
-                                      onTouchStart={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteSign(pos.key);
-                                        setIsStamp(false);
-                                      }}
-                                      style={{
-                                        position: "absolute",
-                                        right: 0,
-                                        display: "inline-block",
-                                        background: themeColor(),
-                                        cursor: "pointer",
-                                        padding: "0px 10px"
-                                      }}
-                                    >
-                                      x
-                                    </div>
-                                    <div style={{ pointerEvents: "none" }}>
-                                      <img
-                                        alt="signimg"
-                                        onClick={(e) => {
-                                          setSignKey(pos.key);
-                                          console.log("Drag 2");
-                                          setIsSignPad(true);
-                                          setIsStamp(pos.isStamp);
-                                        }}
-                                        src={pos.SignUrl}
-                                        style={{
-                                          width: "100%",
-                                          height: "100%",
-                                          objectFit: "contain"
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                </Rnd>
-                              ) : (
-                                <>
-                                  <Rnd
-                                    allowAnyClick
-                                    ref={nodeRef}
-                                    key={pos.key}
-                                    lockAspectRatio={
-                                      pos.Width ? pos.Width / pos.Height : 2.5
-                                    }
-                                    bounds="parent"
-                                    style={{
-                                      padding: "0px",
-                                      cursor: "all-scroll",
-                                      zIndex: 10,
-                                      position: "absolute",
-                                      borderStyle: "dashed",
-                                      width: "150px",
-                                      height: "60px",
-                                      borderColor: themeColor(),
-                                      background: "#daebe0",
-                                      textAlign: "center",
-                                      justifyContent: "center",
-                                      borderWidth: "0.2px",
-                                      overflow: "hidden"
-                                    }}
-                                    onDrag={(e) => {
-                                      handleTabDrag(pos.key, e);
-                                    }}
-                                    onDragStop={handleStop}
-                                    size={{
-                                      width: pos.Width ? pos.Width : 150,
-                                      height: pos.Height ? pos.Height : 60
-                                    }}
-                                    default={{
-                                      x: pos.xPosition,
-                                      y: pos.yPosition
-                                    }}
-                                  >
-                                    <div
+                                    <i
+                                      className="fa-regular fa-copy signCopy"
                                       onTouchEnd={(e) => {
-                                        if (!isDragging) {
-                                          setTimeout(() => {
-                                            setIsSignPad(true);
-                                            setSignKey(pos.key);
-                                            setIsStamp(pos.isStamp);
-                                          }, 500);
-                                        }
+                                        e.stopPropagation();
+                                        setIsPageCopy(true);
+                                        setSignKey(pos.key);
                                       }}
-                                      className="dragElm"
                                       style={{
-                                        padding: "0px",
-                                        cursor: "all-scroll",
-                                        zIndex: 20,
-                                        position: "absolute",
-                                        borderStyle: "dashed",
-                                        width: "150px",
-                                        height: "60px",
-                                        borderColor: themeColor(),
-                                        background: "#daebe0",
-                                        textAlign: "center",
-                                        justifyContent: "center",
-                                        borderWidth: "0.2px",
-                                        overflow: "hidden"
+                                        color: "#188ae2"
                                       }}
-                                    >
-                                      <div
-                                        onTouchStart={(e) => {
-                                          e.stopPropagation();
-                                          e.preventDefault();
-
+                                    ></i>
+                                    <i
+                                      className="fa-regular fa-circle-xmark signCloseBtn"
+                                      onTouchEnd={(e) => {
+                                        e.stopPropagation();
+                                        if (data) {
+                                          handleDeleteSign(
+                                            pos.key,
+                                            data.signerObjId
+                                          );
+                                        } else {
                                           handleDeleteSign(pos.key);
                                           setIsStamp(false);
-                                        }}
-                                        onClick={(e) => {
-                                          e.stopPropagation(); // Prevent further event propagation
-                                        }}
-                                        style={{
-                                          position: "absolute",
-                                          right: 0,
-                                          display: "inline-block",
-                                          background: themeColor(),
-                                          cursor: "pointer",
-                                          padding: "0px 10px"
-                                        }}
-                                      >
-                                        x
+                                        }
+                                      }}
+                                      style={{
+                                        color: "#188ae2"
+                                      }}
+                                    ></i>
+
+                                    {pos.SignUrl ? (
+                                      <div style={{ pointerEvents: "none" }}>
+                                        <img
+                                          alt="signimg"
+                                          src={pos.SignUrl}
+                                          style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "contain"
+                                          }}
+                                        />
                                       </div>
+                                    ) : (
                                       <div
-                                        cancel=".dragElm"
                                         style={{
-                                          fontSize: "12px",
-                                          color: themeColor(),
-                                          justifyContent: "center",
-                                          marginTop: "20px"
+                                          fontSize: "10px",
+                                          color: "black",
+                                          justifyContent: "center"
                                         }}
                                       >
                                         {pos.isStamp ? "stamp" : "signature"}
                                       </div>
-                                    </div>
-                                  </Rnd>
-                                </>
-                              );
-                            })}
-                        </React.Fragment>
-                      );
-                    }))}
+                                    )}
+                                  </div>
+                                </Rnd>
+                              )
+                            );
+                          })}
+                      </React.Fragment>
+                    );
+                  }))}
 
           {/* this component for render pdf document is in middle of the component */}
           <div
@@ -775,9 +775,7 @@ function RenderPdf({
           >
             <Document
               onLoadError={(e) => {
-                if (recipient) {
-                  setPdfLoadFail(true);
-                }
+                setPdfLoadFail(true);
               }}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
@@ -793,8 +791,8 @@ function RenderPdf({
                 <Page
                   key={index}
                   pageNumber={pageNumber}
-                  width={window.innerWidth - 32}
-                  height={window.innerHeight - 32}
+                  width={containerWH.width}
+                  height={containerWH.height}
                   renderAnnotationLayer={false}
                   renderTextLayer={false}
                   onGetAnnotationsError={(error) => {
@@ -825,315 +823,221 @@ function RenderPdf({
             ref={drop}
             id="container"
           >
-            <div className="d-flex justify-content-center">
-              <Toast
-                show={successEmail}
-                delay={3000}
-                autohide
-                className="d-inline-block m-1"
-                bg="success"
-                style={{ background: "#348545" }}
-              >
-                <Toast.Body className={"text-white"}>
-                  Email sent successful!
-                </Toast.Body>
-              </Toast>
-            </div>
+            <EmailToast isShow={successEmail} />
             {pdfLoadFail.status &&
-              (recipient
-                ? !pdfUrl &&
-                  !isAlreadySign.mssg &&
-                  xyPostion.length > 0 &&
-                  xyPostion.map((data, ind) => {
+              (pdfRequest
+                ? signerPos.map((data, key) => {
                     return (
-                      <React.Fragment key={ind}>
-                        {data.pageNumber === pageNumber &&
-                          data.pos.map((pos) => {
-                            return pos && pos.SignUrl ? (
-                              <Rnd
-                                disableDragging={true}
-                                enableResizing={{
-                                  top: false,
-                                  right: false,
-                                  bottom: false,
-                                  left: false,
-                                  topRight: false,
-                                  bottomRight: false,
-                                  bottomLeft: false,
-                                  topLeft: false
-                                }}
-                                key={pos.key}
-                                bounds="parent"
-                                style={{
-                                  padding: "0px",
-                                  cursor: "all-scroll",
-                                  zIndex: 1,
-                                  position: "absolute",
-                                  borderStyle: "dashed",
-                                  width: "150px",
-                                  height: "60px",
-                                  borderColor: themeColor(),
-                                  background: "#daebe0",
-                                  textAlign: "center",
-                                  justifyContent: "center",
-                                  borderWidth: "0.2px"
-                                }}
-                                size={{
-                                  width: pos.Width ? pos.Width : 150,
-                                  height: pos.Height ? pos.Height : 60
-                                }}
-                                lockAspectRatio={pos.Width && 2.5}
-                                //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
-
-                                default={{
-                                  x: pos.isMobile
-                                    ? pos.scale &&
-                                      pos.xPosition * pos.scale + 20
-                                    : pos.xPosition,
-                                  y: pos.isMobile
-                                    ? pos.scale && pos.yPosition * pos.scale
-                                    : pos.yPosition
-                                }}
-                                onClick={() => {
-                                  setIsSignPad(true);
-                                  setSignKey(pos.key);
-                                }}
-                              >
-                                <div style={{ pointerEvents: "none" }}>
-                                  <img
-                                    alt="no img"
-                                    onClick={() => {
-                                      setIsSignPad(true);
-                                      setSignKey(pos.key);
-                                    }}
-                                    src={pos.SignUrl}
-                                    style={{
-                                      width: "100%",
-                                      height: "100%",
-                                      objectFit: "contain"
-                                    }}
-                                  />
-                                </div>
-                              </Rnd>
-                            ) : (
-                              <Rnd
-                                data-tut="reactourSecond"
-                                enableResizing={{
-                                  top: false,
-                                  right: false,
-                                  bottom: false,
-                                  left: false,
-                                  topRight: false,
-                                  bottomRight: false,
-                                  bottomLeft: false,
-                                  topLeft: false
-                                }}
-                                key={pos.key}
-                                bounds="parent"
-                                style={{
-                                  padding: "0px",
-                                  cursor: "all-scroll",
-                                  zIndex: 1,
-                                  position: "absolute",
-                                  borderStyle: "dashed",
-                                  width: "150px",
-                                  height: "60px",
-                                  borderColor: themeColor(),
-                                  background: "#c1dee0",
-                                  textAlign: "center",
-                                  justifyContent: "center",
-                                  borderWidth: "0.2px"
-                                }}
-                                size={{
-                                  width: pos.Width ? pos.Width : 150,
-                                  height: pos.Height ? pos.Height : 60
-                                }}
-                                disableDragging={true}
-                                //if pos.isMobile false -- placeholder saved from mobile view then handle position in desktop view to multiply by scale
-
-                                default={{
-                                  x: pos.isMobile
-                                    ? pos.scale &&
-                                      pos.xPosition * pos.scale + 20
-                                    : pos.xPosition,
-                                  y: pos.isMobile
-                                    ? pos.scale && pos.yPosition * pos.scale
-                                    : pos.yPosition
-                                }}
-                                onClick={() => {
-                                  setIsSignPad(true);
-                                  setSignKey(pos.key);
-                                  setIsStamp(pos.isStamp);
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    fontSize: "12px",
-                                    color: "black",
-                                    fontWeight: "600",
-                                    justifyContent: "center",
-                                    marginTop: "0px"
-                                  }}
-                                >
-                                  {pos.isStamp ? "stamp" : "signature"}
-                                </div>
-                              </Rnd>
-                            );
-                          })}
+                      <React.Fragment key={key}>
+                        {checkSignedSignes(data)}
                       </React.Fragment>
                     );
                   })
-                : pdfRequest
-                  ? signerPos.map((data, key) => {
+                : placeholder
+                  ? signerPos.map((data, ind) => {
                       return (
-                        <React.Fragment key={key}>
-                          {checkSignedSignes(data)}
-                        </React.Fragment>
-                      );
-                    })
-                  : placeholder
-                    ? signerPos.map((data, ind) => {
-                        return (
-                          <React.Fragment key={ind}>
-                            {data.placeHolder.map((placeData, index) => {
-                              return (
-                                <React.Fragment key={index}>
-                                  {placeData.pageNumber === pageNumber &&
-                                    placeData.pos.map((pos) => {
-                                      return (
-                                        <Rnd
-                                          key={pos.key}
-                                          bounds="parent"
-                                          style={{
-                                            padding: "0px",
-                                            cursor: "all-scroll",
-                                            zIndex: 1,
-                                            position: "absolute",
-                                            borderStyle: "dashed",
-                                            width: "200px",
-                                            height: "30px",
-                                            borderColor: themeColor(),
-                                            background: data.blockColor,
-                                            textAlign: "center",
-                                            justifyContent: "center",
-                                            borderWidth: "0.2px"
-                                          }}
-                                          onDrag={() =>
-                                            handleTabDrag(
-                                              pos.key,
-                                              data.signerObjId
-                                            )
-                                          }
-                                          size={{
-                                            width: pos.Width ? pos.Width : 150,
-                                            height: pos.Height ? pos.Height : 60
-                                          }}
-                                          lockAspectRatio={
-                                            pos.Width
-                                              ? pos.Width / pos.Height
-                                              : 2.5
-                                          }
-                                          resizeHandleStyles={{
-                                            bottom: { display: "none" },
-                                            right: { display: "none" },
-                                            bottomRight: { display: "block" }
-                                          }}
-                                          onDragStop={(event, dragElement) =>
+                        <React.Fragment key={ind}>
+                          {data.placeHolder.map((placeData, index) => {
+                            return (
+                              <React.Fragment key={index}>
+                                {placeData.pageNumber === pageNumber &&
+                                  placeData.pos.map((pos) => {
+                                    return (
+                                      <Rnd
+                                        onClick={() => {
+                                          const dataNewPlace = addZIndex(
+                                            signerPos,
+                                            pos.key,
+                                            setZIndex
+                                          );
+                                          setSignerPos((prevState) => {
+                                            const newState = [...prevState];
+                                            newState.splice(
+                                              0,
+                                              signerPos.length,
+                                              ...dataNewPlace
+                                            );
+                                            return newState;
+                                          });
+                                        }}
+                                        key={pos.key}
+                                        enableResizing={{
+                                          top: false,
+                                          right: false,
+                                          bottom: false,
+                                          left: false,
+                                          topRight: false,
+                                          bottomRight: true,
+                                          bottomLeft: false,
+                                          topLeft: false
+                                        }}
+                                        bounds="parent"
+                                        style={{
+                                          cursor: "all-scroll",
+                                          background: data.blockColor,
+                                          zIndex: pos.zIndex
+                                        }}
+                                        className="signYourselfBlock"
+                                        onDrag={() => handleTabDrag(pos.key)}
+                                        size={{
+                                          width: posWidth(pos),
+                                          height: posHeight(pos)
+                                        }}
+                                        lockAspectRatio={
+                                          pos.Width
+                                            ? pos.Width / pos.Height
+                                            : 2.5
+                                        }
+                                        onDragStop={
+                                          (event, dragElement) =>
                                             handleStop(
                                               event,
                                               dragElement,
-                                              data.signerObjId,
+                                              data.Id,
                                               pos.key
                                             )
-                                          }
-                                          default={{
-                                            x: pos.xPosition,
-                                            y: pos.yPosition
-                                          }}
-                                          onResize={(
-                                            e,
-                                            direction,
+                                          // data.signerObjId,
+                                        }
+                                        // default={{
+                                        //   x: pos.xPosition,
+                                        //   y: pos.yPosition
+                                        // }}
+                                        default={{
+                                          x: xPos(pos),
+                                          y: yPos(pos)
+                                        }}
+                                        onResizeStart={() => {
+                                          setIsResize(true);
+                                        }}
+                                        onResizeStop={() => {
+                                          setIsResize && setIsResize(false);
+                                        }}
+                                        onResize={(
+                                          e,
+                                          direction,
+                                          ref,
+                                          delta,
+                                          position
+                                        ) => {
+                                          e.stopPropagation();
+                                          handleImageResize(
                                             ref,
-                                            delta,
-                                            position
-                                          ) => {
-                                            handleImageResize(
-                                              ref,
-                                              pos.key,
-                                              data.signerObjId,
-                                              position
-                                            );
-                                          }}
-                                        >
-                                          <div
+                                            pos.key,
+                                            data.Id, //data.signerObjId,
+                                            position,
+                                            signerPos,
+                                            pageNumber,
+                                            setSignerPos,
+                                            pdfOriginalWidth,
+                                            containerWH,
+                                            false
+                                          );
+                                        }}
+                                      >
+                                        <BorderResize right={-12} top={-11} />
+                                        <PlaceholderBorder
+                                          pos={pos}
+                                          posWidth={posWidth}
+                                          posHeight={posHeight}
+                                        />
+                                        <div>
+                                          <i
+                                            data-tut="reactourLinkUser"
+                                            className="fa-regular fa-user signUserIcon"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleLinkUser(data.Id);
+                                              setUniqueId(data.Id);
+                                            }}
+                                            style={{
+                                              color: "#188ae2"
+                                            }}
+                                          ></i>
+                                          <i
+                                            className="fa-regular fa-copy signCopy"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setIsPageCopy(true);
+                                              setSignKey(pos.key);
+                                              setUniqueId(data.Id);
+                                              setSignerObjId(data.signerObjId);
+                                            }}
+                                            style={{
+                                              color: "#188ae2"
+                                            }}
+                                          ></i>
+                                          <i
+                                            className="fa-regular fa-circle-xmark signCloseBtn"
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               handleDeleteSign(
                                                 pos.key,
-                                                data.signerObjId
+                                                data.Id
                                               );
+                                              // data.signerObjId
                                             }}
                                             style={{
-                                              position: "absolute",
-                                              right: 0,
-                                              display: "inline-block",
-                                              background: themeColor(),
-                                              cursor: "pointer",
-                                              padding: "0px 10px",
-                                              zIndex: 10
+                                              color: "#188ae2"
                                             }}
-                                          >
-                                            x
-                                          </div>
+                                          ></i>
+
                                           <div
                                             style={{
-                                              fontSize: "12px",
+                                              fontSize: "10px",
                                               color: "black",
-                                              fontWeight: "600",
-
-                                              marginTop: "0px"
+                                              justifyContent: "center"
                                             }}
                                           >
-                                            {pos.isStamp
-                                              ? "stamp"
-                                              : "signature"}
+                                            {pos.isStamp ? (
+                                              <div>stamp</div>
+                                            ) : (
+                                              <div>signature</div>
+                                            )}
+                                            {handleUserName(
+                                              data.signerObjId,
+                                              data.Role
+                                            )}
                                           </div>
-                                        </Rnd>
-                                      );
-                                    })}
-                                </React.Fragment>
-                              );
-                            })}
-                          </React.Fragment>
-                        );
-                      })
-                    : xyPostion.map((data, ind) => {
-                        return (
-                          <React.Fragment key={ind}>
-                            {data.pageNumber === pageNumber &&
-                              data.pos.map((pos) => {
-                                return pos && pos.SignUrl ? (
+                                        </div>
+                                      </Rnd>
+                                    );
+                                  })}
+                              </React.Fragment>
+                            );
+                          })}
+                        </React.Fragment>
+                      );
+                    })
+                  : xyPostion.map((data, ind) => {
+                      return (
+                        <React.Fragment key={ind}>
+                          {data.pageNumber === pageNumber &&
+                            data.pos.map((pos) => {
+                              return (
+                                pos && (
                                   <Rnd
                                     ref={nodeRef}
                                     key={pos.key}
                                     lockAspectRatio={
                                       pos.Width ? pos.Width / pos.Height : 2.5
                                     }
+                                    enableResizing={{
+                                      top: false,
+                                      right: false,
+                                      bottom: false,
+                                      left: false,
+                                      topRight: false,
+                                      bottomRight: true,
+                                      bottomLeft: false,
+                                      topLeft: false
+                                    }}
                                     bounds="parent"
+                                    className="signYourselfBlock"
                                     style={{
-                                      padding: "0px",
+                                      border: "1px solid red",
                                       cursor: "all-scroll",
-                                      zIndex: 1,
-                                      position: "absolute",
-                                      borderStyle: "dashed",
-                                      width: "150px",
-                                      height: "60px",
-                                      borderColor: themeColor(),
-                                      background: "#daebe0",
-                                      textAlign: "center",
-                                      justifyContent: "center",
-                                      borderWidth: "0.2px",
-                                      overflow: "hidden"
+                                      zIndex: "1",
+                                      background: "#daebe0"
                                     }}
                                     onDrag={() => handleTabDrag(pos.key)}
                                     size={{
@@ -1145,20 +1049,6 @@ function RenderPdf({
                                       x: pos.xPosition,
                                       y: pos.yPosition
                                     }}
-                                    onResize={(
-                                      e,
-                                      direction,
-                                      ref,
-                                      delta,
-                                      position
-                                    ) => {
-                                      handleImageResize(
-                                        ref,
-                                        pos.key,
-                                        direction,
-                                        position
-                                      );
-                                    }}
                                     onClick={() => {
                                       if (!isDragging) {
                                         setIsSignPad(true);
@@ -1166,147 +1056,45 @@ function RenderPdf({
                                         setIsStamp(pos.isStamp);
                                       }
                                     }}
-                                  >
-                                    <div
-                                      ref={nodeRef}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteSign(pos.key);
-                                        setIsStamp(false);
-                                      }}
-                                      style={{
-                                        position: "absolute",
-                                        right: 0,
-                                        display: "inline-block",
-                                        background: themeColor(),
-                                        cursor: "pointer",
-                                        padding: "0px 10px"
-                                      }}
-                                    >
-                                      x
-                                    </div>
-                                    <div style={{ pointerEvents: "none" }}>
-                                      <img
-                                        alt="signimg"
-                                        onClick={(e) => {
-                                          setSignKey(pos.key);
-                                          setIsSignPad(true);
-                                          setIsStamp(pos.isStamp);
-                                        }}
-                                        src={pos.SignUrl}
-                                        style={{
-                                          width: "100%",
-                                          height: "100%",
-                                          objectFit: "contain"
-                                        }}
-                                      />
-                                    </div>
-                                  </Rnd>
-                                ) : (
-                                  <Rnd
-                                    ref={nodeRef}
-                                    key={pos.key}
-                                    lockAspectRatio={
-                                      pos.Width ? pos.Width / pos.Height : 2.5
-                                    }
-                                    bounds="parent"
-                                    style={{
-                                      padding: "0px",
-                                      cursor: "all-scroll",
-                                      zIndex: 1,
-                                      position: "absolute",
-                                      borderStyle: "dashed",
-                                      width: "150px",
-                                      height: "60px",
-                                      borderColor: themeColor(),
-                                      background: "#daebe0",
-                                      textAlign: "center",
-                                      justifyContent: "center",
-                                      borderWidth: "0.2px",
-                                      overflow: "hidden"
-                                    }}
-                                    onDrag={(e) => handleTabDrag(pos.key, e)}
-                                    size={{
-                                      width: pos.Width ? pos.Width : 150,
-                                      height: pos.Height ? pos.Height : 60
-                                    }}
-                                    onDragStop={handleStop}
-                                    default={{
-                                      x: pos.xPosition,
-                                      y: pos.yPosition
+                                    onResize={(
+                                      e,
+                                      direction,
+                                      ref,
+                                      delta,
+                                      position
+                                    ) => {
+                                      e.stopPropagation();
+                                      handleSignYourselfImageResize(
+                                        ref,
+                                        pos.key,
+                                        xyPostion,
+                                        index,
+                                        setXyPostion
+                                      );
                                     }}
                                   >
-                                    <div
-                                      className="dragElm"
-                                      ref={nodeRef}
-                                      onClick={(e) => {
-                                        if (!isDragging) {
-                                          e.stopPropagation();
-                                          setIsSignPad(true);
-                                          setSignKey(pos.key);
-                                          setIsStamp(pos.isStamp);
-                                        }
-                                      }}
-                                      style={{
-                                        cursor: "all-scroll",
-                                        zIndex: 10,
-                                        position: "absolute",
-                                        borderStyle: "dashed",
-                                        width: "150px",
-                                        height: "60px",
-                                        borderColor: themeColor(),
-                                        background: "#daebe0",
-                                        textAlign: "center",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        borderWidth: "0.2px"
-                                      }}
-                                    >
-                                      <div
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleDeleteSign(pos.key);
-                                          setIsStamp(false);
-                                        }}
-                                        style={{
-                                          position: "absolute",
-                                          right: 0,
-                                          display: "inline-block",
-                                          background: themeColor(),
-                                          cursor: "pointer",
-                                          padding: "0px 10px"
-                                        }}
-                                      >
-                                        x
-                                      </div>
-                                      <div
-                                        style={{
-                                          fontSize: "12px",
-                                          color: themeColor(),
-                                          justifyContent: "center",
-                                          marginTop: "20px"
-                                        }}
-                                      >
-                                        {pos.isStamp ? "stamp" : "signature"}
-                                      </div>
-                                    </div>
+                                    <BorderResize right={-12} top={-11} />
+                                    <PlaceholderBorder
+                                      pos={pos}
+                                      posWidth={posWidth}
+                                      posHeight={posHeight}
+                                    />
+                                    <PlaceholderDesign pos={pos} />
                                   </Rnd>
-                                );
-                              })}
-                          </React.Fragment>
-                        );
-                      }))}
+                                )
+                              );
+                            })}
+                        </React.Fragment>
+                      );
+                    }))}
             {/* this component for render pdf document is in middle of the component */}
-
             <Document
               onLoadError={(e) => {
-                if (recipient) {
-                  const load = {
-                    status: false,
-                    type: "failed"
-                  };
-                  setPdfLoadFail(load);
-                }
+                const load = {
+                  status: false,
+                  type: "failed"
+                };
+                setPdfLoadFail(load);
               }}
               onLoadSuccess={pageDetails}
               ref={pdfRef}

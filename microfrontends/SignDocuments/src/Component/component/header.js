@@ -33,7 +33,10 @@ function Header({
   currentSigner,
   dataTut4,
   alreadySign,
-  isSignYourself
+  isSignYourself,
+  setIsEmail,
+  completeBtnTitle,
+  setIsEditTemplate
 }) {
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
@@ -222,10 +225,7 @@ function Header({
     );
   };
   return (
-    <div
-      style={{ padding: !isGuestSigner && "5px 0px 5px 0px" }}
-      className="mobileHead"
-    >
+    <div style={{ padding: "5px 0px 5px 0px" }} className="mobileHead">
       {isMobile && isShowHeader ? (
         <div
           id="navbar"
@@ -329,9 +329,29 @@ function Header({
                       </DropdownMenu.Item>
                     ) : (
                       isSignYourself && (
-                        <DropdownMenu.Item className="DropdownMenuItem">
-                          <CertificateDropDown />
-                        </DropdownMenu.Item>
+                        <>
+                          <DropdownMenu.Item className="DropdownMenuItem">
+                            <CertificateDropDown />
+                          </DropdownMenu.Item>
+                          <DropdownMenu.Item
+                            className="DropdownMenuItem"
+                            onClick={() => setIsEmail(true)}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row"
+                              }}
+                            >
+                              <i
+                                className="fa fa-envelope"
+                                style={{ marginRight: "2px" }}
+                                aria-hidden="true"
+                              ></i>
+                              Mail
+                            </div>
+                          </DropdownMenu.Item>
+                        </>
                       )
                     )}
                     <DropdownMenu.Item
@@ -394,7 +414,7 @@ function Header({
                         }}
                         data-tut={dataTut4}
                       >
-                        Send
+                        {completeBtnTitle ? completeBtnTitle : "Send"}
                       </div>
                     ) : (
                       <div
@@ -512,17 +532,17 @@ function Header({
           ) : isPlaceholder ? (
             <>
               {!isMailSend &&
-                signersdata.Signers &&
-                signersdata.Signers.length !== signerPos.length && (
+                signersdata.length > 0 &&
+                signersdata.length !== signerPos.length && (
                   <div>
                     {signerPos.length === 0 ? (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add all {signersdata.Signers.length - signerPos.length}{" "}
-                        recipients signature
+                        Add {signersdata.length - signerPos.length} recipients
+                        signature
                       </span>
                     ) : (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add {signersdata.Signers.length - signerPos.length} more
+                        Add {signersdata.length - signerPos.length} more
                         recipients signature
                       </span>
                     )}
@@ -530,6 +550,18 @@ function Header({
                 )}
 
               <div>
+                {setIsEditTemplate && (
+                  <button
+                    onClick={() => setIsEditTemplate(true)}
+                    style={{
+                      border: "none",
+                      outline: "none",
+                      textAlign: "center"
+                    }}
+                  >
+                    <i className="fa-solid fa-gear fa-lg"></i>
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     navigate(-1);
@@ -552,7 +584,7 @@ function Header({
                   }}
                   className={isMailSend ? "sendMail" : "sendMail sendHover"}
                 >
-                  Send
+                  {completeBtnTitle ? completeBtnTitle : "Send"}
                 </button>
               </div>
             </>
@@ -689,6 +721,28 @@ function Header({
                   aria-hidden="true"
                 ></i>
                 Download
+              </button>
+              <button
+                type="button"
+                className="defaultBtn mailBtn"
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: "10px"
+                }}
+                onClick={() => setIsEmail(true)}
+              >
+                <i
+                  className="fa fa-envelope"
+                  style={{
+                    color: "white",
+                    fontSize: "15px",
+                    marginRight: "3px"
+                  }}
+                  aria-hidden="true"
+                ></i>
+                Mail
               </button>
             </div>
           ) : (
