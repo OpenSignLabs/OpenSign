@@ -53,5 +53,5 @@ export default async function getTemplatetList(request, response) {
       return response.json({ code: 200, result: [] });
     }
   }
-  return response.json({ code: 404, message: 'Invalid API Token!' });
+  return response.json({ code: 405, message: 'Invalid API Token!' });
 }

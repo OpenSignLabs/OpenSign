@@ -14,6 +14,7 @@ export default async function getDocument(request, response) {
       const Document = new Parse.Query('contracts_Document');
       Document.equalTo('objectId', request.params.document_id);
       Document.equalTo('CreatedBy', userId);
+      Document.notEqualTo('IsArchive', true);
       const res = await Document.first({ useMasterKey: true });
       if (res) {
         return response.json({ code: 200, result: res });
@@ -21,7 +22,7 @@ export default async function getDocument(request, response) {
         return response.json({ code: 404, message: 'Document not found!' });
       }
     } else {
-      return response.json({ code: 404, message: 'Invalid API Token!' });
+      return response.json({ code: 405, message: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);

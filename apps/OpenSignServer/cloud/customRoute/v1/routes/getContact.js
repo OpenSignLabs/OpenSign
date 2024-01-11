@@ -14,14 +14,21 @@ export default async function getContact(request, response) {
       const Contactbook = new Parse.Query('contracts_Contactbook');
       Contactbook.equalTo('objectId', request.params.contact_id);
       Contactbook.equalTo('CreatedBy', userId);
+      Contactbook.notEqualTo('IsDeleted', true);
+      Contactbook.select('Name,Email,Phone');
+
       const res = await Contactbook.first({ useMasterKey: true });
       if (res) {
-        return response.json({ code: 200, result: res });
+        const parseRes = JSON.parse(JSON.stringify(res));
+        return response.json({
+          code: 200,
+          result: { objectId: parseRes.objectId, Name: parseRes.Name, Email: parseRes.Email },
+        });
       } else {
         return response.json({ code: 404, message: 'Record not found!' });
       }
     } else {
-      return response.json({ code: 404, message: 'Invalid API Token!' });
+      return response.json({ code: 405, message: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);
