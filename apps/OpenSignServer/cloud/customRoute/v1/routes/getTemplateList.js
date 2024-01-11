@@ -1,5 +1,4 @@
 import axios from 'axios';
-import reportJson from '../../../parsefunction/reportsJson.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -16,8 +15,8 @@ export default async function getTemplatetList(request, response) {
   if (token !== undefined) {
     // Valid Token then proceed request
     const userId = token.get('Id');
-    const limit = request.body.limit ? request.body.limit : 200;
-    const skip = request.body.skip ? request.body.skip : 0;
+    const limit = request?.body?.limit ? request.body.limit : 100;
+    const skip = request?.body?.skip ? request.body.skip : 0;
 
     const clsName = 'contracts_Template';
     const params = {

@@ -17,8 +17,8 @@ export default async function getDocumentList(request, response) {
     // Valid Token then proceed request
     const userId = token.get('Id');
     const docType = request.body.doctype;
-    const limit = request.body.limit;
-    const skip = request.body.skip;
+    const limit = request?.body?.limit ? request.body.limit : 100;
+    const skip = request?.body?.skip ? request.body.skip : 0;
     let reportId;
     switch (docType) {
       case 'draftDocuments':
