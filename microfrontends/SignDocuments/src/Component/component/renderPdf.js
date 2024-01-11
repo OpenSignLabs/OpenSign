@@ -520,7 +520,14 @@ function RenderPdf({
                                         posHeight={posHeight}
                                       />
                                       <div
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleLinkUser(data.Id);
+                                          setUniqueId(data.Id);
+                                        }}
                                         onTouchEnd={() => {
+                                          handleLinkUser(data.Id);
+                                          setUniqueId(data.Id);
                                           const dataNewPlace = addZIndex(
                                             signerPos,
                                             pos.key,
@@ -777,6 +784,7 @@ function RenderPdf({
               onLoadError={(e) => {
                 setPdfLoadFail(true);
               }}
+              loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
               file={
@@ -845,6 +853,8 @@ function RenderPdf({
                                     return (
                                       <Rnd
                                         onClick={() => {
+                                          handleLinkUser(data.Id);
+                                          setUniqueId(data.Id);
                                           const dataNewPlace = addZIndex(
                                             signerPos,
                                             pos.key,
@@ -1096,6 +1106,7 @@ function RenderPdf({
                 };
                 setPdfLoadFail(load);
               }}
+              loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
               file={

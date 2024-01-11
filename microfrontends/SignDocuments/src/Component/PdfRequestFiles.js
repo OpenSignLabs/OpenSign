@@ -851,19 +851,25 @@ function PdfRequestFiles() {
               }}
             >
               {/* this modal is used show this document is already sign */}
+              <ModalUi
+                isOpen={isCompleted.isModal}
+                title={"Sign Documents"}
+                handleClose={() => {
+                  setIsCompleted({ isModal: false, isCertificate: true });
+                }}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
+                  <p>This document has been signed by all Signers.</p>
 
-              <Modal show={isCompleted.isModal}>
-                <ModalHeader style={{ background: themeColor() }}>
-                  <span className="spanTagHead"> Sign Documents</span>
-                </ModalHeader>
-
-                <Modal.Body>
-                  <p className="pTagBody">
-                    This document has been signed by all Signers.
-                  </p>
-                </Modal.Body>
-
-                <Modal.Footer>
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
                   <button
                     style={{
                       color: "black"
@@ -876,8 +882,9 @@ function PdfRequestFiles() {
                   >
                     Close
                   </button>
-                </Modal.Footer>
-              </Modal>
+                </div>
+              </ModalUi>
+
               {/* this component is used for signature pad modal */}
               <SignPad
                 isSignPad={isSignPad}

@@ -20,7 +20,8 @@ function PdfFileComponent({
   setDocId,
   setIsLoading,
   setPdfData,
-  isList
+  isList,
+  setIsAlert
 }) {
   const [rename, setRename] = useState("");
   const [renameValue, setRenameValue] = useState("");
@@ -103,7 +104,10 @@ function PdfFileComponent({
           // console.log("res", res);
         })
         .catch((err) => {
-          console.log("error updating field is decline ", err);
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
+          });
         });
     }
   };
@@ -191,7 +195,10 @@ function PdfFileComponent({
         setPdfData(updatedData);
       })
       .catch((err) => {
-        console.log("err", err);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
       });
   };
   const handleMoveDocument = async (docData) => {
