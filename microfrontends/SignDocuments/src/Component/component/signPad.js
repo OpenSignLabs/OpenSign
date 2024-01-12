@@ -66,6 +66,7 @@ function SignPad({
 
       setIsSignImg("");
     } else if (isTab === "uploadImage") {
+       setImage("");
     }
   };
   //function for set signature url
