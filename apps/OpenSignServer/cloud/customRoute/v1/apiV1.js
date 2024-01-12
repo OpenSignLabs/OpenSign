@@ -15,6 +15,7 @@ import getTemplate from './routes/getTemplate.js';
 import deletedTemplate from './routes/deleteTemplate.js';
 import getTemplatetList from './routes/getTemplateList.js';
 import updateTemplate from './routes/updateTemplate.js';
+import createContact from './routes/createContact.js';
 
 dotenv.config();
 app.use(cors());
@@ -24,11 +25,8 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // get user details whose api token used
 app.get('/getuser', getUser);
 
-// get all types of documents on the basis of doctype
-app.get('/documentlist', getDocumentList);
-
-// get Document on the basis of id
-app.get('/document/:document_id', getDocument);
+// get contact on the basis of id
+app.post('/createcontact', createContact);
 
 // get contact on the basis of id
 app.get('/contact/:contact_id', getContact);
@@ -37,10 +35,16 @@ app.get('/contact/:contact_id', getContact);
 app.delete('/contact/:contact_id', deleteContact);
 
 //  get list of contacts
-app.get('/contactlist', getContactList);
+app.post('/contactlist', getContactList);
 
 // create Document
 app.post('/createdocument', createDocument);
+
+// get Document on the basis of id
+app.get('/document/:document_id', getDocument);
+
+// get all types of documents on the basis of doctype
+app.post('/documentlist', getDocumentList);
 
 // create Template
 app.post('/createtemplate', createTemplate);
@@ -55,4 +59,4 @@ app.put('/template/:template_id', updateTemplate);
 app.delete('/template/:template_id', deletedTemplate);
 
 // get all types of documents on the basis of doctype
-app.get('/templatelist', getTemplatetList);
+app.post('/templatelist', getTemplatetList);
