@@ -26,14 +26,14 @@ tags:
   externalDocs:
     description: Visit github
     url: http://github.com/opensignlabs/opensign
-- name: templates
-  description: Operations about templates
-- name: documents
-  description: Operations about documents
-- name: contacts
-  description: Operations about contacts
 - name: user
   description: Operations about user
+- name: contacts
+  description: Operations about contacts
+- name: documents
+  description: Operations about documents
+- name: templates
+  description: Operations about templates
 paths:
   /getuser:
     get:
@@ -41,6 +41,15 @@ paths:
       - user
       summary: Get your details
       operationId: getUser
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
         "200":
           description: Successful operation
@@ -51,7 +60,7 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Pet'
-        "400":
+        "405":
           description: Invalid API Token!
         "404":
           description: Record not found!
@@ -64,6 +73,15 @@ paths:
       summary: Add a new pet to the store
       description: Add a new pet to the store
       operationId: addPet
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       requestBody:
         description: Create a new pet in the store
         content:
@@ -91,193 +109,135 @@ paths:
           description: Invalid input
       security:
       - api_key: []
-  /documentlist:
-    get:
+  /createcontact:
+    post:
       tags:
-      - documents
-      summary: Finds Pets by status
-      description: Multiple status values can be provided with comma separated strings
-      operationId: findPetsByStatus
+      - contacts
+      summary: Create contact
+      operationId: createcontact
       parameters:
-      - name: status
-        in: query
-        description: Status values that need to be considered for filter
-        required: false
-        style: form
-        explode: true
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
         schema:
           type: string
-          default: available
-          enum:
-          - available
-          - pending
-          - sold
+      requestBody:
+        description: provide below parameter to create contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createcontact_body'
+        required: true
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-        "400":
-          description: Invalid status value
-      security:
-      - api_key: []
-  /document/:
-    get:
-      tags:
-      - documents
-      summary: Finds Pets by tags
-      description: "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
-      operationId: findPetsByTags
-      parameters:
-      - name: tags
-        in: query
-        description: Tags to filter by
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: array
-          items:
-            type: string
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-        "400":
-          description: Invalid tag value
+                $ref: '#/components/schemas/contactdetails'
+        "404":
+          description: "Something went wrong, please try again later!"
+        "405":
+          description: Invalid API Token!
       security:
       - api_key: []
   /contact/{contact_id}:
     get:
       tags:
       - contacts
-      summary: Find pet by ID
-      description: Returns a single pet
-      operationId: getPetById
+      summary: Get contact
+      description: get a contact
+      operationId: getcontact
       parameters:
-      - name: contact_id
-        in: path
-        description: ID of pet to return
+      - name: x-api-token
+        in: header
+        description: ""
         required: true
         style: simple
         explode: false
         schema:
-          type: integer
-          format: int64
+          type: string
+      - name: contact_id
+        in: path
+        description: objectId of contact
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: pH1bhc2hpb
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
-        "400":
-          description: Invalid ID supplied
+                $ref: '#/components/schemas/contactdetails'
         "404":
-          description: Pet not found
-      security:
-      - api_key: []
-    post:
-      tags:
-      - contacts
-      summary: Updates a pet in the store with form data
-      description: ""
-      operationId: updatePetWithForm
-      parameters:
-      - name: contact_id
-        in: path
-        description: ID of pet that needs to be updated
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-          format: int64
-      - name: name
-        in: query
-        description: Name of pet that needs to be updated
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-      - name: status
-        in: query
-        description: Status of pet that needs to be updated
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-      responses:
+          description: Contact not found!
         "405":
-          description: Invalid input
+          description: Invalid API Token!
       security:
       - api_key: []
     delete:
       tags:
       - contacts
-      summary: Deletes a pet
-      description: delete a pet
-      operationId: deletePet
+      summary: Deletes contact
+      description: delete a contact
+      operationId: deletecontact
       parameters:
-      - name: api_key
+      - name: x-api-token
         in: header
         description: ""
-        required: false
+        required: true
         style: simple
         explode: false
         schema:
           type: string
       - name: contact_id
         in: path
-        description: Pet id to delete
+        description: Provide objectId of contact to delete
         required: true
         style: simple
         explode: false
         schema:
-          type: integer
-          format: int64
+          type: string
+          format: string
+          example: ph2bh2asd
       responses:
-        "400":
-          description: Invalid pet value
+        "200":
+          description: Contact deleted successfully!
+        "404":
+          description: Contact not found!
+        "405":
+          description: Invalid API Token!
       security:
       - api_key: []
   /contactlist:
     post:
       tags:
       - contacts
-      summary: uploads an image
+      summary: Get contact list
       description: ""
-      operationId: uploadFile
+      operationId: contactlist
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       requestBody:
         content:
-          application/octet-stream:
+          application/json:
             schema:
-              type: string
-              format: binary
+              $ref: '#/components/schemas/listbody'
       responses:
         "200":
           description: successful operation
@@ -285,34 +245,163 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+        "404":
+          description: Report is not available!
+        "405":
+          description: Invalid API Token!
       security:
       - api_key: []
   /createdocument:
+    post:
+      tags:
+      - documents
+      summary: Create document
+      operationId: createdocument
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Document created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "405":
+          description: Invalid API Token!
+      security:
+      - api_key: []
+  /document/{document_id}:
     get:
       tags:
       - documents
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
-      operationId: getInventory
+      summary: Get document by ID
+      description: Get a document
+      operationId: getdocument
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: document_id
+        in: path
+        description: objectId of contact
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: pH1bhc2hpb
       responses:
         "200":
           description: successful operation
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties:
-                  type: integer
-                  format: int32
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        "404":
+          description: Document not found!
+        "405":
+          description: Invalid API Token!
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - contacts
+      summary: Delete document by ID
+      description: delete a document
+      operationId: deletedocument
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: document_id
+        in: path
+        description: Provide objectId of document to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: ph2bh2asd
+      responses:
+        "200":
+          description: Contact deleted successfully!
+        "404":
+          description: Contact not found!
+        "405":
+          description: Invalid API Token!
+      security:
+      - api_key: []
+  /documentlist:
+    post:
+      tags:
+      - documents
+      summary: Get document list
+      description: Get document list
+      operationId: getdocumentlist
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/listbody'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        "404":
+          description: Report is not available!
+        "405":
+          description: Invalid API Token!
       security:
       - api_key: []
   /createtemplate:
     post:
       tags:
       - templates
-      summary: Template Creation API
+      summary: Create template
       description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template."
       operationId: createtemplate
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -325,7 +414,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/createTemplateResponse'
-        "404":
+        "405":
           description: Invalid API Token!
   /template/{template_id}:
     get:
@@ -335,6 +424,14 @@ paths:
       description: ""
       operationId: getTemplate
       parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       - name: template_id
         in: path
         description: ID of template that needs to be fetched
@@ -351,16 +448,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/createtemplate'
-        "400":
-          description: Template not found!
         "404":
+          description: Template not found!
+        "405":
           description: Invalid API Token!'
     put:
       tags:
       - templates
-      summary: update template by ID
+      summary: Update template by ID
       operationId: updateTemplate
       parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       - name: template_id
         in: path
         description: ID of the order that needs to be updated
@@ -387,6 +492,14 @@ paths:
       summary: Delete template by ID
       operationId: deleteTemplate
       parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       - name: template_id
         in: path
         description: ID of the template that needs to be deleted
@@ -406,20 +519,32 @@ paths:
       tags:
       - templates
       summary: Get template list
-      operationId: templateList
+      operationId: gettemplatelist
+      parameters:
+      - name: x-api-token
+        in: header
+        description: ""
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       requestBody:
-        description: provide below parameter to get number of templates
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/listbody'
       responses:
-        default:
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/template'
+        "404":
+          description: Report is not available!
+        "405":
+          description: Invalid API Token!
 components:
   schemas:
     createtemplate:
@@ -513,25 +638,27 @@ components:
           example: 0
       xml:
         name: listbody
-    Customer:
+    contactdetails:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 100000
-        username:
+        objectId:
           type: string
-          example: fehguy
-        address:
-          type: array
-          xml:
-            name: addresses
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/signers'
+          format: string
+          example: ph1bhx2jp
+        Name:
+          type: string
+          format: string
+          example: joe bee
+        Email:
+          type: string
+          format: string
+          example: joebee@example.com
+        Phone:
+          type: string
+          format: string
+          example: "4131231231"
       xml:
-        name: customer
+        name: contactdetails
     signers:
       type: string
       example: joe@example.com
@@ -641,6 +768,32 @@ components:
           type: string
       xml:
         name: '##default'
+    createcontact_body:
+      type: object
+      properties:
+        Name:
+          type: string
+          format: string
+          example: joe bee
+        Email:
+          type: string
+          format: string
+          example: joebee@example.com
+        Phone:
+          type: string
+          format: string
+          example: "1232131321"
+    inline_response_200:
+      type: object
+      properties:
+        id:
+          type: string
+          format: string
+          example: hji2zxcv2P
+        url:
+          type: string
+          format: string
+          example: https://example.com
     template_template_id_body:
       type: object
       properties:
