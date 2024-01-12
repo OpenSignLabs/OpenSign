@@ -44,28 +44,25 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       responses:
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
+                $ref: '#/components/schemas/user'
         "405":
           description: Invalid API Token!
         "404":
           description: Record not found!
       security:
-      - api_key: []
+      - x-api-token: []
   /createuser:
     post:
       tags:
@@ -76,24 +73,18 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       requestBody:
         description: Create a new pet in the store
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Pet'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pet'
+              $ref: '#/components/schemas/user'
         required: true
       responses:
         "200":
@@ -101,14 +92,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pet'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Pet'
+                $ref: '#/components/schemas/user'
         "405":
           description: Invalid input
       security:
-      - api_key: []
+      - x-api-token: []
   /createcontact:
     post:
       tags:
@@ -118,12 +106,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       requestBody:
         description: provide below parameter to create contact
         content:
@@ -143,7 +131,7 @@ paths:
         "405":
           description: Invalid API Token!
       security:
-      - api_key: []
+      - x-api-token: []
   /contact/{contact_id}:
     get:
       tags:
@@ -154,12 +142,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       - name: contact_id
         in: path
         description: objectId of contact
@@ -182,7 +170,7 @@ paths:
         "405":
           description: Invalid API Token!
       security:
-      - api_key: []
+      - x-api-token: []
     delete:
       tags:
       - contacts
@@ -192,12 +180,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       - name: contact_id
         in: path
         description: Provide objectId of contact to delete
@@ -216,7 +204,7 @@ paths:
         "405":
           description: Invalid API Token!
       security:
-      - api_key: []
+      - x-api-token: []
   /contactlist:
     post:
       tags:
@@ -227,12 +215,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       requestBody:
         content:
           application/json:
@@ -244,13 +232,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/contactdetails'
         "404":
           description: Report is not available!
         "405":
           description: Invalid API Token!
       security:
-      - api_key: []
+      - x-api-token: []
   /createdocument:
     post:
       tags:
@@ -260,12 +250,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       responses:
         "200":
           description: Document created successfully!
@@ -276,7 +266,7 @@ paths:
         "405":
           description: Invalid API Token!
       security:
-      - api_key: []
+      - x-api-token: []
   /document/{document_id}:
     get:
       tags:
@@ -287,12 +277,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       - name: document_id
         in: path
         description: objectId of contact
@@ -311,13 +301,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Pet'
+                  $ref: '#/components/schemas/user'
         "404":
           description: Document not found!
         "405":
           description: Invalid API Token!
       security:
-      - api_key: []
+      - x-api-token: []
     delete:
       tags:
       - contacts
@@ -327,12 +317,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       - name: document_id
         in: path
         description: Provide objectId of document to delete
@@ -351,7 +341,7 @@ paths:
         "405":
           description: Invalid API Token!
       security:
-      - api_key: []
+      - x-api-token: []
   /documentlist:
     post:
       tags:
@@ -362,12 +352,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       requestBody:
         content:
           application/json:
@@ -385,7 +375,7 @@ paths:
         "405":
           description: Invalid API Token!
       security:
-      - api_key: []
+      - x-api-token: []
   /createtemplate:
     post:
       tags:
@@ -396,12 +386,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       requestBody:
         content:
           application/json:
@@ -426,12 +416,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       - name: template_id
         in: path
         description: ID of template that needs to be fetched
@@ -460,12 +450,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       - name: template_id
         in: path
         description: ID of the order that needs to be updated
@@ -494,12 +484,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       - name: template_id
         in: path
         description: ID of the template that needs to be deleted
@@ -523,12 +513,12 @@ paths:
       parameters:
       - name: x-api-token
         in: header
-        description: ""
         required: true
         style: simple
         explode: false
         schema:
           type: string
+        example: opensign.xxxx
       requestBody:
         content:
           application/json:
@@ -664,98 +654,55 @@ components:
       example: joe@example.com
       xml:
         name: signers
-    Category:
+    date:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        name:
+        __type:
           type: string
-          example: Dogs
+          example: Date
+        iso:
+          type: string
+          example: 2023-10-07T16:49:56.000Z
       xml:
-        name: category
-    User:
+        name: date
+    user:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        username:
+        objectId:
           type: string
-          example: theUser
-        firstName:
+          format: string
+          example: FGik23bhUJ
+        Name:
           type: string
-          example: John
-        lastName:
+          format: string
+          example: Joe Bee
+        Email:
           type: string
-          example: James
-        email:
+          format: string
+          example: joebee@example.com
+        Phone:
           type: string
-          example: john@email.com
-        password:
+          format: string
+          example: "4567832123"
+        JobTitle:
           type: string
-          example: "12345"
-        phone:
+          format: string
+          example: dev
+        Company:
           type: string
-          example: "12345"
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
+          format: string
+          example: opensign
+        Customer_id:
+          type: string
+          example: customer_id
+        Subscriptions_id:
+          type: string
+          format: string
+          example: subscriptions_id
+        Next_billing_date:
+          $ref: '#/components/schemas/date'
       xml:
         name: user
-    Tag:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-      xml:
-        name: tag
-    Pet:
-      required:
-      - name
-      - photoUrls
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        name:
-          type: string
-          example: doggie
-        category:
-          $ref: '#/components/schemas/Category'
-        photoUrls:
-          type: array
-          xml:
-            wrapped: true
-          items:
-            type: string
-            xml:
-              name: photoUrl
-        tags:
-          type: array
-          xml:
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/Tag'
-        status:
-          type: string
-          description: pet status in the store
-          enum:
-          - available
-          - pending
-          - sold
-      xml:
-        name: pet
     ApiResponse:
       type: object
       properties:
@@ -769,6 +716,10 @@ components:
       xml:
         name: '##default'
     createcontact_body:
+      required:
+      - Email
+      - Name
+      - Phone
       type: object
       properties:
         Name:
@@ -822,26 +773,8 @@ components:
         Name:
           type: string
           example: joe
-  requestBodies:
-    Pet:
-      description: Pet object that needs to be added to the store
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Pet'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Pet'
-    UserArray:
-      description: List of user object
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/User'
   securitySchemes:
-    api_key:
+    x-api-token:
       type: apiKey
       name: x-api-token
       in: header
