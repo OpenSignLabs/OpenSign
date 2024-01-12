@@ -1182,7 +1182,7 @@ const TemplatePlaceholder = () => {
                   handleDeleteUser={handleDeleteUser}
                   handleRoleChange={handleRoleChange}
                   handleOnBlur={handleOnBlur}
-                  title={"Role"}
+                  title={"Roles"}
                 />
               </div>
             ) : (
@@ -1201,7 +1201,7 @@ const TemplatePlaceholder = () => {
                     handleDeleteUser={handleDeleteUser}
                     handleRoleChange={handleRoleChange}
                     handleOnBlur={handleOnBlur}
-                    title={"Role"}
+                    title={"Roles"}
                   />
                   <div data-tut="reactourSecond">
                     <FieldsComponent
@@ -1219,7 +1219,7 @@ const TemplatePlaceholder = () => {
                       isDragStamp={isDragStamp}
                       isSignYourself={false}
                       addPositionOfSignature={addPositionOfSignature}
-                      title={"Role"}
+                      title={"Roles"}
                     />
                   </div>
                 </div>
