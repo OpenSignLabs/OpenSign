@@ -6,11 +6,13 @@ import { Document, Page, pdfjs } from "react-pdf";
 import BorderResize from "./borderResize";
 import {
   addZIndex,
+  defaultWidthHeight,
   handleImageResize,
   handleSignYourselfImageResize
 } from "../../utils/Utils";
 import EmailToast from "./emailToast";
 import PlaceholderBorder from "./placeholderBorder";
+import Placeholder from "../WidgetComponent/placeholder";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -35,6 +37,7 @@ function RenderPdf({
   pdfUrl,
   numPages,
   pageDetails,
+
   pdfRequest,
   setCurrentSigner,
   signerObjectId,
@@ -52,7 +55,8 @@ function RenderPdf({
   setUniqueId,
   signersdata,
   setIsPageCopy,
-  setSignerObjId
+  setSignerObjId,
+  setShowDropdown
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -62,7 +66,7 @@ function RenderPdf({
 
   // handle signature block width and height according to screen
   const posWidth = (pos, signYourself) => {
-    const defaultWidth = 150;
+    const defaultWidth = defaultWidthHeight(pos.type).width;
     const posWidth = pos.Width ? pos.Width : defaultWidth;
     let width;
     if (signYourself) {
@@ -76,6 +80,7 @@ function RenderPdf({
             return width;
           } else {
             width = (posWidth || defaultWidth) / scale;
+
             return width;
           }
         } else {
@@ -99,11 +104,14 @@ function RenderPdf({
     }
   };
   const posHeight = (pos, signYourself) => {
+    // console.log("signyourself",pos)
     let height;
     const posHeight = pos.Height;
-    const defaultHeight = 60;
+    const defaultHeight = defaultWidthHeight(pos.type).height;
+
     if (signYourself) {
       height = posHeight ? posHeight : defaultHeight;
+
       return height;
     } else {
       if (isMobile) {
@@ -113,6 +121,7 @@ function RenderPdf({
             return height;
           } else {
             height = (posHeight || defaultHeight) / scale;
+
             return height;
           }
         } else {
@@ -200,6 +209,26 @@ function RenderPdf({
     if (data.signerObjId === signerObjectId) {
       setCurrentSigner(true);
     }
+    const handleAllUserName = () => {
+      pdfDetails[0].Signers.map((signerData, key) => {
+        return (
+          signerData.objectId === data.signerObjId && (
+            <div
+              key={key}
+              style={{
+                fontSize: "12px",
+                color: "black",
+                fontWeight: "600",
+
+                marginTop: "0px"
+              }}
+            >
+              {signerData.Name}
+            </div>
+          )
+        );
+      });
+    };
 
     return (
       checkSign.length === 0 &&
@@ -211,7 +240,7 @@ function RenderPdf({
                 return (
                   pos && (
                     <React.Fragment key={pos.key}>
-                      <Rnd
+                      {/* <Rnd
                         disableDragging={true}
                         enableResizing={{
                           top: false,
@@ -284,7 +313,7 @@ function RenderPdf({
                               }}
                               src={pos.SignUrl}
                               style={{
-                                width: "99%",
+                                width: "100%",
                                 height: "100%",
                                 objectFit: "contain"
                               }}
@@ -304,22 +333,35 @@ function RenderPdf({
                                     }}
                                   >
                                     {signerData.Name}
-                                    <div
-                                      style={{
-                                        fontSize: "10px",
-                                        color: "black",
-                                        justifyContent: "center"
-                                      }}
-                                    >
-                                      {pos.isStamp ? "stamp" : "signature"}
-                                    </div>
                                   </div>
                                 )
                               );
                             })
                           )}
                         </div>
-                      </Rnd>
+                      </Rnd> */}
+                      <Placeholder
+                        pos={pos}
+                        setSignKey={setSignKey}
+                        setIsSignPad={setIsSignPad}
+                        setIsStamp={setIsStamp}
+                        handleSignYourselfImageResize={handleImageResize}
+                        index={pageNumber}
+                        xyPostion={signerPos}
+                        setXyPostion={setSignerPos}
+                        data={data}
+                        setIsResize={setIsResize}
+                        isShowBorder={false}
+                        signerObjId={signerObjectId}
+                        isShowDropdown={true}
+                        isNeedSign={true}
+                        isSignYourself={false}
+                        xPos={xPos}
+                        yPos={yPos}
+                        posWidth={posWidth}
+                        posHeight={posHeight}
+                        handleUserName={handleAllUserName}
+                      />
                     </React.Fragment>
                   )
                 );
@@ -380,12 +422,13 @@ function RenderPdf({
               justifyContent: "center"
             }}
           >
-            {pos.isStamp ? "stamp" : "signature"}
+            {pos.type}
           </div>
         )}
       </div>
     );
   };
+
   const handleUserName = (signerId, Role) => {
     if (signerId) {
       const checkSign = signersdata.find((sign) => sign.objectId === signerId);
@@ -418,6 +461,141 @@ function RenderPdf({
         >
           <EmailToast isShow={successEmail} />
           {pdfLoadFail.status &&
+            // recipient
+            //   ? !pdfUrl &&
+            //     !isAlreadySign.mssg &&
+            //     xyPostion.length > 0 &&
+            //     xyPostion.map((data, ind) => {
+            //       return (
+            //         <React.Fragment key={ind}>
+            //           {data.pageNumber === pageNumber &&
+            //             data.pos.map((pos) => {
+            //               return (
+            //                 pos && (
+            //                   // <Rnd
+            //                   //   data-tut="reactourSecond"
+            //                   //   disableDragging={true}
+            //                   //   enableResizing={{
+            //                   //     top: false,
+            //                   //     right: false,
+            //                   //     bottom: false,
+            //                   //     left: false,
+            //                   //     topRight: false,
+            //                   //     bottomRight: true,
+            //                   //     bottomLeft: false,
+            //                   //     topLeft: false
+            //                   //   }}
+            //                   //   key={pos.key}
+            //                   //   bounds="parent"
+            //                   //   style={{
+            //                   //     cursor: "all-scroll",
+            //                   //     borderColor: themeColor(),
+            //                   //     borderStyle: "dashed",
+            //                   //     borderWidth: "0.1px",
+            //                   //     zIndex: "1",
+            //                   //     background: data.blockColor
+            //                   //       ? data.blockColor
+            //                   //       : "#daebe0"
+            //                   //   }}
+            //                   //   className="signYourselfBlock"
+            //                   //   onResize={(
+            //                   //     e,
+            //                   //     direction,
+            //                   //     ref,
+            //                   //     delta,
+            //                   //     position
+            //                   //   ) => {
+            //                   //     handleSignYourselfImageResize(
+            //                   //       ref,
+            //                   //       pos.key,
+            //                   //       xyPostion,
+            //                   //       index,
+            //                   //       setXyPostion
+            //                   //     );
+            //                   //   }}
+            //                   //   size={{
+            //                   //     width: posWidth(pos),
+            //                   //     height: posHeight(pos)
+            //                   //   }}
+            //                   //   lockAspectRatio={
+            //                   //     pos.Width ? pos.Width / pos.Height : 2.5
+            //                   //   }
+            //                   //   //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
+            //                   //   //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
+            //                   //   default={{
+            //                   //     x: xPos(pos),
+            //                   //     y: yPos(pos)
+            //                   //   }}
+            //                   //   onClick={() => {
+            //                   //     setIsSignPad(true);
+            //                   //     setSignKey(pos.key);
+            //                   //     setIsStamp(
+            //                   //       pos?.isStamp ? pos.isStamp : false
+            //                   //     );
+            //                   //   }}
+            //                   // >
+            //                   //   <BorderResize />
+            //                   //   {pos.SignUrl ? (
+            //                   //     <img
+            //                   //       alt="no img"
+            //                   //       onClick={() => {
+            //                   //         setIsSignPad(true);
+            //                   //         setSignKey(pos.key);
+            //                   //       }}
+            //                   //       src={pos.SignUrl}
+            //                   //       style={{
+            //                   //         width: "100%",
+            //                   //         height: "100%",
+            //                   //         objectFit: "contain"
+            //                   //       }}
+            //                   //     />
+            //                   //   ) : (
+            //                   //     <div
+            //                   //       style={{
+            //                   //         fontSize: "10px",
+            //                   //         color: "black",
+
+            //                   //         justifyContent: "center",
+            //                   //         marginTop: "0px"
+            //                   //       }}
+            //                   //     >
+            //                   //       <div>{pos.type}</div>
+
+            //                   //       {handleUserName(
+            //                   //         data.signerObjId,
+            //                   //         data.Role
+            //                   //       )}
+            //                   //     </div>
+            //                   //   )}
+            //                   // </Rnd>
+            //                   <Placeholder
+            //                     pos={pos}
+            //                     setSignKey={setSignKey}
+            //                     setIsStamp={setIsStamp}
+            //                     handleSignYourselfImageResize={
+            //                       handleSignYourselfImageResize
+            //                     }
+            //                     index={index}
+            //                     xyPostion={xyPostion}
+            //                     setXyPostion={setXyPostion}
+            //                     pdfOriginalWidth={pdfOriginalWidth}
+            //                     containerWH={containerWH}
+            //                     setIsSignPad={setIsSignPad}
+            //                     isShowDropdown={true}
+            //                     isRecipient={true}
+            //                     isSignYourself={false}
+            //                     xPos={xPos}
+            //                     yPos={yPos}
+            //                     posWidth={posWidth}
+            //                     posHeight={posHeight}
+            //                   />
+            //                 )
+            //               );
+            //             })}
+            //         </React.Fragment>
+            //       );
+            //     })
+            //   :
             (pdfRequest
               ? signerPos.map((data, key) => {
                   return (
@@ -589,7 +767,6 @@ function RenderPdf({
                                           onTouchEnd={(e) => {
                                             e.stopPropagation();
                                             handleDeleteSign(pos.key, data.Id);
-                                            // data.signerObjId
                                           }}
                                           onClick={(e) => {
                                             e.stopPropagation();
@@ -609,15 +786,11 @@ function RenderPdf({
                                             marginTop: "0px"
                                           }}
                                         >
-                                          {pos.isStamp ? (
-                                            <div>stamp</div>
-                                          ) : (
-                                            <div>signature</div>
-                                          )}
+                                          <div>{pos.type}</div>
                                           {handleUserName(
                                             data.signerObjId,
                                             data.Role
-                                          )}
+                                          )}{" "}
                                         </div>
                                       </div>
                                     </Rnd>
@@ -636,138 +809,162 @@ function RenderPdf({
                           data.pos.map((pos) => {
                             return (
                               pos && (
-                                <Rnd
-                                  allowAnyClick
-                                  enableResizing={{
-                                    top: false,
-                                    right: false,
-                                    bottom: false,
-                                    left: false,
-                                    topRight: false,
-                                    bottomRight: true,
-                                    bottomLeft: false,
-                                    topLeft: false
-                                  }}
-                                  lockAspectRatio={
-                                    pos.Width ? pos.Width / pos.Height : 2.5
-                                  }
-                                  bounds="parent"
-                                  ref={nodeRef}
-                                  key={pos.key}
-                                  className="signYourselfBlock"
-                                  style={{
-                                    border: "1px solid red",
-                                    cursor: "all-scroll",
-                                    zIndex: "1",
-                                    background: "#daebe0"
-                                  }}
-                                  size={{
-                                    width: posWidth(pos, true),
-                                    height: posHeight(pos, true)
-                                  }}
-                                  default={{
-                                    x: xPos(pos, true),
-                                    y: yPos(pos, true)
-                                  }}
-                                  onDrag={() => handleTabDrag(pos.key)}
-                                  onDragStop={handleStop}
-                                  onResize={(
-                                    e,
-                                    direction,
-                                    ref,
-                                    delta,
-                                    position
-                                  ) => {
-                                    handleSignYourselfImageResize(
-                                      ref,
-                                      pos.key,
-                                      xyPostion,
-                                      index,
-                                      setXyPostion
-                                    );
-                                  }}
-                                >
-                                  <BorderResize right={-12} top={-11} />
-                                  <PlaceholderBorder
-                                    pos={pos}
-                                    posWidth={posWidth}
-                                    isSignYourself={true}
-                                    posHeight={posHeight}
-                                  />
-                                  <div
-                                    style={{
-                                      left: xPos(pos, true),
-                                      top: yPos(pos, true),
-                                      width: posWidth(pos, true),
-                                      height: posHeight(pos, true),
-                                      zIndex: "10"
-                                    }}
-                                    onTouchEnd={(e) => {
-                                      if (!isDragging && isMobile) {
-                                        setTimeout(() => {
-                                          e.stopPropagation();
-                                          setIsSignPad(true);
-                                          setSignKey(pos.key);
-                                          setIsStamp(pos.isStamp);
-                                        }, 500);
-                                      }
-                                    }}
-                                  >
-                                    <i
-                                      className="fa-regular fa-copy signCopy"
-                                      onTouchEnd={(e) => {
-                                        e.stopPropagation();
-                                        setIsPageCopy(true);
-                                        setSignKey(pos.key);
-                                      }}
-                                      style={{
-                                        color: "#188ae2"
-                                      }}
-                                    ></i>
-                                    <i
-                                      className="fa-regular fa-circle-xmark signCloseBtn"
-                                      onTouchEnd={(e) => {
-                                        e.stopPropagation();
-                                        if (data) {
-                                          handleDeleteSign(
-                                            pos.key,
-                                            data.signerObjId
-                                          );
-                                        } else {
-                                          handleDeleteSign(pos.key);
-                                          setIsStamp(false);
-                                        }
-                                      }}
-                                      style={{
-                                        color: "#188ae2"
-                                      }}
-                                    ></i>
+                                // <Rnd
+                                //   allowAnyClick
+                                //   enableResizing={{
+                                //     top: false,
+                                //     right: false,
+                                //     bottom: false,
+                                //     left: false,
+                                //     topRight: false,
+                                //     bottomRight: true,
+                                //     bottomLeft: false,
+                                //     topLeft: false
+                                //   }}
+                                //   lockAspectRatio={
+                                //     pos.Width ? pos.Width / pos.Height : 2.5
+                                //   }
+                                //   bounds="parent"
+                                //   ref={nodeRef}
+                                //   key={pos.key}
+                                //   className="signYourselfBlock"
+                                //   style={{
+                                //     border: "1px solid red",
+                                //     cursor: "all-scroll",
+                                //     zIndex: "1",
+                                //     background: "#daebe0"
+                                //   }}
+                                //   size={{
+                                //     width: posWidth(pos, true),
+                                //     height: posHeight(pos, true)
+                                //   }}
+                                //   default={{
+                                //     x: xPos(pos, true),
+                                //     y: yPos(pos, true)
+                                //   }}
+                                //   onDrag={() => handleTabDrag(pos.key)}
+                                //   onDragStop={handleStop}
+                                //   onResize={(
+                                //     e,
+                                //     direction,
+                                //     ref,
+                                //     delta,
+                                //     position
+                                //   ) => {
+                                //     handleSignYourselfImageResize(
+                                //       ref,
+                                //       pos.key,
+                                //       xyPostion,
+                                //       index,
+                                //       setXyPostion
+                                //     );
+                                //   }}
+                                // >
+                                //   <BorderResize right={-12} top={-11} />
+                                //   <PlaceholderBorder
+                                //     pos={pos}
+                                //     posWidth={posWidth}
+                                //     isSignYourself={true}
+                                //     posHeight={posHeight}
+                                //   />
+                                //   <div
+                                //     style={{
+                                //       left: xPos(pos, true),
+                                //       top: yPos(pos, true),
+                                //       width: posWidth(pos, true),
+                                //       height: posHeight(pos, true),
+                                //       zIndex: "10"
+                                //     }}
+                                //     onTouchEnd={(e) => {
+                                //       if (!isDragging && isMobile) {
+                                //         setTimeout(() => {
+                                //           e.stopPropagation();
+                                //           setIsSignPad(true);
+                                //           setSignKey(pos.key);
+                                //           setIsStamp(pos.isStamp);
+                                //         }, 500);
+                                //       }
+                                //     }}
+                                //   >
+                                //     <i
+                                //       className="fa-regular fa-copy signCopy"
+                                //       onTouchEnd={(e) => {
+                                //         e.stopPropagation();
+                                //         setIsPageCopy(true);
+                                //         setSignKey(pos.key);
+                                //       }}
+                                //       style={{
+                                //         color: "#188ae2"
+                                //       }}
+                                //     ></i>
+                                //     <i
+                                //       className="fa-regular fa-circle-xmark signCloseBtn"
+                                //       onTouchEnd={(e) => {
+                                //         e.stopPropagation();
+                                //         if (data) {
+                                //           handleDeleteSign(
+                                //             pos.key,
+                                //             data.signerObjId
+                                //           );
+                                //         } else {
+                                //           handleDeleteSign(pos.key);
+                                //           setIsStamp(false);
+                                //         }
+                                //       }}
+                                //       style={{
+                                //         color: "#188ae2"
+                                //       }}
+                                //     ></i>
 
-                                    {pos.SignUrl ? (
-                                      <div style={{ pointerEvents: "none" }}>
-                                        <img
-                                          alt="signimg"
-                                          src={pos.SignUrl}
-                                          style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "contain"
-                                          }}
-                                        />
-                                      </div>
-                                    ) : (
-                                      <div
-                                        style={{
-                                          fontSize: "10px",
-                                          color: "black",
-                                          justifyContent: "center"
-                                        }}
-                                      >
-                                        {pos.isStamp ? "stamp" : "signature"}
-                                      </div>
-                                    )}
-                                  </div>
-                                </Rnd>
+                                //     {pos.SignUrl ? (
+                                //       <div style={{ pointerEvents: "none" }}>
+                                //         <img
+                                //           alt="signimg"
+                                //           src={pos.SignUrl}
+                                //           style={{
+                                //             width: "100%",
+                                //             height: "100%",
+                                //             objectFit: "contain"
+                                //           }}
+                                //         />
+                                //       </div>
+                                //     ) : (
+                                //       <div
+                                //         style={{
+                                //           fontSize: "10px",
+                                //           color: "black",
+                                //           justifyContent: "center"
+                                //         }}
+                                //       >
+                                //         {pos.isStamp ? "stamp" : "signature"}
+                                //       </div>
+                                //     )}
+                                //   </div>
+                                // </Rnd>
+                                <Placeholder
+                                  pos={pos}
+                                  setIsPageCopy={setIsPageCopy}
+                                  setSignKey={setSignKey}
+                                  handleDeleteSign={handleDeleteSign}
+                                  setIsStamp={setIsStamp}
+                                  handleTabDrag={handleTabDrag}
+                                  handleStop={handleStop}
+                                  handleSignYourselfImageResize={
+                                    handleSignYourselfImageResize
+                                  }
+                                  index={index}
+                                  xyPostion={xyPostion}
+                                  setXyPostion={setXyPostion}
+                                  pdfOriginalWidth={pdfOriginalWidth}
+                                  containerWH={containerWH}
+                                  setIsSignPad={setIsSignPad}
+                                  isShowBorder={true}
+                                  isSignYourself={true}
+                                  xPos={xPos}
+                                  yPos={yPos}
+                                  posWidth={posWidth}
+                                  posHeight={posHeight}
+                                />
                               )
                             );
                           })}
@@ -836,6 +1033,143 @@ function RenderPdf({
           >
             <EmailToast isShow={successEmail} />
             {pdfLoadFail.status &&
+              // recipient
+              // ? !pdfUrl &&
+              //   !isAlreadySign.mssg &&
+              //   xyPostion.length > 0 &&
+              //   xyPostion.map((data, ind) => {
+              //     return (
+              //       <React.Fragment key={ind}>
+              //         {data.pageNumber === pageNumber &&
+              //           data.pos.map((pos) => {
+              //             return (
+              //               pos && (
+              //                 //   <Rnd
+              //                 //   data-tut="reactourSecond"
+              //                 //   disableDragging={true}
+              //                 //   enableResizing={{
+              //                 //     top: false,
+              //                 //     right: false,
+              //                 //     bottom: false,
+              //                 //     left: false,
+              //                 //     topRight: false,
+              //                 //     bottomRight: true,
+              //                 //     bottomLeft: false,
+              //                 //     topLeft: false
+              //                 //   }}
+              //                 //   onResize={(
+              //                 //     e,
+              //                 //     direction,
+              //                 //     ref,
+              //                 //     delta,
+              //                 //     position
+              //                 //   ) => {
+              //                 //     handleSignYourselfImageResize(
+              //                 //       ref,
+              //                 //       pos.key,
+              //                 //       xyPostion,
+              //                 //       index,
+              //                 //       setXyPostion
+              //                 //     );
+              //                 //   }}
+              //                 //   key={pos.key}
+              //                 //   bounds="parent"
+              //                 //   style={{
+              //                 //     cursor: "all-scroll",
+              //                 //     borderColor: themeColor(),
+              //                 //     borderStyle: "dashed",
+              //                 //     borderWidth: "0.1px",
+              //                 //     zIndex: "1",
+              //                 //     background: data.blockColor
+              //                 //       ? data.blockColor
+              //                 //       : "#daebe0"
+              //                 //   }}
+              //                 //   className="signYourselfBlock"
+              //                 //   size={{
+              //                 //     width: posWidth(pos),
+              //                 //     height: posHeight(pos)
+              //                 //   }}
+              //                 //   lockAspectRatio={
+              //                 //     pos.Width ? pos.Width / pos.Height : 2.5
+              //                 //   }
+              //                 //   default={{
+              //                 //     x: xPos(pos),
+              //                 //     y: yPos(pos)
+              //                 //   }}
+              //                 //   onClick={() => {
+              //                 //     setIsSignPad(true);
+              //                 //     setSignKey(pos.key);
+              //                 //     setIsStamp(pos?.isStamp ? pos.isStamp : false);
+              //                 //   }}
+              //                 // >
+              //                 //   <div style={{ pointerEvents: "none" }}>
+              //                 //     <BorderResize />
+              //                 //     {pos.SignUrl ? (
+              //                 //       <img
+              //                 //         alt="no img"
+              //                 //         onClick={() => {
+              //                 //           setIsSignPad(true);
+              //                 //           setSignKey(pos.key);
+              //                 //         }}
+              //                 //         src={pos.SignUrl}
+              //                 //         style={{
+              //                 //           width: "100%",
+              //                 //           height: "100%",
+              //                 //           objectFit: "contain"
+              //                 //         }}
+              //                 //       />
+              //                 //     ) : (
+              //                 //       <div
+              //                 //         style={{
+              //                 //           fontSize: "10px",
+              //                 //           color: "black",
+              //                 //           fontWeight: "600",
+              //                 //           justifyContent: "center",
+              //                 //           marginTop: "0px"
+              //                 //         }}
+              //                 //       >
+              //                 //         {pos.isStamp ? (
+              //                 //           <div>stamp</div>
+              //                 //         ) : (
+              //                 //           <div>signature</div>
+              //                 //         )}
+              //                 //         {handleUserName(
+              //                 //           data.signerObjId,
+              //                 //           data.Role
+              //                 //         )}
+              //                 //       </div>
+              //                 //     )}
+              //                 //   </div>
+              //                 // </Rnd>
+
+              //                 <Placeholder
+              //                   pos={pos}
+              //                   setSignKey={setSignKey}
+              //                   setIsStamp={setIsStamp}
+              //                   handleSignYourselfImageResize={
+              //                     handleSignYourselfImageResize
+              //                   }
+              //                   index={index}
+              //                   xyPostion={xyPostion}
+              //                   setXyPostion={setXyPostion}
+              //                   pdfOriginalWidth={pdfOriginalWidth}
+              //                   containerWH={containerWH}
+              //                   setIsSignPad={setIsSignPad}
+              //                   isShowDropdown={true}
+              //                   isRecipient={true}
+              //                   isSignYourself={false}
+              //                   xPos={xPos}
+              //                   yPos={yPos}
+              //                   posWidth={posWidth}
+              //                   posHeight={posHeight}
+              //                 />
+              //               )
+              //             );
+              //           })}
+              //       </React.Fragment>
+              //     );
+              //   })
+              // :
               (pdfRequest
                 ? signerPos.map((data, key) => {
                     return (
@@ -854,161 +1188,198 @@ function RenderPdf({
                                 {placeData.pageNumber === pageNumber &&
                                   placeData.pos.map((pos) => {
                                     return (
-                                      <Rnd
-                                        onClick={(e) => {
-                                          if (!isDragging) {
-                                            handleLinkUser(data.Id);
-                                            setUniqueId(data.Id);
-                                          }
-                                          const dataNewPlace = addZIndex(
-                                            signerPos,
-                                            pos.key,
-                                            setZIndex
-                                          );
-                                          setSignerPos((prevState) => {
-                                            const newState = [...prevState];
-                                            newState.splice(
-                                              0,
-                                              signerPos.length,
-                                              ...dataNewPlace
-                                            );
-                                            return newState;
-                                          });
-                                        }}
-                                        key={pos.key}
-                                        enableResizing={{
-                                          top: false,
-                                          right: false,
-                                          bottom: false,
-                                          left: false,
-                                          topRight: false,
-                                          bottomRight: true,
-                                          bottomLeft: false,
-                                          topLeft: false
-                                        }}
-                                        bounds="parent"
-                                        style={{
-                                          cursor: "all-scroll",
-                                          background: data.blockColor,
-                                          zIndex: pos.zIndex
-                                        }}
-                                        className="signYourselfBlock"
-                                        onDrag={() => handleTabDrag(pos.key)}
-                                        size={{
-                                          width: posWidth(pos),
-                                          height: posHeight(pos)
-                                        }}
-                                        lockAspectRatio={
-                                          pos.Width
-                                            ? pos.Width / pos.Height
-                                            : 2.5
-                                        }
-                                        onDragStop={(event, dragElement) =>
-                                          handleStop(
-                                            event,
-                                            dragElement,
-                                            data.Id,
-                                            pos.key
-                                          )
-                                        }
-                                        default={{
-                                          x: xPos(pos),
-                                          y: yPos(pos)
-                                        }}
-                                        onResizeStart={() => {
-                                          setIsResize(true);
-                                        }}
-                                        onResizeStop={() => {
-                                          setIsResize && setIsResize(false);
-                                        }}
-                                        onResize={(
-                                          e,
-                                          direction,
-                                          ref,
-                                          delta,
-                                          position
-                                        ) => {
-                                          e.stopPropagation();
-                                          handleImageResize(
-                                            ref,
-                                            pos.key,
-                                            data.Id, //data.signerObjId,
-                                            position,
-                                            signerPos,
-                                            pageNumber,
-                                            setSignerPos,
-                                            pdfOriginalWidth,
-                                            containerWH,
-                                            false
-                                          );
-                                        }}
-                                      >
-                                        <BorderResize right={-12} top={-11} />
-                                        <PlaceholderBorder
-                                          pos={pos}
-                                          posWidth={posWidth}
-                                          posHeight={posHeight}
-                                        />
-                                        <div>
-                                          <i
-                                            data-tut="reactourLinkUser"
-                                            className="fa-regular fa-user signUserIcon"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleLinkUser(data.Id);
-                                              setUniqueId(data.Id);
-                                            }}
-                                            style={{
-                                              color: "#188ae2"
-                                            }}
-                                          ></i>
-                                          <i
-                                            className="fa-regular fa-copy signCopy"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              setIsPageCopy(true);
-                                              setSignKey(pos.key);
-                                              setUniqueId(data.Id);
-                                              setSignerObjId(data.signerObjId);
-                                            }}
-                                            style={{
-                                              color: "#188ae2"
-                                            }}
-                                          ></i>
-                                          <i
-                                            className="fa-regular fa-circle-xmark signCloseBtn"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleDeleteSign(
-                                                pos.key,
-                                                data.Id
-                                              );
-                                              // data.signerObjId
-                                            }}
-                                            style={{
-                                              color: "#188ae2"
-                                            }}
-                                          ></i>
+                                      // <Rnd
+                                      //   onClick={() => {
+                                      // if (!isDragging) {
+                                      //   handleLinkUser(data.Id);
+                                      //   setUniqueId(data.Id);
+                                      // }
+                                      //     const dataNewPlace = addZIndex(
+                                      //       signerPos,
+                                      //       pos.key,
+                                      //       setZIndex
+                                      //     );
+                                      //     setSignerPos((prevState) => {
+                                      //       const newState = [...prevState];
+                                      //       newState.splice(
+                                      //         0,
+                                      //         signerPos.length,
+                                      //         ...dataNewPlace
+                                      //       );
+                                      //       return newState;
+                                      //     });
+                                      //   }}
+                                      //   key={pos.key}
+                                      //   enableResizing={{
+                                      //     top: false,
+                                      //     right: false,
+                                      //     bottom: false,
+                                      //     left: false,
+                                      //     topRight: false,
+                                      //     bottomRight: true,
+                                      //     bottomLeft: false,
+                                      //     topLeft: false
+                                      //   }}
+                                      //   bounds="parent"
+                                      //   style={{
+                                      //     cursor: "all-scroll",
+                                      //     background: data.blockColor,
+                                      //     zIndex: pos.zIndex
+                                      //   }}
+                                      //   className="signYourselfBlock"
+                                      //   onDrag={() => handleTabDrag(pos.key)}
+                                      //   size={{
+                                      //     width: posWidth(pos),
+                                      //     height: posHeight(pos)
+                                      //   }}
+                                      //   lockAspectRatio={
+                                      //     pos.Width
+                                      //       ? pos.Width / pos.Height
+                                      //       : 2.5
+                                      //   }
+                                      //   onDragStop={
+                                      //     (event, dragElement) =>
+                                      //       handleStop(
+                                      //         event,
+                                      //         dragElement,
+                                      //         data.Id,
+                                      //         pos.key
+                                      //       )
+                                      //     // data.signerObjId,
+                                      //   }
+                                      //   // default={{
+                                      //   //   x: pos.xPosition,
+                                      //   //   y: pos.yPosition
+                                      //   // }}
+                                      //   default={{
+                                      //     x: xPos(pos),
+                                      //     y: yPos(pos)
+                                      //   }}
+                                      //   onResizeStart={() => {
+                                      //     setIsResize(true);
+                                      //   }}
+                                      //   onResizeStop={() => {
+                                      //     setIsResize && setIsResize(false);
+                                      //   }}
+                                      //   onResize={(
+                                      //     e,
+                                      //     direction,
+                                      //     ref,
+                                      //     delta,
+                                      //     position
+                                      //   ) => {
+                                      //     e.stopPropagation();
+                                      //     handleImageResize(
+                                      //       ref,
+                                      //       pos.key,
+                                      //       data.Id, //data.signerObjId,
+                                      //       position,
+                                      //       signerPos,
+                                      //       pageNumber,
+                                      //       setSignerPos,
+                                      //       pdfOriginalWidth,
+                                      //       containerWH,
+                                      //       false
+                                      //     );
+                                      //   }}
+                                      // >
+                                      //   <BorderResize right={-12} top={-11} />
+                                      //   <PlaceholderBorder
+                                      //     pos={pos}
+                                      //     posWidth={posWidth}
+                                      //     posHeight={posHeight}
+                                      //   />
+                                      //   <div>
+                                      //     <i
+                                      //       data-tut="reactourLinkUser"
+                                      //       className="fa-regular fa-user signUserIcon"
+                                      //       onClick={(e) => {
+                                      //         e.stopPropagation();
+                                      //         handleLinkUser(data.Id);
+                                      //         setUniqueId(data.Id);
+                                      //       }}
+                                      //       style={{
+                                      //         color: "#188ae2"
+                                      //       }}
+                                      //     ></i>
+                                      //     <i
+                                      //       className="fa-regular fa-copy signCopy"
+                                      //       onClick={(e) => {
+                                      //         e.stopPropagation();
+                                      //         setIsPageCopy(true);
+                                      //         setSignKey(pos.key);
+                                      //         setUniqueId(data.Id);
+                                      //         setSignerObjId(
+                                      //           data.signerObjId
+                                      //         );
+                                      //       }}
+                                      //       style={{
+                                      //         color: "#188ae2"
+                                      //       }}
+                                      //     ></i>
+                                      //     <i
+                                      //       className="fa-regular fa-circle-xmark signCloseBtn"
+                                      //       onClick={(e) => {
+                                      //         e.stopPropagation();
+                                      //         handleDeleteSign(
+                                      //           pos.key,
+                                      //           data.Id
+                                      //         );
+                                      //         // data.signerObjId
+                                      //       }}
+                                      //       style={{
+                                      //         color: "#188ae2"
+                                      //       }}
+                                      //     ></i>
 
-                                          <div
-                                            style={{
-                                              fontSize: "10px",
-                                              color: "black",
-                                              justifyContent: "center"
-                                            }}
-                                          >
-                                            {pos.isStamp ? (
-                                              <div>stamp</div>
-                                            ) : (
-                                              <div>signature</div>
-                                            )}
-                                            {handleUserName(
-                                              data.signerObjId,
-                                              data.Role
-                                            )}
-                                          </div>
-                                        </div>
-                                      </Rnd>
+                                      //     <div
+                                      //       style={{
+                                      //         fontSize: "10px",
+                                      //         color: "black",
+                                      //         justifyContent: "center"
+                                      //       }}
+                                      //     >
+                                      //       {pos.isStamp ? (
+                                      //         <div>stamp</div>
+                                      //       ) : (
+                                      //         <div>signature</div>
+                                      //       )}
+                                      //       {handleUserName(
+                                      //         data.signerObjId,
+                                      //         data.Role
+                                      //       )}
+                                      //     </div>
+                                      //   </div>
+                                      // </Rnd>
+                                      <Placeholder
+                                        pos={pos}
+                                        setIsPageCopy={setIsPageCopy}
+                                        setSignKey={setSignKey}
+                                        handleDeleteSign={handleDeleteSign}
+                                        setIsStamp={setIsStamp}
+                                        handleTabDrag={handleTabDrag}
+                                        handleStop={handleStop}
+                                        handleSignYourselfImageResize={
+                                          handleImageResize
+                                        }
+                                        index={pageNumber}
+                                        xyPostion={signerPos}
+                                        setXyPostion={setSignerPos}
+                                        setSignerObjId={setSignerObjId}
+                                        data={data}
+                                        setIsResize={setIsResize}
+                                        setShowDropdown={setShowDropdown}
+                                        isShowBorder={true}
+                                        isPlaceholder={true}
+                                        setUniqueId={setUniqueId}
+                                        handleLinkUser={handleLinkUser}
+                                        handleUserName={handleUserName}
+                                        isSignYourself={false}
+                                        xPos={xPos}
+                                        yPos={yPos}
+                                        posWidth={posWidth}
+                                        posHeight={posHeight}
+                                      />
                                     );
                                   })}
                               </React.Fragment>
@@ -1024,78 +1395,103 @@ function RenderPdf({
                             data.pos.map((pos) => {
                               return (
                                 pos && (
-                                  <Rnd
-                                    ref={nodeRef}
-                                    key={pos.key}
-                                    lockAspectRatio={
-                                      pos.Width ? pos.Width / pos.Height : 2.5
+                                  //   <Rnd
+                                  //   ref={nodeRef}
+                                  //   key={pos.key}
+                                  //   lockAspectRatio={
+                                  //     pos.Width ? pos.Width / pos.Height : 2.5
+                                  //   }
+                                  //   enableResizing={{
+                                  //     top: false,
+                                  //     right: false,
+                                  //     bottom: false,
+                                  //     left: false,
+                                  //     topRight: false,
+                                  //     bottomRight: true,
+                                  //     bottomLeft: false,
+                                  //     topLeft: false
+                                  //   }}
+                                  //   bounds="parent"
+                                  //   className="signYourselfBlock"
+                                  //   style={{
+                                  //     border: "1px solid red",
+                                  //     cursor: "all-scroll",
+                                  //     zIndex: "1",
+                                  //     background: "#daebe0"
+                                  //   }}
+                                  //   onDrag={() => handleTabDrag(pos.key)}
+                                  //   size={{
+                                  //     width: pos.Width ? pos.Width : 150,
+                                  //     height: pos.Height ? pos.Height : 60
+                                  //   }}
+                                  //   onDragStop={handleStop}
+                                  //   default={{
+                                  //     x: pos.xPosition,
+                                  //     y: pos.yPosition
+                                  //   }}
+                                  //   onClick={() => {
+                                  //     if (!isDragging) {
+                                  //       setIsSignPad(true);
+                                  //       setSignKey(pos.key);
+                                  //       setIsStamp(pos.isStamp);
+                                  //     }
+                                  //   }}
+                                  //   onResize={(
+                                  //     e,
+                                  //     direction,
+                                  //     ref,
+                                  //     delta,
+                                  //     position
+                                  //   ) => {
+                                  //     e.stopPropagation();
+                                  //     handleSignYourselfImageResize(
+                                  //       ref,
+                                  //       pos.key,
+                                  //       xyPostion,
+                                  //       index,
+                                  //       setXyPostion
+                                  //     );
+                                  //   }}
+                                  // >
+                                  //   <BorderResize right={-12} top={-11} />
+                                  //   <PlaceholderBorder
+                                  //     pos={pos}
+                                  //     posWidth={posWidth}
+                                  //     posHeight={posHeight}
+                                  //   />
+                                  //   <PlaceholderDesign pos={pos} />
+                                  // </Rnd>
+                                  <Placeholder
+                                    pos={pos}
+                                    setIsPageCopy={setIsPageCopy}
+                                    setSignKey={setSignKey}
+                                    handleDeleteSign={handleDeleteSign}
+                                    setIsStamp={setIsStamp}
+                                    handleTabDrag={handleTabDrag}
+                                    handleStop={handleStop}
+                                    handleSignYourselfImageResize={
+                                      handleSignYourselfImageResize
                                     }
-                                    enableResizing={{
-                                      top: false,
-                                      right: false,
-                                      bottom: false,
-                                      left: false,
-                                      topRight: false,
-                                      bottomRight: true,
-                                      bottomLeft: false,
-                                      topLeft: false
-                                    }}
-                                    bounds="parent"
-                                    className="signYourselfBlock"
-                                    style={{
-                                      border: "1px solid red",
-                                      cursor: "all-scroll",
-                                      zIndex: "1",
-                                      background: "#daebe0"
-                                    }}
-                                    onDrag={() => handleTabDrag(pos.key)}
-                                    size={{
-                                      width: pos.Width ? pos.Width : 150,
-                                      height: pos.Height ? pos.Height : 60
-                                    }}
-                                    onDragStop={handleStop}
-                                    default={{
-                                      x: pos.xPosition,
-                                      y: pos.yPosition
-                                    }}
-                                    onClick={() => {
-                                      if (!isDragging) {
-                                        setIsSignPad(true);
-                                        setSignKey(pos.key);
-                                        setIsStamp(pos.isStamp);
-                                      }
-                                    }}
-                                    onResize={(
-                                      e,
-                                      direction,
-                                      ref,
-                                      delta,
-                                      position
-                                    ) => {
-                                      e.stopPropagation();
-                                      handleSignYourselfImageResize(
-                                        ref,
-                                        pos.key,
-                                        xyPostion,
-                                        index,
-                                        setXyPostion
-                                      );
-                                    }}
-                                  >
-                                    <BorderResize right={-12} top={-11} />
-                                    <PlaceholderBorder
-                                      pos={pos}
-                                      posWidth={posWidth}
-                                      posHeight={posHeight}
-                                    />
-                                    <PlaceholderDesign pos={pos} />
-                                  </Rnd>
+                                    index={index}
+                                    xyPostion={xyPostion}
+                                    setXyPostion={setXyPostion}
+                                    pdfOriginalWidth={pdfOriginalWidth}
+                                    containerWH={containerWH}
+                                    setIsSignPad={setIsSignPad}
+                                    isShowBorder={true}
+                                    isSignYourself={true}
+                                    xPos={xPos}
+                                    yPos={yPos}
+                                    posWidth={posWidth}
+                                    posHeight={posHeight}
+                                  />
                                 )
                               );
                             })}
                         </React.Fragment>
                       );
                     }))}
+
             {/* this component for render pdf document is in middle of the component */}
             <Document
               onLoadError={(e) => {

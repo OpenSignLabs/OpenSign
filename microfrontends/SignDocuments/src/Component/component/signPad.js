@@ -66,7 +66,7 @@ function SignPad({
 
       setIsSignImg("");
     } else if (isTab === "uploadImage") {
-       setImage("");
+      setImage("");
     }
   };
   //function for set signature url
@@ -388,7 +388,8 @@ function SignPad({
                 <>
                   <div
                     style={{
-                      border: "1px solid black",
+                      border: "1.3px solid #007bff",
+                      borderRadius: "2px",
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "center",
@@ -417,7 +418,8 @@ function SignPad({
                 !image ? (
                   <div
                     style={{
-                      border: "1px solid black",
+                      border: "1.3px solid #007bff",
+                      borderRadius: "2px",
 
                       display: "flex",
                       flexDirection: "column",
@@ -444,7 +446,8 @@ function SignPad({
                   <>
                     <div
                       style={{
-                        border: "1px solid black",
+                        border: "1.3px solid #007bff",
+                        borderRadius: "2px",
                         marginBottom: 6,
 
                         overflow: "hidden"
@@ -533,7 +536,11 @@ function SignPad({
                     ref={canvasRef}
                     penColor={penColor}
                     canvasProps={{
-                      className: "signatureCanvas"
+                      className: "signatureCanvas",
+                      style: {
+                        border: "1.6px solid #007bff",
+                        borderRadius: "2px"
+                      }
                     }}
                     backgroundColor="rgb(255, 255, 255)"
                     onEnd={() =>

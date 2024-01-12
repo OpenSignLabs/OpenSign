@@ -103,9 +103,8 @@ function SignYourSelf() {
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
     item: {
-      type: "BOX",
       id: 1,
-      text: "drag me"
+      text: "signature"
     },
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
@@ -115,14 +114,14 @@ function SignYourSelf() {
   const [{ isDragStamp }, dragStamp] = useDrag({
     type: "BOX",
     item: {
-      type: "BOX",
       id: 2,
-      text: "drag me"
+      text: "stamp"
     },
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
     })
   });
+
   const [{ isDragSignatureSS }, dragSignatureSS] = useDrag({
     type: "BOX",
 
@@ -172,6 +171,17 @@ function SignYourSelf() {
   const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
+    // localStorage.setItem("accesstoken", "r:d70a32032557e982aab7aec1cae668fc");
+    // localStorage.setItem(
+    //   "baseUrl",
+    //   "https://staging-app.opensignlabs.com/api/app/"
+    // );
+    // localStorage.setItem("parseAppId", "opensignstgn");
+    // localStorage.setItem(
+    //   "Parse/opensignstgn/currentUser",
+    //   '{"name":"raktima","email":"raktimachaurasiya@gmail.com","phone":"9876567876","username":"raktimachaurasiya@gmail.com","createdAt":"2024-01-03T05:48:49.407Z","sessionToken":"r:d70a32032557e982aab7aec1cae668fc","updatedAt":"2024-01-03T05:48:49.407Z","emailVerified":false,"ACL":{"YHwDtLNto7":{"read":true,"write":true}},"__type":"Object","className":"_User","objectId":"YHwDtLNto7"}'
+    // );
+    // localStorage.setItem("_appName", "contracts");
     if (documentId) {
       getDocumentDetails(true);
     }
@@ -316,16 +326,18 @@ function SignYourSelf() {
   const addPositionOfSignature = (item, monitor) => {
     const key = Math.floor(1000 + Math.random() * 9000);
     let dropData = [];
+    let dropObj = {};
     let filterDropPos = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
     );
     if (item === "onclick") {
-      const dropObj = {
+      dropObj = {
         xPosition: window.innerWidth / 2 - 100,
         yPosition: window.innerHeight / 2 - 60,
         isDrag: false,
         key: key,
         isStamp: monitor,
+        type: item.text,
         yBottom: window.innerHeight / 2 - 60
       };
 
@@ -347,7 +359,7 @@ function SignYourSelf() {
       const y = offset.y - containerRect.top;
       const ybottom = containerRect.bottom - offset.y;
 
-      const dropObj = {
+      dropObj = {
         xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
         yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
         isDrag: false,
@@ -355,7 +367,8 @@ function SignYourSelf() {
         isStamp: isDragStamp || isDragStampSS ? true : false,
         firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
         firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
-        yBottom: ybottom
+        yBottom: ybottom,
+        type: item.text
       };
 
       dropData.push(dropObj);
@@ -379,8 +392,11 @@ function SignYourSelf() {
         pos: newSignPos
       };
       xyPostion.splice(index, 1, xyPos);
-      setIsSignPad(true);
-      setSignKey(key);
+      if (isDragSign || isDragSignatureSS || isDragStamp || isDragStampSS) {
+        setIsSignPad(true);
+        setSignKey(key);
+      }
+
       // }
     } else {
       const xyPos = {
@@ -388,8 +404,11 @@ function SignYourSelf() {
         pos: dropData
       };
       setXyPostion((prev) => [...prev, xyPos]);
-      setIsSignPad(true);
-      setSignKey(key);
+
+      if (isDragSign || isDragSignatureSS) {
+        setIsSignPad(true);
+        setSignKey(key);
+      }
     }
 
     // setXyPostion((prev) => [...prev, xyPos]);
@@ -405,64 +424,64 @@ function SignYourSelf() {
         checkSignUrl.push(posData);
       }
     }
-    if (xyPostion.length === 0) {
-      setIsAlert({
-        isShow: true,
-        alertMessage: "Please complete your signature!"
-      });
-      return;
-    } else if (xyPostion.length > 0 && checkSignUrl.length > 0) {
-      setIsAlert({
-        isShow: true,
-        alertMessage: "Please complete your signature!"
-      });
-      return;
-    } else {
-      setIsCeleb(true);
-      setTimeout(() => {
-        setIsCeleb(false);
-      }, 3000);
-      const loadObj = {
-        isLoad: true,
-        message: "This might take some time"
-      };
-      setIsLoading(loadObj);
-      const url = pdfDetails[0] && pdfDetails[0].URL;
+    // if (xyPostion.length === 0) {
+    //   setIsAlert({
+    //     isShow: true,
+    //     alertMessage: "Please complete your signature!"
+    //   });
+    //   return;
+    // } else if (xyPostion.length > 0 && checkSignUrl.length > 0) {
+    //   setIsAlert({
+    //     isShow: true,
+    //     alertMessage: "Please complete your signature!"
+    //   });
+    //   return;
+    // } else {
+    setIsCeleb(true);
+    setTimeout(() => {
+      setIsCeleb(false);
+    }, 3000);
+    const loadObj = {
+      isLoad: true,
+      message: "This might take some time"
+    };
+    setIsLoading(loadObj);
+    const url = pdfDetails[0] && pdfDetails[0].URL;
 
-      const existingPdfBytes = await fetch(url).then((res) =>
-        res.arrayBuffer()
-      );
+    const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
 
-      // Load a PDFDocument from the existing PDF bytes
-      const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-        ignoreEncryption: true
-      });
+    // Load a PDFDocument from the existing PDF bytes
+    const pdfDoc = await PDFDocument.load(existingPdfBytes, {
+      ignoreEncryption: true
+    });
 
-      const flag = true;
-      //embed document's object id to all pages in pdf document
-      await embedDocId(pdfDoc, documentId, allPages);
+    const flag = true;
+    //embed document's object id to all pages in pdf document
+    await embedDocId(pdfDoc, documentId, allPages);
 
-      //embed multi signature in pdf
-      const pdfBytes = await multiSignEmbed(
-        xyPostion,
-        pdfDoc,
-        pdfOriginalWidth,
-        flag,
-        containerWH
-      );
+    //embed multi signature in pdf
+    const pdfBytes = await multiSignEmbed(
+      xyPostion,
+      pdfDoc,
+      pdfOriginalWidth,
+      flag,
+      containerWH
+    );
 
-      //function for call to embed signature in pdf and get digital signature pdf
-      signPdfFun(pdfBytes, documentId);
-      setIsSignPad(false);
-      setIsEmail(true);
-      setXyPostion([]);
-      setSignBtnPosition([]);
-    }
+    console.log("pdf", pdfBytes);
+    //function for call to embed signature in pdf and get digital signature pdf
+    signPdfFun(pdfBytes, documentId);
+
+    setIsSignPad(false);
+    setIsEmail(true);
+    setXyPostion([]);
+    setSignBtnPosition([]);
+    // }
   }
 
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
-    const singleSign = {
+    let singleSign = {
       pdfFile: base64Url,
       docId: documentId
     };
@@ -603,7 +622,6 @@ function SignYourSelf() {
 
     setXyPostion(getUpdatePosition);
   };
-
   //function for capture position on hover signature button
   const handleDivClick = (e) => {
     const divRect = e.currentTarget.getBoundingClientRect();
@@ -664,11 +682,9 @@ function SignYourSelf() {
     setXyPostion(getXyData);
     setShowAlreadySignDoc({ status: false });
   };
-
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
-
   const tourConfig = [
     {
       selector: '[data-tut="reactourFirst"]',

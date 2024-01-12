@@ -3,7 +3,91 @@
 @import url('https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap');
 
+.placeholderBlock {
+  padding: 0px;
+  position: absolute;
+  border-style: dashed;
+  width: 150px;
+  height: 60px;
+  background: #daebe0;
+  text-align: center;
+  justify-content: center;
+  border-width: 0.2px;
+
+}
+
+.dropdownContainer {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  max-height: 250px;
+}
+
+.dropdownContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.inputPlaceholder {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  font-size: 12px;
+  border: 1px solid #007bff;
+  border-radius: 2px;
+}
+
+.inputPlaceholder:focus {
+  outline: none;
+  border: 1px solid #188ae2;
+}
+
+.drodown-input {
+  padding: 5px;
+  width: 100%;
+  font-size: 0.75rem;
+  border: 1px solid #8ad5ce;
+  /* border: 1px solid #e2dddd; */
+  /* background-color: #e0e5f5; */
+  color: black;
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-weight: inherit;
+  overflow: visible;
+
+}
+
+.drodown-input:focus {
+  outline: none;
+  border: 1px solid #099b8d;
+}
+
+.dropdownAdd {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  margin-left: 10px;
+
+}
+
+.dropdownAdd:focus {
+  outline: none;
+}
+
+.dropdownList {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+}
+
 .signatureCanvas {
+  
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
   width: 460px;
@@ -247,7 +331,7 @@
 
 .finishBtn:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-   
+
 }
 
 .saveBtn {
@@ -412,10 +496,12 @@
   margin: 7px !important;
   font-size: 15px !important;
 }
+
 .cancelBtn {
   color: black;
   border: 1px solid #ccc;
 }
+
 .draggable-button {
   padding: 10px 20px;
   background: #3498db;

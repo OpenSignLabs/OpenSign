@@ -1,7 +1,191 @@
 import axios from "axios";
 import { rgb } from "pdf-lib";
-
+import { themeColor } from "./ThemeColor/backColor";
 const isMobile = window.innerWidth < 767;
+
+export const onChangeInput = (
+  value,
+  signKey,
+  xyPostion,
+  index,
+  setXyPostion,
+  signerObjId
+) => {
+  const isSigners = xyPostion.some((data) => data.signerPtr);
+  console.log("isSigner", isSigners);
+  if (isSigners) {
+    const filterSignerPos = xyPostion.filter(
+      (data) => data.signerObjId === signerObjId
+    );
+
+    const getPlaceHolder = filterSignerPos[0].placeHolder;
+    const getPageNumer = getPlaceHolder.filter(
+      (data) => data.pageNumber === index
+    );
+    if (getPageNumer.length > 0) {
+      const getXYdata = getPageNumer[0].pos;
+      const getPosData = getXYdata;
+      const addSignPos = getPosData.map((url, ind) => {
+        if (url.key === signKey) {
+          return {
+            ...url,
+            widgetValue: value
+          };
+        }
+        return url;
+      });
+
+      const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+        if (obj.pageNumber === index) {
+          return { ...obj, pos: addSignPos };
+        }
+        return obj;
+      });
+      const newUpdateSigner = xyPostion.map((obj, ind) => {
+        if (obj.Id === signerObjId) {
+          return { ...obj, placeHolder: newUpdateSignPos };
+        }
+        return obj;
+      });
+
+      setXyPostion(newUpdateSigner);
+    }
+  } else {
+    let getXYdata = xyPostion[index].pos;
+
+    const updatePosition = getXYdata.map((positionData, ind) => {
+      if (positionData.key === signKey) {
+        return {
+          ...positionData,
+          widgetValue: value
+        };
+      }
+      return positionData;
+    });
+
+    const updatePlaceholder = xyPostion.map((obj, ind) => {
+      if (ind === index) {
+        return { ...obj, pos: updatePosition };
+      }
+      return obj;
+    });
+    setXyPostion(updatePlaceholder);
+  }
+};
+
+export const widgets = [
+  {
+    type: "signature",
+    icon: "fa-solid fa-signature",
+    iconSize: "16px"
+  },
+  {
+    type: "stamp",
+    icon: "fa-solid fa-stamp",
+    iconSize: "19px"
+  },
+  {
+    type: "dropdown",
+    icon: "fa-solid fa-circle-chevron-down",
+    iconSize: "19px"
+  },
+  {
+    type: "checkbox",
+    icon: "fa-solid fa-square-check",
+    iconSize: "21px"
+  },
+  {
+    type: "text",
+    icon: "fa-solid fa-font",
+    iconSize: "21px"
+  }
+];
+
+export const getWidgetType = (item) => {
+  return (
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginLeft: "5px"
+        }}
+      >
+        <i
+          class="fa-sharp fa-solid fa-grip-vertical"
+          style={{ color: "#908d8d", fontSize: "13px" }}
+        ></i>
+        <span
+          style={{
+            fontWeight: "400",
+            fontSize: "15px",
+            // padding: "3px 20px 0px 20px",
+            color: "black",
+            marginLeft: "5px"
+          }}
+        >
+          {item.type}
+        </span>
+      </div>
+      <div
+        style={{
+          backgroundColor: themeColor(),
+          padding: "0 5px",
+          display: "flex",
+          alignItems: "center"
+        }}
+      >
+        <i
+          style={{ color: "white", fontSize: item.iconSize }}
+          className={item.icon}
+        ></i>
+      </div>
+    </>
+  );
+};
+
+export const defaultWidthHeight = (type) => {
+  let obj;
+  switch (type) {
+    case "signature":
+      obj = {
+        width: 150,
+        height: 60
+      };
+      return obj;
+
+    case "stamp":
+      obj = {
+        width: 150,
+        height: 60
+      };
+      return obj;
+    case "checkbox":
+      obj = {
+        width: 15,
+        height: 15
+      };
+      return obj;
+    case "text":
+      obj = {
+        width: 150,
+        height: 25
+      };
+      return obj;
+    case "dropdown":
+      obj = {
+        width: 120,
+        height: 22
+      };
+      return obj;
+    default:
+      obj = {
+        width: 150,
+        height: 60
+      };
+      return obj;
+  }
+};
 
 export const resizeBorderExtraWidth = () => {
   return 20;
@@ -400,7 +584,7 @@ export function urlValidator(url) {
 
 export const placeholderWidth = (pos, scale, signyourself) => {
   let width;
-  const defaultWidth = 150;
+  const defaultWidth = defaultWidthHeight(pos.type).width;
   const posWidth = pos.Width ? pos.Width : defaultWidth;
 
   if (signyourself) {
@@ -443,12 +627,12 @@ export const placeholderWidth = (pos, scale, signyourself) => {
 export const placeholderHeight = (pos, scale, signyourself) => {
   let height;
   const posHeight = pos.Height;
-  const defaultHeight = 60;
+  const defaultHeight = defaultWidthHeight(pos.type).height;
   if (signyourself) {
     if (isMobile) {
-      return posHeight * scale;
+      return posHeight ? posHeight * scale : defaultHeight * scale;
     } else {
-      return posHeight;
+      return posHeight ? posHeight : defaultHeight;
     }
   } else {
     if (isMobile) {
@@ -497,41 +681,42 @@ export const multiSignEmbed = async (
     const pageNo = item.pageNumber;
     const imgUrlList = item.pos;
     const pages = pdfDoc.getPages();
+    const form = pdfDoc.getForm();
     const page = pages[pageNo - 1];
     const images = await Promise.all(
       imgUrlList.map(async (url) => {
-        let signUrl = url.SignUrl;
-        if (url.ImageType === "image/png") {
-          //function for convert signature png base64 url to jpeg base64
-          const newUrl = await convertPNGtoJPEG(signUrl);
-          signUrl = newUrl;
+        let signUrl = url.SignUrl && url.SignUrl;
+        if (signUrl) {
+          if (url.ImageType === "image/png") {
+            //function for convert signature png base64 url to jpeg base64
+            const newUrl = await convertPNGtoJPEG(signUrl);
+            signUrl = newUrl;
+          }
+          const checkUrl = urlValidator(signUrl);
+          if (checkUrl) {
+            signUrl = signUrl + "?get";
+          }
+          const res = await fetch(signUrl);
+          return res.arrayBuffer();
         }
-        const checkUrl = urlValidator(signUrl);
-        if (checkUrl) {
-          signUrl = signUrl + "?get";
-        }
-        const res = await fetch(signUrl);
-        return res.arrayBuffer();
       })
     );
-    images.forEach(async (imgData, id) => {
-      let img;
-      if (
-        (imgUrlList[id].ImageType &&
-          imgUrlList[id].ImageType === "image/png") ||
-        imgUrlList[id].ImageType === "image/jpeg"
-      ) {
-        img = await pdfDoc.embedJpg(imgData);
-      } else {
-        img = await pdfDoc.embedPng(imgData);
-      }
 
-      const scaleWidth = placeholderWidth(imgUrlList[id], scale, signyourself);
-      const scaleHeight = placeholderHeight(
-        imgUrlList[id],
-        scale,
-        signyourself
-      );
+    imgUrlList.forEach(async (imgData, id) => {
+      let img;
+      if (imgData.type === "signature" || imgData.type === "stamp") {
+        if (
+          (imgData.ImageType && imgData.ImageType === "image/png") ||
+          imgData.ImageType === "image/jpeg"
+        ) {
+          img = await pdfDoc.embedJpg(images[id]);
+        } else {
+          img = await pdfDoc.embedPng(images[id]);
+        }
+      }
+      let scaleWidth, scaleHeight;
+      scaleWidth = placeholderWidth(imgData, scale, signyourself);
+      scaleHeight = placeholderHeight(imgData, scale, signyourself);
 
       const xPos = (pos) => {
         const resizePos = pos.xPosition;
@@ -565,7 +750,7 @@ export const multiSignEmbed = async (
       };
 
       const yPos = (pos) => {
-        const resizePos = imgUrlList[id].yPosition;
+        const resizePos = pos.yPosition;
         if (signyourself) {
           if (isMobile) {
             return page.getHeight() - resizePos * scale - scaleHeight;
@@ -603,13 +788,48 @@ export const multiSignEmbed = async (
           }
         }
       };
+      const checkboxId = "checkbox_" + id;
+      if (imgData.type === "checkbox") {
+        const checkBox = form.createCheckBox(checkboxId);
 
-      page.drawImage(img, {
-        x: xPos(imgUrlList[id]),
-        y: yPos(imgUrlList[id]),
-        width: scaleWidth,
-        height: scaleHeight
-      });
+        checkBox.addToPage(page, {
+          x: xPos(imgData),
+          y: yPos(imgData),
+          width: scaleWidth,
+          height: scaleHeight
+        });
+        checkBox.check();
+        checkBox.enableReadOnly();
+      } else if (imgData.type === "text") {
+        const font = await pdfDoc.embedFont("Helvetica");
+        const fontSize = 12;
+        const textContent = imgData.widgetValue;
+        page.drawText(textContent, {
+          x: xPos(imgData),
+          y: yPos(imgData),
+          size: fontSize,
+          font,
+          color: rgb(0, 0, 0)
+        });
+      } else if (imgData.type === "dropdown") {
+        const dropdown = form.createDropdown(checkboxId);
+        dropdown.addOptions(imgData.widgetOption);
+        dropdown.select(imgData.widgetValue);
+        dropdown.addToPage(page, {
+          x: xPos(imgData),
+          y: yPos(imgData),
+          width: scaleWidth,
+          height: scaleHeight
+        });
+        dropdown.disableEditing();
+      } else {
+        page.drawImage(img, {
+          x: xPos(imgData),
+          y: yPos(imgData),
+          width: scaleWidth,
+          height: scaleHeight
+        });
+      }
     });
   }
 
@@ -646,13 +866,10 @@ export const pdfNewWidthFun = (divRef) => {
 export const handleImageResize = (
   ref,
   key,
-  signerId,
-  position,
   signerPos,
-  pageNumber,
   setSignerPos,
-  pdfOriginalWidth,
-  containerWH,
+  pageNumber,
+  signerId,
   showResize
 ) => {
   // const filterSignerPos = signerPos.filter(
@@ -752,8 +969,8 @@ export const handleSignYourselfImageResize = (
   ref,
   key,
   xyPostion,
-  index,
-  setXyPostion
+  setXyPostion,
+  index
 ) => {
   // const updateFilter = xyPostion[index].pos.filter(
   //   (data) => data.key === key && data.Width && data.Height
