@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "../css/./signature.css";
-import Modal from "react-bootstrap/Modal";
 import sign from "../assests/sign3.png";
 import stamp from "../assests/stamp2.png";
 import { themeColor } from "../utils/ThemeColor/backColor";
@@ -26,7 +25,6 @@ import {
   randomId
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
-import ModalComponent from "./component/modalComponent";
 import { useNavigate } from "react-router-dom";
 import PlaceholderCopy from "./component/PlaceholderCopy";
 import LinkUserModal from "./component/LinkUserModal";
@@ -85,6 +83,7 @@ function PlaceHolderSign() {
   const [isAddUser, setIsAddUser] = useState({});
   const [signerExistModal, setSignerExistModal] = useState(false);
   const [isDontShow, setIsDontShow] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -464,11 +463,12 @@ function PlaceHolderSign() {
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key, signerId) => {
     setDragKey(key);
+    setIsDragging(true);
   };
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
-    if (!isResize) {
+    if (!isResize && isDragging) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
@@ -527,6 +527,9 @@ function PlaceHolderSign() {
         }
       }
     }
+    setTimeout(() => {
+      setIsDragging(false);
+    }, 200);
   };
 
   //function for delete signature block
@@ -680,6 +683,9 @@ function PlaceHolderSign() {
         const hostUrl = window.location.origin + "/loadmf/signmicroapp";
         let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
         const openSignUrl = "https://www.opensignlabs.com/contact-us";
+        const orgName = pdfDetails[0]?.ExtUserPtr.Company
+          ? pdfDetails[0].ExtUserPtr.Company
+          : "";
         const themeBGcolor = themeColor();
         let params = {
           recipient: signerMail[i].Email,
@@ -687,7 +693,7 @@ function PlaceHolderSign() {
           from: sender,
 
           html:
-            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background-color: white;padding-bottom: 20px;'> <div><img src=" +
+            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
             imgPng +
             " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
             themeBGcolor +
@@ -697,11 +703,13 @@ function PlaceHolderSign() {
             pdfDetails?.[0].Name +
             "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
             sender +
-            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization Name</td> <td> </td><td style='color:#626363;font-weight:bold'>__</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+            orgName +
+            "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
             localExpireDate +
-            "</td></tr><tr> <td></td> <td> <div style='display: flex; justify-content: center;margin-top: 50px;'><a href=" +
+            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
             signPdf +
-            ">  <button style='padding: 12px 20px 12px 20px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold'>Sign here</button></a> </div> </td><td> </td></tr></table> </div><div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+            "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
             sender +
             " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
             openSignUrl +
@@ -1031,11 +1039,8 @@ function PlaceHolderSign() {
                   )}
                   <button
                     onClick={() => setIsSendAlert({})}
-                    style={{
-                      color: "black"
-                    }}
                     type="button"
-                    className="finishBtn"
+                    className="finishBtn cancelBtn"
                   >
                     Close
                   </button>
@@ -1085,11 +1090,8 @@ function PlaceHolderSign() {
                           setIsSend(false);
                           setSignerPos([]);
                         }}
-                        style={{
-                          color: "black"
-                        }}
                         type="button"
-                        className="finishBtn"
+                        className="finishBtn cancelBtn"
                       >
                         No
                       </button>
@@ -1100,11 +1102,8 @@ function PlaceHolderSign() {
                         setIsSend(false);
                         setSignerPos([]);
                       }}
-                      style={{
-                        color: "black"
-                      }}
                       type="button"
-                      className="finishBtn"
+                      className="finishBtn cancelBtn"
                     >
                       Close
                     </button>
@@ -1113,11 +1112,37 @@ function PlaceHolderSign() {
               </ModalUi>
 
               {/* <ModalComponent isShow={isAlreadyPlace} type={"alreadyPlace"} /> */}
-              <ModalComponent
-                isShow={isShowEmail}
-                type={"signersAlert"}
-                setIsShowEmail={setIsShowEmail}
-              />
+              <ModalUi
+                headerColor={"#dc3545"}
+                isOpen={isShowEmail}
+                title={"signersAlert"}
+                handleClose={() => {
+                  setIsShowEmail(false);
+                }}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
+                  <p>Please select signer for add placeholder!</p>
+
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
+                  <button
+                    onClick={() => {
+                      setIsShowEmail(false);
+                    }}
+                    type="button"
+                    className="finishBtn cancelBtn"
+                  >
+                    Ok
+                  </button>
+                </div>
+              </ModalUi>
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}
@@ -1172,6 +1197,7 @@ function PlaceHolderSign() {
                     setSignerObjId={setSignerObjId}
                     handleLinkUser={handleLinkUser}
                     setUniqueId={setUniqueId}
+                    isDragging={isDragging}
                   />
                 )}
               </div>
@@ -1276,11 +1302,8 @@ function PlaceHolderSign() {
             ></div>
             <button
               onClick={() => setSignerExistModal(false)}
-              style={{
-                color: "black"
-              }}
               type="button"
-              className="finishBtn"
+              className="finishBtn cancelBtn"
             >
               Close
             </button>

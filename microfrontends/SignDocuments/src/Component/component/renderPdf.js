@@ -520,7 +520,17 @@ function RenderPdf({
                                         posHeight={posHeight}
                                       />
                                       <div
+                                        onClick={(e) => {
+                                          if (!isDragging) {
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }
+                                        }}
                                         onTouchEnd={() => {
+                                          if (!isDragging) {
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }
                                           const dataNewPlace = addZIndex(
                                             signerPos,
                                             pos.key,
@@ -777,6 +787,7 @@ function RenderPdf({
               onLoadError={(e) => {
                 setPdfLoadFail(true);
               }}
+              loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
               file={
@@ -844,7 +855,11 @@ function RenderPdf({
                                   placeData.pos.map((pos) => {
                                     return (
                                       <Rnd
-                                        onClick={() => {
+                                        onClick={(e) => {
+                                          if (!isDragging) {
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }
                                           const dataNewPlace = addZIndex(
                                             signerPos,
                                             pos.key,
@@ -888,20 +903,14 @@ function RenderPdf({
                                             ? pos.Width / pos.Height
                                             : 2.5
                                         }
-                                        onDragStop={
-                                          (event, dragElement) =>
-                                            handleStop(
-                                              event,
-                                              dragElement,
-                                              data.Id,
-                                              pos.key
-                                            )
-                                          // data.signerObjId,
+                                        onDragStop={(event, dragElement) =>
+                                          handleStop(
+                                            event,
+                                            dragElement,
+                                            data.Id,
+                                            pos.key
+                                          )
                                         }
-                                        // default={{
-                                        //   x: pos.xPosition,
-                                        //   y: pos.yPosition
-                                        // }}
                                         default={{
                                           x: xPos(pos),
                                           y: yPos(pos)
@@ -1096,6 +1105,7 @@ function RenderPdf({
                 };
                 setPdfLoadFail(load);
               }}
+              loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
               ref={pdfRef}
               file={
