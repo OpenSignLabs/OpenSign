@@ -1,7 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import SignYourselfPdf from "./Component/SignYourselfPdf";
-import RecipientSignPdf from "./Component/recipientSignPdf";
 import PlaceHolderSign from "./Component/placeHolderSign";
 import ManageSign from "./Component/ManageSign";
 import Login from "./Component/login";
@@ -28,7 +27,6 @@ function AppRoutes() {
         {/* recipient signature route with no rowlevel data using docId from url */}
         <Route
           path="/recipientSignPdf/:docId/:contactBookId"
-          // element={<RecipientSignPdf />
           element={<PdfRequestFiles />}
         />
         {/* recipient placeholder set route with  rowlevel data */}

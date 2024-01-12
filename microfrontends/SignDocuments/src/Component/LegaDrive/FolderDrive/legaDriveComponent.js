@@ -20,7 +20,8 @@ function PdfFileComponent({
   setDocId,
   setIsLoading,
   setPdfData,
-  isList
+  isList,
+  setIsAlert
 }) {
   const [rename, setRename] = useState("");
   const [renameValue, setRenameValue] = useState("");
@@ -103,7 +104,10 @@ function PdfFileComponent({
           // console.log("res", res);
         })
         .catch((err) => {
-          console.log("error updating field is decline ", err);
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
+          });
         });
     }
   };
@@ -187,11 +191,16 @@ function PdfFileComponent({
       )
       .then((result) => {
         const res = result.data;
-        const updatedData = pdfData.filter((x) => x.objectId !== docId);
-        setPdfData(updatedData);
+        if (res) {
+          const updatedData = pdfData.filter((x) => x.objectId !== docId);
+          setPdfData(updatedData);
+        }
       })
       .catch((err) => {
-        console.log("err", err);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
       });
   };
   const handleMoveDocument = async (docData) => {
@@ -243,10 +252,13 @@ function PdfFileComponent({
 
         .then((Listdata) => {
           // console.log("Listdata ", Listdata);
-          const json = Listdata.data;
-
-          const updatedData = pdfData.filter((x) => x.objectId !== updateDocId);
-          setPdfData(updatedData);
+          const res = Listdata.data;
+          if (res) {
+            const updatedData = pdfData.filter(
+              (x) => x.objectId !== updateDocId
+            );
+            setPdfData(updatedData);
+          }
         })
         .catch((err) => {
           console.log("err", err);
@@ -276,13 +288,7 @@ function PdfFileComponent({
 
   //component to handle type of document and render according to type
   const handleFolderData = (data, ind, listType) => {
-    let createddate,
-      status,
-      isDecline,
-      signerExist,
-      isComplete,
-      signUrl,
-      isPlaceholder;
+    let createddate, status, isDecline, signerExist, isComplete, isPlaceholder;
     if (data.Type !== "Folder") {
       const expireDate = data.ExpiryDate && data.ExpiryDate.iso;
       const createdDate = data.createdAt && data.createdAt;
@@ -291,7 +297,7 @@ function PdfFileComponent({
       isDecline = data.IsDeclined && data.IsDeclined;
       isPlaceholder = data.Placeholders && data.Placeholders;
       signerExist = data.Signers && data.Signers;
-      signUrl = data.SignedUrl && data.SignedUrl;
+
       const expireUpdateDate = new Date(expireDate).getTime();
       const currDate = new Date().getTime();
       let isExpire = false;
@@ -732,11 +738,8 @@ function PdfFileComponent({
             onClick={() => {
               setIsDeleteDoc(false);
             }}
-            style={{
-              color: "black"
-            }}
             type="button"
-            className="finishBtn"
+            className="finishBtn cancelBtn"
           >
             No
           </button>

@@ -13,19 +13,13 @@ import { useDrag, useDrop } from "react-dnd";
 import SignPad from "./component/signPad";
 import EmailComponent from "./component/emailComponent";
 import FieldsComponent from "./component/fieldsComponent";
-import Modal from "react-bootstrap/Modal";
-import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import {
-  convertPNGtoJPEG,
   contractDocument,
-  getBase64FromIMG,
   embedDocId,
   multiSignEmbed,
   pdfNewWidthFun,
   addDefaultSignatureImg,
-  onImageSelect,
-  placeholderHeight,
-  placeholderWidth
+  onImageSelect
 } from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -35,12 +29,11 @@ import HandleError from "./component/HandleError";
 import Nodata from "./component/Nodata";
 import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
-import { contractUsers, contactBook, urlValidator } from "../utils/Utils";
-import { modalAlign } from "../utils/Utils";
-import AlertComponent from "./component/alertComponent";
+import { contractUsers, contactBook } from "../utils/Utils";
 import PlaceholderCopy from "./component/PlaceholderCopy";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import Title from "./component/Title";
+import ModalUi from "../premitives/ModalUi";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -445,44 +438,6 @@ function SignYourSelf() {
         ignoreEncryption: true
       });
 
-      // //checking if signature is only one then send image url in jpeg formate to server
-      // if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
-      //   //embed document's object id to all pages in pdf document
-      //   await embedDocId(pdfDoc, documentId, allPages);
-      //   const pdfBase64 = await pdfDoc.saveAsBase64({
-      //     useObjectStreams: false
-      //   });
-
-      //   for (let xyData of xyPostion) {
-      //     const imgUrlList = xyData.pos;
-      //     const pageNo = xyData.pageNumber;
-      //     imgUrlList.map(async (data) => {
-      //       let ImgUrl = data.SignUrl;
-      //       //cheking signUrl is defau;t signature url of custom url
-      //       const checkUrl = urlValidator(ImgUrl);
-      //       //if default signature url then convert it in base 64
-      //       if (checkUrl) {
-      //         ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
-      //       }
-      //       //function for convert signature png base64 url to jpeg base64
-      //       convertPNGtoJPEG(ImgUrl)
-      //         .then((jpegBase64Data) => {
-      //           const removeBase64Fromjpeg = "data:image/jpeg;base64,";
-      //           const newImgUrl = jpegBase64Data.replace(
-      //             removeBase64Fromjpeg,
-      //             ""
-      //           );
-      //           //function for call to embed signature in pdf and get digital signature pdf
-      //           signPdfFun(newImgUrl, documentId, data, pdfBase64, pageNo);
-      //         })
-      //         .catch((error) => {
-      //           console.error("Error:", error);
-      //         });
-      //     });
-      //   }
-      // }
-      //else if signature is more than one then embed all sign with the use of pdf-lib
-      // else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
       const flag = true;
       //embed document's object id to all pages in pdf document
       await embedDocId(pdfDoc, documentId, allPages);
@@ -498,7 +453,6 @@ function SignYourSelf() {
 
       //function for call to embed signature in pdf and get digital signature pdf
       signPdfFun(pdfBytes, documentId);
-      // }
       setIsSignPad(false);
       setIsEmail(true);
       setXyPostion([]);
@@ -507,51 +461,10 @@ function SignYourSelf() {
   }
 
   //function for get digital signature
-  const signPdfFun = async (
-    base64Url,
-    documentId,
-    xyPosData,
-    pdfBase64Url,
-    pageNo
-  ) => {
-    let singleSign;
-    const newWidth = containerWH.width;
-    const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
-
-    // if (xyPostion.length === 1 && xyPostion[0].pos.length === 1) {
-    //   const xPos = () => {
-    //     const resizePos = xyPosData.xPosition;
-    //     if (isMobile) {
-    //       return resizePos * scale;
-    //     } else {
-    //       return resizePos;
-    //     }
-    //   };
-    //   const height = xyPosData.Height ? xyPosData.Height : 60;
-    //   const resizePos = xyPosData.yBottom;
-    //   const bottomY = xyPosData.isDrag
-    //     ? resizePos * scale - height * scale
-    //     : xyPosData.firstYPos
-    //       ? resizePos * scale - height * scale + xyPosData.firstYPos
-    //       : resizePos * scale - height * scale;
-
-    //   singleSign = {
-    //     pdfFile: pdfBase64Url,
-    //     docId: documentId,
-    //     sign: {
-    //       Base64: base64Url,
-    //       Left: xPos(),
-    //       Bottom: bottomY,
-    //       Width: placeholderWidth(xyPosData, scale),
-    //       Height: placeholderHeight(xyPosData, scale),
-    //       Page: pageNo
-    //     }
-    //   };
-    // } else if (xyPostion.length > 0 && xyPostion[0].pos.length > 0) {
-    singleSign = {
+  const signPdfFun = async (base64Url, documentId) => {
+    const singleSign = {
       pdfFile: base64Url,
       docId: documentId
-      // };
     };
 
     await axios
@@ -865,52 +778,73 @@ function SignYourSelf() {
               marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
             }}
           >
-            <AlertComponent
-              isShow={isAlert.isShow}
-              alertMessage={isAlert.alertMessage}
-              setIsAlert={setIsAlert}
-            />
-            {/* this modal is used show this document is already sign */}
-            <Modal
-              show={showAlreadySignDoc.status}
-              onShow={() => modalAlign()}
-              backdropClassName="signature-backdrop"
+            <ModalUi
+              headerColor={"#dc3545"}
+              isOpen={isAlert.isShow}
+              title={"Alert"}
+              handleClose={() => {
+                setIsAlert({
+                  isShow: false,
+                  alertMessage: ""
+                });
+              }}
             >
-              <ModalHeader style={{ background: themeColor() }}>
-                <span style={{ color: "white" }}> Sign Documents</span>
-              </ModalHeader>
+              <div style={{ height: "100%", padding: 20 }}>
+                <p>{isAlert.alertMessage}</p>
 
-              <Modal.Body>
-                <p>{showAlreadySignDoc.mssg}</p>
-              </Modal.Body>
-
-              <Modal.Footer>
-                <button
+                <div
                   style={{
-                    borderRadius: "0px",
-                    border: "1.5px solid #e3e2e1",
-                    fontWeight: "600",
-                    color: "black"
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
                   }}
-                  className="btn"
+                ></div>
+                <button
+                  onClick={() => {
+                    setIsAlert({
+                      isShow: false,
+                      alertMessage: ""
+                    });
+                  }}
+                  type="button"
+                  className="finishBtn cancelBtn"
+                >
+                  Ok
+                </button>
+              </div>
+            </ModalUi>
+
+            {/* this modal is used show this document is already sign */}
+            <ModalUi
+              isOpen={showAlreadySignDoc.status}
+              title={"Sign Documents"}
+              handleClose={() => {
+                setShowAlreadySignDoc({ status: false });
+              }}
+            >
+              <div style={{ height: "100%", padding: 20 }}>
+                <p>{showAlreadySignDoc.mssg}</p>
+
+                <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
+                  }}
+                ></div>
+                <button
+                  className="finishBtn cancelBtn"
                   onClick={() => setShowAlreadySignDoc({ status: false })}
                 >
                   Close
                 </button>
-                {showAlreadySignDoc.sure && (
-                  <button
-                    onClick={() => addDefaultSignature()}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    className="finishBtn"
-                  >
-                    Yes
-                  </button>
-                )}
-              </Modal.Footer>
-            </Modal>
+              </div>
+            </ModalUi>
+
             <PlaceholderCopy
               isPageCopy={isPageCopy}
               setIsPageCopy={setIsPageCopy}
