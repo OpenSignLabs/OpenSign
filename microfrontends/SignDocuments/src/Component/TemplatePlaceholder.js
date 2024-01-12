@@ -158,6 +158,7 @@ const TemplatePlaceholder = () => {
   const [signKey, setSignKey] = useState();
   const [IsReceipent, setIsReceipent] = useState(true);
   const [isDontShow, setIsDontShow] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -473,11 +474,12 @@ const TemplatePlaceholder = () => {
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key) => {
     setDragKey(key);
+    setIsDragging(true);
   };
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
-    if (!isResize) {
+    if (!isResize && isDragging) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
@@ -537,6 +539,9 @@ const TemplatePlaceholder = () => {
       }
     }
     setIsMailSend(false);
+    setTimeout(() => {
+      setIsDragging(false);
+    }, 200);
   };
 
   //function for delete signature block
@@ -1132,6 +1137,7 @@ const TemplatePlaceholder = () => {
                     setIsPageCopy={setIsPageCopy}
                     setSignKey={setSignKey}
                     setSignerObjId={setSignerObjId}
+                    isDragging={isDragging}
                   />
                 )}
               </div>
