@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { saveAs } from "file-saver";
 import celebration from "../../assests/newCeleb.gif";
-import Modal from "react-bootstrap/Modal";
-import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import axios from "axios";
 import { getBase64FromUrl } from "../../utils/Utils";
 import { themeColor } from "../../utils/ThemeColor/backColor";
@@ -88,6 +86,8 @@ function EmailComponent({
         isShow: true,
         alertMessage: "something went wrong"
       });
+      setEmailValue("");
+      setEmailList([]);
     } else {
       setIsLoading(false);
       setIsEmail(false);
@@ -95,6 +95,8 @@ function EmailComponent({
         isShow: true,
         alertMessage: "something went wrong"
       });
+      setEmailValue("");
+      setEmailList([]);
     }
   };
 
@@ -159,251 +161,268 @@ function EmailComponent({
   return (
     <div>
       {/* isEmail */}
-      <Modal show={isEmail}>
-        {isLoading && (
-          <div
-            style={{
-              position: "absolute",
-              height: "100%",
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-              alignItems: "center",
-              zIndex: "20",
-              backgroundColor: "#e6f2f2",
-              opacity: 0.8
-            }}
-          >
-            <img
-              alt="no img"
-              src={loader}
-              style={{ width: "70px", height: "70px" }}
-            />
-            <span style={{ fontSize: "12px", fontWeight: "bold" }}>
-              This might take some time
-            </span>
-          </div>
-        )}
-
-        <ModalHeader style={{ background: themeColor() }}>
-          <span style={{ color: "white" }}>Successfully signed!</span>
-
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <div></div>
-            {!isAndroid && (
-              <button
-                onClick={handleToPrint}
+      {isEmail && (
+        <div className="modaloverlay">
+          <div className="modalcontainer">
+            {isLoading && (
+              <div
                 style={{
+                  position: "absolute",
+                  height: "100%",
+                  width: "100%",
                   display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center"
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  zIndex: "20",
+                  backgroundColor: "#e6f2f2",
+                  opacity: 0.8
                 }}
-                className="btn btn-primary btn-sm"
               >
-                <i
-                  className="fa fa-print"
-                  style={{
-                    fontSize: "15px",
-                    marginRight: "3px",
-                    color: "white"
-                  }}
-                  aria-hidden="true"
-                ></i>
-                Print
-              </button>
+                <img
+                  alt="no img"
+                  src={loader}
+                  style={{ width: "70px", height: "70px" }}
+                />
+                <span style={{ fontSize: "12px", fontWeight: "bold" }}>
+                  This might take some time
+                </span>
+              </div>
             )}
+            <div style={{ background: "#32a3ac" }} className="modalheader">
+              <span style={{ color: "white" }}>Successfully signed!</span>
 
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => handleDownloadPdf()}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: "10px"
-              }}
-            >
-              <i
-                className="fa fa-download"
-                style={{
-                  color: "white",
-                  fontSize: "15px",
-                  marginRight: "3px"
-                }}
-                aria-hidden="true"
-              ></i>
-              Download
-            </button>
-          </div>
-        </ModalHeader>
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <div></div>
+                {!isAndroid && (
+                  <button
+                    onClick={handleToPrint}
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center"
+                    }}
+                    className="btn btn-primary btn-sm"
+                  >
+                    <i
+                      className="fa fa-print"
+                      style={{
+                        fontSize: "15px",
+                        marginRight: "3px",
+                        color: "white"
+                      }}
+                      aria-hidden="true"
+                    ></i>
+                    Print
+                  </button>
+                )}
 
-        <Modal.Body>
-          {isCeleb && (
-            <div
-              style={{
-                position: "absolute",
-                marginLeft: "50px"
-              }}
-            >
-              <img
-                alt="print img"
-                width={300}
-                height={250}
-                // style={styles.gifCeleb}
-                src={celebration}
-              />
-            </div>
-          )}
-          <p
-            style={{
-              fontFamily: "system-ui",
-              verticalAlign: "baseline",
-              fontWeight: "500",
-              color: "#403f3e",
-              fontSize: "15px"
-            }}
-          >
-            Recipients added here will get a copy of the signed document.
-          </p>
-          {emailList.length > 0 ? (
-            <>
-              <div className="addEmail">
-                <div
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => handleDownloadPdf()}
                   style={{
                     display: "flex",
                     flexDirection: "row",
-
-                    flexWrap: "wrap"
+                    alignItems: "center",
+                    marginLeft: "10px"
                   }}
                 >
-                  {emailList.map((data, ind) => {
-                    return (
-                      <div
-                        className="emailChip"
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center"
-                        }}
-                        key={ind}
-                      >
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: "13px"
-                          }}
-                        >
-                          {data}
-                        </span>
-                        <span
-                          style={{
-                            color: "white",
-                            fontSize: 13,
-                            fontWeight: 600,
-                            marginLeft: 7,
-                            cursor: "pointer"
-                          }}
-                          onClick={() => removeChip(ind)}
-                        >
-                          <i className="fa-solid fa-xmark"></i>
-                        </span>
-                      </div>
-                    );
-                  })}
+                  <i
+                    className="fa fa-download"
+                    style={{
+                      color: "white",
+                      fontSize: "15px",
+                      marginRight: "3px"
+                    }}
+                    aria-hidden="true"
+                  ></i>
+                  Download
+                </button>
+              </div>
+            </div>
+            <div style={{ height: "100%", padding: 20 }}>
+              {isCeleb && (
+                <div
+                  style={{
+                    position: "absolute",
+                    marginLeft: "50px"
+                  }}
+                >
+                  <img
+                    alt="print img"
+                    width={300}
+                    height={250}
+                    // style={styles.gifCeleb}
+                    src={celebration}
+                  />
                 </div>
-                {emailList.length <= 9 && (
+              )}
+              <p
+                style={{
+                  fontFamily: "system-ui",
+                  verticalAlign: "baseline",
+                  fontWeight: "500",
+                  color: "#403f3e",
+                  fontSize: "15px",
+                  marginBottom: "5px"
+                }}
+              >
+                Recipients added here will get a copy of the signed document.
+              </p>
+              {emailList.length > 0 ? (
+                <>
+                  <div className="addEmail">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+
+                        flexWrap: "wrap"
+                      }}
+                    >
+                      {emailList.map((data, ind) => {
+                        return (
+                          <div
+                            className="emailChip"
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center"
+                            }}
+                            key={ind}
+                          >
+                            <span
+                              style={{
+                                color: "white",
+                                fontSize: "13px"
+                              }}
+                            >
+                              {data}
+                            </span>
+                            <span
+                              style={{
+                                color: "white",
+                                fontSize: 13,
+                                fontWeight: 600,
+                                marginLeft: 7,
+                                cursor: "pointer"
+                              }}
+                              onClick={() => removeChip(ind)}
+                            >
+                              <i className="fa-solid fa-xmark"></i>
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {emailList.length <= 9 && (
+                      <input
+                        type="text"
+                        value={emailValue}
+                        className="addEmailInput"
+                        onChange={handleEmailValue}
+                        onKeyDown={handleEnterPress}
+                        onBlur={() => {
+                          if (emailValue) {
+                            handleEnterPress("add");
+                          }
+                        }}
+                        required
+                      />
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div>
                   <input
                     type="text"
                     value={emailValue}
-                    className="addEmailInput"
+                    className="emailInput"
                     onChange={handleEmailValue}
                     onKeyDown={handleEnterPress}
+                    placeholder="Add the email addresses"
+                    onBlur={() => {
+                      if (emailValue) {
+                        handleEnterPress("add");
+                      }
+                    }}
                     required
                   />
-                )}
+                </div>
+              )}
+              <span
+                style={{
+                  cursor: emailValue && "pointer"
+                }}
+                onClick={() => {
+                  if (emailValue) {
+                    handleEnterPress("add");
+                  }
+                }}
+              >
+                <i
+                  style={{
+                    backgroundColor: themeColor(),
+                    padding: "5px 7px",
+                    marginTop: "10px",
+                    color: "white",
+                    borderRadius: "2px"
+                  }}
+                  className="fa fa-plus"
+                  aria-hidden="true"
+                ></i>
+              </span>
+
+              <div
+                style={{
+                  background: "#e3e2e1",
+                  marginTop: "10px",
+                  padding: "5px",
+                  borderRadius: "3px"
+                }}
+              >
+                <span style={{ fontWeight: "700" }}>Note:</span>
+                <span style={{ fontSize: "15px" }}>
+                  {" "}
+                  You can only send to ten recipients at a time.
+                </span>
               </div>
-            </>
-          ) : (
-            <div>
-              <input
-                type="text"
-                value={emailValue}
-                className="emailInput"
-                onChange={handleEmailValue}
-                onKeyDown={handleEnterPress}
-                placeholder="Add the email addresses"
-                required
-              />
+              <div
+                style={{
+                  height: "1px",
+                  backgroundColor: "#9f9f9f",
+                  width: "100%",
+                  marginTop: "15px",
+                  marginBottom: "15px"
+                }}
+              ></div>
+              <button
+                disabled={emailList.length === 0 && true}
+                style={{
+                  background: themeColor(),
+                  color: "white"
+                }}
+                type="button"
+                className={emailList.length === 0 ? "defaultBtn" : "finishBtn"}
+                onClick={() => sendEmail()}
+              >
+                Send
+              </button>
+              <button
+                type="button"
+                className="finishBtn cancelBtn"
+                onClick={() => {
+                  setIsEmail(false);
+                  setEmailValue("");
+                  setEmailList([]);
+                }}
+              >
+                Close
+              </button>
             </div>
-          )}
-          <span
-            style={{
-              cursor: emailValue && "pointer"
-            }}
-            onClick={() => {
-              if (emailValue) {
-                handleEnterPress("add");
-              }
-            }}
-          >
-            <i
-              style={{
-                backgroundColor: themeColor(),
-                padding: "2px 10px",
-                marginTop: "10px",
-                color: "white"
-              }}
-              className="fa fa-plus"
-              aria-hidden="true"
-            ></i>
-          </span>
-
-          <div
-            style={{
-              background: "#e3e2e1",
-              marginTop: "30px",
-              padding: "5px",
-              borderRadius: "3px"
-            }}
-          >
-            <span style={{ fontWeight: "700" }}>Note:</span>
-            <span style={{ fontSize: "15px" }}>
-              {" "}
-              You can only send to ten recipients at a time.
-            </span>
           </div>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <button
-            style={{
-              color: "black"
-            }}
-            type="button"
-            className="finishBtn"
-            onClick={() => {
-              setIsEmail(false);
-              setEmailValue("");
-              setEmailList([]);
-            }}
-          >
-            Close
-          </button>
-          <button
-            disabled={emailList.length === 0 && true}
-            style={{
-              background: themeColor(),
-              color: "white"
-            }}
-            type="button"
-            className={emailList.length === 0 ? "defaultBtn" : "finishBtn"}
-            onClick={() => sendEmail()}
-          >
-            Send
-          </button>
-        </Modal.Footer>
-      </Modal>
+        </div>
+      )}
     </div>
   );
 }
