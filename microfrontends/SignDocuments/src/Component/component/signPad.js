@@ -55,16 +55,17 @@ function SignPad({
     setSignValue(currentUserName);
     setFontSelect("Fasthand");
   }, []);
-  //function for clear signature
-  const handleClear = (type) => {
+  //function for clear signature image
+  const handleClear = () => {
     if (isTab === "draw") {
       if (canvasRef.current) {
         canvasRef.current.clear();
+      } else if (isStamp) {
+        setImage("");
       }
 
       setIsSignImg("");
     } else if (isTab === "uploadImage") {
-      setImage("");
     }
   };
   //function for set signature url
