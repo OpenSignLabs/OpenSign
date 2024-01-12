@@ -44,7 +44,7 @@ app.post('/createdocument', createDocument);
 app.get('/document/:document_id', getDocument);
 
 // get all types of documents on the basis of doctype
-app.post('/documentlist', getDocumentList);
+app.post('/documentlist/:doctype', getDocumentList);
 
 // create Template
 app.post('/createtemplate', createTemplate);

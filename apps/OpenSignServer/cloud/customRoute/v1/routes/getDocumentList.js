@@ -16,33 +16,35 @@ export default async function getDocumentList(request, response) {
   if (token !== undefined) {
     // Valid Token then proceed request
     const userId = token.get('Id');
-    const docType = request.body.doctype;
+    const docType = request.params.doctype;
     const limit = request?.body?.limit ? request.body.limit : 100;
     const skip = request?.body?.skip ? request.body.skip : 0;
     let reportId;
     switch (docType) {
-      case 'draftDocuments':
+      case 'draftdocuments':
         reportId = 'ByHuevtCFY';
         break;
       case 'signatureRequest':
         reportId = '4Hhwbp482K';
         break;
-      case 'inprogressDocuments':
+      case 'inprogressdocuments':
         reportId = '1MwEuxLEkF';
         break;
-      case 'completeDocuments':
+      case 'completedocuments':
         reportId = 'kQUoW4hUXz';
         break;
-      case 'expiredDocuments':
+      case 'expiredocuments':
         reportId = 'zNqBHXHsYH';
         break;
-      case 'declinedDocuments':
+      case 'declinedocuments':
         reportId = 'UPr2Fm5WY3';
         break;
+      default:
+        reportId = '';
     }
     const json = reportId && reportJson(reportId, userId);
     const clsName = 'contracts_Document';
-    if (json) {
+    if (reportId && json) {
       const { params, keys } = json;
       const orderBy = '-updatedAt';
       const strParams = JSON.stringify(params);
