@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ModalUi from "../../premitives/ModalUi";
 import RecipientList from "../../premitives/RecipientList";
+import { useDrag } from "react-dnd";
+import AllWidgets from "../WidgetComponent/allWidgets";
+import { widgets } from "../../utils/Utils";
 
 function FieldsComponent({
   pdfUrl,
@@ -39,9 +42,44 @@ function FieldsComponent({
   title
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
-  const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
 
+  const [{ isDragDropdown }, dropdown] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 5,
+      text: "dropdown"
+    },
+    collect: (monitor) => ({
+      isDragDropdown: !!monitor.isDragging()
+    })
+  });
+  const [{ isDragCheck }, checkbox] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 6,
+      text: "checkbox"
+    },
+    collect: (monitor) => ({
+      isDragCheck: !!monitor.isDragging()
+    })
+  });
+  const [{ isDragText }, text] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 2,
+      text: "text"
+    },
+    collect: (monitor) => ({
+      isDragText: !!monitor.isDragging()
+    })
+  });
+  const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
   const isMobile = window.innerWidth < 767;
+  const scrollContainerRef = useRef(null);
+  const [widget, setWidget] = useState([]);
 
   const color = [
     "#93a3db",
@@ -57,13 +95,31 @@ function FieldsComponent({
     "#66ccff",
     "#ffffcc"
   ];
-
   const handleModal = () => {
     setIsSignersModal(!isSignersModal);
   };
+
+  useEffect(() => {
+    const widgetRef = [dragSignature, dragStamp, dropdown, checkbox, text];
+    const getWidgetArray = widgets;
+    const newUpdateSigner = getWidgetArray.map((obj, ind) => {
+      return { ...obj, ref: widgetRef[ind] };
+    });
+    setWidget(newUpdateSigner);
+  }, []);
+
+  const filterWidgets = widget.filter((data) => data.type !== "dropdown");
+  const updateWidgets = isSignYourself ? filterWidgets : widget;
+
+  const handleScroll = (scrollOffset) => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft += scrollOffset;
+    }
+  };
+
   return (
     <>
-      {isMobile && isSignYourself ? (
+      {isMobile ? (
         !isMailSend && (
           <div
             data-tut={dataTut}
@@ -152,7 +208,7 @@ function FieldsComponent({
                 <span style={{ marginLeft: 2 }}>Add role</span>
               </div>
             )}
-            <div
+            {/* <div
               data-tut={dataTut2}
               className="signLayoutContainer2"
               style={{ backgroundColor: themeColor() }}
@@ -222,6 +278,107 @@ function FieldsComponent({
                   Stamp
                 </span>
               </div>
+            </div> */}
+            <div
+              ref={scrollContainerRef}
+              style={{
+                overflowX: "scroll",
+                whiteSpace: "nowrap",
+                padding: "10px",
+                background: "white",
+                borderTop: `2px solid ${themeColor()}`
+              }}
+            >
+              <i
+                style={{
+                  color: "rgb(140 142 149)",
+                  position: "fixed",
+                  left: "1%",
+                  bottom: "6%",
+                  fontSize: "23px"
+                }}
+                onClick={() => handleScroll(-100)}
+                className="fa-solid fa-circle-chevron-left"
+              ></i>
+              <div style={{ display: "flex" }}>
+                {/* {updateWidgets.map((item, ind) => {
+                  return (
+                    <div
+                      key={ind}
+                      ref={(element) => {
+                        item.ref(element);
+                        if (element) {
+                          signRef.current = element;
+                        }
+                      }}
+                      className={signStyle}
+                      onMouseMove={handleDivClick}
+                      onMouseDown={handleMouseLeave}
+                      style={{
+                        opacity: isDragSign ? 0.5 : 1,
+                        boxShadow:
+                          "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
+                        marginLeft: "5px"
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginLeft: "5px"
+                        }}
+                      >
+                        <i
+                          class="fa-sharp fa-solid fa-grip-vertical"
+                          style={{ color: "#908d8d", fontSize: "13px" }}
+                        ></i>
+                        <span
+                          style={{
+                            fontWeight: "400",
+                            fontSize: "15px",
+                            // padding: "3px 20px 0px 20px",
+                            color: "black",
+                            marginLeft: "5px"
+                          }}
+                        >
+                          {item.type}
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          backgroundColor: themeColor(),
+                          padding: "0 5px",
+                          display: "flex",
+                          alignItems: "center"
+                        }}
+                      >
+                        <i
+                          style={{ color: "white", fontSize: item.iconSize }}
+                          className={item.icon}
+                        ></i>
+                      </div>
+                    </div>
+                  );
+                })} */}
+                <AllWidgets
+                  updateWidgets={updateWidgets}
+                  handleDivClick={handleDivClick}
+                  handleMouseLeave={handleMouseLeave}
+                  signRef={signRef}
+                  marginLeft={5}
+                />
+              </div>
+              <i
+                style={{
+                  color: "rgb(140 142 149)",
+                  position: "fixed",
+                  left: "95%",
+                  bottom: "6%",
+                  fontSize: "23px"
+                }}
+                onClick={() => handleScroll(100)}
+                className="fa-solid fa-circle-chevron-right"
+              ></i>
             </div>
           </div>
         )
@@ -237,7 +394,7 @@ function FieldsComponent({
           </div>
 
           <div className="signLayoutContainer1">
-            {pdfUrl ? (
+            {/* {pdfUrl ? (
               <>
                 <button className={signStyle} disabled={true}>
                   <span
@@ -291,8 +448,6 @@ function FieldsComponent({
                     dragSignature(element);
                     if (element) {
                       signRef.current = element;
-                      // const height = signRef && signRef.current.offsetHeight;
-                      // const width = signRef && signRef.current.offsetWidth;
                     }
                   }}
                   className={signStyle}
@@ -319,17 +474,18 @@ function FieldsComponent({
                     style={{
                       width: "30px",
                       height: "28px",
-                      background: themeColor()
+                      background: themeColor(),
                     }}
                     src={sign}
                   />
+                  
                 </div>
                 <div
                   ref={(element) => {
                     dragStamp(element);
                     dragRef.current = element;
                     if (isDragStamp) {
-                      // setIsStamp(true);
+                      
                     }
                   }}
                   className={!pdfUrl ? signStyle : "disableSign"}
@@ -364,7 +520,71 @@ function FieldsComponent({
                   />
                 </div>
               </>
-            )}
+            )} */}
+            {/* {updateWidgets.map((item, ind) => {
+              return (
+                <div
+                  key={ind}
+                  ref={(element) => {
+                    item.ref(element);
+                    if (element) {
+                      signRef.current = element;
+                    }
+                  }}
+                  className={signStyle}
+                  onMouseMove={handleDivClick}
+                  onMouseDown={handleMouseLeave}
+                  style={{
+                    opacity: isDragSign ? 0.5 : 1,
+                    boxShadow:
+                      "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)"
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginLeft: "5px"
+                    }}
+                  >
+                    <i
+                      class="fa-sharp fa-solid fa-grip-vertical"
+                      style={{ color: "#908d8d", fontSize: "13px" }}
+                    ></i>
+                    <span
+                      style={{
+                        fontWeight: "400",
+                        fontSize: "15px",
+                        // padding: "3px 20px 0px 20px",
+                        color: "black",
+                        marginLeft: "5px"
+                      }}
+                    >
+                      {item.type}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      backgroundColor: themeColor(),
+                      padding: "0 5px",
+                      display: "flex",
+                      alignItems: "center"
+                    }}
+                  >
+                    <i
+                      style={{ color: "white", fontSize: item.iconSize }}
+                      className={item.icon}
+                    ></i>
+                  </div>
+                </div>
+              );
+            })} */}
+            <AllWidgets
+              updateWidgets={updateWidgets}
+              handleDivClick={handleDivClick}
+              handleMouseLeave={handleMouseLeave}
+              signRef={signRef}
+            />
           </div>
         </div>
       )}

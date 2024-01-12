@@ -31,6 +31,7 @@ import LinkUserModal from "./component/LinkUserModal";
 import Title from "./component/Title";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import ModalUi from "../premitives/ModalUi";
+import DropdownWidgetOption from "../Component/WidgetComponent/dropdownWidgetOption";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -84,6 +85,8 @@ function PlaceHolderSign() {
   const [signerExistModal, setSignerExistModal] = useState(false);
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -111,7 +114,7 @@ function PlaceHolderSign() {
     item: {
       type: "BOX",
       id: 1,
-      text: "drag me"
+      text: "signature"
     },
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
@@ -122,7 +125,13 @@ function PlaceHolderSign() {
     item: {
       type: "BOX",
       id: 2,
-      text: "drag me"
+      text: "stamp"
+    },
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 2,
+      text: "stamp"
     },
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
@@ -132,9 +141,8 @@ function PlaceHolderSign() {
   const [{ isDragSignatureSS }, dragSignatureSS] = useDrag({
     type: "BOX",
     item: {
-      type: "BOX",
       id: 3,
-      text: "drag me"
+      text: "signature"
     },
     collect: (monitor) => ({
       isDragSignatureSS: !!monitor.isDragging()
@@ -144,9 +152,8 @@ function PlaceHolderSign() {
   const [{ isDragStampSS }, dragStampSS] = useDrag({
     type: "BOX",
     item: {
-      type: "BOX",
       id: 4,
-      text: "drag me"
+      text: "stamp"
     },
     collect: (monitor) => ({
       isDragStampSS: !!monitor.isDragging()
@@ -339,6 +346,7 @@ function PlaceHolderSign() {
         let placeHolder;
         if (item === "onclick") {
           const dropObj = {
+            //onclick put placeholder center on pdf
             xPosition: window.innerWidth / 2 - 100,
             yPosition: window.innerHeight / 2 - 60,
             isStamp: monitor,
@@ -347,7 +355,8 @@ function PlaceHolderSign() {
             scale: scale,
             isMobile: isMobile,
             yBottom: window.innerHeight / 2 - 60,
-            zIndex: posZIndex
+            zIndex: posZIndex,
+            type: item.text
           };
           dropData.push(dropObj);
           placeHolder = {
@@ -375,7 +384,8 @@ function PlaceHolderSign() {
             yBottom: ybottom,
             scale: scale,
             isMobile: isMobile,
-            zIndex: posZIndex
+            zIndex: posZIndex,
+            type: item.text
           };
 
           dropData.push(dropObj);
@@ -642,7 +652,6 @@ function PlaceHolderSign() {
       setIsSendAlert(alert);
     }
   };
-
   const sendEmailToSigners = async () => {
     const loadObj = {
       isLoad: true,
@@ -682,7 +691,7 @@ function PlaceHolderSign() {
 
         const hostUrl = window.location.origin + "/loadmf/signmicroapp";
         let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
-        const openSignUrl = "https://www.opensignlabs.com/contact-us";
+        const openSignUrl = "https://www.opensignlabs.com/";
         const orgName = pdfDetails[0]?.ExtUserPtr.Company
           ? pdfDetails[0].ExtUserPtr.Company
           : "";
@@ -787,12 +796,11 @@ function PlaceHolderSign() {
       }
     }
   };
-
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
-
   //here you can add your messages in content and selector is key of particular steps
+
   const tourConfig = [
     {
       selector: '[data-tut="reactourFirst"]',
@@ -850,6 +858,55 @@ function PlaceHolderSign() {
       style: { fontSize: "13px" }
     }
   ];
+
+  const handleSaveDropdownOptions = (dropdownName, dropdownOptions) => {
+    //get current signers placeholder position data
+    const currentSigner = signerPos.filter(
+      (data) => data.signerObjId === signerObjId
+    );
+    //get current pagenumber placeholder index
+    const getIndex = currentSigner[0].placeHolder.findIndex((object) => {
+      return object.pageNumber === pageNumber;
+    });
+
+    const placeholderPosition = currentSigner[0].placeHolder;
+    //function of save signature image and get updated position with signature image url
+
+    let getXYdata = placeholderPosition[getIndex].pos;
+    const updateXYData = getXYdata.map((position) => {
+      if (position.key === signKey) {
+        return {
+          ...position,
+          widgetName: dropdownName,
+          widgetOption: dropdownOptions
+        };
+      }
+      return position;
+    });
+
+    const getUpdatePosition = placeholderPosition.map((obj, ind) => {
+      if (ind === getIndex) {
+        return { ...obj, pos: updateXYData };
+      }
+      return obj;
+    });
+
+    const updateSignerData = currentSigner.map((obj, ind) => {
+      if (obj.signerObjId === signerObjId) {
+        return { ...obj, placeHolder: getUpdatePosition };
+      }
+      return obj;
+    });
+
+    const index = signerPos.findIndex(
+      (data) => data.signerObjId === signerObjId
+    );
+    setSignerPos((prevState) => {
+      const newState = [...prevState];
+      newState.splice(index, 1, ...updateSignerData);
+      return newState;
+    });
+  };
 
   //function for update TourStatus
   const closeTour = async () => {
@@ -925,7 +982,6 @@ function PlaceHolderSign() {
         }
         return { ...x };
       });
-      //  console.log("updateSigner ", updateSigner);
       if (updateSigner && updateSigner.length > 0) {
         const currEmail = pdfDetails[0].ExtUserPtr.Email;
         const getCurrentUserDeatils = updateSigner.filter(
@@ -935,6 +991,7 @@ function PlaceHolderSign() {
           setCurrentId(getCurrentUserDeatils[0].Email);
         }
       }
+      // console.log("updateSigner ", updateSigner);
 
       setSignersData(updateSigner);
       const index = signersdata.findIndex((x) => x.Id === uniqueId);
@@ -1027,7 +1084,7 @@ function PlaceHolderSign() {
 
                   {isSendAlert.mssg === "confirm" && (
                     <button
-                      onClick={() => sendEmailToSigners()}
+                      // onClick={() => sendEmailToSigners()}
                       style={{
                         background: themeColor()
                       }}
@@ -1154,6 +1211,11 @@ function PlaceHolderSign() {
                 // signerObjId={signerObjId}
                 Id={uniqueId}
               />
+              <DropdownWidgetOption
+                showDropdown={showDropdown}
+                setShowDropdown={setShowDropdown}
+                handleSaveDropdownOptions={handleSaveDropdownOptions}
+              />
               {/* pdf header which contain funish back button */}
               <Header
                 isPlaceholder={true}
@@ -1198,6 +1260,7 @@ function PlaceHolderSign() {
                     handleLinkUser={handleLinkUser}
                     setUniqueId={setUniqueId}
                     isDragging={isDragging}
+                    setShowDropdown={setShowDropdown}
                   />
                 )}
               </div>
@@ -1221,7 +1284,7 @@ function PlaceHolderSign() {
                   dragStamp={dragStamp}
                   dragRef={dragRef}
                   isDragStamp={isDragStamp}
-                  isSignYourself={true}
+                  isSignYourself={false}
                   isDragSignatureSS={isDragSignatureSS}
                   dragSignatureSS={dragSignatureSS}
                   dragStampSS={dragStampSS}
@@ -1309,7 +1372,6 @@ function PlaceHolderSign() {
             </button>
           </div>
         </ModalUi>
-
         <LinkUserModal
           handleAddUser={handleAddUser}
           isAddUser={isAddUser}
