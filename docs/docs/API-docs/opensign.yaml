@@ -26,19 +26,19 @@ tags:
   externalDocs:
     description: Visit github
     url: http://github.com/opensignlabs/opensign
-- name: user
+- name: User
   description: Operations about user
-- name: contacts
+- name: Contacts
   description: Operations about contacts
-- name: documents
+- name: Documents
   description: Operations about documents
-- name: templates
+- name: Templates
   description: Operations about templates
 paths:
   /getuser:
     get:
       tags:
-      - user
+      - User
       summary: Get your details
       operationId: getUser
       parameters:
@@ -63,44 +63,10 @@ paths:
           description: Record not found!
       security:
       - x-api-token: []
-  /createuser:
-    post:
-      tags:
-      - users
-      summary: Add a new pet to the store
-      description: Add a new pet to the store
-      operationId: addPet
-      parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
-      requestBody:
-        description: Create a new pet in the store
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/user'
-        required: true
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user'
-        "405":
-          description: Invalid input
-      security:
-      - x-api-token: []
   /createcontact:
     post:
       tags:
-      - contacts
+      - Contacts
       summary: Create contact
       operationId: createcontact
       parameters:
@@ -121,7 +87,7 @@ paths:
         required: true
       responses:
         "200":
-          description: successful operation
+          description: Contact created successfully!
           content:
             application/json:
               schema:
@@ -135,7 +101,7 @@ paths:
   /contact/{contact_id}:
     get:
       tags:
-      - contacts
+      - Contacts
       summary: Get contact
       description: get a contact
       operationId: getcontact
@@ -173,7 +139,7 @@ paths:
       - x-api-token: []
     delete:
       tags:
-      - contacts
+      - Contacts
       summary: Deletes contact
       description: delete a contact
       operationId: deletecontact
@@ -208,7 +174,7 @@ paths:
   /contactlist:
     post:
       tags:
-      - contacts
+      - Contacts
       summary: Get contact list
       description: ""
       operationId: contactlist
@@ -235,8 +201,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/contactdetails'
-        "404":
-          description: Report is not available!
         "405":
           description: Invalid API Token!
       security:
@@ -244,7 +208,7 @@ paths:
   /createdocument:
     post:
       tags:
-      - documents
+      - Documents
       summary: Create document
       operationId: createdocument
       parameters:
@@ -270,7 +234,7 @@ paths:
   /document/{document_id}:
     get:
       tags:
-      - documents
+      - Documents
       summary: Get document by ID
       description: Get a document
       operationId: getdocument
@@ -310,7 +274,7 @@ paths:
       - x-api-token: []
     delete:
       tags:
-      - contacts
+      - Documents
       summary: Delete document by ID
       description: delete a document
       operationId: deletedocument
@@ -342,14 +306,49 @@ paths:
           description: Invalid API Token!
       security:
       - x-api-token: []
-  /documentlist:
+  /documentlist/{doctype}:
     post:
       tags:
-      - documents
+      - Documents
       summary: Get document list
-      description: Get document list
+      description: |
+        ### Document Types:
+        Retrieve a list of documents based on type
+
+        1. **Draft Documents:**
+            - Documents that are currently in draft status.
+
+        2. **Signature Requests:**
+            - Documents that require the your signature.
+
+        3. **In-Progress Documents:**
+            - Documents that are currently in progress.
+
+        4. **Completed Documents:**
+            - Documents that have been successfully completed with all required signatures.
+
+        5. **Expired Documents:**
+            - Documents that have expired and are no longer accessible.
+
+        6. **Declined Documents:**
+            - Documents that have been declined by the user.
       operationId: getdocumentlist
       parameters:
+      - name: doctype
+        in: path
+        description: The type of documents to retrieve
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - draftdocuments
+          - signaturerequest
+          - inprogressdocuments
+          - completedocuments
+          - expiredocuments
+          - declinedocuments
       - name: x-api-token
         in: header
         required: true
@@ -379,7 +378,7 @@ paths:
   /createtemplate:
     post:
       tags:
-      - templates
+      - Templates
       summary: Create template
       description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template."
       operationId: createtemplate
@@ -409,7 +408,7 @@ paths:
   /template/{template_id}:
     get:
       tags:
-      - templates
+      - Templates
       summary: Get template by ID
       description: ""
       operationId: getTemplate
@@ -444,7 +443,7 @@ paths:
           description: Invalid API Token!'
     put:
       tags:
-      - templates
+      - Templates
       summary: Update template by ID
       operationId: updateTemplate
       parameters:
@@ -463,8 +462,8 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
-          format: int64
+          type: string
+          format: string
       requestBody:
         description: provide below parameter to update templates (at least one parameter required)
         content:
@@ -478,7 +477,7 @@ paths:
           description: Order not found
     delete:
       tags:
-      - templates
+      - Templates
       summary: Delete template by ID
       operationId: deleteTemplate
       parameters:
@@ -497,8 +496,8 @@ paths:
         style: simple
         explode: false
         schema:
-          type: integer
-          format: int64
+          type: string
+          format: string
       responses:
         "400":
           description: Invalid ID supplied
@@ -507,7 +506,7 @@ paths:
   /templatelist:
     post:
       tags:
-      - templates
+      - Templates
       summary: Get template list
       operationId: gettemplatelist
       parameters:
@@ -531,8 +530,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/template'
-        "404":
-          description: Report is not available!
         "405":
           description: Invalid API Token!
 components:
@@ -576,8 +573,8 @@ components:
       type: object
       properties:
         code:
-          type: integer
-          format: int32
+          type: number
+          format: number
         type:
           type: string
         message:
@@ -619,12 +616,12 @@ components:
       type: object
       properties:
         limit:
-          type: integer
-          format: int32
+          type: number
+          format: number
           example: 10
         skip:
-          type: integer
-          format: int32
+          type: number
+          format: number
           example: 0
       xml:
         name: listbody
@@ -707,8 +704,7 @@ components:
       type: object
       properties:
         code:
-          type: integer
-          format: int32
+          type: number
         type:
           type: string
         message:
@@ -768,8 +764,9 @@ components:
       type: object
       properties:
         objectId:
-          type: integer
-          format: int64
+          type: string
+          format: sting
+          example: zxcpou2Hbs
         Name:
           type: string
           example: joe
