@@ -40,10 +40,8 @@ Parse.Cloud.define('getDrive', getDrive);
 Parse.Cloud.define('getReport', getReport);
 Parse.Cloud.define('generateapitoken', generateApiToken);
 Parse.Cloud.define('getapitoken', getapitoken);
-Parse.Cloud.define('getDrive', getDrive)
-Parse.Cloud.define('getReport', getReport)
-Parse.Cloud.define("getTemplate", GetTemplate)
+Parse.Cloud.define('getTemplate', GetTemplate);
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
 Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
 Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
-Parse.Cloud.afterSave("contracts_Template", TemplateAfterSave)
+Parse.Cloud.afterSave('contracts_Template', TemplateAfterSave);
