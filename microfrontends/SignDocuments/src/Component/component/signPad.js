@@ -56,12 +56,16 @@ function SignPad({
     setFontSelect("Fasthand");
   }, []);
   //function for clear signature
-  const handleClear = () => {
-    if (canvasRef.current) {
-      canvasRef.current.clear();
-    }
+  const handleClear = (type) => {
+    if (isTab === "draw") {
+      if (canvasRef.current) {
+        canvasRef.current.clear();
+      }
 
-    setIsSignImg("");
+      setIsSignImg("");
+    } else if (isTab === "uploadImage") {
+      setImage("");
+    }
   };
   //function for set signature url
   const handleSignatureChange = (dataURL) => {
@@ -73,11 +77,12 @@ function SignPad({
   //save button component
   const SaveBtn = () => {
     return (
-      <div>
-        {!isStamp && !isImageSelect && (
+      <div style={{ marginTop: "2px" }}>
+        {(isTab === "draw" || isTab === "uploadImage") && (
           <button
             style={{
-              color: "black"
+              color: "black",
+              border: "1px solid #ccc"
             }}
             type="button"
             className="finishBtn saveBtn"
@@ -124,7 +129,9 @@ function SignPad({
           }
           type="button"
           className={
-            isSignImg || image ? "finishBtn saveBtn" : "disabledFinish saveBtn"
+            isSignImg || image || isDefaultSign || textWidth
+              ? "finishBtn saveBtn"
+              : "disabledFinish saveBtn"
           }
         >
           Save
@@ -213,7 +220,10 @@ function SignPad({
       {isSignPad && (
         <div className="modaloverlay">
           <div className="modalcontainer">
-            <div className="modalheader" style={{ padding: "0 5px" }}>
+            <div
+              className="modalheader"
+              style={{ padding: "0 13px", marginTop: "5px" }}
+            >
               <div className="modaltitle">
                 <div
                   style={{
@@ -221,8 +231,7 @@ function SignPad({
                     flexDirection: "row",
                     justifyContent: "space-between",
                     background: "white",
-
-                    marginTop: "15px"
+                    marginTop: "3px"
                   }}
                 >
                   <div
@@ -445,7 +454,9 @@ function SignPad({
                         ref={imageRef}
                         src={image.src}
                         style={{
-                          objectFit: "contain"
+                          objectFit: "contain",
+                          height: "100%",
+                          width: "100%"
                         }}
                       />
                     </div>
@@ -534,7 +545,7 @@ function SignPad({
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "space-between",
-                      marginTop: "4px"
+                      marginTop: "10px"
                     }}
                   >
                     <div style={{ display: "flex", flexDirection: "row" }}>

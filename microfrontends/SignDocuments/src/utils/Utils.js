@@ -1,5 +1,4 @@
 import axios from "axios";
-import { $ } from "select-dom";
 import { rgb } from "pdf-lib";
 
 const isMobile = window.innerWidth < 767;
@@ -396,16 +395,6 @@ export function urlValidator(url) {
     return newUrl.protocol === "http:" || newUrl.protocol === "https:";
   } catch (err) {
     return false;
-  }
-}
-export function modalAlign() {
-  let modalDialog = $(".modal-dialog").getBoundingClientRect();
-  let mobileHead = $(".mobileHead").getBoundingClientRect();
-  let modal = $(".modal-dialog");
-  if (modalDialog.left < mobileHead.left) {
-    let leftOffset = mobileHead.left - modalDialog.left;
-    modal.style.left = leftOffset + "px";
-    modal.style.top = window.innerHeight / 3 + "px";
   }
 }
 

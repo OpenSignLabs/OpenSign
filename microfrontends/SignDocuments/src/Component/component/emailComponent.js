@@ -86,6 +86,8 @@ function EmailComponent({
         isShow: true,
         alertMessage: "something went wrong"
       });
+      setEmailValue("");
+      setEmailList([]);
     } else {
       setIsLoading(false);
       setIsEmail(false);
@@ -93,6 +95,8 @@ function EmailComponent({
         isShow: true,
         alertMessage: "something went wrong"
       });
+      setEmailValue("");
+      setEmailList([]);
     }
   };
 
@@ -259,7 +263,8 @@ function EmailComponent({
                   verticalAlign: "baseline",
                   fontWeight: "500",
                   color: "#403f3e",
-                  fontSize: "15px"
+                  fontSize: "15px",
+                  marginBottom: "5px"
                 }}
               >
                 Recipients added here will get a copy of the signed document.
@@ -358,9 +363,10 @@ function EmailComponent({
                 <i
                   style={{
                     backgroundColor: themeColor(),
-                    padding: "2px 10px",
+                    padding: "5px 7px",
                     marginTop: "10px",
-                    color: "white"
+                    color: "white",
+                    borderRadius: "2px"
                   }}
                   className="fa fa-plus"
                   aria-hidden="true"
@@ -370,7 +376,7 @@ function EmailComponent({
               <div
                 style={{
                   background: "#e3e2e1",
-                  marginTop: "30px",
+                  marginTop: "10px",
                   padding: "5px",
                   borderRadius: "3px"
                 }}
@@ -403,11 +409,8 @@ function EmailComponent({
                 Send
               </button>
               <button
-                style={{
-                  color: "black"
-                }}
                 type="button"
-                className="finishBtn"
+                className="finishBtn cancelBtn"
                 onClick={() => {
                   setIsEmail(false);
                   setEmailValue("");

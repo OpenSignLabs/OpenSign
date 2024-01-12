@@ -50,6 +50,7 @@ function RenderAllPdfPage({
               }}
             >
               <Document
+                loading={"Loading Document.."}
                 onLoadSuccess={onDocumentLoad}
                 file={pdfUrl ? pdfUrl : signPdfUrl}
                 //   file="https://api.printnode.com/static/test/pdf/multipage.pdf"

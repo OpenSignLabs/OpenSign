@@ -3,8 +3,6 @@ import { themeColor } from "../utils/ThemeColor/backColor";
 import { PDFDocument } from "pdf-lib";
 import "../css/signature.css";
 import axios from "axios";
-import ModalHeader from "react-bootstrap/esm/ModalHeader";
-import Modal from "react-bootstrap/Modal";
 import loader from "../assests/loader2.gif";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -12,11 +10,7 @@ import { useParams } from "react-router-dom";
 import SignPad from "./component/signPad";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import {
-  convertPNGtoJPEG,
   contractDocument,
-  getBase64FromIMG,
-  getBase64FromUrl,
-  urlValidator,
   multiSignEmbed,
   embedDocId,
   pdfNewWidthFun,
@@ -32,7 +26,6 @@ import Nodata from "./component/Nodata";
 import Header from "./component/header";
 import RenderPdf from "./component/renderPdf";
 import CustomModal from "./component/CustomModal";
-import AlertComponent from "./component/alertComponent";
 import Title from "./component/Title";
 import DefaultSignature from "./component/defaultSignature";
 import ModalUi from "../premitives/ModalUi";
@@ -722,11 +715,8 @@ function PdfRequestFiles() {
                       alertMessage: ""
                     });
                   }}
-                  style={{
-                    color: "black"
-                  }}
                   type="button"
-                  className="finishBtn"
+                  className="finishBtn cancelBtn"
                 >
                   Ok
                 </button>
@@ -806,11 +796,8 @@ function PdfRequestFiles() {
                           alertMessage: ""
                         });
                       }}
-                      style={{
-                        color: "black"
-                      }}
                       type="button"
-                      className="finishBtn"
+                      className="finishBtn cancelBtn"
                     >
                       Close
                     </button>
@@ -823,11 +810,8 @@ function PdfRequestFiles() {
                         alertMessage: ""
                       });
                     }}
-                    style={{
-                      color: "black"
-                    }}
                     type="button"
-                    className="finishBtn"
+                    className="finishBtn cancelBtn"
                   >
                     Ok
                   </button>
@@ -871,11 +855,8 @@ function PdfRequestFiles() {
                     }}
                   ></div>
                   <button
-                    style={{
-                      color: "black"
-                    }}
                     type="button"
-                    className="finishBtn"
+                    className="finishBtn cancelBtn"
                     onClick={() =>
                       setIsCompleted({ isModal: false, isCertificate: true })
                     }

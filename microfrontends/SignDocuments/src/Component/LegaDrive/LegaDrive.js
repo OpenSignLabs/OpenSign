@@ -369,11 +369,8 @@ function PdfFile() {
                   alertMessage: ""
                 })
               }
-              style={{
-                color: "black"
-              }}
               type="button"
-              className="finishBtn"
+              className="finishBtn cancelBtn"
             >
               Close
             </button>
@@ -419,12 +416,13 @@ function PdfFile() {
                     fontWeight: "400"
                   }}
                 >
-                  Name*
+                  Name
+                  <span style={{ color: "red" }}>*</span>
                 </label>
 
                 <input
                   required
-                  className="form-control"
+                  className="form-control inputStyle"
                   type="text"
                   value={newFolderName}
                   onChange={(e) => handleFolderName(e)}
@@ -455,11 +453,8 @@ function PdfFile() {
                     Add
                   </button>
                   <button
-                    style={{
-                      color: "black"
-                    }}
                     type="button"
-                    className="finishBtn"
+                    className="finishBtn cancelBtn"
                     onClick={oncloseFolder}
                   >
                     Close
