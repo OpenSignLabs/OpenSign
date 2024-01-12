@@ -521,13 +521,16 @@ function RenderPdf({
                                       />
                                       <div
                                         onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleLinkUser(data.Id);
-                                          setUniqueId(data.Id);
+                                          if (!isDragging) {
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }
                                         }}
                                         onTouchEnd={() => {
-                                          handleLinkUser(data.Id);
-                                          setUniqueId(data.Id);
+                                          if (!isDragging) {
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }
                                           const dataNewPlace = addZIndex(
                                             signerPos,
                                             pos.key,
@@ -852,9 +855,11 @@ function RenderPdf({
                                   placeData.pos.map((pos) => {
                                     return (
                                       <Rnd
-                                        onClick={() => {
-                                          handleLinkUser(data.Id);
-                                          setUniqueId(data.Id);
+                                        onClick={(e) => {
+                                          if (!isDragging) {
+                                            handleLinkUser(data.Id);
+                                            setUniqueId(data.Id);
+                                          }
                                           const dataNewPlace = addZIndex(
                                             signerPos,
                                             pos.key,
@@ -898,20 +903,14 @@ function RenderPdf({
                                             ? pos.Width / pos.Height
                                             : 2.5
                                         }
-                                        onDragStop={
-                                          (event, dragElement) =>
-                                            handleStop(
-                                              event,
-                                              dragElement,
-                                              data.Id,
-                                              pos.key
-                                            )
-                                          // data.signerObjId,
+                                        onDragStop={(event, dragElement) =>
+                                          handleStop(
+                                            event,
+                                            dragElement,
+                                            data.Id,
+                                            pos.key
+                                          )
                                         }
-                                        // default={{
-                                        //   x: pos.xPosition,
-                                        //   y: pos.yPosition
-                                        // }}
                                         default={{
                                           x: xPos(pos),
                                           y: yPos(pos)

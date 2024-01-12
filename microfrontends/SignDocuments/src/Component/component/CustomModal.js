@@ -49,11 +49,8 @@ function CustomModal({
                     Yes
                   </button>
                   <button
-                    style={{
-                      color: "black"
-                    }}
                     type="button"
-                    className="finishBtn"
+                    className="finishBtn cancelBtn"
                     onClick={() => setIsDecline({ isDeclined: false })}
                   >
                     Close

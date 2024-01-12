@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import { themeColor } from "../../utils/ThemeColor/backColor";
 import ModalUi from "../../premitives/ModalUi";
 
@@ -251,11 +249,8 @@ function PlaceholderCopy(props) {
           Apply
         </button>
         <button
-          style={{
-            color: "black"
-          }}
           type="button"
-          className="finishBtn"
+          className="finishBtn cancelBtn"
           onClick={() => props.setIsPageCopy(false)}
         >
           Cancel

@@ -83,6 +83,7 @@ function PlaceHolderSign() {
   const [isAddUser, setIsAddUser] = useState({});
   const [signerExistModal, setSignerExistModal] = useState(false);
   const [isDontShow, setIsDontShow] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -462,11 +463,12 @@ function PlaceHolderSign() {
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key, signerId) => {
     setDragKey(key);
+    setIsDragging(true);
   };
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
-    if (!isResize) {
+    if (!isResize && isDragging) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
@@ -525,6 +527,9 @@ function PlaceHolderSign() {
         }
       }
     }
+    setTimeout(() => {
+      setIsDragging(false);
+    }, 200);
   };
 
   //function for delete signature block
@@ -1034,11 +1039,8 @@ function PlaceHolderSign() {
                   )}
                   <button
                     onClick={() => setIsSendAlert({})}
-                    style={{
-                      color: "black"
-                    }}
                     type="button"
-                    className="finishBtn"
+                    className="finishBtn cancelBtn"
                   >
                     Close
                   </button>
@@ -1088,11 +1090,8 @@ function PlaceHolderSign() {
                           setIsSend(false);
                           setSignerPos([]);
                         }}
-                        style={{
-                          color: "black"
-                        }}
                         type="button"
-                        className="finishBtn"
+                        className="finishBtn cancelBtn"
                       >
                         No
                       </button>
@@ -1103,11 +1102,8 @@ function PlaceHolderSign() {
                         setIsSend(false);
                         setSignerPos([]);
                       }}
-                      style={{
-                        color: "black"
-                      }}
                       type="button"
-                      className="finishBtn"
+                      className="finishBtn cancelBtn"
                     >
                       Close
                     </button>
@@ -1140,11 +1136,8 @@ function PlaceHolderSign() {
                     onClick={() => {
                       setIsShowEmail(false);
                     }}
-                    style={{
-                      color: "black"
-                    }}
                     type="button"
-                    className="finishBtn"
+                    className="finishBtn cancelBtn"
                   >
                     Ok
                   </button>
@@ -1204,6 +1197,7 @@ function PlaceHolderSign() {
                     setSignerObjId={setSignerObjId}
                     handleLinkUser={handleLinkUser}
                     setUniqueId={setUniqueId}
+                    isDragging={isDragging}
                   />
                 )}
               </div>
@@ -1308,11 +1302,8 @@ function PlaceHolderSign() {
             ></div>
             <button
               onClick={() => setSignerExistModal(false)}
-              style={{
-                color: "black"
-              }}
               type="button"
-              className="finishBtn"
+              className="finishBtn cancelBtn"
             >
               Close
             </button>

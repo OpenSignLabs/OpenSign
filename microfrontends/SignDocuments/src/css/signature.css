@@ -227,6 +227,7 @@
   font-size: 14px !important;
   border: none;
   margin-left: 10px;
+  border-radius: 2px;
 }
 
 .sendMail {
@@ -246,7 +247,7 @@
 
 .finishBtn:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-  color: white;
+   
 }
 
 .saveBtn {
@@ -408,10 +409,13 @@
 .signTab {
   cursor: pointer !important;
   font-weight: 400 !important;
-  margin-left: 10px !important;
+  margin: 7px !important;
   font-size: 15px !important;
 }
-
+.cancelBtn {
+  color: black;
+  border: 1px solid #ccc;
+}
 .draggable-button {
   padding: 10px 20px;
   background: #3498db;

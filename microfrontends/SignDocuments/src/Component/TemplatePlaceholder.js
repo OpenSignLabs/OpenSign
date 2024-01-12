@@ -1061,11 +1061,8 @@ const TemplatePlaceholder = () => {
                         onClick={() => {
                           setIsCreateDocModal(false);
                         }}
-                        style={{
-                          color: "black"
-                        }}
                         type="button"
-                        className="finishBtn"
+                        className="finishBtn cancelBtn"
                       >
                         No
                       </button>
@@ -1179,6 +1176,7 @@ const TemplatePlaceholder = () => {
                   handleDeleteUser={handleDeleteUser}
                   handleRoleChange={handleRoleChange}
                   handleOnBlur={handleOnBlur}
+                  title={"Role"}
                 />
               </div>
             ) : (
@@ -1197,6 +1195,7 @@ const TemplatePlaceholder = () => {
                     handleDeleteUser={handleDeleteUser}
                     handleRoleChange={handleRoleChange}
                     handleOnBlur={handleOnBlur}
+                    title={"Role"}
                   />
                   <div data-tut="reactourSecond">
                     <FieldsComponent
@@ -1214,6 +1213,7 @@ const TemplatePlaceholder = () => {
                       isDragStamp={isDragStamp}
                       isSignYourself={false}
                       addPositionOfSignature={addPositionOfSignature}
+                      title={"Role"}
                     />
                   </div>
                 </div>
