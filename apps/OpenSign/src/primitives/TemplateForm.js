@@ -22,6 +22,8 @@ const TemplateForm = () => {
   const [fileload, setfileload] = useState(false);
   const [percentage, setpercentage] = useState(0);
   const [isAlert, setIsAlert] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [isErr, setIsErr] = useState("");
   const handleStrInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -128,6 +130,7 @@ const TemplateForm = () => {
   const dropboxCancel = async () => {};
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmit(true);
     try {
       const currentUser = Parse.User.current();
       const template = new Parse.Object(templateCls);
@@ -155,10 +158,6 @@ const TemplateForm = () => {
 
       const res = await template.save();
       if (res) {
-        setIsAlert(true);
-        setTimeout(() => {
-          setIsAlert(false);
-        }, 1000);
         setSigners([]);
         setFolder({ ObjectId: "", Name: "" });
         setFormData({
@@ -175,7 +174,13 @@ const TemplateForm = () => {
       }
     } catch (err) {
       console.log("err ", err);
+      setIsErr(true);
+    } finally {
       setIsAlert(true);
+      setTimeout(() => {
+        setIsAlert(false);
+      }, 1000);
+      setIsSubmit(false);
     }
   };
 
@@ -207,7 +212,13 @@ const TemplateForm = () => {
   return (
     <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
       <Title title="New Template" />
-      {isAlert && <Alert type="success">Template created successfully!</Alert>}
+      {isAlert && (
+        <Alert type={isErr ? "danger" : "success"}>
+          {isErr
+            ? "Something went wrong please try again!"
+            : "Template created successfully!"}
+        </Alert>
+      )}
       <form onSubmit={handleSubmit}>
         <h1 className="text-[20px] font-semibold mb-4">New Template</h1>
         {fileload && (
@@ -302,8 +313,11 @@ const TemplateForm = () => {
         <SelectFolder onSuccess={handleFolder} folderCls={templateCls} />
         <div className="flex items-center mt-3 gap-2 text-white">
           <button
-            className="bg-[#1ab6ce] rounded-sm shadow-md text-[14px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none"
+            className={`${
+              isSubmit && "cursor-progress"
+            } bg-[#1ab6ce] rounded-sm shadow-md text-[14px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none`}
             type="submit"
+            disabled={isSubmit}
           >
             Submit
           </button>
