@@ -28,31 +28,19 @@ tags:
     url: http://github.com/opensignlabs/opensign
 - name: templates
   description: Operations about templates
-- name: users
-  description: Operations about users
 - name: documents
   description: Operations about documents
+- name: contacts
+  description: Operations about contacts
+- name: user
+  description: Operations about user
 paths:
   /getuser:
-    put:
+    get:
       tags:
-      - users
-      summary: Update an existing pet
-      description: Update an existing pet by Id
-      operationId: updatePet
-      requestBody:
-        description: Update an existent pet in the store
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Pet'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Pet'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Pet'
-        required: true
+      - user
+      summary: Get your details
+      operationId: getUser
       responses:
         "200":
           description: Successful operation
@@ -64,13 +52,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pet'
         "400":
-          description: Invalid ID supplied
+          description: Invalid API Token!
         "404":
-          description: Pet not found
-        "405":
-          description: Validation exception
+          description: Record not found!
       security:
       - api_key: []
+  /createuser:
     post:
       tags:
       - users
