@@ -897,7 +897,7 @@ components:
           type: string
           example: Contact created successfully!
         result:
-          $ref: '#/components/schemas/contactdetails'
+          $ref: '#/components/schemas/inline_response_200_1_result'
     inline_response_404_1:
       type: object
       properties:
@@ -1106,6 +1106,12 @@ components:
         Name:
           type: string
           example: joe
+    inline_response_200_1_result:
+      type: object
+      properties:
+        objectId:
+          type: string
+          example: Phck1hoJ2d
     inline_response_200_5_result:
       type: object
       properties:
