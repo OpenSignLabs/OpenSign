@@ -110,10 +110,17 @@ export default async function createContact(request, response) {
 
           contactQuery.setACL(acl);
           const contactRes = await contactQuery.save();
-          return response.json({
-            message: 'Contact created sucessfully!',
-            result: { objectId: contactRes.id },
-          });
+          if (contactRes) {
+            const parseRes = JSON.parse(JSON.stringify(contactRes));
+            return response.json({
+              objectId: parseRes.objectId,
+              Name: parseRes.Name,
+              Email: parseRes.Email,
+              Phone: parseRes.Phone,
+              createdAt: parseRes.createdAt,
+              updateAt: parseRes.updateAt,
+            });
+          }
           //   const parseData = JSON.parse(JSON.stringify(res));
         }
       }

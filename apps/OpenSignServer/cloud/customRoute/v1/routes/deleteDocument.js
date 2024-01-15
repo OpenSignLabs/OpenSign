@@ -1,4 +1,4 @@
-export default async function getDocument(request, response) {
+export default async function deleteDocument(request, response) {
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -14,24 +14,24 @@ export default async function getDocument(request, response) {
       const Document = new Parse.Query('contracts_Document');
       Document.equalTo('objectId', request.params.document_id);
       Document.equalTo('CreatedBy', userId);
-      Document.notEqualTo('IsArchive', true);
-      Document.include('Signers');
-      Document.include('Folder');
-      Document.include('ExtUserPtr');
       const res = await Document.first({ useMasterKey: true });
       if (res) {
-        const document = JSON.parse(JSON.stringify(res));
-        return response.json({
-          objectId: document.objectId,
-          Title: document.Name,
-          Note: document.Note || '',
-          Folder: document?.Folder?.Name || 'OpenSign™ Drive',
-          File: document?.SignedUrl || document.URL,
-          Owner: document?.ExtUserPtr?.Name,
-          Signers: document?.Signers?.map(y => y?.Name) || '',
-          createdAt: document.createdAt,
-          updatedAt: document.updatedAt,
-        });
+        const isArchive = res.get('IsArchive');
+        if (isArchive && isArchive) {
+          return response.status(404).json({ error: 'Document not found!' });
+        } else {
+          const Document = Parse.Object.extend('contracts_Document');
+          const deleteQuery = new Document();
+          deleteQuery.id = request.params.document_id;
+          deleteQuery.set('IsArchive', true);
+          const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
+          if (deleteRes) {
+            return response.json({
+              objectId: request.params.document_id,
+              deletedAt: deleteRes.get('updatedAt'),
+            });
+          }
+        }
       } else {
         return response.status(404).json({ error: 'Document not found!' });
       }

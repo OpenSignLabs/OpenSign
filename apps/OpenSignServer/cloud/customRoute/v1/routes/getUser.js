@@ -15,10 +15,19 @@ export default async function getUser(request, response) {
     const query = new Parse.Query('contracts_Users');
     query.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
     query.exclude('IsContactEntry,TourStatus,UserRole,TenantId,UserId,CreatedBy,Plan');
-    let user = await query.first({ useMasterKey: true });
-    const result = user;
-    if (result) {
-      return response.json({ result: result });
+    const user = await query.first({ useMasterKey: true });
+    if (user) {
+      const parseRes = JSON.parse(JSON.stringify(user));
+      return response.json({
+        objectId: parseRes.objectId,
+        Name: parseRes.Name,
+        Email: parseRes.Email,
+        Phone: parseRes.Phone,
+        JobTitle: parseRes.JobTitle,
+        Company: parseRes.Company,
+        createdAt: parseRes.createdAt,
+        updateAt: parseRes.updateAt,
+      });
     } else {
       return response.status(404).json({ error: 'User not found!' });
     }

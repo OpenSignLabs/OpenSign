@@ -26,7 +26,10 @@ export default async function deleteContact(request, response) {
           deleteQuery.set('IsDeleted', true);
           const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
           if (deleteRes) {
-            return response.json({ message: 'Contact deleted successfully!' });
+            return response.json({
+              objectId: request.params.contact_id,
+              deletedAt: deleteRes.get('updatedAt'),
+            });
           }
         }
       } else {
