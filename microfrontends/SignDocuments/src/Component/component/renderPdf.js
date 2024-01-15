@@ -104,7 +104,6 @@ function RenderPdf({
     }
   };
   const posHeight = (pos, signYourself) => {
-    // console.log("signyourself",pos)
     let height;
     const posHeight = pos.Height;
     const defaultHeight = defaultWidthHeight(pos.type).height;
@@ -964,6 +963,7 @@ function RenderPdf({
                                   yPos={yPos}
                                   posWidth={posWidth}
                                   posHeight={posHeight}
+                                  pdfDetails={pdfDetails[0]}
                                 />
                               )
                             );
@@ -1468,7 +1468,9 @@ function RenderPdf({
                                     handleDeleteSign={handleDeleteSign}
                                     setIsStamp={setIsStamp}
                                     handleTabDrag={handleTabDrag}
-                                    handleStop={handleStop}
+                                    handleStop={(event, dragElement) =>
+                                      handleStop(event, dragElement, pos.type)
+                                    }
                                     handleSignYourselfImageResize={
                                       handleSignYourselfImageResize
                                     }
@@ -1484,6 +1486,7 @@ function RenderPdf({
                                     yPos={yPos}
                                     posWidth={posWidth}
                                     posHeight={posHeight}
+                                    pdfDetails={pdfDetails[0]}
                                   />
                                 )
                               );

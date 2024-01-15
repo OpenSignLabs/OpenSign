@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "../css/./signature.css";
-import sign from "../assests/sign3.png";
-import stamp from "../assests/stamp2.png";
 import { themeColor } from "../utils/ThemeColor/backColor";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -1273,8 +1271,6 @@ function PlaceHolderSign() {
                   dataTut="reactourFirst"
                   dataTut2="reactourSecond"
                   pdfUrl={isMailSend}
-                  sign={sign}
-                  stamp={stamp}
                   dragSignature={dragSignature}
                   signRef={signRef}
                   handleDivClick={handleDivClick}
@@ -1321,8 +1317,6 @@ function PlaceHolderSign() {
                   <div data-tut="reactourSecond">
                     <FieldsComponent
                       pdfUrl={isMailSend}
-                      sign={sign}
-                      stamp={stamp}
                       dragSignature={dragSignature}
                       signRef={signRef}
                       handleDivClick={handleDivClick}

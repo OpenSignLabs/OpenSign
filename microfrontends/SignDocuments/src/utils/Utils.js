@@ -12,7 +12,7 @@ export const onChangeInput = (
   signerObjId
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
-  console.log("isSigner", isSigners);
+
   if (isSigners) {
     const filterSignerPos = xyPostion.filter(
       (data) => data.signerObjId === signerObjId
@@ -76,8 +76,8 @@ export const onChangeInput = (
 export const widgets = [
   {
     type: "signature",
-    icon: "fa-solid fa-signature",
-    iconSize: "16px"
+    icon: "fa-solid fa-pen-nib",
+    iconSize: "20px"
   },
   {
     type: "stamp",
@@ -92,53 +92,88 @@ export const widgets = [
   {
     type: "checkbox",
     icon: "fa-solid fa-square-check",
-    iconSize: "21px"
+    iconSize: "22px"
   },
   {
     type: "text",
     icon: "fa-solid fa-font",
     iconSize: "21px"
+  },
+  {
+    type: "initials",
+    icon: "fa-solid fa-signature",
+    iconSize: "15px"
+  },
+  {
+    type: "name",
+    icon: "fa-solid fa-user",
+    iconSize: "21px"
+  },
+  {
+    type: "company",
+    icon: "fa-solid fa-building",
+    iconSize: "24px"
+  },
+  {
+    type: "job title",
+    icon: "fa-solid fa-address-card",
+    iconSize: "16px"
+  },
+  {
+    type: "date",
+    icon: "fa-solid fa-calendar-days",
+    iconSize: "19px"
   }
 ];
 
-export const getWidgetType = (item) => {
+export const getWidgetType = (item, marginLeft) => {
   return (
     <>
       <div
+        className="signatureBtn"
         style={{
-          display: "flex",
-          alignItems: "center",
-          marginLeft: "5px"
+          // opacity: isDragSign ? 0.5 : 1,
+          boxShadow:
+            "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
+          marginLeft: marginLeft && `${marginLeft}px`
         }}
       >
-        <i
-          class="fa-sharp fa-solid fa-grip-vertical"
-          style={{ color: "#908d8d", fontSize: "13px" }}
-        ></i>
-        <span
+        <div
           style={{
-            fontWeight: "400",
-            fontSize: "15px",
-            // padding: "3px 20px 0px 20px",
-            color: "black",
+            display: "flex",
+            alignItems: "center",
             marginLeft: "5px"
           }}
         >
-          {item.type}
-        </span>
-      </div>
-      <div
-        style={{
-          backgroundColor: themeColor(),
-          padding: "0 5px",
-          display: "flex",
-          alignItems: "center"
-        }}
-      >
-        <i
-          style={{ color: "white", fontSize: item.iconSize }}
-          className={item.icon}
-        ></i>
+          <i
+            className="fa-sharp fa-solid fa-grip-vertical"
+            style={{ color: "#908d8d", fontSize: "13px" }}
+          ></i>
+          <span
+            style={{
+              fontWeight: "400",
+              fontSize: "15px",
+              // padding: "3px 20px 0px 20px",
+              color: "black",
+              marginLeft: "5px"
+            }}
+          >
+            {item.type}
+          </span>
+        </div>
+        <div
+          style={{
+            backgroundColor: themeColor(),
+            padding: "0 5px",
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          <i
+            style={{ color: "white", fontSize: item.iconSize }}
+            className={item.icon}
+          ></i>
+        </div>
       </div>
     </>
   );
@@ -176,6 +211,37 @@ export const defaultWidthHeight = (type) => {
       obj = {
         width: 120,
         height: 22
+      };
+      return obj;
+    case "initials":
+      obj = {
+        width: 150,
+        height: 60
+      };
+      return obj;
+    case "name":
+      obj = {
+        width: 150,
+        height: 25
+      };
+      return obj;
+
+    case "company":
+      obj = {
+        width: 150,
+        height: 25
+      };
+      return obj;
+    case "job title":
+      obj = {
+        width: 150,
+        height: 25
+      };
+      return obj;
+    case "date":
+      obj = {
+        width: 100,
+        height: 20
       };
       return obj;
     default:
@@ -704,7 +770,11 @@ export const multiSignEmbed = async (
 
     imgUrlList.forEach(async (imgData, id) => {
       let img;
-      if (imgData.type === "signature" || imgData.type === "stamp") {
+      if (
+        imgData.type === "signature" ||
+        imgData.type === "stamp" ||
+        imgData.type === "initials"
+      ) {
         if (
           (imgData.ImageType && imgData.ImageType === "image/png") ||
           imgData.ImageType === "image/jpeg"
@@ -800,13 +870,19 @@ export const multiSignEmbed = async (
         });
         checkBox.check();
         checkBox.enableReadOnly();
-      } else if (imgData.type === "text") {
+      } else if (
+        imgData.type === "text" ||
+        imgData.type === "name" ||
+        imgData.type === "company" ||
+        imgData.type === "job title" ||
+        imgData.type === "date"
+      ) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
         const textContent = imgData.widgetValue;
         page.drawText(textContent, {
           x: xPos(imgData),
-          y: yPos(imgData),
+          y: yPos(imgData) + 10,
           size: fontSize,
           font,
           color: rgb(0, 0, 0)

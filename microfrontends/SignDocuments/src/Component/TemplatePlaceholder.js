@@ -3,8 +3,6 @@ import RenderAllPdfPage from "./component/renderAllPdfPage";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../css/./signature.css";
-import sign from "../assests/sign3.png";
-import stamp from "../assests/stamp2.png";
 import { themeColor } from "../utils/ThemeColor/backColor";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -637,7 +635,7 @@ const TemplatePlaceholder = () => {
     if (signerPos.length !== signersdata.length) {
       setIsSendAlert(true);
     } else {
-      handleSaveTemplate();
+      // handleSaveTemplate();
     }
   };
   const handleSaveTemplate = async () => {
@@ -1149,8 +1147,6 @@ const TemplatePlaceholder = () => {
                   dataTut="reactourFirst"
                   dataTut2="reactourSecond"
                   pdfUrl={isMailSend}
-                  sign={sign}
-                  stamp={stamp}
                   dragSignature={dragSignature}
                   signRef={signRef}
                   handleDivClick={handleDivClick}
@@ -1206,8 +1202,6 @@ const TemplatePlaceholder = () => {
                   <div data-tut="reactourSecond">
                     <FieldsComponent
                       pdfUrl={isMailSend}
-                      sign={sign}
-                      stamp={stamp}
                       dragSignature={dragSignature}
                       signRef={signRef}
                       handleDivClick={handleDivClick}
