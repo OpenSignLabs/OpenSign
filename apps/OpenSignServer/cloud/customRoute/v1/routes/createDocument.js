@@ -48,7 +48,7 @@ export default async function createDocument(request, response) {
       return response.json({
         code: 200,
         message: 'Document created successfully!',
-        result: { id: res.id, url: url },
+        result: { objectId: res.id, url: url },
       });
     } else {
       return response.json({ code: 405, message: 'Invalid API Token!' });

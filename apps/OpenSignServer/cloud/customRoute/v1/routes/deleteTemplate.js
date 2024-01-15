@@ -18,7 +18,7 @@ export default async function deletedTemplate(request, response) {
       if (res) {
         const isArchive = res.get('IsArchive');
         if (isArchive && isArchive) {
-          return response.json({ code: 404, message: 'Record not found!' });
+          return response.json({ code: 404, message: 'Template not found!' });
         } else {
           const template = Parse.Object.extend('contracts_Template');
           const deleteQuery = new template();
@@ -26,11 +26,11 @@ export default async function deletedTemplate(request, response) {
           deleteQuery.set('IsArchive', true);
           const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
           if (deleteRes) {
-            return response.json({ code: 200, message: 'Template delete successfully!' });
+            return response.json({ code: 200, message: 'Template deleted successfully!' });
           }
         }
       } else {
-        return response.json({ code: 404, message: 'Record not found!' });
+        return response.json({ code: 404, message: 'Template not found!' });
       }
     } else {
       return response.json({ code: 405, message: 'Invalid API Token!' });

@@ -22,7 +22,7 @@ export default async function updateTemplate(request, response) {
         if (res) {
           const isArchive = res.get('IsArchive');
           if (isArchive && isArchive) {
-            return response.json({ code: 404, message: 'Record not found!' });
+            return response.json({ code: 404, message: 'Template not found!' });
           } else {
             const template = Parse.Object.extend('contracts_Template');
             const updateQuery = new template();
@@ -48,12 +48,12 @@ export default async function updateTemplate(request, response) {
               return response.json({
                 code: 200,
                 message: 'Template updated successfully!',
-                result: updatedRes.id,
+                result: { objectId: updatedRes.id },
               });
             }
           }
         } else {
-          return response.json({ code: 404, message: 'Record not found!' });
+          return response.json({ code: 404, message: 'Template not found!' });
         }
       } else {
         return response.json({ code: 400, message: 'Please provide valid field names!' });
