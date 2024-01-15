@@ -24,7 +24,7 @@ export default async function getDocumentList(request, response) {
       case 'draftdocuments':
         reportId = 'ByHuevtCFY';
         break;
-      case 'signatureRequest':
+      case 'signaturerequest':
         reportId = '4Hhwbp482K';
         break;
       case 'inprogressdocuments':
@@ -57,12 +57,24 @@ export default async function getDocumentList(request, response) {
       const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr`;
       const res = await axios.get(url, { headers: headers });
       if (res.data && res.data.results) {
-        return response.json({ code: 200, result: res.data.results });
+        const updateRes =
+          res.data.results.length > 0
+            ? res.data.results.map(x => ({
+                objectId: x.objectId,
+                Title: x.Name,
+                Note: x.Note || '',
+                Folder: x?.Folder?.Name || 'OpenSign™ Drive',
+                File: x?.SignedUrl || x.URL,
+                Owner: x?.ExtUserPtr?.Name,
+                Signers: x?.Signers?.map(y => y?.Name) || '',
+              }))
+            : [];
+        return response.json({ code: 200, result: updateRes });
       } else {
         return response.json({ code: 200, result: [] });
       }
     } else {
-      return response.json({ code: 404, message: 'Report is not available!' });
+      return response.json({ code: 404, message: 'Report not available!' });
     }
   }
   return response.json({ code: 405, message: 'Invalid API Token!' });

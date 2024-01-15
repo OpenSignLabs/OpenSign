@@ -34,6 +34,7 @@ export default async function getTemplatetList(request, response) {
       'Description',
       'Folder.Name',
       'URL',
+      'SignedUrl',
       'ExtUserPtr.Name',
       'Signers.Name',
     ];
@@ -48,7 +49,19 @@ export default async function getTemplatetList(request, response) {
     const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr`;
     const res = await axios.get(url, { headers: headers });
     if (res.data && res.data.results) {
-      return response.json({ code: 200, result: res.data.results });
+      const updateRes =
+        res.data.results.length > 0
+          ? res.data.results.map(x => ({
+              objectId: x.objectId,
+              Title: x.Name,
+              Note: x.Note || '',
+              Folder: x?.Folder?.Name || 'OpenSign™ Drive',
+              File: x?.SignedUrl || x.URL,
+              Owner: x?.ExtUserPtr?.Name,
+              Signers: x?.Signers?.map(y => y?.Name) || '',
+            }))
+          : [];
+      return response.json({ code: 200, result: updateRes });
     } else {
       return response.json({ code: 200, result: [] });
     }

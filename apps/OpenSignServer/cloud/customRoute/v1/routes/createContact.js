@@ -75,7 +75,7 @@ export default async function createContact(request, response) {
           return response.json({
             code: 200,
             message: 'Contact created sucessfully!',
-            result: { id: contactRes.id },
+            result: { objectId: contactRes.id },
           });
         }
       } catch (err) {
@@ -114,7 +114,7 @@ export default async function createContact(request, response) {
           return response.json({
             code: 200,
             message: 'Contact created sucessfully!',
-            result: { id: contactRes.id },
+            result: { objectId: contactRes.id },
           });
           //   const parseData = JSON.parse(JSON.stringify(res));
         }

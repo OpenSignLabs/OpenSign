@@ -18,7 +18,7 @@ export default async function deleteContact(request, response) {
       if (res) {
         const isDeleted = res.get('IsDeleted');
         if (isDeleted && isDeleted) {
-          return response.json({ code: 404, message: 'Record not found!' });
+          return response.json({ code: 404, message: 'Contact not found!' });
         } else {
           const Contactbook = Parse.Object.extend('contracts_Contactbook');
           const deleteQuery = new Contactbook();
