@@ -56,11 +56,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                $ref: '#/components/schemas/inline_response_200'
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
         "405":
           description: Invalid API Token!
-        "404":
-          description: Record not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
   /createcontact:
@@ -91,11 +99,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/contactdetails'
+                $ref: '#/components/schemas/inline_response_200_1'
         "404":
           description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_1'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
   /contact/{contact_id}:
@@ -130,11 +146,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/contactdetails'
+                $ref: '#/components/schemas/inline_response_200_1'
         "404":
           description: Contact not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_2'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
     delete:
@@ -165,10 +189,22 @@ paths:
       responses:
         "200":
           description: Contact deleted successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
         "404":
           description: Contact not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_2'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
   /contactlist:
@@ -203,6 +239,10 @@ paths:
                   $ref: '#/components/schemas/contactdetails'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
   /createdocument:
@@ -226,9 +266,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/inline_response_200_3'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
   /document/{document_id}:
@@ -263,11 +307,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/document'
+                $ref: '#/components/schemas/inline_response_200_4'
         "404":
           description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
     delete:
@@ -298,10 +350,22 @@ paths:
       responses:
         "200":
           description: Document deleted successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
         "404":
           description: Document not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_3'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
   /documentlist/{doctype}:
@@ -366,11 +430,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/document'
+                type: array
+                items:
+                  $ref: '#/components/schemas/document'
         "404":
-          description: Report is not available!
+          description: Report not available!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_4'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
   /createtemplate:
@@ -400,7 +474,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createTemplateResponse'
+                $ref: '#/components/schemas/inline_response_200_6'
         "405":
           description: Invalid API Token!
   /template/{template_id}:
@@ -434,11 +508,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/createtemplate'
+                $ref: '#/components/schemas/inline_response_200_7'
         "404":
           description: Template not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_5'
         "405":
-          description: Invalid API Token!'
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
     put:
       tags:
       - Templates
@@ -455,7 +537,7 @@ paths:
         example: opensign.xxxx
       - name: template_id
         in: path
-        description: ID of the order that needs to be updated
+        description: ID of the template that needs to be updated
         required: true
         style: simple
         explode: false
@@ -469,10 +551,30 @@ paths:
             schema:
               $ref: '#/components/schemas/template_template_id_body'
       responses:
+        "200":
+          description: Template updated successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_8'
         "400":
-          description: Invalid ID supplied
+          description: Please provide valid field names!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
         "404":
-          description: Order not found
+          description: Template not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_6'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
     delete:
       tags:
       - Templates
@@ -497,10 +599,24 @@ paths:
           type: string
           format: string
       responses:
-        "400":
-          description: Invalid ID supplied
+        "200":
+          description: Template deleted successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_9'
         "404":
-          description: Order not found
+          description: Template not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_5'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
   /templatelist:
     post:
       tags:
@@ -527,9 +643,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/template'
+                $ref: '#/components/schemas/inline_response_200_10'
         "405":
           description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
 components:
   schemas:
     createtemplate:
@@ -582,11 +702,11 @@ components:
     template:
       type: object
       properties:
-        id:
+        objectId:
           type: string
           format: string
           example: x1Hbnms2Pg
-        URL:
+        File:
           type: string
           example: https://templateuser.com
         Name:
@@ -719,20 +839,37 @@ components:
         Signers:
           type: array
           items:
-            $ref: '#/components/schemas/document_Signers'
+            $ref: '#/components/schemas/template_Signers'
       xml:
         name: document
-    ApiResponse:
+    invalidtoken:
       type: object
       properties:
         code:
           type: number
-        type:
-          type: string
+          example: 405
         message:
           type: string
+          example: Invalid API token!
       xml:
-        name: '##default'
+        name: invalidtoken
+    inline_response_200:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        result:
+          $ref: '#/components/schemas/user'
+    inline_response_404:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 404
+        message:
+          type: string
+          example: User not found!
     createcontact_body:
       required:
       - Email
@@ -752,17 +889,121 @@ components:
           type: string
           format: string
           example: "1232131321"
-    inline_response_200:
+    inline_response_200_1:
       type: object
       properties:
-        objectId:
+        code:
+          type: number
+          example: 200
+        message:
           type: string
-          format: string
-          example: hji2zxcv2P
-        url:
+          example: Contact created successfully!
+        result:
+          $ref: '#/components/schemas/contactdetails'
+    inline_response_404_1:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 404
+        message:
           type: string
-          format: string
-          example: https://example.com
+          example: "Something went wrong, please try again later!"
+    inline_response_404_2:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 404
+        message:
+          type: string
+          example: Contact not found!
+    inline_response_200_2:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: Contact deleted successfully!
+    inline_response_200_3:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: Contact deleted successfully!
+        result:
+          $ref: '#/components/schemas/inline_response_200_3_result'
+    inline_response_200_4:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: Contact created successfully!
+        result:
+          $ref: '#/components/schemas/document'
+    inline_response_404_3:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 404
+        message:
+          type: string
+          example: Document not found!
+    inline_response_200_5:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: Document deleted successfully!
+    inline_response_404_4:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 404
+        message:
+          type: string
+          example: Report not available!
+    inline_response_200_6:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: Template created successfully!
+        result:
+          $ref: '#/components/schemas/createTemplateResponse'
+    inline_response_200_7:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        result:
+          $ref: '#/components/schemas/createtemplate'
+    inline_response_404_5:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 404
+        message:
+          type: string
+          example: Template not found!
     template_template_id_body:
       type: object
       properties:
@@ -782,22 +1023,83 @@ components:
           type: string
           format: string
           example: xjsba1GaxP
+    inline_response_200_8:
+      type: object
+      properties:
+        code:
+          type: number
+          format: number
+          example: 200
+        message:
+          type: string
+          format: string
+          example: Template upated sucessfully
+        result:
+          $ref: '#/components/schemas/inline_response_200_8_result'
+    inline_response_400:
+      type: object
+      properties:
+        code:
+          type: number
+          format: number
+          example: 400
+        message:
+          type: string
+          format: string
+          example: Please provide valid field names!
+    inline_response_404_6:
+      type: object
+      properties:
+        code:
+          type: number
+          format: number
+          example: 404
+        message:
+          type: string
+          format: string
+          example: Template not found!
+    inline_response_200_9:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: Template deleted successfully!
+    inline_response_200_10:
+      type: object
+      properties:
+        code:
+          type: number
+          example: 200
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/template'
     template_Signers:
+      type: object
+      properties:
+        Name:
+          type: string
+          example: joe
+    inline_response_200_3_result:
       type: object
       properties:
         objectId:
           type: string
-          format: sting
-          example: zxcpou2Hbs
-        Name:
+          format: string
+          example: hji2zxcv2P
+        url:
           type: string
-          example: joe
-    document_Signers:
+          format: string
+          example: https://example.com
+    inline_response_200_8_result:
       type: object
       properties:
-        Name:
+        objectId:
           type: string
-          example: joe
+          example: asd2HsP4Hp
   securitySchemes:
     x-api-token:
       type: apiKey
