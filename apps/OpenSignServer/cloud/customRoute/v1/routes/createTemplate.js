@@ -5,11 +5,11 @@ export default async function createTemplate(request, response) {
   const signers = request.body.signer;
   const folderId = request.body.folderId;
   const file = request.body.file;
-  const url = process.env.SERVER_URL
+  const url = process.env.SERVER_URL;
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
-      return response.json({ message: 'Please Provide API Token' });
+      return response.status(400).json({ error:  'Please Provide API Token' });
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
@@ -45,12 +45,11 @@ export default async function createTemplate(request, response) {
       }
       const res = await object.save(null, { useMasterKey: true });
       return response.json({
-        code: 200,
         message: 'Template created successfully!',
         result: { id: res.id, url: url },
       });
     } else {
-      return response.json({ code: 405, result: 'Invalid API Token!' });
+      return response.status(405).json({ error: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);

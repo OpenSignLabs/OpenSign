@@ -2,7 +2,7 @@ export default async function deleteContact(request, response) {
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
-      return response.json({ message: 'Please Provide API Token' });
+      return response.status(400).json({ error: 'Please Provide API Token' });
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
@@ -18,7 +18,7 @@ export default async function deleteContact(request, response) {
       if (res) {
         const isDeleted = res.get('IsDeleted');
         if (isDeleted && isDeleted) {
-          return response.json({ code: 404, message: 'Contact not found!' });
+          return response.status(404).json({ error: 'Contact not found!' });
         } else {
           const Contactbook = Parse.Object.extend('contracts_Contactbook');
           const deleteQuery = new Contactbook();
@@ -26,14 +26,14 @@ export default async function deleteContact(request, response) {
           deleteQuery.set('IsDeleted', true);
           const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
           if (deleteRes) {
-            return response.json({ code: 200, message: 'Contact deleted successfully!' });
+            return response.json({ message: 'Contact deleted successfully!' });
           }
         }
       } else {
-        return response.json({ code: 404, message: 'Contact not found!' });
+        return response.status(404).json({ error: 'Contact not found!' });
       }
     } else {
-      return response.json({ code: 405, message: 'Invalid API Token!' });
+      return response.status(405).json({ error: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);
