@@ -687,16 +687,6 @@ components:
           example: xjsba1GaxP
       xml:
         name: createtemplate
-    createTemplateResponse:
-      type: object
-      properties:
-        objectId:
-          type: number
-        url:
-          type: string
-          example: https://exampleurl.com
-      xml:
-        name: createTemplateResponse
     template:
       type: object
       properties:
@@ -704,28 +694,25 @@ components:
           type: string
           format: string
           example: x1Hbnms2Pg
-        File:
-          type: string
-          example: https://templateuser.com
-        Name:
+        Title:
           type: string
           example: sample template
         Note:
           type: string
           example: template note
-        Description:
-          type: string
-          example: template name
         Folder:
           type: string
           example: folder name
+        File:
+          type: string
+          example: https://templateuser.com
+        Owner:
+          type: string
+          example: template creator name
         Signers:
           type: array
           items:
             $ref: '#/components/schemas/template_Signers'
-        CreateBy:
-          type: string
-          example: template creator name
       xml:
         name: template
     listbody:
@@ -837,7 +824,7 @@ components:
         Signers:
           type: array
           items:
-            $ref: '#/components/schemas/template_Signers'
+            $ref: '#/components/schemas/document_Signers'
       xml:
         name: document
     invalidtoken:
@@ -1009,7 +996,7 @@ components:
           type: string
           example: Template created successfully!
         result:
-          $ref: '#/components/schemas/createTemplateResponse'
+          $ref: '#/components/schemas/inline_response_200_9_result'
     inline_response_200_10:
       type: object
       properties:
@@ -1017,7 +1004,7 @@ components:
           type: number
           example: 200
         result:
-          $ref: '#/components/schemas/createtemplate'
+          $ref: '#/components/schemas/template'
     inline_response_404_5:
       type: object
       properties:
@@ -1105,6 +1092,12 @@ components:
       properties:
         Name:
           type: string
+          example: joe bee
+    document_Signers:
+      type: object
+      properties:
+        Name:
+          type: string
           example: joe
     inline_response_200_1_result:
       type: object
@@ -1123,6 +1116,14 @@ components:
           type: string
           format: string
           example: https://example.com
+    inline_response_200_9_result:
+      type: object
+      properties:
+        objectId:
+          type: number
+        url:
+          type: string
+          example: https://exampleurl.com
     inline_response_200_11_result:
       type: object
       properties:
