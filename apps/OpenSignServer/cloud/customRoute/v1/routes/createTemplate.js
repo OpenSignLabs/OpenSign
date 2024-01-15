@@ -9,7 +9,7 @@ export default async function createTemplate(request, response) {
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
-      return response.status(400).json({ error:  'Please Provide API Token' });
+      return response.status(400).json({ error: 'Please Provide API Token' });
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
@@ -44,10 +44,7 @@ export default async function createTemplate(request, response) {
         object.set('Folder', folderPtr);
       }
       const res = await object.save(null, { useMasterKey: true });
-      return response.json({
-        message: 'Template created successfully!',
-        result: { id: res.id, url: url },
-      });
+      return response.json({ objectId: res.id, url: url });
     } else {
       return response.status(405).json({ error: 'Invalid API Token!' });
     }

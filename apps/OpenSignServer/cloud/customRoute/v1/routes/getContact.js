@@ -21,7 +21,12 @@ export default async function getContact(request, response) {
       if (res) {
         const parseRes = JSON.parse(JSON.stringify(res));
         return response.json({
-          result: { objectId: parseRes.objectId, Name: parseRes.Name, Email: parseRes.Email },
+          objectId: parseRes.objectId,
+          Name: parseRes.Name,
+          Email: parseRes.Email,
+          Phone: parseRes.Phone,
+          createdAt: parseRes.createdAt,
+          updatedAt: parseRes.updatedAt,
         });
       } else {
         return response.status(404).json({ error: 'Contact not found!' });

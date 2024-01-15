@@ -26,7 +26,10 @@ export default async function deletedTemplate(request, response) {
           deleteQuery.set('IsArchive', true);
           const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
           if (deleteRes) {
-            return response.json({ message: 'Template deleted successfully!' });
+            return response.json({
+              objectId: request.params.template_id,
+              deletedAt: deleteRes.get('updatedAt'),
+            });
           }
         }
       } else {

@@ -45,10 +45,7 @@ export default async function createDocument(request, response) {
         object.set('Folder', folderPtr);
       }
       const res = await object.save(null, { useMasterKey: true });
-      return response.json({
-        message: 'Document created successfully!',
-        result: { objectId: res.id, url: url },
-      });
+      return response.json({ objectId: res.id, url: url });
     } else {
       return response.status(405).json({ error: 'Invalid API Token!' });
     }

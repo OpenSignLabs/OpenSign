@@ -46,8 +46,8 @@ export default async function updateTemplate(request, response) {
             const updatedRes = await updateQuery.save(null, { useMasterKey: true });
             if (updatedRes) {
               return response.json({
-                message: 'Template updated successfully!',
-                result: { objectId: updatedRes.id },
+                objectId: updatedRes.id,
+                updatedAt: updatedRes.get('updatedAt'),
               });
             }
           }

@@ -20,7 +20,16 @@ export default async function getContactList(request, response) {
       Contactbook.skip(skip);
       const res = await Contactbook.find({ useMasterKey: true });
       if (res && res.length > 0) {
-        return response.json({ result: res });
+        const parseRes = JSON.parse(JSON.stringify(res));
+        const contactlist = parseRes.map(x => ({
+          objectId: x.objectId,
+          Name: x.Name,
+          Email: x.Email,
+          Phone: x.Phone,
+          createdAt: x.createdAt,
+          updatedAt: x.updatedAt,
+        }));
+        return response.json({ result: contactlist });
       } else {
         return response.json({ result: [] });
       }

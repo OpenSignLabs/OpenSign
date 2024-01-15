@@ -18,6 +18,8 @@ import updateTemplate from './routes/updateTemplate.js';
 import createContact from './routes/createContact.js';
 import multer from 'multer';
 import fs from 'node:fs';
+import updateDocument from './routes/updateDocument.js';
+import deleteDocument from './routes/deleteDocument.js';
 
 dotenv.config();
 const storage = multer.memoryStorage();
@@ -45,11 +47,14 @@ app.get('/contactlist', getContactList);
 // create Document
 app.post('/createdocument', createDocument);
 
-// get template on the basis of id
-app.put('/template/:document_id', updateTemplate);
-
 // get Document on the basis of id
 app.get('/document/:document_id', getDocument);
+
+// get document on the basis of id
+app.put('/document/:document_id', updateDocument);
+
+// get document on the basis of id
+app.delete('/document/:document_id', deleteDocument);
 
 // get all types of documents on the basis of doctype
 app.get('/documentlist/:doctype', getDocumentList);
