@@ -170,17 +170,17 @@ function SignYourSelf() {
   const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
-    localStorage.setItem("accesstoken", "r:17de3495dd207dc88677da7f9f9e4d6b");
-    localStorage.setItem(
-      "baseUrl",
-      "https://staging-app.opensignlabs.com/api/app/"
-    );
-    localStorage.setItem("parseAppId", "opensignstgn");
-    localStorage.setItem(
-      "Parse/opensignstgn/currentUser",
-      '{"name":"raktima","email":"raktimachaurasiya@gmail.com","phone":"5645676534","username":"raktimachaurasiya@gmail.com","emailVerified":false,"createdAt":"2024-01-10T14:40:59.326Z","updatedAt":"2024-01-10T14:40:59.326Z","ACL":{"9MUdPyX2ae":{"read":true,"write":true}},"sessionToken":"r:17de3495dd207dc88677da7f9f9e4d6b","__type":"Object","className":"_User","objectId":"9MUdPyX2ae"}'
-    );
-    localStorage.setItem("_appName", "contracts");
+    // localStorage.setItem("accesstoken", "r:17de3495dd207dc88677da7f9f9e4d6b");
+    // localStorage.setItem(
+    //   "baseUrl",
+    //   "https://staging-app.opensignlabs.com/api/app/"
+    // );
+    // localStorage.setItem("parseAppId", "opensignstgn");
+    // localStorage.setItem(
+    //   "Parse/opensignstgn/currentUser",
+    //   '{"name":"raktima","email":"raktimachaurasiya@gmail.com","phone":"5645676534","username":"raktimachaurasiya@gmail.com","emailVerified":false,"createdAt":"2024-01-10T14:40:59.326Z","updatedAt":"2024-01-10T14:40:59.326Z","ACL":{"9MUdPyX2ae":{"read":true,"write":true}},"sessionToken":"r:17de3495dd207dc88677da7f9f9e4d6b","__type":"Object","className":"_User","objectId":"9MUdPyX2ae"}'
+    // );
+    // localStorage.setItem("_appName", "contracts");
     if (documentId) {
       getDocumentDetails(true);
     }
