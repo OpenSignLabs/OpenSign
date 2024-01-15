@@ -35,7 +35,8 @@ function FieldsComponent({
   handleDeleteUser,
   signerPos,
   handleRoleChange,
-  handleOnBlur
+  handleOnBlur,
+  title
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
   const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
@@ -95,7 +96,7 @@ function FieldsComponent({
                     textAlign: "center"
                   }}
                 >
-                  Recipient
+                  {title ? title : "Recipient"}
                 </span>
                 <span
                   style={{

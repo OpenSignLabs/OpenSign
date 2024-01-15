@@ -1,13 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import "./LegaDrive.css";
 import loader from "../../assests/loader2.gif";
 import PdfFileComponent from "./FolderDrive/legaDriveComponent";
-import Modal from "react-bootstrap/Modal";
-import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import { themeColor, iconColor } from "../../utils/ThemeColor/backColor";
 import { getDrive } from "../../utils/Utils";
-import AlertComponent from "../component/alertComponent";
 import { useNavigate } from "react-router-dom";
 import Title from "../component/Title";
 import Parse from "parse";
@@ -57,32 +53,38 @@ function PdfFile() {
       isLoad: true,
       message: "This might take some time"
     };
-
+    let driveDetails;
     setIsLoading(load);
-
-    const driveDetails = await getDrive();
-    if (driveDetails) {
-      if (driveDetails.length > 0) {
-        setPdfData(driveDetails);
-        sortApps(null, null, driveDetails);
-      }
-      const data = [
-        {
-          name: "OpenSign™ Drive",
-          objectId: ""
+    try {
+      driveDetails = await getDrive();
+      if (driveDetails) {
+        if (driveDetails.length > 0) {
+          setPdfData(driveDetails);
+          sortApps(null, null, driveDetails);
         }
-      ];
-      setFolderName(data);
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
-    } else if (driveDetails === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
-      setIsLoading(loadObj);
+        const data = [
+          {
+            name: "OpenSign™ Drive",
+            objectId: ""
+          }
+        ];
+        setFolderName(data);
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
+      } else if (driveDetails === "Error: Something went wrong!") {
+        const loadObj = {
+          isLoad: false
+        };
+        setHandleError("Error: Something went wrong!");
+        setIsLoading(loadObj);
+      }
+    } catch (e) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong"
+      });
     }
   };
   //function for get parent folder document list
@@ -92,24 +94,33 @@ function PdfFile() {
       message: "This might take some time"
     };
     setIsLoading(load);
-    const driveDetails = await getDrive(docId);
-    if (driveDetails) {
-      if (driveDetails.length > 0) {
-        setPdfData(driveDetails);
-        sortApps(null, null, driveDetails);
-      } else {
-        setPdfData([]);
+    let driveDetails;
+    try {
+      driveDetails = await getDrive(docId);
+
+      if (driveDetails) {
+        if (driveDetails.length > 0) {
+          setPdfData(driveDetails);
+          sortApps(null, null, driveDetails);
+        } else {
+          setPdfData([]);
+        }
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
+      } else if (driveDetails === "Error: Something went wrong!") {
+        const loadObj = {
+          isLoad: false
+        };
+        setHandleError("Error: Something went wrong!");
+        setIsLoading(loadObj);
       }
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
-    } else if (driveDetails === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
-      setIsLoading(loadObj);
+    } catch (e) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong!"
+      });
     }
   };
 
@@ -187,7 +198,7 @@ function PdfFile() {
       } catch (e) {
         setIsAlert({
           isShow: true,
-          alertMessage: "something went wrong"
+          alertMessage: "something went wrong!"
         });
       }
     } else {
@@ -328,11 +339,43 @@ function PdfFile() {
     <div className="folderComponent ">
       <Title title={"OpenSign™ Drive"} drive={true} />
       <div>
-        <AlertComponent
-          isShow={isAlert.isShow}
-          alertMessage={isAlert.alertMessage}
-          setIsAlert={setIsAlert}
-        />
+        <ModalUi
+          headerColor={"#dc3545"}
+          isOpen={isAlert.isShow}
+          title={"Alert"}
+          handleClose={() => {
+            setIsAlert({
+              isShow: false,
+              alertMessage: ""
+            });
+          }}
+        >
+          <div style={{ height: "100%", padding: 20 }}>
+            <p>{isAlert.alertMessage}</p>
+
+            <div
+              style={{
+                height: "1px",
+                backgroundColor: "#9f9f9f",
+                width: "100%",
+                marginTop: "15px",
+                marginBottom: "15px"
+              }}
+            ></div>
+            <button
+              onClick={() =>
+                setIsAlert({
+                  isShow: false,
+                  alertMessage: ""
+                })
+              }
+              type="button"
+              className="finishBtn cancelBtn"
+            >
+              Close
+            </button>
+          </div>
+        </ModalUi>
         <ModalUi
           isOpen={isFolder}
           title={"Add New Folder"}
@@ -373,12 +416,13 @@ function PdfFile() {
                     fontWeight: "400"
                   }}
                 >
-                  Name*
+                  Name
+                  <span style={{ color: "red" }}>*</span>
                 </label>
 
                 <input
                   required
-                  className="form-control"
+                  className="form-control inputStyle"
                   type="text"
                   value={newFolderName}
                   onChange={(e) => handleFolderName(e)}
@@ -409,11 +453,8 @@ function PdfFile() {
                     Add
                   </button>
                   <button
-                    style={{
-                      color: "black"
-                    }}
                     type="button"
-                    className="finishBtn"
+                    className="finishBtn cancelBtn"
                     onClick={oncloseFolder}
                   >
                     Close
@@ -704,6 +745,7 @@ function PdfFile() {
                 isDocId={docId}
                 setPdfData={setPdfData}
                 isList={isList}
+                setIsAlert={setIsAlert}
               />
             )}
           </>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import { themeColor } from "../../utils/ThemeColor/backColor";
+import ModalUi from "../../premitives/ModalUi";
 
 function PlaceholderCopy(props) {
   const copyType = ["All pages", "All pages but last", "All pages but first"];
@@ -200,12 +199,14 @@ function PlaceholderCopy(props) {
   };
 
   return (
-    <Modal show={props.isPageCopy}>
-      <ModalHeader style={{ background: themeColor() }}>
-        <span style={{ color: "white" }}>Copy to all pages</span>
-      </ModalHeader>
-
-      <Modal.Body>
+    <ModalUi
+      isOpen={props.isPageCopy}
+      title={"Copy to all pages"}
+      handleClose={() => {
+        props.setIsPageCopy(false);
+      }}
+    >
+      <div style={{ height: "100%", padding: 20 }}>
         {copyType.map((data, key) => {
           return (
             <div key={key} style={{ display: "flex", flexDirection: "column" }}>
@@ -223,20 +224,16 @@ function PlaceholderCopy(props) {
             </div>
           );
         })}
-      </Modal.Body>
 
-      <Modal.Footer>
-        <button
+        <div
           style={{
-            color: "black"
+            height: "1px",
+            backgroundColor: "#9f9f9f",
+            width: "100%",
+            marginTop: "15px",
+            marginBottom: "15px"
           }}
-          type="button"
-          className="finishBtn"
-          onClick={() => props.setIsPageCopy(false)}
-        >
-          Cancel
-        </button>
-
+        ></div>
         <button
           onClick={() => {
             handleApplyCopy();
@@ -251,8 +248,15 @@ function PlaceholderCopy(props) {
         >
           Apply
         </button>
-      </Modal.Footer>
-    </Modal>
+        <button
+          type="button"
+          className="finishBtn cancelBtn"
+          onClick={() => props.setIsPageCopy(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </ModalUi>
   );
 }
 
