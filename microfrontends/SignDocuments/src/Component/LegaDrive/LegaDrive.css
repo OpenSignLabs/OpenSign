@@ -116,7 +116,9 @@
   margin: 30px;
   height: 100%;
 }
-
+.inputStyle{
+  border: 1.6px solid #ccc !important;
+}
 .folderComponent::-webkit-scrollbar {
   display: none;
   /* for Chrome, Safari, and Opera */

@@ -12,7 +12,9 @@ function SignerListPlace(props) {
           padding: "5px"
         }}
       >
-        <span className="signedStyle">Recipients</span>
+        <span className="signedStyle">
+          {props.title ? props.title : "Recipients"}
+        </span>
       </div>
       <div className="signerList">
         <RecipientList {...props} />
