@@ -263,9 +263,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/document'
+                $ref: '#/components/schemas/document'
         "404":
           description: Document not found!
         "405":
@@ -299,9 +297,9 @@ paths:
           example: ph2bh2asd
       responses:
         "200":
-          description: Contact deleted successfully!
+          description: Document deleted successfully!
         "404":
-          description: Contact not found!
+          description: Document not found!
         "405":
           description: Invalid API Token!
       security:
@@ -757,7 +755,7 @@ components:
     inline_response_200:
       type: object
       properties:
-        id:
+        objectId:
           type: string
           format: string
           example: hji2zxcv2P
