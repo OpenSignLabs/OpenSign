@@ -265,7 +265,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/user'
+                  $ref: '#/components/schemas/document'
         "404":
           description: Document not found!
         "405":
@@ -310,7 +310,7 @@ paths:
     post:
       tags:
       - Documents
-      summary: Get document list
+      summary: Get document list by doctype
       description: |
         ### Document Types:
         Retrieve a list of documents based on type
@@ -368,7 +368,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponse'
+                $ref: '#/components/schemas/document'
         "404":
           description: Report is not available!
         "405":
@@ -689,17 +689,41 @@ components:
           type: string
           format: string
           example: opensign
-        Customer_id:
-          type: string
-          example: customer_id
-        Subscriptions_id:
-          type: string
-          format: string
-          example: subscriptions_id
-        Next_billing_date:
-          $ref: '#/components/schemas/date'
       xml:
         name: user
+    document:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: FGik23bhUJ
+        Title:
+          type: string
+          format: string
+          example: sample doc
+        Note:
+          type: string
+          format: string
+          example: please sign document
+        Folder:
+          type: string
+          format: string
+          example: OpenSign™ Drive
+        File:
+          type: string
+          format: string
+          example: https://exampleurl.com
+        Owner:
+          type: string
+          format: string
+          example: joe bee
+        Signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/document_Signers'
+      xml:
+        name: document
     ApiResponse:
       type: object
       properties:
@@ -767,6 +791,12 @@ components:
           type: string
           format: sting
           example: zxcpou2Hbs
+        Name:
+          type: string
+          example: joe
+    document_Signers:
+      type: object
+      properties:
         Name:
           type: string
           example: joe
