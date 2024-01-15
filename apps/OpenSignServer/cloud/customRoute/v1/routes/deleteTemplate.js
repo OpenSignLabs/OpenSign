@@ -2,7 +2,7 @@ export default async function deletedTemplate(request, response) {
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
-      return response.json({ message: 'Please Provide API Token' });
+      return response.status(400).json({ error: 'Please Provide API Token' });
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
@@ -18,7 +18,7 @@ export default async function deletedTemplate(request, response) {
       if (res) {
         const isArchive = res.get('IsArchive');
         if (isArchive && isArchive) {
-          return response.json({ code: 404, message: 'Template not found!' });
+          return response.status(404).json({ error: 'Template not found!' });
         } else {
           const template = Parse.Object.extend('contracts_Template');
           const deleteQuery = new template();
@@ -26,14 +26,14 @@ export default async function deletedTemplate(request, response) {
           deleteQuery.set('IsArchive', true);
           const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
           if (deleteRes) {
-            return response.json({ code: 200, message: 'Template deleted successfully!' });
+            return response.json({ message: 'Template deleted successfully!' });
           }
         }
       } else {
-        return response.json({ code: 404, message: 'Template not found!' });
+        return response.status(404).json({ error: 'Template not found!' });
       }
     } else {
-      return response.json({ code: 405, message: 'Invalid API Token!' });
+      return response.status(405).json({ error: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);

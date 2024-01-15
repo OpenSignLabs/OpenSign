@@ -7,7 +7,7 @@ export default async function getTemplatetList(request, response) {
   const appId = process.env.APP_ID;
   const serverUrl = process.env.SERVER_URL;
   if (!reqToken) {
-    return response.json({ message: 'Please Provide API Token' });
+    return response.status(400).json({ error: 'Please Provide API Token' });
   }
   const tokenQuery = new Parse.Query('appToken');
   tokenQuery.equalTo('token', reqToken);
@@ -15,8 +15,8 @@ export default async function getTemplatetList(request, response) {
   if (token !== undefined) {
     // Valid Token then proceed request
     const userId = token.get('Id');
-    const limit = request?.body?.limit ? request.body.limit : 100;
-    const skip = request?.body?.skip ? request.body.skip : 0;
+    const limit = request?.query?.limit ? request.query.limit : 100;
+    const skip = request?.query?.skip ? request.query.skip : 0;
 
     const clsName = 'contracts_Template';
     const params = {
@@ -61,10 +61,10 @@ export default async function getTemplatetList(request, response) {
               Signers: x?.Signers?.map(y => y?.Name) || '',
             }))
           : [];
-      return response.json({ code: 200, result: updateRes });
+      return response.json({ result: updateRes });
     } else {
-      return response.json({ code: 200, result: [] });
+      return response.json({ result: [] });
     }
   }
-  return response.json({ code: 405, message: 'Invalid API Token!' });
+  return response.status(405).json({ error: 'Invalid API Token!' });
 }

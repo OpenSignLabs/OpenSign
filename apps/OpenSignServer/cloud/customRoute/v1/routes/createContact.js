@@ -8,7 +8,7 @@ export default async function createContact(request, response) {
 
   const reqToken = request.headers['x-api-token'];
   if (!reqToken) {
-    return response.json({ message: 'Please Provide API Token' });
+    return response.status(400).json({ error: 'Please Provide API Token' });
   }
   const tokenQuery = new Parse.Query('appToken');
   tokenQuery.equalTo('token', reqToken);
@@ -73,7 +73,6 @@ export default async function createContact(request, response) {
           const contactRes = await contactQuery.save();
           // const parseData = JSON.parse(JSON.stringify(res));
           return response.json({
-            code: 200,
             message: 'Contact created sucessfully!',
             result: { objectId: contactRes.id },
           });
@@ -112,7 +111,6 @@ export default async function createContact(request, response) {
           contactQuery.setACL(acl);
           const contactRes = await contactQuery.save();
           return response.json({
-            code: 200,
             message: 'Contact created sucessfully!',
             result: { objectId: contactRes.id },
           });
@@ -120,9 +118,9 @@ export default async function createContact(request, response) {
         }
       }
     } catch (err) {
-      return response.json({ code: 404, message: 'Something went wrong, please try again later!' });
+      return response.status(404).json({ error: 'Something went wrong, please try again later!' });
     }
   } else {
-    return response.json({ code: 405, message: 'Invalid API Token!' });
+    return response.status(405).json({ error: 'Invalid API Token!' });
   }
 }

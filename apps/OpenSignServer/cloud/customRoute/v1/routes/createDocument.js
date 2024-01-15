@@ -10,7 +10,7 @@ export default async function createDocument(request, response) {
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
-      return response.json({ message: 'Please Provide API Token' });
+      return response.status(400).json({ error: 'Please Provide API Token' });
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
@@ -46,12 +46,11 @@ export default async function createDocument(request, response) {
       }
       const res = await object.save(null, { useMasterKey: true });
       return response.json({
-        code: 200,
         message: 'Document created successfully!',
         result: { objectId: res.id, url: url },
       });
     } else {
-      return response.json({ code: 405, message: 'Invalid API Token!' });
+      return response.status(405).json({ error: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);

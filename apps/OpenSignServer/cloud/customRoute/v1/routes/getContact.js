@@ -2,7 +2,7 @@ export default async function getContact(request, response) {
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
-      return response.json({ message: 'Please Provide API Token' });
+      return response.status(400).json({ error: 'Please Provide API Token' });
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
@@ -21,14 +21,13 @@ export default async function getContact(request, response) {
       if (res) {
         const parseRes = JSON.parse(JSON.stringify(res));
         return response.json({
-          code: 200,
           result: { objectId: parseRes.objectId, Name: parseRes.Name, Email: parseRes.Email },
         });
       } else {
-        return response.json({ code: 404, message: 'Contact not found!' });
+        return response.status(404).json({ error: 'Contact not found!' });
       }
     } else {
-      return response.json({ code: 405, message: 'Invalid API Token!' });
+      return response.status(405).json({ error: 'Invalid API Token!' });
     }
   } catch (err) {
     console.log('err ', err);

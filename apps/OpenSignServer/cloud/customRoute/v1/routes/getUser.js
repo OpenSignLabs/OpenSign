@@ -4,7 +4,7 @@ dotenv.config();
 export default async function getUser(request, response) {
   const reqToken = request.headers['x-api-token'];
   if (!reqToken) {
-    return response.json({ message: 'Please Provide API Token' });
+    return response.status(400).json({ error: 'Please Provide API Token' });
   }
   const tokenQuery = new Parse.Query('appToken');
   tokenQuery.equalTo('token', reqToken);
@@ -18,10 +18,10 @@ export default async function getUser(request, response) {
     let user = await query.first({ useMasterKey: true });
     const result = user;
     if (result) {
-      return response.json({ code: 200, result: result });
+      return response.json({ result: result });
     } else {
-      return response.json({ code: 404, message: 'User not found!' });
+      return response.status(404).json({ error: 'User not found!' });
     }
   }
-  return response.json({ code: 405, message: 'Invalid API Token!' });
+  return response.status(405).json({ error: 'Invalid API Token!' });
 }
