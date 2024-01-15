@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../css/./signature.css";
-import sign from "../assests/sign3.png";
-import stamp from "../assests/stamp2.png";
 import { themeColor } from "../utils/ThemeColor/backColor";
 import axios from "axios";
 import Loader from "./component/loader";
@@ -87,6 +85,7 @@ function SignYourSelf() {
   });
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
+  const [initial, setInitial] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
@@ -171,17 +170,17 @@ function SignYourSelf() {
   const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
-    // localStorage.setItem("accesstoken", "r:d70a32032557e982aab7aec1cae668fc");
-    // localStorage.setItem(
-    //   "baseUrl",
-    //   "https://staging-app.opensignlabs.com/api/app/"
-    // );
-    // localStorage.setItem("parseAppId", "opensignstgn");
-    // localStorage.setItem(
-    //   "Parse/opensignstgn/currentUser",
-    //   '{"name":"raktima","email":"raktimachaurasiya@gmail.com","phone":"9876567876","username":"raktimachaurasiya@gmail.com","createdAt":"2024-01-03T05:48:49.407Z","sessionToken":"r:d70a32032557e982aab7aec1cae668fc","updatedAt":"2024-01-03T05:48:49.407Z","emailVerified":false,"ACL":{"YHwDtLNto7":{"read":true,"write":true}},"__type":"Object","className":"_User","objectId":"YHwDtLNto7"}'
-    // );
-    // localStorage.setItem("_appName", "contracts");
+    localStorage.setItem("accesstoken", "r:17de3495dd207dc88677da7f9f9e4d6b");
+    localStorage.setItem(
+      "baseUrl",
+      "https://staging-app.opensignlabs.com/api/app/"
+    );
+    localStorage.setItem("parseAppId", "opensignstgn");
+    localStorage.setItem(
+      "Parse/opensignstgn/currentUser",
+      '{"name":"raktima","email":"raktimachaurasiya@gmail.com","phone":"5645676534","username":"raktimachaurasiya@gmail.com","emailVerified":false,"createdAt":"2024-01-10T14:40:59.326Z","updatedAt":"2024-01-10T14:40:59.326Z","ACL":{"9MUdPyX2ae":{"read":true,"write":true}},"sessionToken":"r:17de3495dd207dc88677da7f9f9e4d6b","__type":"Object","className":"_User","objectId":"9MUdPyX2ae"}'
+    );
+    localStorage.setItem("_appName", "contracts");
     if (documentId) {
       getDocumentDetails(true);
     }
@@ -255,9 +254,9 @@ function SignYourSelf() {
       .then((Listdata) => {
         const json = Listdata.data;
         const res = json.results;
-
         if (res[0] && res.length > 0) {
           setDefaultSignImg(res[0].ImageURL);
+          setInitial(res[0]?.Initials);
         }
       })
       .catch((err) => {
@@ -322,6 +321,28 @@ function SignYourSelf() {
     }
   };
 
+  //calculate width and height
+  const calculateWidthHeight = (type) => {
+    const intialText =
+      type === "name"
+        ? pdfDetails[0].ExtUserPtr.Name
+        : type === "company"
+          ? pdfDetails[0].ExtUserPtr.Company
+          : type === "job title" && pdfDetails[0].ExtUserPtr.JobTitle;
+    const span = document.createElement("span");
+    span.textContent = intialText;
+    span.style.font = `14px`; // here put your text size and font family
+    span.style.display = "hidden";
+    document.body.appendChild(span);
+    const width = span.offsetWidth;
+    const height = span.offsetHeight;
+
+    document.body.removeChild(span);
+    return {
+      getWidth: width,
+      getHeight: height
+    };
+  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     const key = Math.floor(1000 + Math.random() * 9000);
@@ -330,6 +351,7 @@ function SignYourSelf() {
     let filterDropPos = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
     );
+
     if (item === "onclick") {
       dropObj = {
         xPosition: window.innerWidth / 2 - 100,
@@ -338,7 +360,8 @@ function SignYourSelf() {
         key: key,
         isStamp: monitor,
         type: item.text,
-        yBottom: window.innerHeight / 2 - 60
+        yBottom: window.innerHeight / 2 - 60,
+        SignUrl: item.text === "initials" && initial
       };
 
       dropData.push(dropObj);
@@ -368,7 +391,28 @@ function SignYourSelf() {
         firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
         firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
         yBottom: ybottom,
-        type: item.text
+        type: item.text,
+        SignUrl: item.text === "initials" && initial,
+        widgetValue:
+          item.text === "name"
+            ? pdfDetails[0].ExtUserPtr.Name
+            : item.text === "company"
+              ? pdfDetails[0].ExtUserPtr.Company
+              : item.text === "job title"
+                ? pdfDetails[0].ExtUserPtr.JobTitle
+                : "",
+        Width:
+          item.text === "name" ||
+          item.text === "company" ||
+          item.text === "job title"
+            ? calculateWidthHeight(item.text).getWidth
+            : "",
+        Height:
+          item.text === "company" ||
+          item.text === "name" ||
+          item.text === "job title"
+            ? calculateWidthHeight(item.text).getHeight
+            : ""
       };
 
       dropData.push(dropObj);
@@ -468,7 +512,7 @@ function SignYourSelf() {
       containerWH
     );
 
-    console.log("pdf", pdfBytes);
+    // console.log("pdf", pdfBytes);
     //function for call to embed signature in pdf and get digital signature pdf
     signPdfFun(pdfBytes, documentId);
 
@@ -514,7 +558,7 @@ function SignYourSelf() {
   };
 
   //function for set and update x and y postion after drag and drop signature tab
-  const handleStop = (event, dragElement) => {
+  const handleStop = (event, dragElement, type) => {
     if (isDragging && dragElement) {
       event.preventDefault();
       const containerRect = document
@@ -533,13 +577,24 @@ function SignYourSelf() {
           const getPosData = getXYdata;
           const addSign = getPosData.map((url, ind) => {
             if (url.key === dragKey) {
-              return {
-                ...url,
-                xPosition: dragElement.x,
-                yPosition: dragElement.y,
-                isDrag: true,
-                yBottom: ybottom
-              };
+              if (type === "initials") {
+                return {
+                  ...url,
+                  xPosition: dragElement.x,
+                  yPosition: dragElement.y,
+                  isDrag: true,
+                  yBottom: ybottom,
+                  SignUrl: initial
+                };
+              } else {
+                return {
+                  ...url,
+                  xPosition: dragElement.x,
+                  yPosition: dragElement.y,
+                  isDrag: true,
+                  yBottom: ybottom
+                };
+              }
             }
             return url;
           });
@@ -954,8 +1009,6 @@ function SignYourSelf() {
               <FieldsComponent
                 dataTut="reactourFirst"
                 pdfUrl={pdfUrl}
-                sign={sign}
-                stamp={stamp}
                 dragSignature={dragSignature}
                 signRef={signRef}
                 handleDivClick={handleDivClick}
@@ -973,6 +1026,7 @@ function SignYourSelf() {
                 isSignYourself={true}
                 addPositionOfSignature={addPositionOfSignature}
                 isMailSend={false}
+                initial={initial}
               />
             </div>
           ) : (

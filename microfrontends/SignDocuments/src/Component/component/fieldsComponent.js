@@ -7,8 +7,6 @@ import { widgets } from "../../utils/Utils";
 
 function FieldsComponent({
   pdfUrl,
-  sign,
-  stamp,
   dragSignature,
   signRef,
   handleDivClick,
@@ -39,7 +37,8 @@ function FieldsComponent({
   signerPos,
   handleRoleChange,
   handleOnBlur,
-  title
+  title,
+  initial
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
 
@@ -69,14 +68,69 @@ function FieldsComponent({
     type: "BOX",
     item: {
       type: "BOX",
-      id: 2,
+      id: 7,
       text: "text"
     },
     collect: (monitor) => ({
       isDragText: !!monitor.isDragging()
     })
   });
-  const signStyle = pdfUrl ? "disableSign" : "signatureBtn";
+  const [{ isDragInitial }, initials] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 8,
+      text: "initials"
+    },
+    collect: (monitor) => ({
+      isDragInitial: !!monitor.isDragging()
+    })
+  });
+  const [{ isDragName }, name] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 9,
+      text: "name"
+    },
+    collect: (monitor) => ({
+      isDragName: !!monitor.isDragging()
+    })
+  });
+  const [{ isDragCompany }, company] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 10,
+      text: "company"
+    },
+    collect: (monitor) => ({
+      isDragCompany: !!monitor.isDragging()
+    })
+  });
+  const [{ isDragJobtitle }, jobTitle] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 11,
+      text: "job title"
+    },
+    collect: (monitor) => ({
+      isDragJobtitle: !!monitor.isDragging()
+    })
+  });
+  const [{ isDragDate }, date] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 11,
+      text: "date"
+    },
+    collect: (monitor) => ({
+      isDragDate: !!monitor.isDragging()
+    })
+  });
+
   const isMobile = window.innerWidth < 767;
   const scrollContainerRef = useRef(null);
   const [widget, setWidget] = useState([]);
@@ -100,12 +154,27 @@ function FieldsComponent({
   };
 
   useEffect(() => {
-    const widgetRef = [dragSignature, dragStamp, dropdown, checkbox, text];
+    const widgetRef = [
+      dragSignature,
+      dragStamp,
+      dropdown,
+      checkbox,
+      text,
+      initials,
+      name,
+      company,
+      jobTitle,
+      date
+    ];
     const getWidgetArray = widgets;
     const newUpdateSigner = getWidgetArray.map((obj, ind) => {
       return { ...obj, ref: widgetRef[ind] };
     });
-    setWidget(newUpdateSigner);
+    const removeInitial = newUpdateSigner.filter(
+      (widgetData) => widgetData.type !== "initials"
+    );
+
+    setWidget(initial ? newUpdateSigner : removeInitial);
   }, []);
 
   const filterWidgets = widget.filter((data) => data.type !== "dropdown");
@@ -294,7 +363,7 @@ function FieldsComponent({
                   color: "rgb(140 142 149)",
                   position: "fixed",
                   left: "1%",
-                  bottom: "6%",
+                  bottom: "3%",
                   fontSize: "23px"
                 }}
                 onClick={() => handleScroll(-100)}
@@ -372,8 +441,8 @@ function FieldsComponent({
                 style={{
                   color: "rgb(140 142 149)",
                   position: "fixed",
-                  left: "95%",
-                  bottom: "6%",
+                  left: "93%",
+                  bottom: "3%",
                   fontSize: "23px"
                 }}
                 onClick={() => handleScroll(100)}

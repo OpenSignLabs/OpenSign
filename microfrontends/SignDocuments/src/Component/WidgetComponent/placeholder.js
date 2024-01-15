@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import BorderResize from "../component/borderResize";
 import PlaceholderBorder from "./placeholderBorder";
 import { Rnd } from "react-rnd";
@@ -6,7 +6,13 @@ import { defaultWidthHeight } from "../../utils/Utils";
 import PlaceholderType from "./placeholderType";
 
 function Placeholder(props) {
+  const [isDraggingEnabled, setDraggingEnabled] = useState(true);
+
   const handlePlaceholderClick = () => {
+    if (props.pos.type === "text") {
+      setDraggingEnabled(false);
+    }
+
     if (!props.data && !props.isDragging) {
       if (props.pos.type) {
         if (props.pos.type === "signature" || props.pos.type === "stamp") {
@@ -79,6 +85,11 @@ function Placeholder(props) {
       style={{
         border: "1px solid #007bff",
         borderRadius: "2px",
+        textAlign:
+          props.pos.type !== "name" &&
+          props.pos.type !== "company" &&
+          props.pos.type !== "job title" &&
+          "center",
         cursor:
           props.data && props.isNeedSign
             ? props.data?.signerObjId === props.signerObjId
@@ -88,18 +99,23 @@ function Placeholder(props) {
         zIndex: "1",
         background: props.data ? props.data.blockColor : "rgb(203 233 237)"
       }}
-      onDrag={() => props.handleTabDrag && props.handleTabDrag(props.pos.key)}
+      onDrag={() => {
+        setDraggingEnabled(true);
+        props.handleTabDrag && props.handleTabDrag(props.pos.key);
+      }}
       size={{
         width: props.posWidth(props.pos, props.isSignYourself),
         height: props.posHeight(props.pos, props.isSignYourself)
       }}
       onResizeStart={() => {
+        setDraggingEnabled(true);
         props.setIsResize && props.setIsResize(true);
       }}
       onResizeStop={() => {
         props.setIsResize && props.setIsResize(false);
       }}
-      disableDragging={props.isNeedSign || (props.isRecipient && true)}
+      disableDragging={!isDraggingEnabled}
+      // disableDragging={props.isNeedSign || (props.isRecipient && true)}
       onDragStop={(event, dragElement) =>
         props.handleStop &&
         props.handleStop(event, dragElement, props.signerObjId, props.pos.key)
@@ -227,6 +243,8 @@ function Placeholder(props) {
           isPlaceholder={props.isPlaceholder}
           signerObjId={props.signerObjId}
           handleUserName={props.handleUserName}
+          setDraggingEnabled={setDraggingEnabled}
+          pdfDetails={props.pdfDetails}
         />
       </div>
     </Rnd>

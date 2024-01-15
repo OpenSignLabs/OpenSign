@@ -36,6 +36,7 @@
   font-size: 12px;
   border: 1px solid #007bff;
   border-radius: 2px;
+   
 }
 
 .inputPlaceholder:focus {
@@ -298,7 +299,6 @@
 .signYourselfBlock {
   padding: 0px;
   display: flex !important;
-  text-align: center !important;
   justify-content: center !important;
   align-items: center !important;
 }

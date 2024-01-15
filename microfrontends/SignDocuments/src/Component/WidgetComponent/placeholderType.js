@@ -4,20 +4,21 @@ import { onChangeInput } from "../../utils/Utils";
 function PlaceholderType(props) {
   const [selectOption, setSelectOption] = useState("");
 
+  const handleInputBlur = () => {
+    props.setDraggingEnabled(true);
+  };
   switch (props.pos.type) {
     case "signature":
       return props.pos.SignUrl ? (
-        <div style={{ pointerEvents: "none" }}>
-          <img
-            alt="signimg"
-            src={props.pos.SignUrl}
-            style={{
-              width: "99%",
-              height: "100%",
-              objectFit: "contain"
-            }}
-          />
-        </div>
+        <img
+          alt="signimg"
+          src={props.pos.SignUrl}
+          style={{
+            width: "99%",
+            height: "100%",
+            objectFit: "contain"
+          }}
+        />
       ) : (
         <div
           style={{
@@ -35,17 +36,15 @@ function PlaceholderType(props) {
 
     case "stamp":
       return props.pos.SignUrl ? (
-        <div style={{ pointerEvents: "none" }}>
-          <img
-            alt="signimg"
-            src={props.pos.SignUrl}
-            style={{
-              width: "99%",
-              height: "100%",
-              objectFit: "contain"
-            }}
-          />
-        </div>
+        <img
+          alt="signimg"
+          src={props.pos.SignUrl}
+          style={{
+            width: "99%",
+            height: "100%",
+            objectFit: "contain"
+          }}
+        />
       ) : (
         <div
           style={{
@@ -65,8 +64,10 @@ function PlaceholderType(props) {
       return (
         <input
           className="inputPlaceholder"
+          style={{ outlineColor: "#007bff" }}
           type="checkbox"
           disabled={props.isPlaceholder}
+          onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
               e.target.checked,
@@ -85,7 +86,9 @@ function PlaceholderType(props) {
         <input
           className="inputPlaceholder"
           type="text"
+          tabIndex="0"
           disabled={props.isPlaceholder}
+          onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
               e.target.value,
@@ -132,7 +135,72 @@ function PlaceholderType(props) {
           {props.pos.widgetName ? props.pos.widgetName : props.pos.type}
         </div>
       );
-
+    case "initials":
+      return (
+        <img
+          alt="signimg"
+          src={props.pos.SignUrl}
+          style={{
+            width: "99%",
+            height: "100%",
+            objectFit: "contain"
+          }}
+        />
+      );
+    case "name":
+      return (
+        <div
+          style={{
+            color: "black",
+            fontSize: "14px"
+          }}
+        >
+          <span>{props.pos.widgetValue}</span>
+        </div>
+      );
+    case "company":
+      return (
+        <div
+          style={{
+            fontSize: "14px",
+            color: "black"
+          }}
+        >
+          <div>{props.pos.widgetValue}</div>
+        </div>
+      );
+    case "job title":
+      return (
+        <div
+          style={{
+            fontSize: "14px",
+            color: "black"
+          }}
+        >
+          <div>{props.pos.widgetValue}</div>
+        </div>
+      );
+    case "date":
+      return (
+        <input
+          className="inputPlaceholder"
+          style={{ outlineColor: "#007bff" }}
+          type="date"
+          disabled={props.isPlaceholder}
+          onBlur={handleInputBlur}
+          onChange={(e) =>
+            onChangeInput(
+              e.target.value,
+              props.pos.key,
+              props.xyPostion,
+              props.index,
+              props.setXyPostion,
+              props.data && props.data.signerObjId,
+              false
+            )
+          }
+        />
+      );
     default:
       return props.pos.SignUrl ? (
         <div style={{ pointerEvents: "none" }}>
