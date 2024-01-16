@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
 import axios from "axios";
+import Alert from "../primitives/Alert";
 
 function GenerateToken() {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -8,6 +9,8 @@ function GenerateToken() {
   const [apiToken, SetApiToken] = useState("");
   const [isLoader, setIsLoader] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [isGenerate, setIsGenerate] = useState(false);
+  const [isErr, setIsErr] = useState(false);
 
   useEffect(() => {
     fetchToken();
@@ -47,17 +50,27 @@ function GenerateToken() {
         if (res) {
           SetApiToken(res.data.result.token);
           //   localStorage.setItem("apiToken", res.data.result.token);
-          alert("Token generated successfully!");
+          setIsGenerate(true);
+          setTimeout(() => {
+            setIsGenerate(false);
+          }, 1500);
           setIsLoader(false);
         } else {
-          alert("Something went wrong!");
           console.error("Error while generating Token");
           setIsLoader(false);
+          setIsErr(true);
+          setTimeout(() => {
+            setIsErr(false);
+          }, 1500);
         }
       });
     } catch (error) {
       setIsLoader(false);
-      alert("Something went wrong!");
+      setIsErr(true);
+      setTimeout(() => {
+        setIsErr(false);
+      }, 1500);
+
       console.log("err", error);
     }
   };
@@ -72,11 +85,11 @@ function GenerateToken() {
   return (
     <React.Fragment>
       <Title title={"token"} />
-      {copied && (
-        <div className={`alert alert-success alertBox`} role="alert">
-          Copied
-        </div>
+      {isGenerate && (
+        <Alert type="success">Token generated successfully!</Alert>
       )}
+      {copied && <Alert type="success">Copied</Alert>}
+      {isErr && <Alert type="danger">Something went wrong!</Alert>}
       {isLoader ? (
         <div
           style={{

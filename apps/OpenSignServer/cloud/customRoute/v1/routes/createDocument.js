@@ -1,13 +1,20 @@
+const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createDocument(request, response) {
-  const name = request.body.name;
-  const note = request.body.note;
-  const description = request.body.description;
-  const signers = request.body.signer;
-  const folderId = request.body.folderId;
-  const file = request.body.file;
+  const name = request.body.Title;
+  const note = request.body.Note;
+  const description = request.body.Description;
+  const signers = request.body.Signers;
+  const folderId = request.body.FolderId;
+  // const file = request.body.file;
   const url = process.env.SERVER_URL;
-
+  const fileData = request.files[0] ? request.files[0].buffer : null;
   try {
+    const file = new Parse.File(request.files[0].originalname, {
+      base64: fileData.toString('base64'),
+    });
+    await file.save({ useMasterKey: true });
+    const fileUrl = file.url();
+
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
       return response.status(400).json({ error: 'Please Provide API Token' });
@@ -35,15 +42,30 @@ export default async function createDocument(request, response) {
       if (description) {
         object.set('Description', description);
       }
-      object.set('URL', file);
+      object.set('URL', fileUrl);
       object.set('CreatedBy', userId);
       object.set('ExtUserPtr', extUserPtr);
       if (signers) {
-        object.set('Signers', signers);
+        const placeholders = signers.map(x => ({
+          email: x,
+          Id: randomId(),
+          Role: '',
+          blockColor: '',
+          signerObjId: '',
+          signerPtr: {},
+          placeHolder: [],
+        }));
+        object.set('Placeholders', placeholders);
       }
       if (folderId) {
         object.set('Folder', folderPtr);
       }
+      const newACL = new Parse.ACL();
+      newACL.setPublicReadAccess(false);
+      newACL.setPublicWriteAccess(false);
+      newACL.setReadAccess(id, true);
+      newACL.setWriteAccess(id, true);
+      object.setACL(newACL);
       const res = await object.save(null, { useMasterKey: true });
       return response.json({ objectId: res.id, url: url });
     } else {
