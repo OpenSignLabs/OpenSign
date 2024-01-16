@@ -1,12 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { onChangeInput } from "../../utils/Utils";
 
 function PlaceholderType(props) {
   const [selectOption, setSelectOption] = useState("");
-
+  const type = props.pos.type;
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
   };
+  useEffect(() => {
+    if (props.isNeedSign) {
+      onChangeInput(
+        props.pdfDetails,
+        null,
+        props.xyPostion,
+        null,
+        props.setXyPostion,
+        props.data && props.data.signerObjId,
+        props.initial
+      );
+    }
+  }, [type]);
+
   switch (props.pos.type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -136,19 +150,54 @@ function PlaceholderType(props) {
         </div>
       );
     case "initials":
-      return (
+      return props.pos.SignUrl || props.initial ? (
         <img
           alt="signimg"
-          src={props.pos.SignUrl}
+          src={props.pos?.SignUrl ? props.pos?.SignUrl : props.initial}
           style={{
             width: "99%",
             height: "100%",
             objectFit: "contain"
           }}
         />
+      ) : (
+        <div
+          style={{
+            fontSize: "10px",
+            color: "black",
+            justifyContent: "center"
+          }}
+        >
+          <div>{props.pos.type}</div>
+
+          {props?.handleUserName &&
+            props?.handleUserName(props?.data.signerObjId, props?.data.Role)}
+        </div>
       );
+
     case "name":
-      return (
+      return props.isNeedSign ? (
+        <input
+          className="inputPlaceholder"
+          type="text"
+          value={
+            props.pos.widgetValue
+              ? props.pos.widgetValue
+              : props.pdfDetails.ExtUserPtr.Name
+          }
+          onChange={(e) =>
+            onChangeInput(
+              e.target.value,
+              props.pos.key,
+              props.xyPostion,
+              props.index,
+              props.setXyPostion,
+              props.data && props.data.signerObjId,
+              false
+            )
+          }
+        />
+      ) : props.pos.widgetValue ? (
         <div
           style={{
             color: "black",
@@ -157,27 +206,98 @@ function PlaceholderType(props) {
         >
           <span>{props.pos.widgetValue}</span>
         </div>
-      );
-    case "company":
-      return (
+      ) : (
         <div
           style={{
-            fontSize: "14px",
-            color: "black"
+            color: "black",
+            fontSize: "14px"
           }}
         >
-          <div>{props.pos.widgetValue}</div>
+          <span>{props.pos.type}</span>
         </div>
       );
-    case "job title":
-      return (
+
+    case "company":
+      return props.isNeedSign ? (
+        <input
+          className="inputPlaceholder"
+          type="text"
+          value={
+            props.pos.widgetValue
+              ? props.pos.widgetValue
+              : props.pdfDetails.ExtUserPtr.Company
+          }
+          onChange={(e) =>
+            onChangeInput(
+              e.target.value,
+              props.pos.key,
+              props.xyPostion,
+              props.index,
+              props.setXyPostion,
+              props.data && props.data.signerObjId,
+              false
+            )
+          }
+        />
+      ) : props.pos.widgetValue ? (
         <div
           style={{
-            fontSize: "14px",
-            color: "black"
+            color: "black",
+            fontSize: "14px"
           }}
         >
-          <div>{props.pos.widgetValue}</div>
+          <span>{props.pos.widgetValue}</span>
+        </div>
+      ) : (
+        <div
+          style={{
+            color: "black",
+            fontSize: "14px"
+          }}
+        >
+          <span>{props.pos.type}</span>
+        </div>
+      );
+
+    case "job title":
+      return props.isNeedSign ? (
+        <input
+          className="inputPlaceholder"
+          type="text"
+          value={
+            props.pos.widgetValue
+              ? props.pos.widgetValue
+              : props.pdfDetails.ExtUserPtr.JobTitle
+          }
+          onChange={(e) =>
+            onChangeInput(
+              e.target.value,
+              props.pos.key,
+              props.xyPostion,
+              props.index,
+              props.setXyPostion,
+              props.data && props.data.signerObjId,
+              false
+            )
+          }
+        />
+      ) : props.pos.widgetValue ? (
+        <div
+          style={{
+            color: "black",
+            fontSize: "14px"
+          }}
+        >
+          <span>{props.pos.widgetValue}</span>
+        </div>
+      ) : (
+        <div
+          style={{
+            color: "black",
+            fontSize: "14px"
+          }}
+        >
+          <span>{props.pos.type}</span>
         </div>
       );
     case "date":
@@ -186,7 +306,9 @@ function PlaceholderType(props) {
           className="inputPlaceholder"
           style={{ outlineColor: "#007bff" }}
           type="date"
-          disabled={props.isPlaceholder}
+          disabled={
+            props.isNeedSign ? false : props.isPlaceholder ? true : false
+          }
           onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
@@ -201,6 +323,7 @@ function PlaceholderType(props) {
           }
         />
       );
+
     default:
       return props.pos.SignUrl ? (
         <div style={{ pointerEvents: "none" }}>

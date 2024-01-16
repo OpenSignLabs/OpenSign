@@ -452,9 +452,14 @@ function PlaceHolderSign() {
           }
           setSignerPos((prev) => [...prev, placeHolderPos]);
         }
+        if (item.text === "dropdown") {
+          setShowDropdown(true);
+          setSignKey(key);
+        }
       }
     }
   };
+
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     const load = {
@@ -858,52 +863,46 @@ function PlaceHolderSign() {
   ];
 
   const handleSaveDropdownOptions = (dropdownName, dropdownOptions) => {
-    //get current signers placeholder position data
-    const currentSigner = signerPos.filter(
-      (data) => data.signerObjId === signerObjId
-    );
-    //get current pagenumber placeholder index
-    const getIndex = currentSigner[0].placeHolder.findIndex((object) => {
-      return object.pageNumber === pageNumber;
-    });
+    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
 
-    const placeholderPosition = currentSigner[0].placeHolder;
-    //function of save signature image and get updated position with signature image url
+    if (filterSignerPos.length > 0) {
+      const getPlaceHolder = filterSignerPos[0].placeHolder;
 
-    let getXYdata = placeholderPosition[getIndex].pos;
-    const updateXYData = getXYdata.map((position) => {
-      if (position.key === signKey) {
-        return {
-          ...position,
-          widgetName: dropdownName,
-          widgetOption: dropdownOptions
-        };
+      const getPageNumer = getPlaceHolder.filter(
+        (data) => data.pageNumber === pageNumber
+      );
+
+      if (getPageNumer.length > 0) {
+        const getXYdata = getPageNumer[0].pos;
+
+        const getPosData = getXYdata;
+        const addSignPos = getPosData.map((position, ind) => {
+          if (position.key === signKey) {
+            return {
+              ...position,
+              widgetName: dropdownName,
+              widgetOption: dropdownOptions
+            };
+          }
+          return position;
+        });
+
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+        const newUpdateSigner = signerPos.map((obj, ind) => {
+          if (obj.Id === uniqueId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+
+        setSignerPos(newUpdateSigner);
       }
-      return position;
-    });
-
-    const getUpdatePosition = placeholderPosition.map((obj, ind) => {
-      if (ind === getIndex) {
-        return { ...obj, pos: updateXYData };
-      }
-      return obj;
-    });
-
-    const updateSignerData = currentSigner.map((obj, ind) => {
-      if (obj.signerObjId === signerObjId) {
-        return { ...obj, placeHolder: getUpdatePosition };
-      }
-      return obj;
-    });
-
-    const index = signerPos.findIndex(
-      (data) => data.signerObjId === signerObjId
-    );
-    setSignerPos((prevState) => {
-      const newState = [...prevState];
-      newState.splice(index, 1, ...updateSignerData);
-      return newState;
-    });
+    }
   };
 
   //function for update TourStatus
@@ -1082,7 +1081,7 @@ function PlaceHolderSign() {
 
                   {isSendAlert.mssg === "confirm" && (
                     <button
-                      // onClick={() => sendEmailToSigners()}
+                      onClick={() => sendEmailToSigners()}
                       style={{
                         background: themeColor()
                       }}
@@ -1298,37 +1297,44 @@ function PlaceHolderSign() {
                   selectedEmail={selectedEmail}
                   setUniqueId={setUniqueId}
                   setRoleName={setRoleName}
+                  initial={true}
                 />
               </div>
             ) : (
               <div>
                 <div className="signerComponent">
-                  <SignerListPlace
-                    signerPos={signerPos}
-                    signersdata={signersdata}
-                    isSelectListId={isSelectListId}
-                    setSignerObjId={setSignerObjId}
-                    setIsSelectId={setIsSelectId}
-                    setContractName={setContractName}
-                    setUniqueId={setUniqueId}
-                    setRoleName={setRoleName}
-                    // handleAddSigner={handleAddSigner}
-                  />
-                  <div data-tut="reactourSecond">
-                    <FieldsComponent
-                      pdfUrl={isMailSend}
-                      dragSignature={dragSignature}
-                      signRef={signRef}
-                      handleDivClick={handleDivClick}
-                      handleMouseLeave={handleMouseLeave}
-                      isDragSign={isDragSign}
-                      themeColor={themeColor}
-                      dragStamp={dragStamp}
-                      dragRef={dragRef}
-                      isDragStamp={isDragStamp}
-                      isSignYourself={false}
-                      addPositionOfSignature={addPositionOfSignature}
+                  <div
+                    style={{ maxHeight: window.innerHeight - 70 + "px" }}
+                    className="autoSignScroll"
+                  >
+                    <SignerListPlace
+                      signerPos={signerPos}
+                      signersdata={signersdata}
+                      isSelectListId={isSelectListId}
+                      setSignerObjId={setSignerObjId}
+                      setIsSelectId={setIsSelectId}
+                      setContractName={setContractName}
+                      setUniqueId={setUniqueId}
+                      setRoleName={setRoleName}
+                      // handleAddSigner={handleAddSigner}
                     />
+                    <div data-tut="reactourSecond">
+                      <FieldsComponent
+                        pdfUrl={isMailSend}
+                        dragSignature={dragSignature}
+                        signRef={signRef}
+                        handleDivClick={handleDivClick}
+                        handleMouseLeave={handleMouseLeave}
+                        isDragSign={isDragSign}
+                        themeColor={themeColor}
+                        dragStamp={dragStamp}
+                        dragRef={dragRef}
+                        isDragStamp={isDragStamp}
+                        isSignYourself={false}
+                        addPositionOfSignature={addPositionOfSignature}
+                        initial={true}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -6,6 +6,10 @@ function AllWidgets(props) {
     return (
       <div
         key={ind}
+        onClick={() =>
+          props.addPositionOfSignature &&
+          props.addPositionOfSignature("onclick", item)
+        }
         ref={(element) => {
           item.ref(element);
           if (element) {

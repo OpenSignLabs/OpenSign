@@ -56,7 +56,8 @@ function RenderPdf({
   signersdata,
   setIsPageCopy,
   setSignerObjId,
-  setShowDropdown
+  setShowDropdown,
+  initial
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -360,6 +361,9 @@ function RenderPdf({
                         posWidth={posWidth}
                         posHeight={posHeight}
                         handleUserName={handleAllUserName}
+                        isDragging={false}
+                        initial={initial}
+                        pdfDetails={pdfDetails}
                       />
                     </React.Fragment>
                   )
@@ -964,6 +968,7 @@ function RenderPdf({
                                   posWidth={posWidth}
                                   posHeight={posHeight}
                                   pdfDetails={pdfDetails[0]}
+                                  isDragging={isDragging}
                                 />
                               )
                             );
@@ -1487,6 +1492,7 @@ function RenderPdf({
                                     posWidth={posWidth}
                                     posHeight={posHeight}
                                     pdfDetails={pdfDetails[0]}
+                                    isDragging={isDragging}
                                   />
                                 )
                               );

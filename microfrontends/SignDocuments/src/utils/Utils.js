@@ -3,13 +3,87 @@ import { rgb } from "pdf-lib";
 import { themeColor } from "./ThemeColor/backColor";
 const isMobile = window.innerWidth < 767;
 
+//calculate width and height
+export const calculateInitialWidthHeight = (type, pdfDetails) => {
+  const intialText =
+    type === "name"
+      ? pdfDetails.ExtUserPtr.Name
+      : type === "company"
+        ? pdfDetails.ExtUserPtr.Company
+        : type === "job title" && pdfDetails.ExtUserPtr.JobTitle;
+  const span = document.createElement("span");
+  span.textContent = intialText;
+  span.style.font = `14px`; // here put your text size and font family
+  span.style.display = "hidden";
+  document.body.appendChild(span);
+  const width = span.offsetWidth;
+  const height = span.offsetHeight;
+
+  document.body.removeChild(span);
+  return {
+    getWidth: width,
+    getHeight: height
+  };
+};
+export const addInitialData = (signerPos, setXyPostion, value, initial) => {
+  return signerPos.map((item) => {
+    if (item.placeHolder && item.placeHolder.length > 0) {
+      // If there is a nested array, recursively add the field to the last object
+      return {
+        ...item,
+        placeHolder: addInitialData(
+          item.placeHolder,
+          setXyPostion,
+          value,
+          initial
+        )
+      };
+    } else if (item.pos && item.pos.length > 0) {
+      // If there is no nested array, add the new field
+      return {
+        ...item,
+        pos: addInitialData(item.pos, setXyPostion, value, initial)
+        // Adjust this line to add the desired field
+      };
+    } else {
+      const widgetData =
+        item.type === "name"
+          ? value.ExtUserPtr.Name
+          : item.type === "company"
+            ? value.ExtUserPtr.Company
+            : item.type === "job title" && value.ExtUserPtr.JobTitle;
+      if (item.type === "initials") {
+        return {
+          ...item,
+          SignUrl: initial
+        };
+      } else if (
+        item.type === "name" ||
+        item.type === "company" ||
+        item.type === "job title"
+      ) {
+        return {
+          ...item,
+          widgetValue: widgetData,
+          Width: calculateInitialWidthHeight(item.type, value).getWidth,
+          Height: calculateInitialWidthHeight(item.type, value).getHeight
+        };
+      } else {
+        return {
+          ...item
+        };
+      }
+    }
+  });
+};
 export const onChangeInput = (
   value,
   signKey,
   xyPostion,
   index,
   setXyPostion,
-  signerObjId
+  signerObjId,
+  initial
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
 
@@ -17,38 +91,44 @@ export const onChangeInput = (
     const filterSignerPos = xyPostion.filter(
       (data) => data.signerObjId === signerObjId
     );
-
     const getPlaceHolder = filterSignerPos[0].placeHolder;
-    const getPageNumer = getPlaceHolder.filter(
-      (data) => data.pageNumber === index
-    );
-    if (getPageNumer.length > 0) {
-      const getXYdata = getPageNumer[0].pos;
-      const getPosData = getXYdata;
-      const addSignPos = getPosData.map((url, ind) => {
-        if (url.key === signKey) {
-          return {
-            ...url,
-            widgetValue: value
-          };
-        }
-        return url;
-      });
 
-      const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-        if (obj.pageNumber === index) {
-          return { ...obj, pos: addSignPos };
-        }
-        return obj;
-      });
-      const newUpdateSigner = xyPostion.map((obj, ind) => {
-        if (obj.Id === signerObjId) {
-          return { ...obj, placeHolder: newUpdateSignPos };
-        }
-        return obj;
-      });
+    if (initial) {
+      const xyData = addInitialData(xyPostion, setXyPostion, value, initial);
+      setXyPostion(xyData);
+    } else {
+      const getPageNumer = getPlaceHolder.filter(
+        (data) => data.pageNumber === index
+      );
+      if (getPageNumer.length > 0) {
+        const getXYdata = getPageNumer[0].pos;
+        const getPosData = getXYdata;
+        const addSignPos = getPosData.map((url, ind) => {
+          if (url.key === signKey) {
+            return {
+              ...url,
+              widgetValue: value
+            };
+          }
+          return url;
+        });
 
-      setXyPostion(newUpdateSigner);
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === index) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+
+        const newUpdateSigner = xyPostion.map((obj, ind) => {
+          if (obj.signerObjId === signerObjId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+
+        setXyPostion(newUpdateSigner);
+      }
     }
   } else {
     let getXYdata = xyPostion[index].pos;
@@ -122,7 +202,7 @@ export const widgets = [
   {
     type: "date",
     icon: "fa-solid fa-calendar-days",
-    iconSize: "19px"
+    iconSize: "20px"
   }
 ];
 
@@ -221,20 +301,20 @@ export const defaultWidthHeight = (type) => {
       return obj;
     case "name":
       obj = {
-        width: 150,
+        width: 50,
         height: 25
       };
       return obj;
 
     case "company":
       obj = {
-        width: 150,
+        width: 60,
         height: 25
       };
       return obj;
     case "job title":
       obj = {
-        width: 150,
+        width: 60,
         height: 25
       };
       return obj;
@@ -466,7 +546,17 @@ export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
 
     const addSign = getPosData.map((position, ind) => {
       getIMGWH = calculateImgAspectRatio(imgWH, position);
-      if (position && !position.isStamp) {
+      if (position.type) {
+        if (position?.type === "signature") {
+          return {
+            ...position,
+            SignUrl: defaultSignImg,
+            Width: getIMGWH.newWidth,
+            Height: getIMGWH.newHeight,
+            ImageType: "default"
+          };
+        }
+      } else if (position && !position.isStamp) {
         return {
           ...position,
           SignUrl: defaultSignImg,
@@ -897,7 +987,7 @@ export const multiSignEmbed = async (
           width: scaleWidth,
           height: scaleHeight
         });
-        dropdown.disableEditing();
+        dropdown.enableReadOnly();
       } else {
         page.drawImage(img, {
           x: xPos(imgData),
