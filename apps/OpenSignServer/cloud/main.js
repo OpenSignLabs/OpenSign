@@ -17,6 +17,8 @@ import getUserDetails from './parsefunction/getUserDetails.js';
 import getDocument from './parsefunction/getDocument.js';
 import getDrive from './parsefunction/getDrive.js';
 import getReport from './parsefunction/getReport.js';
+import generateApiToken from './parsefunction/generateApiToken.js';
+import getapitoken from './parsefunction/getapitoken.js';
 import TemplateAfterSave from './parsefunction/TemplateAfterSave.js';
 import GetTemplate from './parsefunction/GetTemplate.js';
 
@@ -34,10 +36,12 @@ Parse.Cloud.define('AuthLoginAsMail', AuthLoginAsMail);
 Parse.Cloud.define('getUserId', getUserId);
 Parse.Cloud.define('getUserDetails', getUserDetails);
 Parse.Cloud.define('getDocument', getDocument);
-Parse.Cloud.define('getDrive', getDrive)
-Parse.Cloud.define('getReport', getReport)
-Parse.Cloud.define("getTemplate", GetTemplate)
+Parse.Cloud.define('getDrive', getDrive);
+Parse.Cloud.define('getReport', getReport);
+Parse.Cloud.define('generateapitoken', generateApiToken);
+Parse.Cloud.define('getapitoken', getapitoken);
+Parse.Cloud.define('getTemplate', GetTemplate);
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
 Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
 Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
-Parse.Cloud.afterSave("contracts_Template", TemplateAfterSave)
+Parse.Cloud.afterSave('contracts_Template', TemplateAfterSave);

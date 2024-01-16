@@ -8,7 +8,9 @@ export default async function TemplateAfterSave(request) {
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
       } else {
-        await updateSelfDoc(request.object.id);
+        if (request?.object?.id && request.user) {
+          await updateSelfDoc(request.object.id);
+        }
       }
     } else {
       if (request.user) {
@@ -16,7 +18,9 @@ export default async function TemplateAfterSave(request) {
         if (signers && signers.length > 0) {
           await updateAclDoc(request.object.id);
         } else {
-          await updateSelfDoc(request.object.id);
+          if (request?.object?.id) {
+            await updateSelfDoc(request.object.id);
+          }
         }
       }
     }
@@ -66,7 +70,7 @@ export default async function TemplateAfterSave(request) {
 
   async function updateSelfDoc(objId) {
     // console.log("Inside updateSelfDoc func")
-    
+
     const Query = new Parse.Query('contracts_Template');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     // const res = JSON.parse(JSON.stringify(updateACL));

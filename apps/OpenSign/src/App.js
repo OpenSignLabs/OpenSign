@@ -15,6 +15,7 @@ import ForgetPassword from "./routes/ForgetPassword";
 import ChangePassword from "./routes/ChangePassword";
 import ReportMicroapp from "./components/ReportMicroapp";
 import LoadMf from "./routes/LoadMf";
+import GenerateToken from "./routes/GenerateToken";
 import ValidateRoute from "./primitives/ValidateRoute";
 
 function App() {
@@ -152,6 +153,14 @@ function App() {
               element={
                 <HomeLayout>
                   <UserProfile />
+                </HomeLayout>
+              }
+            />
+            <Route
+              path="/generatetoken"
+              element={
+                <HomeLayout>
+                  <GenerateToken />
                 </HomeLayout>
               }
             />
