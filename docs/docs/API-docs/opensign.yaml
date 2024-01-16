@@ -14,7 +14,7 @@ externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
 servers:
-- url: https://app.opensignlabs.com/api/v1
+- url: https://staging-app.opensignlabs.com/api/v1
 tags:
 - name: OpenSign
   description: OpenSource DocuSign alternative
