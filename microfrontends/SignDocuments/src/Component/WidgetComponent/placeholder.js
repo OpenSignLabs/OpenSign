@@ -8,20 +8,20 @@ import PlaceholderType from "./placeholderType";
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
 
+  //onclick placeholder function to open signature pad
   const handlePlaceholderClick = () => {
-    if (props.pos.type === "text") {
+    if (props.pos.type === "text" || props.pos.type === "checkbox") {
       setDraggingEnabled(false);
     }
-
-    if (!props.data && !props.isDragging) {
+    if (props.isNeedSign && !props.isDragging) {
       if (props.pos.type) {
         if (props.pos.type === "signature" || props.pos.type === "stamp") {
           props.setIsSignPad(true);
           props.setSignKey(props.pos.key);
           props.setIsStamp(props.pos.isStamp);
-        } else if (props.pos.type === "dropdown") {
-          props.setShowDropdown(true);
-          props.setSignKey(props.pos.key);
+        } else if (props.pos.type === "dropdown" && !props.isNeedSign) {
+          props?.setShowDropdown(true);
+          props?.setSignKey(props.pos.key);
         }
       } else {
         props.setIsSignPad(true);
@@ -33,7 +33,7 @@ function Placeholder(props) {
         props.setShowDropdown(true);
         props.setSignKey(props.pos.key);
       }
-    } else {
+    } else if (!props.pos.type) {
       if (
         !props.pos.type &&
         props.isNeedSign &&
@@ -209,8 +209,9 @@ function Placeholder(props) {
               className="fa-regular fa-circle-xmark signCloseBtn"
               onClick={(e) => {
                 e.stopPropagation();
+
                 if (props.data) {
-                  props.handleDeleteSign(props.pos.key, props.data.signerObjId);
+                  props.handleDeleteSign(props.pos.key, props.data.Id);
                 } else {
                   props.handleDeleteSign(props.pos.key);
                   props.setIsStamp(false);
@@ -219,7 +220,7 @@ function Placeholder(props) {
               onTouchEnd={(e) => {
                 e.stopPropagation();
                 if (props.data) {
-                  props.handleDeleteSign(props.pos.key, props.data.signerObjId);
+                  props.handleDeleteSign(props.pos.key, props.data.Id);
                 } else {
                   props.handleDeleteSign(props.pos.key);
                   props.setIsStamp(false);
@@ -239,12 +240,14 @@ function Placeholder(props) {
           setXyPostion={props.setXyPostion}
           data={props.data}
           setSignKey={props.setSignKey}
-          isShowDropdown={props.isShowDropdown}
+          isShowDropdown={props?.isShowDropdown}
           isPlaceholder={props.isPlaceholder}
           signerObjId={props.signerObjId}
           handleUserName={props.handleUserName}
           setDraggingEnabled={setDraggingEnabled}
-          pdfDetails={props.pdfDetails}
+          pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
+          isNeedSign={props.isNeedSign}
+          initial={props.initial}
         />
       </div>
     </Rnd>

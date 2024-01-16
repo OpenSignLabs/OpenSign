@@ -435,6 +435,7 @@ function FieldsComponent({
                   handleMouseLeave={handleMouseLeave}
                   signRef={signRef}
                   marginLeft={5}
+                  addPositionOfSignature={addPositionOfSignature}
                 />
               </div>
               <i

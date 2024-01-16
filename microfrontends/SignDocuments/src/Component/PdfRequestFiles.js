@@ -79,6 +79,7 @@ function PdfRequestFiles() {
   const [isExpired, setIsExpired] = useState(false);
   const [alreadySign, setAlreadySign] = useState(false);
   const [containerWH, setContainerWH] = useState({});
+  const [initial, setInitial] = useState("");
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -268,6 +269,7 @@ function PdfRequestFiles() {
 
         if (res[0] && res.length > 0) {
           setDefaultSignImg(res[0].ImageURL);
+          setInitial(res[0]?.Initials);
         }
         const loadObj = {
           isLoad: false
@@ -289,18 +291,23 @@ function PdfRequestFiles() {
       (data) => data.signerObjId === signerObjectId
     );
     if (checkUser && checkUser.length > 0) {
-      let checkSignUrl = [];
-      const checkSign = checkUser[0].placeHolder.filter(
-        (data, ind) => data.pos
-      );
-      for (let i = 0; i < checkSign.length; i++) {
-        const posData = checkSign[i].pos.filter((pos) => !pos.SignUrl);
-        if (posData && posData.length > 0) {
-          checkSignUrl.push(posData);
-        }
+      let checkSigned = 0;
+      let allXyPos = 0;
+
+      for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
+        const posSignUrlData = checkUser[0].placeHolder[i].pos.filter(
+          (pos) => pos.SignUrl
+        );
+        const posWidgetData = checkUser[0].placeHolder[i].pos.filter(
+          (pos) => pos.widgetValue
+        );
+
+        checkSigned =
+          checkSigned + posSignUrlData.length + posWidgetData.length;
+        allXyPos = allXyPos + checkUser[0].placeHolder[i].pos.length;
       }
 
-      if (checkSignUrl && checkSignUrl.length > 0) {
+      if (allXyPos !== checkSigned) {
         setIsAlert({
           isShow: true,
           alertMessage: "Please complete your signature!"
@@ -315,93 +322,7 @@ function PdfRequestFiles() {
         const pdfDoc = await PDFDocument.load(existingPdfBytes, {
           ignoreEncryption: true
         });
-        // let pdfBase64;
 
-        //checking if signature is only one then send image url in jpeg formate to server
-        // if (pngUrl.length === 1 && pngUrl[0].pos.length === 1) {
-        //   if (isDocId) {
-        //     try {
-        //       pdfBase64 = await getBase64FromUrl(pdfUrl);
-        //     } catch (err) {
-        //       console.log(err);
-        //     }
-        //   } else {
-        //     //embed document's object id to all pages in pdf document
-        //     try {
-        //       await embedDocId(pdfDoc, documentId, allPages);
-        //     } catch (err) {
-        //       console.log(err);
-        //     }
-        //     try {
-        //       pdfBase64 = await pdfDoc.saveAsBase64({
-        //         useObjectStreams: false
-        //       });
-        //     } catch (err) {
-        //       console.log(err);
-        //     }
-        //   }
-        //   for (let pngData of pngUrl) {
-        //     const imgUrlList = pngData.pos;
-        //     const pageNo = pngData.pageNumber;
-        //     imgUrlList.map(async (data) => {
-        //       //cheking signUrl is defau;t signature url of custom url
-        //       let ImgUrl = data.SignUrl;
-        //       const checkUrl = urlValidator(ImgUrl);
-        //       //if default signature url then convert it in base 64
-        //       if (checkUrl) {
-        //         ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
-        //       }
-        //       //function for called convert png signatre to jpeg in base 64
-        //       convertPNGtoJPEG(ImgUrl)
-        //         .then((jpegBase64Data) => {
-        //           const removeBase64Fromjpeg = "data:image/jpeg;base64,";
-        //           const newImgUrl = jpegBase64Data.replace(
-        //             removeBase64Fromjpeg,
-        //             ""
-        //           );
-
-        //           //function for call to embed signature in pdf and get digital signature pdf
-        //           signPdfFun(
-        //             newImgUrl,
-        //             documentId,
-        //             signerObjectId,
-        //             pdfOriginalWidth,
-        //             pngUrl,
-        //             containerWH,
-        //             setIsAlert,
-        //             data,
-        //             pdfBase64,
-        //             pageNo
-        //           )
-        //             .then((res) => {
-        //               if (res && res.status === "success") {
-        //                 setPdfUrl(res.data);
-        //                 setIsSigned(true);
-        //                 setSignedSigners([]);
-        //                 setUnSignedSigners([]);
-        //                 getDocumentDetails();
-        //               } else {
-        //                 setIsAlert({
-        //                   isShow: true,
-        //                   alertMessage: "something went wrong"
-        //                 });
-        //               }
-        //             })
-        //             .catch((err) => {
-        //               setIsAlert({
-        //                 isShow: true,
-        //                 alertMessage: "something went wrong"
-        //               });
-        //             });
-        //         })
-        //         .catch((error) => {
-        //           console.error("Error:", error);
-        //         });
-        //     });
-        //   }
-        // }
-        // //else if signature is more than one then embed all sign with the use of pdf-lib
-        // else if (pngUrl.length > 0 && pngUrl[0].pos.length > 0) {
         const flag = false;
         //embed document's object id to all pages in pdf document
         if (!isDocId) {
@@ -415,6 +336,7 @@ function PdfRequestFiles() {
           flag,
           containerWH
         );
+
         //function for call to embed signature in pdf and get digital signature pdf
         try {
           const res = await signPdfFun(
@@ -922,6 +844,7 @@ function PdfRequestFiles() {
                   pdfLoadFail={pdfLoadFail}
                   setSignerPos={setSignerPos}
                   containerWH={containerWH}
+                  initial={initial}
                 />
               )}
             </div>

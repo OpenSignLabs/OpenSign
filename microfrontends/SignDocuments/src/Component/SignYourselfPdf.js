@@ -17,7 +17,8 @@ import {
   multiSignEmbed,
   pdfNewWidthFun,
   addDefaultSignatureImg,
-  onImageSelect
+  onImageSelect,
+  calculateInitialWidthHeight
 } from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -321,28 +322,6 @@ function SignYourSelf() {
     }
   };
 
-  //calculate width and height
-  const calculateWidthHeight = (type) => {
-    const intialText =
-      type === "name"
-        ? pdfDetails[0].ExtUserPtr.Name
-        : type === "company"
-          ? pdfDetails[0].ExtUserPtr.Company
-          : type === "job title" && pdfDetails[0].ExtUserPtr.JobTitle;
-    const span = document.createElement("span");
-    span.textContent = intialText;
-    span.style.font = `14px`; // here put your text size and font family
-    span.style.display = "hidden";
-    document.body.appendChild(span);
-    const width = span.offsetWidth;
-    const height = span.offsetHeight;
-
-    document.body.removeChild(span);
-    return {
-      getWidth: width,
-      getHeight: height
-    };
-  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     const key = Math.floor(1000 + Math.random() * 9000);
@@ -357,11 +336,31 @@ function SignYourSelf() {
         xPosition: window.innerWidth / 2 - 100,
         yPosition: window.innerHeight / 2 - 60,
         isDrag: false,
+        isStamp: monitor.type === "stamp" && true,
         key: key,
-        isStamp: monitor,
-        type: item.text,
+        type: monitor.type,
         yBottom: window.innerHeight / 2 - 60,
-        SignUrl: item.text === "initials" && initial
+        SignUrl: monitor.type === "initials" && initial,
+        widgetValue:
+          monitor.type === "name"
+            ? pdfDetails[0].ExtUserPtr.Name
+            : monitor.type === "company"
+              ? pdfDetails[0].ExtUserPtr.Company
+              : monitor.type === "job title"
+                ? pdfDetails[0].ExtUserPtr.JobTitle
+                : "",
+        Width:
+          monitor.type === "name" ||
+          monitor.type === "company" ||
+          monitor.type === "job title"
+            ? calculateInitialWidthHeight(monitor.type, pdfDetails[0]).getWidth
+            : "",
+        Height:
+          monitor.type === "company" ||
+          monitor.type === "name" ||
+          monitor.type === "job title"
+            ? calculateInitialWidthHeight(monitor.type, pdfDetails[0]).getHeight
+            : ""
       };
 
       dropData.push(dropObj);
@@ -386,8 +385,8 @@ function SignYourSelf() {
         xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
         yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
         isDrag: false,
+        isStamp: item.text === "stamp" && true,
         key: key,
-        isStamp: isDragStamp || isDragStampSS ? true : false,
         firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
         firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
         yBottom: ybottom,
@@ -405,13 +404,13 @@ function SignYourSelf() {
           item.text === "name" ||
           item.text === "company" ||
           item.text === "job title"
-            ? calculateWidthHeight(item.text).getWidth
+            ? calculateInitialWidthHeight(item.text, pdfDetails[0]).getWidth
             : "",
         Height:
           item.text === "company" ||
           item.text === "name" ||
           item.text === "job title"
-            ? calculateWidthHeight(item.text).getHeight
+            ? calculateInitialWidthHeight(item.text, pdfDetails[0]).getHeight
             : ""
       };
 
@@ -449,78 +448,79 @@ function SignYourSelf() {
       };
       setXyPostion((prev) => [...prev, xyPos]);
 
-      if (isDragSign || isDragSignatureSS) {
+      if (isDragSign || isDragSignatureSS || isDragStamp || isDragStampSS) {
         setIsSignPad(true);
         setSignKey(key);
       }
     }
-
-    // setXyPostion((prev) => [...prev, xyPos]);
   };
 
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedImages() {
-    let checkSignUrl = [];
+    let checkSigned = 0;
+    let allXyPos = 0;
 
     for (let i = 0; i < xyPostion.length; i++) {
-      const posData = xyPostion[i].pos.filter((pos) => !pos.SignUrl);
-      if (posData && posData.length > 0) {
-        checkSignUrl.push(posData);
-      }
+      const posSignUrlData = xyPostion[i].pos.filter((pos) => pos.SignUrl);
+      const posWidgetData = xyPostion[i].pos.filter((pos) => pos.widgetValue);
+
+      checkSigned = checkSigned + posSignUrlData.length + posWidgetData.length;
+      allXyPos = allXyPos + xyPostion[i].pos.length;
     }
-    // if (xyPostion.length === 0) {
-    //   setIsAlert({
-    //     isShow: true,
-    //     alertMessage: "Please complete your signature!"
-    //   });
-    //   return;
-    // } else if (xyPostion.length > 0 && checkSignUrl.length > 0) {
-    //   setIsAlert({
-    //     isShow: true,
-    //     alertMessage: "Please complete your signature!"
-    //   });
-    //   return;
-    // } else {
-    setIsCeleb(true);
-    setTimeout(() => {
-      setIsCeleb(false);
-    }, 3000);
-    const loadObj = {
-      isLoad: true,
-      message: "This might take some time"
-    };
-    setIsLoading(loadObj);
-    const url = pdfDetails[0] && pdfDetails[0].URL;
+    if (xyPostion.length === 0) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
+      return;
+    } else if (xyPostion.length > 0 && allXyPos !== checkSigned) {
+      setIsAlert({
+        isShow: true,
+        alertMessage: "Please complete your signature!"
+      });
+      return;
+    } else {
+      setIsCeleb(true);
+      setTimeout(() => {
+        setIsCeleb(false);
+      }, 3000);
+      const loadObj = {
+        isLoad: true,
+        message: "This might take some time"
+      };
+      setIsLoading(loadObj);
+      const url = pdfDetails[0] && pdfDetails[0].URL;
 
-    const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
+      const existingPdfBytes = await fetch(url).then((res) =>
+        res.arrayBuffer()
+      );
 
-    // Load a PDFDocument from the existing PDF bytes
-    const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-      ignoreEncryption: true
-    });
+      // Load a PDFDocument from the existing PDF bytes
+      const pdfDoc = await PDFDocument.load(existingPdfBytes, {
+        ignoreEncryption: true
+      });
 
-    const flag = true;
-    //embed document's object id to all pages in pdf document
-    await embedDocId(pdfDoc, documentId, allPages);
+      const flag = true;
+      //embed document's object id to all pages in pdf document
+      await embedDocId(pdfDoc, documentId, allPages);
 
-    //embed multi signature in pdf
-    const pdfBytes = await multiSignEmbed(
-      xyPostion,
-      pdfDoc,
-      pdfOriginalWidth,
-      flag,
-      containerWH
-    );
+      //embed multi signature in pdf
+      const pdfBytes = await multiSignEmbed(
+        xyPostion,
+        pdfDoc,
+        pdfOriginalWidth,
+        flag,
+        containerWH
+      );
 
-    // console.log("pdf", pdfBytes);
-    //function for call to embed signature in pdf and get digital signature pdf
-    signPdfFun(pdfBytes, documentId);
+      //function for call to embed signature in pdf and get digital signature pdf
+      signPdfFun(pdfBytes, documentId);
 
-    setIsSignPad(false);
-    setIsEmail(true);
-    setXyPostion([]);
-    setSignBtnPosition([]);
-    // }
+      setIsSignPad(false);
+      setIsEmail(true);
+      setXyPostion([]);
+      setSignBtnPosition([]);
+    }
   }
 
   //function for get digital signature
