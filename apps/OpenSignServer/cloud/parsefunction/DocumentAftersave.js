@@ -43,7 +43,7 @@ async function DocumentAftersave(request) {
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
       } else {
-        if (request?.object?.id) {
+        if (request?.object?.id && request.user) {
           await updateSelfDoc(request.object.id);
         }
       }

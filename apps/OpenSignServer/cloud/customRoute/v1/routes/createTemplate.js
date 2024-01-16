@@ -1,3 +1,4 @@
+const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createTemplate(request, response) {
   const name = request.body.Title;
   const note = request.body.Note;
@@ -44,10 +45,10 @@ export default async function createTemplate(request, response) {
       object.set('CreatedBy', userId);
       object.set('ExtUserPtr', extUserPtr);
       if (signers) {
-        const placeholders = signers.map(x => ({
+        const placeholders = signers.map((x, i) => ({
           email: x,
           Id: randomId(),
-          Role: '',
+          Role: 'User ' + (i + 1),
           blockColor: '',
           signerObjId: '',
           signerPtr: {},
