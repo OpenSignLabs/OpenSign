@@ -42,15 +42,6 @@ paths:
       summary: Get your details
       description: The Get User API enables you to get your own details.
       operationId: getUser
-      parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       responses:
         "200":
           description: Successful operation
@@ -79,15 +70,6 @@ paths:
       summary: Create contact
       description: The Create contact API allows you to effortlessly create new contacts that can act as signers for your important documents.
       operationId: createcontact
-      parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       requestBody:
         description: Provide below parameter to create contact
         content:
@@ -124,14 +106,6 @@ paths:
       description: The Get Contact API allows you to retrieve details about a specific contact.
       operationId: getcontact
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: contact_id
         in: path
         description: objectId of contact
@@ -170,14 +144,6 @@ paths:
       description: "The Delete Contact API allows you to remove a contact from your contactbook. If you no longer need a particular contact's information, this API makes it easy to delete their record."
       operationId: deletecontact
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: contact_id
         in: path
         description: Provide objectId of contact to delete
@@ -217,14 +183,6 @@ paths:
       description: "The Contact List API empowers you to retrieve a list of contacts, providing a comprehensive view of all available contacts in your contactbook."
       operationId: contactlist
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: limit
         in: query
         required: false
@@ -263,15 +221,6 @@ paths:
       summary: Create document
       description: "The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios."
       operationId: createdocument
-      parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       requestBody:
         content:
           multipart/form-data:
@@ -301,14 +250,6 @@ paths:
       description: The Get Document API enables you to retrieve details about a specific document.
       operationId: getdocument
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: document_id
         in: path
         description: objectId of contact
@@ -347,14 +288,6 @@ paths:
       description: The Update Document API allows users to modify and update the details of a specific document.
       operationId: updateDocument
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: document_id
         in: path
         description: ID of the document that needs to be updated
@@ -402,14 +335,6 @@ paths:
       description: The Delete document API allows you to remove specific document from your documents.
       operationId: deletedocument
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: document_id
         in: path
         description: Provide objectId of document to delete
@@ -484,14 +409,6 @@ paths:
           - completedocuments
           - expiredocuments
           - declinedocuments
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: limit
         in: query
         required: false
@@ -536,15 +453,6 @@ paths:
       summary: Create template
       description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template and **url** to edit template."
       operationId: createtemplate
-      parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       requestBody:
         content:
           multipart/form-data:
@@ -572,14 +480,6 @@ paths:
       description: The Get Template API allows you to retrieve details about a specific template. Templates serve as blueprints for creating documents with predefined structures.
       operationId: getTemplate
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: template_id
         in: path
         description: ID of template that needs to be fetched
@@ -615,14 +515,6 @@ paths:
       description: The Update Template API enables you to modify and update the details of a specific template.
       operationId: updateTemplate
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: template_id
         in: path
         description: ID of the template that needs to be updated
@@ -670,14 +562,6 @@ paths:
       description: The Delete Template API provides you with the ability to remove a specific template from the templates. If a template is no longer needed
       operationId: deleteTemplate
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: template_id
         in: path
         description: ID of the template that needs to be deleted
@@ -714,14 +598,6 @@ paths:
       description: "The Get Template List API allows you to retrieve a list of available templates. This functionality provides an overview of all templates, enabling users to choose from existing templates when creating documents."
       operationId: gettemplatelist
       parameters:
-      - name: x-api-token
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: opensign.xxxx
       - name: limit
         in: query
         required: false
@@ -758,41 +634,6 @@ components:
       example: 2023-10-07T16:49:56.000Z
       xml:
         name: date
-    createtemplate:
-      type: object
-      properties:
-        Name:
-          type: string
-          format: string
-          example: sample template
-        Note:
-          type: string
-          format: string
-          example: Please review and sign this document
-        Description:
-          type: string
-          format: string
-          example: template description
-        URL:
-          type: string
-          format: string
-          example: https://yourimage.com
-        signers:
-          type: array
-          example:
-          - joe@gmail.com
-          - john@gmail.com
-          xml:
-            name: signers
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/signers'
-        folderId:
-          type: string
-          format: string
-          example: xjsba1GaxP
-      xml:
-        name: createtemplate
     template:
       type: object
       properties:
@@ -850,11 +691,6 @@ components:
           $ref: '#/components/schemas/date'
       xml:
         name: contactdetails
-    signers:
-      type: string
-      example: joe@example.com
-      xml:
-        name: signers
     user:
       type: object
       properties:
