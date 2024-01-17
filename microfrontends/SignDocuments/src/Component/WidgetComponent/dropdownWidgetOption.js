@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import { themeColor } from "../../utils/ThemeColor/backColor";
+import ModalUi from "../../premitives/ModalUi";
 function DropdownWidgetOption(props) {
   const [dropdownOptionList, setDropdownOptionList] = useState([
     "option-1",
@@ -21,9 +20,7 @@ function DropdownWidgetOption(props) {
   const handleAddInput = () => {
     setDropdownOptionList((prevInputs) => [...prevInputs, ""]);
   };
-  const handleAddOption = () => {
-    setDropdownOptionList([...dropdownOptionList, ""]);
-  };
+
   const handleDeleteInput = (ind) => {
     const getUpdatedOptions = dropdownOptionList.filter(
       (data, index) => index !== ind
@@ -46,11 +43,14 @@ function DropdownWidgetOption(props) {
 
   return (
     //props.showDropdown
-    <Modal show={props.showDropdown} size="sm">
-      <ModalHeader style={{ color: "white", background: themeColor() }}>
-        Dropdown options
-      </ModalHeader>
-      <Modal.Body>
+    <ModalUi
+      dropdownModal={"dropdownModal"}
+      isOpen={props.showDropdown}
+      title={"Dropdown options"}
+      closeOff={true}
+      // handleClose={() => props.setShowDropdown(false)}
+    >
+      <div style={{ height: "100%", padding: 20 }}>
         <div className="dropdownContainer">
           <label style={{ fontSize: "13px", fontWeight: "600" }}>Name</label>
           <input
@@ -68,8 +68,7 @@ function DropdownWidgetOption(props) {
           <div
             style={{
               display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap"
+              flexDirection: "column"
             }}
           >
             {dropdownOptionList.map((option, index) => (
@@ -109,18 +108,15 @@ function DropdownWidgetOption(props) {
           </div>
         </div>
         <span style={{ fontSize: "13px", color: "red" }}>{error}</span>
-      </Modal.Body>
-      <Modal.Footer>
-        <button
-          onClick={() => props.setShowDropdown(false)}
+        <div
           style={{
-            color: "black"
+            height: "1px",
+            backgroundColor: "#9f9f9f",
+            width: "100%",
+            marginTop: "15px",
+            marginBottom: "15px"
           }}
-          type="button"
-          className="finishBtn"
-        >
-          cancel
-        </button>
+        ></div>
         <button
           onClick={() => handleSaveOption()}
           disabled={dropdownOptionList.length === 0 && true}
@@ -133,8 +129,18 @@ function DropdownWidgetOption(props) {
         >
           Save
         </button>
-      </Modal.Footer>
-    </Modal>
+        {/* <button
+          onClick={() => props.setShowDropdown(false)}
+          style={{
+            color: "black"
+          }}
+          type="button"
+          className="finishBtn"
+        >
+          cancel
+        </button> */}
+      </div>
+    </ModalUi>
   );
 }
 

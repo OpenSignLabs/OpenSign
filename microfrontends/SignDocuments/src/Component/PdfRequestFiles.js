@@ -9,6 +9,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useParams } from "react-router-dom";
 import SignPad from "./component/signPad";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
+import { useNavigate } from "react-router-dom";
 import {
   contractDocument,
   multiSignEmbed,
@@ -18,7 +19,8 @@ import {
   onImageSelect,
   onSaveSign,
   onSaveImage,
-  addDefaultSignatureImg
+  addDefaultSignatureImg,
+  getHostUrl
 } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -31,6 +33,7 @@ import DefaultSignature from "./component/defaultSignature";
 import ModalUi from "../premitives/ModalUi";
 
 function PdfRequestFiles() {
+  const navigate = useNavigate();
   const { docId } = useParams();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
@@ -63,6 +66,7 @@ function PdfRequestFiles() {
   const [isDecline, setIsDecline] = useState({ isDeclined: false });
   const [currentSigner, setCurrentSigner] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
+  const [isInitialSign, setIsInitialSign] = useState(false);
   const [defaultSignAlert, setDefaultSignAlert] = useState({
     isShow: false,
     alertMessage: ""
@@ -116,9 +120,20 @@ function PdfRequestFiles() {
       });
     }
   }, [divRef.current]);
-
+  // Function to check if the given initial value exists in the array
+  const isInitialValueExist = (array, initialValue) => {
+    for (const item of array) {
+      for (const pos of item.pos) {
+        if (pos.type === "initials") {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async () => {
+    let currUserId;
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
@@ -135,9 +150,7 @@ function PdfRequestFiles() {
           (data) => data.UserId.objectId === jsonSender.objectId
         );
 
-      const currUserId = getCurrentSigner[0]
-        ? getCurrentSigner[0].objectId
-        : "";
+      currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
       setSignerObjectId(currUserId);
       if (documentData[0].SignedUrl) {
         setPdfUrl(documentData[0].SignedUrl);
@@ -269,7 +282,17 @@ function PdfRequestFiles() {
 
         if (res[0] && res.length > 0) {
           setDefaultSignImg(res[0].ImageURL);
-          setInitial(res[0]?.Initials);
+          const getcurrentUserPosition = documentData[0].Placeholders.filter(
+            (data) => data.signerObjId === currUserId
+          );
+          const getPlacecholder = getcurrentUserPosition[0].placeHolder;
+          const checkInitialExist = isInitialValueExist(getPlacecholder);
+
+          if (res[0].Initials) {
+            setInitial(res[0]?.Initials);
+          } else if (checkInitialExist) {
+            setIsInitialSign(true);
+          }
         }
         const loadObj = {
           isLoad: false
@@ -566,6 +589,11 @@ function PdfRequestFiles() {
       isShow: false,
       alertMessage: ""
     });
+  };
+
+  const handleAddInitial = () => {
+    const hostUrl = getHostUrl();
+    navigate(`${hostUrl}managesign`);
   };
 
   return (
@@ -1002,6 +1030,40 @@ function PdfRequestFiles() {
           </div>
         </div>
       )}
+      <ModalUi
+        isOpen={isInitialSign}
+        title={"Add Initial signature"}
+        handleClose={() => {
+          setIsInitialSign(false);
+        }}
+      >
+        <div style={{ height: "100%", padding: 20 }}>
+          <p>Please add your initial signature</p>
+
+          <div
+            style={{
+              height: "1px",
+              backgroundColor: "#9f9f9f",
+              width: "100%",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          ></div>
+
+          <button
+            style={{
+              background: themeColor()
+            }}
+            onClick={() => {
+              handleAddInitial();
+            }}
+            type="button"
+            className="finishBtn"
+          >
+            Add
+          </button>
+        </div>
+      </ModalUi>
     </DndProvider>
   );
 }

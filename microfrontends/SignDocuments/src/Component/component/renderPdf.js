@@ -375,63 +375,6 @@ function RenderPdf({
     );
   };
 
-  const PlaceholderDesign = ({ pos, data }) => {
-    return (
-      <div>
-        <i
-          className="fa-regular fa-copy signCopy"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsPageCopy(true);
-            setSignKey(pos.key);
-          }}
-          style={{
-            color: "#188ae2"
-          }}
-        ></i>
-        <i
-          className="fa-regular fa-circle-xmark signCloseBtn"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (data) {
-              handleDeleteSign(pos.key, data.signerObjId);
-            } else {
-              handleDeleteSign(pos.key);
-              setIsStamp(false);
-            }
-          }}
-          style={{
-            color: "#188ae2"
-          }}
-        ></i>
-
-        {pos.SignUrl ? (
-          <div style={{ pointerEvents: "none" }}>
-            <img
-              alt="signimg"
-              src={pos.SignUrl}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain"
-              }}
-            />
-          </div>
-        ) : (
-          <div
-            style={{
-              fontSize: "10px",
-              color: "black",
-              justifyContent: "center"
-            }}
-          >
-            {pos.type}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const handleUserName = (signerId, Role) => {
     if (signerId) {
       const checkSign = signersdata.find((sign) => sign.objectId === signerId);
@@ -451,6 +394,7 @@ function RenderPdf({
       return <div style={{ color: "black", fontSize: 11 }}> {Role} </div>;
     }
   };
+
   return (
     <>
       {isMobile && scale ? (
@@ -617,186 +561,216 @@ function RenderPdf({
                               {placeData.pageNumber === pageNumber &&
                                 placeData.pos.map((pos) => {
                                   return (
-                                    <Rnd
-                                      bounds="parent"
-                                      enableResizing={{
-                                        top: false,
-                                        right: false,
-                                        bottom: false,
-                                        left: false,
-                                        topRight: false,
-                                        bottomRight: true,
-                                        bottomLeft: false,
-                                        topLeft: false
-                                      }}
-                                      key={pos.key}
-                                      style={{
-                                        cursor: "all-scroll",
-                                        background: data.blockColor,
-                                        borderColor: data.bac,
-                                        zIndex: pos.zIndex
-                                      }}
-                                      className="signYourselfBlock"
-                                      onDrag={() => handleTabDrag(pos.key)}
-                                      size={{
-                                        width: posWidth(pos),
-                                        height: posHeight(pos)
-                                      }}
-                                      // size={{
-                                      //   width: pos.Width ? pos.Width : 150,
-                                      //   height: pos.Height ? pos.Height : 60
-                                      // }}
-                                      lockAspectRatio={
-                                        pos.Width ? pos.Width / pos.Height : 2.5
-                                      }
-                                      onDragStop={
-                                        (event, dragElement) =>
-                                          handleStop(
-                                            event,
-                                            dragElement,
-                                            data.Id,
-                                            pos.key
-                                          )
-                                        // data.signerObjId,
-                                      }
-                                      // default={{
-                                      //   x: pos.xPosition,
-                                      //   y: pos.yPosition
-                                      // }}
-                                      default={{
-                                        x: xPos(pos),
-                                        y: yPos(pos)
-                                      }}
-                                      onResizeStart={() => {
-                                        setIsResize(true);
-                                      }}
-                                      onResizeStop={() => {
-                                        setIsResize && setIsResize(false);
-                                      }}
-                                      onResize={(
-                                        e,
-                                        direction,
-                                        ref,
-                                        delta,
-                                        position
-                                      ) => {
-                                        handleImageResize(
-                                          ref,
-                                          pos.key,
-                                          data.Id,
-                                          position,
-                                          signerPos,
-                                          pageNumber,
-                                          setSignerPos,
-                                          pdfOriginalWidth,
-                                          containerWH,
-                                          true
-                                        );
-                                      }}
-                                    >
-                                      <BorderResize right={-12} top={-11} />
-                                      <PlaceholderBorder
-                                        pos={pos}
-                                        posWidth={posWidth}
-                                        posHeight={posHeight}
-                                      />
-                                      <div
-                                        onClick={(e) => {
-                                          if (!isDragging) {
-                                            handleLinkUser(data.Id);
-                                            setUniqueId(data.Id);
-                                          }
-                                        }}
-                                        onTouchEnd={() => {
-                                          if (!isDragging) {
-                                            handleLinkUser(data.Id);
-                                            setUniqueId(data.Id);
-                                          }
-                                          const dataNewPlace = addZIndex(
-                                            signerPos,
-                                            pos.key,
-                                            setZIndex
-                                          );
-                                          setSignerPos((prevState) => {
-                                            const newState = [...prevState];
-                                            newState.splice(
-                                              0,
-                                              signerPos.length,
-                                              ...dataNewPlace
-                                            );
-                                            return newState;
-                                          });
-                                        }}
-                                      >
-                                        <i
-                                          data-tut="reactourLinkUser"
-                                          className="fa-regular fa-user signUserIcon"
-                                          onTouchEnd={(e) => {
-                                            e.stopPropagation();
-                                            handleLinkUser(data.Id);
-                                            setUniqueId(data.Id);
-                                          }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleLinkUser(data.Id);
-                                            setUniqueId(data.Id);
-                                          }}
-                                          style={{
-                                            color: "#188ae2"
-                                          }}
-                                        ></i>
-                                        <i
-                                          className="fa-regular fa-copy signCopy"
-                                          onTouchEnd={(e) => {
-                                            e.stopPropagation();
-                                            setIsPageCopy(true);
-                                            setSignKey(pos.key);
-                                            setSignerObjId(data.signerObjId);
-                                            setUniqueId(data.Id);
-                                          }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setIsPageCopy(true);
-                                            setSignKey(pos.key);
-                                            setSignerObjId(data.signerObjId);
-                                            setUniqueId(data.Id);
-                                          }}
-                                          style={{
-                                            color: "#188ae2"
-                                          }}
-                                        ></i>
-                                        <i
-                                          className="fa-regular fa-circle-xmark signCloseBtn"
-                                          onTouchEnd={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteSign(pos.key, data.Id);
-                                          }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteSign(pos.key, data.Id);
-                                            // data.signerObjId
-                                          }}
-                                          style={{
-                                            color: "#188ae2"
-                                          }}
-                                        ></i>
+                                    // <Rnd
+                                    //   bounds="parent"
+                                    //   enableResizing={{
+                                    //     top: false,
+                                    //     right: false,
+                                    //     bottom: false,
+                                    //     left: false,
+                                    //     topRight: false,
+                                    //     bottomRight: true,
+                                    //     bottomLeft: false,
+                                    //     topLeft: false
+                                    //   }}
+                                    //   key={pos.key}
+                                    //   style={{
+                                    //     cursor: "all-scroll",
+                                    //     background: data.blockColor,
+                                    //     borderColor: data.bac,
+                                    //     zIndex: pos.zIndex
+                                    //   }}
+                                    //   className="signYourselfBlock"
+                                    //   onDrag={() => handleTabDrag(pos.key)}
+                                    //   size={{
+                                    //     width: posWidth(pos),
+                                    //     height: posHeight(pos)
+                                    //   }}
+                                    //   // size={{
+                                    //   //   width: pos.Width ? pos.Width : 150,
+                                    //   //   height: pos.Height ? pos.Height : 60
+                                    //   // }}
+                                    //   lockAspectRatio={
+                                    //     pos.Width ? pos.Width / pos.Height : 2.5
+                                    //   }
+                                    //   onDragStop={
+                                    //     (event, dragElement) =>
+                                    //       handleStop(
+                                    //         event,
+                                    //         dragElement,
+                                    //         data.Id,
+                                    //         pos.key
+                                    //       )
+                                    //     // data.signerObjId,
+                                    //   }
+                                    //   // default={{
+                                    //   //   x: pos.xPosition,
+                                    //   //   y: pos.yPosition
+                                    //   // }}
+                                    //   default={{
+                                    //     x: xPos(pos),
+                                    //     y: yPos(pos)
+                                    //   }}
+                                    //   onResizeStart={() => {
+                                    //     setIsResize(true);
+                                    //   }}
+                                    //   onResizeStop={() => {
+                                    //     setIsResize && setIsResize(false);
+                                    //   }}
+                                    //   onResize={(
+                                    //     e,
+                                    //     direction,
+                                    //     ref,
+                                    //     delta,
+                                    //     position
+                                    //   ) => {
+                                    //     handleImageResize(
+                                    //       ref,
+                                    //       pos.key,
+                                    //       data.Id,
+                                    //       position,
+                                    //       signerPos,
+                                    //       pageNumber,
+                                    //       setSignerPos,
+                                    //       pdfOriginalWidth,
+                                    //       containerWH,
+                                    //       true
+                                    //     );
+                                    //   }}
+                                    // >
+                                    //   <BorderResize right={-12} top={-11} />
+                                    //   <PlaceholderBorder
+                                    //     pos={pos}
+                                    //     posWidth={posWidth}
+                                    //     posHeight={posHeight}
+                                    //   />
+                                    //   <div
+                                    //     onClick={(e) => {
+                                    //       if (!isDragging) {
+                                    //         handleLinkUser(data.Id);
+                                    //         setUniqueId(data.Id);
+                                    //       }
+                                    //     }}
+                                    //     onTouchEnd={() => {
+                                    //       if (!isDragging) {
+                                    //         handleLinkUser(data.Id);
+                                    //         setUniqueId(data.Id);
+                                    //       }
+                                    //       const dataNewPlace = addZIndex(
+                                    //         signerPos,
+                                    //         pos.key,
+                                    //         setZIndex
+                                    //       );
+                                    //       setSignerPos((prevState) => {
+                                    //         const newState = [...prevState];
+                                    //         newState.splice(
+                                    //           0,
+                                    //           signerPos.length,
+                                    //           ...dataNewPlace
+                                    //         );
+                                    //         return newState;
+                                    //       });
+                                    //     }}
+                                    //   >
+                                    //     <i
+                                    //       data-tut="reactourLinkUser"
+                                    //       className="fa-regular fa-user signUserIcon"
+                                    //       onTouchEnd={(e) => {
+                                    //         e.stopPropagation();
+                                    //         handleLinkUser(data.Id);
+                                    //         setUniqueId(data.Id);
+                                    //       }}
+                                    //       onClick={(e) => {
+                                    //         e.stopPropagation();
+                                    //         handleLinkUser(data.Id);
+                                    //         setUniqueId(data.Id);
+                                    //       }}
+                                    //       style={{
+                                    //         color: "#188ae2"
+                                    //       }}
+                                    //     ></i>
+                                    //     <i
+                                    //       className="fa-regular fa-copy signCopy"
+                                    //       onTouchEnd={(e) => {
+                                    //         e.stopPropagation();
+                                    //         setIsPageCopy(true);
+                                    //         setSignKey(pos.key);
+                                    //         setSignerObjId(data.signerObjId);
+                                    //         setUniqueId(data.Id);
+                                    //       }}
+                                    //       onClick={(e) => {
+                                    //         e.stopPropagation();
+                                    //         setIsPageCopy(true);
+                                    //         setSignKey(pos.key);
+                                    //         setSignerObjId(data.signerObjId);
+                                    //         setUniqueId(data.Id);
+                                    //       }}
+                                    //       style={{
+                                    //         color: "#188ae2"
+                                    //       }}
+                                    //     ></i>
+                                    //     <i
+                                    //       className="fa-regular fa-circle-xmark signCloseBtn"
+                                    //       onTouchEnd={(e) => {
+                                    //         e.stopPropagation();
+                                    //         handleDeleteSign(pos.key, data.Id);
+                                    //       }}
+                                    //       onClick={(e) => {
+                                    //         e.stopPropagation();
+                                    //         handleDeleteSign(pos.key, data.Id);
+                                    //         // data.signerObjId
+                                    //       }}
+                                    //       style={{
+                                    //         color: "#188ae2"
+                                    //       }}
+                                    //     ></i>
 
-                                        <div
-                                          style={{
-                                            fontSize: "10px",
-                                            color: "black",
-                                            fontWeight: "500",
-                                            marginTop: "0px"
-                                          }}
-                                        >
-                                          <div>{pos.type}</div>
-                                          {handleUserName(
-                                            data.signerObjId,
-                                            data.Role
-                                          )}{" "}
-                                        </div>
-                                      </div>
-                                    </Rnd>
+                                    //     <div
+                                    //       style={{
+                                    //         fontSize: "10px",
+                                    //         color: "black",
+                                    //         fontWeight: "500",
+                                    //         marginTop: "0px"
+                                    //       }}
+                                    //     >
+                                    //       <div>{pos.type}</div>
+                                    //       {handleUserName(
+                                    //         data.signerObjId,
+                                    //         data.Role
+                                    //       )}{" "}
+                                    //     </div>
+                                    //   </div>
+                                    // </Rnd>
+                                    <Placeholder
+                                      pos={pos}
+                                      setIsPageCopy={setIsPageCopy}
+                                      setSignKey={setSignKey}
+                                      handleDeleteSign={handleDeleteSign}
+                                      setIsStamp={setIsStamp}
+                                      handleTabDrag={handleTabDrag}
+                                      handleStop={handleStop}
+                                      handleSignYourselfImageResize={
+                                        handleImageResize
+                                      }
+                                      index={pageNumber}
+                                      xyPostion={signerPos}
+                                      setXyPostion={setSignerPos}
+                                      setSignerObjId={setSignerObjId}
+                                      data={data}
+                                      setIsResize={setIsResize}
+                                      setShowDropdown={setShowDropdown}
+                                      isShowBorder={true}
+                                      isPlaceholder={true}
+                                      setUniqueId={setUniqueId}
+                                      handleLinkUser={handleLinkUser}
+                                      handleUserName={handleUserName}
+                                      isSignYourself={false}
+                                      xPos={xPos}
+                                      yPos={yPos}
+                                      posWidth={posWidth}
+                                      posHeight={posHeight}
+                                      isDragging={isDragging}
+                                    />
                                   );
                                 })}
                             </React.Fragment>
@@ -1038,143 +1012,6 @@ function RenderPdf({
           >
             <EmailToast isShow={successEmail} />
             {pdfLoadFail.status &&
-              // recipient
-              // ? !pdfUrl &&
-              //   !isAlreadySign.mssg &&
-              //   xyPostion.length > 0 &&
-              //   xyPostion.map((data, ind) => {
-              //     return (
-              //       <React.Fragment key={ind}>
-              //         {data.pageNumber === pageNumber &&
-              //           data.pos.map((pos) => {
-              //             return (
-              //               pos && (
-              //                 //   <Rnd
-              //                 //   data-tut="reactourSecond"
-              //                 //   disableDragging={true}
-              //                 //   enableResizing={{
-              //                 //     top: false,
-              //                 //     right: false,
-              //                 //     bottom: false,
-              //                 //     left: false,
-              //                 //     topRight: false,
-              //                 //     bottomRight: true,
-              //                 //     bottomLeft: false,
-              //                 //     topLeft: false
-              //                 //   }}
-              //                 //   onResize={(
-              //                 //     e,
-              //                 //     direction,
-              //                 //     ref,
-              //                 //     delta,
-              //                 //     position
-              //                 //   ) => {
-              //                 //     handleSignYourselfImageResize(
-              //                 //       ref,
-              //                 //       pos.key,
-              //                 //       xyPostion,
-              //                 //       index,
-              //                 //       setXyPostion
-              //                 //     );
-              //                 //   }}
-              //                 //   key={pos.key}
-              //                 //   bounds="parent"
-              //                 //   style={{
-              //                 //     cursor: "all-scroll",
-              //                 //     borderColor: themeColor(),
-              //                 //     borderStyle: "dashed",
-              //                 //     borderWidth: "0.1px",
-              //                 //     zIndex: "1",
-              //                 //     background: data.blockColor
-              //                 //       ? data.blockColor
-              //                 //       : "#daebe0"
-              //                 //   }}
-              //                 //   className="signYourselfBlock"
-              //                 //   size={{
-              //                 //     width: posWidth(pos),
-              //                 //     height: posHeight(pos)
-              //                 //   }}
-              //                 //   lockAspectRatio={
-              //                 //     pos.Width ? pos.Width / pos.Height : 2.5
-              //                 //   }
-              //                 //   default={{
-              //                 //     x: xPos(pos),
-              //                 //     y: yPos(pos)
-              //                 //   }}
-              //                 //   onClick={() => {
-              //                 //     setIsSignPad(true);
-              //                 //     setSignKey(pos.key);
-              //                 //     setIsStamp(pos?.isStamp ? pos.isStamp : false);
-              //                 //   }}
-              //                 // >
-              //                 //   <div style={{ pointerEvents: "none" }}>
-              //                 //     <BorderResize />
-              //                 //     {pos.SignUrl ? (
-              //                 //       <img
-              //                 //         alt="no img"
-              //                 //         onClick={() => {
-              //                 //           setIsSignPad(true);
-              //                 //           setSignKey(pos.key);
-              //                 //         }}
-              //                 //         src={pos.SignUrl}
-              //                 //         style={{
-              //                 //           width: "100%",
-              //                 //           height: "100%",
-              //                 //           objectFit: "contain"
-              //                 //         }}
-              //                 //       />
-              //                 //     ) : (
-              //                 //       <div
-              //                 //         style={{
-              //                 //           fontSize: "10px",
-              //                 //           color: "black",
-              //                 //           fontWeight: "600",
-              //                 //           justifyContent: "center",
-              //                 //           marginTop: "0px"
-              //                 //         }}
-              //                 //       >
-              //                 //         {pos.isStamp ? (
-              //                 //           <div>stamp</div>
-              //                 //         ) : (
-              //                 //           <div>signature</div>
-              //                 //         )}
-              //                 //         {handleUserName(
-              //                 //           data.signerObjId,
-              //                 //           data.Role
-              //                 //         )}
-              //                 //       </div>
-              //                 //     )}
-              //                 //   </div>
-              //                 // </Rnd>
-
-              //                 <Placeholder
-              //                   pos={pos}
-              //                   setSignKey={setSignKey}
-              //                   setIsStamp={setIsStamp}
-              //                   handleSignYourselfImageResize={
-              //                     handleSignYourselfImageResize
-              //                   }
-              //                   index={index}
-              //                   xyPostion={xyPostion}
-              //                   setXyPostion={setXyPostion}
-              //                   pdfOriginalWidth={pdfOriginalWidth}
-              //                   containerWH={containerWH}
-              //                   setIsSignPad={setIsSignPad}
-              //                   isShowDropdown={true}
-              //                   isRecipient={true}
-              //                   isSignYourself={false}
-              //                   xPos={xPos}
-              //                   yPos={yPos}
-              //                   posWidth={posWidth}
-              //                   posHeight={posHeight}
-              //                 />
-              //               )
-              //             );
-              //           })}
-              //       </React.Fragment>
-              //     );
-              //   })
-              // :
               (pdfRequest
                 ? signerPos.map((data, key) => {
                     return (
@@ -1384,6 +1221,7 @@ function RenderPdf({
                                         yPos={yPos}
                                         posWidth={posWidth}
                                         posHeight={posHeight}
+                                        isDragging={isDragging}
                                       />
                                     );
                                   })}
