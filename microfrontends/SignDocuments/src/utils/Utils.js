@@ -4,13 +4,8 @@ import { themeColor } from "./ThemeColor/backColor";
 const isMobile = window.innerWidth < 767;
 
 //calculate width and height
-export const calculateInitialWidthHeight = (type, pdfDetails) => {
-  const intialText =
-    type === "name"
-      ? pdfDetails.ExtUserPtr.Name
-      : type === "company"
-        ? pdfDetails.ExtUserPtr.Company
-        : type === "job title" && pdfDetails.ExtUserPtr.JobTitle;
+export const calculateInitialWidthHeight = (type, widgetData) => {
+  const intialText = widgetData;
   const span = document.createElement("span");
   span.textContent = intialText;
   span.style.font = `14px`; // here put your text size and font family
@@ -30,7 +25,8 @@ export const addInitialData = (
   setXyPostion,
   value,
   initial,
-  signerObjId
+  signerObjId,
+  jsonSender
 ) => {
   return signerPos.map((item) => {
     if (item.placeHolder && item.placeHolder.length > 0) {
@@ -42,7 +38,9 @@ export const addInitialData = (
             item.placeHolder,
             setXyPostion,
             value,
-            initial
+            initial,
+            signerObjId,
+            jsonSender
           )
         };
       } else {
@@ -54,13 +52,20 @@ export const addInitialData = (
       // If there is no nested array, add the new field
       return {
         ...item,
-        pos: addInitialData(item.pos, setXyPostion, value, initial)
+        pos: addInitialData(
+          item.pos,
+          setXyPostion,
+          value,
+          initial,
+          signerObjId,
+          jsonSender
+        )
         // Adjust this line to add the desired field
       };
     } else {
       const widgetData =
         item.type === "name"
-          ? value.ExtUserPtr.Name
+          ? jsonSender
           : item.type === "company"
             ? value.ExtUserPtr.Company
             : item.type === "job title" && value.ExtUserPtr.JobTitle;
@@ -77,8 +82,8 @@ export const addInitialData = (
         return {
           ...item,
           widgetValue: widgetData,
-          Width: calculateInitialWidthHeight(item.type, value).getWidth,
-          Height: calculateInitialWidthHeight(item.type, value).getHeight
+          Width: calculateInitialWidthHeight(item.type, widgetData).getWidth,
+          Height: calculateInitialWidthHeight(item.type, widgetData).getHeight
         };
       } else {
         return {
@@ -95,10 +100,11 @@ export const onChangeInput = (
   index,
   setXyPostion,
   signerObjId,
-  initial
+  initial,
+  jsonSender
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
-
+  console.log(signerObjId);
   if (isSigners) {
     const filterSignerPos = xyPostion.filter(
       (data) => data.signerObjId === signerObjId
@@ -111,7 +117,8 @@ export const onChangeInput = (
         setXyPostion,
         value,
         initial,
-        signerObjId
+        signerObjId,
+        jsonSender
       );
       setXyPostion(xyData);
     } else {

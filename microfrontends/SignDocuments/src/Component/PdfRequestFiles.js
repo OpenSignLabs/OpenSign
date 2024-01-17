@@ -285,6 +285,7 @@ function PdfRequestFiles() {
           const getcurrentUserPosition = documentData[0].Placeholders.filter(
             (data) => data.signerObjId === currUserId
           );
+
           const getPlacecholder = getcurrentUserPosition[0].placeHolder;
           const checkInitialExist = isInitialValueExist(getPlacecholder);
 
@@ -293,7 +294,19 @@ function PdfRequestFiles() {
           } else if (checkInitialExist) {
             setIsInitialSign(true);
           }
+        } else {
+          const getcurrentUserPosition = documentData[0].Placeholders.filter(
+            (data) => data.signerObjId === currUserId
+          );
+
+          const getPlacecholder = getcurrentUserPosition[0].placeHolder;
+          const checkInitialExist = isInitialValueExist(getPlacecholder);
+
+          if (checkInitialExist) {
+            setIsInitialSign(true);
+          }
         }
+
         const loadObj = {
           isLoad: false
         };
@@ -303,6 +316,7 @@ function PdfRequestFiles() {
         const loadObj = {
           isLoad: false
         };
+
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
       });
@@ -1030,13 +1044,7 @@ function PdfRequestFiles() {
           </div>
         </div>
       )}
-      <ModalUi
-        isOpen={isInitialSign}
-        title={"Add Initial signature"}
-        handleClose={() => {
-          setIsInitialSign(false);
-        }}
-      >
+      <ModalUi isOpen={isInitialSign} title={"Add Initial signature"}>
         <div style={{ height: "100%", padding: 20 }}>
           <p>Please add your initial signature</p>
 
