@@ -7,7 +7,17 @@ function PlaceholderType(props) {
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
   };
+
   useEffect(() => {
+    const senderUser =
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      ) &&
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      );
+    const jsonSender = JSON.parse(senderUser);
+
     if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
       onChangeInput(
         props.pdfDetails,
@@ -16,7 +26,8 @@ function PlaceholderType(props) {
         null,
         props.setXyPostion,
         props.signerObjId,
-        props.initial
+        props.initial,
+        jsonSender.name
       );
     }
   }, [type]);
@@ -233,11 +244,7 @@ function PlaceholderType(props) {
         <input
           className="inputPlaceholder"
           type="text"
-          value={
-            props.pos.widgetValue
-              ? props.pos.widgetValue
-              : props.pdfDetails.ExtUserPtr.Company
-          }
+          value={props.pos.widgetValue && props.pos.widgetValue}
           onChange={(e) =>
             onChangeInput(
               e.target.value,
@@ -276,11 +283,7 @@ function PlaceholderType(props) {
         <input
           className="inputPlaceholder"
           type="text"
-          value={
-            props.pos.widgetValue
-              ? props.pos.widgetValue
-              : props.pdfDetails.ExtUserPtr.JobTitle
-          }
+          value={props.pos.widgetValue && props.pos.widgetValue}
           onChange={(e) =>
             onChangeInput(
               e.target.value,

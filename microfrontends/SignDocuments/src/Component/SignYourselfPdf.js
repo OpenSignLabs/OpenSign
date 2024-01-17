@@ -380,7 +380,14 @@ function SignYourSelf() {
       const x = offset.x - containerRect.left;
       const y = offset.y - containerRect.top;
       const ybottom = containerRect.bottom - offset.y;
-
+      const widgetData =
+        item.text === "name"
+          ? pdfDetails[0].ExtUserPtr.Name
+          : item.text === "company"
+            ? pdfDetails[0].ExtUserPtr.Company
+            : item.text === "job title"
+              ? pdfDetails[0].ExtUserPtr.JobTitle
+              : "";
       dropObj = {
         xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
         yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
@@ -392,25 +399,18 @@ function SignYourSelf() {
         yBottom: ybottom,
         type: item.text,
         SignUrl: item.text === "initials" && initial,
-        widgetValue:
-          item.text === "name"
-            ? pdfDetails[0].ExtUserPtr.Name
-            : item.text === "company"
-              ? pdfDetails[0].ExtUserPtr.Company
-              : item.text === "job title"
-                ? pdfDetails[0].ExtUserPtr.JobTitle
-                : "",
+        widgetValue: widgetData,
         Width:
           item.text === "name" ||
           item.text === "company" ||
           item.text === "job title"
-            ? calculateInitialWidthHeight(item.text, pdfDetails[0]).getWidth
+            ? calculateInitialWidthHeight(item.text, widgetData).getWidth
             : "",
         Height:
           item.text === "company" ||
           item.text === "name" ||
           item.text === "job title"
-            ? calculateInitialWidthHeight(item.text, pdfDetails[0]).getHeight
+            ? calculateInitialWidthHeight(item.text, widgetData).getHeight
             : ""
       };
 
