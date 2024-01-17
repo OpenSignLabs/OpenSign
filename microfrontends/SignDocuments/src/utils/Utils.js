@@ -25,19 +25,31 @@ export const calculateInitialWidthHeight = (type, pdfDetails) => {
     getHeight: height
   };
 };
-export const addInitialData = (signerPos, setXyPostion, value, initial) => {
+export const addInitialData = (
+  signerPos,
+  setXyPostion,
+  value,
+  initial,
+  signerObjId
+) => {
   return signerPos.map((item) => {
     if (item.placeHolder && item.placeHolder.length > 0) {
       // If there is a nested array, recursively add the field to the last object
-      return {
-        ...item,
-        placeHolder: addInitialData(
-          item.placeHolder,
-          setXyPostion,
-          value,
-          initial
-        )
-      };
+      if (item.signerObjId === signerObjId) {
+        return {
+          ...item,
+          placeHolder: addInitialData(
+            item.placeHolder,
+            setXyPostion,
+            value,
+            initial
+          )
+        };
+      } else {
+        return {
+          ...item
+        };
+      }
     } else if (item.pos && item.pos.length > 0) {
       // If there is no nested array, add the new field
       return {
@@ -94,7 +106,13 @@ export const onChangeInput = (
     const getPlaceHolder = filterSignerPos[0].placeHolder;
 
     if (initial) {
-      const xyData = addInitialData(xyPostion, setXyPostion, value, initial);
+      const xyData = addInitialData(
+        xyPostion,
+        setXyPostion,
+        value,
+        initial,
+        signerObjId
+      );
       setXyPostion(xyData);
     } else {
       const getPageNumer = getPlaceHolder.filter(

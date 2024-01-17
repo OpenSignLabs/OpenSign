@@ -8,14 +8,14 @@ function PlaceholderType(props) {
     props.setDraggingEnabled(true);
   };
   useEffect(() => {
-    if (props.isNeedSign) {
+    if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
       onChangeInput(
         props.pdfDetails,
         null,
         props.xyPostion,
         null,
         props.setXyPostion,
-        props.data && props.data.signerObjId,
+        props.signerObjId,
         props.initial
       );
     }
@@ -80,7 +80,11 @@ function PlaceholderType(props) {
           className="inputPlaceholder"
           style={{ outlineColor: "#007bff" }}
           type="checkbox"
-          disabled={props.isPlaceholder}
+          disabled={
+            props.isNeedSign && props.data?.signerObjId !== props.signerObjId
+              ? true
+              : props.isPlaceholder
+          }
           onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
@@ -101,7 +105,11 @@ function PlaceholderType(props) {
           className="inputPlaceholder"
           type="text"
           tabIndex="0"
-          disabled={props.isPlaceholder}
+          disabled={
+            props.isNeedSign && props.data?.signerObjId !== props.signerObjId
+              ? true
+              : props.isPlaceholder
+          }
           onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
@@ -117,7 +125,7 @@ function PlaceholderType(props) {
         />
       );
     case "dropdown":
-      return !props.isPlaceholder ? (
+      return props.data?.signerObjId === props.signerObjId ? (
         <select
           className="inputPlaceholder"
           id="myDropdown"
@@ -150,7 +158,8 @@ function PlaceholderType(props) {
         </div>
       );
     case "initials":
-      return props.pos.SignUrl || props.initial ? (
+      return props.pos.SignUrl ||
+        props.data?.signerObjId === props.signerObjId ? (
         <img
           alt="signimg"
           src={props.pos?.SignUrl ? props.pos?.SignUrl : props.initial}
@@ -176,7 +185,8 @@ function PlaceholderType(props) {
       );
 
     case "name":
-      return props.isNeedSign ? (
+      return props.isNeedSign &&
+        props.data?.signerObjId === props.signerObjId ? (
         <input
           className="inputPlaceholder"
           type="text"
@@ -218,7 +228,8 @@ function PlaceholderType(props) {
       );
 
     case "company":
-      return props.isNeedSign ? (
+      return props.isNeedSign &&
+        props.data?.signerObjId === props.signerObjId ? (
         <input
           className="inputPlaceholder"
           type="text"
@@ -260,7 +271,8 @@ function PlaceholderType(props) {
       );
 
     case "job title":
-      return props.isNeedSign ? (
+      return props.isNeedSign &&
+        props.data?.signerObjId === props.signerObjId ? (
         <input
           className="inputPlaceholder"
           type="text"

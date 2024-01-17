@@ -125,12 +125,6 @@ function PlaceHolderSign() {
       id: 2,
       text: "stamp"
     },
-    type: "BOX",
-    item: {
-      type: "BOX",
-      id: 2,
-      text: "stamp"
-    },
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
     })
@@ -347,14 +341,14 @@ function PlaceHolderSign() {
             //onclick put placeholder center on pdf
             xPosition: window.innerWidth / 2 - 100,
             yPosition: window.innerHeight / 2 - 60,
-            isStamp: monitor,
+            isStamp: monitor.type === "stamp" && true,
             key: key,
             isDrag: false,
             scale: scale,
             isMobile: isMobile,
             yBottom: window.innerHeight / 2 - 60,
             zIndex: posZIndex,
-            type: item.text
+            type: monitor.type
           };
           dropData.push(dropObj);
           placeHolder = {
@@ -452,7 +446,7 @@ function PlaceHolderSign() {
           }
           setSignerPos((prev) => [...prev, placeHolderPos]);
         }
-        if (item.text === "dropdown") {
+        if (item.text === "dropdown" || monitor.type === "dropdown") {
           setShowDropdown(true);
           setSignKey(key);
         }
@@ -864,7 +858,6 @@ function PlaceHolderSign() {
 
   const handleSaveDropdownOptions = (dropdownName, dropdownOptions) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
 

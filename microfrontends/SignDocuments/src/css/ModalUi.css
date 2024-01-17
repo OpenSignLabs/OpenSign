@@ -22,12 +22,37 @@
     max-height: 80%;
     min-width: 500px;
     overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer and Edge */
+}
+
+.dropdownModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 901;
+    max-height: 80%;
+    min-width: 30%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer and Edge */
 }
 
 /* Hide scrollbar for Webkit browsers */
 .modalcontainer::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for Webkit browsers */
+.dropdownModal::-webkit-scrollbar {
     display: none;
 }
 
@@ -43,7 +68,7 @@
 /* Styling for the modal title */
 .modaltitle {
     font-size: 1.2rem;
-    font-weight:normal;
+    font-weight: normal;
 }
 
 /* Styling for the close button */
@@ -69,4 +94,35 @@
         min-width: 90%;
         overflow-y: auto;
     }
+
+    .dropdownModal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        max-height: 80%;
+        min-width: 60%;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width:464px) {
+    .dropdownModal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        max-height: 80%;
+        min-width: 78%;
+        overflow-y: auto;
+    }
+
 }

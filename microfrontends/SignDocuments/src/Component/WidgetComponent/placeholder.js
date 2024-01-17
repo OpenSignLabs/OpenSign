@@ -13,26 +13,26 @@ function Placeholder(props) {
     if (props.pos.type === "text" || props.pos.type === "checkbox") {
       setDraggingEnabled(false);
     }
-    if (props.isNeedSign && !props.isDragging) {
+    if ((props.isNeedSign || props.isSignYourself) && !props.isDragging) {
       if (props.pos.type) {
         if (props.pos.type === "signature" || props.pos.type === "stamp") {
           props.setIsSignPad(true);
           props.setSignKey(props.pos.key);
           props.setIsStamp(props.pos.isStamp);
-        } else if (props.pos.type === "dropdown" && !props.isNeedSign) {
-          props?.setShowDropdown(true);
-          props?.setSignKey(props.pos.key);
         }
       } else {
         props.setIsSignPad(true);
         props.setSignKey(props.pos.key);
         props.setIsStamp(props.pos?.isStamp ? props.pos.isStamp : false);
       }
-    } else if (props.isPlaceholder && props.pos.type) {
-      if (props.pos.type === "dropdown") {
-        props.setShowDropdown(true);
-        props.setSignKey(props.pos.key);
-      }
+    } else if (
+      props.isPlaceholder &&
+      props.pos.type === "dropdown" &&
+      !props.isDragging
+    ) {
+      props?.setShowDropdown(true);
+      props?.setSignKey(props.pos.key);
+      props.setUniqueId(props.data.Id);
     } else if (!props.pos.type) {
       if (
         !props.pos.type &&
@@ -114,8 +114,7 @@ function Placeholder(props) {
       onResizeStop={() => {
         props.setIsResize && props.setIsResize(false);
       }}
-      disableDragging={!isDraggingEnabled}
-      // disableDragging={props.isNeedSign || (props.isRecipient && true)}
+      disableDragging={props.isNeedSign ? true : !isDraggingEnabled}
       onDragStop={(event, dragElement) =>
         props.handleStop &&
         props.handleStop(event, dragElement, props.signerObjId, props.pos.key)
@@ -136,7 +135,13 @@ function Placeholder(props) {
             false
           );
       }}
-      onClick={() => handlePlaceholderClick()}
+      onClick={() => {
+        props.isNeedSign && props.data?.signerObjId === props.signerObjId
+          ? handlePlaceholderClick()
+          : props.isPlaceholder
+            ? handlePlaceholderClick()
+            : props.isSignYourself && handlePlaceholderClick();
+      }}
     >
       {props.isShowBorder ? (
         <BorderResize right={-12} top={-11} />

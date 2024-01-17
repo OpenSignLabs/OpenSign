@@ -103,7 +103,7 @@ const TemplatePlaceholder = () => {
     item: {
       type: "BOX",
       id: 1,
-      text: "drag me"
+      text: "signature"
     },
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
@@ -115,7 +115,7 @@ const TemplatePlaceholder = () => {
     item: {
       type: "BOX",
       id: 2,
-      text: "drag me"
+      text: "stamp"
     },
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
@@ -127,7 +127,7 @@ const TemplatePlaceholder = () => {
     item: {
       type: "BOX",
       id: 3,
-      text: "drag me"
+      text: "signature"
     },
     collect: (monitor) => ({
       isDragSignatureSS: !!monitor.isDragging()
@@ -139,7 +139,7 @@ const TemplatePlaceholder = () => {
     item: {
       type: "BOX",
       id: 4,
-      text: "drag me"
+      text: "stamp"
     },
     collect: (monitor) => ({
       isDragStampSS: !!monitor.isDragging()
@@ -349,13 +349,14 @@ const TemplatePlaceholder = () => {
           const dropObj = {
             xPosition: window.innerWidth / 2 - 100,
             yPosition: window.innerHeight / 2 - 60,
-            isStamp: monitor,
+            isStamp: monitor.type === "stamp" && true,
             key: key,
             isDrag: false,
             scale: scale,
             isMobile: isMobile,
             yBottom: window.innerHeight / 2 - 60,
-            zIndex: posZIndex
+            zIndex: posZIndex,
+            type: monitor.type
           };
           dropData.push(dropObj);
           placeHolder = {
@@ -383,7 +384,8 @@ const TemplatePlaceholder = () => {
             yBottom: ybottom,
             scale: scale,
             isMobile: isMobile,
-            zIndex: posZIndex
+            zIndex: posZIndex,
+            type: item.text
           };
 
           dropData.push(dropObj);
@@ -458,6 +460,7 @@ const TemplatePlaceholder = () => {
       }
     }
   };
+
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     const load = {
@@ -635,7 +638,7 @@ const TemplatePlaceholder = () => {
     if (signerPos.length !== signersdata.length) {
       setIsSendAlert(true);
     } else {
-      // handleSaveTemplate();
+      handleSaveTemplate();
     }
   };
   const handleSaveTemplate = async () => {
@@ -1156,7 +1159,7 @@ const TemplatePlaceholder = () => {
                   dragStamp={dragStamp}
                   dragRef={dragRef}
                   isDragStamp={isDragStamp}
-                  isSignYourself={true}
+                  isSignYourself={false}
                   isDragSignatureSS={isDragSignatureSS}
                   dragSignatureSS={dragSignatureSS}
                   dragStampSS={dragStampSS}
@@ -1179,42 +1182,49 @@ const TemplatePlaceholder = () => {
                   handleRoleChange={handleRoleChange}
                   handleOnBlur={handleOnBlur}
                   title={"Roles"}
+                  initial={true}
                 />
               </div>
             ) : (
               <div>
                 <div className="signerComponent">
-                  <SignerListPlace
-                    signerPos={signerPos}
-                    signersdata={signersdata}
-                    isSelectListId={isSelectListId}
-                    setSignerObjId={setSignerObjId}
-                    setRoleName={setRoleName}
-                    setIsSelectId={setIsSelectId}
-                    setContractName={setContractName}
-                    handleAddSigner={handleAddSigner}
-                    setUniqueId={setUniqueId}
-                    handleDeleteUser={handleDeleteUser}
-                    handleRoleChange={handleRoleChange}
-                    handleOnBlur={handleOnBlur}
-                    title={"Roles"}
-                  />
-                  <div data-tut="reactourSecond">
-                    <FieldsComponent
-                      pdfUrl={isMailSend}
-                      dragSignature={dragSignature}
-                      signRef={signRef}
-                      handleDivClick={handleDivClick}
-                      handleMouseLeave={handleMouseLeave}
-                      isDragSign={isDragSign}
-                      themeColor={themeColor}
-                      dragStamp={dragStamp}
-                      dragRef={dragRef}
-                      isDragStamp={isDragStamp}
-                      isSignYourself={false}
-                      addPositionOfSignature={addPositionOfSignature}
+                  <div
+                    style={{ maxHeight: window.innerHeight - 70 + "px" }}
+                    className="autoSignScroll"
+                  >
+                    <SignerListPlace
+                      signerPos={signerPos}
+                      signersdata={signersdata}
+                      isSelectListId={isSelectListId}
+                      setSignerObjId={setSignerObjId}
+                      setRoleName={setRoleName}
+                      setIsSelectId={setIsSelectId}
+                      setContractName={setContractName}
+                      handleAddSigner={handleAddSigner}
+                      setUniqueId={setUniqueId}
+                      handleDeleteUser={handleDeleteUser}
+                      handleRoleChange={handleRoleChange}
+                      handleOnBlur={handleOnBlur}
                       title={"Roles"}
                     />
+                    <div data-tut="reactourSecond">
+                      <FieldsComponent
+                        pdfUrl={isMailSend}
+                        dragSignature={dragSignature}
+                        signRef={signRef}
+                        handleDivClick={handleDivClick}
+                        handleMouseLeave={handleMouseLeave}
+                        isDragSign={isDragSign}
+                        themeColor={themeColor}
+                        dragStamp={dragStamp}
+                        dragRef={dragRef}
+                        isDragStamp={isDragStamp}
+                        isSignYourself={false}
+                        addPositionOfSignature={addPositionOfSignature}
+                        title={"Roles"}
+                        initial={true}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
