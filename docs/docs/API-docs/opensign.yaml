@@ -829,7 +829,7 @@ components:
         file:
           type: string
           format: binary
-        Name:
+        Title:
           type: string
         Description:
           type: string
@@ -916,7 +916,7 @@ components:
         file:
           type: string
           format: binary
-        Name:
+        Title:
           type: string
         Description:
           type: string
