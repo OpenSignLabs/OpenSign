@@ -40,6 +40,7 @@ paths:
       tags:
       - User
       summary: Get your details
+      description: The Get User API enables you to get your own details.
       operationId: getUser
       parameters:
       - name: x-api-token
@@ -76,6 +77,7 @@ paths:
       tags:
       - Contacts
       summary: Create contact
+      description: The Create contact API allows you to effortlessly create new contacts that can act as signers for your important documents.
       operationId: createcontact
       parameters:
       - name: x-api-token
@@ -87,7 +89,7 @@ paths:
           type: string
         example: opensign.xxxx
       requestBody:
-        description: provide below parameter to create contact
+        description: Provide below parameter to create contact
         content:
           application/json:
             schema:
@@ -119,7 +121,7 @@ paths:
       tags:
       - Contacts
       summary: Get contact
-      description: get a contact
+      description: The Get Contact API allows you to retrieve details about a specific contact.
       operationId: getcontact
       parameters:
       - name: x-api-token
@@ -164,8 +166,8 @@ paths:
     delete:
       tags:
       - Contacts
-      summary: Deletes contact
-      description: delete a contact
+      summary: Delete contact
+      description: "The Delete Contact API allows you to remove a contact from your contactbook. If you no longer need a particular contact's information, this API makes it easy to delete their record."
       operationId: deletecontact
       parameters:
       - name: x-api-token
@@ -212,7 +214,7 @@ paths:
       tags:
       - Contacts
       summary: Get contact list
-      description: ""
+      description: "The Contact List API empowers you to retrieve a list of contacts, providing a comprehensive view of all available contacts in your contactbook."
       operationId: contactlist
       parameters:
       - name: x-api-token
@@ -259,6 +261,7 @@ paths:
       tags:
       - Documents
       summary: Create document
+      description: "The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios."
       operationId: createdocument
       parameters:
       - name: x-api-token
@@ -295,7 +298,7 @@ paths:
       tags:
       - Documents
       summary: Get document by ID
-      description: Get a document
+      description: The Get Document API enables you to retrieve details about a specific document.
       operationId: getdocument
       parameters:
       - name: x-api-token
@@ -341,6 +344,7 @@ paths:
       tags:
       - Documents
       summary: Update document by ID
+      description: The Update Document API allows users to modify and update the details of a specific document.
       operationId: updateDocument
       parameters:
       - name: x-api-token
@@ -361,7 +365,7 @@ paths:
           type: string
           format: string
       requestBody:
-        description: provide below parameter to update templates (at least one parameter required)
+        description: Provide below parameter to update templates (at least one parameter required)
         content:
           application/json:
             schema:
@@ -395,7 +399,7 @@ paths:
       tags:
       - Documents
       summary: Delete document by ID
-      description: delete a document
+      description: The Delete document API allows you to remove specific document from your documents.
       operationId: deletedocument
       parameters:
       - name: x-api-token
@@ -530,7 +534,7 @@ paths:
       tags:
       - Templates
       summary: Create template
-      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template."
+      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template and **url** to edit template."
       operationId: createtemplate
       parameters:
       - name: x-api-token
@@ -565,7 +569,7 @@ paths:
       tags:
       - Templates
       summary: Get template by ID
-      description: ""
+      description: The Get Template API allows you to retrieve details about a specific template. Templates serve as blueprints for creating documents with predefined structures.
       operationId: getTemplate
       parameters:
       - name: x-api-token
@@ -608,6 +612,7 @@ paths:
       tags:
       - Templates
       summary: Update template by ID
+      description: The Update Template API enables you to modify and update the details of a specific template.
       operationId: updateTemplate
       parameters:
       - name: x-api-token
@@ -628,7 +633,7 @@ paths:
           type: string
           format: string
       requestBody:
-        description: provide below parameter to update templates (at least one parameter required)
+        description: Provide below parameter to update templates (at least one parameter required)
         content:
           application/json:
             schema:
@@ -662,6 +667,7 @@ paths:
       tags:
       - Templates
       summary: Delete template by ID
+      description: The Delete Template API provides you with the ability to remove a specific template from the templates. If a template is no longer needed
       operationId: deleteTemplate
       parameters:
       - name: x-api-token
@@ -705,6 +711,7 @@ paths:
       tags:
       - Templates
       summary: Get template list
+      description: "The Get Template List API allows you to retrieve a list of available templates. This functionality provides an overview of all templates, enabling users to choose from existing templates when creating documents."
       operationId: gettemplatelist
       parameters:
       - name: x-api-token
