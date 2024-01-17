@@ -269,6 +269,12 @@ paths:
         schema:
           type: string
         example: opensign.xxxx
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/createdocument_body'
+        required: true
       responses:
         "200":
           description: Document created successfully!
@@ -537,9 +543,10 @@ paths:
         example: opensign.xxxx
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/createtemplate'
+              $ref: '#/components/schemas/createtemplate_body'
+        required: true
       responses:
         "200":
           description: Template created successfully!
@@ -973,6 +980,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/contact'
+    createdocument_body:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        Name:
+          type: string
+        Description:
+          type: string
+        Note:
+          type: string
+        Signers:
+          type: array
+          items:
+            type: string
     inline_response_200_1:
       type: object
       properties:
@@ -1044,6 +1067,22 @@ components:
         error:
           type: string
           example: Report not available!
+    createtemplate_body:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        Name:
+          type: string
+        Description:
+          type: string
+        Note:
+          type: string
+        Signers:
+          type: array
+          items:
+            type: string
     inline_response_200_4:
       type: object
       properties:
