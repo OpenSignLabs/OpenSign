@@ -2,10 +2,9 @@ import axios from 'axios';
 export default async function createContact(request, response) {
   const serverUrl = process.env.SERVER_URL;
   const appId = process.env.APP_ID;
-  const name = request.body.name;
-  const phone = request.body.phone;
-  const email = request.body.email;
-
+  const name = request.body.Name;
+  const phone = request.body.Phone;
+  const email = request.body.Email;
   const reqToken = request.headers['x-api-token'];
   if (!reqToken) {
     return response.status(400).json({ error: 'Please Provide API Token' });
@@ -20,15 +19,14 @@ export default async function createContact(request, response) {
     try {
       const Tenant = new Parse.Query('partners_Tenant');
       Tenant.equalTo('UserId', userId);
-      const tenantRes = Tenant.first({ useMasterKey: true });
+      const tenantRes = await Tenant.first({ useMasterKey: true });
 
       const contactQuery = new Parse.Object('contracts_Contactbook');
       contactQuery.set('Name', name);
       contactQuery.set('Phone', phone);
       contactQuery.set('Email', email);
       contactQuery.set('UserRole', 'contracts_Guest');
-
-      if (tenantRes) {
+      if (tenantRes && tenantRes.id) {
         contactQuery.set('TenantId', {
           __type: 'Pointer',
           className: 'partners_Tenant',
@@ -58,23 +56,26 @@ export default async function createContact(request, response) {
             userId: user.id,
           };
           await axios.post(roleurl, body, { headers: headers });
-          const currentUser = Parse.User.current();
-          contactQuery.set('CreatedBy', Parse.User.createWithoutData(currentUser.id));
-
+          const currentUser = userId;
+          contactQuery.set('CreatedBy', currentUser);
           contactQuery.set('UserId', user);
+
           const acl = new Parse.ACL();
-          acl.setReadAccess(currentUser.id, true);
-          acl.setWriteAccess(currentUser.id, true);
+          acl.setReadAccess(id, true);
+          acl.setWriteAccess(id, true);
           acl.setReadAccess(user.id, true);
           acl.setWriteAccess(user.id, true);
-
           contactQuery.setACL(acl);
 
           const contactRes = await contactQuery.save();
-          // const parseData = JSON.parse(JSON.stringify(res));
+          const parseRes = JSON.parse(JSON.stringify(contactRes));
           return response.json({
-            message: 'Contact created sucessfully!',
-            result: { objectId: contactRes.id },
+            objectId: parseRes.objectId,
+            Name: parseRes.Name,
+            Email: parseRes.Email,
+            Phone: parseRes.Phone,
+            createdAt: parseRes.createdAt,
+            updatedAt: parseRes.updatedAt,
           });
         }
       } catch (err) {
@@ -82,10 +83,10 @@ export default async function createContact(request, response) {
         if (err.code === 202) {
           const params = { email: email };
           const userRes = await Parse.Cloud.run('getUserId', params);
-          const roleurl = `${parseBaseUrl}functions/AddUserToRole`;
+          const roleurl = `${serverUrl}/functions/AddUserToRole`;
           const headers = {
             'Content-Type': 'application/json',
-            'X-Parse-Application-Id': parseAppId,
+            'X-Parse-Application-Id': appId,
             // sessionToken: localStorage.getItem('accesstoken'),
           };
           const body = {
@@ -94,17 +95,15 @@ export default async function createContact(request, response) {
             userId: userRes.id,
           };
           await axios.post(roleurl, body, { headers: headers });
-          const currentUser = Parse.User.current();
-          contactQuery.set('CreatedBy', Parse.User.createWithoutData(currentUser.id));
-
+          contactQuery.set('CreatedBy', userId);
           contactQuery.set('UserId', {
             __type: 'Pointer',
             className: '_User',
             objectId: userRes.id,
           });
           const acl = new Parse.ACL();
-          acl.setReadAccess(currentUser.id, true);
-          acl.setWriteAccess(currentUser.id, true);
+          acl.setReadAccess(id, true);
+          acl.setWriteAccess(id, true);
           acl.setReadAccess(userRes.id, true);
           acl.setWriteAccess(userRes.id, true);
 
@@ -118,14 +117,18 @@ export default async function createContact(request, response) {
               Email: parseRes.Email,
               Phone: parseRes.Phone,
               createdAt: parseRes.createdAt,
-              updateAt: parseRes.updateAt,
+              updatedAt: parseRes.updatedAt,
             });
           }
-          //   const parseData = JSON.parse(JSON.stringify(res));
+        } else {
+          return response
+            .status(400)
+            .json({ error: 'Something went wrong, please try again later!' });
         }
       }
     } catch (err) {
-      return response.status(404).json({ error: 'Something went wrong, please try again later!' });
+      console.log('err ', err);
+      return response.status(400).json({ error: 'Something went wrong, please try again later!' });
     }
   } else {
     return response.status(405).json({ error: 'Invalid API Token!' });
