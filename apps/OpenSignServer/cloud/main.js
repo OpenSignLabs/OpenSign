@@ -19,7 +19,11 @@ import getDrive from './parsefunction/getDrive.js';
 import getReport from './parsefunction/getReport.js';
 import TemplateAfterSave from './parsefunction/TemplateAfterSave.js';
 import GetTemplate from './parsefunction/GetTemplate.js';
+import LoginSSO from './parsefunction/loginSSO.js';
+import GetTokens from './parsefunction/getTokens.js';
 
+Parse.Cloud.define('login', LoginSSO);
+Parse.Cloud.define('getTokens', GetTokens);
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
 Parse.Cloud.define('signPdf', PDF);
