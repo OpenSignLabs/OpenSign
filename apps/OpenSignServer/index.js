@@ -19,6 +19,7 @@ import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
+import { validateAuthData } from './middlewares/CustomAuth.js';
 
 const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 // console.log("configuration ", configuration);
@@ -159,6 +160,7 @@ if (!process.env.TESTING) {
   const mountPath = process.env.PARSE_MOUNT || '/app';
   const server = new ParseServer(config);
   await server.start();
+  app.use(validateAuthData)
   app.use(mountPath, server.app);
 }
 // Mount your custom express app

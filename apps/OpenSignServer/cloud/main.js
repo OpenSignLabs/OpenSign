@@ -22,6 +22,7 @@ import GetTemplate from './parsefunction/GetTemplate.js';
 import LoginSSO from './parsefunction/loginSSO.js';
 import GetTokens from './parsefunction/getTokens.js';
 import GetUserInfo from './parsefunction/getUserInfo.js';
+import getUserById from './parsefunction/getUserById.js';
 
 Parse.Cloud.define('login', LoginSSO);
 Parse.Cloud.define('getTokens', GetTokens);
@@ -38,6 +39,7 @@ Parse.Cloud.define('SendOTPMailV1', sendMailOTPv1);
 Parse.Cloud.define('sendmail', SendMailv1);
 Parse.Cloud.define('AuthLoginAsMail', AuthLoginAsMail);
 Parse.Cloud.define('getUserId', getUserId);
+Parse.Cloud.define('getUserById', getUserById);
 Parse.Cloud.define('getUserDetails', getUserDetails);
 Parse.Cloud.define('getDocument', getDocument);
 Parse.Cloud.define('getDrive', getDrive)
