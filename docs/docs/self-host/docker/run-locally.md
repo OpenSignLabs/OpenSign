@@ -1,6 +1,6 @@
-## Localhost(Docker)
+## Localhost Setup with Docker
 
-For local Setup we need to need following prerequisite:
+To set up OpenSign™ locally using Docker, the following prerequisites are required:
 
 Environment Varaibles:
 
