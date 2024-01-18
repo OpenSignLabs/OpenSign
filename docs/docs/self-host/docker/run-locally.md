@@ -1,7 +1,7 @@
 ---
-title: Code of conduct
+title: Localhost Setup with Docker
 ---
-## Localhost Setup with Docker
+## Setup OpenSign™ with Docker on Localhost
 
 To set up OpenSign™ locally using Docker, the following prerequisites are required:
 
