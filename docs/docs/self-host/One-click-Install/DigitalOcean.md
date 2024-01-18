@@ -1,4 +1,4 @@
-## Digital Ocean
+# Digital Ocean
 
 OpenSign application consistes of 3 components -
 - ReactJS frontend
