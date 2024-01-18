@@ -8,16 +8,15 @@ export default async function updateDocument(request, response) {
     tokenQuery.equalTo('token', reqToken);
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
-      // Valid Token then proceed request
-      const id = token.get('Id');
+      // Valid Token then proceed request      
       const allowedKeys = ['Name', 'Note', 'Description'];
       const objectKeys = Object.keys(request.body);
       const isValid = objectKeys.every(key => allowedKeys.includes(key)) && objectKeys.length > 0;
       if (isValid) {
-        const userId = { __type: 'Pointer', className: '_User', objectId: id };
+        const userPtr = token.get('userId');
         const document = new Parse.Query('contracts_Document');
         document.equalTo('objectId', request.params.document_id);
-        document.equalTo('CreatedBy', userId);
+        document.equalTo('CreatedBy', userPtr);
         const res = await document.first({ useMasterKey: true });
         if (res) {
           const isArchive = res.get('IsArchive');

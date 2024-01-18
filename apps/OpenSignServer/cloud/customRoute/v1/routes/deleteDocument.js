@@ -9,11 +9,10 @@ export default async function deleteDocument(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const id = token.get('Id');
-      const userId = { __type: 'Pointer', className: '_User', objectId: id };
+      const userPtr = token.get('userId');
       const Document = new Parse.Query('contracts_Document');
       Document.equalTo('objectId', request.params.document_id);
-      Document.equalTo('CreatedBy', userId);
+      Document.equalTo('CreatedBy', userPtr);
       const res = await Document.first({ useMasterKey: true });
       if (res) {
         const isArchive = res.get('IsArchive');

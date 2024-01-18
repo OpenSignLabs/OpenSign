@@ -371,7 +371,7 @@ const ReportTable = ({
                     )}
                     {heading.includes("Folder") && (
                       <td className="px-4 py-2">
-                        {item?.Folder?.Name || "OpenSignDrive"}
+                        {item?.Folder?.Name || "OpenSign™ Drive"}
                       </td>
                     )}
                     <td className="px-4 py-2">

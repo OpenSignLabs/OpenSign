@@ -11,9 +11,9 @@ export default async function getUser(request, response) {
   const token = await tokenQuery.first({ useMasterKey: true });
   if (token !== undefined) {
     // Valid Token then proceed request
-    const userId = token.get('Id');
+    const userPtr = token.get('userId');
     const query = new Parse.Query('contracts_Users');
-    query.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
+    query.equalTo('UserId', userPtr);
     query.exclude('IsContactEntry,TourStatus,UserRole,TenantId,UserId,CreatedBy,Plan');
     const user = await query.first({ useMasterKey: true });
     if (user) {
@@ -26,7 +26,7 @@ export default async function getUser(request, response) {
         JobTitle: parseRes.JobTitle,
         Company: parseRes.Company,
         createdAt: parseRes.createdAt,
-        updateAt: parseRes.updateAt,
+        updatedAt: parseRes.updatedAt,
       });
     } else {
       return response.status(404).json({ error: 'User not found!' });
