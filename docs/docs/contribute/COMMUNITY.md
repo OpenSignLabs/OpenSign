@@ -1,1 +1,4 @@
-
+- [Discord](https://discord.com/invite/xe9TDuyAyj)
+- [Twitter](https://www.twitter.com/opensignhq)
+- [LinkedIn](https://www.linkedin.com/company/opensign™/)
+- [Facebook](https://www.facebook.com/profile.php?id=61551030403669)
