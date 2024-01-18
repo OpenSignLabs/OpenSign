@@ -1,0 +1,8 @@
+{
+  "label": "One-click Install",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Start with installing OpenSign in your own cloud infrastructure."
+  }
+}
