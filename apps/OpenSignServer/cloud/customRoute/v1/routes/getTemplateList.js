@@ -14,18 +14,14 @@ export default async function getTemplatetList(request, response) {
   const token = await tokenQuery.first({ useMasterKey: true });
   if (token !== undefined) {
     // Valid Token then proceed request
-    const userId = token.get('Id');
+    const userPtr = token.get('userId');
     const limit = request?.query?.limit ? request.query.limit : 100;
     const skip = request?.query?.skip ? request.query.skip : 0;
 
     const clsName = 'contracts_Template';
     const params = {
       Type: { $ne: 'Folder' },
-      CreatedBy: {
-        __type: 'Pointer',
-        className: '_User',
-        objectId: userId,
-      },
+      CreatedBy: userPtr,
       IsArchive: { $ne: true },
     };
     const keys = [

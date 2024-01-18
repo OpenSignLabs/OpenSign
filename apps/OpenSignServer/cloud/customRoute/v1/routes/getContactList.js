@@ -9,12 +9,12 @@ export default async function getContactList(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const id = token.get('Id');
-      const userId = { __type: 'Pointer', className: '_User', objectId: id };
+      const userPtr = token.get('userId');
+
       const limit = request?.query?.limit ? request.query.limit : 100;
       const skip = request?.query?.skip ? request.query.skip : 0;
       const Contactbook = new Parse.Query('contracts_Contactbook');
-      Contactbook.equalTo('CreatedBy', userId);
+      Contactbook.equalTo('CreatedBy', userPtr);
       Contactbook.notEqualTo('IsDeleted', true);
       Contactbook.limit(limit);
       Contactbook.skip(skip);

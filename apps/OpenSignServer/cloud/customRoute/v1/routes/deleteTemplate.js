@@ -9,11 +9,10 @@ export default async function deletedTemplate(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const id = token.get('Id');
-      const userId = { __type: 'Pointer', className: '_User', objectId: id };
+      const userPtr = token.get('userId');
       const template = new Parse.Query('contracts_Template');
       template.equalTo('objectId', request.params.template_id);
-      template.equalTo('CreatedBy', userId);
+      template.equalTo('CreatedBy', userPtr);
       const res = await template.first({ useMasterKey: true });
       if (res) {
         const isArchive = res.get('IsArchive');
