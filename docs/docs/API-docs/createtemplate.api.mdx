@@ -1,11 +1,11 @@
 ---
-id: upload-file
-title: "uploads an image"
-description: ""
-sidebar_label: "uploads an image"
+id: createtemplate
+title: "Template Creation API"
+description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template."
+sidebar_label: "Template Creation API"
 hide_title: true
 hide_table_of_contents: true
-api: eJyNVG1v2jAQ/iuW+2WVgND2G5qmsaqrqlWjGkz70KLJcS7EJbE922mLEP99d05CU1akIQTJvT5399xteRArzyf3XBodhAyeLwc8Ay+dskEZzSecD7ix4AS93mQoqG1pRPZVlYAqB39q8OGLyTZ8so1hQAd6FNaWSka3xMgAYeiDA1GRzssCKkFPYWMBY6JK6RXGy42rBPrzVGnhNnyHH8rirdEePLmcj8f09xalr6UE7/O6ZHu0GO4InkdPTu/gMOkjyICO1lGYoJqU0mTQs1IYdAWuDxdFF+ccoTYmh4WhokJ4YvWeDpUvVUkKLSpSnJxkkIu6DDGgCiUJp1b9aNsQu4IqD7J2KmDn76k+9XsN9LzcLSldKAyNyxofCxKhwLekHXSpotSDewLnY4DaIQZehGD9JEmwXSNsgfZqpUuR+pE0FQpV8nTGKX6Xe04tbLq0R7CvECXfUDDoCnsZomQYzBpoOIoGV4DIsJVUjtK5ic5txTNMP8f0bHp3wzDtITMXhfIMv6TOjKwrnHScL8OxsANvlgoPGUNlKCAqSX4xOmPeglR5S40Re9APem4qYLUHolOp9NpPHvSQ3c9yNFOiZL8g9SrA8kPXrefn53+6dRp9rlUo6pQ5sObVfBWFsaV9r/3LKdYawFV+ls9xQkpCO5kjqZJonLSEx/FSG5HZiibaij4fOhG5cCOACPXKven13S22ZYyxXgnxH5CT25vLq+/zK4pKlGpGdDYaYygUEQsroXuJmjPimdBMVbQYB+PtHRO6QS2jAryExJYCubNrEW5bbu+PWOQ2UrQg5qN4u6XZ/3TlbkdiPFgurgkCFU6JlMiGSzPouEjLEHnMLxsEwwUlJ/Oybmh95LTtBp3nFM+RDUd84vl5s6R3s/kCjdP2jFbx3vCcbiziEjXV19+qddyq9oHwdiq96eV8u24NMPolmO86fKSdwI39tDdvNEcd2o511jSVJZ6mv+5WK3E=
+api: eJztVt9v4zYM/ld0upddkSbp3T3l6bquKIIVbdCk2ENaDLLNxGplyZPk/FiQ/32kbCeOkxsaYI/rFT2bpEjqI/nRG+7F3PHBlHvIciU8OP7a4Qm42MrcS6P5gE9SYJNKzW4sCJKz69GQCaXM0rHCgXXMGxaTElhcOG8y+beIFLCd4w5bpjJOGRovgAnHIlVAbqX2js2MZXPQYNG3nrPExEUGpFhKn7LcQgIzqSFhztsi9oUF12XPOabhijgG52aF2kUq08AcO8xj6pSoBTyjHROs0PKvAtjFRW09TC4u0E54FgvNIqDbJHSZKh9oZBMJ0mFU8utyiOVMknHlqss73OThEkYPE4SuBKTWo9oCRnf+V5Os+WDDY6M9eqZHkedKxuFo780R8Bvu4hQyQU9+nQP6M9EbxB795JYCeYn1Qu2DyKBhhSAhimiFsGbCNyWwEphLMAoPu9z5tsMfjD/bzUgBgoIALyQsmdBYIjkngKTbAUe+f2u21HkhdnVttiW6fH66P9dV6n3uBr3e2hRWZmIO3dhk5IuSxiZu+BPWinXz8JS/Gfgxz4RU4VQH31PdEODgrDJFLnSox85phy8tlhewI7B9AcNJvJM7lfw+VQpWvVXhTjtHb156dSDaEgoqAUtNeB5CqzcXias7sRoFN4cxW+3cCN3WbOkwTimOqCt79Gu/T/+1qOVgZGm+d+Os1p8wsf9oQGKTNDsbOQfmYJtQoOjb13CjYNIGDRUZ5oUdc0J3hNPnz8hXolD+GKL6xk8VNhVU3/vfj9EZ6oVQMgkMNjHvoD+FWBn41BC75MaFqwqf4lvviGwC01JTTze8sKrR/4hlF/HR1DFKRI46DIWyt7ji21c6GeOA+PWY8C0hRO2f77BuTkgufwcakerWq0uUXHpKFIWSbpCCwC4MWVPJnvbsd1t3XM1eR4RU89HHKKbFMKdJo+KMn9BAgwU+Muv7CTsYGrr5zASYqsI/ItBjypjqiAAf71e8CP6Sur5PuWNpLbZOH+4gUpL8W/eq3kflhHTZi37RY5OFfUbbUUn97gYv+pJNH2doJoVif0DkkIpef6kBWS6XR33xJZy5w0VcRFiE3OzN50EYmqd5avfyBe/qwWbucTbGXpRxzcE/CdULxr1q7kUc5h4IdJqfUvSjfYggR2IAGqb9CF7fje4Rlj762rf+B1Lu3Q9vbh/Gt+SVhqcs0VW3j65QRCOXCd0IdPLLqF3jxqb//3PqnM+pimo8rHwPhTIs/lDQTcV70/buwdFMiRhRs9lQiGertlsSY6YWCWyKjwthJeFJb+ix4ikiysBx/KYs1+WE4pM5ghsor7WDtp36xDUCl/t/tX1tcPfocTxB46j6EMzCguJWLOkjEf8O+Av+Cx+U5CFQcJBvuBJ6XoRNxEu/9PMPphMdww==
 sidebar_class_name: "post api-method"
 info_path: docs/API-docs/opensign-api-v-1
 custom_edit_url: null
@@ -25,19 +25,19 @@ import TabItem from "@theme/TabItem";
 <h1
   className={"openapi__heading"}
 >
-  uploads an image
+  Template Creation API
 </h1>
 
 <MethodEndpoint
   method={"post"}
-  path={"/contactlist"}
+  path={"/createtemplate"}
 >
   
 </MethodEndpoint>
 
 
 
-
+The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template.
 
 ## Request
 
@@ -45,8 +45,8 @@ import TabItem from "@theme/TabItem";
   className={"openapi-tabs__mime"}
 >
   <TabItem
-    label={"application/octet-stream"}
-    value={"application/octet-stream-schema"}
+    label={"application/json"}
+    value={"application/json-schema"}
   >
     <details
       style={{}}
@@ -70,15 +70,61 @@ import TabItem from "@theme/TabItem";
       </div><ul
         style={{"marginLeft":"1rem"}}
       >
-        <div
-          style={{"marginTop":".5rem","marginBottom":".5rem","marginLeft":"1rem"}}
+        <SchemaItem
+          collapsible={false}
+          name={"Name"}
+          required={false}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string","format":"string","example":"sample template"}}
         >
           
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"Note"}
+          required={false}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string","format":"string","example":"Please review and sign this document"}}
+        >
           
-          string
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"Description"}
+          required={false}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string","format":"string","example":"template description"}}
+        >
           
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"URL"}
+          required={false}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string","format":"string","example":"https://yourimage.com"}}
+        >
           
-        </div>
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"signers"}
+          required={false}
+          schemaName={"signers[]"}
+          qualifierMessage={undefined}
+          schema={{"type":"array","example":["joe@gmail.com","john@gmail.com"],"xml":{"name":"signers","wrapped":true},"items":{"type":"string","example":"joe@example.com","xml":{"name":"signers"},"title":"signers"}}}
+        >
+          
+        </SchemaItem><SchemaItem
+          collapsible={false}
+          name={"folderId"}
+          required={false}
+          schemaName={"string"}
+          qualifierMessage={undefined}
+          schema={{"type":"string","format":"string","example":"xjsba1GaxP"}}
+        >
+          
+        </SchemaItem>
       </ul>
     </details>
   </TabItem>
@@ -92,7 +138,7 @@ import TabItem from "@theme/TabItem";
         <div>
           
           
-          successful operation
+          Template created successfully!
           
           
         </div><div>
@@ -175,6 +221,19 @@ import TabItem from "@theme/TabItem";
               </SchemaTabs>
             </TabItem>
           </MimeTabs>
+        </div>
+      </TabItem><TabItem
+        label={"404"}
+        value={"404"}
+      >
+        <div>
+          
+          
+          Invalid API Token!
+          
+          
+        </div><div>
+          
         </div>
       </TabItem>
     </ApiTabs>

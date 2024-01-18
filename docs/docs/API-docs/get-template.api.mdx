@@ -1,0 +1,219 @@
+---
+id: get-template
+title: "Get template by ID"
+description: ""
+sidebar_label: "Get template by ID"
+hide_title: true
+hide_table_of_contents: true
+api: eJyVVU1v2zAM/SuaLluBNG63nXJasRZBsKItlg47tMUg23Ss1pY8ic4HDP/3kYqduGk3rECAWBT5SJF8ZCNRLbyc3EmEsioUgpcPI5mCT5yuUFsjJ1KOpK3AKT7OUhIsAG87dbqrlFMlIDjGaaShA+n0eL90SjqacSqFuTwEn50Lm4leW2CuUBiA1Au0IgaRASY5MIaD37V29DlBV8NIetwU7MlrsuVAYF0VNiVRpgrPCmRYKjlpJG6qoIlOmwVpZtaVCrcSErTtA8P7yhpPCSCDjycn/Pc8VF8nCXif1YXY5YPAEmsQDLK+qqpCJ+EievRs1LyMwsaPkCAnzjEM6q3Lq5C3f8e6lcBahReTKHzssifbkbyy+GaYmwKUB+FgqWEllEmF1wtDtdBepDapS34eYZ8P0/E2F7sCD1NKkD++X74VKkes/CSKNrZ2ulQLGCe2ZCwOOnThDk85pzZD4zv5aOHLolS6CFYjOudmIKBGWJcFQ3R93IOO5MpRefv2I3ea3uRfC34fKjvrTp2718EJDTUWz0QtZ6FIwTHl3pah9aOP1elUrW8CzHOfiQOqw7BleteHNy0bf36NCT37hbEoMlub9J0Mup9f6s7MUhU6FWc3M3Frn8C8ex+iopGR226ahClCw2Eio9591AwmSEsKHtyynzG1KwaNQGUZE5MMp65QsedUk1BHy1PJzPaQUKfgZs5M3JKNbn89wWbYKpX+BtwrXZrWxyQ5Rg64n185KCpHCF6bzAbjLnXX5H7OnOFXktvDKXfLVKIfX/eMCmOCsufEgbWIiY2psMxACJcs/zQ+Fb6CRGfdhBmLe3Nv5rYEUXvgqVRo8+Qn9+ZY3F1npKZVIX5C7KlTHz702VqtVi+ydRRsphrzOqYxUNm9+iIIQ0qHVrvDEb2VZn/pr7M5VUgnPUX/4ioKylE3N1US5iYw/7gDt6Ivh0bcXDRYSQiDTj6b3lxSWk4Ia98Q/xFydDn7enE1v2BUbqltiU7HJwRFosp6LJUZOJoC7jdUvBGz88MCN/stwOuy6ymENUZkpcOoCzE2XaPvFy6pT4bLkho2pwhYpWm4E364om1Z/LsGRy17R59L5bSKw0QjvmnP3+lu8f01tA/fux16JP5/7776mJ41hilDBK9h+/JAqmfLv30g9Y46HO1W44xWaYUD2xerk5m7mxHTi1vi3R8/Pvp4
+sidebar_class_name: "get api-method"
+info_path: docs/API-docs/opensign-api-v-1
+custom_edit_url: null
+---
+
+import ApiTabs from "@theme/ApiTabs";
+import DiscriminatorTabs from "@theme/DiscriminatorTabs";
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import SecuritySchemes from "@theme/ApiExplorer/SecuritySchemes";
+import MimeTabs from "@theme/MimeTabs";
+import ParamsItem from "@theme/ParamsItem";
+import ResponseSamples from "@theme/ResponseSamples";
+import SchemaItem from "@theme/SchemaItem";
+import SchemaTabs from "@theme/SchemaTabs";
+import TabItem from "@theme/TabItem";
+
+<h1
+  className={"openapi__heading"}
+>
+  Get template by ID
+</h1>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/template/{template_id}"}
+>
+  
+</MethodEndpoint>
+
+
+
+
+
+## Request
+
+<details
+  style={{"marginBottom":"1rem"}}
+  className={"openapi-markdown__details"}
+  data-collapsed={false}
+  open={true}
+>
+  <summary
+    style={{}}
+  >
+    <h3
+      className={"openapi-markdown__details-summary-header-params"}
+    >
+      Path Parameters
+    </h3>
+  </summary><div>
+    <ul>
+      <ParamsItem
+        className={"paramsItem"}
+        param={{"name":"template_id","in":"path","description":"ID of template that needs to be fetched","required":true,"style":"simple","explode":false,"schema":{"type":"string","format":"strng"}}}
+      >
+        
+      </ParamsItem>
+    </ul>
+  </div>
+</details><div>
+  <div>
+    <ApiTabs>
+      <TabItem
+        label={"200"}
+        value={"200"}
+      >
+        <div>
+          
+          
+          successful operation
+          
+          
+        </div><div>
+          <MimeTabs
+            className={"openapi-tabs__mime"}
+            schemaType={"response"}
+          >
+            <TabItem
+              label={"application/json"}
+              value={"application/json"}
+            >
+              <SchemaTabs
+                className={"openapi-tabs__schema"}
+              >
+                <TabItem
+                  label={"Schema"}
+                  value={"Schema"}
+                >
+                  <details
+                    style={{}}
+                    className={"openapi-markdown__details response"}
+                    data-collapsed={false}
+                    open={true}
+                  >
+                    <summary
+                      style={{}}
+                      className={"openapi-markdown__details-summary-response"}
+                    >
+                      <strong>
+                        Schema
+                      </strong>
+                    </summary><div
+                      style={{"textAlign":"left","marginLeft":"1rem"}}
+                    >
+                      
+                    </div><ul
+                      style={{"marginLeft":"1rem"}}
+                    >
+                      <SchemaItem
+                        collapsible={false}
+                        name={"Name"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string","format":"string","example":"sample template"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"Note"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string","format":"string","example":"Please review and sign this document"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"Description"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string","format":"string","example":"template description"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"URL"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string","format":"string","example":"https://yourimage.com"}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"signers"}
+                        required={false}
+                        schemaName={"signers[]"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"array","example":["joe@gmail.com","john@gmail.com"],"xml":{"name":"signers","wrapped":true},"items":{"type":"string","example":"joe@example.com","xml":{"name":"signers"},"title":"signers"}}}
+                      >
+                        
+                      </SchemaItem><SchemaItem
+                        collapsible={false}
+                        name={"folderId"}
+                        required={false}
+                        schemaName={"string"}
+                        qualifierMessage={undefined}
+                        schema={{"type":"string","format":"string","example":"xjsba1GaxP"}}
+                      >
+                        
+                      </SchemaItem>
+                    </ul>
+                  </details>
+                </TabItem><TabItem
+                  label={"Example (from schema)"}
+                  value={"Example (from schema)"}
+                >
+                  <ResponseSamples
+                    responseExample={"{\n  \"Name\": \"sample template\",\n  \"Note\": \"Please review and sign this document\",\n  \"Description\": \"template description\",\n  \"URL\": \"https://yourimage.com\",\n  \"signers\": [\n    \"joe@gmail.com\",\n    \"john@gmail.com\"\n  ],\n  \"folderId\": \"xjsba1GaxP\"\n}"}
+                    language={"json"}
+                  >
+                    
+                  </ResponseSamples>
+                </TabItem>
+              </SchemaTabs>
+            </TabItem>
+          </MimeTabs>
+        </div>
+      </TabItem><TabItem
+        label={"400"}
+        value={"400"}
+      >
+        <div>
+          
+          
+          Template not found!
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem><TabItem
+        label={"404"}
+        value={"404"}
+      >
+        <div>
+          
+          
+          Invalid API Token!'
+          
+          
+        </div><div>
+          
+        </div>
+      </TabItem>
+    </ApiTabs>
+  </div>
+</div>
+      

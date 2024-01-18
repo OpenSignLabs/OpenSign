@@ -11,26 +11,32 @@ const sidebar: SidebarConfig = [
     "items": [
       {
         "type": "doc",
-        "id": "API-docs/place-order",
-        "label": "Place an order for a pet",
+        "id": "API-docs/createtemplate",
+        "label": "Template Creation API",
         "className": "api-method post"
       },
       {
         "type": "doc",
-        "id": "API-docs/get-order-by-id",
-        "label": "Find purchase order by ID",
+        "id": "API-docs/get-template",
+        "label": "Get template by ID",
         "className": "api-method get"
       },
       {
         "type": "doc",
-        "id": "API-docs/delete-order",
-        "label": "Delete purchase order by ID",
+        "id": "API-docs/update-template",
+        "label": "update template by ID",
+        "className": "api-method put"
+      },
+      {
+        "type": "doc",
+        "id": "API-docs/delete-template",
+        "label": "Delete template by ID",
         "className": "api-method delete"
       },
       {
         "type": "doc",
-        "id": "API-docs/create-user",
-        "label": "Create user",
+        "id": "API-docs/template-list",
+        "label": "Get template list",
         "className": "api-method post"
       }
     ]
