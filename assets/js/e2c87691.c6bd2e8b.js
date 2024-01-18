@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkOpenSign_Docs=self.webpackChunkOpenSign_Docs||[]).push([[420],{89898:e=>{e.exports=JSON.parse('{"title":"Docker","slug":"/category/docker","permalink":"/docs/category/docker","navigation":{"next":{"title":"Manage Docs Versions","permalink":"/docs/self-host/tutorial-extras/manage-docs-versions"}}}')}}]);

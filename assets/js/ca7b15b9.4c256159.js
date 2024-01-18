@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkOpenSign_Docs=self.webpackChunkOpenSign_Docs||[]).push([[7608],{19825:e=>{e.exports=JSON.parse('{"title":"Tutorial - Extras","slug":"/category/tutorial---extras","permalink":"/docs/category/tutorial---extras","navigation":{"next":{"title":"Manage Docs Versions","permalink":"/docs/self-host/tutorial-extras/manage-docs-versions"}}}')}}]);
