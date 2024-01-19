@@ -9,11 +9,10 @@ export default async function getTemplate(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const id = token.get('Id');
-      const userId = { __type: 'Pointer', className: '_User', objectId: id };
+      const userPtr = token.get('userId');
       const Template = new Parse.Query('contracts_Template');
       Template.equalTo('objectId', request.params.template_id);
-      Template.equalTo('CreatedBy', userId);
+      Template.equalTo('CreatedBy', userPtr);
       Template.notEqualTo('IsArchive', true);
       Template.include('Signers');
       Template.include('Folder');

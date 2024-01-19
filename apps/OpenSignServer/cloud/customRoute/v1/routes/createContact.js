@@ -14,11 +14,10 @@ export default async function createContact(request, response) {
   const token = await tokenQuery.first({ useMasterKey: true });
   if (token !== undefined) {
     // Valid Token then proceed request
-    const id = token.get('Id');
-    const userId = { __type: 'Pointer', className: '_User', objectId: id };
+    const userPtr = token.get('userId');
     try {
       const Tenant = new Parse.Query('partners_Tenant');
-      Tenant.equalTo('UserId', userId);
+      Tenant.equalTo('UserId', userPtr);
       const tenantRes = await Tenant.first({ useMasterKey: true });
 
       const contactQuery = new Parse.Object('contracts_Contactbook');
@@ -56,13 +55,13 @@ export default async function createContact(request, response) {
             userId: user.id,
           };
           await axios.post(roleurl, body, { headers: headers });
-          const currentUser = userId;
+          const currentUser = userPtr;
           contactQuery.set('CreatedBy', currentUser);
           contactQuery.set('UserId', user);
 
           const acl = new Parse.ACL();
-          acl.setReadAccess(id, true);
-          acl.setWriteAccess(id, true);
+          acl.setReadAccess(userPtr.id, true);
+          acl.setWriteAccess(userPtr.id, true);
           acl.setReadAccess(user.id, true);
           acl.setWriteAccess(user.id, true);
           contactQuery.setACL(acl);
@@ -79,7 +78,7 @@ export default async function createContact(request, response) {
           });
         }
       } catch (err) {
-        console.log('err ', err);
+        console.log('err in', err);
         if (err.code === 202) {
           const params = { email: email };
           const userRes = await Parse.Cloud.run('getUserId', params);
@@ -95,15 +94,15 @@ export default async function createContact(request, response) {
             userId: userRes.id,
           };
           await axios.post(roleurl, body, { headers: headers });
-          contactQuery.set('CreatedBy', userId);
+          contactQuery.set('CreatedBy', userPtr);
           contactQuery.set('UserId', {
             __type: 'Pointer',
             className: '_User',
             objectId: userRes.id,
           });
           const acl = new Parse.ACL();
-          acl.setReadAccess(id, true);
-          acl.setWriteAccess(id, true);
+          acl.setReadAccess(userPtr.id, true);
+          acl.setWriteAccess(userPtr.id, true);
           acl.setReadAccess(userRes.id, true);
           acl.setWriteAccess(userRes.id, true);
 
@@ -121,6 +120,9 @@ export default async function createContact(request, response) {
             });
           }
         } else {
+          if (err.code === 137) {
+            return response.status(401).json({ error: 'Contact already exists!' });
+          }
           return response
             .status(400)
             .json({ error: 'Something went wrong, please try again later!' });
@@ -128,7 +130,13 @@ export default async function createContact(request, response) {
       }
     } catch (err) {
       console.log('err ', err);
-      return response.status(400).json({ error: 'Something went wrong, please try again later!' });
+      if (err.code === 137) {
+        return response.status(137).json({ error: 'Contact already exists!' });
+      } else {
+        return response
+          .status(400)
+          .json({ error: 'Something went wrong, please try again later!' });
+      }
     }
   } else {
     return response.status(405).json({ error: 'Invalid API Token!' });

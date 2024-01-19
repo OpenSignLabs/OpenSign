@@ -17,9 +17,10 @@ import getTemplatetList from './routes/getTemplateList.js';
 import updateTemplate from './routes/updateTemplate.js';
 import createContact from './routes/createContact.js';
 import multer from 'multer';
-import fs from 'node:fs';
+// import fs from 'node:fs';
 import updateDocument from './routes/updateDocument.js';
 import deleteDocument from './routes/deleteDocument.js';
+// import createDocumentWithTemplate from './routes/CreateDocumentWithTemplate.js';
 
 dotenv.config();
 const storage = multer.memoryStorage();
@@ -47,6 +48,8 @@ app.get('/contactlist', getContactList);
 // create Document
 app.post('/createdocument', upload.array('file', 1), createDocument);
 
+// create Document with templateId
+// app.post('/createdocument/:template_id', createDocumentWithTemplate);
 // get Document on the basis of id
 app.get('/document/:document_id', getDocument);
 
@@ -60,7 +63,7 @@ app.delete('/document/:document_id', deleteDocument);
 app.get('/documentlist/:doctype', getDocumentList);
 
 // create Template
-app.post('/createtemplate',upload.array('file', 1), createTemplate);
+app.post('/createtemplate', upload.array('file', 1), createTemplate);
 
 // get template on the basis of id
 app.get('/template/:template_id', getTemplate);
@@ -73,4 +76,3 @@ app.delete('/template/:template_id', deletedTemplate);
 
 // get all types of documents on the basis of doctype
 app.get('/templatelist', getTemplatetList);
-

@@ -9,11 +9,6 @@ export default async function createTemplate(request, response) {
   const url = process.env.SERVER_URL;
   const fileData = request.files[0] ? request.files[0].buffer : null;
   try {
-    const file = new Parse.File(request.files[0].originalname, {
-      base64: fileData.toString('base64'),
-    });
-    await file.save({ useMasterKey: true });
-    const fileUrl = file.url();
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
       return response.status(400).json({ error: 'Please Provide API Token' });
@@ -23,9 +18,12 @@ export default async function createTemplate(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const id = token.get('Id');
-      const userId = { __type: 'Pointer', className: '_User', objectId: id };
-
+      const userPtr = token.get('userId');
+      const file = new Parse.File(request.files?.[0]?.originalname, {
+        base64: fileData.toString('base64'),
+      });
+      await file.save({ useMasterKey: true });
+      const fileUrl = file.url();
       const contractsUser = new Parse.Query('contracts_Users');
       contractsUser.equalTo('UserId', userId);
       const extUser = await contractsUser.first({ useMasterKey: true });
@@ -42,10 +40,11 @@ export default async function createTemplate(request, response) {
         object.set('Description', description);
       }
       object.set('URL', fileUrl);
-      object.set('CreatedBy', userId);
+      object.set('CreatedBy', userPtr);
       object.set('ExtUserPtr', extUserPtr);
       if (signers) {
-        const placeholders = signers.map((x, i) => ({
+        const parseSigners = JSON.parse(signers);
+        const placeholders = parseSigners.map((x, i) => ({
           email: x,
           Id: randomId(),
           Role: 'User ' + (i + 1),
@@ -62,8 +61,8 @@ export default async function createTemplate(request, response) {
       const newACL = new Parse.ACL();
       newACL.setPublicReadAccess(false);
       newACL.setPublicWriteAccess(false);
-      newACL.setReadAccess(id, true);
-      newACL.setWriteAccess(id, true);
+      newACL.setReadAccess(userPtr.id, true);
+      newACL.setWriteAccess(userPtr.id, true);
       object.setACL(newACL);
       const res = await object.save(null, { useMasterKey: true });
       return response.json({ objectId: res.id, url: url });
