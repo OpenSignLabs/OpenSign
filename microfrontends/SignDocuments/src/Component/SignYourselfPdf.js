@@ -106,6 +106,7 @@ function SignYourSelf() {
       id: 1,
       text: "signature"
     },
+
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
     })
@@ -117,6 +118,7 @@ function SignYourSelf() {
       id: 2,
       text: "stamp"
     },
+
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
     })
@@ -130,6 +132,7 @@ function SignYourSelf() {
       id: 3,
       text: "drag me"
     },
+    canDrag: false,
     collect: (monitor) => ({
       isDragSignatureSS: !!monitor.isDragging()
     })
@@ -171,17 +174,6 @@ function SignYourSelf() {
   const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
-    // localStorage.setItem("accesstoken", "r:17de3495dd207dc88677da7f9f9e4d6b");
-    // localStorage.setItem(
-    //   "baseUrl",
-    //   "https://staging-app.opensignlabs.com/api/app/"
-    // );
-    // localStorage.setItem("parseAppId", "opensignstgn");
-    // localStorage.setItem(
-    //   "Parse/opensignstgn/currentUser",
-    //   '{"name":"raktima","email":"raktimachaurasiya@gmail.com","phone":"5645676534","username":"raktimachaurasiya@gmail.com","emailVerified":false,"createdAt":"2024-01-10T14:40:59.326Z","updatedAt":"2024-01-10T14:40:59.326Z","ACL":{"9MUdPyX2ae":{"read":true,"write":true}},"sessionToken":"r:17de3495dd207dc88677da7f9f9e4d6b","__type":"Object","className":"_User","objectId":"9MUdPyX2ae"}'
-    // );
-    // localStorage.setItem("_appName", "contracts");
     if (documentId) {
       getDocumentDetails(true);
     }
@@ -331,6 +323,16 @@ function SignYourSelf() {
       (data) => data.pageNumber === pageNumber
     );
 
+    const widgetValue =
+      monitor.type === "name"
+        ? pdfDetails[0].ExtUserPtr.Name
+        : monitor.type === "company"
+          ? pdfDetails[0].ExtUserPtr.Company
+          : monitor.type === "job title"
+            ? pdfDetails[0].ExtUserPtr.JobTitle
+            : monitor.type === "checkbox"
+              ? true
+              : "";
     if (item === "onclick") {
       dropObj = {
         xPosition: window.innerWidth / 2 - 100,
@@ -340,26 +342,19 @@ function SignYourSelf() {
         key: key,
         type: monitor.type,
         yBottom: window.innerHeight / 2 - 60,
-        SignUrl: monitor.type === "initials" && initial,
-        widgetValue:
-          monitor.type === "name"
-            ? pdfDetails[0].ExtUserPtr.Name
-            : monitor.type === "company"
-              ? pdfDetails[0].ExtUserPtr.Company
-              : monitor.type === "job title"
-                ? pdfDetails[0].ExtUserPtr.JobTitle
-                : "",
+        // SignUrl: monitor.type === "initials" && initial,
+        widgetValue: widgetValue,
         Width:
           monitor.type === "name" ||
           monitor.type === "company" ||
           monitor.type === "job title"
-            ? calculateInitialWidthHeight(monitor.type, pdfDetails[0]).getWidth
+            ? calculateInitialWidthHeight(monitor.type, widgetValue).getWidth
             : "",
         Height:
           monitor.type === "company" ||
           monitor.type === "name" ||
           monitor.type === "job title"
-            ? calculateInitialWidthHeight(monitor.type, pdfDetails[0]).getHeight
+            ? calculateInitialWidthHeight(monitor.type, widgetValue).getHeight
             : ""
       };
 
@@ -387,7 +382,9 @@ function SignYourSelf() {
             ? pdfDetails[0].ExtUserPtr.Company
             : item.text === "job title"
               ? pdfDetails[0].ExtUserPtr.JobTitle
-              : "";
+              : item.text === "checkbox"
+                ? true
+                : "";
       dropObj = {
         xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
         yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
@@ -398,7 +395,7 @@ function SignYourSelf() {
         firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
         yBottom: ybottom,
         type: item.text,
-        SignUrl: item.text === "initials" && initial,
+        // SignUrl: item.text === "initials" && initial,
         widgetValue: widgetData,
         Width:
           item.text === "name" ||

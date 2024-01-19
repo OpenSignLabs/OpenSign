@@ -10,12 +10,23 @@ function Placeholder(props) {
 
   //onclick placeholder function to open signature pad
   const handlePlaceholderClick = () => {
-    if (props.pos.type === "text" || props.pos.type === "checkbox") {
+    if (
+      props.pos.type === "text" ||
+      props.pos.type === "checkbox" ||
+      props.pos.type === "name" ||
+      props.pos.type === "company" ||
+      props.pos.type === "job title" ||
+      props.pos.type === "date"
+    ) {
       setDraggingEnabled(false);
     }
     if ((props.isNeedSign || props.isSignYourself) && !props.isDragging) {
       if (props.pos.type) {
-        if (props.pos.type === "signature" || props.pos.type === "stamp") {
+        if (
+          props.pos.type === "signature" ||
+          props.pos.type === "stamp" ||
+          props.pos.type === "initials"
+        ) {
           props.setIsSignPad(true);
           props.setSignKey(props.pos.key);
           props.setIsStamp(props.pos.isStamp);
@@ -114,7 +125,13 @@ function Placeholder(props) {
       onResizeStop={() => {
         props.setIsResize && props.setIsResize(false);
       }}
-      disableDragging={props.isNeedSign ? true : !isDraggingEnabled}
+      disableDragging={
+        props.isNeedSign
+          ? true
+          : props.isPlaceholder
+            ? false
+            : !isDraggingEnabled
+      }
       onDragStop={(event, dragElement) =>
         props.handleStop &&
         props.handleStop(event, dragElement, props.signerObjId, props.pos.key)
@@ -155,7 +172,12 @@ function Placeholder(props) {
         <BorderResize />
       )}
 
-      {props.isShowBorder && <PlaceholderBorder pos={props.pos} />}
+      {props.isShowBorder && (
+        <PlaceholderBorder
+          setDraggingEnabled={setDraggingEnabled}
+          pos={props.pos}
+        />
+      )}
       <div
         style={{
           left: props.xPos(props.pos, props.isSignYourself),
@@ -247,12 +269,12 @@ function Placeholder(props) {
           setSignKey={props.setSignKey}
           isShowDropdown={props?.isShowDropdown}
           isPlaceholder={props.isPlaceholder}
+          isSignYourself={props.isSignYourself}
           signerObjId={props.signerObjId}
           handleUserName={props.handleUserName}
           setDraggingEnabled={setDraggingEnabled}
           pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
           isNeedSign={props.isNeedSign}
-          initial={props.initial}
         />
       </div>
     </Rnd>

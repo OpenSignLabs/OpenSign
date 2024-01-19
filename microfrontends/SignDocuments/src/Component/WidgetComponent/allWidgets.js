@@ -11,10 +11,12 @@ function AllWidgets(props) {
           props.addPositionOfSignature("onclick", item)
         }
         ref={(element) => {
-          item.ref(element);
-          if (element) {
-            if (props?.signRef) {
-              props.signRef.current = element;
+          if (!props.isMobile) {
+            item.ref(element);
+            if (element) {
+              if (props?.signRef) {
+                props.signRef.current = element;
+              }
             }
           }
         }}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { onChangeInput } from "../../utils/Utils";
+import "../../css/signature.css";
 
 function PlaceholderType(props) {
   const [selectOption, setSelectOption] = useState("");
@@ -9,25 +10,18 @@ function PlaceholderType(props) {
   };
 
   useEffect(() => {
-    const senderUser =
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      ) &&
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      );
+    const senderUser = localStorage.getItem(`Extand_Class`);
     const jsonSender = JSON.parse(senderUser);
 
     if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
       onChangeInput(
-        props.pdfDetails,
+        jsonSender && jsonSender[0],
         null,
         props.xyPostion,
         null,
         props.setXyPostion,
         props.signerObjId,
-        props.initial,
-        jsonSender.name
+        true
       );
     }
   }, [type]);
@@ -55,7 +49,7 @@ function PlaceholderType(props) {
           <div>{props.pos.type}</div>
 
           {props?.handleUserName &&
-            props?.handleUserName(props?.data.signerObjId, props?.data.Role)}
+            props?.handleUserName(props?.data.Id, props?.data.Role)}
         </div>
       );
 
@@ -81,7 +75,7 @@ function PlaceholderType(props) {
           <div>{props.pos.type}</div>
 
           {props?.handleUserName &&
-            props?.handleUserName(props?.data?.signerObjId, props?.data?.Role)}
+            props?.handleUserName(props?.data.Id, props?.data.Role)}
         </div>
       );
 
@@ -97,6 +91,7 @@ function PlaceholderType(props) {
               : props.isPlaceholder
           }
           onBlur={handleInputBlur}
+          checked={props.pos.widgetValue}
           onChange={(e) =>
             onChangeInput(
               e.target.checked,
@@ -169,11 +164,10 @@ function PlaceholderType(props) {
         </div>
       );
     case "initials":
-      return props.pos.SignUrl ||
-        props.data?.signerObjId === props.signerObjId ? (
+      return props.pos.SignUrl ? (
         <img
           alt="signimg"
-          src={props.pos?.SignUrl ? props.pos?.SignUrl : props.initial}
+          src={props.pos.SignUrl}
           style={{
             width: "99%",
             height: "100%",
@@ -191,21 +185,20 @@ function PlaceholderType(props) {
           <div>{props.pos.type}</div>
 
           {props?.handleUserName &&
-            props?.handleUserName(props?.data.signerObjId, props?.data.Role)}
+            props?.handleUserName(props?.data.Id, props?.data.Role)}
         </div>
       );
 
     case "name":
-      return props.isNeedSign &&
-        props.data?.signerObjId === props.signerObjId ? (
+      return props.isSignYourself ||
+        (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <input
+          tabIndex="0"
+          placeholder="name"
           className="inputPlaceholder"
           type="text"
-          value={
-            props.pos.widgetValue
-              ? props.pos.widgetValue
-              : props.pdfDetails.ExtUserPtr.Name
-          }
+          value={props.pos.widgetValue}
+          onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
               e.target.value,
@@ -218,15 +211,6 @@ function PlaceholderType(props) {
             )
           }
         />
-      ) : props.pos.widgetValue ? (
-        <div
-          style={{
-            color: "black",
-            fontSize: "14px"
-          }}
-        >
-          <span>{props.pos.widgetValue}</span>
-        </div>
       ) : (
         <div
           style={{
@@ -239,12 +223,14 @@ function PlaceholderType(props) {
       );
 
     case "company":
-      return props.isNeedSign &&
-        props.data?.signerObjId === props.signerObjId ? (
+      return props.isSignYourself ||
+        (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <input
           className="inputPlaceholder"
           type="text"
+          placeholder="company"
           value={props.pos.widgetValue && props.pos.widgetValue}
+          onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
               e.target.value,
@@ -257,15 +243,6 @@ function PlaceholderType(props) {
             )
           }
         />
-      ) : props.pos.widgetValue ? (
-        <div
-          style={{
-            color: "black",
-            fontSize: "14px"
-          }}
-        >
-          <span>{props.pos.widgetValue}</span>
-        </div>
       ) : (
         <div
           style={{
@@ -278,12 +255,14 @@ function PlaceholderType(props) {
       );
 
     case "job title":
-      return props.isNeedSign &&
-        props.data?.signerObjId === props.signerObjId ? (
+      return props.isSignYourself ||
+        (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <input
           className="inputPlaceholder"
           type="text"
+          placeholder="job title"
           value={props.pos.widgetValue && props.pos.widgetValue}
+          onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
               e.target.value,
@@ -296,15 +275,6 @@ function PlaceholderType(props) {
             )
           }
         />
-      ) : props.pos.widgetValue ? (
-        <div
-          style={{
-            color: "black",
-            fontSize: "14px"
-          }}
-        >
-          <span>{props.pos.widgetValue}</span>
-        </div>
       ) : (
         <div
           style={{
@@ -318,12 +288,11 @@ function PlaceholderType(props) {
     case "date":
       return (
         <input
+          placeholder="mm/dd/yyyy"
           className="inputPlaceholder"
           style={{ outlineColor: "#007bff" }}
           type="date"
-          disabled={
-            props.isNeedSign ? false : props.isPlaceholder ? true : false
-          }
+          disabled={props.isPlaceholder ? true : false}
           onBlur={handleInputBlur}
           onChange={(e) =>
             onChangeInput(
@@ -362,7 +331,7 @@ function PlaceholderType(props) {
         >
           {props.pos.isStamp ? <div>stamp</div> : <div>signature</div>}
           {props?.handleUserName &&
-            props?.handleUserName(props?.data?.signerObjId, props?.data?.Role)}
+            props?.handleUserName(props?.data.Id, props?.data.Role)}
         </div>
       );
   }

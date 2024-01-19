@@ -56,8 +56,7 @@ function RenderPdf({
   signersdata,
   setIsPageCopy,
   setSignerObjId,
-  setShowDropdown,
-  initial
+  setShowDropdown
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -362,7 +361,6 @@ function RenderPdf({
                         posHeight={posHeight}
                         handleUserName={handleAllUserName}
                         isDragging={false}
-                        initial={initial}
                         pdfDetails={pdfDetails}
                       />
                     </React.Fragment>
@@ -375,9 +373,9 @@ function RenderPdf({
     );
   };
 
-  const handleUserName = (signerId, Role) => {
-    if (signerId) {
-      const checkSign = signersdata.find((sign) => sign.objectId === signerId);
+  const handleUserName = (Id, Role) => {
+    if (Id) {
+      const checkSign = signersdata.find((sign) => sign.Id === Id);
       if (checkSign?.Name) {
         return (
           <>

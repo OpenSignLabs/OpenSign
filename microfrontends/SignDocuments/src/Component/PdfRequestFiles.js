@@ -66,7 +66,6 @@ function PdfRequestFiles() {
   const [isDecline, setIsDecline] = useState({ isDeclined: false });
   const [currentSigner, setCurrentSigner] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
-  const [isInitialSign, setIsInitialSign] = useState(false);
   const [defaultSignAlert, setDefaultSignAlert] = useState({
     isShow: false,
     alertMessage: ""
@@ -83,7 +82,6 @@ function PdfRequestFiles() {
   const [isExpired, setIsExpired] = useState(false);
   const [alreadySign, setAlreadySign] = useState(false);
   const [containerWH, setContainerWH] = useState({});
-  const [initial, setInitial] = useState("");
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -120,17 +118,7 @@ function PdfRequestFiles() {
       });
     }
   }, [divRef.current]);
-  // Function to check if the given initial value exists in the array
-  const isInitialValueExist = (array, initialValue) => {
-    for (const item of array) {
-      for (const pos of item.pos) {
-        if (pos.type === "initials") {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
+
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async () => {
     let currUserId;
@@ -282,29 +270,6 @@ function PdfRequestFiles() {
 
         if (res[0] && res.length > 0) {
           setDefaultSignImg(res[0].ImageURL);
-          const getcurrentUserPosition = documentData[0].Placeholders.filter(
-            (data) => data.signerObjId === currUserId
-          );
-
-          const getPlacecholder = getcurrentUserPosition[0].placeHolder;
-          const checkInitialExist = isInitialValueExist(getPlacecholder);
-
-          if (res[0].Initials) {
-            setInitial(res[0]?.Initials);
-          } else if (checkInitialExist) {
-            setIsInitialSign(true);
-          }
-        } else {
-          const getcurrentUserPosition = documentData[0].Placeholders.filter(
-            (data) => data.signerObjId === currUserId
-          );
-
-          const getPlacecholder = getcurrentUserPosition[0].placeHolder;
-          const checkInitialExist = isInitialValueExist(getPlacecholder);
-
-          if (checkInitialExist) {
-            setIsInitialSign(true);
-          }
         }
 
         const loadObj = {
@@ -605,11 +570,6 @@ function PdfRequestFiles() {
     });
   };
 
-  const handleAddInitial = () => {
-    const hostUrl = getHostUrl();
-    navigate(`${hostUrl}managesign`);
-  };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Request Sign"} />
@@ -886,7 +846,6 @@ function PdfRequestFiles() {
                   pdfLoadFail={pdfLoadFail}
                   setSignerPos={setSignerPos}
                   containerWH={containerWH}
-                  initial={initial}
                 />
               )}
             </div>
@@ -1044,34 +1003,6 @@ function PdfRequestFiles() {
           </div>
         </div>
       )}
-      <ModalUi isOpen={isInitialSign} title={"Add Initial signature"}>
-        <div style={{ height: "100%", padding: 20 }}>
-          <p>Please add your initial signature</p>
-
-          <div
-            style={{
-              height: "1px",
-              backgroundColor: "#9f9f9f",
-              width: "100%",
-              marginTop: "15px",
-              marginBottom: "15px"
-            }}
-          ></div>
-
-          <button
-            style={{
-              background: themeColor()
-            }}
-            onClick={() => {
-              handleAddInitial();
-            }}
-            type="button"
-            className="finishBtn"
-          >
-            Add
-          </button>
-        </div>
-      </ModalUi>
     </DndProvider>
   );
 }
