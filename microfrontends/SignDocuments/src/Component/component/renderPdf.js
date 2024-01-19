@@ -1,9 +1,7 @@
 import React from "react";
 import RSC from "react-scrollbars-custom";
-import { Rnd } from "react-rnd";
-import { themeColor } from "../../utils/ThemeColor/backColor";
 import { Document, Page, pdfjs } from "react-pdf";
-import BorderResize from "./borderResize";
+
 import {
   addZIndex,
   defaultWidthHeight,
@@ -739,36 +737,38 @@ function RenderPdf({
                                     //     </div>
                                     //   </div>
                                     // </Rnd>
-                                    <Placeholder
-                                      pos={pos}
-                                      setIsPageCopy={setIsPageCopy}
-                                      setSignKey={setSignKey}
-                                      handleDeleteSign={handleDeleteSign}
-                                      setIsStamp={setIsStamp}
-                                      handleTabDrag={handleTabDrag}
-                                      handleStop={handleStop}
-                                      handleSignYourselfImageResize={
-                                        handleImageResize
-                                      }
-                                      index={pageNumber}
-                                      xyPostion={signerPos}
-                                      setXyPostion={setSignerPos}
-                                      setSignerObjId={setSignerObjId}
-                                      data={data}
-                                      setIsResize={setIsResize}
-                                      setShowDropdown={setShowDropdown}
-                                      isShowBorder={true}
-                                      isPlaceholder={true}
-                                      setUniqueId={setUniqueId}
-                                      handleLinkUser={handleLinkUser}
-                                      handleUserName={handleUserName}
-                                      isSignYourself={false}
-                                      xPos={xPos}
-                                      yPos={yPos}
-                                      posWidth={posWidth}
-                                      posHeight={posHeight}
-                                      isDragging={isDragging}
-                                    />
+                                    <React.Fragment key={pos.key}>
+                                      <Placeholder
+                                        pos={pos}
+                                        setIsPageCopy={setIsPageCopy}
+                                        setSignKey={setSignKey}
+                                        handleDeleteSign={handleDeleteSign}
+                                        setIsStamp={setIsStamp}
+                                        handleTabDrag={handleTabDrag}
+                                        handleStop={handleStop}
+                                        handleSignYourselfImageResize={
+                                          handleImageResize
+                                        }
+                                        index={pageNumber}
+                                        xyPostion={signerPos}
+                                        setXyPostion={setSignerPos}
+                                        setSignerObjId={setSignerObjId}
+                                        data={data}
+                                        setIsResize={setIsResize}
+                                        setShowDropdown={setShowDropdown}
+                                        isShowBorder={true}
+                                        isPlaceholder={true}
+                                        setUniqueId={setUniqueId}
+                                        handleLinkUser={handleLinkUser}
+                                        handleUserName={handleUserName}
+                                        isSignYourself={false}
+                                        xPos={xPos}
+                                        yPos={yPos}
+                                        posWidth={posWidth}
+                                        posHeight={posHeight}
+                                        isDragging={isDragging}
+                                      />
+                                    </React.Fragment>
                                   );
                                 })}
                             </React.Fragment>
@@ -1191,36 +1191,38 @@ function RenderPdf({
                                       //     </div>
                                       //   </div>
                                       // </Rnd>
-                                      <Placeholder
-                                        pos={pos}
-                                        setIsPageCopy={setIsPageCopy}
-                                        setSignKey={setSignKey}
-                                        handleDeleteSign={handleDeleteSign}
-                                        setIsStamp={setIsStamp}
-                                        handleTabDrag={handleTabDrag}
-                                        handleStop={handleStop}
-                                        handleSignYourselfImageResize={
-                                          handleImageResize
-                                        }
-                                        index={pageNumber}
-                                        xyPostion={signerPos}
-                                        setXyPostion={setSignerPos}
-                                        setSignerObjId={setSignerObjId}
-                                        data={data}
-                                        setIsResize={setIsResize}
-                                        setShowDropdown={setShowDropdown}
-                                        isShowBorder={true}
-                                        isPlaceholder={true}
-                                        setUniqueId={setUniqueId}
-                                        handleLinkUser={handleLinkUser}
-                                        handleUserName={handleUserName}
-                                        isSignYourself={false}
-                                        xPos={xPos}
-                                        yPos={yPos}
-                                        posWidth={posWidth}
-                                        posHeight={posHeight}
-                                        isDragging={isDragging}
-                                      />
+                                      <React.Fragment key={pos.key}>
+                                        <Placeholder
+                                          pos={pos}
+                                          setIsPageCopy={setIsPageCopy}
+                                          setSignKey={setSignKey}
+                                          handleDeleteSign={handleDeleteSign}
+                                          setIsStamp={setIsStamp}
+                                          handleTabDrag={handleTabDrag}
+                                          handleStop={handleStop}
+                                          handleSignYourselfImageResize={
+                                            handleImageResize
+                                          }
+                                          index={pageNumber}
+                                          xyPostion={signerPos}
+                                          setXyPostion={setSignerPos}
+                                          setSignerObjId={setSignerObjId}
+                                          data={data}
+                                          setIsResize={setIsResize}
+                                          setShowDropdown={setShowDropdown}
+                                          isShowBorder={true}
+                                          isPlaceholder={true}
+                                          setUniqueId={setUniqueId}
+                                          handleLinkUser={handleLinkUser}
+                                          handleUserName={handleUserName}
+                                          isSignYourself={false}
+                                          xPos={xPos}
+                                          yPos={yPos}
+                                          posWidth={posWidth}
+                                          posHeight={posHeight}
+                                          isDragging={isDragging}
+                                        />
+                                      </React.Fragment>
                                     );
                                   })}
                               </React.Fragment>
@@ -1302,34 +1304,36 @@ function RenderPdf({
                                   //   />
                                   //   <PlaceholderDesign pos={pos} />
                                   // </Rnd>
-                                  <Placeholder
-                                    pos={pos}
-                                    setIsPageCopy={setIsPageCopy}
-                                    setSignKey={setSignKey}
-                                    handleDeleteSign={handleDeleteSign}
-                                    setIsStamp={setIsStamp}
-                                    handleTabDrag={handleTabDrag}
-                                    handleStop={(event, dragElement) =>
-                                      handleStop(event, dragElement, pos.type)
-                                    }
-                                    handleSignYourselfImageResize={
-                                      handleSignYourselfImageResize
-                                    }
-                                    index={index}
-                                    xyPostion={xyPostion}
-                                    setXyPostion={setXyPostion}
-                                    pdfOriginalWidth={pdfOriginalWidth}
-                                    containerWH={containerWH}
-                                    setIsSignPad={setIsSignPad}
-                                    isShowBorder={true}
-                                    isSignYourself={true}
-                                    xPos={xPos}
-                                    yPos={yPos}
-                                    posWidth={posWidth}
-                                    posHeight={posHeight}
-                                    pdfDetails={pdfDetails[0]}
-                                    isDragging={isDragging}
-                                  />
+                                  <React.Fragment key={pos.key}>
+                                    <Placeholder
+                                      pos={pos}
+                                      setIsPageCopy={setIsPageCopy}
+                                      setSignKey={setSignKey}
+                                      handleDeleteSign={handleDeleteSign}
+                                      setIsStamp={setIsStamp}
+                                      handleTabDrag={handleTabDrag}
+                                      handleStop={(event, dragElement) =>
+                                        handleStop(event, dragElement, pos.type)
+                                      }
+                                      handleSignYourselfImageResize={
+                                        handleSignYourselfImageResize
+                                      }
+                                      index={index}
+                                      xyPostion={xyPostion}
+                                      setXyPostion={setXyPostion}
+                                      pdfOriginalWidth={pdfOriginalWidth}
+                                      containerWH={containerWH}
+                                      setIsSignPad={setIsSignPad}
+                                      isShowBorder={true}
+                                      isSignYourself={true}
+                                      xPos={xPos}
+                                      yPos={yPos}
+                                      posWidth={posWidth}
+                                      posHeight={posHeight}
+                                      pdfDetails={pdfDetails[0]}
+                                      isDragging={isDragging}
+                                    />
+                                  </React.Fragment>
                                 )
                               );
                             })}

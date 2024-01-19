@@ -51,7 +51,7 @@ function DraftDocument() {
     const signerExist = data.Signers && data.Signers;
     const isDecline = data.IsDeclined && data.IsDeclined;
     const isPlaceholder = data.Placeholders && data.Placeholders;
-
+    const signedUrl = data.SignedUrl;
     //checking if document has completed and request signature flow
     if (data?.IsCompleted && signerExist?.length > 0) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
@@ -64,6 +64,12 @@ function DraftDocument() {
     else if (isDecline) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
       //checking draft type document
+    } else if (
+      signerExist?.length > 0 &&
+      isPlaceholder?.length > 0 &&
+      !signedUrl
+    ) {
+      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
     //Inprogress document
     else if (isPlaceholder?.length > 0 && signerExist?.length > 0) {
