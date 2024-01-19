@@ -9,11 +9,10 @@ export default async function getContact(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const id = token.get('Id');
-      const userId = { __type: 'Pointer', className: '_User', objectId: id };
+      const userPtr = token.get('userId');
       const Contactbook = new Parse.Query('contracts_Contactbook');
       Contactbook.equalTo('objectId', request.params.contact_id);
-      Contactbook.equalTo('CreatedBy', userId);
+      Contactbook.equalTo('CreatedBy', userPtr);
       Contactbook.notEqualTo('IsDeleted', true);
       Contactbook.select('Name,Email,Phone');
 

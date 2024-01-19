@@ -12,7 +12,7 @@ export default async function generateApiToken(request) {
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
       const tokenQuery = new Parse.Query('appToken');
-      tokenQuery.equalTo('Id', userId);
+      tokenQuery.equalTo('userId', { __type: 'Pointer', className: '_User', objectId: userId });
       const token = await tokenQuery.first({ useMasterKey: true });
       if (token !== undefined) {
         // return exsiting Token
@@ -31,7 +31,7 @@ export default async function generateApiToken(request) {
         const appTokenQuery = new appToken();
         const token = generateApiKey({ method: 'base62', prefix: 'opensign' });
         appTokenQuery.set('token', token);
-        appTokenQuery.set('Id', userId);
+        appTokenQuery.set('userId', { __type: 'Pointer', className: '_User', objectId: userId });
         const newRes = await appTokenQuery.save(null, { useMasterKey: true });
         return newRes;
       }

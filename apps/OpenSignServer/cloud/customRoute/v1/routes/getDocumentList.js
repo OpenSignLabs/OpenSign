@@ -15,7 +15,7 @@ export default async function getDocumentList(request, response) {
   const token = await tokenQuery.first({ useMasterKey: true });
   if (token !== undefined) {
     // Valid Token then proceed request
-    const userId = token.get('Id');
+    const userPtr = token.get('userId');
     const docType = request.params.doctype;
     const limit = request?.query?.limit ? request.query.limit : 100;
     const skip = request?.query?.skip ? request.query.skip : 0;
@@ -42,7 +42,7 @@ export default async function getDocumentList(request, response) {
       default:
         reportId = '';
     }
-    const json = reportId && reportJson(reportId, userId);
+    const json = reportId && reportJson(reportId, userPtr.id);
     const clsName = 'contracts_Document';
     if (reportId && json) {
       const { params, keys } = json;
@@ -59,14 +59,14 @@ export default async function getDocumentList(request, response) {
       if (res.data && res.data.results.length > 0) {
         const updateRes = res.data.results.map(x => ({
           objectId: x.objectId,
-          title: x.Name,
-          note: x.Note || '',
-          folder: x?.Folder?.Name || 'OpenSign™ Drive',
-          file: x?.SignedUrl || x.URL,
-          owner: x?.ExtUserPtr?.Name,
-          signers: x?.Signers?.map(y => y?.Name) || '',
-          created_at: x.createdAt,
-          updated_at: x.updatedAt,
+          Title: x.Name,
+          Note: x.Note || '',
+          Folder: x?.Folder?.Name || 'OpenSign™ Drive',
+          File: x?.SignedUrl || x.URL,
+          Owner: x?.ExtUserPtr?.Name,
+          Signers: x?.Signers?.map(y => y?.Name) || '',
+          createdAt: x.createdAt,
+          updatedAt: x.updatedAt,
         }));
         return response.json({ result: updateRes });
       } else {

@@ -11,7 +11,7 @@ export default async function getapitoken(request) {
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
       const tokenQuery = new Parse.Query('appToken');
-      tokenQuery.equalTo('Id', userId);
+      tokenQuery.equalTo('userId', { __type: 'Pointer', className: '_User', objectId: userId });
       const res = await tokenQuery.first({ useMasterKey: true });
       if (res) {
         return { status: 'success', result: res.get('token') };
@@ -19,6 +19,11 @@ export default async function getapitoken(request) {
     }
   } catch (err) {
     console.log('Err', err);
-    return { status: 'error', result: err };
+    console.log('err', err);
+    if (err.code == 209) {
+      return { error: 'Invalid session token' };
+    } else {
+      return { error: "You don't have access!" };
+    }
   }
 }
