@@ -186,7 +186,13 @@ function Placeholder(props) {
           height: props.posHeight(props.pos, props.isSignYourself),
           zIndex: "10"
         }}
-        onTouchEnd={(e) => handlePlaceholderClick()}
+        onTouchEnd={(e) => {
+          props.isNeedSign && props.data?.signerObjId === props.signerObjId
+            ? handlePlaceholderClick()
+            : props.isPlaceholder
+              ? handlePlaceholderClick()
+              : props.isSignYourself && handlePlaceholderClick();
+        }}
       >
         {props.isShowBorder && (
           <>

@@ -119,7 +119,7 @@ function PdfFileComponent({
     const signerExist = data.Signers && data.Signers;
     const isDecline = data.IsDeclined && data.IsDeclined;
     const isPlaceholder = data.Placeholders && data.Placeholders;
-
+    const signedUrl = data.SignedUrl;
     //checking if document has completed and request signature flow
     if (data?.IsCompleted && signerExist?.length > 0) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
@@ -132,6 +132,12 @@ function PdfFileComponent({
     else if (isDecline) {
       navigate(`${hostUrl}pdfRequestFiles/${data.objectId}`);
       //checking draft type document
+    } else if (
+      signerExist?.length > 0 &&
+      isPlaceholder?.length > 0 &&
+      !signedUrl
+    ) {
+      navigate(`${hostUrl}placeHolderSign/${data.objectId}`);
     }
     //Inprogress document
     else if (isPlaceholder?.length > 0 && signerExist?.length > 0) {
@@ -297,6 +303,7 @@ function PdfFileComponent({
       isDecline = data.IsDeclined && data.IsDeclined;
       isPlaceholder = data.Placeholders && data.Placeholders;
       signerExist = data.Signers && data.Signers;
+      const signedUrl = data.SignedUrl;
 
       const expireUpdateDate = new Date(expireDate).getTime();
       const currDate = new Date().getTime();
@@ -314,6 +321,12 @@ function PdfFileComponent({
       } else if (
         signerExist?.length > 0 &&
         (!isPlaceholder || isPlaceholder?.length === 0)
+      ) {
+        status = "Draft";
+      } else if (
+        signerExist?.length > 0 &&
+        isPlaceholder?.length > 0 &&
+        !signedUrl
       ) {
         status = "Draft";
       } else if (isExpire) {

@@ -666,7 +666,6 @@ const TemplatePlaceholder = () => {
       try {
         const data = {
           Placeholders: signerPos,
-          SignedUrl: pdfDetails[0].URL,
           Signers: signers,
           Name: pdfDetails[0]?.Name || "",
           Note: pdfDetails[0]?.Note || "",
