@@ -8,12 +8,13 @@ import axios from "axios";
 import Title from "../components/Title";
 import GoogleSignInBtn from "../components/LoginGoogle";
 // import LoginFacebook from "../components/LoginFacebook";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 
 function Login(props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { width } = useWindowSize();
   const [state, setState] = useState({
     email: "",
@@ -132,6 +133,9 @@ function Login(props) {
                             `${localStorage.getItem("_appName")}_appeditor`
                         ) {
                           userSettings.forEach(async (element) => {
+                            const redirectUrl =
+                              location?.state?.from ||
+                              `/${element.pageType}/${element.pageId}`;
                             if (element.role === _currentRole) {
                               let _role = _currentRole.replace(
                                 `${localStorage.getItem("_appName")}_`,
@@ -260,9 +264,8 @@ function Login(props) {
                                             localStorage.removeItem(
                                               "userDetails"
                                             );
-                                            navigate(
-                                              `/${element.pageType}/${element.pageId}`
-                                            );
+                                            // Redirect to the appropriate URL after successful login
+                                            navigate(redirectUrl);
                                           } else {
                                             navigate(`/subscription`, {
                                               replace: true
@@ -274,9 +277,8 @@ function Login(props) {
                                           });
                                         }
                                       } else {
-                                        navigate(
-                                          `/${element.pageType}/${element.pageId}`
-                                        );
+                                        // Redirect to the appropriate URL after successful login
+                                        navigate(redirectUrl);
                                       }
                                     }
                                   } else {
@@ -313,9 +315,8 @@ function Login(props) {
                                         });
                                       }
                                     } else {
-                                      navigate(
-                                        `/${element.pageType}/${element.pageId}`
-                                      );
+                                      // Redirect to the appropriate URL after successful login
+                                      navigate(redirectUrl);
                                     }
                                   }
                                 },
@@ -462,6 +463,9 @@ function Login(props) {
                     `${localStorage.getItem("_appName")}_appeditor`
                 ) {
                   userSettings.forEach(async (element) => {
+                    const redirectUrl =
+                      location?.state?.from ||
+                      `/${element.pageType}/${element.pageId}`;
                     if (element.role === _currentRole) {
                       let _role = _currentRole.replace(
                         `${localStorage.getItem("_appName")}_`,
@@ -569,9 +573,7 @@ function Login(props) {
                                 if (billingDate) {
                                   if (billingDate > new Date()) {
                                     localStorage.removeItem("userDetails");
-                                    navigate(
-                                      `/${element.pageType}/${element.pageId}`
-                                    );
+                                    navigate(redirectUrl);
                                   } else {
                                     navigate(`/subscription`, {
                                       replace: true
@@ -581,9 +583,7 @@ function Login(props) {
                                   navigate(`/subscription`, { replace: true });
                                 }
                               } else {
-                                navigate(
-                                  `/${element.pageType}/${element.pageId}`
-                                );
+                                navigate(redirectUrl);
                               }
                             }
                           } else {
@@ -599,9 +599,8 @@ function Login(props) {
                               if (billingDate) {
                                 if (billingDate > new Date()) {
                                   localStorage.removeItem("userDetails");
-                                  navigate(
-                                    `/${element.pageType}/${element.pageId}`
-                                  );
+                                  // Redirect to the appropriate URL after successful login
+                                  navigate(redirectUrl);
                                 } else {
                                   navigate(`/subscription`, { replace: true });
                                 }
@@ -609,9 +608,7 @@ function Login(props) {
                                 navigate(`/subscription`, { replace: true });
                               }
                             } else {
-                              navigate(
-                                `/${element.pageType}/${element.pageId}`
-                              );
+                              navigate(redirectUrl);
                             }
                           }
                         },
