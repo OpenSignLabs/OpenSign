@@ -1,7 +1,7 @@
 
 # OpenSign™ Reporting Guidelines
 
-This document provides guidelines for reporting issues, suggesting enhancements, and submitting pull requests to the OpenSign™ GitHub repository. Adhering to these guidelines helps maintain the project's quality and efficiency.
+This document provides guidelines for reporting issues, suggesting enhancements, and submitting pull requests to the [OpenSign™ GitHub repository](https://github.com/OpenSignLabs/OpenSign). Adhering to these guidelines helps maintain the project's quality and efficiency.
 
 ## Issues
 
