@@ -454,6 +454,7 @@ const TemplatePlaceholder = () => {
           }
           setSignerPos((prev) => [...prev, placeHolderPos]);
         }
+
         setIsMailSend(false);
       } else {
         setIsReceipent(false);

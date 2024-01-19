@@ -277,158 +277,22 @@ function FieldsComponent({
                 <span style={{ marginLeft: 2 }}>Add role</span>
               </div>
             )}
-            {/* <div
-              data-tut={dataTut2}
-              className="signLayoutContainer2"
-              style={{ backgroundColor: themeColor() }}
-            >
-              <div
-                onClick={() => addPositionOfSignature("onclick", false)}
-                ref={(element) => {
-                  dragSignatureSS(element);
-                  if (element) {
-                    signRef.current = element;
-                    // const height = signRef && signRef.current.offsetHeight;
-                    // const width = signRef && signRef.current.offsetWidth;
-                  }
-                }}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  userSelect: "none",
-                  opacity: isDragSignatureSS ? 0.5 : 1,
-                  backgroundImage: `url(${sign})`,
-                  backgroundSize: "70% 70%",
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center center",
-                  paddingBottom: "2.2rem"
-                }}
-              >
-                <span
-                  style={{
-                    color: "white",
-                    fontSize: "12px",
-                    position: "relative",
-                    top: "2.6rem"
-                  }}
-                >
-                  Signature
-                </span>
-              </div>
-              <div
-                onClick={() => addPositionOfSignature("onclick", true)}
-                ref={(element) => {
-                  dragStampSS(element);
-                  dragRef.current = element;
-                }}
-                onMouseMove={handleDivClick}
-                onMouseDown={handleMouseLeave}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  userSelect: "none",
-                  backgroundImage: `url(${stamp})`,
-                  backgroundSize: "32px 33px",
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center center",
-                  paddingBottom: "2.2rem"
-                }}
-              >
-                <span
-                  style={{
-                    color: "white",
-                    fontSize: "12px",
-                    position: "relative",
-                    top: "2.6rem"
-                  }}
-                >
-                  Stamp
-                </span>
-              </div>
-            </div> */}
+
             <div
               ref={scrollContainerRef}
               style={{
-                overflowX: "scroll",
-                whiteSpace: "nowrap",
-                padding: "10px",
                 background: "white",
                 borderTop: `2px solid ${themeColor()}`
               }}
             >
-              <i
+              <div
                 style={{
-                  color: "rgb(140 142 149)",
-                  position: "fixed",
-                  left: "1%",
-                  bottom: "3%",
-                  fontSize: "23px"
+                  display: "flex",
+                  overflowX: "scroll",
+                  whiteSpace: "nowrap",
+                  padding: "10px"
                 }}
-                onClick={() => handleScroll(-100)}
-                className="fa-solid fa-circle-chevron-left"
-              ></i>
-              <div style={{ display: "flex" }}>
-                {/* {updateWidgets.map((item, ind) => {
-                  return (
-                    <div
-                      key={ind}
-                      ref={(element) => {
-                        item.ref(element);
-                        if (element) {
-                          signRef.current = element;
-                        }
-                      }}
-                      className={signStyle}
-                      onMouseMove={handleDivClick}
-                      onMouseDown={handleMouseLeave}
-                      style={{
-                        opacity: isDragSign ? 0.5 : 1,
-                        boxShadow:
-                          "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
-                        marginLeft: "5px"
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginLeft: "5px"
-                        }}
-                      >
-                        <i
-                          class="fa-sharp fa-solid fa-grip-vertical"
-                          style={{ color: "#908d8d", fontSize: "13px" }}
-                        ></i>
-                        <span
-                          style={{
-                            fontWeight: "400",
-                            fontSize: "15px",
-                            // padding: "3px 20px 0px 20px",
-                            color: "black",
-                            marginLeft: "5px"
-                          }}
-                        >
-                          {item.type}
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          backgroundColor: themeColor(),
-                          padding: "0 5px",
-                          display: "flex",
-                          alignItems: "center"
-                        }}
-                      >
-                        <i
-                          style={{ color: "white", fontSize: item.iconSize }}
-                          className={item.icon}
-                        ></i>
-                      </div>
-                    </div>
-                  );
-                })} */}
+              >
                 <AllWidgets
                   updateWidgets={updateWidgets}
                   handleDivClick={handleDivClick}
@@ -436,19 +300,9 @@ function FieldsComponent({
                   signRef={signRef}
                   marginLeft={5}
                   addPositionOfSignature={addPositionOfSignature}
+                  isMobile={isMobile}
                 />
               </div>
-              <i
-                style={{
-                  color: "rgb(140 142 149)",
-                  position: "fixed",
-                  left: "93%",
-                  bottom: "3%",
-                  fontSize: "23px"
-                }}
-                onClick={() => handleScroll(100)}
-                className="fa-solid fa-circle-chevron-right"
-              ></i>
             </div>
           </div>
         )

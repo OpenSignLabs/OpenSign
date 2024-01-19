@@ -20,14 +20,7 @@ export const calculateInitialWidthHeight = (type, widgetData) => {
     getHeight: height
   };
 };
-export const addInitialData = (
-  signerPos,
-  setXyPostion,
-  value,
-  initial,
-  signerObjId,
-  jsonSender
-) => {
+export const addInitialData = (signerPos, setXyPostion, value, signerObjId) => {
   return signerPos.map((item) => {
     if (item.placeHolder && item.placeHolder.length > 0) {
       // If there is a nested array, recursively add the field to the last object
@@ -38,9 +31,7 @@ export const addInitialData = (
             item.placeHolder,
             setXyPostion,
             value,
-            initial,
-            signerObjId,
-            jsonSender
+            signerObjId
           )
         };
       } else {
@@ -52,29 +43,19 @@ export const addInitialData = (
       // If there is no nested array, add the new field
       return {
         ...item,
-        pos: addInitialData(
-          item.pos,
-          setXyPostion,
-          value,
-          initial,
-          signerObjId,
-          jsonSender
-        )
+        pos: addInitialData(item.pos, setXyPostion, value, signerObjId)
         // Adjust this line to add the desired field
       };
     } else {
       const widgetData =
         item.type === "name"
-          ? jsonSender
+          ? value?.Name
           : item.type === "company"
-            ? value.ExtUserPtr.Company
-            : item.type === "job title" && value.ExtUserPtr.JobTitle;
-      if (item.type === "initials") {
-        return {
-          ...item,
-          SignUrl: initial
-        };
-      } else if (
+            ? value?.Company
+            : item.type === "job title"
+              ? value?.JobTitle
+              : "";
+      if (
         item.type === "name" ||
         item.type === "company" ||
         item.type === "job title"
@@ -100,11 +81,10 @@ export const onChangeInput = (
   index,
   setXyPostion,
   signerObjId,
-  initial,
-  jsonSender
+  initial
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
-  console.log(signerObjId);
+
   if (isSigners) {
     const filterSignerPos = xyPostion.filter(
       (data) => data.signerObjId === signerObjId
@@ -116,9 +96,7 @@ export const onChangeInput = (
         xyPostion,
         setXyPostion,
         value,
-        initial,
-        signerObjId,
-        jsonSender
+        signerObjId
       );
       setXyPostion(xyData);
     } else {
@@ -973,7 +951,7 @@ export const multiSignEmbed = async (
           }
         }
       };
-      const checkboxId = "checkbox_" + id;
+      const checkboxId = "checkbox_" + imgData.key;
       if (imgData.type === "checkbox") {
         const checkBox = form.createCheckBox(checkboxId);
 

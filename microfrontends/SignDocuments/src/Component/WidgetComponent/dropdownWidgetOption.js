@@ -38,6 +38,8 @@ function DropdownWidgetOption(props) {
     } else {
       props.handleSaveDropdownOptions(dropdownName, dropdownOptionList);
       props.setShowDropdown(false);
+      setDropdownOptionList(["option-1", "option-2"]);
+      setDropdownName("Dropdown-1");
     }
   };
 
