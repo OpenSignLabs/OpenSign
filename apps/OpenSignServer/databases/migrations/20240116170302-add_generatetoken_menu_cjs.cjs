@@ -151,7 +151,7 @@ exports.up = async Parse => {
         },
         {
           icon: 'fa-solid fa-key',
-          title: 'Generate token',
+          title: 'API Token',
           target: '_self',
           pageType: 'generatetoken',
           description: '',
@@ -316,7 +316,7 @@ exports.up = async Parse => {
         },
         {
           icon: 'fa-solid fa-key',
-          title: 'Generate token',
+          title: 'API Token',
           target: '_self',
           pageType: 'generatetoken',
           description: '',
