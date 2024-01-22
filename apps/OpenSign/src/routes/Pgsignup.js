@@ -5,7 +5,7 @@ import axios from "axios";
 import { fetchAppInfo, showTenantName } from "../redux/actions/index";
 import { connect } from "react-redux";
 import Title from "../components/Title";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const appId = localStorage.getItem("AppID12");
 const server = localStorage.getItem("BaseUrl12");
@@ -13,6 +13,7 @@ Parse.serverURL = server;
 Parse.initialize(appId);
 const PgSignUp = (props) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [parseBaseUrl] = useState(localStorage.getItem("BaseUrl12"));
   const [parseAppId] = useState(localStorage.getItem("AppID12"));
   const [formData, setFormData] = useState({
@@ -187,7 +188,7 @@ const PgSignUp = (props) => {
       console.log("err ", error);
       if (error.message === "Account already exists for this username.") {
         alert("Account already exists!");
-        navigate("/");
+        navigate("/", { replace: true });
       } else {
         setIsLoader(false);
         alert("Something went wrong, please try again later!");
@@ -351,7 +352,7 @@ const PgSignUp = (props) => {
                                 element.pageType
                               );
                               setIsLoader(false);
-                              navigate("/");
+                              navigate("/", { replace: true });
                             } else {
                               extendedInfo.forEach((x) => {
                                 if (x.TenantId) {
@@ -389,9 +390,12 @@ const PgSignUp = (props) => {
                               );
                               setIsLoader(false);
                               alert("Registered user successfully");
-                              navigate(
-                                `/${element.pageType}/${element.pageId}`
-                              );
+                              const redirectUrl =
+                                location?.state?.from ||
+                                `/${element.pageType}/${element.pageId}`;
+
+                              // Redirect to the appropriate URL after successful login
+                              navigate(redirectUrl);
                             }
                           } else {
                             alert("Registered user successfully");
@@ -402,7 +406,12 @@ const PgSignUp = (props) => {
                             );
                             localStorage.setItem("pageType", element.pageType);
                             setIsLoader(false);
-                            navigate(`/${element.pageType}/${element.pageId}`);
+                            const redirectUrl =
+                            location?.state?.from ||
+                            `/${element.pageType}/${element.pageId}`;
+
+                          // Redirect to the appropriate URL after successful login
+                          navigate(redirectUrl);
                           }
                         },
                         (error) => {

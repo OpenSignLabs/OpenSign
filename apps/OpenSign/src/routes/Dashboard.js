@@ -24,7 +24,7 @@ const Dashboard = (props) => {
         getDashboard(localStorage.getItem("PageLanding"));
       }
     } else {
-      navigate("/", { replace: true });
+      navigate("/", { replace: true, state: { from: location } });
     }
     // eslint-disable-next-line
   }, [id]);
