@@ -7,7 +7,7 @@ import Signup from "./routes/Signup";
 import Form from "./routes/Form";
 import Report from "./routes/Report";
 import Dashboard from "./routes/Dashboard";
-import PlanSubscriptions from "./routes/PlanSubscriptions";
+import Subscriptions from "./routes/PlanSubscriptions";
 import HomeLayout from "./layout/HomeLayout";
 import UserProfile from "./routes/UserProfile";
 import PageNotFound from "./routes/PageNotFound";
@@ -60,112 +60,30 @@ function App() {
       ) : (
         <BrowserRouter>
           <Routes>
-            <Route
-              exact
-              path="/"
-              element={
-                <ValidateRoute>
-                  <Login />
-                </ValidateRoute>
-              }
-            />
-            <Route
-              exact
-              path="/signup"
-              element={
-                <ValidateRoute>
-                  <Signup />
-                </ValidateRoute>
-              }
-            />
+            <Route element={<ValidateRoute />}>
+              <Route exact path="/" element={<Login />} />
+              <Route exact path="/signup" element={<Signup />} />
+            </Route>
             <Route exact path="/loadmf/:remoteApp/*" element={<LoadMf />} />
             <Route exact path="/forgetpassword" element={<ForgetPassword />} />
             {process.env.REACT_APP_ENABLE_SUBSCRIPTION && (
               <>
                 <Route exact path="/pgsignup" element={<Pgsignup />} />
-                <Route
-                  exact
-                  path="/subscription"
-                  element={<PlanSubscriptions />}
-                />
+                <Route exact path="/subscription" element={<Subscriptions />} />
               </>
             )}
-            <Route
-              exact
-              path="/changepassword"
-              element={
-                <HomeLayout>
-                  <ChangePassword />
-                </HomeLayout>
-              }
-            />
-            <Route
-              path="/mf/:remoteApp/*"
-              element={
-                <HomeLayout>
-                  <Microapp />
-                </HomeLayout>
-              }
-            />
-            <Route
-              path="/asmf/:remoteApp/*"
-              element={
-                <HomeLayout>
-                  <Microapp />
-                </HomeLayout>
-              }
-            />
-            <Route
-              path="/rpmf/:remoteApp/*"
-              element={
-                <HomeLayout>
-                  <ReportMicroapp />
-                </HomeLayout>
-              }
-            />
-            <Route
-              path="/form/:id"
-              element={
-                <HomeLayout>
-                  <Form />
-                </HomeLayout>
-              }
-            />
-            <Route
-              path="/report/:id"
-              element={
-                <HomeLayout>
-                  <Report />
-                </HomeLayout>
-              }
-            />
-            <Route
-              path="/dashboard/:id"
-              element={
-                <HomeLayout>
-                  <Dashboard />
-                </HomeLayout>
-              }
-            />
-
-            <Route
-              path="/profile"
-              element={
-                <HomeLayout>
-                  <UserProfile />
-                </HomeLayout>
-              }
-            />
-            <Route
-              path="/generatetoken"
-              element={
-                <HomeLayout>
-                  <GenerateToken />
-                </HomeLayout>
-              }
-            />
+            <Route element={<HomeLayout />}>
+              <Route path="/changepassword" element={<ChangePassword />} />
+              <Route path="/mf/:remoteApp/*" element={<Microapp />} />
+              <Route path="/asmf/:remoteApp/*" element={<Microapp />} />
+              <Route path="/rpmf/:remoteApp/*" element={<ReportMicroapp />} />
+              <Route path="/form/:id" element={<Form />} />
+              <Route path="/report/:id" element={<Report />} />
+              <Route path="/dashboard/:id" element={<Dashboard />} />
+              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/generatetoken" element={<GenerateToken />} />
+            </Route>
             <Route path="*" element={<PageNotFound />} />
-            {/* <Route exact path="/ForgotPassword" element={<ForgotPassword />} /> */}
           </Routes>
         </BrowserRouter>
       )}

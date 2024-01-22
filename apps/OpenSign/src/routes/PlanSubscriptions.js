@@ -39,7 +39,7 @@ const PlanSubscriptions = () => {
       setIsLoader(false);
       setYearlyVisible(false);
     } else {
-      navigate("/");
+      navigate("/", { replace: true });
     }
     // eslint-disable-next-line
   }, []);
@@ -78,31 +78,6 @@ const PlanSubscriptions = () => {
             id="monthlyPlans"
             className={`${yearlyVisible ? "none" : "block my-2"}`}
           >
-            {/* <div className=" my-2 w-full flex justify-center">
-              <ul
-                className="navs"
-                style={{
-                  listStyle: "none",
-                  display: "flex",
-                  alignItems: "baseline"
-                }}
-              >
-                <li className="nav-item">
-                  <button className="nav-link frequency active" name="1_months">
-                    Monthly
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    className="nav-link frequency "
-                    onClick={toggleFrequency}
-                    name="1_years"
-                  >
-                    Yearly
-                  </button>
-                </li>
-              </ul>
-            </div> */}
             <div className="flex justify-center w-full my-2">
               <ul className=" flex flex-col md:flex-row h-full bg-white justify-center border-collapse border-[1px] border-gray-300">
                 {plansArr.map((item) => (
