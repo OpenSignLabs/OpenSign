@@ -20,7 +20,7 @@ import multer from 'multer';
 // import fs from 'node:fs';
 import updateDocument from './routes/updateDocument.js';
 import deleteDocument from './routes/deleteDocument.js';
-// import createDocumentWithTemplate from './routes/CreateDocumentWithTemplate.js';
+import createDocumentWithTemplate from './routes/CreateDocumentWithTemplate.js';
 
 dotenv.config();
 const storage = multer.memoryStorage();
@@ -49,7 +49,8 @@ app.get('/contactlist', getContactList);
 app.post('/createdocument', upload.array('file', 1), createDocument);
 
 // create Document with templateId
-// app.post('/createdocument/:template_id', createDocumentWithTemplate);
+app.post('/createdocument/:template_id', createDocumentWithTemplate);
+
 // get Document on the basis of id
 app.get('/document/:document_id', getDocument);
 
