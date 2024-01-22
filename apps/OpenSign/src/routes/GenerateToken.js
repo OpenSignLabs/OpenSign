@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
 import axios from "axios";
 import Alert from "../primitives/Alert";
+import ModalUi from "../primitives/ModalUi";
+import { rejectBtn, submitBtn } from "../constant/const";
+import { openInNewTab } from "../constant/Utils";
 
 function GenerateToken() {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -11,6 +14,7 @@ function GenerateToken() {
   const [copied, setCopied] = useState(false);
   const [isGenerate, setIsGenerate] = useState(false);
   const [isErr, setIsErr] = useState(false);
+  const [isModal, setIsModal] = useState(false);
 
   useEffect(() => {
     fetchToken();
@@ -39,6 +43,7 @@ function GenerateToken() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoader(true);
+    setIsModal(false);
     try {
       const url = parseBaseUrl + "functions/generateapitoken";
       const headers = {
@@ -82,6 +87,7 @@ function GenerateToken() {
       setCopied(false);
     }, 1500); // Reset copied state after 1.5 seconds
   };
+  const handleModal = () => setIsModal(!isModal);
   return (
     <React.Fragment>
       <Title title={"token"} />
@@ -134,15 +140,47 @@ function GenerateToken() {
               </span>
             </li>
           </ul>
-          <div className="flex justify-center pb-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-2 pb-4">
             <button
               type="button"
-              onClick={handleSubmit}
-              className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-4 py-2 text-xs md:text-base"
+              onClick={apiToken ? handleModal : handleSubmit}
+              className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-4 py-2 text-xs md:text-base focus:outline-none"
             >
               {apiToken ? "Regenerate Token" : "Generate Token"}
             </button>
+            <button
+              type="button"
+              onClick={() => openInNewTab("https://docs.opensignlabs.com")}
+              className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
+            >
+              View Docs
+            </button>
           </div>
+
+          <ModalUi
+            isOpen={isModal}
+            title={"Regenerate Token"}
+            handleClose={handleModal}
+          >
+            <div className="m-[20px]">
+              <div className="text-lg font-normal text-black">
+                Are you sure you want to regenerate token it will expire old
+                token?
+              </div>
+              <hr className="bg-[#ccc] mt-4 " />
+              <div className="flex items-center mt-3 gap-2 text-white">
+                <button
+                  onClick={handleSubmit}
+                  className={submitBtn + "ml-[2px]"}
+                >
+                  Yes
+                </button>
+                <button onClick={handleModal} className={rejectBtn}>
+                  No
+                </button>
+              </div>
+            </div>
+          </ModalUi>
         </div>
       )}
     </React.Fragment>
