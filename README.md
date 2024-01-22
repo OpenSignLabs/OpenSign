@@ -38,10 +38,11 @@
 7. [Acknowledgments](#acknowledgments)
 
 ---
+Please star ⭐ the repo to support us! 😀
 
 ### Introduction
 
-Welcome to OpenSign, an open-source document e-signing solution designed to provide a secure, reliable, and free alternative to commercial platforms like DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, HelloSign & Zoho sign. Developed under the OpenSignLabs organization, our mission is to democratize the e-signing process, making it accessible and straightforward for everyone.
+Welcome to OpenSign, the premier open-source docusign alternative - document e-signing solution designed to provide a secure, reliable, and free alternative to commercial platforms like DocuSign, PandaDoc, SignNow, Adobe Sign, Smartwaiver, SignRequest, HelloSign & Zoho sign. Developed under the OpenSignLabs organization, our mission is to democratize the e-signing process, making it accessible and straightforward for everyone.
 
 ---
 
