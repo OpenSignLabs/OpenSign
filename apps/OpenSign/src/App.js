@@ -17,6 +17,7 @@ import ReportMicroapp from "./components/ReportMicroapp";
 import LoadMf from "./routes/LoadMf";
 import GenerateToken from "./routes/GenerateToken";
 import ValidateRoute from "./primitives/ValidateRoute";
+import Webhook from "./routes/Webhook";
 
 function App() {
   const [isloading, setIsLoading] = useState(true);
@@ -82,6 +83,7 @@ function App() {
               <Route path="/dashboard/:id" element={<Dashboard />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/generatetoken" element={<GenerateToken />} />
+              <Route path="/webhook" element={<Webhook />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
