@@ -140,7 +140,11 @@ function GenerateToken() {
             </button>
             <button
               type="button"
-              onClick={() => openInNewTab("https://docs.opensignlabs.com")}
+              onClick={() =>
+                openInNewTab(
+                  "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
+                )
+              }
               className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
             >
               View Docs
