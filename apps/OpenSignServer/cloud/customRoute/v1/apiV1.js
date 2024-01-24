@@ -49,7 +49,10 @@ app.delete('/contact/:contact_id', deleteContact);
 app.get('/contactlist', getContactList);
 
 // create Document
-app.post('/createdocument', upload.array('file', 1), createDocument);
+app.post('/createdocumentwithbinary', upload.array('file', 1), createDocument);
+
+// create Document with base64
+app.post('/createdocument', createDocument);
 
 // create Document with templateId
 app.post('/createdocument/:template_id', createDocumentWithTemplate);
