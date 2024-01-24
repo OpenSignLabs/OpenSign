@@ -90,7 +90,7 @@ function GenerateToken() {
   const handleModal = () => setIsModal(!isModal);
   return (
     <React.Fragment>
-      <Title title={"token"} />
+      <Title title={"API Token"} />
       {isGenerate && (
         <Alert type="success">Token generated successfully!</Alert>
       )}
@@ -115,9 +115,10 @@ function GenerateToken() {
         </div>
       ) : (
         <div className="bg-white flex flex-col justify-center shadow rounded">
-          <ul className="w-full flex flex-col  p-2 text-sm">
+          <h1 className="ml-4 mt-3 mb-2 font-semibold">API Token</h1>
+          <ul className="w-full flex flex-col p-2 text-sm">
             <li
-              className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all py-2`}
+              className={`flex justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
             >
               <span className="w-[40%]">Api Token:</span>{" "}
               <span
@@ -126,17 +127,6 @@ function GenerateToken() {
                 onClick={() => copytoclipboard(apiToken)}
               >
                 {apiToken && apiToken}
-              </span>
-            </li>
-            <li
-              className={`flex justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
-            >
-              <span className="w-[40%]">Application Id:</span>{" "}
-              <span
-                className="w-[60%] md:text-end cursor-pointer"
-                onClick={() => copytoclipboard(localStorage.getItem("AppID12"))}
-              >
-                {localStorage.getItem("AppID12")}
               </span>
             </li>
           </ul>

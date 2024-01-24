@@ -13,7 +13,7 @@ export default async function TemplateAfterSave(request) {
         }
       }
     } else {
-      if (request.user) {
+      if (request?.user) {
         const signers = request.object.get('Signers');
         if (signers && signers.length > 0) {
           await updateAclDoc(request.object.id);

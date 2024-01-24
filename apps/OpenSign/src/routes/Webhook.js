@@ -12,7 +12,6 @@ function Webhook() {
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [webhook, setWebhook] = useState();
   const [isLoader, setIsLoader] = useState(true);
-  const [copied, setCopied] = useState(false);
   const [isGenerate, setIsGenerate] = useState(false);
   const [isErr, setIsErr] = useState(false);
   const [isModal, setIsModal] = useState(false);
@@ -77,19 +76,11 @@ function Webhook() {
     }
   };
 
-  const copytoclipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 1500); // Reset copied state after 1.5 seconds
-  };
   const handleModal = () => setIsModal(!isModal);
   return (
     <React.Fragment>
       <Title title={"Webhook"} />
       {isGenerate && <Alert type="success">Webhook added successfully!</Alert>}
-      {copied && <Alert type="success">Copied</Alert>}
       {isErr && <Alert type="danger">Something went wrong!</Alert>}
       {isLoader ? (
         <div
@@ -110,24 +101,14 @@ function Webhook() {
         </div>
       ) : (
         <div className="bg-white flex flex-col justify-center shadow rounded">
+          <h1 className="ml-4 mt-3 mb-2 font-semibold">Webhook</h1>
           <ul className="w-full flex flex-col  p-2 text-sm">
             <li
-              className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all py-2`}
+              className={`flex justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
             >
               <span className="w-[40%]">Webhook:</span>{" "}
               <span id="token" className="w-[60%] md:text-end cursor-pointer">
                 {webhook && webhook}
-              </span>
-            </li>
-            <li
-              className={`flex justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
-            >
-              <span className="w-[40%]">Application Id:</span>{" "}
-              <span
-                className="w-[60%] md:text-end cursor-pointer"
-                onClick={() => copytoclipboard(localStorage.getItem("AppID12"))}
-              >
-                {localStorage.getItem("AppID12")}
               </span>
             </li>
           </ul>
