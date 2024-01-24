@@ -522,13 +522,39 @@ paths:
       tags:
       - Templates
       summary: Create template
-      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **templateId** that can be used to generate documents based on the specified template and **url** to edit template."
+      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template."
       operationId: createtemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createtemplate_body'
+        required: true
+      responses:
+        "200":
+          description: Template created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+  /createtemplatewithbinary:
+    post:
+      tags:
+      - Templates
+      summary: Create template With binary
+      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template."
+      operationId: createtemplatewithbinary
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/createtemplate_body'
+              $ref: '#/components/schemas/createtemplatewithbinary_body'
         required: true
       responses:
         "200":
@@ -920,7 +946,7 @@ components:
         Signers:
           type: array
           items:
-            $ref: '#/components/schemas/document_Signers'
+            $ref: '#/components/schemas/template_Signers'
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -992,7 +1018,7 @@ components:
     createdocument_body:
       type: object
       properties:
-        file:
+        File:
           type: string
           format: base64
           example: base64 encoded pdf
@@ -1137,6 +1163,38 @@ components:
     createtemplate_body:
       type: object
       properties:
+        File:
+          type: string
+          format: base64
+          example: base64 encoded file
+        Title:
+          type: string
+          format: string
+          example: sample template
+        Note:
+          type: string
+          format: string
+          example: sample note
+        Description:
+          type: string
+          format: string
+          example: sample description
+        Signers:
+          type: array
+          items:
+            type: string
+            example: contact@example.com
+    inline_response_200_5:
+      type: object
+      properties:
+        objectId:
+          type: number
+        url:
+          type: string
+          example: https://exampleurl.com
+    createtemplatewithbinary_body:
+      type: object
+      properties:
         file:
           type: string
           format: binary
@@ -1147,17 +1205,8 @@ components:
         Note:
           type: string
         Signers:
-          type: array
-          items:
-            type: string
-    inline_response_200_5:
-      type: object
-      properties:
-        objectId:
-          type: number
-        url:
           type: string
-          example: https://exampleurl.com
+          format: array
     inline_response_404_6:
       type: object
       properties:
@@ -1231,12 +1280,6 @@ components:
           type: string
           example: Webhook deleted successfully!
     template_Signers:
-      type: object
-      properties:
-        Name:
-          type: string
-          example: joe bee
-    document_Signers:
       type: object
       properties:
         Name:
