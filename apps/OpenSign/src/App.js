@@ -18,6 +18,7 @@ import LoadMf from "./routes/LoadMf";
 import GenerateToken from "./routes/GenerateToken";
 import ValidateRoute from "./primitives/ValidateRoute";
 import Webhook from "./routes/Webhook";
+import Validate from "./primitives/Validate";
 
 function App() {
   const [isloading, setIsLoading] = useState(true);
@@ -64,6 +65,9 @@ function App() {
             <Route element={<ValidateRoute />}>
               <Route exact path="/" element={<Login />} />
               <Route exact path="/signup" element={<Signup />} />
+            </Route>
+            <Route element={<Validate />}>
+              <Route exact path="/load/:remoteApp/*" element={<LoadMf />} />
             </Route>
             <Route exact path="/loadmf/:remoteApp/*" element={<LoadMf />} />
             <Route exact path="/forgetpassword" element={<ForgetPassword />} />
