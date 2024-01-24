@@ -21,6 +21,9 @@ import multer from 'multer';
 import updateDocument from './routes/updateDocument.js';
 import deleteDocument from './routes/deleteDocument.js';
 import createDocumentWithTemplate from './routes/CreateDocumentWithTemplate.js';
+import saveWebhook from './routes/saveWebhook.js';
+import deleteWebhook from './routes/deleteWebhook.js';
+import getWebhook from './routes/getWebhook.js';
 
 dotenv.config();
 const storage = multer.memoryStorage();
@@ -77,3 +80,12 @@ app.delete('/template/:template_id', deletedTemplate);
 
 // get all types of documents on the basis of doctype
 app.get('/templatelist', getTemplatetList);
+
+// set and update webhook
+app.get('/webhook', getWebhook);
+
+// set and update webhook
+app.post('/webhook', saveWebhook);
+
+// set and update webhook
+app.delete('/webhook', deleteWebhook);
