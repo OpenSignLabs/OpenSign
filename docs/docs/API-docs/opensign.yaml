@@ -547,7 +547,7 @@ paths:
     post:
       tags:
       - Templates
-      summary: Create template With binary
+      summary: Create template with binary file
       description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template."
       operationId: createtemplatewithbinary
       requestBody:
