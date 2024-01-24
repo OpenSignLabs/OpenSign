@@ -20,7 +20,11 @@ function SignPad({
   onSaveImage,
   image,
   defaultSign,
-  setSignature
+  setSignature,
+  myInitial,
+  isInitial,
+  setIsInitial,
+  setIsStamp
 }) {
   const [penColor, setPenColor] = useState("blue");
   const allColor = [bluePen, redPen, blackPen];
@@ -40,19 +44,22 @@ function SignPad({
   ];
   const [fontSelect, setFontSelect] = useState(fontOptions[0].value);
 
-  useEffect(() => {
-    const senderUser =
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      ) &&
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      );
-    const jsonSender = JSON.parse(senderUser);
+  const senderUser =
+    localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    ) &&
+    localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+  const jsonSender = JSON.parse(senderUser);
 
-    const currentUserName = jsonSender && jsonSender.name;
-    //function for clear signature
-    setSignValue(currentUserName);
+  const currentUserName = jsonSender && jsonSender.name;
+
+  useEffect(() => {
+    const trimmedName = currentUserName.trim();
+    const firstCharacter = trimmedName.charAt(0);
+    const userName = isInitial ? firstCharacter : currentUserName;
+    setSignValue(userName);
     setFontSelect("Fasthand");
   }, []);
   //function for clear signature image
@@ -68,6 +75,7 @@ function SignPad({
     } else if (isTab === "uploadImage") {
       setImage("");
     }
+    setIsInitial(false);
   };
   //function for set signature url
   const handleSignatureChange = (dataURL) => {
@@ -97,9 +105,13 @@ function SignPad({
         <button
           onClick={() => {
             if (!image) {
-              if (isDefaultSign) {
+              if (isTab === "mysignature") {
                 setIsSignImg("");
-                onSaveSign(isDefaultSign);
+                if (isInitial) {
+                  onSaveSign("initials");
+                } else {
+                  onSaveSign("default");
+                }
               } else {
                 if (isTab === "type") {
                   setIsSignImg("");
@@ -116,11 +128,13 @@ function SignPad({
               onSaveImage();
             }
             setIsSignPad(false);
-
+            setIsInitial(false);
             setIsImageSelect(false);
             setIsDefaultSign(false);
             setImage();
             setIsTab("draw");
+            setSignValue("");
+            setIsStamp(false);
           }}
           style={{
             background: themeColor(),
@@ -164,9 +178,14 @@ function SignPad({
       canvasRef.current.fromDataURL(isSignImg);
     }
     if (isTab === "type") {
-      convertToImg(fontSelect, signValue);
+      const trimmedName = signValue ? signValue.trim() : currentUserName.trim();
+      const firstCharacter = trimmedName.charAt(0);
+      const userName = isInitial ? firstCharacter : signValue;
+      setSignValue(userName);
+      convertToImg(fontSelect, userName);
     }
   }, [isTab]);
+
   //function for convert input text value in image
   const convertToImg = async (fontStyle, text) => {
     //get text content to convert in image
@@ -217,6 +236,12 @@ function SignPad({
     setSignature(dataUrl);
   };
 
+  const getFirstChar = () => {
+    const trimmedString = currentUserName.trim();
+    const firstCharacter = trimmedString.charAt(0);
+    const userName = isInitial ? firstCharacter : signValue;
+    setSignValue(userName);
+  };
   return (
     <div>
       {isSignPad && (
@@ -333,7 +358,7 @@ function SignPad({
                             }}
                           ></div>
                         </div>
-                        {defaultSign && (
+                        {!isInitial && defaultSign ? (
                           <div>
                             <span
                               onClick={() => {
@@ -361,6 +386,37 @@ function SignPad({
                               }}
                             ></div>
                           </div>
+                        ) : (
+                          isInitial &&
+                          myInitial && (
+                            <div>
+                              <span
+                                onClick={() => {
+                                  setIsDefaultSign(true);
+                                  setIsImageSelect(true);
+                                  setIsTab("mysignature");
+                                  setImage();
+                                }}
+                                style={{
+                                  color:
+                                    isTab === "mysignature"
+                                      ? themeColor()
+                                      : "#515252"
+                                }}
+                                className="signTab"
+                              >
+                                My Initials
+                              </span>
+                              <div
+                                style={{
+                                  border:
+                                    isTab === "mysignature"
+                                      ? "1.5px solid #108783"
+                                      : "1.5px solid #ffffff"
+                                }}
+                              ></div>
+                            </div>
+                          )
                         )}
                       </>
                     )}
@@ -373,11 +429,13 @@ function SignPad({
                 onClick={() => {
                   setPenColor("blue");
                   setIsSignPad(false);
-
+                  setIsInitial(false);
                   setIsImageSelect(false);
                   setIsDefaultSign(false);
                   setImage();
                   setIsTab("draw");
+                  setSignValue("");
+                  setIsStamp(false);
                 }}
               >
                 &times;
@@ -386,29 +444,33 @@ function SignPad({
             <div style={{ height: "100%", padding: 20 }}>
               {isDefaultSign ? (
                 <>
-                  <div
-                    style={{
-                      border: "1.3px solid #007bff",
-                      borderRadius: "2px",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginBottom: 6,
-                      cursor: "pointer"
-                    }}
-                    className="signatureCanvas"
-                  >
-                    <img
-                      alt="stamp img"
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <div
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        background: "rgb(255, 255, 255)",
-                        objectFit: "contain"
+                        border: "1.3px solid #007bff",
+                        borderRadius: "2px",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginBottom: 6,
+                        cursor: "pointer"
                       }}
-                      src={defaultSign}
-                    />
+                      className={
+                        isInitial ? "intialSignatureCanvas" : "signatureCanvas"
+                      }
+                    >
+                      <img
+                        alt="stamp img"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          background: "rgb(255, 255, 255)",
+                          objectFit: "contain"
+                        }}
+                        src={isInitial ? myInitial : defaultSign}
+                      />
+                    </div>
                   </div>
                   <div style={{ display: "flex", justifyContent: "flex-end" }}>
                     <SaveBtn />
@@ -416,54 +478,63 @@ function SignPad({
                 </>
               ) : isImageSelect || isStamp ? (
                 !image ? (
-                  <div
-                    style={{
-                      border: "1.3px solid #007bff",
-                      borderRadius: "2px",
-
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginBottom: 6,
-                      cursor: "pointer"
-                    }}
-                    className="signatureCanvas"
-                    onClick={() => imageRef.current.click()}
-                  >
-                    <input
-                      type="file"
-                      onChange={onImageChange}
-                      className="filetype"
-                      accept="image/*"
-                      ref={imageRef}
-                      hidden
-                    />
-                    <i className="fas fa-cloud-upload-alt uploadImgLogo"></i>
-                    <div className="uploadImg">Upload</div>
-                  </div>
-                ) : (
-                  <>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
                     <div
                       style={{
                         border: "1.3px solid #007bff",
                         borderRadius: "2px",
-                        marginBottom: 6,
 
-                        overflow: "hidden"
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginBottom: 6,
+                        cursor: "pointer"
                       }}
-                      className="signatureCanvas"
+                      className={
+                        isInitial ? "intialSignatureCanvas" : "signatureCanvas"
+                      }
+                      onClick={() => imageRef.current.click()}
                     >
-                      <img
-                        alt="print img"
+                      <input
+                        type="file"
+                        onChange={onImageChange}
+                        className="filetype"
+                        accept="image/*"
                         ref={imageRef}
-                        src={image.src}
-                        style={{
-                          objectFit: "contain",
-                          height: "100%",
-                          width: "100%"
-                        }}
+                        hidden
                       />
+                      <i className="fas fa-cloud-upload-alt uploadImgLogo"></i>
+                      <div className="uploadImg">Upload</div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <div
+                        style={{
+                          border: "1.3px solid #007bff",
+                          borderRadius: "2px",
+                          marginBottom: 6,
+                          overflow: "hidden"
+                        }}
+                        className={
+                          isInitial
+                            ? "intialSignatureCanvas"
+                            : "signatureCanvas"
+                        }
+                      >
+                        <img
+                          alt="print img"
+                          ref={imageRef}
+                          src={image.src}
+                          style={{
+                            objectFit: "contain",
+                            height: "100%",
+                            width: "100%"
+                          }}
+                        />
+                      </div>
                     </div>
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
@@ -481,10 +552,12 @@ function SignPad({
                       alignItems: "center"
                     }}
                   >
-                    <span className="signatureText">Signature:</span>
+                    <span className="signatureText">
+                      {isInitial ? "Initials" : "Signature"}:
+                    </span>
 
                     <input
-                      maxLength={30}
+                      maxLength={isInitial ? 3 : 30}
                       style={{ fontFamily: fontSelect }}
                       type="text"
                       className="signatureInput"
@@ -532,23 +605,26 @@ function SignPad({
                 </div>
               ) : (
                 <>
-                  <SignatureCanvas
-                    ref={canvasRef}
-                    penColor={penColor}
-                    canvasProps={{
-                      className: "signatureCanvas",
-                      style: {
-                        border: "1.6px solid #007bff",
-                        borderRadius: "2px"
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <SignatureCanvas
+                      ref={canvasRef}
+                      penColor={penColor}
+                      canvasProps={{
+                        className: isInitial
+                          ? "intialSignatureCanvas"
+                          : "signatureCanvas",
+                        style: {
+                          border: "1.6px solid #007bff",
+                          borderRadius: "2px"
+                        }
+                      }}
+                      backgroundColor="rgb(255, 255, 255)"
+                      onEnd={() =>
+                        handleSignatureChange(canvasRef.current.toDataURL())
                       }
-                    }}
-                    backgroundColor="rgb(255, 255, 255)"
-                    onEnd={() =>
-                      handleSignatureChange(canvasRef.current.toDataURL())
-                    }
-                    dotSize={1}
-                  />
-
+                      dotSize={1}
+                    />
+                  </div>
                   <div
                     style={{
                       display: "flex",

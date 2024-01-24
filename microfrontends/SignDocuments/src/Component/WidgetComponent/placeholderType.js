@@ -308,6 +308,63 @@ function PlaceholderType(props) {
         />
       );
 
+    case "image":
+      return props.pos.SignUrl ? (
+        <img
+          alt="signimg"
+          src={props.pos.SignUrl}
+          style={{
+            width: "99%",
+            height: "100%",
+            objectFit: "contain"
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            fontSize: "10px",
+            color: "black",
+            justifyContent: "center"
+          }}
+        >
+          <div>{props.pos.type}</div>
+
+          {props?.handleUserName &&
+            props?.handleUserName(props?.data.Id, props?.data.Role)}
+        </div>
+      );
+    case "email":
+      return props.isSignYourself ||
+        (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
+        <input
+          className="inputPlaceholder"
+          type="text"
+          placeholder="email"
+          value={props.pos.widgetValue && props.pos.widgetValue}
+          onBlur={handleInputBlur}
+          onChange={(e) =>
+            onChangeInput(
+              e.target.value,
+              props.pos.key,
+              props.xyPostion,
+              props.index,
+              props.setXyPostion,
+              props.data && props.data.signerObjId,
+              false
+            )
+          }
+        />
+      ) : (
+        <div
+          style={{
+            color: "black",
+            fontSize: "14px"
+          }}
+        >
+          <span>{props.pos.type}</span>
+        </div>
+      );
+
     default:
       return props.pos.SignUrl ? (
         <div style={{ pointerEvents: "none" }}>

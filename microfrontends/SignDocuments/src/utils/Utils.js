@@ -1,7 +1,7 @@
 import axios from "axios";
 import { rgb } from "pdf-lib";
 import { themeColor } from "./ThemeColor/backColor";
-const isMobile = window.innerWidth < 767;
+export const isMobile = window.innerWidth < 767;
 
 //calculate width and height
 export const calculateInitialWidthHeight = (type, widgetData) => {
@@ -54,11 +54,15 @@ export const addInitialData = (signerPos, setXyPostion, value, signerObjId) => {
             ? value?.Company
             : item.type === "job title"
               ? value?.JobTitle
-              : "";
+              : item.type === "email"
+                ? value?.Email
+                : "";
+
       if (
         item.type === "name" ||
         item.type === "company" ||
-        item.type === "job title"
+        item.type === "job title" ||
+        item.type === "email"
       ) {
         return {
           ...item,
@@ -195,16 +199,26 @@ export const widgets = [
   {
     type: "company",
     icon: "fa-solid fa-building",
-    iconSize: "24px"
+    iconSize: "25px"
   },
   {
     type: "job title",
     icon: "fa-solid fa-address-card",
-    iconSize: "16px"
+    iconSize: "17px"
   },
   {
     type: "date",
     icon: "fa-solid fa-calendar-days",
+    iconSize: "20px"
+  },
+  {
+    type: "image",
+    icon: "fa-solid fa-image",
+    iconSize: "20px"
+  },
+  {
+    type: "email",
+    icon: "fa-solid fa-envelope",
     iconSize: "20px"
   }
 ];
@@ -215,7 +229,6 @@ export const getWidgetType = (item, marginLeft) => {
       <div
         className="signatureBtn"
         style={{
-          // opacity: isDragSign ? 0.5 : 1,
           boxShadow:
             "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
           marginLeft: marginLeft && `${marginLeft}px`
@@ -298,8 +311,8 @@ export const defaultWidthHeight = (type) => {
       return obj;
     case "initials":
       obj = {
-        width: 150,
-        height: 60
+        width: 50,
+        height: 50
       };
       return obj;
     case "name":
@@ -324,6 +337,18 @@ export const defaultWidthHeight = (type) => {
     case "date":
       obj = {
         width: 100,
+        height: 20
+      };
+      return obj;
+    case "image":
+      obj = {
+        width: 150,
+        height: 60
+      };
+      return obj;
+    case "email":
+      obj = {
+        width: 50,
         height: 20
       };
       return obj;
@@ -414,6 +439,7 @@ export function getHostUrl() {
 
 export const calculateImgAspectRatio = (imgWH, pos) => {
   let newWidth, newHeight;
+
   const placeholderHeight = pos && pos.Width ? pos.Height : 60;
   const aspectRatio = imgWH.width / imgWH.height;
   newWidth = aspectRatio * placeholderHeight;
@@ -465,13 +491,22 @@ export function onSaveSign(
   let getXYdata = xyPostion[index].pos;
   const updateXYData = getXYdata.map((position) => {
     if (position.key === signKey) {
-      if (isDefaultSign) {
+      if (isDefaultSign === "initials") {
+        let imgWH = { width: position.Width, height: position.Height };
+        getIMGWH = calculateImgAspectRatio(imgWH, position);
+      } else if (isDefaultSign === "default") {
         getIMGWH = calculateImgAspectRatio(imgWH, position);
       } else if (isTypeText) {
         getIMGWH = { newWidth: imgWH.width, newHeight: imgWH.height };
       } else {
+        const defaultWidth = defaultWidthHeight(position?.type).width;
+        const defaultHeight = defaultWidthHeight(position?.type).height;
+
         getIMGWH = calculateImgAspectRatio(
-          { width: 150, height: 60 },
+          {
+            width: defaultWidth ? defaultWidth : 150,
+            height: defaultHeight ? defaultHeight : 60
+          },
           position
         );
       }
