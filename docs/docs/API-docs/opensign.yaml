@@ -222,13 +222,41 @@ paths:
       tags:
       - Documents
       summary: Create document
-      description: "The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios."
+      description: "The Create Document API allows users to generate new documents by providing data with base64 encoded file. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios."
       operationId: createdocument
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createdocument_body'
+        required: true
+      responses:
+        "200":
+          description: Document created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /createdocumentwithbinary:
+    post:
+      tags:
+      - Documents
+      summary: Create document with binary file type
+      description: "The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios."
+      operationId: createdocumentwithbinary
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/createdocument_body'
+              $ref: '#/components/schemas/createdocumentwithbinary_body'
         required: true
       responses:
         "200":
@@ -275,7 +303,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
+                $ref: '#/components/schemas/inline_response_200_2'
         "405":
           description: Invalid API Token!
           content:
@@ -351,7 +379,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_2'
+                $ref: '#/components/schemas/inline_response_200_3'
         "400":
           description: Please provide valid field names!
           content:
@@ -474,7 +502,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_3'
+                $ref: '#/components/schemas/inline_response_200_4'
         "404":
           description: Report not available!
           content:
@@ -508,7 +536,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_4'
+                $ref: '#/components/schemas/inline_response_200_5'
         "405":
           description: Invalid API Token!
           content:
@@ -579,7 +607,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_2'
+                $ref: '#/components/schemas/inline_response_200_3'
         "400":
           description: Please provide valid field names!
           content:
@@ -664,7 +692,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_5'
+                $ref: '#/components/schemas/inline_response_200_6'
         "405":
           description: Invalid API Token!
           content:
@@ -684,7 +712,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_6'
+                $ref: '#/components/schemas/inline_response_200_7'
         "404":
           description: User not found!
           content:
@@ -717,7 +745,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_7'
+                $ref: '#/components/schemas/inline_response_200_8'
         "401":
           description: Successful operation
           content:
@@ -750,7 +778,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_8'
+                $ref: '#/components/schemas/inline_response_200_9'
         "404":
           description: User not found!
           content:
@@ -966,17 +994,26 @@ components:
       properties:
         file:
           type: string
-          format: binary
+          format: base64
+          example: base64 encoded pdf
         Title:
           type: string
+          format: string
+          example: sample document
         Description:
           type: string
+          format: string
+          example: sample Description
         Note:
           type: string
+          format: string
+          example: sample Note
         Signers:
           type: array
           items:
             type: string
+            format: string
+            example: contact@example.com
     inline_response_200_1:
       type: object
       properties:
@@ -987,7 +1024,22 @@ components:
         url:
           type: string
           format: string
-          example: https://example.com
+          example: https://url-to-edit-document.com
+    createdocumentwithbinary_body:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        Title:
+          type: string
+        Description:
+          type: string
+        Note:
+          type: string
+        Signers:
+          type: string
+          format: array
     createdocumenttemplate_id_Signers:
       type: object
       properties:
@@ -1011,6 +1063,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/createdocumenttemplate_id_Signers'
+    inline_response_200_2:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: hji2zxcv2P
+        url:
+          type: string
+          format: string
+          example: https://example.com
     inline_response_404_3:
       type: object
       properties:
@@ -1036,7 +1099,7 @@ components:
           type: string
           format: string
           example: Bjsba2bhoP
-    inline_response_200_2:
+    inline_response_200_3:
       type: object
       properties:
         objectId:
@@ -1058,7 +1121,7 @@ components:
           type: string
           format: string
           example: Document not found!
-    inline_response_200_3:
+    inline_response_200_4:
       type: object
       properties:
         result:
@@ -1087,7 +1150,7 @@ components:
           type: array
           items:
             type: string
-    inline_response_200_4:
+    inline_response_200_5:
       type: object
       properties:
         objectId:
@@ -1127,14 +1190,14 @@ components:
           type: string
           format: string
           example: Template not found!
-    inline_response_200_5:
+    inline_response_200_6:
       type: object
       properties:
         result:
           type: array
           items:
             $ref: '#/components/schemas/template'
-    inline_response_200_6:
+    inline_response_200_7:
       type: object
       properties:
         Webhook:
@@ -1149,7 +1212,7 @@ components:
           type: string
           format: string
           example: https://your-webhook-url@example.com
-    inline_response_200_7:
+    inline_response_200_8:
       type: object
       properties:
         result:
@@ -1161,10 +1224,10 @@ components:
         result:
           type: string
           example: Webhook url already exists!
-    inline_response_200_8:
+    inline_response_200_9:
       type: object
       properties:
-        Webhook:
+        result:
           type: string
           example: Webhook deleted successfully!
     template_Signers:
