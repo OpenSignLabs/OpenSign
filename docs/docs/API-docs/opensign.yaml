@@ -34,6 +34,8 @@ tags:
   description: Operations about documents
 - name: Templates
   description: Operations about templates
+- name: Webhook
+  description: Operations about Webhook
 paths:
   /getuser:
     get:
@@ -189,6 +191,7 @@ paths:
         style: form
         explode: true
         schema:
+          maximum: 500
           type: number
         example: 10
       - name: skip
@@ -226,6 +229,45 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/createdocument_body'
+        required: true
+      responses:
+        "200":
+          description: Document created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /createdocument/{template_id}:
+    post:
+      tags:
+      - Documents
+      summary: Create document by template_id
+      description: The Create Document API allows you to generate new documents by providing template_id.
+      operationId: createdocumentwithtemplateid
+      parameters:
+      - name: template_id
+        in: path
+        description: objectId of contact
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: pH1bhc2hpb
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createdocument_template_id_body'
         required: true
       responses:
         "200":
@@ -415,6 +457,7 @@ paths:
         style: form
         explode: true
         schema:
+          maximum: 500
           type: number
         example: 10
       - name: skip
@@ -604,6 +647,7 @@ paths:
         style: form
         explode: true
         schema:
+          maximum: 500
           type: number
         example: 10
       - name: skip
@@ -627,6 +671,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/invalidtoken'
+  /webhook:
+    get:
+      tags:
+      - Webhook
+      summary: Get Webhook
+      description: The Get Webhook API allow you to get webhook url
+      operationId: getWebhook
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_6'
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    post:
+      tags:
+      - Webhook
+      summary: Save or Update Webhook
+      description: The save or update Webhook API allow you to save webhook url which is used to capture document signature completion event
+      operationId: save&updateWebhook
+      requestBody:
+        description: Provide below parameter to create contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/webhook_body'
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_7'
+        "401":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    delete:
+      tags:
+      - Webhook
+      summary: Delete Webhook
+      description: The Delete Webhook API allow you to delete webhook url
+      operationId: deleteWebhook
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_8'
+        "404":
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
 components:
   schemas:
     date:
@@ -850,6 +988,29 @@ components:
           type: string
           format: string
           example: https://example.com
+    createdocumenttemplate_id_Signers:
+      type: object
+      properties:
+        Role:
+          type: string
+          example: Accoutnant
+        Email:
+          type: string
+          format: mail
+          example: joe@example.com
+        Name:
+          type: string
+          example: joe bee
+        Phone:
+          type: string
+          example: "123123131"
+    createdocument_template_id_body:
+      type: object
+      properties:
+        Signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/createdocumenttemplate_id_Signers'
     inline_response_404_3:
       type: object
       properties:
@@ -973,6 +1134,39 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/template'
+    inline_response_200_6:
+      type: object
+      properties:
+        Webhook:
+          type: string
+          example: https://your-webhook-url@example.com
+    webhook_body:
+      required:
+      - Url
+      type: object
+      properties:
+        Url:
+          type: string
+          format: string
+          example: https://your-webhook-url@example.com
+    inline_response_200_7:
+      type: object
+      properties:
+        result:
+          type: string
+          example: Webhook updated successfully!
+    inline_response_401:
+      type: object
+      properties:
+        result:
+          type: string
+          example: Webhook url already exists!
+    inline_response_200_8:
+      type: object
+      properties:
+        Webhook:
+          type: string
+          example: Webhook deleted successfully!
     template_Signers:
       type: object
       properties:
