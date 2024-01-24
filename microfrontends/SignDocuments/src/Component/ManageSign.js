@@ -8,7 +8,6 @@ import "../css/signature.css";
 import axios from "axios";
 import { toDataUrl } from "../utils/toDataUrl";
 
- 
 const ManageSign = () => {
   let appName;
   const [penColor, setPenColor] = useState("blue");
@@ -50,7 +49,7 @@ const ManageSign = () => {
     const userId = {
       __type: "Pointer",
       className: "_User",
-      objectId: User.objectId,
+      objectId: User.objectId
     };
     const strObj = JSON.stringify(userId);
     const url =
@@ -59,7 +58,7 @@ const ManageSign = () => {
 
     const headers = {
       "Content-Type": "application/json",
-      "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+      "X-Parse-Application-Id": localStorage.getItem("parseAppId")
       // "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
     };
     const res = await axios
@@ -142,7 +141,6 @@ const ManageSign = () => {
 
     if (!signName) {
       setNameWarning(true);
-     
     } else if (!isvalue) {
       setWarning(true);
       setTimeout(() => setWarning(false), 1000);
@@ -173,7 +171,7 @@ const ManageSign = () => {
         await saveEntry({
           name: signName,
           url: imgUrl.data.imageUrl,
-          initialsUrl: initialsUrl,
+          initialsUrl: initialsUrl
         });
       }
     }
@@ -199,14 +197,14 @@ const ManageSign = () => {
     const config = {
       headers: {
         "content-type": "multipart/form-data",
-        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId")
       },
       onUploadProgress: function (progressEvent) {
         let percentCompleted = Math.round(
           (progressEvent.loaded * 100) / progressEvent.total
         );
         // setpercentage(percentCompleted);
-      },
+      }
     };
     const response = await axios
       .post(url, formData, config)
@@ -241,12 +239,12 @@ const ManageSign = () => {
         UserId: {
           __type: "Pointer",
           className: "_User",
-          objectId: User.objectId,
-        },
+          objectId: User.objectId
+        }
       };
       const headers = {
         "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId")
         // "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
       };
       const res = await axios
@@ -279,12 +277,12 @@ const ManageSign = () => {
         UserId: {
           __type: "Pointer",
           className: "_User",
-          objectId: User.objectId,
-        },
+          objectId: User.objectId
+        }
       };
       const headers = {
         "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId")
         // "X-Parse-Session-Token": localStorage.getItem("accesstoken"),
       };
       const res = await axios
@@ -320,7 +318,7 @@ const ManageSign = () => {
     <div
       style={{
         maxHeight: "500px",
-        overflow: "auto",
+        overflow: "auto"
       }}
     >
       {isSuccess && (
@@ -337,7 +335,7 @@ const ManageSign = () => {
         className="mainDiv"
         style={{
           width: "100%",
-          paddingRight: "10px",
+          paddingRight: "10px"
         }}
       >
         <div style={{ margin: 20 }}>
@@ -346,7 +344,7 @@ const ManageSign = () => {
               fontWeight: "700",
               fontSize: 15,
               color: "#000",
-              paddingBottom: 8,
+              paddingBottom: 8
             }}
           >
             Manage Signature
@@ -357,7 +355,7 @@ const ManageSign = () => {
               style={{
                 fontSize: 12,
                 position: "relative",
-                paddingBottom: 5,
+                paddingBottom: 5
               }}
             >
               Signer's Name
@@ -386,7 +384,7 @@ const ManageSign = () => {
                 height: 35,
                 padding: "6px 12px",
                 marginBottom: 10,
-                fontSize: 12,
+                fontSize: 12
               }}
               required
               onFocus={() => setNameWarning(false)}
@@ -397,7 +395,7 @@ const ManageSign = () => {
               htmlFor="imgoverview"
               style={{
                 fontSize: 12,
-                paddingBottom: 5,
+                paddingBottom: 5
               }}
             >
               Signature/Image
@@ -412,7 +410,7 @@ const ManageSign = () => {
                     flexDirection: "row",
                     justifyContent: "space-between",
                     width: "50%",
-                    paddingLeft: 10,
+                    paddingLeft: 10
                   }}
                 >
                   <div
@@ -422,7 +420,7 @@ const ManageSign = () => {
                       justifyContent: "space-around",
                       alignItems: "center",
                       gap: 10,
-                      marginBottom: 10,
+                      marginBottom: 10
                     }}
                   >
                     <>
@@ -458,7 +456,7 @@ const ManageSign = () => {
                           position: "relative",
 
                           border: "2px solid #888",
-                          marginBottom: 6,
+                          marginBottom: 6
                         }}
                         className="signatureCanvas"
                       >
@@ -468,7 +466,7 @@ const ManageSign = () => {
                           style={{
                             width: "100%",
                             height: "100%",
-                            objectFit: "contain",
+                            objectFit: "contain"
                           }}
                         />
                       </div>
@@ -479,7 +477,7 @@ const ManageSign = () => {
                         canvasProps={{
                           width: "456px",
                           height: "180px",
-                          className: "signatureCanvas",
+                          className: "signatureCanvas"
                         }}
                         backgroundColor="rgb(255, 255, 255)"
                         onEnd={() =>
@@ -492,7 +490,7 @@ const ManageSign = () => {
                       style={{
                         display: "flex",
                         flexDirection: "row",
-                        justifyContent: "space-between",
+                        justifyContent: "space-between"
                         // width: 460,
                       }}
                       className="penContainer"
@@ -513,10 +511,10 @@ const ManageSign = () => {
                                       key === 0 && penColor === "blue"
                                         ? "2px solid blue"
                                         : key === 1 && penColor === "red"
-                                        ? "2px solid red"
-                                        : key === 2 && penColor === "black"
-                                        ? "2px solid black"
-                                        : "2px solid white",
+                                          ? "2px solid red"
+                                          : key === 2 && penColor === "black"
+                                            ? "2px solid black"
+                                            : "2px solid white"
                                   }}
                                   onClick={() => {
                                     if (key === 0) {
@@ -579,9 +577,9 @@ const ManageSign = () => {
                       position: "relative",
 
                       border: "2px solid #888",
-                      marginBottom: 6,
+                      marginBottom: 6
                     }}
-                    className="signatureCanvas"
+                    className="intialSignature"
                   >
                     <img
                       alt="preview image"
@@ -589,7 +587,7 @@ const ManageSign = () => {
                       style={{
                         width: "100%",
                         height: "100%",
-                        objectFit: "contain",
+                        objectFit: "contain"
                       }}
                     />
                   </div>
@@ -598,9 +596,7 @@ const ManageSign = () => {
                     ref={initailsRef}
                     penColor={initialPen}
                     canvasProps={{
-                      width: "456px",
-                      height: "180px",
-                      className: "signatureCanvas",
+                      className: "intialSignature"
                     }}
                     backgroundColor="rgb(255, 255, 255)"
                     onEnd={() =>
@@ -613,8 +609,7 @@ const ManageSign = () => {
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    justifyContent: "space-between",
-                    // width: 460,
+                    justifyContent: "space-between"
                   }}
                   className="penContainer"
                 >
@@ -624,7 +619,7 @@ const ManageSign = () => {
                         {allColor.map((data, key) => {
                           return (
                             <img
-                            alt="pen"
+                              alt="pen"
                               style={{
                                 border: "none",
                                 margin: "5px",
@@ -632,10 +627,10 @@ const ManageSign = () => {
                                   key === 0 && initialPen === "blue"
                                     ? "2px solid blue"
                                     : key === 1 && initialPen === "red"
-                                    ? "2px solid red"
-                                    : key === 2 && initialPen === "black"
-                                    ? "2px solid black"
-                                    : "2px solid white",
+                                      ? "2px solid red"
+                                      : key === 2 && initialPen === "black"
+                                        ? "2px solid black"
+                                        : "2px solid white"
                               }}
                               onClick={() => {
                                 if (key === 0) {

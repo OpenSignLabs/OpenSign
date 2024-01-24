@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import BorderResize from "../component/borderResize";
 import PlaceholderBorder from "./placeholderBorder";
 import { Rnd } from "react-rnd";
-import { defaultWidthHeight } from "../../utils/Utils";
+import { defaultWidthHeight, isMobile } from "../../utils/Utils";
 import PlaceholderType from "./placeholderType";
 
 function Placeholder(props) {
@@ -16,7 +16,8 @@ function Placeholder(props) {
       props.pos.type === "name" ||
       props.pos.type === "company" ||
       props.pos.type === "job title" ||
-      props.pos.type === "date"
+      props.pos.type === "date" ||
+      props.pos.type === "email"
     ) {
       setDraggingEnabled(false);
     }
@@ -25,11 +26,16 @@ function Placeholder(props) {
         if (
           props.pos.type === "signature" ||
           props.pos.type === "stamp" ||
-          props.pos.type === "initials"
+          props.pos.type === "image"
         ) {
           props.setIsSignPad(true);
           props.setSignKey(props.pos.key);
           props.setIsStamp(props.pos.isStamp);
+        } else if (props.pos.type === "initials") {
+          props.setIsSignPad(true);
+          props.setSignKey(props.pos.key);
+          props.setIsStamp(props.pos.isStamp);
+          props.setIsInitial(true);
         }
       } else {
         props.setIsSignPad(true);
@@ -64,6 +70,82 @@ function Placeholder(props) {
         props.setSignKey(props.pos.key);
       }
     }
+  };
+
+  const PlaceholderIcon = () => {
+    return (
+      props.isShowBorder && (
+        <>
+          {props.isPlaceholder && (
+            <i
+              data-tut="reactourLinkUser"
+              className="fa-regular fa-user signUserIcon"
+              onClick={(e) => {
+                e.stopPropagation();
+                props.handleLinkUser(props.data.Id);
+                props.setUniqueId(props.data.Id);
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                props.handleLinkUser(props.data.Id);
+                props.setUniqueId(props.data.Id);
+              }}
+              style={{
+                color: "#188ae2"
+              }}
+            ></i>
+          )}
+
+          <i
+            className="fa-regular fa-copy signCopy"
+            onClick={(e) => {
+              if (props.data) {
+                props.setSignerObjId(props.data.signerObjId);
+              }
+              e.stopPropagation();
+              props.setIsPageCopy(true);
+              props.setSignKey(props.pos.key);
+            }}
+            onTouchEnd={(e) => {
+              if (props.data) {
+                props.setSignerObjId(props.data.signerObjId);
+              }
+              e.stopPropagation();
+              props.setIsPageCopy(true);
+              props.setSignKey(props.pos.key);
+            }}
+            style={{
+              color: "#188ae2"
+            }}
+          ></i>
+          <i
+            className="fa-regular fa-circle-xmark signCloseBtn"
+            onClick={(e) => {
+              e.stopPropagation();
+
+              if (props.data) {
+                props.handleDeleteSign(props.pos.key, props.data.Id);
+              } else {
+                props.handleDeleteSign(props.pos.key);
+                props.setIsStamp(false);
+              }
+            }}
+            onTouchEnd={(e) => {
+              e.stopPropagation();
+              if (props.data) {
+                props.handleDeleteSign(props.pos.key, props.data.Id);
+              } else {
+                props.handleDeleteSign(props.pos.key);
+                props.setIsStamp(false);
+              }
+            }}
+            style={{
+              color: "#188ae2"
+            }}
+          ></i>
+        </>
+      )
+    );
   };
 
   return (
@@ -178,111 +260,63 @@ function Placeholder(props) {
           pos={props.pos}
         />
       )}
-      <div
-        style={{
-          left: props.xPos(props.pos, props.isSignYourself),
-          top: props.yPos(props.pos, props.isSignYourself),
-          width: props.posWidth(props.pos, props.isSignYourself),
-          height: props.posHeight(props.pos, props.isSignYourself),
-          zIndex: "10"
-        }}
-        onTouchEnd={(e) => {
-          props.isNeedSign && props.data?.signerObjId === props.signerObjId
-            ? handlePlaceholderClick()
-            : props.isPlaceholder
+      {isMobile ? (
+        <div
+          style={{
+            left: props.xPos(props.pos, props.isSignYourself),
+            top: props.yPos(props.pos, props.isSignYourself),
+            width: props.posWidth(props.pos, props.isSignYourself),
+            height: props.posHeight(props.pos, props.isSignYourself),
+            zIndex: "10"
+          }}
+          onTouchEnd={(e) => {
+            props.isNeedSign && props.data?.signerObjId === props.signerObjId
               ? handlePlaceholderClick()
-              : props.isSignYourself && handlePlaceholderClick();
-        }}
-      >
-        {props.isShowBorder && (
-          <>
-            {props.isPlaceholder && (
-              <i
-                data-tut="reactourLinkUser"
-                className="fa-regular fa-user signUserIcon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  props.handleLinkUser(props.data.Id);
-                  props.setUniqueId(props.data.Id);
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  props.handleLinkUser(props.data.Id);
-                  props.setUniqueId(props.data.Id);
-                }}
-                style={{
-                  color: "#188ae2"
-                }}
-              ></i>
-            )}
+              : props.isPlaceholder
+                ? handlePlaceholderClick()
+                : props.isSignYourself && handlePlaceholderClick();
+          }}
+        >
+          <PlaceholderIcon />
+          <PlaceholderType
+            pos={props.pos}
+            xyPostion={props.xyPostion}
+            index={props.index}
+            setXyPostion={props.setXyPostion}
+            data={props.data}
+            setSignKey={props.setSignKey}
+            isShowDropdown={props?.isShowDropdown}
+            isPlaceholder={props.isPlaceholder}
+            isSignYourself={props.isSignYourself}
+            signerObjId={props.signerObjId}
+            handleUserName={props.handleUserName}
+            setDraggingEnabled={setDraggingEnabled}
+            pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
+            isNeedSign={props.isNeedSign}
+          />
+        </div>
+      ) : (
+        <>
+          <PlaceholderIcon />
 
-            <i
-              className="fa-regular fa-copy signCopy"
-              onClick={(e) => {
-                if (props.data) {
-                  props.setSignerObjId(props.data.signerObjId);
-                }
-                e.stopPropagation();
-                props.setIsPageCopy(true);
-                props.setSignKey(props.pos.key);
-              }}
-              onTouchEnd={(e) => {
-                if (props.data) {
-                  props.setSignerObjId(props.data.signerObjId);
-                }
-                e.stopPropagation();
-                props.setIsPageCopy(true);
-                props.setSignKey(props.pos.key);
-              }}
-              style={{
-                color: "#188ae2"
-              }}
-            ></i>
-            <i
-              className="fa-regular fa-circle-xmark signCloseBtn"
-              onClick={(e) => {
-                e.stopPropagation();
-
-                if (props.data) {
-                  props.handleDeleteSign(props.pos.key, props.data.Id);
-                } else {
-                  props.handleDeleteSign(props.pos.key);
-                  props.setIsStamp(false);
-                }
-              }}
-              onTouchEnd={(e) => {
-                e.stopPropagation();
-                if (props.data) {
-                  props.handleDeleteSign(props.pos.key, props.data.Id);
-                } else {
-                  props.handleDeleteSign(props.pos.key);
-                  props.setIsStamp(false);
-                }
-              }}
-              style={{
-                color: "#188ae2"
-              }}
-            ></i>
-          </>
-        )}
-
-        <PlaceholderType
-          pos={props.pos}
-          xyPostion={props.xyPostion}
-          index={props.index}
-          setXyPostion={props.setXyPostion}
-          data={props.data}
-          setSignKey={props.setSignKey}
-          isShowDropdown={props?.isShowDropdown}
-          isPlaceholder={props.isPlaceholder}
-          isSignYourself={props.isSignYourself}
-          signerObjId={props.signerObjId}
-          handleUserName={props.handleUserName}
-          setDraggingEnabled={setDraggingEnabled}
-          pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
-          isNeedSign={props.isNeedSign}
-        />
-      </div>
+          <PlaceholderType
+            pos={props.pos}
+            xyPostion={props.xyPostion}
+            index={props.index}
+            setXyPostion={props.setXyPostion}
+            data={props.data}
+            setSignKey={props.setSignKey}
+            isShowDropdown={props?.isShowDropdown}
+            isPlaceholder={props.isPlaceholder}
+            isSignYourself={props.isSignYourself}
+            signerObjId={props.signerObjId}
+            handleUserName={props.handleUserName}
+            setDraggingEnabled={setDraggingEnabled}
+            pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
+            isNeedSign={props.isNeedSign}
+          />
+        </>
+      )}
     </Rnd>
   );
 }

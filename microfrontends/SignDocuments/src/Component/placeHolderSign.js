@@ -341,7 +341,8 @@ function PlaceHolderSign() {
             //onclick put placeholder center on pdf
             xPosition: window.innerWidth / 2 - 100,
             yPosition: window.innerHeight / 2 - 60,
-            isStamp: monitor.type === "stamp" && true,
+            isStamp:
+              (monitor.type === "stamp" || monitor.type === "image") && true,
             key: key,
             isDrag: false,
             scale: scale,
@@ -368,7 +369,7 @@ function PlaceHolderSign() {
           const dropObj = {
             xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
             yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
-            isStamp: isDragStamp || isDragStampSS ? true : false,
+            isStamp: (item.text === "stamp" || item.text === "image") && true,
             key: key,
             isDrag: false,
             firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,

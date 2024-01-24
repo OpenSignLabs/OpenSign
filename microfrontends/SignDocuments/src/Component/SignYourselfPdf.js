@@ -18,7 +18,8 @@ import {
   pdfNewWidthFun,
   addDefaultSignatureImg,
   onImageSelect,
-  calculateInitialWidthHeight
+  calculateInitialWidthHeight,
+  defaultWidthHeight
 } from "../utils/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -62,6 +63,8 @@ function SignYourSelf() {
   const [successEmail, setSuccessEmail] = useState(false);
   const imageRef = useRef(null);
   const [documentStatus, setDocumentStatus] = useState({ isCompleted: false });
+  const [myInitial, setMyInitial] = useState("");
+  const [isInitial, setIsInitial] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -86,7 +89,6 @@ function SignYourSelf() {
   });
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
-  const [initial, setInitial] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
@@ -249,7 +251,7 @@ function SignYourSelf() {
         const res = json.results;
         if (res[0] && res.length > 0) {
           setDefaultSignImg(res[0].ImageURL);
-          setInitial(res[0]?.Initials);
+          setMyInitial(res[0]?.Initials);
         }
       })
       .catch((err) => {
@@ -323,48 +325,55 @@ function SignYourSelf() {
       (data) => data.pageNumber === pageNumber
     );
 
+    const dragTypeValue = item?.text ? item.text : monitor.type;
+
     const widgetValue =
-      monitor.type === "name"
+      dragTypeValue === "name"
         ? pdfDetails[0].ExtUserPtr.Name
-        : monitor.type === "company"
+        : dragTypeValue === "company"
           ? pdfDetails[0].ExtUserPtr.Company
-          : monitor.type === "job title"
+          : dragTypeValue === "job title"
             ? pdfDetails[0].ExtUserPtr.JobTitle
-            : monitor.type === "checkbox"
-              ? true
-              : "";
+            : dragTypeValue === "email"
+              ? pdfDetails[0].ExtUserPtr.Email
+              : dragTypeValue === "checkbox"
+                ? true
+                : "";
+
     if (item === "onclick") {
       dropObj = {
         xPosition: window.innerWidth / 2 - 100,
         yPosition: window.innerHeight / 2 - 60,
         isDrag: false,
-        isStamp: monitor.type === "stamp" && true,
+        isStamp:
+          (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
         key: key,
-        type: monitor.type,
+        type: dragTypeValue,
         yBottom: window.innerHeight / 2 - 60,
-        // SignUrl: monitor.type === "initials" && initial,
         widgetValue: widgetValue,
         Width:
-          monitor.type === "name" ||
-          monitor.type === "company" ||
-          monitor.type === "job title"
-            ? calculateInitialWidthHeight(monitor.type, widgetValue).getWidth
-            : "",
+          dragTypeValue === "name" ||
+          dragTypeValue === "company" ||
+          dragTypeValue === "job title" ||
+          dragTypeValue === "email" ||
+          dragTypeValue === "initials"
+            ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
+            : dragTypeValue === "initials"
+              ? defaultWidthHeight(dragTypeValue).width
+              : "",
         Height:
-          monitor.type === "company" ||
-          monitor.type === "name" ||
-          monitor.type === "job title"
-            ? calculateInitialWidthHeight(monitor.type, widgetValue).getHeight
-            : ""
+          dragTypeValue === "company" ||
+          dragTypeValue === "name" ||
+          dragTypeValue === "job title" ||
+          dragTypeValue === "email" ||
+          dragTypeValue === "initials"
+            ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
+            : dragTypeValue === "initials"
+              ? defaultWidthHeight(dragTypeValue).height
+              : ""
       };
 
       dropData.push(dropObj);
-
-      if (monitor) {
-        setIsStamp(true);
-      } else {
-        setIsStamp(false);
-      }
     } else {
       const offset = monitor.getClientOffset();
       //adding and updating drop position in array when user drop signature button in div
@@ -375,49 +384,39 @@ function SignYourSelf() {
       const x = offset.x - containerRect.left;
       const y = offset.y - containerRect.top;
       const ybottom = containerRect.bottom - offset.y;
-      const widgetData =
-        item.text === "name"
-          ? pdfDetails[0].ExtUserPtr.Name
-          : item.text === "company"
-            ? pdfDetails[0].ExtUserPtr.Company
-            : item.text === "job title"
-              ? pdfDetails[0].ExtUserPtr.JobTitle
-              : item.text === "checkbox"
-                ? true
-                : "";
+
       dropObj = {
         xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
         yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
         isDrag: false,
-        isStamp: item.text === "stamp" && true,
+        isStamp:
+          (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
         key: key,
         firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
         firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
         yBottom: ybottom,
-        type: item.text,
-        // SignUrl: item.text === "initials" && initial,
-        widgetValue: widgetData,
+        type: dragTypeValue,
+
+        widgetValue: widgetValue,
         Width:
-          item.text === "name" ||
-          item.text === "company" ||
-          item.text === "job title"
-            ? calculateInitialWidthHeight(item.text, widgetData).getWidth
-            : "",
+          dragTypeValue === "name" ||
+          dragTypeValue === "company" ||
+          dragTypeValue === "job title" ||
+          dragTypeValue === "email"
+            ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
+            : defaultWidthHeight(dragTypeValue).width,
         Height:
-          item.text === "company" ||
-          item.text === "name" ||
-          item.text === "job title"
-            ? calculateInitialWidthHeight(item.text, widgetData).getHeight
-            : ""
+          dragTypeValue === "company" ||
+          dragTypeValue === "name" ||
+          dragTypeValue === "job title" ||
+          dragTypeValue === "email"
+            ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
+            : dragTypeValue === "initials"
+              ? defaultWidthHeight(dragTypeValue).height
+              : ""
       };
 
       dropData.push(dropObj);
-
-      if (isDragStamp || isDragStampSS) {
-        setIsStamp(true);
-      } else {
-        setIsStamp(false);
-      }
     }
     if (filterDropPos.length > 0) {
       const index = xyPostion.findIndex((object) => {
@@ -432,10 +431,6 @@ function SignYourSelf() {
         pos: newSignPos
       };
       xyPostion.splice(index, 1, xyPos);
-      if (isDragSign || isDragSignatureSS || isDragStamp || isDragStampSS) {
-        setIsSignPad(true);
-        setSignKey(key);
-      }
 
       // }
     } else {
@@ -444,11 +439,22 @@ function SignYourSelf() {
         pos: dropData
       };
       setXyPostion((prev) => [...prev, xyPos]);
+    }
 
-      if (isDragSign || isDragSignatureSS || isDragStamp || isDragStampSS) {
-        setIsSignPad(true);
-        setSignKey(key);
-      }
+    if (
+      dragTypeValue === "signature" ||
+      dragTypeValue === "stamp" ||
+      dragTypeValue === "image" ||
+      dragTypeValue === "initials"
+    ) {
+      setIsSignPad(true);
+      setSignKey(key);
+    }
+
+    if (dragTypeValue === "stamp" || dragTypeValue === "image") {
+      setIsStamp(true);
+    } else if (dragTypeValue === "initials") {
+      setIsInitial(true);
     }
   };
 
@@ -574,24 +580,13 @@ function SignYourSelf() {
           const getPosData = getXYdata;
           const addSign = getPosData.map((url, ind) => {
             if (url.key === dragKey) {
-              if (type === "initials") {
-                return {
-                  ...url,
-                  xPosition: dragElement.x,
-                  yPosition: dragElement.y,
-                  isDrag: true,
-                  yBottom: ybottom,
-                  SignUrl: initial
-                };
-              } else {
-                return {
-                  ...url,
-                  xPosition: dragElement.x,
-                  yPosition: dragElement.y,
-                  isDrag: true,
-                  yBottom: ybottom
-                };
-              }
+              return {
+                ...url,
+                xPosition: dragElement.x,
+                yPosition: dragElement.y,
+                isDrag: true,
+                yBottom: ybottom
+              };
             }
             return url;
           });
@@ -646,7 +641,11 @@ function SignYourSelf() {
   //function for save button to save signature or image url
   const saveSign = (isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
-    const signatureImg = isDefaultSign ? defaultSignImg : signature;
+    const signatureImg = isDefaultSign
+      ? isDefaultSign === "initials"
+        ? myInitial
+        : defaultSignImg
+      : signature;
     let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsSignPad(false);
     setIsImageSelect(false);
@@ -937,6 +936,10 @@ function SignYourSelf() {
               onSaveImage={saveImage}
               onSaveSign={saveSign}
               defaultSign={defaultSignImg}
+              myInitial={myInitial}
+              isInitial={isInitial}
+              setIsInitial={setIsInitial}
+              setIsStamp={setIsStamp}
             />
             {/* render email component to send email after finish signature on document */}
             <EmailComponent
@@ -994,6 +997,7 @@ function SignYourSelf() {
                   index={index}
                   containerWH={containerWH}
                   setIsPageCopy={setIsPageCopy}
+                  setIsInitial={setIsInitial}
                 />
               )}
             </div>
@@ -1001,36 +1005,40 @@ function SignYourSelf() {
 
           {/*if document is not completed then render signature and stamp button in the right side */}
           {/*else document is  completed then render signed by signer name in the right side */}
-          {!documentStatus.isCompleted ? (
-            <div>
-              <FieldsComponent
-                dataTut="reactourFirst"
-                pdfUrl={pdfUrl}
-                dragSignature={dragSignature}
-                signRef={signRef}
-                handleDivClick={handleDivClick}
-                handleMouseLeave={handleMouseLeave}
-                isDragSign={isDragSign}
-                themeColor={themeColor}
-                dragStamp={dragStamp}
-                dragRef={dragRef}
-                isDragStamp={isDragStamp}
-                isDragSignatureSS={isDragSignatureSS}
-                dragSignatureSS={dragSignatureSS}
-                dragStampSS={dragStampSS}
-                handleAllDelete={handleAllDelete}
-                xyPostion={xyPostion}
-                isSignYourself={true}
-                addPositionOfSignature={addPositionOfSignature}
-                isMailSend={false}
-                initial={initial}
-              />
-            </div>
-          ) : (
-            <div>
-              <Signedby pdfDetails={pdfDetails[0]} />
-            </div>
-          )}
+          <div
+            style={{ maxHeight: window.innerHeight - 70 + "px" }}
+            className="autoSignScroll"
+          >
+            {!documentStatus.isCompleted ? (
+              <div>
+                <FieldsComponent
+                  dataTut="reactourFirst"
+                  pdfUrl={pdfUrl}
+                  dragSignature={dragSignature}
+                  signRef={signRef}
+                  handleDivClick={handleDivClick}
+                  handleMouseLeave={handleMouseLeave}
+                  isDragSign={isDragSign}
+                  themeColor={themeColor}
+                  dragStamp={dragStamp}
+                  dragRef={dragRef}
+                  isDragStamp={isDragStamp}
+                  isDragSignatureSS={isDragSignatureSS}
+                  dragSignatureSS={dragSignatureSS}
+                  dragStampSS={dragStampSS}
+                  handleAllDelete={handleAllDelete}
+                  xyPostion={xyPostion}
+                  isSignYourself={true}
+                  addPositionOfSignature={addPositionOfSignature}
+                  isMailSend={false}
+                />
+              </div>
+            ) : (
+              <div>
+                <Signedby pdfDetails={pdfDetails[0]} />
+              </div>
+            )}
+          </div>
         </div>
       )}
     </DndProvider>

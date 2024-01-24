@@ -74,6 +74,8 @@ function PdfRequestFiles() {
     isCertificate: false,
     isModal: false
   });
+  const [myInitial, setMyInitial] = useState("");
+  const [isInitial, setIsInitial] = useState(false);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -270,6 +272,7 @@ function PdfRequestFiles() {
 
         if (res[0] && res.length > 0) {
           setDefaultSignImg(res[0].ImageURL);
+          setMyInitial(res[0]?.Initials);
         }
 
         const loadObj = {
@@ -450,7 +453,11 @@ function PdfRequestFiles() {
   //function for save button to save signature or image url
   const saveSign = (isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
-    const signatureImg = isDefaultSign ? defaultSignImg : signature;
+    const signatureImg = isDefaultSign
+      ? isDefaultSign === "initials"
+        ? myInitial
+        : defaultSignImg
+      : signature;
     let imgWH = { width: width ? width : "", height: height ? height : "" };
     setIsSignPad(false);
     setIsImageSelect(false);
@@ -805,6 +812,10 @@ function PdfRequestFiles() {
                 onSaveImage={saveImage}
                 onSaveSign={saveSign}
                 defaultSign={defaultSignImg}
+                myInitial={myInitial}
+                isInitial={isInitial}
+                setIsInitial={setIsInitial}
+                setIsStamp={setIsStamp}
               />
               {/* pdf header which contain funish back button */}
               <Header
@@ -846,6 +857,7 @@ function PdfRequestFiles() {
                   pdfLoadFail={pdfLoadFail}
                   setSignerPos={setSignerPos}
                   containerWH={containerWH}
+                  setIsInitial={setIsInitial}
                 />
               )}
             </div>

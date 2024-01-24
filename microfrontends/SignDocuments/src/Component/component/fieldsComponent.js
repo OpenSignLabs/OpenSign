@@ -37,8 +37,7 @@ function FieldsComponent({
   signerPos,
   handleRoleChange,
   handleOnBlur,
-  title,
-  initial
+  title
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
 
@@ -123,14 +122,35 @@ function FieldsComponent({
     type: "BOX",
     item: {
       type: "BOX",
-      id: 11,
+      id: 12,
       text: "date"
     },
     collect: (monitor) => ({
       isDragDate: !!monitor.isDragging()
     })
   });
-
+  const [{ isDragImage }, image] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 13,
+      text: "image"
+    },
+    collect: (monitor) => ({
+      isDragImage: !!monitor.isDragging()
+    })
+  });
+  const [{ isDragEmail }, email] = useDrag({
+    type: "BOX",
+    item: {
+      type: "BOX",
+      id: 14,
+      text: "email"
+    },
+    collect: (monitor) => ({
+      isDragEmail: !!monitor.isDragging()
+    })
+  });
   const isMobile = window.innerWidth < 767;
   const scrollContainerRef = useRef(null);
   const [widget, setWidget] = useState([]);
@@ -164,17 +184,16 @@ function FieldsComponent({
       name,
       company,
       jobTitle,
-      date
+      date,
+      image,
+      email
     ];
     const getWidgetArray = widgets;
     const newUpdateSigner = getWidgetArray.map((obj, ind) => {
       return { ...obj, ref: widgetRef[ind] };
     });
-    const removeInitial = newUpdateSigner.filter(
-      (widgetData) => widgetData.type !== "initials"
-    );
 
-    setWidget(initial ? newUpdateSigner : removeInitial);
+    setWidget(newUpdateSigner);
   }, []);
 
   const filterWidgets = widget.filter((data) => data.type !== "dropdown");

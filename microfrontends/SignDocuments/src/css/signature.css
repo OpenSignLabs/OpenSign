@@ -36,7 +36,7 @@
   font-size: 12px;
   border: 1px solid #007bff;
   border-radius: 2px;
-   
+
 }
 
 .inputPlaceholder:focus {
@@ -88,15 +88,29 @@
 }
 
 .signatureCanvas {
-  
+
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
   width: 460px;
   height: 184px;
 }
 
+.intialSignatureCanvas {
+  border: 2px solid #888;
+  background-color: rgb(255, 255, 255);
+  width: 150px;
+  height: 150px;
+}
+
+.intialSignature {
+  border: 2px solid #888;
+  background-color: rgb(255, 255, 255);
+  width: 180px;
+  height: 180px;
+}
+
 .penContainer {
-  width: 460px;
+  width: 180px;
 }
 
 .borderResize {
@@ -131,7 +145,7 @@
 
 .signatureBtn {
   border: 1.5px solid #47a3ad;
-  margin-bottom: 10px;
+
   border-radius: 3px;
   display: flex;
   padding: 0px;
