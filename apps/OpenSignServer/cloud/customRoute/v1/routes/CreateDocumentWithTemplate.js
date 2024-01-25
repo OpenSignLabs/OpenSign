@@ -1,4 +1,5 @@
-const randomId = () => Math.floor(1000 + Math.random() * 9000);
+import axios from 'axios';
+
 export default async function createDocumentWithTemplate(request, response) {
   const signers = request.body.signers;
   const folderId = request.body.folderId;
@@ -27,6 +28,7 @@ export default async function createDocumentWithTemplate(request, response) {
           let updateSigners = template?.Placeholders?.every(y =>
             signers?.some(x => x.Role === y.Role)
           );
+
           if (isValid && updateSigners) {
             const folderPtr = {
               __type: 'Pointer',
@@ -44,47 +46,62 @@ export default async function createDocumentWithTemplate(request, response) {
             }
             let templateSigner = template?.Signers ? template?.Signers : [];
             if (signers && signers.length > 0) {
-              let parseSigners;
-              if (base64File) {
-                parseSigners = signers;
-              } else {
-                parseSigners = JSON.parse(signers);
-              }
+              let parseSigners = [...signers];
               let createContactUrl = protocol + '/v1/createcontact';
 
               let contact = [];
               for (const obj of parseSigners) {
                 const body = {
-                  name: obj?.name || '',
-                  email: obj?.email || '',
-                  phone: obj?.phone || '',
+                  name: obj?.Name || '',
+                  email: obj?.Email || '',
+                  phone: obj?.Phone || '',
                 };
                 try {
                   const res = await axios.post(createContactUrl, body, {
                     headers: { 'Content-Type': 'application/json', 'x-api-token': reqToken },
                   });
-                  // console.log('res ', res.data);
-                  contact.push({
+                  const contactPtr = {
                     __type: 'Pointer',
                     className: 'contracts_Contactbook',
                     objectId: res.data?.objectId,
-                  });
+                  };
+                  const newObj = { ...obj, contactPtr: contactPtr };
+                  contact.push(newObj);
                 } catch (err) {
-                  // console.log('err ', err.response);
+                  console.log('err ', err);
                   if (err?.response?.data?.objectId) {
-                    contact.push({
+                    const contactPtr = {
                       __type: 'Pointer',
                       className: 'contracts_Contactbook',
                       objectId: err.response.data?.objectId,
-                    });
+                    };
+                    const newObj = { ...obj, contactPtr: contactPtr };
+                    contact.push(newObj);
                   }
                 }
               }
-              object.set('Signers', [...templateSigner, ...contact]);
+              const contactPtrs = contact.map(x => x.contactPtr);
+              object.set('Signers', [...templateSigner, ...contactPtrs]);
+
+              let updatedPlaceholder = template?.Placeholders?.map(x => {
+                let matchingSigner = contact.find(y => x.Role && x.Role === y.Role);
+
+                if (matchingSigner) {
+                  return {
+                    ...x,
+                    signerObjId: matchingSigner?.contactPtr?.objectId,
+                    signerPtr: matchingSigner?.contactPtr,
+                  };
+                } else {
+                  return {
+                    ...x,
+                  };
+                }
+              });
+              object.set('Placeholders', updatedPlaceholder);
             } else {
               object.set('Signers', templateSigner);
             }
-
             object.set('URL', template.URL);
             object.set('CreatedBy', template.CreatedBy);
             object.set('ExtUserPtr', template.ExtUserPtr);
