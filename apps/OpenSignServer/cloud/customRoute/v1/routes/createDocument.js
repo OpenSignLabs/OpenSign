@@ -10,17 +10,11 @@ export default async function createDocument(request, response) {
   const signers = request.body.signers;
   const folderId = request.body.folderId;
   const base64File = request.body.file;
-  const url = request?.get('host');
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   // console.log('fileData ', fileData);
-  let protocol = 'https://' + url;
-  if (request.hostname === 'localhost') {
-    // console.log('Running in development environment');
-    protocol = 'http://' + url;
-  } else {
-    // console.log('Running in production environment');
-    protocol = 'https://' + url;
-  }
+  const url = new URL(process.env.SERVER_URL);
+  let protocol = url.origin;
+
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {

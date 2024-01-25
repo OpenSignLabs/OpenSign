@@ -3,15 +3,9 @@ export default async function createDocumentWithTemplate(request, response) {
   const signers = request.body.signers;
   const folderId = request.body.folderId;
   const templateId = request.params.template_id;
-  const url = request?.get('host');
-  let protocol = 'https://' + url;
-  if (request.hostname === 'localhost') {
-    // console.log('Running in development environment');
-    protocol = 'http://' + url;
-  } else {
-    // console.log('Running in production environment');
-    protocol = 'https://' + url;
-  }
+  const url = new URL(process.env.SERVER_URL);
+  let protocol = url.origin;
+
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
