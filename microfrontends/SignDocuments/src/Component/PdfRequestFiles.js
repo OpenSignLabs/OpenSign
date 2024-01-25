@@ -296,23 +296,55 @@ function PdfRequestFiles() {
       (data) => data.signerObjId === signerObjectId
     );
     if (checkUser && checkUser.length > 0) {
-      let checkSigned = 0;
+      let checkWidgetSign = 0;
       let allXyPos = 0;
+      let checkedRequireCount = 0;
+      let optionalCheckbox = 0;
+      let CheckboxRequireCount = 0;
 
       for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
         const posSignUrlData = checkUser[0].placeHolder[i].pos.filter(
-          (pos) => pos.SignUrl
+          (pos) => pos?.SignUrl
         );
         const posWidgetData = checkUser[0].placeHolder[i].pos.filter(
-          (pos) => pos.widgetValue
+          (pos) => pos?.widgetValue && pos?.type !== "checkbox"
         );
-
-        checkSigned =
-          checkSigned + posSignUrlData.length + posWidgetData.length;
+        const checkboxReadOnly = checkUser[0].placeHolder[i].pos.filter(
+          (pos) =>
+            pos?.widgetValue &&
+            pos?.type === "checkbox" &&
+            pos?.widgetStatus === "Read only"
+        ).length;
+        const checkboxRequire = checkUser[0].placeHolder[i].pos.filter(
+          (pos) => pos?.type === "checkbox" && pos?.widgetStatus === "Required"
+        );
+        CheckboxRequireCount = CheckboxRequireCount + checkboxRequire?.length;
+        checkedRequireCount =
+          checkedRequireCount +
+          checkUser[0].placeHolder[i].pos?.filter(
+            (pos) =>
+              pos?.widgetValue &&
+              pos?.type === "checkbox" &&
+              pos?.widgetStatus === "Required"
+          )?.length;
+        optionalCheckbox = checkUser[0].placeHolder[i].pos.filter(
+          (pos) => pos.type === "checkbox" && pos.widgetStatus === "Optional"
+        ).length;
+        checkWidgetSign =
+          checkWidgetSign +
+          posSignUrlData.length +
+          posWidgetData.length +
+          checkboxReadOnly +
+          checkedRequireCount +
+          optionalCheckbox;
         allXyPos = allXyPos + checkUser[0].placeHolder[i].pos.length;
       }
-
-      if (allXyPos !== checkSigned) {
+      if (CheckboxRequireCount !== checkedRequireCount) {
+        setIsAlert({
+          isShow: true,
+          alertMessage: "Please check the required checkbox to continue."
+        });
+      } else if (allXyPos !== checkWidgetSign) {
         setIsAlert({
           isShow: true,
           alertMessage: "Please complete your signature!"
@@ -450,6 +482,7 @@ function PdfRequestFiles() {
     });
   };
 
+  console.log("signerpos", signerPos);
   //function for save button to save signature or image url
   const saveSign = (isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;

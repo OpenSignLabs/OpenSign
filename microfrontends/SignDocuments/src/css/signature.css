@@ -94,7 +94,6 @@
   width: 460px;
   height: 184px;
 }
-
 .intialSignatureCanvas {
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
@@ -105,12 +104,16 @@
 .intialSignature {
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
-  width: 180px;
-  height: 180px;
+  width: 183px;
+  height: 183px;
 }
 
-.penContainer {
-  width: 180px;
+.penContainerDefault {
+  width: 460px;
+}
+
+.penContainerInitial {
+  width: 183px;
 }
 
 .borderResize {
@@ -278,8 +281,7 @@
 
 .signCloseBtn {
   position: absolute;
-  right: -8px;
-  top: -18px;
+
   font-size: 14px;
   cursor: pointer;
   z-index: 2;
@@ -288,8 +290,7 @@
 
 .signCopy {
   position: absolute;
-  right: 12px;
-  top: -18px;
+
   font-size: 13px;
   cursor: pointer;
   z-index: 2;
@@ -298,8 +299,16 @@
 
 .signUserIcon {
   position: absolute;
-  right: 32px;
-  top: -18px;
+
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 2;
+  background: white;
+}
+
+.settingIcon {
+  position: absolute;
+
   font-size: 13px;
   cursor: pointer;
   z-index: 2;
@@ -923,7 +932,7 @@ option {
     height: 120px;
   }
 
-  .penContainer {
+  .penContainerDefault {
     width: 300px;
   }
 
@@ -955,7 +964,7 @@ option {
     height: 112px;
   }
 
-  .penContainer {
+  .penContainerDefault {
     width: 280px;
   }
 
@@ -991,7 +1000,7 @@ option {
     height: 92px;
   }
 
-  .penContainer {
+  .penContainerDefault {
     width: 230px;
   }
 

@@ -518,7 +518,6 @@ function SignYourSelf() {
 
       //function for call to embed signature in pdf and get digital signature pdf
       signPdfFun(pdfBytes, documentId);
-
       setIsSignPad(false);
       setIsEmail(true);
       setXyPostion([]);

@@ -55,7 +55,8 @@ function RenderPdf({
   setIsPageCopy,
   setSignerObjId,
   setShowDropdown,
-  setIsInitial
+  setIsInitial,
+  setIsCheckboxRequired
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -769,6 +770,9 @@ function RenderPdf({
                                         posWidth={posWidth}
                                         posHeight={posHeight}
                                         isDragging={isDragging}
+                                        setIsCheckboxRequired={
+                                          setIsCheckboxRequired
+                                        }
                                       />
                                     </React.Fragment>
                                   );
@@ -1224,6 +1228,9 @@ function RenderPdf({
                                           posWidth={posWidth}
                                           posHeight={posHeight}
                                           isDragging={isDragging}
+                                          setIsCheckboxRequired={
+                                            setIsCheckboxRequired
+                                          }
                                         />
                                       </React.Fragment>
                                     );

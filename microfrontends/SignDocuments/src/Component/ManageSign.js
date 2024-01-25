@@ -493,7 +493,7 @@ const ManageSign = () => {
                         justifyContent: "space-between"
                         // width: 460,
                       }}
-                      className="penContainer"
+                      className="penContainerDefault"
                     >
                       <div>
                         {!image && (
@@ -611,7 +611,7 @@ const ManageSign = () => {
                     flexDirection: "row",
                     justifyContent: "space-between"
                   }}
-                  className="penContainer"
+                  className="penContainerInitial"
                 >
                   <div>
                     {!isInitials && (
