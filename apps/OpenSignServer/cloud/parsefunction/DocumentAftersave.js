@@ -4,11 +4,20 @@ async function DocumentAftersave(request) {
       console.log('new entry is insert in contracts_Document');
       const createdAt = request.object.get('createdAt');
       const Folder = request.object.get('Type');
+      // console.log("createdAt")
+      // console.log(createdAt)
+      // console.log("Folder")
+      // console.log(Folder)
+      // console.log("before If condition")
       if (createdAt && Folder === undefined) {
         // console.log("IN If condition")
         const TimeToCompleteDays = request.object.get('TimeToCompleteDays');
         const ExpiryDate = new Date(createdAt);
+        // console.log("ExpiryDate")
+        // console.log(ExpiryDate)
         ExpiryDate.setDate(ExpiryDate.getDate() + TimeToCompleteDays);
+        // console.log("ExpiryDate date after update")
+        // console.log(ExpiryDate)
         const documentQuery = new Parse.Query('contracts_Document');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
@@ -28,6 +37,8 @@ async function DocumentAftersave(request) {
       }
 
       const signers = request.object.get('Signers');
+      // console.log("Signers")
+      // console.log(signers.length)
       // update acl of New Document If There are signers present in array
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
@@ -37,7 +48,7 @@ async function DocumentAftersave(request) {
         }
       }
     } else {
-      if (request?.user) {
+      if (request.user) {
         const signers = request.object.get('Signers');
         if (signers && signers.length > 0) {
           await updateAclDoc(request.object.id);
@@ -58,7 +69,6 @@ async function DocumentAftersave(request) {
     // console.log(objId)
     const Query = new Parse.Query('contracts_Document');
     Query.include('Signers');
-    Query.include('CreatedBy');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -81,10 +91,9 @@ async function DocumentAftersave(request) {
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
-    if (res?.CreatedBy) {
-      newACL.setReadAccess(res?.CreatedBy?.objectId, true);
-      newACL.setWriteAccess(res?.CreatedBy?.objectId, true);
-    }
+    newACL.setReadAccess(request.user, true);
+    newACL.setWriteAccess(request.user, true);
+
     UsersPtr.forEach(x => {
       newACL.setReadAccess(x.objectId, true);
       newACL.setWriteAccess(x.objectId, true);
@@ -95,9 +104,9 @@ async function DocumentAftersave(request) {
   }
 
   async function updateSelfDoc(objId) {
+    // console.log("In side updateSelfDoc func")
     // console.log(objId)
     const Query = new Parse.Query('contracts_Document');
-    Query.include('CreatedBy');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -105,10 +114,8 @@ async function DocumentAftersave(request) {
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
-    if (res?.CreatedBy) {
-      newACL.setReadAccess(res?.CreatedBy?.objectId, true);
-      newACL.setWriteAccess(res?.CreatedBy?.objectId, true);
-    }
+    newACL.setReadAccess(request.user, true);
+    newACL.setWriteAccess(request.user, true);
     updateACL.setACL(newACL);
     updateACL.save(null, { useMasterKey: true });
   }

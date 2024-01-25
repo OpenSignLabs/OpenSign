@@ -1,17 +1,9 @@
 const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createDocumentWithTemplate(request, response) {
-  const signers = request.body.signers;
-  const folderId = request.body.folderId;
+  const signers = request.body.Signers;
+  const folderId = request.body.FolderId;
   const templateId = request.params.template_id;
-  const url = request?.get('host');
-  let protocol = 'https://' + url;
-  if (request.hostname === 'localhost') {
-    // console.log('Running in development environment');
-    protocol = 'http://' + url;
-  } else {
-    // console.log('Running in production environment');
-    protocol = 'https://' + url;
-  }
+  const url = process.env.SERVER_URL;
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -48,52 +40,31 @@ export default async function createDocumentWithTemplate(request, response) {
             if (template?.Description) {
               object.set('Description', template.Description);
             }
-            let templateSigner = template?.Signers ? template?.Signers : [];
-            if (signers && signers.length > 0) {
-              let parseSigners;
-              if (base64File) {
-                parseSigners = signers;
-              } else {
-                parseSigners = JSON.parse(signers);
-              }
-              let createContactUrl = protocol + '/v1/createcontact';
-
-              let contact = [];
-              for (const obj of parseSigners) {
-                const body = {
-                  name: obj?.name || '',
-                  email: obj?.email || '',
-                  phone: obj?.phone || '',
-                };
-                try {
-                  const res = await axios.post(createContactUrl, body, {
-                    headers: { 'Content-Type': 'application/json', 'x-api-token': reqToken },
-                  });
-                  // console.log('res ', res.data);
-                  contact.push({
-                    __type: 'Pointer',
-                    className: 'contracts_Contactbook',
-                    objectId: res.data?.objectId,
-                  });
-                } catch (err) {
-                  // console.log('err ', err.response);
-                  if (err?.response?.data?.objectId) {
-                    contact.push({
-                      __type: 'Pointer',
-                      className: 'contracts_Contactbook',
-                      objectId: err.response.data?.objectId,
-                    });
-                  }
-                }
-              }
-              object.set('Signers', [...templateSigner, ...contact]);
-            } else {
-              object.set('Signers', templateSigner);
+            if (template?.Signers) {
+              object.set('Signers', template?.Signers);
             }
-
             object.set('URL', template.URL);
             object.set('CreatedBy', template.CreatedBy);
             object.set('ExtUserPtr', template.ExtUserPtr);
+            if (signers) {
+            const placeholders = template?.Placeholders?.map(placeholder => {
+              let matchingSigner = signers.find(y => y.Role === placeholder.Role);
+              if (matchingSigner) {
+                return {
+                  ...placeholder,
+                  email: matchingSigner.Email,
+                  signerObjId: '',
+                  signerPtr: {},
+                };
+              } else {
+                return {
+                  ...placeholder,
+                };
+              }
+            });
+            console.log('placeholders ', placeholders);
+              object.set('Placeholders', placeholders);
+            }
             if (folderId) {
               object.set('Folder', folderPtr);
             }
@@ -104,10 +75,7 @@ export default async function createDocumentWithTemplate(request, response) {
             newACL.setWriteAccess(userPtr.id, true);
             object.setACL(newACL);
             const res = await object.save(null, { useMasterKey: true });
-            return response.json({
-              objectId: res.id,
-              url: protocol + '/load/signmicroapp/placeholdersign/' + res.id,
-            });
+            return response.json({ objectId: res.id, url: url });
           } else {
             return response.status(400).json({ error: 'Please provide signers properly!' });
           }
