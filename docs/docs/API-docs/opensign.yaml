@@ -1037,9 +1037,7 @@ components:
         signers:
           type: array
           items:
-            type: string
-            format: string
-            example: contact@example.com
+            $ref: '#/components/schemas/createdocument_body_signers'
     inline_response_200_1:
       type: object
       properties:
@@ -1069,17 +1067,17 @@ components:
     createdocumenttemplate_id_Signers:
       type: object
       properties:
-        role:
+        Role:
           type: string
           example: Accoutnant
-        email:
+        Email:
           type: string
           format: mail
           example: joe@example.com
-        name:
+        Name:
           type: string
           example: joe bee
-        phone:
+        Phone:
           type: string
           example: "123123131"
     createdocument_template_id_body:
@@ -1182,8 +1180,7 @@ components:
         signers:
           type: array
           items:
-            type: string
-            example: contact@example.com
+            $ref: '#/components/schemas/createdocument_body_signers'
     inline_response_200_5:
       type: object
       properties:
@@ -1285,6 +1282,21 @@ components:
         Name:
           type: string
           example: joe
+    createdocument_body_signers:
+      type: object
+      properties:
+        email:
+          type: string
+          format: string
+          example: joebee@exampl.com
+        name:
+          type: string
+          format: string
+          example: joe bee
+        phone:
+          type: string
+          format: string
+          example: "123121312"
   securitySchemes:
     x-api-token:
       type: apiKey
