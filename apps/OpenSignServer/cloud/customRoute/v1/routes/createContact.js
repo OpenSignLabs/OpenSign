@@ -131,7 +131,7 @@ export default async function createContact(request, response) {
     } catch (err) {
       console.log('err ', err);
       if (err.code === 137) {
-        return response.status(137).json({ error: 'Contact already exists!' });
+        return response.status(401).json({ error: 'Contact already exists!' });
       } else {
         return response
           .status(400)

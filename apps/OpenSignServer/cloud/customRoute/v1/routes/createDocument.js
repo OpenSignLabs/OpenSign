@@ -7,10 +7,10 @@ export default async function createDocument(request, response) {
   const description = request.body.Description;
   const signers = request.body.Signers;
   const folderId = request.body.FolderId;
-  const base64File = request.body.file;
+  const base64File = request.body.File;
   const url = request?.get('host');
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
-  console.log('fileData ', fileData);
+  // console.log('fileData ', fileData);
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -76,7 +76,7 @@ export default async function createDocument(request, response) {
           contactbook.notEqualTo('IsDeleted', true);
           contactbook.containedIn('Email', parseSigners);
           const contactbookRes = await contactbook.find({ useMasterKey: true });
-          console.log('contactbookRes ', contactbookRes);
+          // console.log('contactbookRes ', contactbookRes);
           const parseContactbookRes = JSON.parse(JSON.stringify(contactbookRes));
           // console.log('userPtr ', userPtr);
           // const newContacts = parseSigners
