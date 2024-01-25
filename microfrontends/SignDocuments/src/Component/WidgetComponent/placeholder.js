@@ -77,23 +77,50 @@ function Placeholder(props) {
       props.isShowBorder && (
         <>
           {props.isPlaceholder && (
-            <i
-              data-tut="reactourLinkUser"
-              className="fa-regular fa-user signUserIcon"
-              onClick={(e) => {
-                e.stopPropagation();
-                props.handleLinkUser(props.data.Id);
-                props.setUniqueId(props.data.Id);
-              }}
-              onTouchEnd={(e) => {
-                e.stopPropagation();
-                props.handleLinkUser(props.data.Id);
-                props.setUniqueId(props.data.Id);
-              }}
-              style={{
-                color: "#188ae2"
-              }}
-            ></i>
+            <>
+              {props.pos.type === "checkbox" && (
+                <i
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    props.setIsCheckboxRequired(true);
+                    props.setSignKey(props.pos.key);
+                    props.setUniqueId(props.data.Id);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    props.setIsCheckboxRequired(true);
+                    props.setSignKey(props.pos.key);
+                    props.setUniqueId(props.data.Id);
+                  }}
+                  class="fa-solid fa-gear settingIcon"
+                  style={{
+                    color: "#188ae2",
+                    right: "23px",
+                    top: "-35px"
+                  }}
+                ></i>
+              )}
+
+              <i
+                data-tut="reactourLinkUser"
+                className="fa-regular fa-user signUserIcon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props.handleLinkUser(props.data.Id);
+                  props.setUniqueId(props.data.Id);
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  props.handleLinkUser(props.data.Id);
+                  props.setUniqueId(props.data.Id);
+                }}
+                style={{
+                  color: "#188ae2",
+                  right: props.pos.type === "checkbox" ? "6px" : "32px",
+                  top: props.pos.type === "checkbox" ? "-35px" : "-18px"
+                }}
+              ></i>
+            </>
           )}
 
           <i
@@ -115,7 +142,15 @@ function Placeholder(props) {
               props.setSignKey(props.pos.key);
             }}
             style={{
-              color: "#188ae2"
+              color: "#188ae2",
+              right:
+                props.pos.type === "checkbox" && props.isPlaceholder
+                  ? "-11px"
+                  : "12px",
+              top:
+                props.pos.type === "checkbox" && props.isPlaceholder
+                  ? "-35px"
+                  : "-18px"
             }}
           ></i>
           <i
@@ -140,7 +175,15 @@ function Placeholder(props) {
               }
             }}
             style={{
-              color: "#188ae2"
+              color: "#188ae2",
+              right:
+                props.pos.type === "checkbox" && props.isPlaceholder
+                  ? "-30px"
+                  : "-8px",
+              top:
+                props.pos.type === "checkbox" && props.isPlaceholder
+                  ? "-35px"
+                  : "-18px"
             }}
           ></i>
         </>
@@ -243,7 +286,12 @@ function Placeholder(props) {
       }}
     >
       {props.isShowBorder ? (
-        <BorderResize right={-12} top={-11} />
+        <BorderResize
+          right={
+            props.pos.type === "checkbox" && props.isPlaceholder ? -28 : -12
+          }
+          top={props.pos.type === "checkbox" && props.isPlaceholder ? -28 : -11}
+        />
       ) : props.data && props.isNeedSign ? (
         props.data?.signerObjId === props.signerObjId ? (
           <BorderResize />
@@ -258,6 +306,7 @@ function Placeholder(props) {
         <PlaceholderBorder
           setDraggingEnabled={setDraggingEnabled}
           pos={props.pos}
+          isPlaceholder={props.isPlaceholder}
         />
       )}
       {isMobile ? (

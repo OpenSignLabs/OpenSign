@@ -84,7 +84,8 @@ function PlaceHolderSign() {
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const [isCheckboxRequired, setIsCheckboxRequired] = useState(false);
+  const [selectRequiredType, setSelectRequiredType] = useState("Optional");
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -99,6 +100,7 @@ function PlaceHolderSign() {
     "#66ccff",
     "#ffffcc"
   ];
+  const checkboxType = ["Optional", "Required", "Read only"];
   const isMobile = window.innerWidth < 767;
   const [{ isOver }, drop] = useDrop({
     accept: "BOX",
@@ -349,7 +351,8 @@ function PlaceHolderSign() {
             isMobile: isMobile,
             yBottom: window.innerHeight / 2 - 60,
             zIndex: posZIndex,
-            type: monitor.type
+            type: monitor.type,
+            widgetValue: monitor.type === "checkbox" ? false : ""
           };
           dropData.push(dropObj);
           placeHolder = {
@@ -378,7 +381,8 @@ function PlaceHolderSign() {
             scale: scale,
             isMobile: isMobile,
             zIndex: posZIndex,
-            type: item.text
+            type: item.text,
+            widgetValue: item.text === "checkbox" ? false : ""
           };
 
           dropData.push(dropObj);
@@ -449,6 +453,9 @@ function PlaceHolderSign() {
         }
         if (item.text === "dropdown" || monitor.type === "dropdown") {
           setShowDropdown(true);
+          setSignKey(key);
+        } else if (item.text === "checkbox" || monitor.type === "checkbox") {
+          setIsCheckboxRequired(true);
           setSignKey(key);
         }
       }
@@ -659,7 +666,7 @@ function PlaceHolderSign() {
     setIsSendAlert({});
 
     let sendMail;
-    // console.log("pdfDetails", pdfDetails);
+
     const expireDate = pdfDetails?.[0].ExpiryDate.iso;
     const newDate = new Date(expireDate);
     const localExpireDate = newDate.toLocaleDateString("en-US", {
@@ -982,7 +989,6 @@ function PlaceHolderSign() {
           setCurrentId(getCurrentUserDeatils[0].Email);
         }
       }
-      // console.log("updateSigner ", updateSigner);
 
       setSignersData(updateSigner);
       const index = signersdata.findIndex((x) => x.Id === uniqueId);
@@ -993,6 +999,59 @@ function PlaceHolderSign() {
   const closePopup = () => {
     setIsAddUser({});
   };
+  //function for add checkbox widget status in signerPos array
+
+  const handleApplycheckbox = () => {
+    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+    if (filterSignerPos.length > 0) {
+      const getPlaceHolder = filterSignerPos[0].placeHolder;
+
+      const getPageNumer = getPlaceHolder.filter(
+        (data) => data.pageNumber === pageNumber
+      );
+
+      if (getPageNumer.length > 0) {
+        const getXYdata = getPageNumer[0].pos;
+
+        const getPosData = getXYdata;
+        const addSignPos = getPosData.map((position, ind) => {
+          if (position.key === signKey) {
+            if (selectRequiredType === "Read only") {
+              return {
+                ...position,
+                widgetStatus: selectRequiredType,
+                widgetValue: true
+              };
+            } else {
+              return {
+                ...position,
+                widgetStatus: selectRequiredType
+              };
+            }
+          }
+          return position;
+        });
+
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+        const newUpdateSigner = signerPos.map((obj, ind) => {
+          if (obj.Id === uniqueId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+
+        setSignerPos(newUpdateSigner);
+        setIsCheckboxRequired(false);
+        setSelectRequiredType("Optional");
+      }
+    }
+  };
+
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1191,6 +1250,57 @@ function PlaceHolderSign() {
                   </button>
                 </div>
               </ModalUi>
+              {/* checkbox widget status component */}
+              <ModalUi isOpen={isCheckboxRequired} title={"Checkbox"}>
+                <div style={{ height: "100%", padding: 20 }}>
+                  {checkboxType.map((data, key) => {
+                    return (
+                      <div
+                        key={key}
+                        style={{ display: "flex", flexDirection: "column" }}
+                      >
+                        <label
+                          key={key}
+                          style={{ fontSize: "16px", fontWeight: "500" }}
+                        >
+                          <input
+                            style={{ accentColor: "red", marginRight: "10px" }}
+                            type="radio"
+                            value={data}
+                            onChange={() => setSelectRequiredType(data)}
+                            checked={selectRequiredType === data}
+                          />
+
+                          {data}
+                        </label>
+                      </div>
+                    );
+                  })}
+
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
+                  <button
+                    onClick={() => {
+                      handleApplycheckbox();
+                    }}
+                    style={{
+                      background: themeColor()
+                    }}
+                    type="button"
+                    // disabled={!selectCopyType}
+                    className="finishBtn"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </ModalUi>
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}
@@ -1252,6 +1362,7 @@ function PlaceHolderSign() {
                     setUniqueId={setUniqueId}
                     isDragging={isDragging}
                     setShowDropdown={setShowDropdown}
+                    setIsCheckboxRequired={setIsCheckboxRequired}
                   />
                 )}
               </div>

@@ -364,6 +364,7 @@ export const defaultWidthHeight = (type) => {
 export const resizeBorderExtraWidth = () => {
   return 20;
 };
+
 export async function getBase64FromUrl(url) {
   const data = await fetch(url);
   const blob = await data.blob();
@@ -440,7 +441,7 @@ export function getHostUrl() {
 export const calculateImgAspectRatio = (imgWH, pos) => {
   let newWidth, newHeight;
 
-  const placeholderHeight = pos && pos.Width ? pos.Height : 60;
+  const placeholderHeight = pos && pos.Height ? pos.Height : 60;
   const aspectRatio = imgWH.width / imgWH.height;
   newWidth = aspectRatio * placeholderHeight;
   newHeight = placeholderHeight;
@@ -451,6 +452,7 @@ export const calculateImgAspectRatio = (imgWH, pos) => {
 //function for upload stamp or image
 export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
   let getIMGWH;
+
   //get current page position
   const getXYData = xyPostion[index].pos;
   const updateXYData = getXYData.map((position) => {
@@ -901,7 +903,8 @@ export const multiSignEmbed = async (
       if (
         imgData.type === "signature" ||
         imgData.type === "stamp" ||
-        imgData.type === "initials"
+        imgData.type === "initials" ||
+        imgData.type === "image"
       ) {
         if (
           (imgData.ImageType && imgData.ImageType === "image/png") ||
@@ -996,14 +999,20 @@ export const multiSignEmbed = async (
           width: scaleWidth,
           height: scaleHeight
         });
-        checkBox.check();
+        if (imgData.widgetValue) {
+          checkBox.check();
+        } else {
+          checkBox.uncheck();
+        }
+
         checkBox.enableReadOnly();
       } else if (
         imgData.type === "text" ||
         imgData.type === "name" ||
         imgData.type === "company" ||
         imgData.type === "job title" ||
-        imgData.type === "date"
+        imgData.type === "date" ||
+        imgData.type === "email"
       ) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;

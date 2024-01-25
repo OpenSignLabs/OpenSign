@@ -85,10 +85,13 @@ function PlaceholderType(props) {
           className="inputPlaceholder"
           style={{ outlineColor: "#007bff" }}
           type="checkbox"
+          defaultChecked={props.pos?.widgetStatus === "Read only"}
           disabled={
             props.isNeedSign && props.data?.signerObjId !== props.signerObjId
               ? true
-              : props.isPlaceholder
+              : props.isNeedSign && props.pos?.widgetStatus === "Read only"
+                ? true
+                : props.isPlaceholder
           }
           onBlur={handleInputBlur}
           checked={props.pos.widgetValue}

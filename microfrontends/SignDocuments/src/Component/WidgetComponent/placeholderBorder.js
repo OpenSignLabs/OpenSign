@@ -3,8 +3,14 @@ import { themeColor } from "../../utils/ThemeColor/backColor";
 import { defaultWidthHeight, resizeBorderExtraWidth } from "../../utils/Utils";
 function PlaceholderBorder(props) {
   const getResizeBorderExtraWidth = resizeBorderExtraWidth();
-  const defaultWidth = defaultWidthHeight(props.pos.type).width;
-  const defaultHeight = defaultWidthHeight(props.pos.type).height;
+  const defaultWidth =
+    props.pos.type === "checkbox" && props.isPlaceholder
+      ? 50
+      : defaultWidthHeight(props.pos.type).width;
+  const defaultHeight =
+    props.pos.type === "checkbox" && props.isPlaceholder
+      ? 50
+      : defaultWidthHeight(props.pos.type).height;
 
   return (
     <div
