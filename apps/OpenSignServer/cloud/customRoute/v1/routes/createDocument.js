@@ -1,5 +1,3 @@
-// import batchQuery from './batchquery.js';
-
 import axios from 'axios';
 
 // const randomId = () => Math.floor(1000 + Math.random() * 9000);
