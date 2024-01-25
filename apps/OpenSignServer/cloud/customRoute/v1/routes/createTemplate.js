@@ -1,21 +1,13 @@
 const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createTemplate(request, response) {
-  const name = request.body?.title;
-  const note = request.body?.note;
-  const description = request.body?.description;
-  const signers = request.body?.signers;
-  const folderId = request.body?.folderId;
+  const name = request.body?.Title;
+  const note = request.body?.Note;
+  const description = request.body?.Description;
+  const signers = request.body?.Signers;
+  const folderId = request.body?.FolderId;
   const url = request?.get('host');
-  const base64File = request.body.file;
+  const base64File = request.body.File;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
-  let protocol = 'https://' + url;
-  if (request.hostname === 'localhost') {
-    // console.log('Running in development environment');
-    protocol = 'http://' + url;
-  } else {
-    // console.log('Running in production environment');
-    protocol = 'https://' + url;
-  }
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -60,44 +52,30 @@ export default async function createTemplate(request, response) {
       object.set('URL', fileUrl);
       object.set('CreatedBy', userPtr);
       object.set('ExtUserPtr', extUserPtr);
-      if (signers && signers.length > 0) {
+      if (signers) {
         let parseSigners;
         if (base64File) {
           parseSigners = signers;
         } else {
           parseSigners = JSON.parse(signers);
         }
-        let createContactUrl = protocol + '/v1/createcontact';
 
-        let contact = [];
-        for (const obj of parseSigners) {
-          const body = {
-            name: obj?.name || '',
-            email: obj?.email || '',
-            phone: obj?.phone || '',
-          };
-          try {
-            const res = await axios.post(createContactUrl, body, {
-              headers: { 'Content-Type': 'application/json', 'x-api-token': reqToken },
-            });
-            // console.log('res ', res.data);
-            contact.push({
-              __type: 'Pointer',
-              className: 'contracts_Contactbook',
-              objectId: res.data?.objectId,
-            });
-          } catch (err) {
-            // console.log('err ', err.response);
-            if (err?.response?.data?.objectId) {
-              contact.push({
-                __type: 'Pointer',
-                className: 'contracts_Contactbook',
-                objectId: err.response.data?.objectId,
-              });
-            }
-          }
-        }
-        object.set('Signers', contact);
+        const contactbook = new Parse.Query('contracts_Contactbook');
+        contactbook.containedIn('Email', parseSigners);
+        contactbook.equalTo('UserId', userPtr);
+        contactbook.notEqualTo('IsDeleted', true);
+        const contactbookRes = await contactbook.find({ useMasterKey: true });
+        // console.log('contactbookRes ', contactbookRes);
+        const parseContactbookRes = JSON.parse(JSON.stringify(contactbookRes));
+
+        object.set(
+          'Signers',
+          parseContactbookRes?.map(x => ({
+            __type: 'Pointer',
+            className: 'contracts_Contactbook',
+            objectId: x.objectId,
+          }))
+        );
       }
       if (folderId) {
         object.set('Folder', folderPtr);
@@ -111,7 +89,7 @@ export default async function createTemplate(request, response) {
       const res = await object.save(null, { useMasterKey: true });
       return response.json({
         objectId: res.id,
-        url: protocol + '/load/signmicroapp/template/' + res.id,
+        url: 'https://' + url + '/load/signmicroapp/template/' + res.id,
       });
     } else {
       return response.status(405).json({ error: 'Invalid API Token!' });
