@@ -26,20 +26,20 @@ export default async function updateTemplate(request, response) {
             const template = Parse.Object.extend('contracts_Template');
             const updateQuery = new template();
             updateQuery.id = request.params.template_id;
-            if (request?.body?.Name) {
-              updateQuery.set('Name', request?.body?.Name);
+            if (request?.body?.name) {
+              updateQuery.set('Name', request?.body?.name);
             }
-            if (request?.body?.Note) {
-              updateQuery.set('Note', request?.body?.Note);
+            if (request?.body?.note) {
+              updateQuery.set('Note', request?.body?.note);
             }
-            if (request?.body?.Description) {
-              updateQuery.set('Name', request?.body?.Description);
+            if (request?.body?.description) {
+              updateQuery.set('Name', request?.body?.description);
             }
-            if (request?.body?.FolderId) {
+            if (request?.body?.folderId) {
               updateQuery.set('Folder', {
                 __type: 'Pointer',
                 className: 'contracts_Template',
-                objectId: request?.body?.FolderId,
+                objectId: request?.body?.folderId,
               });
             }
             const updatedRes = await updateQuery.save(null, { useMasterKey: true });
