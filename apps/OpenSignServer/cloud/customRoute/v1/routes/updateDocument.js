@@ -8,8 +8,8 @@ export default async function updateDocument(request, response) {
     tokenQuery.equalTo('token', reqToken);
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
-      // Valid Token then proceed request
-      const allowedKeys = ['name', 'note', 'description'];
+      // Valid Token then proceed request      
+      const allowedKeys = ['Name', 'Note', 'Description'];
       const objectKeys = Object.keys(request.body);
       const isValid = objectKeys.every(key => allowedKeys.includes(key)) && objectKeys.length > 0;
       if (isValid) {
