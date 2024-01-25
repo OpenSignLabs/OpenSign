@@ -1,16 +1,18 @@
-// import batchQuery from './batchquery.js';
+import axios from 'axios';
 
 // const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createDocument(request, response) {
-  const name = request.body.Title;
-  const note = request.body.Note;
-  const description = request.body.Description;
-  const signers = request.body.Signers;
-  const folderId = request.body.FolderId;
-  const base64File = request.body.File;
-  const url = request?.get('host');
+  const name = request.body.title;
+  const note = request.body.note;
+  const description = request.body.description;
+  const signers = request.body.signers;
+  const folderId = request.body.folderId;
+  const base64File = request.body.file;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   // console.log('fileData ', fileData);
+  const url = new URL(process.env.SERVER_URL);
+  let protocol = url.origin;
+
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -21,7 +23,7 @@ export default async function createDocument(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      if (signers) {
+      if (signers && signers.length > 0) {
         const userPtr = token.get('userId');
         let fileUrl;
         if (request.files?.[0]) {
@@ -63,56 +65,44 @@ export default async function createDocument(request, response) {
         object.set('URL', fileUrl);
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
-        if (signers) {
+        if (signers && signers.length > 0) {
           let parseSigners;
           if (base64File) {
             parseSigners = signers;
           } else {
             parseSigners = JSON.parse(signers);
           }
+          let createContactUrl = protocol + '/v1/createcontact';
 
-          const contactbook = new Parse.Query('contracts_Contactbook');
-          contactbook.equalTo('UserId', userPtr);
-          contactbook.notEqualTo('IsDeleted', true);
-          contactbook.containedIn('Email', parseSigners);
-          const contactbookRes = await contactbook.find({ useMasterKey: true });
-          // console.log('contactbookRes ', contactbookRes);
-          const parseContactbookRes = JSON.parse(JSON.stringify(contactbookRes));
-          // console.log('userPtr ', userPtr);
-          // const newContacts = parseSigners
-          //   .filter(x => !parseContactbookRes.some(y => y.Email === x))
-          //   .map(email => ({
-          //     method: 'POST',
-          //     path: '/app/classes/contracts_Contactbook',
-          //     body: {
-          //       Email: email,
-          //       CreatedBy: { __type: 'Pointer', className: '_User', objectId: userPtr.id },
-          //       UserId: { __type: 'Pointer', className: '_User', objectId: userPtr.id },
-          //       Role: 'contracts_Guest',
-          //       IsDeleted: false,
-          //       ACL: {
-          //         [userPtr.id]: { read: true, write: true },
-          //       },
-          //     },
-          //   }));
-          // console.log('newContacts', newContacts);
-          let contactSigners = parseContactbookRes?.map(x => ({
-            __type: 'Pointer',
-            className: 'contracts_Contactbook',
-            objectId: x.objectId,
-          }));
-          // if (newContacts.length > 0) {
-          //   const batchRes = await batchQuery(newContacts);
-          //   const contacts = batchRes?.map(x => ({
-          //     __type: 'Pointer',
-          //     className: 'contracts_Contactbook',
-          //     objectId: x.success.objectId,
-          //   }));
-          //   contactSigners = [...contactSigners, ...contacts];
-          // }
-          // console.log('contactsigners', contactSigners);
-
-          object.set('Signers', contactSigners);
+          let contact = [];
+          for (const obj of parseSigners) {
+            const body = {
+              name: obj?.name || '',
+              email: obj?.email || '',
+              phone: obj?.phone || '',
+            };
+            try {
+              const res = await axios.post(createContactUrl, body, {
+                headers: { 'Content-Type': 'application/json', 'x-api-token': reqToken },
+              });
+              // console.log('res ', res.data);
+              contact.push({
+                __type: 'Pointer',
+                className: 'contracts_Contactbook',
+                objectId: res.data?.objectId,
+              });
+            } catch (err) {
+              // console.log('err ', err.response);
+              if (err?.response?.data?.objectId) {
+                contact.push({
+                  __type: 'Pointer',
+                  className: 'contracts_Contactbook',
+                  objectId: err.response.data?.objectId,
+                });
+              }
+            }
+          }
+          object.set('Signers', contact);
         }
         if (folderId) {
           object.set('Folder', folderPtr);
@@ -126,7 +116,7 @@ export default async function createDocument(request, response) {
         const res = await object.save(null, { useMasterKey: true });
         return response.json({
           objectId: res.id,
-          url: 'https://' + url + '/load/signmicroapp/placeholdersign/' + res.id,
+          url: protocol + '/load/signmicroapp/placeholdersign/' + res.id,
         });
       } else {
         return response.status(400).json({ error: 'Please provide signers!' });
