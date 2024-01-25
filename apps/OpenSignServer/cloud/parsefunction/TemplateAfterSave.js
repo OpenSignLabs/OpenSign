@@ -34,6 +34,7 @@ export default async function TemplateAfterSave(request) {
     // console.log(objId)
     const Query = new Parse.Query('contracts_Template');
     Query.include('Signers');
+    Query.include('CreatedBy');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -56,9 +57,10 @@ export default async function TemplateAfterSave(request) {
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
-    newACL.setReadAccess(request.user, true);
-    newACL.setWriteAccess(request.user, true);
-
+    if (res?.CreatedBy) {
+      newACL.setReadAccess(res?.CreatedBy?.objectId, true);
+      newACL.setWriteAccess(res?.CreatedBy?.objectId, true);
+    }
     UsersPtr.forEach(x => {
       newACL.setReadAccess(x.objectId, true);
       newACL.setWriteAccess(x.objectId, true);
@@ -72,6 +74,7 @@ export default async function TemplateAfterSave(request) {
     // console.log("Inside updateSelfDoc func")
 
     const Query = new Parse.Query('contracts_Template');
+    Query.include('CreatedBy');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     // const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -79,8 +82,10 @@ export default async function TemplateAfterSave(request) {
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
-    newACL.setReadAccess(request.user, true);
-    newACL.setWriteAccess(request.user, true);
+    if (res?.CreatedBy) {
+      newACL.setReadAccess(res?.CreatedBy?.objectId, true);
+      newACL.setWriteAccess(res?.CreatedBy?.objectId, true);
+    }
     updateACL.setACL(newACL);
     updateACL.save(null, { useMasterKey: true });
   }

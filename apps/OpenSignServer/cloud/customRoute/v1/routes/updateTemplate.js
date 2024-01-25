@@ -9,7 +9,7 @@ export default async function updateTemplate(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const allowedKeys = ['Name', 'Note', 'Description'];
+      const allowedKeys = ['name', 'note', 'description'];
       const objectKeys = Object.keys(request.body);
       const isValid = objectKeys.every(key => allowedKeys.includes(key)) && objectKeys.length > 0;
       if (isValid) {
