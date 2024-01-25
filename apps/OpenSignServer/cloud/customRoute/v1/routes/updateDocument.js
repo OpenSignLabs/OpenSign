@@ -26,20 +26,20 @@ export default async function updateDocument(request, response) {
             const document = Parse.Object.extend('contracts_Document');
             const updateQuery = new document();
             updateQuery.id = request.params.document_id;
-            if (request?.body?.Name) {
-              updateQuery.set('Name', request?.body?.Name);
+            if (request?.body?.name) {
+              updateQuery.set('Name', request?.body?.name);
             }
-            if (request?.body?.Note) {
-              updateQuery.set('Note', request?.body?.Note);
+            if (request?.body?.note) {
+              updateQuery.set('Note', request?.body?.note);
             }
-            if (request?.body?.Description) {
-              updateQuery.set('Name', request?.body?.Description);
+            if (request?.body?.description) {
+              updateQuery.set('Name', request?.body?.description);
             }
-            if (request?.body?.FolderId) {
+            if (request?.body?.folderId) {
               updateQuery.set('Folder', {
                 __type: 'Pointer',
                 className: 'contracts_Document',
-                objectId: request?.body?.FolderId,
+                objectId: request?.body?.folderId,
               });
             }
             const updatedRes = await updateQuery.save(null, { useMasterKey: true });
