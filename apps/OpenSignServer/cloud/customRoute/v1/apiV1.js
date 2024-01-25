@@ -70,7 +70,10 @@ app.delete('/document/:document_id', deleteDocument);
 app.get('/documentlist/:doctype', getDocumentList);
 
 // create Template
-app.post('/createtemplate', upload.array('file', 1), createTemplate);
+app.post('/createtemplate', createTemplate);
+
+// create Template with binary
+app.post('/createtemplatewithbinary', upload.array('file', 1), createTemplate);
 
 // get template on the basis of id
 app.get('/template/:template_id', getTemplate);
