@@ -1,5 +1,5 @@
 export default async function saveWebhook(request, response) {
-  const Url = request.body.url;
+  const Url = request.body.Url;
   const reqToken = request.headers['x-api-token'];
   if (!reqToken) {
     return response.status(400).json({ error: 'Please Provide API Token' });
