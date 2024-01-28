@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { customAPIurl } from '../../../../Utils.js';
 
 // const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createDocument(request, response) {
@@ -10,8 +11,7 @@ export default async function createDocument(request, response) {
   const base64File = request.body.file;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   // console.log('fileData ', fileData);
-  const url = new URL(process.env.SERVER_URL);
-  let protocol = url.origin;
+  const protocol = customAPIurl();
 
   try {
     const reqToken = request.headers['x-api-token'];
