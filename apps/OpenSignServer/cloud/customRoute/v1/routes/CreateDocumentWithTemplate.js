@@ -1,11 +1,11 @@
 import axios from 'axios';
+import { customAPIurl } from '../../../../Utils.js';
 
 export default async function createDocumentWithTemplate(request, response) {
   const signers = request.body.signers;
   const folderId = request.body.folderId;
   const templateId = request.params.template_id;
-  const url = new URL(process.env.SERVER_URL);
-  let protocol = url.origin;
+  const protocol = customAPIurl();
 
   try {
     const reqToken = request.headers['x-api-token'];
@@ -24,11 +24,14 @@ export default async function createDocumentWithTemplate(request, response) {
       if (templateRes) {
         const template = JSON.parse(JSON.stringify(templateRes));
         if (template?.Placeholders?.length > 0) {
-          let isValid = template?.Placeholders?.length <= signers?.length;
-          let updateSigners = template?.Placeholders?.every(y =>
-            signers?.some(x => x.Role === y.Role)
-          );
-
+          const emptyplaceholder = template?.Placeholders.filter(x => !x.signerObjId);
+          const isValid =
+            signers.length >= emptyplaceholder.length &&
+            signers.length <= template?.Placeholders?.length;
+          const placeholder =
+            signers.length > emptyplaceholder.length ? template.Placeholders : emptyplaceholder;
+          const updateSigners = placeholder.every(y => signers?.some(x => x.Role === y.Role));
+          // console.log('isValid ', isValid);
           if (isValid && updateSigners) {
             const folderPtr = {
               __type: 'Pointer',
@@ -68,7 +71,7 @@ export default async function createDocumentWithTemplate(request, response) {
                   const newObj = { ...obj, contactPtr: contactPtr };
                   contact.push(newObj);
                 } catch (err) {
-                  console.log('err ', err);
+                  // console.log('err ', err);
                   if (err?.response?.data?.objectId) {
                     const contactPtr = {
                       __type: 'Pointer',
@@ -77,6 +80,8 @@ export default async function createDocumentWithTemplate(request, response) {
                     };
                     const newObj = { ...obj, contactPtr: contactPtr };
                     contact.push(newObj);
+                  } else {
+                    console.log('err ', err);
                   }
                 }
               }

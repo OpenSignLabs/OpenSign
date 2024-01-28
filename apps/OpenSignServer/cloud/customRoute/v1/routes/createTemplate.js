@@ -1,3 +1,5 @@
+import { customAPIurl } from '../../../../Utils.js';
+
 const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createTemplate(request, response) {
   const name = request.body?.title;
@@ -7,8 +9,7 @@ export default async function createTemplate(request, response) {
   const folderId = request.body?.folderId;
   const base64File = request.body.file;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
-  const url = new URL(process.env.SERVER_URL);
-  let protocol = url.origin;
+  const protocol = customAPIurl();
 
   try {
     const reqToken = request.headers['x-api-token'];
