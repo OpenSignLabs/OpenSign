@@ -299,11 +299,17 @@ paths:
         required: true
       responses:
         "200":
-          description: Document created successfully!
+          description: "In success response you will get url in response if you are also signer in document otherwise only get objectId, messsage"
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_2'
+        "400":
+          description: If you haven't add widgets and signers in template or not provide signers along with their roles in body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -1067,17 +1073,17 @@ components:
     createdocumenttemplate_id_Signers:
       type: object
       properties:
-        Role:
+        role:
           type: string
           example: Accoutnant
-        Email:
+        email:
           type: string
           format: mail
           example: joe@example.com
-        Name:
+        name:
           type: string
           example: joe bee
-        Phone:
+        phone:
           type: string
           example: "123123131"
     createdocument_template_id_body:
@@ -1098,6 +1104,10 @@ components:
           type: string
           format: string
           example: https://example.com
+        message:
+          type: string
+          format: string
+          example: Document sent successfully!
     inline_response_404_3:
       type: object
       properties:
@@ -1282,6 +1292,13 @@ components:
         Name:
           type: string
           example: joe
+    inline_response_400_1:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: Please setup template properly!
     createdocument_body_signers:
       type: object
       properties:
