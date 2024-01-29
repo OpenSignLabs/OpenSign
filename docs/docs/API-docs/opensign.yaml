@@ -322,13 +322,13 @@ paths:
     get:
       tags:
       - Documents
-      summary: Get Document from ID
+      summary: Get Document
       description: The Get Document API enables you to retrieve details about a specific document.
       operationId: getdocument
       parameters:
       - name: document_id
         in: path
-        description: objectId of contact
+        description: objectId of Document
         required: true
         style: simple
         explode: false
@@ -360,7 +360,7 @@ paths:
     put:
       tags:
       - Documents
-      summary: Update Document from ID
+      summary: Update Document
       description: The Update Document API allows users to modify and update the details of a specific document.
       operationId: updateDocument
       parameters:
@@ -407,7 +407,7 @@ paths:
     delete:
       tags:
       - Documents
-      summary: Delete Document from ID
+      summary: Delete Document
       description: The Delete document API allows you to remove specific document from your documents.
       operationId: deletedocument
       parameters:
@@ -579,7 +579,7 @@ paths:
     get:
       tags:
       - Templates
-      summary: Get Template from ID
+      summary: Get Template
       description: The Get Template API allows you to retrieve details about a specific template. Templates serve as blueprints for creating documents with predefined structures.
       operationId: getTemplate
       parameters:
@@ -614,7 +614,7 @@ paths:
     put:
       tags:
       - Templates
-      summary: Update Template from ID
+      summary: Update Template
       description: The Update Template API enables you to modify and update the details of a specific template.
       operationId: updateTemplate
       parameters:
@@ -661,7 +661,7 @@ paths:
     delete:
       tags:
       - Templates
-      summary: Delete Template from ID
+      summary: Delete Template
       description: The Delete Template API provides you with the ability to remove a specific template from the templates. If a template is no longer needed
       operationId: deleteTemplate
       parameters:
