@@ -283,7 +283,7 @@ paths:
       parameters:
       - name: template_id
         in: path
-        description: objectId of template
+        description: objectId of Template
         required: true
         style: simple
         explode: false
