@@ -1,6 +1,7 @@
 import axios from "axios";
 import { rgb } from "pdf-lib";
 import { themeColor } from "./ThemeColor/backColor";
+
 export const isMobile = window.innerWidth < 767;
 
 //calculate width and height
@@ -223,15 +224,28 @@ export const widgets = [
   }
 ];
 
-export const getWidgetType = (item, marginLeft) => {
+export const getWidgetType = (
+  item,
+  marginLeft,
+  handleTouchStart,
+  handleTouchEnd,
+  handleTouchMove,
+  backgroundColor,
+  selectWidgetType
+) => {
   return (
     <>
       <div
+        onTouchStart={() => handleTouchStart && handleTouchStart(item.type)}
+        onTouchEnd={handleTouchEnd && handleTouchEnd}
+        onTouchMove={handleTouchMove && handleTouchMove}
         className="signatureBtn"
         style={{
           boxShadow:
             "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
-          marginLeft: marginLeft && `${marginLeft}px`
+          marginLeft: marginLeft && `${marginLeft}px`,
+          background:
+            selectWidgetType === item.type && backgroundColor && backgroundColor
         }}
       >
         <div

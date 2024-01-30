@@ -40,6 +40,11 @@ function PdfFile() {
   const jsonCurrentUser = JSON.parse(currentUser);
 
   useEffect(() => {
+    // localStorage.setItem('accesstoken', 'r:6d093ee320d70354f4e92cccc537180b');
+    // localStorage.setItem('baseUrl', 'https://staging-app.opensignlabs.com/api/app/');
+    // localStorage.setItem('parseAppId', 'opensignstgn');
+    // localStorage.setItem('Parse/opensignstgn/currentUser', '{"name":"Raktima chaurasiya","email":"raktimachaurasiya@gmail.com","phone":"5645676534","username":"raktimachaurasiya@gmail.com","emailVerified":false,"createdAt":"2024-01-10T14:40:59.326Z","updatedAt":"2024-01-15T13:31:19.044Z","ProfilePic":"","ACL":{"9MUdPyX2ae":{"read":true,"write":true}},"sessionToken":"r:6d093ee320d70354f4e92cccc537180b","objectId":"9MUdPyX2ae","className":"_User"}');
+    // localStorage.setItem('_appName', 'contracts');
     if (docId) {
       getPdfFolderDocumentList();
     } else {
