@@ -1,12 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BorderResize from "../component/borderResize";
 import PlaceholderBorder from "./placeholderBorder";
 import { Rnd } from "react-rnd";
 import { defaultWidthHeight, isMobile } from "../../utils/Utils";
 import PlaceholderType from "./placeholderType";
+import moment from "moment";
+import "../LegaDrive/LegaDrive.css";
 
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
+  const [isShowDateFormat, setIsShowDateFormat] = useState(false);
+  const [selectDate, setSelectDate] = useState();
+  const [dateFormat, setDateFormat] = useState([]);
+  const dateFormatArr = ["L", "l", "LL", "ll", "LLL", "lll", "llll"];
+
+  const changeDateFormat = () => {
+    const updateDate = [];
+    dateFormatArr.map((data) => {
+      const date = new Date(selectDate);
+      const milliseconds = date.getTime();
+      const newDate = moment(milliseconds).format(data);
+      updateDate.push(newDate);
+    });
+    setDateFormat(updateDate);
+  };
+  useEffect(() => {
+    if (selectDate) {
+      changeDateFormat();
+    }
+  }, [selectDate]);
+  //handle to close drop down menu onclick screen
+  useEffect(() => {
+    const closeMenuOnOutsideClick = (e) => {
+      if (isShowDateFormat && !e.target.closest("#menu-container")) {
+        setIsShowDateFormat(!isShowDateFormat);
+      }
+    };
+
+    document.addEventListener("click", closeMenuOnOutsideClick);
+
+    return () => {
+      // Cleanup the event listener when the component unmounts
+      document.removeEventListener("click", closeMenuOnOutsideClick);
+    };
+  }, [isShowDateFormat]);
 
   //onclick placeholder function to open signature pad
   const handlePlaceholderClick = () => {
@@ -122,7 +159,59 @@ function Placeholder(props) {
               ></i>
             </>
           )}
+          {props.pos.type === "date" && selectDate && (
+            <div
+              id="menu-container"
+              style={{ zIndex: "99", top: "-20px", left: "6px" }}
+              className={isShowDateFormat ? "dropdown show" : "dropdown"}
+              onClick={() => setIsShowDateFormat(!isShowDateFormat)}
+            >
+              <div className=" sort  " data-toggle="dropdown">
+                <i
+                  // onClick={(e) => {
+                  //   console.log("click here");
+                  //   e.stopPropagation();
 
+                  //   props.setSignKey(props.pos.key);
+                  // }}
+                  // onTouchEnd={(e) => {
+                  //   e.stopPropagation();
+
+                  //   props.setSignKey(props.pos.key);
+                  // }}
+                  class="fa-solid fa-gear settingIcon"
+                  style={{
+                    color: "#188ae2"
+                    // right: "2px",
+                    // top: "-15px"
+                  }}
+                ></i>
+              </div>
+              <div
+                className={
+                  isShowDateFormat ? "dropdown-menu show" : "dropdown-menu"
+                }
+                aria-labelledby="dropdownMenuButton"
+                aria-expanded={isShowDateFormat ? "true" : "false"}
+              >
+                {dateFormat.map((date) => {
+                  return (
+                    <span
+                      onClick={() => {
+                        // console.log("go here");
+                        setIsShowDateFormat(!isShowDateFormat);
+                        setSelectDate(date);
+                      }}
+                      className="dropdown-item itemColor"
+                      style={{ fontSize: "12px" }}
+                    >
+                      {date}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <i
             className="fa-regular fa-copy signCopy"
             onClick={(e) => {
@@ -342,6 +431,8 @@ function Placeholder(props) {
             setDraggingEnabled={setDraggingEnabled}
             pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
             isNeedSign={props.isNeedSign}
+            setSelectDate={setSelectDate}
+            selectDate={selectDate}
           />
         </div>
       ) : (
@@ -363,6 +454,8 @@ function Placeholder(props) {
             setDraggingEnabled={setDraggingEnabled}
             pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
             isNeedSign={props.isNeedSign}
+            setSelectDate={setSelectDate}
+            selectDate={selectDate}
           />
         </>
       )}

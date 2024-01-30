@@ -89,6 +89,7 @@ function SignYourSelf() {
   });
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
+  const [isdraggingEnable, setIsDraggingEnable] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
@@ -108,6 +109,7 @@ function SignYourSelf() {
       id: 1,
       text: "signature"
     },
+    canDrag: isdraggingEnable,
 
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
@@ -120,6 +122,7 @@ function SignYourSelf() {
       id: 2,
       text: "stamp"
     },
+    canDrag: isdraggingEnable,
 
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
@@ -134,7 +137,7 @@ function SignYourSelf() {
       id: 3,
       text: "drag me"
     },
-    canDrag: false,
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragSignatureSS: !!monitor.isDragging()
     })
@@ -147,6 +150,7 @@ function SignYourSelf() {
       id: 4,
       text: "drag me"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragStampSS: !!monitor.isDragging()
     })
@@ -178,6 +182,9 @@ function SignYourSelf() {
   useEffect(() => {
     if (documentId) {
       getDocumentDetails(true);
+    }
+    if (!isMobile) {
+      setIsDraggingEnable(true);
     }
   }, []);
 
@@ -455,6 +462,9 @@ function SignYourSelf() {
       setIsStamp(true);
     } else if (dragTypeValue === "initials") {
       setIsInitial(true);
+    }
+    if (isMobile) {
+      setIsDraggingEnable(false);
     }
   };
 
@@ -1030,6 +1040,8 @@ function SignYourSelf() {
                   isSignYourself={true}
                   addPositionOfSignature={addPositionOfSignature}
                   isMailSend={false}
+                  setIsDraggingEnable={setIsDraggingEnable}
+                  isdraggingEnable={isdraggingEnable}
                 />
               </div>
             ) : (

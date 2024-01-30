@@ -123,6 +123,10 @@
   height: 14px;
 
 }
+.dropdown-date-menu {
+  min-width: 7rem;
+}
+
 
 .mailBtn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
@@ -131,7 +135,7 @@
   border: none !important;
   color: white !important;
 }
-
+ 
 .mailBtn:hover {
   box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
 }

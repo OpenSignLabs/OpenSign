@@ -72,6 +72,7 @@ const TemplatePlaceholder = () => {
   const [isResize, setIsResize] = useState(false);
   const [isSigners, setIsSigners] = useState(false);
   const [zIndex, setZIndex] = useState(1);
+  const [isdraggingEnable, setIsDraggingEnable] = useState(false);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -168,7 +169,9 @@ const TemplatePlaceholder = () => {
 
   useEffect(() => {
     fetchTemplate();
-    // eslint-disable-next-line
+    if (!isMobile) {
+      setIsDraggingEnable(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -454,7 +457,9 @@ const TemplatePlaceholder = () => {
           }
           setSignerPos((prev) => [...prev, placeHolderPos]);
         }
-
+        if (isMobile) {
+          setIsDraggingEnable(false);
+        }
         setIsMailSend(false);
       } else {
         setIsReceipent(false);
@@ -1183,6 +1188,8 @@ const TemplatePlaceholder = () => {
                   handleOnBlur={handleOnBlur}
                   title={"Roles"}
                   initial={true}
+                  setIsDraggingEnable={setIsDraggingEnable}
+                  isdraggingEnable={isdraggingEnable}
                 />
               </div>
             ) : (
@@ -1223,6 +1230,8 @@ const TemplatePlaceholder = () => {
                         addPositionOfSignature={addPositionOfSignature}
                         title={"Roles"}
                         initial={true}
+                        setIsDraggingEnable={setIsDraggingEnable}
+                        isdraggingEnable={isdraggingEnable}
                       />
                     </div>
                   </div>

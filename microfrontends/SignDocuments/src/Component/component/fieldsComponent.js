@@ -4,6 +4,7 @@ import RecipientList from "../../premitives/RecipientList";
 import { useDrag } from "react-dnd";
 import AllWidgets from "../WidgetComponent/allWidgets";
 import { widgets } from "../../utils/Utils";
+import Scrollbar from "react-scrollbars-custom";
 
 function FieldsComponent({
   pdfUrl,
@@ -37,12 +38,16 @@ function FieldsComponent({
   signerPos,
   handleRoleChange,
   handleOnBlur,
-  title
+  title,
+  setIsDraggingEnable,
+  isdraggingEnable
 }) {
+  const temp = ["1", "2", "3", "4", "5", "6", "7", "8", "0", "23"];
   const [isSignersModal, setIsSignersModal] = useState(false);
-
+  const [initialTouchX, setInitialTouchX] = useState(0);
   const [{ isDragDropdown }, dropdown] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 5,
@@ -54,6 +59,7 @@ function FieldsComponent({
   });
   const [{ isDragCheck }, checkbox] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 6,
@@ -65,6 +71,7 @@ function FieldsComponent({
   });
   const [{ isDragText }, text] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 7,
@@ -76,6 +83,7 @@ function FieldsComponent({
   });
   const [{ isDragInitial }, initials] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 8,
@@ -87,6 +95,7 @@ function FieldsComponent({
   });
   const [{ isDragName }, name] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 9,
@@ -98,6 +107,7 @@ function FieldsComponent({
   });
   const [{ isDragCompany }, company] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 10,
@@ -109,6 +119,7 @@ function FieldsComponent({
   });
   const [{ isDragJobtitle }, jobTitle] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 11,
@@ -120,6 +131,7 @@ function FieldsComponent({
   });
   const [{ isDragDate }, date] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 12,
@@ -131,6 +143,7 @@ function FieldsComponent({
   });
   const [{ isDragImage }, image] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 13,
@@ -142,6 +155,7 @@ function FieldsComponent({
   });
   const [{ isDragEmail }, email] = useDrag({
     type: "BOX",
+    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 14,
@@ -198,12 +212,6 @@ function FieldsComponent({
 
   const filterWidgets = widget.filter((data) => data.type !== "dropdown");
   const updateWidgets = isSignYourself ? filterWidgets : widget;
-
-  const handleScroll = (scrollOffset) => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollLeft += scrollOffset;
-    }
-  };
 
   return (
     <>
@@ -304,24 +312,41 @@ function FieldsComponent({
                 borderTop: `2px solid ${themeColor()}`
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  overflowX: "scroll",
-                  whiteSpace: "nowrap",
-                  padding: "10px"
-                }}
+              <Scrollbar
+                style={{ height: "50px", width: "100%" }}
+                // onScroll={handleScrollStart}
+                // onScrollStop={handleScrollEnd}
+                // onTouchEnd={handleScrollStart}
+                noScrollY={true}
               >
-                <AllWidgets
-                  updateWidgets={updateWidgets}
-                  handleDivClick={handleDivClick}
-                  handleMouseLeave={handleMouseLeave}
-                  signRef={signRef}
-                  marginLeft={5}
-                  addPositionOfSignature={addPositionOfSignature}
-                  isMobile={isMobile}
-                />
-              </div>
+                <div
+                  style={{
+                    display: "flex",
+                    // overflowX: "scroll",
+                    // whiteSpace: "nowrap",
+                    padding: "10px"
+                  }}
+                  //  onScroll={handleScroll}
+                  // onTouchStart={handleScrollStart}
+                  // onTouchMove={handleTouchMove}
+                  // onTouchEnd={handleTouchEnd}
+                >
+                  {/* {temp.map((data,ind) => {
+                    return <div style={{border:"1px solid red",padding:"20px"}} key={ind}>{data}</div>;
+                  })} */}
+                  <AllWidgets
+                    updateWidgets={updateWidgets}
+                    handleDivClick={handleDivClick}
+                    handleMouseLeave={handleMouseLeave}
+                    signRef={signRef}
+                    marginLeft={5}
+                    addPositionOfSignature={addPositionOfSignature}
+                    setIsDraggingEnable={setIsDraggingEnable}
+                    isMobile={isMobile}
+                    isdraggingEnable={isdraggingEnable}
+                  />
+                </div>
+              </Scrollbar>
             </div>
           </div>
         )

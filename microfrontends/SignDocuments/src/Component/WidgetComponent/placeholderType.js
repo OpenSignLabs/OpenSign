@@ -290,25 +290,30 @@ function PlaceholderType(props) {
       );
     case "date":
       return (
-        <input
-          placeholder="mm/dd/yyyy"
-          className="inputPlaceholder"
-          style={{ outlineColor: "#007bff" }}
-          type="date"
-          disabled={props.isPlaceholder ? true : false}
-          onBlur={handleInputBlur}
-          onChange={(e) =>
-            onChangeInput(
-              e.target.value,
-              props.pos.key,
-              props.xyPostion,
-              props.index,
-              props.setXyPostion,
-              props.data && props.data.signerObjId,
-              false
-            )
-          }
-        />
+        <div>
+          <input
+            placeholder="mm/dd/yyyy"
+            className="inputPlaceholder"
+            style={{ outlineColor: "#007bff" }}
+            type="date"
+            disabled={props.isPlaceholder ? true : false}
+            onBlur={handleInputBlur}
+            value={props.selectDate && props.selectDate}
+            onChange={(e) => {
+              props.setSelectDate(e.target.value);
+              onChangeInput(
+                e.target.value,
+                props.pos.key,
+                props.xyPostion,
+                props.index,
+                props.setXyPostion,
+                props.data && props.data.signerObjId,
+                false
+              );
+            }}
+          />
+          {/* <div style={{ position: "absolute" }}>{props.selectDate}</div> */}
+        </div>
       );
 
     case "image":

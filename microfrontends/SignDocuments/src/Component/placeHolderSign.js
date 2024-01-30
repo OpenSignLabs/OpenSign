@@ -86,6 +86,7 @@ function PlaceHolderSign() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isCheckboxRequired, setIsCheckboxRequired] = useState(false);
   const [selectRequiredType, setSelectRequiredType] = useState("Optional");
+  const [isdraggingEnable, setIsDraggingEnable] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -116,6 +117,7 @@ function PlaceHolderSign() {
       id: 1,
       text: "signature"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
     })
@@ -127,6 +129,7 @@ function PlaceHolderSign() {
       id: 2,
       text: "stamp"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
     })
@@ -138,6 +141,7 @@ function PlaceHolderSign() {
       id: 3,
       text: "signature"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragSignatureSS: !!monitor.isDragging()
     })
@@ -149,6 +153,7 @@ function PlaceHolderSign() {
       id: 4,
       text: "stamp"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragStampSS: !!monitor.isDragging()
     })
@@ -175,6 +180,9 @@ function PlaceHolderSign() {
   useEffect(() => {
     if (documentId) {
       getDocumentDetails();
+    }
+    if (!isMobile) {
+      setIsDraggingEnable(true);
     }
   }, []);
 
@@ -457,6 +465,9 @@ function PlaceHolderSign() {
         } else if (item.text === "checkbox" || monitor.type === "checkbox") {
           setIsCheckboxRequired(true);
           setSignKey(key);
+        }
+        if (isMobile) {
+          setIsDraggingEnable(false);
         }
       }
     }
@@ -1403,6 +1414,8 @@ function PlaceHolderSign() {
                   setUniqueId={setUniqueId}
                   setRoleName={setRoleName}
                   initial={true}
+                  setIsDraggingEnable={setIsDraggingEnable}
+                  isdraggingEnable={isdraggingEnable}
                 />
               </div>
             ) : (
@@ -1438,6 +1451,8 @@ function PlaceHolderSign() {
                         isSignYourself={false}
                         addPositionOfSignature={addPositionOfSignature}
                         initial={true}
+                        setIsDraggingEnable={setIsDraggingEnable}
+                        isdraggingEnable={isdraggingEnable}
                       />
                     </div>
                   </div>
