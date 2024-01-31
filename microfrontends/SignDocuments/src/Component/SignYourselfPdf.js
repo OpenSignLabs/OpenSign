@@ -3,6 +3,7 @@ import { PDFDocument } from "pdf-lib";
 import "../css/./signature.css";
 import { themeColor } from "../utils/ThemeColor/backColor";
 import axios from "axios";
+import moment from "moment";
 import Loader from "./component/loader";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import { DndProvider } from "react-dnd";
@@ -323,6 +324,12 @@ function SignYourSelf() {
     }
   };
 
+  const getDate = () => {
+    const date = new Date();
+    const milliseconds = date.getTime();
+    const newDate = moment(milliseconds).format("MM/DD/YYYY");
+    return newDate;
+  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     const key = Math.floor(1000 + Math.random() * 9000);
@@ -345,7 +352,9 @@ function SignYourSelf() {
               ? pdfDetails[0].ExtUserPtr.Email
               : dragTypeValue === "checkbox"
                 ? true
-                : "";
+                : dragTypeValue === "date"
+                  ? getDate()
+                  : "";
 
     if (item === "onclick") {
       dropObj = {
@@ -525,6 +534,7 @@ function SignYourSelf() {
         flag,
         containerWH
       );
+      // console.log(("pdf",pdfBytes))
 
       //function for call to embed signature in pdf and get digital signature pdf
       signPdfFun(pdfBytes, documentId);

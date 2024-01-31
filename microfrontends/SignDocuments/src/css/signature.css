@@ -26,6 +26,9 @@
 .dropdownContainer::-webkit-scrollbar {
   display: none;
 }
+.react-datepicker__input-container{
+position: initial !important;
+}
 
 .inputPlaceholder {
   width: 100%;

@@ -1,20 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef, useMemo } from "react";
+
 import { onChangeInput } from "../../utils/Utils";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import "../../css/signature.css";
 
 function PlaceholderType(props) {
   const [selectOption, setSelectOption] = useState("");
+  const [startDate, setStartDate] = useState(new Date());
+  const memoizedCount = useMemo(
+    () => props.saveDateFormat,
+    [props.saveDateFormat]
+  );
   const type = props.pos.type;
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
   };
+  useEffect(() => {
+    onChangeInput(
+      props.saveDateFormat,
+      props.pos.key,
+      props.xyPostion,
+      props.index,
+      props.setXyPostion,
+      props.data && props.data.signerObjId,
+      false,
+      props.selectDate?.format ? props.selectDate.format : "MM/dd/YYYY"
+    );
+  }, [memoizedCount]);
 
-  // const formatDate = (dateString) => {
-  //   const date = new Date(dateString);
-  //   const updateDate = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-  //  console.log("update",updateDate)
-  //   return  updateDate;
-  // };
+  const dateValue = (value) => {
+    props.setSaveDateFormat(value);
+    return <span>{value}</span>;
+  };
+  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+    <div
+      className="inputPlaceholder"
+      style={{ overflow: "hidden" }}
+      onClick={onClick}
+      ref={ref}
+    >
+      {dateValue(value)}
+      <i class="fa-solid fa-calendar" style={{ marginLeft: "5px" }}></i>
+    </div>
+  ));
 
   useEffect(() => {
     const senderUser = localStorage.getItem(`Extand_Class`);
@@ -298,7 +327,7 @@ function PlaceholderType(props) {
     case "date":
       return (
         <div>
-          <input
+          {/* <input
             placeholder="mm/dd/yyyy"
             className="inputPlaceholder"
             style={{ outlineColor: "#007bff" }}
@@ -319,6 +348,54 @@ function PlaceholderType(props) {
                 false
               );
             }}
+          /> */}
+          <DatePicker
+            // disabled={props.isPlaceholder ? true : false}
+            onBlur={handleInputBlur}
+            closeOnScroll={true}
+            className="inputPlaceholder"
+            style={{ outlineColor: "#007bff" }}
+            selected={
+              // props.pos?.widgetValue ? props.pos.widgetValue :
+              startDate
+                ? startDate
+                : props.pos?.widgetValue
+                  ? props.pos?.widgetValue
+                  : new Date(props.pos.widgetValue)
+            }
+            onChange={(date) => {
+              setStartDate(date);
+              const dateObj = {
+                date: props.saveDateFormat,
+                format: props.pos?.dateFormat
+                  ? props.pos?.dateFormat
+                  : props.selectDate
+                    ? props.selectDate?.format
+                    : "MM/dd/YYYY"
+              };
+              props.setSelectDate(dateObj);
+              onChangeInput(
+                props.saveDateFormat,
+                props.pos.key,
+                props.xyPostion,
+                props.index,
+                props.setXyPostion,
+                props.data && props.data.signerObjId,
+                false,
+                props.selectDate?.format
+                  ? props.selectDate.format
+                  : "MM/dd/YYYY"
+              );
+            }}
+            popperPlacement="top-end"
+            customInput={<ExampleCustomInput />}
+            dateFormat={
+              props.pos?.dateFormat
+                ? props.pos?.dateFormat
+                : props.selectDate
+                  ? props.selectDate?.format
+                  : "dd MMMM, YYYY"
+            }
           />
           {/* <div style={{ position: "absolute" }}>{props.selectDate}</div> */}
         </div>
