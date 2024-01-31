@@ -32,7 +32,8 @@ function RemoteApp({ app }) {
             width: "100%",
             overflow: "hidden",
             borderRadius: 3,
-            minHeight: "70vh"
+            height: "100%",
+            minHeight: "100vh"
           }}
         >
           {RemoteComponent && <RemoteComponent />}
