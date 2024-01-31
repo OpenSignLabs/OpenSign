@@ -245,7 +245,10 @@ export const getWidgetType = (
             "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
           marginLeft: marginLeft && `${marginLeft}px`,
           background:
-            selectWidgetType === item.type && backgroundColor && backgroundColor
+            selectWidgetType === item.type &&
+            backgroundColor &&
+            backgroundColor,
+          userSelect: "none"
         }}
       >
         <div
