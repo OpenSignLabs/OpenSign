@@ -26,8 +26,17 @@
 .dropdownContainer::-webkit-scrollbar {
   display: none;
 }
-.react-datepicker__input-container{
-position: initial !important;
+
+.react-datepicker__input-container {
+  position: initial !important;
+}
+
+.widgets {
+  -webkit-user-select: none;
+  /* Disable text selection in WebKit browsers */
+  -moz-user-select: none;
+  user-select: none;
+
 }
 
 .inputPlaceholder {
@@ -97,6 +106,7 @@ position: initial !important;
   width: 460px;
   height: 184px;
 }
+
 .intialSignatureCanvas {
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
@@ -126,6 +136,7 @@ position: initial !important;
   height: 14px;
 
 }
+
 .dropdown-date-menu {
   min-width: 7rem;
 }
@@ -138,7 +149,7 @@ position: initial !important;
   border: none !important;
   color: white !important;
 }
- 
+
 .mailBtn:hover {
   box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
 }
