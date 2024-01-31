@@ -9,6 +9,13 @@ function PlaceholderType(props) {
     props.setDraggingEnabled(true);
   };
 
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   const updateDate = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  //  console.log("update",updateDate)
+  //   return  updateDate;
+  // };
+
   useEffect(() => {
     const senderUser = localStorage.getItem(`Extand_Class`);
     const jsonSender = JSON.parse(senderUser);
@@ -298,7 +305,8 @@ function PlaceholderType(props) {
             type="date"
             disabled={props.isPlaceholder ? true : false}
             onBlur={handleInputBlur}
-            value={props.selectDate && props.selectDate}
+            //  value={props.selectDate && formatDate(props.selectDate)}
+            // value={props.selectDate && props.selectDate}
             onChange={(e) => {
               props.setSelectDate(e.target.value);
               onChangeInput(
