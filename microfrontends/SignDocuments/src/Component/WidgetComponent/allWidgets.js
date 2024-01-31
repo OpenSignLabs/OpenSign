@@ -45,11 +45,11 @@ function AllWidgets(props) {
     return (
       <div key={ind} style={{ marginBottom: "10px" }}>
         <div
+          className="widgets"
           onClick={(e) => {
             props.addPositionOfSignature &&
               props.addPositionOfSignature("onclick", item);
           }}
-          className="draggable"
           ref={(element) => {
             // if (!props.isMobile) {
             item.ref(element);
