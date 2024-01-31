@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import moment from "moment";
 import "../css/./signature.css";
 import { themeColor } from "../utils/ThemeColor/backColor";
 import { DndProvider } from "react-dnd";
@@ -324,6 +325,12 @@ function PlaceHolderSign() {
     }
   };
 
+  const getDate = () => {
+    const date = new Date();
+    const milliseconds = date.getTime();
+    const newDate = moment(milliseconds).format("MM/DD/YYYY");
+    return newDate;
+  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
@@ -360,7 +367,12 @@ function PlaceHolderSign() {
             yBottom: window.innerHeight / 2 - 60,
             zIndex: posZIndex,
             type: monitor.type,
-            widgetValue: monitor.type === "checkbox" ? false : ""
+            widgetValue:
+              monitor.type === "checkbox"
+                ? false
+                : monitor.type === "date"
+                  ? getDate()
+                  : ""
           };
           dropData.push(dropObj);
           placeHolder = {
@@ -390,7 +402,12 @@ function PlaceHolderSign() {
             isMobile: isMobile,
             zIndex: posZIndex,
             type: item.text,
-            widgetValue: item.text === "checkbox" ? false : ""
+            widgetValue:
+              item.text === "checkbox"
+                ? false
+                : monitor.type === "date"
+                  ? getDate()
+                  : ""
           };
 
           dropData.push(dropObj);

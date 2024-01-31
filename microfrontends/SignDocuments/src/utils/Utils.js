@@ -86,7 +86,8 @@ export const onChangeInput = (
   index,
   setXyPostion,
   signerObjId,
-  initial
+  initial,
+  dateFormat
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
 
@@ -108,15 +109,24 @@ export const onChangeInput = (
       const getPageNumer = getPlaceHolder.filter(
         (data) => data.pageNumber === index
       );
+
       if (getPageNumer.length > 0) {
         const getXYdata = getPageNumer[0].pos;
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((url, ind) => {
           if (url.key === signKey) {
-            return {
-              ...url,
-              widgetValue: value
-            };
+            if (dateFormat) {
+              return {
+                ...url,
+                widgetValue: value,
+                dateFormat: dateFormat
+              };
+            } else {
+              return {
+                ...url,
+                widgetValue: value
+              };
+            }
           }
           return url;
         });

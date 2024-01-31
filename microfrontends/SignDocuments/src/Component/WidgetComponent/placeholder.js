@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import BorderResize from "../component/borderResize";
 import PlaceholderBorder from "./placeholderBorder";
 import { Rnd } from "react-rnd";
-import { defaultWidthHeight, isMobile } from "../../utils/Utils";
+import { defaultWidthHeight, isMobile, onChangeInput } from "../../utils/Utils";
 import PlaceholderType from "./placeholderType";
 import moment from "moment";
 import "../LegaDrive/LegaDrive.css";
@@ -12,18 +12,66 @@ function Placeholder(props) {
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
   const [selectDate, setSelectDate] = useState();
   const [dateFormat, setDateFormat] = useState([]);
-  const dateFormatArr = ["L", "l", "LL", "ll", "LLL", "lll", "llll"];
+  const [saveDateFormat, setSaveDateFormat] = useState("");
+  const dateFormatArr = [
+    "L",
+    "DD/MM/YYYY",
+    "YYYY-MM-DD",
+    "MM.DD.YYYY",
+    "MM-DD-YYYY",
+    "MMM DD, YYYY",
+    "LL",
+    "DD MMM, YYYY",
+    "DD MMMM, YYYY"
+  ];
+
+  const selectFormat = (data) => {
+    switch (data) {
+      case "L":
+        return "MM/dd/yyyy";
+      case "DD/MM/YYYY":
+        return "dd/MM/yyyy";
+      case "LL":
+        return "MMMM dd, yyyy";
+      case "DD MMM, YYYY":
+        return "DD MMM, YYYY";
+      case "YYYY-MM-DD":
+        return "YYYY-MM-dd";
+      case "MM-DD-YYYY":
+        return "MM-dd-YYYY";
+      case "MM.DD.YYYY":
+        return "MM.dd.YYYY";
+      case "MMM DD, YYYY":
+        return "MMM dd, YYYY";
+      case "DD MMMM, YYYY":
+        return "dd MMMM, YYYY";
+    }
+  };
 
   const changeDateFormat = () => {
     const updateDate = [];
     dateFormatArr.map((data) => {
-      const date = new Date(selectDate);
+      const date = new Date(selectDate?.date);
       const milliseconds = date.getTime();
       const newDate = moment(milliseconds).format(data);
-      updateDate.push(newDate);
+      const dateObj = {
+        date: newDate,
+        format: selectFormat(data)
+      };
+      updateDate.push(dateObj);
     });
     setDateFormat(updateDate);
   };
+  useEffect(() => {
+    const date = new Date();
+    const milliseconds = date.getTime();
+    const newDate = moment(milliseconds).format("MM/DD/YYYY");
+    const dateObj = {
+      date: newDate,
+      format: "MM/dd/YYYY"
+    };
+    setSelectDate(dateObj);
+  }, []);
   useEffect(() => {
     if (selectDate) {
       changeDateFormat();
@@ -162,28 +210,29 @@ function Placeholder(props) {
           {props.pos.type === "date" && selectDate && (
             <div
               id="menu-container"
-              style={{ zIndex: "99", top: "-20px", left: "6px" }}
+              style={{
+                zIndex: "99",
+                top: "-19px",
+                left: props.isPlaceholder ? "-5px" : "9px"
+              }}
               className={isShowDateFormat ? "dropdown show" : "dropdown"}
-              onClick={() => setIsShowDateFormat(!isShowDateFormat)}
+              onClick={(e) => {
+                setIsShowDateFormat(!isShowDateFormat);
+                e.stopPropagation();
+                props.setSignKey(props.pos.key);
+              }}
+              // onTouchEnd={(e) => {
+              //   e.stopPropagation();
+              //   setIsShowDateFormat(!isShowDateFormat);
+              //   props.setSignKey(props.pos.key);
+              // }}
             >
               <div className=" sort  " data-toggle="dropdown">
                 <i
-                  // onClick={(e) => {
-                  //   console.log("click here");
-                  //   e.stopPropagation();
-
-                  //   props.setSignKey(props.pos.key);
-                  // }}
-                  // onTouchEnd={(e) => {
-                  //   e.stopPropagation();
-
-                  //   props.setSignKey(props.pos.key);
-                  // }}
                   class="fa-solid fa-gear settingIcon"
                   style={{
-                    color: "#188ae2"
-                    // right: "2px",
-                    // top: "-15px"
+                    color: "#188ae2",
+                    fontSize: "14px"
                   }}
                 ></i>
               </div>
@@ -194,18 +243,34 @@ function Placeholder(props) {
                 aria-labelledby="dropdownMenuButton"
                 aria-expanded={isShowDateFormat ? "true" : "false"}
               >
-                {dateFormat.map((date) => {
+                {dateFormat.map((data, ind) => {
                   return (
                     <span
+                      key={ind}
                       onClick={() => {
-                        // console.log("go here");
                         setIsShowDateFormat(!isShowDateFormat);
-                        setSelectDate(date);
+                        setSelectDate(data);
+
+                        // {
+                        //   props.isPlaceholder &&
+                        //     onChangeInput(
+                        //       data.date,
+                        //       props.pos.key,
+                        //       props.xyPostion,
+                        //       props.index,
+                        //       props.setXyPostion,
+                        //       props.data && props.data.signerObjId,
+                        //       false,
+                        //       selectDate?.format
+                        //         ? selectDate.format
+                        //         : "MM/dd/YYYY"
+                        //     );
+                        // }
                       }}
                       className="dropdown-item itemColor"
                       style={{ fontSize: "12px" }}
                     >
-                      {date}
+                      {data?.date ? data?.date : "nodata"}
                     </span>
                   );
                 })}
@@ -433,6 +498,8 @@ function Placeholder(props) {
             isNeedSign={props.isNeedSign}
             setSelectDate={setSelectDate}
             selectDate={selectDate}
+            setSaveDateFormat={setSaveDateFormat}
+            saveDateFormat={saveDateFormat}
           />
         </div>
       ) : (
@@ -456,6 +523,8 @@ function Placeholder(props) {
             isNeedSign={props.isNeedSign}
             setSelectDate={setSelectDate}
             selectDate={selectDate}
+            setSaveDateFormat={setSaveDateFormat}
+            saveDateFormat={saveDateFormat}
           />
         </>
       )}
