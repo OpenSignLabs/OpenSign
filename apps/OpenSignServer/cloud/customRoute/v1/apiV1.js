@@ -24,7 +24,8 @@ import createDocumentWithTemplate from './routes/CreateDocumentWithTemplate.js';
 import saveWebhook from './routes/saveWebhook.js';
 import deleteWebhook from './routes/deleteWebhook.js';
 import getWebhook from './routes/getWebhook.js';
-
+import createDocumentwithCoordinate from './routes/createDocumentwithCoordinate.js';
+import createTemplatewithCoordinate from './routes/createTemplatewithCoordinate.js';
 dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -51,8 +52,11 @@ app.get('/contactlist', getContactList);
 // create Document
 app.post('/createdocumentwithbinary', upload.array('file', 1), createDocument);
 
-// create Document with base64
-app.post('/createdocument', createDocument);
+// create Document with co-ordinate
+app.post('/createdocument', upload.array('file', 1), createDocumentwithCoordinate);
+
+// create Document with base64 without placeholder
+app.post('/draftdocument', createDocument);
 
 // create Document with templateId
 app.post('/createdocument/:template_id', createDocumentWithTemplate);
@@ -69,8 +73,11 @@ app.delete('/document/:document_id', deleteDocument);
 // get all types of documents on the basis of doctype
 app.get('/documentlist/:doctype', getDocumentList);
 
+// create Template with co-ordinate
+app.post('/createtemplate', upload.array('file', 1), createTemplatewithCoordinate);
+
 // create Template
-app.post('/createtemplate', createTemplate);
+app.post('/drafttemplate', createTemplate);
 
 // create Template with binary
 app.post('/createtemplatewithbinary', upload.array('file', 1), createTemplate);
