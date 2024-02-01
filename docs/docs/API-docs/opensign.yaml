@@ -1,1321 +1,2097 @@
----
-openapi: 3.0.3
-info:
-  title: OpenSign API v1
-  description: "This is API documentation for OpenSign API v1 based on the OpenAPI 3.1 specification. \n\nSome useful links:\n- [Official Website](https://www.opensignlabs.com)\n- [Github repo](https://github.com/opensignlabs/opensign)"
-  termsOfService: http://www.opensignlabs.com/terms/
-  contact:
-    email: contact@opensignlabs.com
-  license:
-    name: AGPL 3.0
-    url: http://github.com/opensignlabs/opensign/LICENSE
-  version: 1.0.0
-externalDocs:
-  description: Find out more about OpenSign
-  url: http://docs.opensignlabs.com
-servers:
-- url: https://staging-app.opensignlabs.com/api/v1
-tags:
-- name: OpenSign
-  description: OpenSource DocuSign alternative
-  externalDocs:
-    description: Find out more
-    url: http://www.opensignlabs.com
-- name: Github repo
-  description: Access the source code
-  externalDocs:
-    description: Visit github
-    url: http://github.com/opensignlabs/opensign
-- name: User
-  description: Operations about user
-- name: Contacts
-  description: Operations about contacts
-- name: Documents
-  description: Operations about documents
-- name: Templates
-  description: Operations about templates
-- name: Webhook
-  description: Operations about Webhook
-paths:
-  /getuser:
-    get:
-      tags:
-      - User
-      summary: Get your details
-      description: The Get User API enables you to get your own details.
-      operationId: getUser
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user'
-        "404":
-          description: User not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /createcontact:
-    post:
-      tags:
-      - Contacts
-      summary: Create Contact
-      description: The Create contact API allows you to effortlessly create new contacts that can act as signers for your important documents.
-      operationId: createcontact
-      requestBody:
-        description: Provide below parameter to create contact
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/createcontact_body'
-        required: true
-      responses:
-        "200":
-          description: Contact created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/contact'
-        "404":
-          description: "Something went wrong, please try again later!"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_1'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /contact/{contact_id}:
-    get:
-      tags:
-      - Contacts
-      summary: Get Contact
-      description: The Get Contact API allows you to retrieve details about a specific contact.
-      operationId: getcontact
-      parameters:
-      - name: contact_id
-        in: path
-        description: objectId of contact
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-          example: pH1bhc2hpb
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/contact'
-        "404":
-          description: Contact not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_2'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-    delete:
-      tags:
-      - Contacts
-      summary: Delete Contact
-      description: "The Delete Contact API allows you to remove a contact from your contactbook. If you no longer need a particular contact's information, this API makes it easy to delete their record."
-      operationId: deletecontact
-      parameters:
-      - name: contact_id
-        in: path
-        description: Provide objectId of contact to delete
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-          example: ph2bh2asd
-      responses:
-        "200":
-          description: Contact deleted successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/delete'
-        "404":
-          description: Contact not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_2'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /contactlist:
-    get:
-      tags:
-      - Contacts
-      summary: Get Contact list
-      description: "The Contact List API empowers you to retrieve a list of contacts, providing a comprehensive view of all available contacts in your contactbook."
-      operationId: contactlist
-      parameters:
-      - name: limit
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          maximum: 500
-          type: number
-        example: 10
-      - name: skip
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: number
-        example: 0
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /createdocument:
-    post:
-      tags:
-      - Documents
-      summary: Create Document
-      description: "The Create Document API allows users to generate new documents by providing data with base64 encoded file. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios."
-      operationId: createdocument
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/createdocument_body'
-        required: true
-      responses:
-        "200":
-          description: Document created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_1'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /createdocumentwithbinary:
-    post:
-      tags:
-      - Documents
-      summary: Create Document from binary
-      description: "The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios."
-      operationId: createdocumentwithbinary
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/createdocumentwithbinary_body'
-        required: true
-      responses:
-        "200":
-          description: Document created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_1'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /createdocument/{template_id}:
-    post:
-      tags:
-      - Documents
-      summary: Create Document from Template
-      description: The Create Document API allows you to generate new documents by providing template_id.
-      operationId: createdocumentwithtemplateid
-      parameters:
-      - name: template_id
-        in: path
-        description: objectId of Template
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-          example: pH1bhc2hpb
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/createdocument_template_id_body'
-        required: true
-      responses:
-        "200":
-          description: "In success response you will get url in response if you are also signer in document otherwise only get objectId, messsage"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_2'
-        "400":
-          description: If you haven't add widgets and signers in template or not provide signers along with their roles in body
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400_1'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /document/{document_id}:
-    get:
-      tags:
-      - Documents
-      summary: Get Document
-      description: The Get Document API enables you to retrieve details about a specific document.
-      operationId: getdocument
-      parameters:
-      - name: document_id
-        in: path
-        description: objectId of Document
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-          example: pH1bhc2hpb
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/document'
-        "404":
-          description: Document not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_3'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-    put:
-      tags:
-      - Documents
-      summary: Update Document
-      description: The Update Document API allows users to modify and update the details of a specific document.
-      operationId: updateDocument
-      parameters:
-      - name: document_id
-        in: path
-        description: ID of the document that needs to be updated
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-      requestBody:
-        description: Provide below parameter to update templates (at least one parameter required)
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/document_document_id_body'
-      responses:
-        "200":
-          description: Document updated successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_3'
-        "400":
-          description: Please provide valid field names!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400'
-        "404":
-          description: Document not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_4'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-    delete:
-      tags:
-      - Documents
-      summary: Delete Document
-      description: The Delete document API allows you to remove specific document from your documents.
-      operationId: deletedocument
-      parameters:
-      - name: document_id
-        in: path
-        description: Provide objectId of document to delete
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-          example: ph2bh2asd
-      responses:
-        "200":
-          description: Document deleted successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/delete'
-        "404":
-          description: Document not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_3'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /documentlist/{doctype}:
-    get:
-      tags:
-      - Documents
-      summary: Get Document list from status
-      description: |
-        ### Document Types:
-        Retrieve a list of documents based on type
-
-        1. **Draft Documents:**
-            - Documents that are currently in draft status.
-
-        2. **Signature Requests:**
-            - Documents that require the your signature.
-
-        3. **In-Progress Documents:**
-            - Documents that are currently in progress.
-
-        4. **Completed Documents:**
-            - Documents that have been successfully completed with all required signatures.
-
-        5. **Expired Documents:**
-            - Documents that have expired and are no longer accessible.
-
-        6. **Declined Documents:**
-            - Documents that have been declined by the user.
-      operationId: getdocumentlist
-      parameters:
-      - name: doctype
-        in: path
-        description: The type of documents to retrieve
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          enum:
-          - draftdocuments
-          - signaturerequest
-          - inprogressdocuments
-          - completedocuments
-          - expiredocuments
-          - declinedocuments
-      - name: limit
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          maximum: 500
-          type: number
-        example: 10
-      - name: skip
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: number
-        example: 0
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_4'
-        "404":
-          description: Report not available!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_5'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /createtemplate:
-    post:
-      tags:
-      - Templates
-      summary: Create Template
-      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template."
-      operationId: createtemplate
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/createtemplate_body'
-        required: true
-      responses:
-        "200":
-          description: Template created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_5'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-  /createtemplatewithbinary:
-    post:
-      tags:
-      - Templates
-      summary: Create Template from binary
-      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template."
-      operationId: createtemplatewithbinary
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/createtemplatewithbinary_body'
-        required: true
-      responses:
-        "200":
-          description: Template created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_5'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-  /template/{template_id}:
-    get:
-      tags:
-      - Templates
-      summary: Get Template
-      description: The Get Template API allows you to retrieve details about a specific template. Templates serve as blueprints for creating documents with predefined structures.
-      operationId: getTemplate
-      parameters:
-      - name: template_id
-        in: path
-        description: ID of template that needs to be fetched
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: strng
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/template'
-        "404":
-          description: Template not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_6'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-    put:
-      tags:
-      - Templates
-      summary: Update Template
-      description: The Update Template API enables you to modify and update the details of a specific template.
-      operationId: updateTemplate
-      parameters:
-      - name: template_id
-        in: path
-        description: ID of the template that needs to be updated
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-      requestBody:
-        description: Provide below parameter to update templates (at least one parameter required)
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/template_template_id_body'
-      responses:
-        "200":
-          description: Template updated successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_3'
-        "400":
-          description: Please provide valid field names!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400'
-        "404":
-          description: Template not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_7'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-    delete:
-      tags:
-      - Templates
-      summary: Delete Template
-      description: The Delete Template API provides you with the ability to remove a specific template from the templates. If a template is no longer needed
-      operationId: deleteTemplate
-      parameters:
-      - name: template_id
-        in: path
-        description: ID of the template that needs to be deleted
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: string
-      responses:
-        "200":
-          description: Template deleted successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/delete'
-        "404":
-          description: Template not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_6'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-  /templatelist:
-    get:
-      tags:
-      - Templates
-      summary: Get Template list
-      description: "The Get Template List API allows you to retrieve a list of available templates. This functionality provides an overview of all templates, enabling users to choose from existing templates when creating documents."
-      operationId: gettemplatelist
-      parameters:
-      - name: limit
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          maximum: 500
-          type: number
-        example: 10
-      - name: skip
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: number
-        example: 0
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_6'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-  /webhook:
-    get:
-      tags:
-      - Webhook
-      summary: Get Webhook
-      description: The Get Webhook API allow you to get webhook url
-      operationId: getWebhook
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_7'
-        "404":
-          description: User not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-    post:
-      tags:
-      - Webhook
-      summary: Save or Update Webhook
-      description: The save or update Webhook API allow you to save webhook url which is used to capture document signature completion event
-      operationId: save&updateWebhook
-      requestBody:
-        description: Provide below parameter to create contact
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/webhook_body'
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_8'
-        "401":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
-        "404":
-          description: User not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-    delete:
-      tags:
-      - Webhook
-      summary: Delete Webhook
-      description: The Delete Webhook API allow you to delete webhook url
-      operationId: deleteWebhook
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_9'
-        "404":
-          description: User not found!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-components:
-  schemas:
-    date:
-      type: string
-      example: 2023-10-07T16:49:56.000Z
-      xml:
-        name: date
-    template:
-      type: object
-      properties:
-        objectId:
-          type: string
-          format: string
-          example: x1Hbnms2Pg
-        Title:
-          type: string
-          example: sample template
-        Note:
-          type: string
-          example: template note
-        Folder:
-          type: string
-          example: folder name
-        File:
-          type: string
-          example: https://templateuser.com
-        Owner:
-          type: string
-          example: template creator name
-        Signers:
-          type: array
-          items:
-            $ref: '#/components/schemas/template_Signers'
-        createdAt:
-          $ref: '#/components/schemas/date'
-        updatedAt:
-          $ref: '#/components/schemas/date'
-      xml:
-        name: template
-    contact:
-      type: object
-      properties:
-        objectId:
-          type: string
-          format: string
-          example: ph1bhx2jp
-        Name:
-          type: string
-          format: string
-          example: joe bee
-        Email:
-          type: string
-          format: string
-          example: joebee@example.com
-        Phone:
-          type: string
-          format: string
-          example: "4131231231"
-        createdAt:
-          $ref: '#/components/schemas/date'
-        updatedAt:
-          $ref: '#/components/schemas/date'
-      xml:
-        name: contactdetails
-    user:
-      type: object
-      properties:
-        objectId:
-          type: string
-          format: string
-          example: FGik23bhUJ
-        Name:
-          type: string
-          format: string
-          example: Joe Bee
-        Email:
-          type: string
-          format: string
-          example: joebee@example.com
-        Phone:
-          type: string
-          format: string
-          example: "4567832123"
-        JobTitle:
-          type: string
-          format: string
-          example: dev
-        Company:
-          type: string
-          format: string
-          example: opensign
-        createdAt:
-          $ref: '#/components/schemas/date'
-        updatedAt:
-          $ref: '#/components/schemas/date'
-      xml:
-        name: user
-    document:
-      type: object
-      properties:
-        objectId:
-          type: string
-          format: string
-          example: FGik23bhUJ
-        Title:
-          type: string
-          format: string
-          example: sample doc
-        Note:
-          type: string
-          format: string
-          example: please sign document
-        Folder:
-          type: string
-          format: string
-          example: OpenSign™ Drive
-        File:
-          type: string
-          format: string
-          example: https://exampleurl.com
-        Owner:
-          type: string
-          format: string
-          example: joe bee
-        Signers:
-          type: array
-          items:
-            $ref: '#/components/schemas/template_Signers'
-        createdAt:
-          $ref: '#/components/schemas/date'
-        updatedAt:
-          $ref: '#/components/schemas/date'
-      xml:
-        name: document
-    invalidtoken:
-      type: object
-      properties:
-        error:
-          type: string
-          example: Invalid API token!
-      xml:
-        name: invalidtoken
-    delete:
-      type: object
-      properties:
-        objectId:
-          type: string
-          example: Bxh2aspHp3
-        deletedAt:
-          $ref: '#/components/schemas/date'
-      xml:
-        name: delete
-    inline_response_404:
-      type: object
-      properties:
-        error:
-          type: string
-          example: User not found!
-    createcontact_body:
-      required:
-      - email
-      - name
-      - phone
-      type: object
-      properties:
-        name:
-          type: string
-          format: string
-          example: joe bee
-        email:
-          type: string
-          format: string
-          example: joebee@example.com
-        phone:
-          type: string
-          format: string
-          example: "1232131321"
-    inline_response_404_1:
-      type: object
-      properties:
-        error:
-          type: string
-          example: "Something went wrong, please try again later!"
-    inline_response_404_2:
-      type: object
-      properties:
-        error:
-          type: string
-          example: Contact not found!
-    inline_response_200:
-      type: object
-      properties:
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/contact'
-    createdocument_body:
-      type: object
-      properties:
-        file:
-          type: string
-          format: base64
-          example: base64 encoded pdf
-        title:
-          type: string
-          format: string
-          example: sample document
-        description:
-          type: string
-          format: string
-          example: sample Description
-        note:
-          type: string
-          format: string
-          example: sample Note
-        signers:
-          type: array
-          items:
-            $ref: '#/components/schemas/createdocument_body_signers'
-    inline_response_200_1:
-      type: object
-      properties:
-        objectId:
-          type: string
-          format: string
-          example: hji2zxcv2P
-        url:
-          type: string
-          format: string
-          example: https://url-to-edit-document.com
-    createdocumentwithbinary_body:
-      type: object
-      properties:
-        file:
-          type: string
-          format: binary
-        title:
-          type: string
-        description:
-          type: string
-        note:
-          type: string
-        signers:
-          type: string
-          format: array
-    createdocumenttemplate_id_Signers:
-      type: object
-      properties:
-        role:
-          type: string
-          example: Accoutnant
-        email:
-          type: string
-          format: mail
-          example: joe@example.com
-        name:
-          type: string
-          example: joe bee
-        phone:
-          type: string
-          example: "123123131"
-    createdocument_template_id_body:
-      type: object
-      properties:
-        signers:
-          type: array
-          items:
-            $ref: '#/components/schemas/createdocumenttemplate_id_Signers'
-    inline_response_200_2:
-      type: object
-      properties:
-        objectId:
-          type: string
-          format: string
-          example: hji2zxcv2P
-        url:
-          type: string
-          format: string
-          example: https://example.com
-        message:
-          type: string
-          format: string
-          example: Document sent successfully!
-    inline_response_404_3:
-      type: object
-      properties:
-        error:
-          type: string
-          example: Document not found!
-    document_document_id_body:
-      type: object
-      properties:
-        name:
-          type: string
-          format: string
-          example: sample document
-        note:
-          type: string
-          format: string
-          example: Please review and sign this document
-        description:
-          type: string
-          format: string
-          example: document description
-        folderId:
-          type: string
-          format: string
-          example: Bjsba2bhoP
-    inline_response_200_3:
-      type: object
-      properties:
-        objectId:
-          type: string
-          example: asd2HsP4Hp
-        updatedAt:
-          $ref: '#/components/schemas/date'
-    inline_response_400:
-      type: object
-      properties:
-        error:
-          type: string
-          format: string
-          example: Please provide valid field names!
-    inline_response_404_4:
-      type: object
-      properties:
-        error:
-          type: string
-          format: string
-          example: Document not found!
-    inline_response_200_4:
-      type: object
-      properties:
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/document'
-    inline_response_404_5:
-      type: object
-      properties:
-        error:
-          type: string
-          example: Report not available!
-    createtemplate_body:
-      type: object
-      properties:
-        file:
-          type: string
-          format: base64
-          example: base64 encoded file
-        title:
-          type: string
-          format: string
-          example: sample template
-        note:
-          type: string
-          format: string
-          example: sample note
-        description:
-          type: string
-          format: string
-          example: sample description
-        signers:
-          type: array
-          items:
-            $ref: '#/components/schemas/createdocument_body_signers'
-    inline_response_200_5:
-      type: object
-      properties:
-        objectId:
-          type: number
-        url:
-          type: string
-          example: https://exampleurl.com
-    createtemplatewithbinary_body:
-      type: object
-      properties:
-        file:
-          type: string
-          format: binary
-        title:
-          type: string
-        description:
-          type: string
-        note:
-          type: string
-        signers:
-          type: string
-          format: array
-    inline_response_404_6:
-      type: object
-      properties:
-        error:
-          type: string
-          example: Template not found!
-    template_template_id_body:
-      type: object
-      properties:
-        name:
-          type: string
-          format: string
-          example: sample template
-        note:
-          type: string
-          format: string
-          example: Please review and sign this document
-        description:
-          type: string
-          format: string
-          example: template description
-        folderId:
-          type: string
-          format: string
-          example: xjsba1GaxP
-    inline_response_404_7:
-      type: object
-      properties:
-        error:
-          type: string
-          format: string
-          example: Template not found!
-    inline_response_200_6:
-      type: object
-      properties:
-        result:
-          type: array
-          items:
-            $ref: '#/components/schemas/template'
-    inline_response_200_7:
-      type: object
-      properties:
-        Webhook:
-          type: string
-          example: https://your-webhook-url@example.com
-    webhook_body:
-      required:
-      - Url
-      type: object
-      properties:
-        url:
-          type: string
-          format: string
-          example: https://your-webhook-url@example.com
-    inline_response_200_8:
-      type: object
-      properties:
-        result:
-          type: string
-          example: Webhook updated successfully!
-    inline_response_401:
-      type: object
-      properties:
-        result:
-          type: string
-          example: Webhook url already exists!
-    inline_response_200_9:
-      type: object
-      properties:
-        result:
-          type: string
-          example: Webhook deleted successfully!
-    template_Signers:
-      type: object
-      properties:
-        Name:
-          type: string
-          example: joe
-    inline_response_400_1:
-      type: object
-      properties:
-        error:
-          type: string
-          format: string
-          example: Please setup template properly!
-    createdocument_body_signers:
-      type: object
-      properties:
-        email:
-          type: string
-          format: string
-          example: joebee@exampl.com
-        name:
-          type: string
-          format: string
-          example: joe bee
-        phone:
-          type: string
-          format: string
-          example: "123121312"
-  securitySchemes:
-    x-api-token:
-      type: apiKey
-      name: x-api-token
-      in: header
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "OpenSign API v1",
+    "description": "This is API documentation for OpenSign API v1 based on the OpenAPI 3.1 specification. \n\nSome useful links:\n- [Official Website](https://www.opensignlabs.com)\n- [Github repo](https://github.com/opensignlabs/opensign)",
+    "termsOfService": "http://www.opensignlabs.com/terms/",
+    "contact": {
+      "email": "contact@opensignlabs.com"
+    },
+    "license": {
+      "name": "AGPL 3.0",
+      "url": "http://github.com/opensignlabs/opensign/LICENSE"
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "Find out more about OpenSign",
+    "url": "http://docs.opensignlabs.com"
+  },
+  "servers": [
+    {
+      "url": "https://staging-app.opensignlabs.com/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "OpenSign",
+      "description": "OpenSource DocuSign alternative",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://www.opensignlabs.com"
+      }
+    },
+    {
+      "name": "Github repo",
+      "description": "Access the source code",
+      "externalDocs": {
+        "description": "Visit github",
+        "url": "http://github.com/opensignlabs/opensign"
+      }
+    },
+    {
+      "name": "User",
+      "description": "Operations about user"
+    },
+    {
+      "name": "Contacts",
+      "description": "Operations about contacts"
+    },
+    {
+      "name": "Documents",
+      "description": "Operations about documents"
+    },
+    {
+      "name": "Templates",
+      "description": "Operations about templates"
+    },
+    {
+      "name": "Webhook",
+      "description": "Operations about Webhook"
+    }
+  ],
+  "paths": {
+    "/getuser": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get your details",
+        "description": "The Get User API enables you to get your own details.",
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/createcontact": {
+      "post": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Create Contact",
+        "description": "The Create contact API allows you to effortlessly create new contacts that can act as signers for your important documents.",
+        "operationId": "createcontact",
+        "requestBody": {
+          "description": "Provide below parameter to create contact",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createcontact_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Contact created successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/contact"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Something went wrong, please try again later!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_1"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/contact/{contact_id}": {
+      "get": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Get Contact",
+        "description": "The Get Contact API allows you to retrieve details about a specific contact.",
+        "operationId": "getcontact",
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "description": "objectId of contact",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "example": "pH1bhc2hpb"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/contact"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contact not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_2"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Delete Contact",
+        "description": "The Delete Contact API allows you to remove a contact from your contactbook. If you no longer need a particular contact's information, this API makes it easy to delete their record.",
+        "operationId": "deletecontact",
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "description": "Provide objectId of contact to delete",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "example": "ph2bh2asd"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact deleted successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/delete"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contact not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_2"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/contactlist": {
+      "get": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Get Contact list",
+        "description": "The Contact List API empowers you to retrieve a list of contacts, providing a comprehensive view of all available contacts in your contactbook.",
+        "operationId": "contactlist",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "maximum": 500,
+              "type": "number"
+            },
+            "example": 10
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 0
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/createdocument": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Create Document",
+        "description": "The Create Document API allows users to generate new documents by providing data with base64 encoded file. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios.",
+        "operationId": "createdocument",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createdocument_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Document created successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/createdocumentwithbinary": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Create Document from binary",
+        "description": "The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios.",
+        "operationId": "createdocumentwithbinary",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/createdocumentwithbinary_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Document created successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/createdocument/{template_id}": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Create Document from Template",
+        "description": "The Create Document API allows you to generate new documents by providing template_id.",
+        "operationId": "createdocumentwithtemplateid",
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "description": "objectId of Template",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "example": "pH1bhc2hpb"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createdocument_template_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "In success response you will get url in response if you are also signer in document otherwise only get objectId, messsage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "If you haven't add widgets and signers in template or not provide signers along with their roles in body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_1"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/document/{document_id}": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get Document",
+        "description": "The Get Document API enables you to retrieve details about a specific document.",
+        "operationId": "getdocument",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "description": "objectId of Document",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "example": "pH1bhc2hpb"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/document"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_3"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Update Document",
+        "description": "The Update Document API allows users to modify and update the details of a specific document.",
+        "operationId": "updateDocument",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "description": "ID of the document that needs to be updated",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Provide below parameter to update templates (at least one parameter required)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/document_document_id_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document updated successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Please provide valid field names!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_4"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Delete Document",
+        "description": "The Delete document API allows you to remove specific document from your documents.",
+        "operationId": "deletedocument",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "description": "Provide objectId of document to delete",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "example": "ph2bh2asd"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document deleted successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/delete"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_3"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/documentlist/{doctype}": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Get Document list from status",
+        "description": "### Document Types:\nRetrieve a list of documents based on type\n\n1. **Draft Documents:**\n    - Documents that are currently in draft status.\n\n2. **Signature Requests:**\n    - Documents that require the your signature.\n\n3. **In-Progress Documents:**\n    - Documents that are currently in progress.\n\n4. **Completed Documents:**\n    - Documents that have been successfully completed with all required signatures.\n\n5. **Expired Documents:**\n    - Documents that have expired and are no longer accessible.\n\n6. **Declined Documents:**\n    - Documents that have been declined by the user.\n",
+        "operationId": "getdocumentlist",
+        "parameters": [
+          {
+            "name": "doctype",
+            "in": "path",
+            "description": "The type of documents to retrieve",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draftdocuments",
+                "signaturerequest",
+                "inprogressdocuments",
+                "completedocuments",
+                "expiredocuments",
+                "declinedocuments"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "maximum": 500,
+              "type": "number"
+            },
+            "example": 10
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 0
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_4"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Report not available!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_5"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
+    "/createtemplate": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Create Template",
+        "description": "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template.",
+        "operationId": "createtemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createtemplate_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Template created successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_5"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/createtemplatewithbinary": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Create Template from binary",
+        "description": "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template.",
+        "operationId": "createtemplatewithbinary",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/createtemplatewithbinary_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Template created successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_5"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/template/{template_id}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get Template",
+        "description": "The Get Template API allows you to retrieve details about a specific template. Templates serve as blueprints for creating documents with predefined structures.",
+        "operationId": "getTemplate",
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "description": "ID of template that needs to be fetched",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "strng"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_6"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Update Template",
+        "description": "The Update Template API enables you to modify and update the details of a specific template.",
+        "operationId": "updateTemplate",
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "description": "ID of the template that needs to be updated",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Provide below parameter to update templates (at least one parameter required)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/template_template_id_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template updated successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Please provide valid field names!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_7"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Delete Template",
+        "description": "The Delete Template API provides you with the ability to remove a specific template from the templates. If a template is no longer needed",
+        "operationId": "deleteTemplate",
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "description": "ID of the template that needs to be deleted",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template deleted successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/delete"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_6"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templatelist": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get Template list",
+        "description": "The Get Template List API allows you to retrieve a list of available templates. This functionality provides an overview of all templates, enabling users to choose from existing templates when creating documents.",
+        "operationId": "gettemplatelist",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "maximum": 500,
+              "type": "number"
+            },
+            "example": 10
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            },
+            "example": 0
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_6"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook": {
+      "get": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Get Webhook",
+        "description": "The Get Webhook API allow you to get webhook url",
+        "operationId": "getWebhook",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_7"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Save or Update Webhook",
+        "description": "The save or update Webhook API allow you to save webhook url which is used to capture document signature completion event",
+        "operationId": "save&updateWebhook",
+        "requestBody": {
+          "description": "Provide below parameter to create contact",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/webhook_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_8"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Delete Webhook",
+        "description": "The Delete Webhook API allow you to delete webhook url",
+        "operationId": "deleteWebhook",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_9"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "date": {
+        "type": "string",
+        "example": "2023-10-07T16:49:56.000Z",
+        "xml": {
+          "name": "date"
+        }
+      },
+      "template": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "format": "string",
+            "example": "x1Hbnms2Pg"
+          },
+          "Title": {
+            "type": "string",
+            "example": "sample template"
+          },
+          "Note": {
+            "type": "string",
+            "example": "template note"
+          },
+          "Folder": {
+            "type": "string",
+            "example": "folder name"
+          },
+          "File": {
+            "type": "string",
+            "example": "https://templateuser.com"
+          },
+          "Owner": {
+            "type": "string",
+            "example": "template creator name"
+          },
+          "Signers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/template_Signers"
+            }
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/date"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/date"
+          }
+        },
+        "xml": {
+          "name": "template"
+        }
+      },
+      "contact": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "format": "string",
+            "example": "ph1bhx2jp"
+          },
+          "Name": {
+            "type": "string",
+            "format": "string",
+            "example": "joe bee"
+          },
+          "Email": {
+            "type": "string",
+            "format": "string",
+            "example": "joebee@example.com"
+          },
+          "Phone": {
+            "type": "string",
+            "format": "string",
+            "example": "4131231231"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/date"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/date"
+          }
+        },
+        "xml": {
+          "name": "contactdetails"
+        }
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "format": "string",
+            "example": "FGik23bhUJ"
+          },
+          "Name": {
+            "type": "string",
+            "format": "string",
+            "example": "Joe Bee"
+          },
+          "Email": {
+            "type": "string",
+            "format": "string",
+            "example": "joebee@example.com"
+          },
+          "Phone": {
+            "type": "string",
+            "format": "string",
+            "example": "4567832123"
+          },
+          "JobTitle": {
+            "type": "string",
+            "format": "string",
+            "example": "dev"
+          },
+          "Company": {
+            "type": "string",
+            "format": "string",
+            "example": "opensign"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/date"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/date"
+          }
+        },
+        "xml": {
+          "name": "user"
+        }
+      },
+      "document": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "format": "string",
+            "example": "FGik23bhUJ"
+          },
+          "Title": {
+            "type": "string",
+            "format": "string",
+            "example": "sample doc"
+          },
+          "Note": {
+            "type": "string",
+            "format": "string",
+            "example": "please sign document"
+          },
+          "Folder": {
+            "type": "string",
+            "format": "string",
+            "example": "OpenSign™ Drive"
+          },
+          "File": {
+            "type": "string",
+            "format": "string",
+            "example": "https://exampleurl.com"
+          },
+          "Owner": {
+            "type": "string",
+            "format": "string",
+            "example": "joe bee"
+          },
+          "Signers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/template_Signers"
+            }
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/date"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/date"
+          }
+        },
+        "xml": {
+          "name": "document"
+        }
+      },
+      "invalidtoken": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Invalid API token!"
+          }
+        },
+        "xml": {
+          "name": "invalidtoken"
+        }
+      },
+      "delete": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "example": "Bxh2aspHp3"
+          },
+          "deletedAt": {
+            "$ref": "#/components/schemas/date"
+          }
+        },
+        "xml": {
+          "name": "delete"
+        }
+      },
+      "inline_response_404": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "User not found!"
+          }
+        }
+      },
+      "createcontact_body": {
+        "required": [
+          "email",
+          "name",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "string",
+            "example": "joe bee"
+          },
+          "email": {
+            "type": "string",
+            "format": "string",
+            "example": "joebee@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "format": "string",
+            "example": "1232131321"
+          }
+        }
+      },
+      "inline_response_404_1": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Something went wrong, please try again later!"
+          }
+        }
+      },
+      "inline_response_404_2": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Contact not found!"
+          }
+        }
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/contact"
+            }
+          }
+        }
+      },
+      "createdocument_body": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "base64",
+            "example": "base64 encoded pdf"
+          },
+          "title": {
+            "type": "string",
+            "format": "string",
+            "example": "sample document"
+          },
+          "description": {
+            "type": "string",
+            "format": "string",
+            "example": "sample Description"
+          },
+          "note": {
+            "type": "string",
+            "format": "string",
+            "example": "sample Note"
+          },
+          "signers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/createdocument_body_signers"
+            }
+          }
+        }
+      },
+      "inline_response_200_1": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "format": "string",
+            "example": "hji2zxcv2P"
+          },
+          "url": {
+            "type": "string",
+            "format": "string",
+            "example": "https://url-to-edit-document.com"
+          }
+        }
+      },
+      "createdocumentwithbinary_body": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "signers": {
+            "type": "string",
+            "format": "array"
+          }
+        }
+      },
+      "createdocumenttemplate_id_Signers": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "example": "Accoutnant"
+          },
+          "email": {
+            "type": "string",
+            "format": "mail",
+            "example": "joe@example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "joe bee"
+          },
+          "phone": {
+            "type": "string",
+            "example": "123123131"
+          }
+        }
+      },
+      "createdocument_template_id_body": {
+        "type": "object",
+        "properties": {
+          "signers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/createdocumenttemplate_id_Signers"
+            }
+          }
+        }
+      },
+      "inline_response_200_2": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "format": "string",
+            "example": "hji2zxcv2P"
+          },
+          "url": {
+            "type": "string",
+            "format": "string",
+            "example": "https://example.com"
+          },
+          "message": {
+            "type": "string",
+            "format": "string",
+            "example": "Document sent successfully!"
+          }
+        }
+      },
+      "inline_response_404_3": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Document not found!"
+          }
+        }
+      },
+      "document_document_id_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "string",
+            "example": "sample document"
+          },
+          "note": {
+            "type": "string",
+            "format": "string",
+            "example": "Please review and sign this document"
+          },
+          "description": {
+            "type": "string",
+            "format": "string",
+            "example": "document description"
+          },
+          "folderId": {
+            "type": "string",
+            "format": "string",
+            "example": "Bjsba2bhoP"
+          }
+        }
+      },
+      "inline_response_200_3": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "example": "asd2HsP4Hp"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/date"
+          }
+        }
+      },
+      "inline_response_400": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "format": "string",
+            "example": "Please provide valid field names!"
+          }
+        }
+      },
+      "inline_response_404_4": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "format": "string",
+            "example": "Document not found!"
+          }
+        }
+      },
+      "inline_response_200_4": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/document"
+            }
+          }
+        }
+      },
+      "inline_response_404_5": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Report not available!"
+          }
+        }
+      },
+      "createtemplate_body": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "base64",
+            "example": "base64 encoded file"
+          },
+          "title": {
+            "type": "string",
+            "format": "string",
+            "example": "sample template"
+          },
+          "note": {
+            "type": "string",
+            "format": "string",
+            "example": "sample note"
+          },
+          "description": {
+            "type": "string",
+            "format": "string",
+            "example": "sample description"
+          },
+          "signers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/createtemplate_body_signers"
+            }
+          }
+        }
+      },
+      "inline_response_200_5": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://exampleurl.com"
+          }
+        }
+      },
+      "createtemplatewithbinary_body": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "signers": {
+            "type": "string",
+            "format": "array"
+          }
+        }
+      },
+      "inline_response_404_6": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Template not found!"
+          }
+        }
+      },
+      "template_template_id_body": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "format": "string",
+            "example": "sample template"
+          },
+          "note": {
+            "type": "string",
+            "format": "string",
+            "example": "Please review and sign this document"
+          },
+          "description": {
+            "type": "string",
+            "format": "string",
+            "example": "template description"
+          },
+          "folderId": {
+            "type": "string",
+            "format": "string",
+            "example": "xjsba1GaxP"
+          }
+        }
+      },
+      "inline_response_404_7": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "format": "string",
+            "example": "Template not found!"
+          }
+        }
+      },
+      "inline_response_200_6": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/template"
+            }
+          }
+        }
+      },
+      "inline_response_200_7": {
+        "type": "object",
+        "properties": {
+          "Webhook": {
+            "type": "string",
+            "example": "https://your-webhook-url@example.com"
+          }
+        }
+      },
+      "webhook_body": {
+        "required": [
+          "Url"
+        ],
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "string",
+            "example": "https://your-webhook-url@example.com"
+          }
+        }
+      },
+      "inline_response_200_8": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "example": "Webhook updated successfully!"
+          }
+        }
+      },
+      "inline_response_401": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "example": "Webhook url already exists!"
+          }
+        }
+      },
+      "inline_response_200_9": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "example": "Webhook deleted successfully!"
+          }
+        }
+      },
+      "template_Signers": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string",
+            "example": "joe"
+          }
+        }
+      },
+      "inline_response_400_1": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "format": "string",
+            "example": "Please setup template properly!"
+          }
+        }
+      },
+      "createdocument_body_widgets": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "format": "number",
+            "example": 1
+          },
+          "type": {
+            "type": "string",
+            "format": "string",
+            "example": "signature"
+          },
+          "x": {
+            "type": "number",
+            "format": "number",
+            "example": 244
+          },
+          "y": {
+            "type": "number",
+            "format": "number",
+            "example": 71
+          },
+          "w": {
+            "type": "number",
+            "format": "number",
+            "example": 38
+          },
+          "h": {
+            "type": "number",
+            "format": "number",
+            "example": 46
+          }
+        }
+      },
+      "createdocument_body_signers": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "format": "string",
+            "example": "ceo"
+          },
+          "email": {
+            "type": "string",
+            "format": "string",
+            "example": "joebee@exampl.com"
+          },
+          "name": {
+            "type": "string",
+            "format": "string",
+            "example": "joe bee"
+          },
+          "phone": {
+            "type": "string",
+            "format": "string",
+            "example": "123121312"
+          },
+          "widgets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/createdocument_body_widgets"
+            }
+          }
+        }
+      },
+      "createtemplate_body_widgets": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "format": "number",
+            "example": 1
+          },
+          "type": {
+            "type": "string",
+            "format": "string",
+            "example": "stamp"
+          },
+          "x": {
+            "type": "number",
+            "format": "number",
+            "example": 244
+          },
+          "y": {
+            "type": "number",
+            "format": "number",
+            "example": 71
+          },
+          "w": {
+            "type": "number",
+            "format": "number",
+            "example": 38
+          },
+          "h": {
+            "type": "number",
+            "format": "number",
+            "example": 46
+          }
+        }
+      },
+      "createtemplate_body_signers": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "format": "string",
+            "example": "ceo"
+          },
+          "email": {
+            "type": "string",
+            "format": "string",
+            "example": "joebee@exampl.com"
+          },
+          "name": {
+            "type": "string",
+            "format": "string",
+            "example": "joe bee"
+          },
+          "phone": {
+            "type": "string",
+            "format": "string",
+            "example": "123121312"
+          },
+          "widgets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/createtemplate_body_widgets"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "x-api-token": {
+        "type": "apiKey",
+        "name": "x-api-token",
+        "in": "header"
+      }
+    }
+  }
+}
