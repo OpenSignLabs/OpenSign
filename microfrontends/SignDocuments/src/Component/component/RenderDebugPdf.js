@@ -61,18 +61,20 @@ const RenderDebugPdf = (props) => {
           style={{ position: "absolute", top: 0, left: 0 }}
         >
           <Layer>
-            {props.annotations.map((value) => {
-              return (
-                <Rect
-                  x={value.x}
-                  y={value.y}
-                  width={value.width}
-                  height={value.height}
-                  fill="transparent"
-                  stroke="black"
-                />
-              );
-            })}
+            {props.annotations
+              .filter((value) => value.page === props.pageNumber)
+              .map((value) => {
+                return (
+                  <Rect
+                    x={value.x}
+                    y={value.y}
+                    width={value.width}
+                    height={value.height}
+                    fill="transparent"
+                    stroke="black"
+                  />
+                );
+              })}
           </Layer>
         </Stage>
       </div>
