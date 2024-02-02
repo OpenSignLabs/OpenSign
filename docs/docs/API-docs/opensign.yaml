@@ -350,6 +350,53 @@
         ]
       }
     },
+    "/draftdocument": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "summary": "Draft Document",
+        "description": "The draft Document API allows you to generate document in which you can add signers and widgets from Ui",
+        "operationId": "draftedocument",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/draftdocument_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Document created successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_d"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
     "/createdocument": {
       "post": {
         "tags": [
@@ -803,6 +850,53 @@
         ]
       }
     },
+    "/drafttemplate": {
+      "post": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Draft Template",
+        "description": "The Draft Template API allows you to create customizable draft templates .The API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template.",
+        "operationId": "drafttemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/drafttemplate_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Template created successfully!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_dt"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid API Token!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invalidtoken"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
+      }
+    },
     "/createtemplate": {
       "post": {
         "tags": [
@@ -842,7 +936,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "x-api-token": []
+          }
+        ]
       }
     },
     "/createtemplatewithbinary": {
@@ -1558,6 +1657,37 @@
           }
         }
       },
+      "draftdocument_body": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "base64",
+            "example": "base64 encoded pdf"
+          },
+          "title": {
+            "type": "string",
+            "format": "string",
+            "example": "sample document"
+          },
+          "description": {
+            "type": "string",
+            "format": "string",
+            "example": "sample Description"
+          },
+          "note": {
+            "type": "string",
+            "format": "string",
+            "example": "sample Note"
+          },
+          "signers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/draftdocument_body_signers"
+            }
+          }
+        }
+      },
       "createdocument_body": {
         "type": "object",
         "properties": {
@@ -1589,6 +1719,21 @@
           }
         }
       },
+      "inline_response_200_d": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "format": "string",
+            "example": "hji2zxcv2P"
+          },
+          "url": {
+            "type": "string",
+            "format": "string",
+            "example": "https://url-to-edit-document"
+          }
+        }
+      },
       "inline_response_200_1": {
         "type": "object",
         "properties": {
@@ -1600,7 +1745,7 @@
           "url": {
             "type": "string",
             "format": "string",
-            "example": "https://url-to-edit-document.com"
+            "example": "https://url-to-sign-document.com"
           }
         }
       },
@@ -1765,6 +1910,31 @@
           }
         }
       },
+      "drafttemplate_body": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "base64",
+            "example": "base64 encoded file"
+          },
+          "title": {
+            "type": "string",
+            "format": "string",
+            "example": "sample template"
+          },
+          "note": {
+            "type": "string",
+            "format": "string",
+            "example": "sample note"
+          },
+          "description": {
+            "type": "string",
+            "format": "string",
+            "example": "sample description"
+          }
+        }
+      },
       "createtemplate_body": {
         "type": "object",
         "properties": {
@@ -1796,7 +1966,7 @@
           }
         }
       },
-      "inline_response_200_5": {
+      "inline_response_200_dt": {
         "type": "object",
         "properties": {
           "objectId": {
@@ -1804,7 +1974,16 @@
           },
           "url": {
             "type": "string",
-            "example": "https://exampleurl.com"
+            "example": "https://url-to-edit-template.com"
+          }
+        }
+      },
+      "inline_response_200_5": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "example": "Bh2Hspnmch"
           }
         }
       },
@@ -1950,6 +2129,26 @@
             "type": "string",
             "format": "string",
             "example": "Please setup template properly!"
+          }
+        }
+      },
+      "draftdocument_body_signers": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "string",
+            "example": "joebee@exampl.com"
+          },
+          "name": {
+            "type": "string",
+            "format": "string",
+            "example": "joe bee"
+          },
+          "phone": {
+            "type": "string",
+            "format": "string",
+            "example": "123121312"
           }
         }
       },
