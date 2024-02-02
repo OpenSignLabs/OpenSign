@@ -35,7 +35,6 @@ function RenderPdf({
   pdfUrl,
   numPages,
   pageDetails,
-
   pdfRequest,
   setCurrentSigner,
   signerObjectId,
@@ -56,7 +55,10 @@ function RenderPdf({
   setSignerObjId,
   setShowDropdown,
   setIsInitial,
-  setIsCheckboxRequired
+  setIsCheckboxRequired,
+  setIsValidate,
+  setWidgetType,
+  setValidateAlert
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -363,6 +365,7 @@ function RenderPdf({
                         isDragging={false}
                         pdfDetails={pdfDetails}
                         setIsInitial={setIsInitial}
+                        setValidateAlert={setValidateAlert}
                       />
                     </React.Fragment>
                   )
@@ -773,6 +776,8 @@ function RenderPdf({
                                         setIsCheckboxRequired={
                                           setIsCheckboxRequired
                                         }
+                                        setIsValidate={setIsValidate}
+                                        setWidgetType={setWidgetType}
                                       />
                                     </React.Fragment>
                                   );
@@ -1231,6 +1236,8 @@ function RenderPdf({
                                           setIsCheckboxRequired={
                                             setIsCheckboxRequired
                                           }
+                                          setIsValidate={setIsValidate}
+                                          setWidgetType={setWidgetType}
                                         />
                                       </React.Fragment>
                                     );

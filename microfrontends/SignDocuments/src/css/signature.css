@@ -615,7 +615,6 @@
 .uploadImgLogo {
   font-size: 50px;
 }
-
 .DropdownMenuContent,
 .DropdownMenuSubContent {
   min-width: 130px;
@@ -824,7 +823,22 @@ option {
   display: none;
 }
 
+.validateInputText {
+  width: 60%;
+}
+
+
+
 @media screen and (max-width:766px) {
+
+  .validateInputText {
+    width: 100%;
+  }
+
+  .validateText {
+    display: flex;
+    flex-direction: column;
+  }
 
   .showPages {
     display: none;

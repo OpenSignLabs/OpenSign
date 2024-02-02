@@ -15,7 +15,7 @@ function Placeholder(props) {
   const [saveDateFormat, setSaveDateFormat] = useState("");
   const dateFormatArr = [
     "L",
-    "DD/MM/YYYY",
+    // "DD/MM/YYYY",
     "YYYY-MM-DD",
     "MM.DD.YYYY",
     "MM-DD-YYYY",
@@ -34,7 +34,7 @@ function Placeholder(props) {
       case "LL":
         return "MMMM dd, yyyy";
       case "DD MMM, YYYY":
-        return "DD MMM, YYYY";
+        return "dd MMM, YYYY";
       case "YYYY-MM-DD":
         return "YYYY-MM-dd";
       case "MM-DD-YYYY":
@@ -63,18 +63,20 @@ function Placeholder(props) {
     setDateFormat(updateDate);
   };
   useEffect(() => {
-    const date = new Date();
-    const milliseconds = date.getTime();
-    const newDate = moment(milliseconds).format("MM/DD/YYYY");
-    const dateObj = {
-      date: newDate,
-      format: "MM/dd/YYYY"
-    };
-    setSelectDate(dateObj);
+    if (props.isPlaceholder || props.isSignYourself) {
+      const date = new Date();
+      const milliseconds = date.getTime();
+      const newDate = moment(milliseconds).format("MM/DD/YYYY");
+      const dateObj = {
+        date: newDate,
+        format: "MM/dd/YYYY"
+      };
+      setSelectDate(dateObj);
+    }
   }, []);
   useEffect(() => {
-    if (selectDate) {
-      changeDateFormat();
+    if (props.isPlaceholder || props.isSignYourself) {
+      selectDate && changeDateFormat();
     }
   }, [selectDate]);
   //handle to close drop down menu onclick screen
@@ -163,25 +165,54 @@ function Placeholder(props) {
         <>
           {props.isPlaceholder && (
             <>
-              {props.pos.type === "checkbox" && (
+              {(props.pos.type === "checkbox" ||
+                props.pos.type === "text" ||
+                props.pos.type === "email" ||
+                props.pos.type === "name" ||
+                props.pos.type === "company" ||
+                props.pos.type === "job title") && (
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
-                    props.setIsCheckboxRequired(true);
+                    if (props.pos.type === "checkbox") {
+                      props.setIsCheckboxRequired(true);
+                    } else {
+                      props.setIsValidate(true);
+                    }
+
                     props.setSignKey(props.pos.key);
                     props.setUniqueId(props.data.Id);
                   }}
                   onTouchEnd={(e) => {
                     e.stopPropagation();
-                    props.setIsCheckboxRequired(true);
+                    if (props.pos.type === "checkbox") {
+                      props.setIsCheckboxRequired(true);
+                    } else {
+                      props.setIsValidate(true);
+                    }
+
                     props.setSignKey(props.pos.key);
                     props.setUniqueId(props.data.Id);
                   }}
                   class="fa-solid fa-gear settingIcon"
                   style={{
                     color: "#188ae2",
-                    right: "23px",
-                    top: "-35px"
+                    right:
+                      props.pos.type === "text" ||
+                      props.pos.type === "email" ||
+                      props.pos.type === "name" ||
+                      props.pos.type === "company" ||
+                      props.pos.type === "job title"
+                        ? "49px"
+                        : "17px",
+                    top:
+                      props.pos.type === "text" ||
+                      props.pos.type === "email" ||
+                      props.pos.type === "name" ||
+                      props.pos.type === "company" ||
+                      props.pos.type === "job title"
+                        ? "-20px"
+                        : "-35px"
                   }}
                 ></i>
               )}
@@ -500,6 +531,7 @@ function Placeholder(props) {
             selectDate={selectDate}
             setSaveDateFormat={setSaveDateFormat}
             saveDateFormat={saveDateFormat}
+            setValidateAlert={props.setValidateAlert}
           />
         </div>
       ) : (
@@ -525,6 +557,7 @@ function Placeholder(props) {
             selectDate={selectDate}
             setSaveDateFormat={setSaveDateFormat}
             saveDateFormat={saveDateFormat}
+            setValidateAlert={props.setValidateAlert}
           />
         </>
       )}

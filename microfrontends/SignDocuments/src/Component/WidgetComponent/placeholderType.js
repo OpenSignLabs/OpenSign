@@ -1,4 +1,4 @@
-import React, { useEffect, useState, forwardRef, useMemo } from "react";
+import React, { useEffect, useState, forwardRef, useMemo, useRef } from "react";
 
 import { onChangeInput } from "../../utils/Utils";
 import DatePicker from "react-datepicker";
@@ -6,17 +6,71 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../css/signature.css";
 
 function PlaceholderType(props) {
+  const type = props.pos.type;
   const [selectOption, setSelectOption] = useState("");
   const [startDate, setStartDate] = useState(new Date());
+  const [validatePlaceholder, setValidatePlaceholder] = useState("");
+  const inputRef = useRef(null);
+  const [inputValue, setInputValue] = useState("");
   const memoizedCount = useMemo(
     () => props.saveDateFormat,
     [props.saveDateFormat]
   );
-  const type = props.pos.type;
+
+  const validateExpression = (regexValidation) => {
+    let isValidate = regexValidation.test(inputValue);
+    if (!isValidate) {
+      props.setValidateAlert(true);
+      inputRef.current.focus();
+    }
+  };
+
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
+    const validateType = props.pos?.validation;
+    let regexValidation;
+    if (props.pos?.validation) {
+      switch (validateType) {
+        case "email":
+          regexValidation = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          validateExpression(regexValidation);
+          break;
+        case "number":
+          regexValidation = /^\d+$/;
+          validateExpression(regexValidation);
+          break;
+        case "text":
+          regexValidation = /^[a-zA-Z\s]+$/;
+          validateExpression(regexValidation);
+          break;
+      }
+    }
   };
+
+  function checkRegularExpress(validateType) {
+    switch (validateType) {
+      case "email":
+        setValidatePlaceholder("demo@gmail.com");
+        break;
+      case "number":
+        setValidatePlaceholder("12345");
+        break;
+      case "text":
+        setValidatePlaceholder("enter text");
+    }
+  }
   useEffect(() => {
+    if (props.pos.validation) {
+      checkRegularExpress(props.pos.validation);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (props.selectDate) {
+      const updateDate = new Date(props.selectDate?.date);
+      setStartDate(updateDate);
+    }
+
     onChangeInput(
       props.saveDateFormat,
       props.pos.key,
@@ -25,7 +79,11 @@ function PlaceholderType(props) {
       props.setXyPostion,
       props.data && props.data.signerObjId,
       false,
-      props.selectDate?.format ? props.selectDate.format : "MM/dd/YYYY"
+      props.selectDate?.format
+        ? props.selectDate.format
+        : props.pos?.dateFormat
+          ? props.pos?.dateFormat
+          : "MM/dd/YYYY"
     );
   }, [memoizedCount]);
 
@@ -148,6 +206,8 @@ function PlaceholderType(props) {
       return (
         <input
           className="inputPlaceholder"
+          ref={inputRef}
+          placeholder={validatePlaceholder}
           type="text"
           tabIndex="0"
           disabled={
@@ -156,7 +216,8 @@ function PlaceholderType(props) {
               : props.isPlaceholder
           }
           onBlur={handleInputBlur}
-          onChange={(e) =>
+          onChange={(e) => {
+            setInputValue(e.target.value);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -165,8 +226,8 @@ function PlaceholderType(props) {
               props.setXyPostion,
               props.data && props.data.signerObjId,
               false
-            )
-          }
+            );
+          }}
         />
       );
     case "dropdown":
@@ -233,7 +294,8 @@ function PlaceholderType(props) {
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <input
           tabIndex="0"
-          placeholder="name"
+          ref={inputRef}
+          placeholder={"name"}
           className="inputPlaceholder"
           type="text"
           value={props.pos.widgetValue}
@@ -267,7 +329,8 @@ function PlaceholderType(props) {
         <input
           className="inputPlaceholder"
           type="text"
-          placeholder="company"
+          ref={inputRef}
+          placeholder={"company"}
           value={props.pos.widgetValue && props.pos.widgetValue}
           onBlur={handleInputBlur}
           onChange={(e) =>
@@ -299,7 +362,8 @@ function PlaceholderType(props) {
         <input
           className="inputPlaceholder"
           type="text"
-          placeholder="job title"
+          ref={inputRef}
+          placeholder={"job title"}
           value={props.pos.widgetValue && props.pos.widgetValue}
           onBlur={handleInputBlur}
           onChange={(e) =>
@@ -390,10 +454,10 @@ function PlaceholderType(props) {
             popperPlacement="top-end"
             customInput={<ExampleCustomInput />}
             dateFormat={
-              props.pos?.dateFormat
-                ? props.pos?.dateFormat
-                : props.selectDate
-                  ? props.selectDate?.format
+              props.selectDate
+                ? props.selectDate?.format
+                : props.pos?.dateFormat
+                  ? props.pos?.dateFormat
                   : "dd MMMM, YYYY"
             }
           />
@@ -432,7 +496,8 @@ function PlaceholderType(props) {
         <input
           className="inputPlaceholder"
           type="text"
-          placeholder="email"
+          ref={inputRef}
+          placeholder={"email"}
           value={props.pos.widgetValue && props.pos.widgetValue}
           onBlur={handleInputBlur}
           onChange={(e) =>

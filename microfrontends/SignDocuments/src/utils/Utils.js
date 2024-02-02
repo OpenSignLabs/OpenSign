@@ -341,7 +341,7 @@ export const defaultWidthHeight = (type) => {
       return obj;
     case "name":
       obj = {
-        width: 50,
+        width: 60,
         height: 25
       };
       return obj;

@@ -88,6 +88,10 @@ function PlaceHolderSign() {
   const [isCheckboxRequired, setIsCheckboxRequired] = useState(false);
   const [selectRequiredType, setSelectRequiredType] = useState("Optional");
   const [isdraggingEnable, setIsDraggingEnable] = useState(false);
+  const [isValidate, setIsValidate] = useState(false);
+  const [textValidate, setTextValidate] = useState("");
+  const [validateError, setValidateError] = useState("");
+  const [widgetType, setWidgetType] = useState("");
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -983,6 +987,7 @@ function PlaceHolderSign() {
     navigate(`${hostUrl}recipientSignPdf/${documentId}/${currentId}`);
   };
 
+  console.log("signerpos", signerPos);
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
   };
@@ -1027,9 +1032,10 @@ function PlaceHolderSign() {
   const closePopup = () => {
     setIsAddUser({});
   };
-  //function for add checkbox widget status in signerPos array
 
-  const handleApplycheckbox = () => {
+  //function for base on condition to add checkbox widget status and input text validation in signerPos array
+  const handleApplyWidgetsStatus = (textValidate) => {
+    let regularExpression = textValidate;
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1044,16 +1050,23 @@ function PlaceHolderSign() {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position, ind) => {
           if (position.key === signKey) {
-            if (selectRequiredType === "Read only") {
-              return {
-                ...position,
-                widgetStatus: selectRequiredType,
-                widgetValue: true
-              };
+            if (widgetType === "checkbox") {
+              if (selectRequiredType === "Read only") {
+                return {
+                  ...position,
+                  widgetStatus: selectRequiredType,
+                  widgetValue: true
+                };
+              } else {
+                return {
+                  ...position,
+                  widgetStatus: selectRequiredType
+                };
+              }
             } else {
               return {
                 ...position,
-                widgetStatus: selectRequiredType
+                validation: regularExpression
               };
             }
           }
@@ -1080,6 +1093,21 @@ function PlaceHolderSign() {
     }
   };
 
+  const handleValidateInput = (e) => {
+    if (
+      textValidate === "email" ||
+      textValidate === "number" ||
+      textValidate === "text"
+    ) {
+      handleApplyWidgetsStatus(textValidate);
+      setIsValidate(false);
+    } else {
+      setValidateError("please enter accurate validation.");
+      setTimeout(() => {
+        setValidateError("");
+      }, 1500);
+    }
+  };
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1316,7 +1344,63 @@ function PlaceHolderSign() {
                   ></div>
                   <button
                     onClick={() => {
-                      handleApplycheckbox();
+                      handleApplyWidgetsStatus();
+                    }}
+                    style={{
+                      background: themeColor()
+                    }}
+                    type="button"
+                    // disabled={!selectCopyType}
+                    className="finishBtn"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </ModalUi>
+              <ModalUi
+                //isValidate
+                isOpen={isValidate}
+                handleClose={() => {
+                  setIsValidate(false);
+                }}
+                title={"Validation"}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
+                  <div className="validateText">
+                    <label
+                      style={{
+                        marginRight: "5px",
+                        fontSize: "14px",
+                        fontWeight: "500"
+                      }}
+                    >
+                      Regular expression:
+                    </label>
+
+                    <input
+                      placeholder="email, number, text"
+                      className="drodown-input validateInputText"
+                      onChange={(e) => setTextValidate(e.target.value)}
+                    />
+                    {validateError && (
+                      <p style={{ color: "red", fontSize: "12px" }}>
+                        {validateError}
+                      </p>
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
+                  <button
+                    onClick={() => {
+                      handleValidateInput();
                     }}
                     style={{
                       background: themeColor()
@@ -1391,6 +1475,8 @@ function PlaceHolderSign() {
                     isDragging={isDragging}
                     setShowDropdown={setShowDropdown}
                     setIsCheckboxRequired={setIsCheckboxRequired}
+                    setIsValidate={setIsValidate}
+                    setWidgetType={setWidgetType}
                   />
                 )}
               </div>
@@ -1509,6 +1595,7 @@ function PlaceHolderSign() {
             </button>
           </div>
         </ModalUi>
+
         <LinkUserModal
           handleAddUser={handleAddUser}
           isAddUser={isAddUser}
