@@ -12,7 +12,6 @@ export default async function createTemplatewithCoordinate(request, response) {
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
-  const baseUrl = new URL(process.env.SERVER_URL);
 
   try {
     const reqToken = request.headers['x-api-token'];
@@ -43,8 +42,6 @@ export default async function createTemplatewithCoordinate(request, response) {
         const contractsUser = new Parse.Query('contracts_Users');
         contractsUser.equalTo('UserId', userPtr);
         const extUser = await contractsUser.first({ useMasterKey: true });
-        const parseExtUser = JSON.parse(JSON.stringify(extUser));
-
         const extUserPtr = {
           __type: 'Pointer',
           className: 'contracts_Users',
@@ -168,7 +165,7 @@ export default async function createTemplatewithCoordinate(request, response) {
 
         return response.json({
           objectId: res.id,
-          url: protocol + '/load/signmicroapp/template/' + res.id,
+          message: 'Template created successfully!',
         });
       } else {
         return response.status(400).json({ error: 'Please provide signers!' });
