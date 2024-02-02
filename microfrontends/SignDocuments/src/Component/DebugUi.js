@@ -148,7 +148,9 @@ const DebugUi = () => {
   const handleMouseDown = (event) => {
     if (newAnnotation.length === 0) {
       const { x, y } = event.target.getStage().getPointerPosition();
-      setNewAnnotation([{ x, y, width: 0, height: 0, key: "0" }]);
+      setNewAnnotation([
+        { x, y, width: 0, height: 0, key: "0", page: pageNumber }
+      ]);
     }
   };
 
@@ -158,7 +160,11 @@ const DebugUi = () => {
       const sy = newAnnotation[0].y;
       const { x, y } = event.target.getStage().getPointerPosition();
       const result = processDimensions(sx, sy, x - sx, y - sy);
-      const annotationToAdd = { ...result, key: annotations.length + 1 };
+      const annotationToAdd = {
+        ...result,
+        key: annotations.length + 1,
+        page: pageNumber
+      };
       annotations.push(annotationToAdd);
       setNewAnnotation([]);
       setAnnotations(annotations);
@@ -181,6 +187,7 @@ const DebugUi = () => {
           y: sy,
           width: x - sx,
           height: y - sy,
+          page: pageNumber,
           key: "0"
         }
       ]);
@@ -349,38 +356,40 @@ const DebugUi = () => {
                   <code
                     style={{ fontSize: 12, color: "black", cursor: "pointer" }}
                   >
-                    {` ["x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}]`}
+                    {` ["page":${coord?.page}, "x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}]`}
                   </code>
-                  <span
-                    style={{
-                      borderRadius: 4,
-                      padding: "3px 5px",
-                      border: "1px solid gray",
-                      fontSize: 12,
-                      margin: 2,
-                      cursor: "pointer"
-                    }}
-                    onClick={() =>
-                      copytoclipboard(
-                        `["x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}]`
-                      )
-                    }
-                  >
-                    <i className="fa-solid fa-copy"></i>
-                  </span>
-                  <span
-                    style={{
-                      borderRadius: 4,
-                      padding: "3px 5px",
-                      border: "1px solid gray",
-                      fontSize: 12,
-                      margin: 2,
-                      cursor: "pointer"
-                    }}
-                    onClick={() => handleDelete(coord.key)}
-                  >
-                    <i className="fa-solid fa-trash-can"></i>
-                  </span>
+                  <div>
+                    <span
+                      style={{
+                        borderRadius: 4,
+                        padding: "3px 5px",
+                        border: "1px solid gray",
+                        fontSize: 12,
+                        margin: 2,
+                        cursor: "pointer"
+                      }}
+                      onClick={() =>
+                        copytoclipboard(
+                          `"page":${coord?.page}, "x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}`
+                        )
+                      }
+                    >
+                      <i className="fa-solid fa-copy"></i>
+                    </span>
+                    <span
+                      style={{
+                        borderRadius: 4,
+                        padding: "3px 5px",
+                        border: "1px solid gray",
+                        fontSize: 12,
+                        margin: 2,
+                        cursor: "pointer"
+                      }}
+                      onClick={() => handleDelete(coord.key)}
+                    >
+                      <i className="fa-solid fa-trash-can"></i>
+                    </span>
+                  </div>
                 </li>
               ))}
             </ul>
