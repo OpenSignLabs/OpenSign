@@ -84,6 +84,7 @@ function PdfRequestFiles() {
   const [isExpired, setIsExpired] = useState(false);
   const [alreadySign, setAlreadySign] = useState(false);
   const [containerWH, setContainerWH] = useState({});
+  const [validateAlert, setValidateAlert] = useState(false);
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -482,7 +483,6 @@ function PdfRequestFiles() {
     });
   };
 
-  console.log("signerpos", signerPos);
   //function for save button to save signature or image url
   const saveSign = (isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
@@ -891,6 +891,7 @@ function PdfRequestFiles() {
                   setSignerPos={setSignerPos}
                   containerWH={containerWH}
                   setIsInitial={setIsInitial}
+                  setValidateAlert={setValidateAlert}
                 />
               )}
             </div>
@@ -1048,6 +1049,36 @@ function PdfRequestFiles() {
           </div>
         </div>
       )}
+
+      <ModalUi
+        headerColor={"#dc3545"}
+        isOpen={validateAlert}
+        title={"Validation alert"}
+        handleClose={() => {
+          setValidateAlert(false);
+        }}
+      >
+        <div style={{ height: "100%", padding: 20 }}>
+          <p>Please input a properly validated input value.</p>
+
+          <div
+            style={{
+              height: "1px",
+              backgroundColor: "#9f9f9f",
+              width: "100%",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          ></div>
+          <button
+            onClick={() => setValidateAlert(false)}
+            type="button"
+            className="finishBtn cancelBtn"
+          >
+            Close
+          </button>
+        </div>
+      </ModalUi>
     </DndProvider>
   );
 }
