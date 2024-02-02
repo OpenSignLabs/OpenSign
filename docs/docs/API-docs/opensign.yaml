@@ -1984,6 +1984,10 @@
           "objectId": {
             "type": "string",
             "example": "Bh2Hspnmch"
+          },
+          "message": {
+            "type": "string",
+            "example": "Template created successfully!"
           }
         }
       },
@@ -2155,15 +2159,15 @@
       "createdocument_body_widgets": {
         "type": "object",
         "properties": {
-          "page": {
-            "type": "number",
-            "format": "number",
-            "example": 1
-          },
           "type": {
             "type": "string",
             "format": "string",
             "example": "signature"
+          },
+          "page": {
+            "type": "number",
+            "format": "number",
+            "example": 1
           },
           "x": {
             "type": "number",
@@ -2221,15 +2225,15 @@
       "createtemplate_body_widgets": {
         "type": "object",
         "properties": {
-          "page": {
-            "type": "number",
-            "format": "number",
-            "example": 1
-          },
           "type": {
             "type": "string",
             "format": "string",
             "example": "stamp"
+          },
+          "page": {
+            "type": "number",
+            "format": "number",
+            "example": 1
           },
           "x": {
             "type": "number",
