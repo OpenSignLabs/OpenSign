@@ -9,6 +9,7 @@ import Alert from "../primitives/Alert";
 import SelectFolder from "../components/fields/SelectFolder";
 import SignersInput from "../components/fields/SignersInput";
 import Title from "../components/Title";
+import PageNotFound from "./PageNotFound";
 
 function Form() {
   const { id } = useParams();
@@ -16,8 +17,12 @@ function Form() {
   if (id === "lM0xRnM3iE") {
     return <AddUser />;
   } else {
-    const config = formJson(id) || {};
-    return <Forms {...config} />;
+    const config = formJson[id];
+    if (config) {
+      return <Forms {...config} />;
+    } else {
+      return <PageNotFound prefix={"Form"} />;
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import axios from "axios";
 import reportJson from "../json/ReportJson";
 import { useParams } from "react-router-dom";
 import Title from "../components/Title";
+import PageNotFound from "./PageNotFound";
 
 const Report = () => {
   const { id } = useParams();
@@ -15,7 +16,7 @@ const Report = () => {
   const [heading, setHeading] = useState([]);
   const [isNextRecord, setIsNextRecord] = useState(false);
   const [isMoreDocs, setIsMoreDocs] = useState(true);
-  const [form, setForm]= useState("")
+  const [form, setForm] = useState("");
   const abortController = new AbortController();
   const docPerPage = 10;
 
@@ -51,7 +52,7 @@ const Report = () => {
       setActions(json.actions);
       setHeading(json.heading);
       setReportName(json.reportName);
-      setForm(json.form)
+      setForm(json.form);
       Parse.serverURL = localStorage.getItem("BaseUrl12");
       Parse.initialize(localStorage.getItem("AppID12"));
       const currentUser = Parse.User.current().id;
@@ -159,13 +160,7 @@ const Report = () => {
               form={form}
             />
           ) : (
-            <div className="flex items-center justify-center h-screen w-full bg-white rounded">
-              <div className="text-center">
-                <p className="text-[30px] lg:text-[50px] text-black">
-                  Report Not Found
-                </p>
-              </div>
-            </div>
+            <PageNotFound prefix={"Report"} />
           )}
         </>
       )}
