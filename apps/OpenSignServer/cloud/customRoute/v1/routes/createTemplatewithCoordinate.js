@@ -124,7 +124,7 @@ export default async function createTemplatewithCoordinate(request, response) {
                 xPosition: widget.x,
                 yPosition: widget.y,
                 isStamp: widget.type === 'stamp',
-                key: Math.floor(Math.random() * 10000),
+                key: randomId(),
                 isDrag: false,
                 firstXPos: widget.x,
                 firstYPos: widget.y,
@@ -152,7 +152,7 @@ export default async function createTemplatewithCoordinate(request, response) {
               signerObjId: signer?.contactPtr?.objectId,
               signerPtr: signer?.contactPtr,
               Role: signer.role,
-              Id: 3000 + index * 1000,
+              Id: randomId(),
               blockColor: color[signer?.index],
               placeHolder,
             };
