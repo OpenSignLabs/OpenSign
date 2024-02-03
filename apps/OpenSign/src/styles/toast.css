@@ -1,209 +1,64 @@
 #snackbar {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 99999;
-    left: 50%;
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 99999;
+  left: 50%;
+  top: 30px;
+  font-size: 14px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
     top: 30px;
-    font-size: 14px;
+    opacity: 1;
   }
-  
-  #_editsnackbar {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 99999;
-    left: 50%;
+}
+
+@keyframes fadein {
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
     top: 30px;
-    font-size: 14px;
+    opacity: 1;
   }
-  
-  #_editsnackbar.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
-  }
-  
-  #UpdateColumnValue.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
-  }
-  #DeleteUser.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
-  }
-  #DeleteUser {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 99999;
-    left: 50%;
+}
+
+@-webkit-keyframes fadeout {
+  from {
     top: 30px;
-    font-size: 14px;
+    opacity: 1;
   }
-  
-  #deleteObj.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
+  to {
+    top: 0;
+    opacity: 0;
   }
-  #deleteObj {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 99999;
-    left: 50%;
+}
+
+@keyframes fadeout {
+  from {
     top: 30px;
-    font-size: 14px;
+    opacity: 1;
   }
-  
-  #UpdateColumnValue {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 99999;
-    left: 50%;
-    top: 30px;
-    font-size: 14px;
+  to {
+    top: 0;
+    opacity: 0;
   }
-  
-  #snackbar.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
-  }
-  
-  #snackbar1 {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 99999;
-    left: 50%;
-    top: 30px;
-    font-size: 14px;
-  }
-  
-  #snackbar1.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
-  }
-  
-  #snackbar10 {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 99999;
-    left: 50%;
-    top: 30px;
-    font-size: 14px;
-  }
-  
-  #snackbar10.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
-  }
-  
-  #snackbarCol {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 99999;
-    left: 50%;
-    top: 30px;
-    font-size: 14px;
-  }
-  
-  #snackbarCol.show {
-    visibility: visible;
-    -webkit-animation: fadein 0.5s;
-  }
-  
-  @-webkit-keyframes fadein {
-    from {
-      top: 0;
-      opacity: 0;
-    }
-    to {
-      top: 30px;
-      opacity: 1;
-    }
-  }
-  
-  @keyframes fadein {
-    from {
-      top: 0;
-      opacity: 0;
-    }
-    to {
-      top: 30px;
-      opacity: 1;
-    }
-  }
-  
-  @-webkit-keyframes fadeout {
-    from {
-      top: 30px;
-      opacity: 1;
-    }
-    to {
-      top: 0;
-      opacity: 0;
-    }
-  }
-  
-  @keyframes fadeout {
-    from {
-      top: 30px;
-      opacity: 1;
-    }
-    to {
-      top: 0;
-      opacity: 0;
-    }
-  }
-  
+}

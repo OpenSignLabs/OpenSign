@@ -214,87 +214,8 @@ export const fetchRoleEnum = (name) => async (dispatch) => {
   dispatch({ type: "FETCH_ROLE", payload: response });
 };
 
-export const setEnableCart = (val) => async (dispatch) => {
-  dispatch({
-    type: "ENABLE_CART",
-    payload: val
-  });
-};
-
-export const setCartUpdateData = (val) => async (dispatch) => {
-  dispatch({
-    type: "UPDATE_CART",
-    payload: val
-  });
-};
-
-export const addItemsToCart = (val) => async (dispatch) => {
-  dispatch({
-    type: "ADD_CART",
-    payload: val
-  });
-};
-
-export const clearCartData = () => async (dispatch) => {
-  dispatch({
-    type: "CLEAR_CART",
-    payload: []
-  });
-};
-
-export const SaveMultipleCart = (val) => async (dispatch) => {
-  dispatch({
-    type: "MULTI_CART",
-    payload: val
-  });
-};
-
-export const removeFromCart = (val) => async (dispatch) => {
-  dispatch({
-    type: "REMOVE_CART",
-    payload: val
-  });
-};
-
-export const onChangeLevel2Dropdown = (id, name) => async (dispatch) => {
-  localStorage.setItem(`_dd${name}`, id);
-  let _data = { [name]: `${id}` };
-  dispatch({ type: "Level2_Dropdown", payload: _data });
-};
-
-export const onChangeLevel3Dropdown = (id, name) => async (dispatch) => {
-  localStorage.setItem(`_dd${name}`, id);
-  let _data = { [name]: `${id}` };
-  dispatch({ type: "Level3_Dropdown", payload: _data });
-};
-
-export const removeState = () => async (dispatch) => {
-  dispatch({ type: "REMOVE_STATE", payload: {} });
-};
-export const removeLevel2State = () => async (dispatch) => {
-  dispatch({ type: "removeLevel2", payload: {} });
-};
-
-export const removeLevel3State = () => async (dispatch) => {
-  dispatch({ type: "removeLevel3", payload: {} });
-};
-
 export const showTenantName = (name) => async (dispatch) => {
   dispatch({ type: "SHOW_TENANT", payload: name || null });
-};
-
-export const saveDependantDDValue = (id, value) => async (dispatch) => {
-  let _data = { [`${id}_dd`]: value };
-  dispatch({ type: "SAVE_DEPENDANTDD", payload: _data });
-};
-
-export const removeDependantDDValue = (id, value) => async (dispatch) => {
-  let _data = { [`${id}_dd`]: value };
-  dispatch({ type: "REMOVE_DEPENDANTDD", payload: _data });
-};
-
-export const remove_AlldependantDD = () => async (dispatch) => {
-  dispatch({ type: "REMOVE_ALLDEPENDANTDD", payload: {} });
 };
 
 export const save_tourSteps = (steps) => async (dispatch) => {
