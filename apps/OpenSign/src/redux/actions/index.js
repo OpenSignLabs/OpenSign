@@ -124,8 +124,7 @@ export const login = (username, password) => async (dispatch) => {
               const currentUser = Parse.User.current();
               await Parse.Cloud.run("getUserDetails", {
                 email: currentUser.get("email")
-              })
-              .then(
+              }).then(
                 (results) => {
                   let userinfo = results.toJSON();
                   if (userinfo.TenantId) {
@@ -255,12 +254,6 @@ export const removeFromCart = (val) => async (dispatch) => {
     type: "REMOVE_CART",
     payload: val
   });
-};
-
-export const onChangeLevel1Dropdown = (id, name) => async (dispatch) => {
-  localStorage.setItem(`_dd${name}`, id);
-  let _data = { [name]: `${id}` };
-  dispatch({ type: "Level1_Dropdown", payload: _data });
 };
 
 export const onChangeLevel2Dropdown = (id, name) => async (dispatch) => {

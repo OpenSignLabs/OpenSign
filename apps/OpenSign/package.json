@@ -4,9 +4,6 @@
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.7",
-    "@rjsf/core": "^5.13.0",
-    "@rjsf/utils": "^5.13.0",
-    "@rjsf/validator-ajv8": "^5.13.0",
     "axios": "^1.5.1",
     "daisyui": "^3.9.2",
     "file-saver": "^2.0.5",
@@ -34,7 +31,6 @@
     "reactour": "^1.19.2",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
-    "rjsf-conditionals": "github:prafullnavkar-nxg/rjsf-conditionals",
     "serve": "^14.2.1",
     "styled-components": "^4.4.1",
     "web-vitals": "^2.1.4"
