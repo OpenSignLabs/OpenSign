@@ -1,249 +1,34 @@
-import Parse from "parse";
+import { documentCls, templateCls } from "../constant/const";
 export const formJson = (id) => {
   let formData;
   //json form for signYourself
   if (id === "sHAnZphf69") {
     formData = {
-      jsonSchema: {
-        title: "Sign Yourself",
-        description: "",
-        type: "object",
-        required: ["URL", "Name"],
-        properties: {
-          URL: {
-            type: "string",
-            title: "Select Document",
-            filetypes: [],
-            maxfilesizeKB: "10000",
-            uploadtype: "regular",
-            helpbody: "",
-            helplink: ""
-          },
-          Name: {
-            type: "string",
-            title: "Title",
-            maxLength: 50
-          },
-          Description: {
-            type: "string",
-            title: "Description",
-            maxLength: 500
-          },
-          Folder: {
-            title: "Folder",
-            parent: null,
-            data: {
-              ClassName: "contracts_Document",
-              FolderNameField: "Name",
-              FolderTypeField: "Type",
-              FolderTypeValue: "Folder",
-              FolderDescription: "Description",
-              ParentFolderField: "Folder",
-              FormId: "YjIB7W7Xs6",
-              Query: 'where={"Folder":{"$exists":false},"Type":"Folder"}'
-            }
-          },
-          ExtUserPtr: {
-            data: {
-              valueKey: "objectId",
-              isPointer: true
-            }
-          }
-        }
-      },
-      uiSchema: {
-        URL: {
-          "ui:field": "FileUpload"
-        },
-        Description: {
-          "ui:widget": "textarea",
-          "ui:options": {
-            rows: 2
-          }
-        },
-        Note: {
-          "ui:widget": "textarea",
-          "ui:options": {
-            rows: 2
-          }
-        },
-        Folder: {
-          "ui:field": "FolderComponent"
-        },
-        ExtUserPtr: {
-          "ui:field": "HiddenField"
-        }
-      },
-      userSchema: {},
-      rules: null,
-      noValidate: false,
-      liveValidate: false,
-      isRegisterForm: false,
-      help: { htmlbody: "" },
-      description: "",
-      class: "contracts_Document",
-      buttons: {
-        add: {
-          resetText: "Reset",
-          submitText: "Submit"
-        },
-        edit: { submitText: "Update", cancelText: "Cancel" }
-      },
-      formACL: {
-        "#currentUser#": { read: true, write: true },
-        "*": { read: true, write: true }
-      },
-      redirect_id:
-        "remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/signaturePdf",
-      success_message: "Success!",
-      success_redirect: "Microapp",
-      validFunction:
-        "ZnVuY3Rpb24gdmFsaWRhdGUoZm9ybURhdGEsIGVycm9ycykgeyBpZiAoZm9ybURhdGEucGFzczEgIT09IGZvcm1EYXRhLnBhc3MyKSB7IGVycm9ycy5wYXNzMi5hZGRFcnJvcignUGFzc3dvcmRzIGRvbid0IG1hdGNoJyk7IH0gcmV0dXJuIGVycm9yczsgfQ=="
+      title: "Sign Yourself",
+      redirectRoute: "signaturePdf",
+      msgVar: "Document",
+      Cls: documentCls
     };
-
     return formData;
   }
   //json form for request signature
   else if (id === "8mZzFxbG1z") {
-    const user = Parse.User.current();
-    const userPtr = JSON.stringify({
-      __type: "Pointer",
-      className: "_User",
-      objectId: user.id
-    });
     formData = {
-      jsonSchema: {
-        title: "Request signatures",
-        description: "",
-        type: "object",
-        required: ["URL", "Name", "Note", "TimeToCompleteDays", "Signers"],
-        properties: {
-          URL: {
-            type: "string",
-            title: "Select Document",
-            filetypes: [],
-            maxfilesizeKB: "5000",
-            uploadtype: "regular",
-            helpbody: "",
-            helplink: ""
-          },
-          Name: {
-            type: "string",
-            title: "Title",
-            maxLength: 100
-          },
-          Description: {
-            type: "string",
-            title: "Description",
-            maxLength: 500
-          },
-          Signers: {
-            type: "array",
-            title: "Signers",
-            isSortable: false,
-            selectAll: false,
-            selectedData: null,
-            data: {
-              class: "contracts_Contactbook",
-              displayKey: "Name",
-              valueKey: "objectId",
-              query: `where={"CreatedBy":${userPtr},"IsDeleted":{"$ne":true}}&keys=Name`,
-              isPointer: true,
-              helpbody: "",
-              helplink: "",
-              quickAddFormId: "qUGywSWd8e"
-            }
-          },
-          Note: {
-            type: "string",
-            title: "Note",
-            default: "Please review and sign this document",
-            maxLength: 500
-          },
-          Folder: {
-            title: "Folder",
-            data: {
-              ClassName: "contracts_Document",
-              FolderNameField: "Name",
-              FolderTypeField: "Type",
-              FolderTypeValue: "Folder",
-              FolderDescription: "Description",
-              ParentFolderField: "Folder",
-              FormId: "YjIB7W7Xs6",
-              Query: 'where={"Folder":{"$exists":false},"Type":"Folder"}'
-            }
-          },
-          TimeToCompleteDays: {
-            type: "number",
-            title: "Time To Complete (Days)",
-            default: 15,
-            maxLength: 5000
-          },
-          ExtUserPtr: {
-            data: {
-              valueKey: "objectId",
-              isPointer: true
-            }
-          }
-        }
-      },
-      uiSchema: {
-        URL: {
-          "ui:field": "FileUpload"
-        },
-        Description: {
-          "ui:widget": "textarea",
-          "ui:options": {
-            rows: 2
-          }
-        },
-        Note: {
-          "ui:widget": "textarea",
-          "ui:options": {
-            rows: 2
-          }
-        },
-        Signers: {
-          "ui:field": "MultiSelectField"
-        },
-        Folder: {
-          "ui:field": "FolderComponent"
-        },
-        TimeToCompleteDays: {
-          "ui:placeholder": "No. of days",
-          "ui:widget": "updown"
-        },
-        ExtUserPtr: {
-          "ui:field": "HiddenField"
-        }
-      },
-      userSchema: {},
-      rules: null,
-      noValidate: false,
-      liveValidate: false,
-      isRegisterForm: false,
-      help: { htmlbody: "" },
-      description: "",
-      class: "contracts_Document",
-      buttons: {
-        add: {
-          resetText: "Reset",
-          submitText: "Submit"
-        },
-        edit: { submitText: "Update", cancelText: "Cancel" }
-      },
-      formACL: {
-        "#currentUser#": { read: true, write: true },
-        "*": { read: true, write: true }
-      },
-      redirect_id:
-        "remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/placeHolderSign",
-      success_message: "Success!",
-      success_redirect: "Microapp",
-      validFunction:
-        "ZnVuY3Rpb24gdmFsaWRhdGUoZm9ybURhdGEsIGVycm9ycykgeyBpZiAoZm9ybURhdGEucGFzczEgIT09IGZvcm1EYXRhLnBhc3MyKSB7IGVycm9ycy5wYXNzMi5hZGRFcnJvcignUGFzc3dvcmRzIGRvbid0IG1hdGNoJyk7IH0gcmV0dXJuIGVycm9yczsgfQ=="
+      title: "Request Signature",
+      msgVar: "Document",
+      redirectRoute: "placeHolderSign",
+      Cls: documentCls,
+      signers: true
     };
-
+    return formData;
+  } //json form for template
+  else if (id === "template") {
+    formData = {
+      title: "New Template",
+      redirectRoute: "template",
+      msgVar: "Template",
+      Cls: templateCls
+    };
     return formData;
   }
   //json form for create new folder

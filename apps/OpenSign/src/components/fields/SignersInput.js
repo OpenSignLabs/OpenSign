@@ -113,6 +113,7 @@ const SignersInput = (props) => {
             value={selected}
             onChange={onChange}
             closeMenuOnSelect={false}
+            required={props.required}
           />
         </div>
         <div
