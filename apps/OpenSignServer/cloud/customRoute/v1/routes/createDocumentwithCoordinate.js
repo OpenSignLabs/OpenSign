@@ -233,19 +233,14 @@ export default async function createDocumentwithCoordinate(request, response) {
         }
 
         if (sendMail.data.result.status === 'success') {
-          const user = contact.find(x => x.email === parseExtUser.Email);
-          if (user && user.email) {
-            return response.json({
-              objectId: res.id,
-              url: `${baseUrl.origin}/loadmf/signmicroapp/login/${res.id}/${user.email}/${user.contactPtr.objectId}/${serverParams}`,
-              message: 'Document sent successfully!',
-            });
-          } else {
-            return response.json({
-              objectId: res.id,
-              message: 'Document sent successfully!',
-            });
-          }
+          return response.json({
+            objectId: res.id,
+            signurl: contact.map(x => ({
+              email: x.email,
+              url: `${baseUrl.origin}/loadmf/signmicroapp/login/${res.id}/${x.email}/${x.contactPtr.objectId}/${serverParams}`,
+            })),
+            message: 'Document sent successfully!',
+          });
         }
       } else {
         return response.status(400).json({ error: 'Please provide signers!' });
