@@ -50,10 +50,10 @@ app.delete('/contact/:contact_id', deleteContact);
 app.get('/contactlist', getContactList);
 
 // create Document
-app.post('/createdocumentwithbinary', upload.array('file', 1), createDocument);
+app.post('/createdocumentwithbinary', upload.array('file', 1), createDocumentwithCoordinate);
 
 // create Document with co-ordinate
-app.post('/createdocument', upload.array('file', 1), createDocumentwithCoordinate);
+app.post('/createdocument', createDocumentwithCoordinate);
 
 // create Document with base64 without placeholder
 app.post('/draftdocument', createDocument);
@@ -74,13 +74,13 @@ app.delete('/document/:document_id', deleteDocument);
 app.get('/documentlist/:doctype', getDocumentList);
 
 // create Template with co-ordinate
-app.post('/createtemplate', upload.array('file', 1), createTemplatewithCoordinate);
+app.post('/createtemplate', createTemplatewithCoordinate);
 
 // create Template
 app.post('/drafttemplate', createTemplate);
 
 // create Template with binary
-app.post('/createtemplatewithbinary', upload.array('file', 1), createTemplate);
+app.post('/createtemplatewithbinary', upload.array('file', 1), createTemplatewithCoordinate);
 
 // get template on the basis of id
 app.get('/template/:template_id', getTemplate);
