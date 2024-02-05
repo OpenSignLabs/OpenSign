@@ -113,39 +113,50 @@ export default async function createTemplatewithCoordinate(request, response) {
               updatedSigners?.map(x => x.contactPtr)
             );
           }
-          let updatePlaceholders = contact.map(x => {
+          let updatePlaceholders = contact.map((signer, index) => {
+            const placeHolder = [];
+
+            for (const widget of signer.widgets) {
+              const pageNumber = widget.page;
+              const page = placeHolder.find(page => page.pageNumber === pageNumber);
+
+              const widgetData = {
+                xPosition: widget.x,
+                yPosition: widget.y,
+                isStamp: widget.type === 'stamp',
+                key: randomId(),
+                isDrag: false,
+                firstXPos: widget.x,
+                firstYPos: widget.y,
+                yBottom: 0,
+                scale: 1,
+                isMobile: false,
+                zIndex: 1,
+                type: widget.type,
+                widgetValue: '',
+                Width: widget.w,
+                Height: widget.h,
+              };
+
+              if (page) {
+                page.pos.push(widgetData);
+              } else {
+                placeHolder.push({
+                  pageNumber,
+                  pos: [widgetData],
+                });
+              }
+            }
+
             return {
-              signerObjId: x?.contactPtr?.objectId || '',
-              signerPtr: x?.contactPtr || {},
-              Role: x.role,
+              signerObjId: signer?.contactPtr?.objectId,
+              signerPtr: signer?.contactPtr,
+              Role: signer.role,
               Id: randomId(),
-              blockColor: color[x?.index],
-              placeHolder: x.widgets.map((widget, i) => ({
-                pageNumber: widget.page,
-                pos: [
-                  {
-                    xPosition: widget.x,
-                    yPosition: widget.y,
-                    isStamp: widget.type === 'stamp' || widget.type === 'image' ? true : false,
-                    key: randomId(),
-                    isDrag: false,
-                    firstXPos: widget.x,
-                    firstYPos: widget.y,
-                    yBottom: 0,
-                    scale: 1,
-                    isMobile: false,
-                    zIndex: i + 1,
-                    type: widget.type,
-                    widgetValue: '',
-                    Width: widget.w,
-                    Height: widget.h,
-                  },
-                ],
-              })),
+              blockColor: color[signer?.index],
+              placeHolder,
             };
           });
-          //   console.log('updatePLacholders', updatePlaceholders);
-
           object.set('Placeholders', updatePlaceholders);
         }
         if (folderId) {
