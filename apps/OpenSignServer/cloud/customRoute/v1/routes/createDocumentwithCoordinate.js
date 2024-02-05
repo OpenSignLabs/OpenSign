@@ -108,35 +108,48 @@ export default async function createDocumentwithCoordinate(request, response) {
             'Signers',
             contact?.map(x => x.contactPtr)
           );
-          let updatePlaceholders = contact.map(x => {
+          let updatePlaceholders = contact.map((signer, index) => {
+            const placeHolder = [];
+
+            for (const widget of signer.widgets) {
+              const pageNumber = widget.page;
+              const page = placeHolder.find(page => page.pageNumber === pageNumber);
+
+              const widgetData = {
+                xPosition: widget.x,
+                yPosition: widget.y,
+                isStamp: widget.type === 'stamp',
+                key: randomId(),
+                isDrag: false,
+                firstXPos: widget.x,
+                firstYPos: widget.y,
+                yBottom: 0,
+                scale: 1,
+                isMobile: false,
+                zIndex: 1,
+                type: widget.type,
+                widgetValue: '',
+                Width: widget.w,
+                Height: widget.h,
+              };
+
+              if (page) {
+                page.pos.push(widgetData);
+              } else {
+                placeHolder.push({
+                  pageNumber,
+                  pos: [widgetData],
+                });
+              }
+            }
+
             return {
-              signerObjId: x?.contactPtr?.objectId,
-              signerPtr: x?.contactPtr,
-              Role: x.role,
+              signerObjId: signer?.contactPtr?.objectId,
+              signerPtr: signer?.contactPtr,
+              Role: signer.role,
               Id: randomId(),
-              blockColor: color[x?.index],
-              placeHolder: x.widgets.map((widget, i) => ({
-                pageNumber: widget.page,
-                pos: [
-                  {
-                    xPosition: widget.x,
-                    yPosition: widget.y,
-                    isStamp: widget.type === 'stamp' || widget.type === 'image' ? true : false,
-                    key: randomId(),
-                    isDrag: false,
-                    firstXPos: widget.x,
-                    firstYPos: widget.y,
-                    yBottom: 0,
-                    scale: 1,
-                    isMobile: false,
-                    zIndex: i + 1,
-                    type: widget.type,
-                    widgetValue: '',
-                    Width: widget.w,
-                    Height: widget.h,
-                  },
-                ],
-              })),
+              blockColor: color[signer?.index],
+              placeHolder,
             };
           });
           object.set('Placeholders', updatePlaceholders);
@@ -220,19 +233,14 @@ export default async function createDocumentwithCoordinate(request, response) {
         }
 
         if (sendMail.data.result.status === 'success') {
-          const user = contact.find(x => x.email === parseExtUser.Email);
-          if (user && user.email) {
-            return response.json({
-              objectId: res.id,
-              url: `${baseUrl.origin}/loadmf/signmicroapp/login/${res.id}/${user.email}/${user.contactPtr.objectId}/${serverParams}`,
-              message: 'Document sent successfully!',
-            });
-          } else {
-            return response.json({
-              objectId: res.id,
-              message: 'Document sent successfully!',
-            });
-          }
+          return response.json({
+            objectId: res.id,
+            signurl: contact.map(x => ({
+              email: x.email,
+              url: `${baseUrl.origin}/loadmf/signmicroapp/login/${res.id}/${x.email}/${x.contactPtr.objectId}/${serverParams}`,
+            })),
+            message: 'Document sent successfully!',
+          });
         }
       } else {
         return response.status(400).json({ error: 'Please provide signers!' });
