@@ -172,29 +172,37 @@ function Placeholder(props) {
                 props.pos.type === "email" ||
                 props.pos.type === "name" ||
                 props.pos.type === "company" ||
-                props.pos.type === "job title") && (
+                props.pos.type === "job title" ||
+                props.pos.type === "radio") && (
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
                     if (props.pos.type === "checkbox") {
                       props.setIsCheckboxRequired(true);
+                    } else if (props.pos.type === "radio") {
+                      props.setIsRadio(true);
                     } else {
                       props.setIsValidate(true);
                     }
 
                     props.setSignKey(props.pos.key);
                     props.setUniqueId(props.data.Id);
+                    props.setWidgetType(props.pos.type);
                   }}
                   onTouchEnd={(e) => {
                     e.stopPropagation();
                     if (props.pos.type === "checkbox") {
                       props.setIsCheckboxRequired(true);
+                    }
+                    if (props.pos.type === "radio") {
+                      props.setIsRadio(true);
                     } else {
                       props.setIsValidate(true);
                     }
 
                     props.setSignKey(props.pos.key);
                     props.setUniqueId(props.data.Id);
+                    props.setWidgetType(props.pos.type);
                   }}
                   class="fa-solid fa-gear settingIcon"
                   style={{
@@ -409,7 +417,8 @@ function Placeholder(props) {
         topRight: false,
         bottomRight:
           props.data && props.isNeedSign
-            ? props.data?.signerObjId === props.signerObjId
+            ? props.data?.signerObjId === props.signerObjId &&
+              props.pos.type !== "radio"
               ? true
               : false
             : true,
@@ -504,7 +513,8 @@ function Placeholder(props) {
           }
         />
       ) : props.data && props.isNeedSign ? (
-        props.data?.signerObjId === props.signerObjId ? (
+        props.data?.signerObjId === props.signerObjId &&
+        props.pos.type !== "radio" ? (
           <BorderResize />
         ) : (
           <></>

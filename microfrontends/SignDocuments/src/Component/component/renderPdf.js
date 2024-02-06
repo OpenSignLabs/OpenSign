@@ -9,7 +9,7 @@ import {
   handleSignYourselfImageResize
 } from "../../utils/Utils";
 import EmailToast from "./emailToast";
-import PlaceholderBorder from "./placeholderBorder";
+// import PlaceholderBorder from "./placeholderBorder";
 import Placeholder from "../WidgetComponent/placeholder";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -58,7 +58,8 @@ function RenderPdf({
   setIsCheckboxRequired,
   setIsValidate,
   setWidgetType,
-  setValidateAlert
+  setValidateAlert,
+  setIsRadio
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -410,141 +411,6 @@ function RenderPdf({
         >
           <EmailToast isShow={successEmail} />
           {pdfLoadFail.status &&
-            // recipient
-            //   ? !pdfUrl &&
-            //     !isAlreadySign.mssg &&
-            //     xyPostion.length > 0 &&
-            //     xyPostion.map((data, ind) => {
-            //       return (
-            //         <React.Fragment key={ind}>
-            //           {data.pageNumber === pageNumber &&
-            //             data.pos.map((pos) => {
-            //               return (
-            //                 pos && (
-            //                   // <Rnd
-            //                   //   data-tut="reactourSecond"
-            //                   //   disableDragging={true}
-            //                   //   enableResizing={{
-            //                   //     top: false,
-            //                   //     right: false,
-            //                   //     bottom: false,
-            //                   //     left: false,
-            //                   //     topRight: false,
-            //                   //     bottomRight: true,
-            //                   //     bottomLeft: false,
-            //                   //     topLeft: false
-            //                   //   }}
-            //                   //   key={pos.key}
-            //                   //   bounds="parent"
-            //                   //   style={{
-            //                   //     cursor: "all-scroll",
-            //                   //     borderColor: themeColor(),
-            //                   //     borderStyle: "dashed",
-            //                   //     borderWidth: "0.1px",
-            //                   //     zIndex: "1",
-            //                   //     background: data.blockColor
-            //                   //       ? data.blockColor
-            //                   //       : "#daebe0"
-            //                   //   }}
-            //                   //   className="signYourselfBlock"
-            //                   //   onResize={(
-            //                   //     e,
-            //                   //     direction,
-            //                   //     ref,
-            //                   //     delta,
-            //                   //     position
-            //                   //   ) => {
-            //                   //     handleSignYourselfImageResize(
-            //                   //       ref,
-            //                   //       pos.key,
-            //                   //       xyPostion,
-            //                   //       index,
-            //                   //       setXyPostion
-            //                   //     );
-            //                   //   }}
-            //                   //   size={{
-            //                   //     width: posWidth(pos),
-            //                   //     height: posHeight(pos)
-            //                   //   }}
-            //                   //   lockAspectRatio={
-            //                   //     pos.Width ? pos.Width / pos.Height : 2.5
-            //                   //   }
-            //                   //   //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divide by scale
-            //                   //   //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-            //                   //   default={{
-            //                   //     x: xPos(pos),
-            //                   //     y: yPos(pos)
-            //                   //   }}
-            //                   //   onClick={() => {
-            //                   //     setIsSignPad(true);
-            //                   //     setSignKey(pos.key);
-            //                   //     setIsStamp(
-            //                   //       pos?.isStamp ? pos.isStamp : false
-            //                   //     );
-            //                   //   }}
-            //                   // >
-            //                   //   <BorderResize />
-            //                   //   {pos.SignUrl ? (
-            //                   //     <img
-            //                   //       alt="no img"
-            //                   //       onClick={() => {
-            //                   //         setIsSignPad(true);
-            //                   //         setSignKey(pos.key);
-            //                   //       }}
-            //                   //       src={pos.SignUrl}
-            //                   //       style={{
-            //                   //         width: "100%",
-            //                   //         height: "100%",
-            //                   //         objectFit: "contain"
-            //                   //       }}
-            //                   //     />
-            //                   //   ) : (
-            //                   //     <div
-            //                   //       style={{
-            //                   //         fontSize: "10px",
-            //                   //         color: "black",
-
-            //                   //         justifyContent: "center",
-            //                   //         marginTop: "0px"
-            //                   //       }}
-            //                   //     >
-            //                   //       <div>{pos.type}</div>
-
-            //                   //       {handleUserName(
-            //                   //         data.signerObjId,
-            //                   //         data.Role
-            //                   //       )}
-            //                   //     </div>
-            //                   //   )}
-            //                   // </Rnd>
-            //                   <Placeholder
-            //                     pos={pos}
-            //                     setSignKey={setSignKey}
-            //                     setIsStamp={setIsStamp}
-            //                     handleSignYourselfImageResize={
-            //                       handleSignYourselfImageResize
-            //                     }
-            //                     index={index}
-            //                     xyPostion={xyPostion}
-            //                     setXyPostion={setXyPostion}
-            //                     pdfOriginalWidth={pdfOriginalWidth}
-            //                     containerWH={containerWH}
-            //                     setIsSignPad={setIsSignPad}
-            //                     isShowDropdown={true}
-            //                     isRecipient={true}
-            //                     isSignYourself={false}
-            //                     xPos={xPos}
-            //                     yPos={yPos}
-            //                     posWidth={posWidth}
-            //                     posHeight={posHeight}
-            //                   />
-            //                 )
-            //               );
-            //             })}
-            //         </React.Fragment>
-            //       );
-            //     })
-            //   :
             (pdfRequest
               ? signerPos.map((data, key) => {
                   return (
@@ -778,6 +644,7 @@ function RenderPdf({
                                         }
                                         setIsValidate={setIsValidate}
                                         setWidgetType={setWidgetType}
+                                        setIsRadio={setIsRadio}
                                       />
                                     </React.Fragment>
                                   );
@@ -975,7 +842,7 @@ function RenderPdf({
               }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
-              ref={pdfRef}
+              // ref={pdfRef}
               file={
                 pdfUrl
                   ? pdfUrl
@@ -1238,6 +1105,7 @@ function RenderPdf({
                                           }
                                           setIsValidate={setIsValidate}
                                           setWidgetType={setWidgetType}
+                                          setIsRadio={setIsRadio}
                                         />
                                       </React.Fragment>
                                     );
@@ -1370,7 +1238,7 @@ function RenderPdf({
               }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
-              ref={pdfRef}
+              // ref={pdfRef}
               file={
                 pdfUrl
                   ? pdfUrl

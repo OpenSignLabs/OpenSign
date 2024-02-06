@@ -164,18 +164,18 @@ function FieldsComponent({
       isDragEmail: !!monitor.isDragging()
     })
   });
-  // const [, radio] = useDrag({
-  //   type: "BOX",
+  const [, radio] = useDrag({
+    type: "BOX",
 
-  //   item: {
-  //     type: "BOX",
-  //     id: 14,
-  //     text: "radio"
-  //   },
-  //   collect: (monitor) => ({
-  //     isDragRadio: !!monitor.isDragging()
-  //   })
-  // });
+    item: {
+      type: "BOX",
+      id: 14,
+      text: "radio"
+    },
+    collect: (monitor) => ({
+      isDragRadio: !!monitor.isDragging()
+    })
+  });
   const isMobile = window.innerWidth < 767;
   const scrollContainerRef = useRef(null);
   const [widget, setWidget] = useState([]);
@@ -211,8 +211,8 @@ function FieldsComponent({
       jobTitle,
       date,
       image,
-      email
-      // radio
+      email,
+      radio
     ];
     const getWidgetArray = widgets;
     const newUpdateSigner = getWidgetArray.map((obj, ind) => {
@@ -223,8 +223,7 @@ function FieldsComponent({
   }, []);
 
   const filterWidgets = widget.filter(
-    (data) => data.type !== "dropdown"
-    // && data.type !== "radio"
+    (data) => data.type !== "dropdown" && data.type !== "radio"
   );
   const updateWidgets = isSignYourself ? filterWidgets : widget;
 
@@ -327,43 +326,24 @@ function FieldsComponent({
                 borderTop: `2px solid ${themeColor()}`
               }}
             >
-              <Scrollbar
-                style={{ height: "50px", width: "100%" }}
-                // onScroll={handleScrollStart}
-                // onScrollStop={handleScrollEnd}
-                // onTouchEnd={handleScrollStart}
-                noScrollY={true}
+              <div
+                style={{
+                  display: "flex",
+                  overflowX: "scroll",
+                  whiteSpace: "nowrap",
+                  padding: "10px"
+                }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    // overflowX: "scroll",
-                    // whiteSpace: "nowrap",
-                    padding: "10px"
-                  }}
-                  //  onScroll={handleScroll}
-                  // onTouchStart={handleScrollStart}
-                  // onTouchMove={handleTouchMove}
-                  // onTouchEnd={handleTouchEnd}
-                >
-                  {/* {temp.map((data,ind) => {
-                    return <div style={{border:"1px solid red",padding:"20px"}} key={ind}>{data}</div>;
-                  })} */}
-                  <AllWidgets
-                    updateWidgets={updateWidgets}
-                    handleDivClick={handleDivClick}
-                    handleMouseLeave={handleMouseLeave}
-                    signRef={signRef}
-                    marginLeft={5}
-                    addPositionOfSignature={addPositionOfSignature}
-                    setIsDraggingEnable={setIsDraggingEnable}
-                    isMobile={isMobile}
-                    isdraggingEnable={isdraggingEnable}
-                    dragSignature={dragSignature}
-                    dragSignatureSS={dragSignatureSS}
-                  />
-                </div>
-              </Scrollbar>
+                <AllWidgets
+                  updateWidgets={updateWidgets}
+                  handleDivClick={handleDivClick}
+                  handleMouseLeave={handleMouseLeave}
+                  signRef={signRef}
+                  marginLeft={5}
+                  addPositionOfSignature={addPositionOfSignature}
+                  isMobile={isMobile}
+                />
+              </div>
             </div>
           </div>
         )
