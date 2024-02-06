@@ -232,6 +232,11 @@ export const widgets = [
     icon: "fa-solid fa-envelope",
     iconSize: "20px"
   }
+  // {
+  //   type: "radio",
+  //   icon: "fa-regular fa-circle-dot",
+  //   iconSize: "20px"
+  // }
 ];
 
 export const getWidgetType = (
@@ -375,7 +380,12 @@ export const defaultWidthHeight = (type) => {
         width: 50,
         height: 20
       };
-      return obj;
+    // case "radio":
+    //   obj = {
+    //     width: 15,
+    //     height: 15
+    //   };
+    //   return obj;
     default:
       obj = {
         width: 150,

@@ -1,5 +1,4 @@
-import React, { useEffect, useState, forwardRef, useMemo, useRef } from "react";
-
+import React, { useEffect, useState, forwardRef, useRef } from "react";
 import { onChangeInput } from "../../utils/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -12,10 +11,6 @@ function PlaceholderType(props) {
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
-  const memoizedCount = useMemo(
-    () => props.saveDateFormat,
-    [props.saveDateFormat]
-  );
 
   const validateExpression = (regexValidation) => {
     let isValidate = regexValidation.test(inputValue);
@@ -66,9 +61,24 @@ function PlaceholderType(props) {
   }, []);
 
   useEffect(() => {
-    if (props.selectDate) {
-      const updateDate = new Date(props.selectDate?.date);
+    if (props.isNeedSign) {
+      const updateDate = new Date(props.pos.widgetValue);
       setStartDate(updateDate);
+    }
+  }, []);
+  useEffect(() => {
+    if (props.selectDate) {
+      const updateDate = new Date(props.saveDateFormat);
+      setStartDate(updateDate);
+      const dateObj = {
+        date: props.saveDateFormat,
+        format: props.selectDate
+          ? props.selectDate?.format
+          : props.pos?.dateFormat
+            ? props.pos?.dateFormat
+            : "MM/dd/YYYY"
+      };
+      props.setSelectDate(dateObj);
     }
 
     onChangeInput(
@@ -85,7 +95,7 @@ function PlaceholderType(props) {
           ? props.pos?.dateFormat
           : "MM/dd/YYYY"
     );
-  }, [memoizedCount]);
+  }, [props.saveDateFormat]);
 
   const dateValue = (value) => {
     props.setSaveDateFormat(value);
@@ -414,6 +424,9 @@ function PlaceholderType(props) {
             }}
           /> */}
           <DatePicker
+            disabled={
+              props.isNeedSign && props.data?.signerObjId !== props.signerObjId
+            }
             // disabled={props.isPlaceholder ? true : false}
             onBlur={handleInputBlur}
             closeOnScroll={true}
@@ -423,33 +436,23 @@ function PlaceholderType(props) {
               // props.pos?.widgetValue ? props.pos.widgetValue :
               startDate
                 ? startDate
-                : props.pos?.widgetValue
-                  ? props.pos?.widgetValue
-                  : new Date(props.pos.widgetValue)
+                : props.pos?.widgetValue && new Date(props.pos.widgetValue)
             }
             onChange={(date) => {
               setStartDate(date);
-              const dateObj = {
-                date: props.saveDateFormat,
-                format: props.pos?.dateFormat
-                  ? props.pos?.dateFormat
-                  : props.selectDate
-                    ? props.selectDate?.format
-                    : "MM/dd/YYYY"
-              };
-              props.setSelectDate(dateObj);
-              onChangeInput(
-                props.saveDateFormat,
-                props.pos.key,
-                props.xyPostion,
-                props.index,
-                props.setXyPostion,
-                props.data && props.data.signerObjId,
-                false,
-                props.selectDate?.format
-                  ? props.selectDate.format
-                  : "MM/dd/YYYY"
-              );
+
+              // onChangeInput(
+              //   props.saveDateFormat,
+              //   props.pos.key,
+              //   props.xyPostion,
+              //   props.index,
+              //   props.setXyPostion,
+              //   props.data && props.data.signerObjId,
+              //   false,
+              //   props.selectDate?.format
+              //     ? props.selectDate.format
+              //     : "MM/dd/YYYY"
+              // );
             }}
             popperPlacement="top-end"
             customInput={<ExampleCustomInput />}
@@ -521,6 +524,19 @@ function PlaceholderType(props) {
         >
           <span>{props.pos.type}</span>
         </div>
+      );
+    case "radio":
+      return (
+        <label
+          style={{ borderRadius: "50%", textAlign: "center" }}
+          className="inputPlaceholder"
+        >
+          <input
+            type="radio"
+            // checked={checked}
+            // onChange={onChange}
+          />
+        </label>
       );
 
     default:
