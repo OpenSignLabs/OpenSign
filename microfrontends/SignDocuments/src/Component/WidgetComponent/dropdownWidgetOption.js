@@ -7,7 +7,7 @@ function DropdownWidgetOption(props) {
     "option-2"
   ]);
 
-  const [dropdownName, setDropdownName] = useState("Dropdown-1");
+  const [dropdownName, setDropdownName] = useState("Field-1");
   const [error, setError] = useState("");
   const handleInputChange = (index, value) => {
     setDropdownOptionList((prevInputs) => {
@@ -39,7 +39,7 @@ function DropdownWidgetOption(props) {
       props.handleSaveDropdownOptions(dropdownName, dropdownOptionList);
       props.setShowDropdown(false);
       setDropdownOptionList(["option-1", "option-2"]);
-      setDropdownName("Dropdown-1");
+      setDropdownName("Field-1");
     }
   };
 

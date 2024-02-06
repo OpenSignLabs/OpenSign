@@ -50,7 +50,16 @@
   border-radius: 2px;
 
 }
-
+.radioButton{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  font-size: 12px;
+  border: 1px solid #007bff;
+  border-radius: 50px;
+}
 .inputPlaceholder:focus {
   outline: none;
   border: 1px solid #188ae2;
@@ -615,6 +624,7 @@
 .uploadImgLogo {
   font-size: 50px;
 }
+
 .DropdownMenuContent,
 .DropdownMenuSubContent {
   min-width: 130px;
@@ -827,8 +837,14 @@ option {
   width: 60%;
 }
 
-
-
+.radioGroupInput{
+  width: 100%;
+}
+.radioGroup{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 @media screen and (max-width:766px) {
 
   .validateInputText {
@@ -838,6 +854,7 @@ option {
   .validateText {
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
   }
 
   .showPages {

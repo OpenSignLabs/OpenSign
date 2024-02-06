@@ -48,6 +48,7 @@ function Placeholder(props) {
     }
   };
 
+  //function for add selected date and format in selectFormat
   const changeDateFormat = () => {
     const updateDate = [];
     dateFormatArr.map((data) => {
@@ -63,6 +64,7 @@ function Placeholder(props) {
     setDateFormat(updateDate);
   };
   useEffect(() => {
+    //set default current date and default format MM/dd/yyyy
     if (props.isPlaceholder || props.isSignYourself) {
       const date = new Date();
       const milliseconds = date.getTime();
@@ -211,7 +213,7 @@ function Placeholder(props) {
                       props.pos.type === "name" ||
                       props.pos.type === "company" ||
                       props.pos.type === "job title"
-                        ? "-20px"
+                        ? "-17px"
                         : "-35px"
                   }}
                 ></i>
@@ -232,8 +234,14 @@ function Placeholder(props) {
                 }}
                 style={{
                   color: "#188ae2",
-                  right: props.pos.type === "checkbox" ? "6px" : "32px",
-                  top: props.pos.type === "checkbox" ? "-35px" : "-18px"
+                  right:
+                    props.pos.type === "checkbox" || props.pos.type === "radio"
+                      ? "6px"
+                      : "32px",
+                  top:
+                    props.pos.type === "checkbox" || props.pos.type === "radio"
+                      ? "-35px"
+                      : "-18px"
                 }}
               ></i>
             </>
@@ -243,8 +251,8 @@ function Placeholder(props) {
               id="menu-container"
               style={{
                 zIndex: "99",
-                top: "-19px",
-                left: props.isPlaceholder ? "-5px" : "9px"
+                top: "-27px",
+                left: props.isPlaceholder ? "-12px" : "5px"
               }}
               className={isShowDateFormat ? "dropdown show" : "dropdown"}
               onClick={(e) => {
@@ -252,21 +260,19 @@ function Placeholder(props) {
                 e.stopPropagation();
                 props.setSignKey(props.pos.key);
               }}
-              // onTouchEnd={(e) => {
-              //   e.stopPropagation();
-              //   setIsShowDateFormat(!isShowDateFormat);
-              //   props.setSignKey(props.pos.key);
-              // }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                setIsShowDateFormat(!isShowDateFormat);
+                props.setSignKey(props.pos.key);
+              }}
             >
-              <div className=" sort  " data-toggle="dropdown">
-                <i
-                  class="fa-solid fa-gear settingIcon"
-                  style={{
-                    color: "#188ae2",
-                    fontSize: "14px"
-                  }}
-                ></i>
-              </div>
+              <i
+                class="fa-solid fa-gear settingIcon"
+                style={{
+                  color: "#188ae2",
+                  fontSize: "14px"
+                }}
+              ></i>
               <div
                 className={
                   isShowDateFormat ? "dropdown-menu show" : "dropdown-menu"
@@ -278,6 +284,11 @@ function Placeholder(props) {
                   return (
                     <span
                       key={ind}
+                      onTouchEnd={(e) => {
+                        e.stopPropagation();
+                        setIsShowDateFormat(!isShowDateFormat);
+                        setSelectDate(data);
+                      }}
                       onClick={() => {
                         setIsShowDateFormat(!isShowDateFormat);
                         setSelectDate(data);
@@ -329,11 +340,13 @@ function Placeholder(props) {
             style={{
               color: "#188ae2",
               right:
-                props.pos.type === "checkbox" && props.isPlaceholder
+                (props.pos.type === "checkbox" || props.pos.type === "radio") &&
+                props.isPlaceholder
                   ? "-11px"
                   : "12px",
               top:
-                props.pos.type === "checkbox" && props.isPlaceholder
+                (props.pos.type === "checkbox" || props.pos.type === "radio") &&
+                props.isPlaceholder
                   ? "-35px"
                   : "-18px"
             }}
@@ -362,11 +375,13 @@ function Placeholder(props) {
             style={{
               color: "#188ae2",
               right:
-                props.pos.type === "checkbox" && props.isPlaceholder
+                (props.pos.type === "checkbox" || props.pos.type === "radio") &&
+                props.isPlaceholder
                   ? "-30px"
                   : "-8px",
               top:
-                props.pos.type === "checkbox" && props.isPlaceholder
+                (props.pos.type === "checkbox" || props.pos.type === "radio") &&
+                props.isPlaceholder
                   ? "-35px"
                   : "-18px"
             }}
@@ -404,6 +419,9 @@ function Placeholder(props) {
       bounds="parent"
       className="signYourselfBlock"
       style={{
+        // borderRadius:"50%",
+        // display:"flex",
+        // alignItem:"center",
         border: "1px solid #007bff",
         borderRadius: "2px",
         textAlign:
@@ -438,7 +456,7 @@ function Placeholder(props) {
       disableDragging={
         props.isNeedSign
           ? true
-          : props.isPlaceholder
+          : props.isPlaceholder && props.pos.type !== "date"
             ? false
             : !isDraggingEnabled
       }
@@ -473,9 +491,17 @@ function Placeholder(props) {
       {props.isShowBorder ? (
         <BorderResize
           right={
-            props.pos.type === "checkbox" && props.isPlaceholder ? -28 : -12
+            (props.pos.type === "checkbox" || props.pos.type === "radio") &&
+            props.isPlaceholder
+              ? -28
+              : -12
           }
-          top={props.pos.type === "checkbox" && props.isPlaceholder ? -28 : -11}
+          top={
+            (props.pos.type === "checkbox" || props.pos.type === "radio") &&
+            props.isPlaceholder
+              ? -28
+              : -11
+          }
         />
       ) : props.data && props.isNeedSign ? (
         props.data?.signerObjId === props.signerObjId ? (

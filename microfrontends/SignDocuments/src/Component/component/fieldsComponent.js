@@ -42,129 +42,140 @@ function FieldsComponent({
   setIsDraggingEnable,
   isdraggingEnable
 }) {
-  const temp = ["1", "2", "3", "4", "5", "6", "7", "8", "0", "23"];
   const [isSignersModal, setIsSignersModal] = useState(false);
-  const [initialTouchX, setInitialTouchX] = useState(0);
-  const [{ isDragDropdown }, dropdown] = useDrag({
+
+  const [, dropdown] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 5,
       text: "dropdown"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragDropdown: !!monitor.isDragging()
     })
   });
-  const [{ isDragCheck }, checkbox] = useDrag({
+  const [, checkbox] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 6,
       text: "checkbox"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragCheck: !!monitor.isDragging()
     })
   });
-  const [{ isDragText }, text] = useDrag({
+  const [, text] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 7,
       text: "text"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragText: !!monitor.isDragging()
     })
   });
-  const [{ isDragInitial }, initials] = useDrag({
+  const [, initials] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 8,
       text: "initials"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragInitial: !!monitor.isDragging()
     })
   });
-  const [{ isDragName }, name] = useDrag({
+  const [, name] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 9,
       text: "name"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragName: !!monitor.isDragging()
     })
   });
-  const [{ isDragCompany }, company] = useDrag({
+  const [, company] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 10,
       text: "company"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragCompany: !!monitor.isDragging()
     })
   });
-  const [{ isDragJobtitle }, jobTitle] = useDrag({
+  const [, jobTitle] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 11,
       text: "job title"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragJobtitle: !!monitor.isDragging()
     })
   });
-  const [{ isDragDate }, date] = useDrag({
+  const [, date] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 12,
       text: "date"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragDate: !!monitor.isDragging()
     })
   });
-  const [{ isDragImage }, image] = useDrag({
+  const [, image] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 13,
       text: "image"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragImage: !!monitor.isDragging()
     })
   });
-  const [{ isDragEmail }, email] = useDrag({
+  const [, email] = useDrag({
     type: "BOX",
-    canDrag: isdraggingEnable,
     item: {
       type: "BOX",
       id: 14,
       text: "email"
     },
+    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragEmail: !!monitor.isDragging()
     })
   });
+  // const [, radio] = useDrag({
+  //   type: "BOX",
+
+  //   item: {
+  //     type: "BOX",
+  //     id: 14,
+  //     text: "radio"
+  //   },
+  //   collect: (monitor) => ({
+  //     isDragRadio: !!monitor.isDragging()
+  //   })
+  // });
   const isMobile = window.innerWidth < 767;
   const scrollContainerRef = useRef(null);
   const [widget, setWidget] = useState([]);
@@ -201,6 +212,7 @@ function FieldsComponent({
       date,
       image,
       email
+      // radio
     ];
     const getWidgetArray = widgets;
     const newUpdateSigner = getWidgetArray.map((obj, ind) => {
@@ -210,7 +222,10 @@ function FieldsComponent({
     setWidget(newUpdateSigner);
   }, []);
 
-  const filterWidgets = widget.filter((data) => data.type !== "dropdown");
+  const filterWidgets = widget.filter(
+    (data) => data.type !== "dropdown"
+    // && data.type !== "radio"
+  );
   const updateWidgets = isSignYourself ? filterWidgets : widget;
 
   return (
@@ -344,6 +359,8 @@ function FieldsComponent({
                     setIsDraggingEnable={setIsDraggingEnable}
                     isMobile={isMobile}
                     isdraggingEnable={isdraggingEnable}
+                    dragSignature={dragSignature}
+                    dragSignatureSS={dragSignatureSS}
                   />
                 </div>
               </Scrollbar>

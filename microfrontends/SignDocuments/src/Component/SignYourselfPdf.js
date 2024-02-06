@@ -111,6 +111,10 @@ function SignYourSelf() {
       text: "signature"
     },
     canDrag: isdraggingEnable,
+    // options: {
+    //   // Set the delay for touch dragging
+    //   delay: { touch: 500 }, // Set the delay in milliseconds
+    // },
 
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
@@ -124,7 +128,6 @@ function SignYourSelf() {
       text: "stamp"
     },
     canDrag: isdraggingEnable,
-
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
     })
@@ -139,12 +142,16 @@ function SignYourSelf() {
       text: "drag me"
     },
     canDrag: isdraggingEnable,
+    // options: {
+    //   // Set the delay for touch dragging
+    //   delay: { touch: 500 }, // Set the delay in milliseconds
+    // },
     collect: (monitor) => ({
       isDragSignatureSS: !!monitor.isDragging()
     })
   });
 
-  const [{ isDragStampSS }, dragStampSS] = useDrag({
+  const [, dragStampSS] = useDrag({
     type: "BOX",
     item: {
       type: "BOX",
@@ -161,6 +168,7 @@ function SignYourSelf() {
     return object.pageNumber === pageNumber;
   });
   //   rowlevel={JSON.parse(localStorage.getItem("rowlevel"))}
+
   const rowLevel =
     localStorage.getItem("rowlevel") &&
     JSON.parse(localStorage.getItem("rowlevel"));
@@ -534,7 +542,6 @@ function SignYourSelf() {
         flag,
         containerWH
       );
-      // console.log(("pdf",pdfBytes))
 
       //function for call to embed signature in pdf and get digital signature pdf
       signPdfFun(pdfBytes, documentId);

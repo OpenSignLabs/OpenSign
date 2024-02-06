@@ -4,11 +4,13 @@ import { defaultWidthHeight, resizeBorderExtraWidth } from "../../utils/Utils";
 function PlaceholderBorder(props) {
   const getResizeBorderExtraWidth = resizeBorderExtraWidth();
   const defaultWidth =
-    props.pos.type === "checkbox" && props.isPlaceholder
+    (props.pos.type === "checkbox" || props.pos.type === "radio") &&
+    props.isPlaceholder
       ? 50
       : defaultWidthHeight(props.pos.type).width;
   const defaultHeight =
-    props.pos.type === "checkbox" && props.isPlaceholder
+    (props.pos.type === "checkbox" || props.pos.type === "radio") &&
+    props.isPlaceholder
       ? 50
       : defaultWidthHeight(props.pos.type).height;
 

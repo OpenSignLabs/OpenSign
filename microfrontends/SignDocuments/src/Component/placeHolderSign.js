@@ -9,6 +9,7 @@ import { useDrag, useDrop } from "react-dnd";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import FieldsComponent from "./component/fieldsComponent";
 import Tour from "reactour";
+import loader from "../assests/loader2.gif";
 import { useLocation, useParams } from "react-router-dom";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -92,6 +93,9 @@ function PlaceHolderSign() {
   const [textValidate, setTextValidate] = useState("");
   const [validateError, setValidateError] = useState("");
   const [widgetType, setWidgetType] = useState("");
+  const [isUiLoading, setIsUiLoading] = useState(false);
+  const [isRadio, setIsRadio] = useState(false);
+  const [radioFieldName, setRadioFieldName] = useState({});
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -690,11 +694,7 @@ function PlaceHolderSign() {
     }
   };
   const sendEmailToSigners = async () => {
-    const loadObj = {
-      isLoad: true,
-      message: "This might take some time"
-    };
-    setIsLoading(loadObj);
+    setIsUiLoading(true);
     setIsSendAlert({});
 
     let sendMail;
@@ -820,10 +820,7 @@ function PlaceHolderSign() {
           .then((result) => {
             setIsSend(true);
             setIsMailSend(true);
-            const loadObj = {
-              isLoad: false
-            };
-            setIsLoading(loadObj);
+            setIsUiLoading(false);
           })
           .catch((err) => {
             console.log("axois err ", err);
@@ -987,7 +984,6 @@ function PlaceHolderSign() {
     navigate(`${hostUrl}recipientSignPdf/${documentId}/${currentId}`);
   };
 
-  console.log("signerpos", signerPos);
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
   };
@@ -1004,7 +1000,6 @@ function PlaceHolderSign() {
         }
         return { ...x };
       });
-      // console.log("updatePlaceHolder ", updatePlaceHolder);
       setSignerPos(updatePlaceHolder);
 
       const updateSigner = signersdata.map((x) => {
@@ -1063,7 +1058,14 @@ function PlaceHolderSign() {
                   widgetStatus: selectRequiredType
                 };
               }
-            } else {
+            } else if (widgetType === "radio") {
+              return {
+                ...position
+                // widgetName: dropdownName,
+                // widgetOption: dropdownOptions
+              };
+            }
+            {
               return {
                 ...position,
                 validation: regularExpression
@@ -1120,6 +1122,31 @@ function PlaceHolderSign() {
           <Nodata />
         ) : (
           <div className="signatureContainer" ref={divRef}>
+            {isUiLoading && (
+              <div
+                style={{
+                  position: "absolute",
+                  height: "100vh",
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  zIndex: "20",
+                  backgroundColor: "#e6f2f2",
+                  opacity: 0.8
+                }}
+              >
+                <img
+                  alt="no img"
+                  src={loader}
+                  style={{ width: "100px", height: "100px" }}
+                />
+                <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                  This might take some time
+                </span>
+              </div>
+            )}
             {/* this component used for UI interaction and show their functionality */}
             {!checkTourStatus && (
               //this tour component used in your html component where you want to put
@@ -1387,6 +1414,70 @@ function PlaceHolderSign() {
                         {validateError}
                       </p>
                     )}
+                  </div>
+
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
+                  <button
+                    onClick={() => {
+                      handleValidateInput();
+                    }}
+                    style={{
+                      background: themeColor()
+                    }}
+                    type="button"
+                    // disabled={!selectCopyType}
+                    className="finishBtn"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </ModalUi>
+              <ModalUi
+                //isValidate
+                isOpen={false}
+                title={"Radio group"}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
+                  <div className="radioGroup">
+                    <label
+                      style={{
+                        marginRight: "5px",
+                        fontSize: "14px",
+                        fontWeight: "500"
+                      }}
+                    >
+                      Field name:
+                    </label>
+
+                    <input
+                      placeholder="Enter field name"
+                      className="drodown-input radioGroupInput"
+                      // onChange={(e) => setTextValidate(e.target.value)}
+                    />
+
+                    <label
+                      style={{
+                        marginRight: "5px",
+                        fontSize: "14px",
+                        fontWeight: "500"
+                      }}
+                    >
+                      Data label:
+                    </label>
+
+                    <input
+                      placeholder="Enter data"
+                      className="drodown-input radioGroupInput"
+                      // onChange={(e) => setTextValidate(e.target.value)}
+                    />
                   </div>
 
                   <div
