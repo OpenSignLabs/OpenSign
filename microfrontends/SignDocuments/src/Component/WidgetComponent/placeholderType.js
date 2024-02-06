@@ -11,6 +11,7 @@ function PlaceholderType(props) {
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
+  const [isCheckedRadio, setIsCheckedRadio] = useState(false);
 
   const validateExpression = (regexValidation) => {
     let isValidate = regexValidation.test(inputValue);
@@ -66,6 +67,18 @@ function PlaceholderType(props) {
       setStartDate(updateDate);
     }
   }, []);
+
+  useEffect(() => {
+    onChangeInput(
+      isCheckedRadio,
+      props.pos.key,
+      props.xyPostion,
+      props.index,
+      props.setXyPostion,
+      props.data && props.data.signerObjId,
+      false
+    );
+  }, [isCheckedRadio]);
   useEffect(() => {
     if (props.selectDate) {
       const updateDate = new Date(props.saveDateFormat);
@@ -533,8 +546,10 @@ function PlaceholderType(props) {
         >
           <input
             type="radio"
-            // checked={checked}
-            // onChange={onChange}
+            checked={isCheckedRadio}
+            onClick={() => {
+              setIsCheckedRadio(!isCheckedRadio);
+            }}
           />
         </label>
       );

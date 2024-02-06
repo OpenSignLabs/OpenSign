@@ -95,7 +95,10 @@ function PlaceHolderSign() {
   const [widgetType, setWidgetType] = useState("");
   const [isUiLoading, setIsUiLoading] = useState(false);
   const [isRadio, setIsRadio] = useState(false);
-  const [radioFieldName, setRadioFieldName] = useState({});
+  const [radioData, setRadioData] = useState({
+    data: "",
+    label: ""
+  });
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -361,24 +364,28 @@ function PlaceHolderSign() {
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
         let dropData = [];
         let placeHolder;
+        const dragTypeValue = item?.text ? item.text : monitor.type;
+        // const widgetWidth = defaultWidthHeight(dragTypeValue).width;
+        // const widgetHeight = defaultWidthHeight(dragTypeValue).height;
+
         if (item === "onclick") {
           const dropObj = {
             //onclick put placeholder center on pdf
-            xPosition: window.innerWidth / 2 - 100,
+            xPosition: window.innerWidth / 2 - 150,
             yPosition: window.innerHeight / 2 - 60,
             isStamp:
-              (monitor.type === "stamp" || monitor.type === "image") && true,
+              (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             isDrag: false,
             scale: scale,
             isMobile: isMobile,
             yBottom: window.innerHeight / 2 - 60,
             zIndex: posZIndex,
-            type: monitor.type,
+            type: dragTypeValue,
             widgetValue:
-              monitor.type === "checkbox"
+              dragTypeValue === "checkbox"
                 ? false
-                : monitor.type === "date"
+                : dragTypeValue === "date"
                   ? getDate()
                   : ""
           };
@@ -387,7 +394,7 @@ function PlaceHolderSign() {
             pageNumber: pageNumber,
             pos: dropData
           };
-        } else if (item.type === "BOX") {
+        } else {
           const offset = monitor.getClientOffset();
           //adding and updating drop position in array when user drop signature button in div
           const containerRect = document
@@ -400,7 +407,8 @@ function PlaceHolderSign() {
           const dropObj = {
             xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
             yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
-            isStamp: (item.text === "stamp" || item.text === "image") && true,
+            isStamp:
+              (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             isDrag: false,
             firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
@@ -411,9 +419,9 @@ function PlaceHolderSign() {
             zIndex: posZIndex,
             type: item.text,
             widgetValue:
-              item.text === "checkbox"
+              dragTypeValue === "checkbox"
                 ? false
-                : monitor.type === "date"
+                : dragTypeValue === "date"
                   ? getDate()
                   : ""
           };
@@ -484,13 +492,15 @@ function PlaceHolderSign() {
           }
           setSignerPos((prev) => [...prev, placeHolderPos]);
         }
-        if (item.text === "dropdown" || monitor.type === "dropdown") {
+        if (dragTypeValue === "dropdown") {
           setShowDropdown(true);
-          setSignKey(key);
-        } else if (item.text === "checkbox" || monitor.type === "checkbox") {
+        } else if (dragTypeValue === "checkbox") {
           setIsCheckboxRequired(true);
-          setSignKey(key);
+        } else if (dragTypeValue === "radio") {
+          setIsRadio(true);
         }
+        setWidgetType(dragTypeValue);
+        setSignKey(key);
         if (isMobile) {
           setIsDraggingEnable(false);
         }
@@ -1060,12 +1070,11 @@ function PlaceHolderSign() {
               }
             } else if (widgetType === "radio") {
               return {
-                ...position
-                // widgetName: dropdownName,
-                // widgetOption: dropdownOptions
+                ...position,
+                widgetName: radioData.label,
+                widgetOption: [radioData.data]
               };
-            }
-            {
+            } else {
               return {
                 ...position,
                 validation: regularExpression
@@ -1090,6 +1099,8 @@ function PlaceHolderSign() {
 
         setSignerPos(newUpdateSigner);
         setIsCheckboxRequired(false);
+        setIsRadio(false);
+        setRadioData({});
         setSelectRequiredType("Optional");
       }
     }
@@ -1110,6 +1121,16 @@ function PlaceHolderSign() {
       }, 1500);
     }
   };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Update the state with the new value for the corresponding input
+    setRadioData((prevValues) => ({
+      ...prevValues,
+      [name]: value
+    }));
+  };
+
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1442,66 +1463,79 @@ function PlaceHolderSign() {
               </ModalUi>
               <ModalUi
                 //isValidate
-                isOpen={false}
+                isOpen={isRadio}
                 title={"Radio group"}
               >
                 <div style={{ height: "100%", padding: 20 }}>
-                  <div className="radioGroup">
-                    <label
-                      style={{
-                        marginRight: "5px",
-                        fontSize: "14px",
-                        fontWeight: "500"
-                      }}
-                    >
-                      Field name:
-                    </label>
-
-                    <input
-                      placeholder="Enter field name"
-                      className="drodown-input radioGroupInput"
-                      // onChange={(e) => setTextValidate(e.target.value)}
-                    />
-
-                    <label
-                      style={{
-                        marginRight: "5px",
-                        fontSize: "14px",
-                        fontWeight: "500"
-                      }}
-                    >
-                      Data label:
-                    </label>
-
-                    <input
-                      placeholder="Enter data"
-                      className="drodown-input radioGroupInput"
-                      // onChange={(e) => setTextValidate(e.target.value)}
-                    />
-                  </div>
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleApplyWidgetsStatus();
                     }}
-                  ></div>
-                  <button
-                    onClick={() => {
-                      handleValidateInput();
-                    }}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    // disabled={!selectCopyType}
-                    className="finishBtn"
                   >
-                    Apply
-                  </button>
+                    <div className="radioGroup">
+                      <label
+                        style={{
+                          marginRight: "5px",
+                          fontSize: "14px",
+                          fontWeight: "500"
+                        }}
+                      >
+                        Field name:
+                      </label>
+
+                      <input
+                        required
+                        placeholder="Enter field name"
+                        className="drodown-input radioGroupInput"
+                        // onChange={(e) => setTextValidate(e.target.value)}
+                        id="label"
+                        name="label"
+                        value={radioData.label}
+                        onChange={handleInputChange}
+                      />
+
+                      <label
+                        style={{
+                          marginRight: "5px",
+                          fontSize: "14px",
+                          fontWeight: "500"
+                        }}
+                      >
+                        Data label:
+                      </label>
+
+                      <input
+                        required
+                        placeholder="Enter data"
+                        className="drodown-input radioGroupInput"
+                        id="data"
+                        name="data"
+                        value={radioData.data}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div
+                      style={{
+                        height: "1px",
+                        backgroundColor: "#9f9f9f",
+                        width: "100%",
+                        marginTop: "15px",
+                        marginBottom: "15px"
+                      }}
+                    ></div>
+                    <button
+                      style={{
+                        background: themeColor()
+                      }}
+                      type="submit"
+                      // disabled={!selectCopyType}
+                      className="finishBtn"
+                    >
+                      Apply
+                    </button>
+                  </form>
                 </div>
               </ModalUi>
               <PlaceholderCopy
@@ -1568,6 +1602,7 @@ function PlaceHolderSign() {
                     setIsCheckboxRequired={setIsCheckboxRequired}
                     setIsValidate={setIsValidate}
                     setWidgetType={setWidgetType}
+                    setIsRadio={setIsRadio}
                   />
                 )}
               </div>

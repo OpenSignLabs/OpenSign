@@ -231,36 +231,23 @@ export const widgets = [
     type: "email",
     icon: "fa-solid fa-envelope",
     iconSize: "20px"
+  },
+  {
+    type: "radio",
+    icon: "fa-regular fa-circle-dot",
+    iconSize: "20px"
   }
-  // {
-  //   type: "radio",
-  //   icon: "fa-regular fa-circle-dot",
-  //   iconSize: "20px"
-  // }
 ];
 
-export const getWidgetType = (
-  item,
-  marginLeft,
-  handleTouchStart,
-  handleTouchEnd,
-  handleTouchMove,
-  backgroundColor,
-  selectWidgetType
-) => {
+export const getWidgetType = (item, marginLeft) => {
   return (
     <>
       <div
-        onTouchStart={() => handleTouchStart && handleTouchStart(item.type)}
-        onTouchEnd={handleTouchEnd && handleTouchEnd}
-        onTouchMove={handleTouchMove && handleTouchMove}
         className="signatureBtn widgets"
         style={{
           boxShadow:
             "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
-          marginLeft: marginLeft && `${marginLeft}px`,
-          background:
-            selectWidgetType === item.type && backgroundColor && backgroundColor
+          marginLeft: marginLeft && `${marginLeft}px`
         }}
       >
         <div
@@ -380,12 +367,12 @@ export const defaultWidthHeight = (type) => {
         width: 50,
         height: 20
       };
-    // case "radio":
-    //   obj = {
-    //     width: 15,
-    //     height: 15
-    //   };
-    //   return obj;
+    case "radio":
+      obj = {
+        width: 15,
+        height: 15
+      };
+      return obj;
     default:
       obj = {
         width: 150,
@@ -1023,9 +1010,9 @@ export const multiSignEmbed = async (
           }
         }
       };
-      const checkboxId = "checkbox_" + imgData.key;
+      const randomboxId = "randombox_" + imgData.key;
       if (imgData.type === "checkbox") {
-        const checkBox = form.createCheckBox(checkboxId);
+        const checkBox = form.createCheckBox(randomboxId);
 
         checkBox.addToPage(page, {
           x: xPos(imgData),
@@ -1059,7 +1046,7 @@ export const multiSignEmbed = async (
           color: rgb(0, 0, 0)
         });
       } else if (imgData.type === "dropdown") {
-        const dropdown = form.createDropdown(checkboxId);
+        const dropdown = form.createDropdown(randomboxId);
         dropdown.addOptions(imgData.widgetOption);
         dropdown.select(imgData.widgetValue);
         dropdown.addToPage(page, {
@@ -1069,6 +1056,16 @@ export const multiSignEmbed = async (
           height: scaleHeight
         });
         dropdown.enableReadOnly();
+      } else if (imgData.type === "radio") {
+        const rocketField = form.createRadioGroup(randomboxId);
+        rocketField.addOptionToPage(imgData.widgetOption[0], page, {
+          x: xPos(imgData),
+          y: yPos(imgData),
+          width: scaleWidth,
+          height: scaleHeight
+        });
+        rocketField.select(imgData.widgetOption[0]);
+        rocketField.enableReadOnly();
       } else {
         page.drawImage(img, {
           x: xPos(imgData),
@@ -1219,38 +1216,8 @@ export const handleSignYourselfImageResize = (
   setXyPostion,
   index
 ) => {
-  // const updateFilter = xyPostion[index].pos.filter(
-  //   (data) => data.key === key && data.Width && data.Height
-  // );
-
-  // if (updateFilter.length > 0) {
-  //   const getXYdata = xyPostion[index].pos;
-  //   const getPosData = getXYdata;
-  //   const addSign = getPosData.map((url, ind) => {
-  //     if (url.key === key) {
-  //       return {
-  //         ...url,
-  //         Width: ref.offsetWidth,
-  //         Height: ref.offsetHeight,
-  //         IsResize: true
-  //       };
-  //     }
-  //     return url;
-  //   });
-
-  //   const newUpdateUrl = xyPostion.map((obj, ind) => {
-  //     if (ind === index) {
-  //       return { ...obj, pos: addSign };
-  //     }
-  //     return obj;
-  //   });
-
-  //   setXyPostion(newUpdateUrl);
-  // } else {
   const getXYdata = xyPostion[index].pos;
-
   const getPosData = getXYdata;
-
   const addSign = getPosData.map((url, ind) => {
     if (url.key === key) {
       return {
@@ -1270,7 +1237,6 @@ export const handleSignYourselfImageResize = (
     return obj;
   });
   setXyPostion(newUpdateUrl);
-  // }
 };
 
 //function for call cloud function signPdf and generate digital signature

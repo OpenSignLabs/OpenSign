@@ -111,10 +111,6 @@ function SignYourSelf() {
       text: "signature"
     },
     canDrag: isdraggingEnable,
-    // options: {
-    //   // Set the delay for touch dragging
-    //   delay: { touch: 500 }, // Set the delay in milliseconds
-    // },
 
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
@@ -363,11 +359,13 @@ function SignYourSelf() {
                 : dragTypeValue === "date"
                   ? getDate()
                   : "";
+    const widgetWidth = defaultWidthHeight(dragTypeValue).width;
+    const widgetHeight = defaultWidthHeight(dragTypeValue).height;
 
     if (item === "onclick") {
       dropObj = {
-        xPosition: window.innerWidth / 2 - 100,
-        yPosition: window.innerHeight / 2 - 60,
+        xPosition: containerWH.width / 2 - widgetWidth / 2,
+        yPosition: containerWH.height / 2 - widgetHeight / 2,
         isDrag: false,
         isStamp:
           (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
@@ -379,8 +377,7 @@ function SignYourSelf() {
           dragTypeValue === "name" ||
           dragTypeValue === "company" ||
           dragTypeValue === "job title" ||
-          dragTypeValue === "email" ||
-          dragTypeValue === "initials"
+          dragTypeValue === "email"
             ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
             : dragTypeValue === "initials"
               ? defaultWidthHeight(dragTypeValue).width
@@ -389,8 +386,7 @@ function SignYourSelf() {
           dragTypeValue === "company" ||
           dragTypeValue === "name" ||
           dragTypeValue === "job title" ||
-          dragTypeValue === "email" ||
-          dragTypeValue === "initials"
+          dragTypeValue === "email"
             ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
             : dragTypeValue === "initials"
               ? defaultWidthHeight(dragTypeValue).height
