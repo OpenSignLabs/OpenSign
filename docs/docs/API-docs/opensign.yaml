@@ -403,7 +403,7 @@
           "Documents"
         ],
         "summary": "Create Document",
-        "description": "The Create Document API allows users to generate new documents by providing data with base64 encoded file. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios.",
+        "description": "The Create Document API allows users to generate new documents by providing data with base64 encoded file. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios.\n\n**Upload you pdf in [debug PDF](https://staging-app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF**\n",
         "operationId": "createdocument",
         "requestBody": {
           "content": {
@@ -450,7 +450,7 @@
           "Documents"
         ],
         "summary": "Create Document from binary",
-        "description": "The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios.",
+        "description": "The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios.\n\n**Upload you pdf in [debug PDF](https://staging-app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF**\n",
         "operationId": "createdocumentwithbinary",
         "requestBody": {
           "content": {
@@ -903,7 +903,7 @@
           "Templates"
         ],
         "summary": "Create Template",
-        "description": "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template.",
+        "description": "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template . \n\n**Upload you pdf in [debug PDF](https://staging-app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF**\n",
         "operationId": "createtemplate",
         "requestBody": {
           "content": {
@@ -950,7 +950,7 @@
           "Templates"
         ],
         "summary": "Create Template from binary",
-        "description": "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template.",
+        "description": "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents.\n\n**Upload you pdf in [debug PDF](https://staging-app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF**\n",
         "operationId": "createtemplatewithbinary",
         "requestBody": {
           "content": {
@@ -1278,7 +1278,7 @@
           "Webhook"
         ],
         "summary": "Save or Update Webhook",
-        "description": "The save or update Webhook API allow you to save webhook url which is used to capture document signature completion event",
+        "description": "The save or update Webhook API allow you to save webhook url which is used to trigger events\n### events:\n\n1. **created:**\n    - when document is created this event will trigger.\n    - **output**:\n       - {\n        \"event\": \"created\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"createdAt\": \"TIMESTAMP\"\n      }\n\n2. **signed:**\n    - when document is signed by signer this event will trigger.\n    - **output**:\n       - {\n        \"event\": \"signed\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"signedAt\":\"TIMESTAMP\"\n        \"createdAt\": \"TIMESTAMP\"\n      }\n3. **completed:**\n    - when document is singed by signers this event will trigger.\n    - **output**:\n       - {\n        \"event\": \"completed\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"completedAt\":\"TIMESTAMP\"\n        \"createdAt\": \"TIMESTAMP\"\n      }\n4. **declined:**\n    - when document is declined by signer this event will trigger.\n    - **output**:\n       - {\n        \"event\": \"declined\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"declinedAt\":\"TIMESTAMP\"\n        \"createdAt\": \"TIMESTAMP\"\n      }\n",
         "operationId": "save&updateWebhook",
         "requestBody": {
           "description": "Provide below parameter to create contact",
