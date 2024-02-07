@@ -66,7 +66,8 @@ function PlaceholderType(props) {
 
   useEffect(() => {
     if (props.isNeedSign) {
-      const updateDate = new Date(props.pos.widgetValue);
+      // props.pos.widgetValue
+      const updateDate = new Date();
       setStartDate(updateDate);
     }
   }, []);
