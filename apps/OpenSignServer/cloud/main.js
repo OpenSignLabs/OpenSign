@@ -22,6 +22,7 @@ import getapitoken from './parsefunction/getapitoken.js';
 import TemplateAfterSave from './parsefunction/TemplateAfterSave.js';
 import GetTemplate from './parsefunction/GetTemplate.js';
 import savewebhook from './parsefunction/saveWebhook.js';
+import callWebhook from './parsefunction/callWebhook.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
@@ -43,6 +44,7 @@ Parse.Cloud.define('generateapitoken', generateApiToken);
 Parse.Cloud.define('getapitoken', getapitoken);
 Parse.Cloud.define('getTemplate', GetTemplate);
 Parse.Cloud.define('savewebhook', savewebhook);
+Parse.Cloud.define('callwebhook', callWebhook);
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
 Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
 Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);

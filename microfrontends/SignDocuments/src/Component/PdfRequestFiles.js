@@ -609,9 +609,37 @@ function PdfRequestFiles() {
           }
         }
       )
-      .then((result) => {
+      .then(async (result) => {
         const res = result.data;
         if (res) {
+          const params = {
+            event: "declined",
+            body: {
+              objectId: pdfDetails?.[0].objectId,
+              name: pdfDetails?.[0].Name,
+              note: pdfDetails?.[0].Note || "",
+              description: pdfDetails?.[0].Description || "",
+              signers: pdfDetails?.[0].Signers?.map((x) => ({
+                name: x?.Name,
+                email: x?.Email,
+                phone: x?.Phone
+              })),
+              createdAt: pdfDetails?.[0].createdAt,
+              declinedAt: new Date()
+            }
+          };
+          const res = await axios.post(
+            `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+            params,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                sessiontoken: localStorage.getItem("accesstoken")
+              }
+            }
+          );
+          console.log("res  ", res.data);
           const currentDecline = {
             currnt: "YouDeclined",
             isDeclined: true
