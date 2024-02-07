@@ -612,6 +612,10 @@ function PdfRequestFiles() {
       .then(async (result) => {
         const res = result.data;
         if (res) {
+          const currentDecline = {
+            currnt: "YouDeclined",
+            isDeclined: true
+          };
           const params = {
             event: "declined",
             body: {
@@ -628,24 +632,23 @@ function PdfRequestFiles() {
               declinedAt: new Date()
             }
           };
-          const res = await axios.post(
-            `${localStorage.getItem("baseUrl")}functions/callwebhook`,
-            params,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-                sessiontoken: localStorage.getItem("accesstoken")
-              }
-            }
-          );
-          console.log("res  ", res.data);
-          const currentDecline = {
-            currnt: "YouDeclined",
-            isDeclined: true
-          };
           setIsDecline(currentDecline);
           setIsUiLoading(false);
+          try {
+            await axios.post(
+              `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+              params,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                  sessiontoken: localStorage.getItem("accesstoken")
+                }
+              }
+            );
+          } catch (err) {
+            console.log("Err ", err);
+          }
         }
       })
       .catch((err) => {
