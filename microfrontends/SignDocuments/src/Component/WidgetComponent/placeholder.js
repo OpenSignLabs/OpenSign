@@ -206,7 +206,7 @@ function Placeholder(props) {
                     props.setWidgetType(props.pos.type);
                     props.setCurrWidgetsDetails(props.pos);
                   }}
-                  class="fa-solid fa-gear settingIcon"
+                  className="fa-solid fa-gear settingIcon"
                   style={{
                     color: "#188ae2",
                     right:
@@ -277,7 +277,7 @@ function Placeholder(props) {
               }}
             >
               <i
-                class="fa-solid fa-gear settingIcon"
+                className="fa-solid fa-gear settingIcon"
                 style={{
                   color: "#188ae2",
                   fontSize: "14px"
@@ -423,7 +423,7 @@ function Placeholder(props) {
               props.pos.type !== "radio"
               ? true
               : false
-            : true,
+            : props.pos.type !== "radio" && true,
         bottomLeft: false,
         topLeft: false
       }}
@@ -499,7 +499,7 @@ function Placeholder(props) {
             : props.isSignYourself && handlePlaceholderClick();
       }}
     >
-      {props.isShowBorder ? (
+      {props.isShowBorder && props.pos.type !== "radio" ? (
         <BorderResize
           right={
             (props.pos.type === "checkbox" || props.pos.type === "radio") &&
@@ -522,7 +522,7 @@ function Placeholder(props) {
           <></>
         )
       ) : (
-        <BorderResize />
+        props.pos.type !== "radio" && <BorderResize />
       )}
 
       {props.isShowBorder && (

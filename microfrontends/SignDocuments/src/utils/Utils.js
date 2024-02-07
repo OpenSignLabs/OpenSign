@@ -370,7 +370,7 @@ export const defaultWidthHeight = (type) => {
     case "radio":
       obj = {
         width: 15,
-        height: 15
+        height: 20
       };
       return obj;
     default:
@@ -1058,16 +1058,27 @@ export const multiSignEmbed = async (
         dropdown.enableReadOnly();
       } else if (imgData.type === "radio") {
         const rocketField = form.createRadioGroup(randomboxId);
-        let addYPosition = 20;
-        imgData.widgetOption.map((data, ind) => {
+        let addYPosition = 18;
+
+        for (let i = 1; i <= imgData?.widgetOption.length; i++) {
+          const data = imgData?.widgetOption[i - 1];
+          let yPosition;
+          if (i > 1) {
+            yPosition = yPos(imgData) + addYPosition;
+          } else {
+            yPosition = yPos(imgData);
+          }
+
           rocketField.addOptionToPage(data, page, {
             x: xPos(imgData),
-            y: ind === 0 ? yPos(imgData) : yPos(imgData) - addYPosition,
+            y: yPosition,
             width: 11,
             height: 11
           });
-          addYPosition = ind !== 0 && addYPosition + 20;
-        });
+          if (i > 1) {
+            addYPosition = addYPosition + 18;
+          }
+        }
 
         rocketField.select(imgData.widgetValue);
         rocketField.enableReadOnly();

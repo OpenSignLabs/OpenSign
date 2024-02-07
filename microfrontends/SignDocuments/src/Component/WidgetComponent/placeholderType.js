@@ -553,7 +553,8 @@ function PlaceholderType(props) {
                   // height: props.pos.Height,
                   display: "flex",
                   justifyContent: "center",
-                  marginBottom: "3px"
+                  marginBottom: "6px",
+                  marginTop: "5px"
                 }}
                 type="radio"
                 checked={isCheckedRadio.selectValue === data}
