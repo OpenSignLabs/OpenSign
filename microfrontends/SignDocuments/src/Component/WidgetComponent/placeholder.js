@@ -188,6 +188,7 @@ function Placeholder(props) {
                     props.setSignKey(props.pos.key);
                     props.setUniqueId(props.data.Id);
                     props.setWidgetType(props.pos.type);
+                    props.setCurrWidgetsDetails(props.pos);
                   }}
                   onTouchEnd={(e) => {
                     e.stopPropagation();
@@ -203,6 +204,7 @@ function Placeholder(props) {
                     props.setSignKey(props.pos.key);
                     props.setUniqueId(props.data.Id);
                     props.setWidgetType(props.pos.type);
+                    props.setCurrWidgetsDetails(props.pos);
                   }}
                   class="fa-solid fa-gear settingIcon"
                   style={{
@@ -214,7 +216,7 @@ function Placeholder(props) {
                       props.pos.type === "company" ||
                       props.pos.type === "job title"
                         ? "49px"
-                        : "17px",
+                        : "23px",
                     top:
                       props.pos.type === "text" ||
                       props.pos.type === "email" ||
@@ -222,7 +224,7 @@ function Placeholder(props) {
                       props.pos.type === "company" ||
                       props.pos.type === "job title"
                         ? "-17px"
-                        : "-35px"
+                        : "-28px"
                   }}
                 ></i>
               )}
@@ -244,11 +246,11 @@ function Placeholder(props) {
                   color: "#188ae2",
                   right:
                     props.pos.type === "checkbox" || props.pos.type === "radio"
-                      ? "6px"
+                      ? "8px"
                       : "32px",
                   top:
                     props.pos.type === "checkbox" || props.pos.type === "radio"
-                      ? "-35px"
+                      ? "-28px"
                       : "-18px"
                 }}
               ></i>
@@ -259,7 +261,7 @@ function Placeholder(props) {
               id="menu-container"
               style={{
                 zIndex: "99",
-                top: "-27px",
+                top: isMobile ? "-17px" : "-27px",
                 left: props.isPlaceholder ? "-12px" : "5px"
               }}
               className={isShowDateFormat ? "dropdown show" : "dropdown"}
@@ -350,12 +352,12 @@ function Placeholder(props) {
               right:
                 (props.pos.type === "checkbox" || props.pos.type === "radio") &&
                 props.isPlaceholder
-                  ? "-11px"
+                  ? "-9px"
                   : "12px",
               top:
                 (props.pos.type === "checkbox" || props.pos.type === "radio") &&
                 props.isPlaceholder
-                  ? "-35px"
+                  ? "-28px"
                   : "-18px"
             }}
           ></i>
@@ -385,12 +387,12 @@ function Placeholder(props) {
               right:
                 (props.pos.type === "checkbox" || props.pos.type === "radio") &&
                 props.isPlaceholder
-                  ? "-30px"
+                  ? "-27px"
                   : "-8px",
               top:
                 (props.pos.type === "checkbox" || props.pos.type === "radio") &&
                 props.isPlaceholder
-                  ? "-35px"
+                  ? "-28px"
                   : "-18px"
             }}
           ></i>
@@ -502,13 +504,13 @@ function Placeholder(props) {
           right={
             (props.pos.type === "checkbox" || props.pos.type === "radio") &&
             props.isPlaceholder
-              ? -28
+              ? -21
               : -12
           }
           top={
             (props.pos.type === "checkbox" || props.pos.type === "radio") &&
             props.isPlaceholder
-              ? -28
+              ? -21
               : -11
           }
         />
