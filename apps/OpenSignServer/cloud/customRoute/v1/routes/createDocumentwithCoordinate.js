@@ -1,11 +1,56 @@
 import axios from 'axios';
 import { color, customAPIurl } from '../../../../Utils.js';
 
+// `sendDoctoWebhook` is used to send res data of document on webhook
+async function sendDoctoWebhook(doc, WebhookUrl, userId) {
+  if (WebhookUrl) {
+    const params = {
+      event: 'created',
+      ...doc,
+    };
+    await axios
+      .post(WebhookUrl, params, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then(res => {
+        try {
+          // console.log('res ', res);
+          const webhook = new Parse.Object('contracts_Webhook');
+          webhook.set('Log', res?.status);
+          webhook.set('UserId', {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: userId,
+          });
+          webhook.save(null, { useMasterKey: true });
+        } catch (err) {
+          console.log('err save in contracts_Webhook', err);
+        }
+      })
+      .catch(err => {
+        console.log('Err send data to webhook', err);
+        try {
+          const webhook = new Parse.Object('contracts_Webhook');
+          webhook.set('Log', err?.status);
+          webhook.set('UserId', {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: userId,
+          });
+          webhook.save(null, { useMasterKey: true });
+        } catch (err) {
+          console.log('err save in contracts_Webhook', err);
+        }
+      });
+    // console.log('res ', res.data);
+  }
+}
 const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createDocumentwithCoordinate(request, response) {
   const name = request.body.title;
   const note = request.body.note;
   const description = request.body.description;
+  const send_email = request.body.send_email || true;
   const signers = request.body.signers;
   const folderId = request.body.folderId;
   const base64File = request.body.file;
@@ -63,6 +108,7 @@ export default async function createDocumentwithCoordinate(request, response) {
         object.set('URL', fileUrl);
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
+        object.set('IsSendMail', send_email);
         let contact = [];
         if (signers && signers.length > 0) {
           let parseSigners;
@@ -168,7 +214,18 @@ export default async function createDocumentwithCoordinate(request, response) {
         newACL.setWriteAccess(userPtr.id, true);
         object.setACL(newACL);
         const res = await object.save(null, { useMasterKey: true });
-
+        const doc = {
+          objectId: res.id,
+          file: fileUrl,
+          name: name,
+          note: note || '',
+          description: description || '',
+          signers: contact?.map(x => ({ name: x.name, email: x.email, phone: x.phone })),
+          createdAt: res.createdAt,
+        };
+        if (parseExtUser && parseExtUser.Webhook) {
+          sendDoctoWebhook(doc, parseExtUser?.Webhook, userPtr?.id);
+        }
         const newDate = new Date();
         newDate.setDate(newDate.getDate() + 15);
         const localExpireDate = newDate.toLocaleDateString('en-US', {

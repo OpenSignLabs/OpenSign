@@ -9,6 +9,7 @@ export default async function createDocument(request, response) {
   const signers = request.body.signers;
   const folderId = request.body.folderId;
   const base64File = request.body.file;
+  const send_email = request.body.send_email || true;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
@@ -65,6 +66,7 @@ export default async function createDocument(request, response) {
         object.set('URL', fileUrl);
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
+        object.set('IsSendMail', send_email);
         if (signers && signers.length > 0) {
           let parseSigners;
           if (base64File) {
