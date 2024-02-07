@@ -7,6 +7,8 @@ export default async function createDocumentWithTemplate(request, response) {
   const templateId = request.params.template_id;
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.SERVER_URL);
+  const send_email = request.body.send_email || true;
+
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -48,6 +50,8 @@ export default async function createDocumentWithTemplate(request, response) {
             if (template?.Description) {
               object.set('Description', template.Description);
             }
+            object.set('IsSendMail', send_email);
+
             let templateSigner = template?.Signers ? template?.Signers : [];
             let contact = [];
             if (signers && signers.length > 0) {
