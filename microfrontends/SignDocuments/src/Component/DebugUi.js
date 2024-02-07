@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import "../css/./signature.css";
-import { pdfNewWidthFun } from "../utils/Utils";
 import "../css/AddUser.css";
 import Title from "./component/Title";
 import ModalUi from "../premitives/ModalUi";
 import RenderDebugPdf from "./component/RenderDebugPdf";
 import { pdfjs } from "react-pdf";
 import Alert from "../premitives/Alert";
+import HandleError from "./component/HandleError";
+import { useWindowSize } from "../hook/useWindowSize";
 
 function processDimensions(x, y, width, height) {
   if (width < 0) {
@@ -28,15 +29,11 @@ function processDimensions(x, y, width, height) {
   };
 }
 const DebugUi = () => {
-  const divRef = useRef(null);
-  const isMobile = window.innerWidth < 767;
+  const { width } = useWindowSize();
   const [pdf, setPdf] = useState("");
   const [isModal, setIsModal] = useState(true);
   const [allPages, setAllPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pdfNewWidth, setPdfNewWidth] = useState();
-  const [containerWH, setContainerWH] = useState();
-  const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -51,21 +48,10 @@ const DebugUi = () => {
     base64: ""
   });
   const [hoverCoordinates, setHoverCoordinates] = useState({ x: 0, y: 0 });
-  const [drawing, setDrawing] = useState(false);
   const [pdfDimension, setPdfDimension] = useState({ width: 0, height: 0 });
   const [annotations, setAnnotations] = useState([]);
   const [newAnnotation, setNewAnnotation] = useState([]);
   const [copied, setCopied] = useState(false);
-  useEffect(() => {
-    if (divRef.current) {
-      const pdfWidth = pdfNewWidthFun(divRef);
-      setPdfNewWidth(pdfWidth);
-      setContainerWH({
-        width: divRef.current.offsetWidth,
-        height: divRef.current.offsetHeight
-      });
-    }
-  }, [divRef.current]);
 
   useEffect(() => {
     if (pdf && pdf.name) {
@@ -233,207 +219,209 @@ const DebugUi = () => {
     <div>
       {copied && <Alert type="success">Copied</Alert>}
       <Title title={"Debug Pdf"} />
-      {!isModal && (
-        <div className="signatureContainer" ref={divRef}>
-          {/* this component used to render all pdf pages in left side */}
-          <RenderAllPdfPage
-            signPdfUrl={pdf}
-            allPages={allPages}
-            setAllPages={setAllPages}
-            setPageNumber={setPageNumber}
-            pageNumber={pageNumber}
-          />
-          {/* pdf render view */}
-          <div
-            style={{
-              marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
-              marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
-            }}
-          >
-            <div data-tut="reactourThird">
-              {containerWH && (
-                <RenderDebugPdf
-                  pdfUrl={pdf}
-                  pageDetails={pageDetails}
-                  pageNumber={pageNumber}
-                  pdfOriginalWidth={pdfOriginalWidth}
-                  pdfNewWidth={pdfNewWidth}
-                  setPdfLoadFail={setPdfLoadFail}
-                  pdfLoadFail={pdfLoadFail}
-                  handlePageLoadSuccess={handlePageLoadSuccess}
-                  handleMouseMove={handleMouseMove}
-                  handleMouseUp={handleMouseUp}
-                  handleMouseDown={handleMouseDown}
-                  hoverCoordinates={hoverCoordinates}
-                  annotations={annotationsToDraw}
-                  pdfDimension={pdfDimension}
-                  handleMouseMoveDiv={handleMouseMoveDiv}
-                />
-              )}
-            </div>
-          </div>
-          <div style={{ backgroundColor: "white", width: 220 }}>
-            <div
-              style={{
-                fontSize: 18,
-                fontWeight: 500,
-                padding: "10px 12px",
-                borderBottom: "1px solid grey"
-              }}
-            >
-              PDF details
-            </div>
-            <div style={{ fontSize: 14, padding: "5px 12px" }}>
-              Name: {pdfDetails?.name}
-            </div>
-            <div style={{ fontSize: 14, padding: "5px 12px" }}>
-              Pdf type: {pdfDetails?.pdftype}
-            </div>
-            <div style={{ fontSize: 14, padding: "5px 12px" }}>
-              Total Pages: {pdfDetails?.totalPages}
-            </div>
-            <div style={{ fontSize: 14, padding: "5px 12px" }}>
-              Current Page: {pdfDetails?.currentPage}
-            </div>
-            <div style={{ fontSize: 14, padding: "5px 12px" }}>
-              Base64 : {pdfDetails?.base64.slice(0, 10)}...
-              <span
-                style={{
-                  borderRadius: 4,
-                  padding: "3px 5px",
-                  border: "1px solid gray",
-                  fontSize: 12,
-                  margin: 2,
-                  cursor: "pointer"
-                }}
-                onClick={() => copytoclipboard(pdfDetails?.base64)}
-              >
-                <i className="fa-solid fa-copy"></i>
-              </span>
-            </div>
-            <div
-              style={{
-                fontSize: 18,
-                fontWeight: 500,
-                padding: "10px 12px",
-                borderBottom: "1px solid grey"
-              }}
-            >
-              Last click
-            </div>
-            <div style={{ fontSize: 14, padding: "5px 12px" }}>
-              x co-ordinate: {pdfDetails?.x}
-            </div>
-            <div style={{ fontSize: 14, padding: "5px 12px" }}>
-              y co-ordinate: {pdfDetails?.y}
-            </div>
-
-            <div
-              style={{
-                fontSize: 18,
-                fontWeight: 500,
-                padding: "10px 12px",
-                borderBottom: "1px solid grey",
-                borderTop: "1px solid grey"
-              }}
-            >
-              Annotation
-            </div>
-            <ul
-              style={{
-                listStyle: "none",
-                padding: 10,
-                height: 500,
-                overflowY: "auto",
-                scrollbarWidth: 5
-              }}
-            >
-              {annotations.map((coord, index) => (
-                <li key={index}>
-                  <span style={{ fontSize: 13, fontWeight: 500 }}>{`Box ${
-                    index + 1
-                  }:`}</span>
-                  <code
-                    style={{ fontSize: 12, color: "black", cursor: "pointer" }}
+      {width < 800 ? (
+        <HandleError handleError={"Debug PDF only availble for PC"} />
+      ) : (
+        <>
+          {!isModal && (
+            <div className="signatureContainer">
+              {/* this component used to render all pdf pages in left side */}
+              <RenderAllPdfPage
+                signPdfUrl={pdf}
+                allPages={allPages}
+                setAllPages={setAllPages}
+                setPageNumber={setPageNumber}
+                pageNumber={pageNumber}
+              />
+              {/* pdf render view */}
+              <div>
+                <div data-tut="reactourThird">
+                  <RenderDebugPdf
+                    pdfUrl={pdf}
+                    pageDetails={pageDetails}
+                    pageNumber={pageNumber}
+                    setPdfLoadFail={setPdfLoadFail}
+                    pdfLoadFail={pdfLoadFail}
+                    handlePageLoadSuccess={handlePageLoadSuccess}
+                    handleMouseMove={handleMouseMove}
+                    handleMouseUp={handleMouseUp}
+                    handleMouseDown={handleMouseDown}
+                    hoverCoordinates={hoverCoordinates}
+                    annotations={annotationsToDraw}
+                    pdfDimension={pdfDimension}
+                    handleMouseMoveDiv={handleMouseMoveDiv}
+                  />
+                </div>
+              </div>
+              <div style={{ backgroundColor: "white", width: 220 }}>
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 500,
+                    padding: "10px 12px",
+                    borderBottom: "1px solid grey"
+                  }}
+                >
+                  PDF details
+                </div>
+                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                  Name: {pdfDetails?.name}
+                </div>
+                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                  Pdf type: {pdfDetails?.pdftype}
+                </div>
+                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                  Total Pages: {pdfDetails?.totalPages}
+                </div>
+                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                  Current Page: {pdfDetails?.currentPage}
+                </div>
+                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                  Base64 : {pdfDetails?.base64.slice(0, 10)}...
+                  <span
+                    style={{
+                      borderRadius: 4,
+                      padding: "3px 5px",
+                      border: "1px solid gray",
+                      fontSize: 12,
+                      margin: 2,
+                      cursor: "pointer"
+                    }}
+                    onClick={() => copytoclipboard(pdfDetails?.base64)}
                   >
-                    {` ["page":${coord?.page}, "x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}]`}
-                  </code>
-                  <div>
-                    <span
-                      style={{
-                        borderRadius: 4,
-                        padding: "3px 5px",
-                        border: "1px solid gray",
-                        fontSize: 12,
-                        margin: 2,
-                        cursor: "pointer"
-                      }}
-                      onClick={() =>
-                        copytoclipboard(
-                          `"page":${coord?.page}, "x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}`
-                        )
-                      }
-                    >
-                      <i className="fa-solid fa-copy"></i>
-                    </span>
-                    <span
-                      style={{
-                        borderRadius: 4,
-                        padding: "3px 5px",
-                        border: "1px solid gray",
-                        fontSize: 12,
-                        margin: 2,
-                        cursor: "pointer"
-                      }}
-                      onClick={() => handleDelete(coord.key)}
-                    >
-                      <i className="fa-solid fa-trash-can"></i>
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
+                    <i className="fa-solid fa-copy"></i>
+                  </span>
+                </div>
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 500,
+                    padding: "10px 12px",
+                    borderBottom: "1px solid grey"
+                  }}
+                >
+                  Last click
+                </div>
+                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                  x co-ordinate: {pdfDetails?.x}
+                </div>
+                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                  y co-ordinate: {pdfDetails?.y}
+                </div>
 
-      <ModalUi title={"Select PDF"} isOpen={isModal}>
-        <form onSubmit={handleSubmit} style={{ margin: "10px" }}>
-          <input
-            type="file"
-            onChange={(e) => handleFileChange(e.target.files)}
-            style={{
-              width: "100%",
-              border: "1px solid grey",
-              borderRadius: "4px",
-              padding: "5px",
-              fontSize: 12
-            }}
-            accept=".pdf"
-            required
-          />
-          <div style={{ borderTop: "1px solid grey", margin: "10px 0" }}></div>
-          <button
-            style={{
-              background: "#32a3ac",
-              borderRadius: "2px",
-              boxShadow:
-                "0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18)",
-              border: "none",
-              textTransform: "uppercase",
-              fontSize: "13px",
-              fontWeight: "600",
-              padding: "0.375rem 0.75rem",
-              textAlign: "center",
-              color: "#ffffff",
-              outline: "none"
-            }}
-            type="submit"
-          >
-            Submit
-          </button>
-        </form>
-      </ModalUi>
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 500,
+                    padding: "10px 12px",
+                    borderBottom: "1px solid grey",
+                    borderTop: "1px solid grey"
+                  }}
+                >
+                  Annotation
+                </div>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 10,
+                    height: 500,
+                    overflowY: "auto",
+                    scrollbarWidth: 5
+                  }}
+                >
+                  {annotations.map((coord, index) => (
+                    <li key={index}>
+                      <span style={{ fontSize: 13, fontWeight: 500 }}>{`Box ${
+                        index + 1
+                      }:`}</span>
+                      <code
+                        style={{
+                          fontSize: 12,
+                          color: "black",
+                          cursor: "pointer"
+                        }}
+                      >
+                        {` ["page":${coord?.page}, "x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}]`}
+                      </code>
+                      <div>
+                        <span
+                          style={{
+                            borderRadius: 4,
+                            padding: "3px 5px",
+                            border: "1px solid gray",
+                            fontSize: 12,
+                            margin: 2,
+                            cursor: "pointer"
+                          }}
+                          onClick={() =>
+                            copytoclipboard(
+                              `"page":${coord?.page}, "x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}`
+                            )
+                          }
+                        >
+                          <i className="fa-solid fa-copy"></i>
+                        </span>
+                        <span
+                          style={{
+                            borderRadius: 4,
+                            padding: "3px 5px",
+                            border: "1px solid gray",
+                            fontSize: 12,
+                            margin: 2,
+                            cursor: "pointer"
+                          }}
+                          onClick={() => handleDelete(coord.key)}
+                        >
+                          <i className="fa-solid fa-trash-can"></i>
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+          <ModalUi title={"Select PDF"} isOpen={isModal}>
+            <form onSubmit={handleSubmit} style={{ margin: "10px" }}>
+              <input
+                type="file"
+                onChange={(e) => handleFileChange(e.target.files)}
+                style={{
+                  width: "100%",
+                  border: "1px solid grey",
+                  borderRadius: "4px",
+                  padding: "5px",
+                  fontSize: 12
+                }}
+                accept=".pdf"
+                required
+              />
+              <div
+                style={{ borderTop: "1px solid grey", margin: "10px 0" }}
+              ></div>
+              <button
+                style={{
+                  background: "#32a3ac",
+                  borderRadius: "2px",
+                  boxShadow:
+                    "0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18)",
+                  border: "none",
+                  textTransform: "uppercase",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  padding: "0.375rem 0.75rem",
+                  textAlign: "center",
+                  color: "#ffffff",
+                  outline: "none"
+                }}
+                type="submit"
+              >
+                Submit
+              </button>
+            </form>
+          </ModalUi>
+        </>
+      )}
     </div>
   );
 };
