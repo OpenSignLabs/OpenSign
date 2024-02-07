@@ -11,7 +11,10 @@ function PlaceholderType(props) {
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
-  const [isCheckedRadio, setIsCheckedRadio] = useState(false);
+  const [isCheckedRadio, setIsCheckedRadio] = useState({
+    isChecked: false,
+    selectValue: ""
+  });
 
   const validateExpression = (regexValidation) => {
     let isValidate = regexValidation.test(inputValue);
@@ -70,7 +73,7 @@ function PlaceholderType(props) {
 
   useEffect(() => {
     onChangeInput(
-      isCheckedRadio,
+      isCheckedRadio.selectValue,
       props.pos.key,
       props.xyPostion,
       props.index,
@@ -540,18 +543,31 @@ function PlaceholderType(props) {
       );
     case "radio":
       return (
-        <label
-          style={{ borderRadius: "50%", textAlign: "center" }}
-          className="inputPlaceholder"
-        >
-          <input
-            type="radio"
-            checked={isCheckedRadio}
-            onClick={() => {
-              setIsCheckedRadio(!isCheckedRadio);
-            }}
-          />
-        </label>
+        <div>
+          {props.pos?.widgetOption?.map((data, ind) => {
+            return (
+              <input
+                key={ind}
+                style={{
+                  width: props.pos.Width,
+                  // height: props.pos.Height,
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: "3px"
+                }}
+                type="radio"
+                checked={isCheckedRadio.selectValue === data}
+                // checked={isCheckedRadio.isChecked}
+                onClick={() => {
+                  setIsCheckedRadio({
+                    isChecked: !isCheckedRadio,
+                    selectValue: data
+                  });
+                }}
+              />
+            );
+          })}
+        </div>
       );
 
     default:

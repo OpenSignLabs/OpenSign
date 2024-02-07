@@ -1058,13 +1058,18 @@ export const multiSignEmbed = async (
         dropdown.enableReadOnly();
       } else if (imgData.type === "radio") {
         const rocketField = form.createRadioGroup(randomboxId);
-        rocketField.addOptionToPage(imgData.widgetOption[0], page, {
-          x: xPos(imgData),
-          y: yPos(imgData),
-          width: scaleWidth,
-          height: scaleHeight
+        let addYPosition = 20;
+        imgData.widgetOption.map((data, ind) => {
+          rocketField.addOptionToPage(data, page, {
+            x: xPos(imgData),
+            y: ind === 0 ? yPos(imgData) : yPos(imgData) - addYPosition,
+            width: 11,
+            height: 11
+          });
+          addYPosition = ind !== 0 && addYPosition + 20;
         });
-        rocketField.select(imgData.widgetOption[0]);
+
+        rocketField.select(imgData.widgetValue);
         rocketField.enableReadOnly();
       } else {
         page.drawImage(img, {

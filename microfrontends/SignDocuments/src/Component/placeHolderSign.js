@@ -22,7 +22,8 @@ import {
   contractUsers,
   getHostUrl,
   addZIndex,
-  randomId
+  randomId,
+  defaultWidthHeight
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import { useNavigate } from "react-router-dom";
@@ -95,10 +96,8 @@ function PlaceHolderSign() {
   const [widgetType, setWidgetType] = useState("");
   const [isUiLoading, setIsUiLoading] = useState(false);
   const [isRadio, setIsRadio] = useState(false);
-  const [radioData, setRadioData] = useState({
-    data: "",
-    label: ""
-  });
+  const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
+
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -903,7 +902,7 @@ function PlaceHolderSign() {
     }
   ];
 
-  const handleSaveDropdownOptions = (dropdownName, dropdownOptions) => {
+  const handleSaveWidgetsOptions = (dropdownName, dropdownOptions) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -918,11 +917,22 @@ function PlaceHolderSign() {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position, ind) => {
           if (position.key === signKey) {
-            return {
-              ...position,
-              widgetName: dropdownName,
-              widgetOption: dropdownOptions
-            };
+            if (widgetType === "radio") {
+              return {
+                ...position,
+                widgetName: dropdownName,
+                widgetOption: dropdownOptions,
+                Height: position.Height
+                  ? position.Height + 15
+                  : defaultWidthHeight(widgetType).width + 15
+              };
+            } else {
+              return {
+                ...position,
+                widgetName: dropdownName,
+                widgetOption: dropdownOptions
+              };
+            }
           }
           return position;
         });
@@ -1068,12 +1078,6 @@ function PlaceHolderSign() {
                   widgetStatus: selectRequiredType
                 };
               }
-            } else if (widgetType === "radio") {
-              return {
-                ...position,
-                widgetName: radioData.label,
-                widgetOption: [radioData.data]
-              };
             } else {
               return {
                 ...position,
@@ -1099,13 +1103,11 @@ function PlaceHolderSign() {
 
         setSignerPos(newUpdateSigner);
         setIsCheckboxRequired(false);
-        setIsRadio(false);
-        setRadioData({});
+
         setSelectRequiredType("Optional");
       }
     }
   };
-
   const handleValidateInput = (e) => {
     if (
       textValidate === "email" ||
@@ -1121,16 +1123,6 @@ function PlaceHolderSign() {
       }, 1500);
     }
   };
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    // Update the state with the new value for the corresponding input
-    setRadioData((prevValues) => ({
-      ...prevValues,
-      [name]: value
-    }));
-  };
-
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1461,83 +1453,7 @@ function PlaceHolderSign() {
                   </button>
                 </div>
               </ModalUi>
-              <ModalUi
-                //isValidate
-                isOpen={isRadio}
-                title={"Radio group"}
-              >
-                <div style={{ height: "100%", padding: 20 }}>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleApplyWidgetsStatus();
-                    }}
-                  >
-                    <div className="radioGroup">
-                      <label
-                        style={{
-                          marginRight: "5px",
-                          fontSize: "14px",
-                          fontWeight: "500"
-                        }}
-                      >
-                        Field name:
-                      </label>
 
-                      <input
-                        required
-                        placeholder="Enter field name"
-                        className="drodown-input radioGroupInput"
-                        // onChange={(e) => setTextValidate(e.target.value)}
-                        id="label"
-                        name="label"
-                        value={radioData.label}
-                        onChange={handleInputChange}
-                      />
-
-                      <label
-                        style={{
-                          marginRight: "5px",
-                          fontSize: "14px",
-                          fontWeight: "500"
-                        }}
-                      >
-                        Data label:
-                      </label>
-
-                      <input
-                        required
-                        placeholder="Enter data"
-                        className="drodown-input radioGroupInput"
-                        id="data"
-                        name="data"
-                        value={radioData.data}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-
-                    <div
-                      style={{
-                        height: "1px",
-                        backgroundColor: "#9f9f9f",
-                        width: "100%",
-                        marginTop: "15px",
-                        marginBottom: "15px"
-                      }}
-                    ></div>
-                    <button
-                      style={{
-                        background: themeColor()
-                      }}
-                      type="submit"
-                      // disabled={!selectCopyType}
-                      className="finishBtn"
-                    >
-                      Apply
-                    </button>
-                  </form>
-                </div>
-              </ModalUi>
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}
@@ -1550,9 +1466,18 @@ function PlaceHolderSign() {
                 Id={uniqueId}
               />
               <DropdownWidgetOption
+                title="RadioGroup"
+                showDropdown={isRadio}
+                setShowDropdown={setIsRadio}
+                handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                currWidgetsDetails={currWidgetsDetails}
+              />
+              <DropdownWidgetOption
+                title="Dropdown options"
                 showDropdown={showDropdown}
                 setShowDropdown={setShowDropdown}
-                handleSaveDropdownOptions={handleSaveDropdownOptions}
+                handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                currWidgetsDetails={currWidgetsDetails}
               />
               {/* pdf header which contain funish back button */}
               <Header
@@ -1603,6 +1528,7 @@ function PlaceHolderSign() {
                     setIsValidate={setIsValidate}
                     setWidgetType={setWidgetType}
                     setIsRadio={setIsRadio}
+                    setCurrWidgetsDetails={setCurrWidgetsDetails}
                   />
                 )}
               </div>
