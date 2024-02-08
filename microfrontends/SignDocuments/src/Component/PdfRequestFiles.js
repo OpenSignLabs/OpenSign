@@ -182,6 +182,51 @@ function PdfRequestFiles() {
           checkAlreadySign.length > 0
         ) {
           setAlreadySign(true);
+        } else {
+          const obj = documentData?.[0];
+          if (
+            obj &&
+            obj.Signers &&
+            obj.Signers.length > 0 &&
+            obj.Placeholders &&
+            obj.Placeholders.length > 0
+          ) {
+            const params = {
+              event: "viewed",
+              body: {
+                objectId: documentData?.[0].objectId,
+                file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
+                name: documentData?.[0].Name,
+                note: documentData?.[0].Note || "",
+                description: documentData?.[0].Description || "",
+                signers: documentData?.[0].Signers?.map((x) => ({
+                  name: x?.Name,
+                  email: x?.Email,
+                  phone: x?.Phone
+                })),
+                viewedBy: jsonSender.email,
+                viewedAt: new Date(),
+                createdAt: documentData?.[0].createdAt
+              }
+            };
+
+            try {
+              await axios.post(
+                `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+                params,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-Parse-Application-Id":
+                      localStorage.getItem("parseAppId"),
+                    sessiontoken: localStorage.getItem("accesstoken")
+                  }
+                }
+              );
+            } catch (err) {
+              console.log("Err ", err);
+            }
+          }
         }
 
         let signers = [];
@@ -616,10 +661,13 @@ function PdfRequestFiles() {
             currnt: "YouDeclined",
             isDeclined: true
           };
+          setIsDecline(currentDecline);
+          setIsUiLoading(false);
           const params = {
             event: "declined",
             body: {
               objectId: pdfDetails?.[0].objectId,
+              file: pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL,
               name: pdfDetails?.[0].Name,
               note: pdfDetails?.[0].Note || "",
               description: pdfDetails?.[0].Description || "",
@@ -628,12 +676,12 @@ function PdfRequestFiles() {
                 email: x?.Email,
                 phone: x?.Phone
               })),
-              createdAt: pdfDetails?.[0].createdAt,
-              declinedAt: new Date()
+              declinedBy: jsonSender.email,
+              declinedAt: new Date(),
+              createdAt: pdfDetails?.[0].createdAt
             }
           };
-          setIsDecline(currentDecline);
-          setIsUiLoading(false);
+
           try {
             await axios.post(
               `${localStorage.getItem("baseUrl")}functions/callwebhook`,
