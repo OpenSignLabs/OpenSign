@@ -1,14 +1,59 @@
 import axios from 'axios';
-import { customAPIurl } from '../../../../Utils.js';
+import { customAPIurl, replaceMailVaribles } from '../../../../Utils.js';
 
+// `sendDoctoWebhook` is used to send res data of document on webhook
+async function sendDoctoWebhook(doc, WebhookUrl, userId) {
+  if (WebhookUrl) {
+    const params = {
+      event: 'created',
+      ...doc,
+    };
+    await axios
+      .post(WebhookUrl, params, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then(res => {
+        try {
+          // console.log('res ', res);
+          const webhook = new Parse.Object('contracts_Webhook');
+          webhook.set('Log', res?.status);
+          webhook.set('UserId', {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: userId,
+          });
+          webhook.save(null, { useMasterKey: true });
+        } catch (err) {
+          console.log('err save in contracts_Webhook', err);
+        }
+      })
+      .catch(err => {
+        console.log('Err send data to webhook', err);
+        try {
+          const webhook = new Parse.Object('contracts_Webhook');
+          webhook.set('Log', err?.status);
+          webhook.set('UserId', {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: userId,
+          });
+          webhook.save(null, { useMasterKey: true });
+        } catch (err) {
+          console.log('err save in contracts_Webhook', err);
+        }
+      });
+    // console.log('res ', res.data);
+  }
+}
 export default async function createDocumentWithTemplate(request, response) {
   const signers = request.body.signers;
   const folderId = request.body.folderId;
   const templateId = request.params.template_id;
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.SERVER_URL);
-  const send_email = request.body.send_email || true;
-
+  const send_email = request.body.send_email;
+  const email_subject = request.body.email_subject;
+  const email_body = request.body.email_body;
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -142,34 +187,32 @@ export default async function createDocumentWithTemplate(request, response) {
             const serverUrl = process.env.SERVER_URL;
             const newServer = serverUrl.replaceAll('/', '%2F');
             const serverParams = `${newServer}%2F&${process.env.APP_ID}&contracts`;
+            if (send_email === false) {
+              console.log("don't send mail");
+            } else {
+              for (let i = 0; i < contact.length; i++) {
+                try {
+                  const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
+                  let url = `${process.env.SERVER_URL}/functions/sendmailv3/`;
+                  const headers = {
+                    'Content-Type': 'application/json',
+                    'X-Parse-Application-Id': process.env.APP_ID,
+                    'X-Parse-Master-Key': process.env.MASTER_KEY,
+                  };
 
-            for (let i = 0; i < contact.length; i++) {
-              try {
-                const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
-                let url = `${process.env.SERVER_URL}/functions/sendmailv3/`;
-                const headers = {
-                  'Content-Type': 'application/json',
-                  'X-Parse-Application-Id': process.env.APP_ID,
-                  'X-Parse-Master-Key': process.env.MASTER_KEY,
-                };
+                  const objectId = contact[i].contactPtr.objectId;
 
-                const objectId = contact[i].contactPtr.objectId;
-
-                const hostUrl = baseUrl.origin + '/loadmf/signmicroapp';
-                let signPdf = `${hostUrl}/login/${res.id}/${contact[i].email}/${objectId}/${serverParams}`;
-                const openSignUrl = 'https://www.opensignlabs.com/contact-us';
-                const orgName = template.ExtUserPtr.Company ? template.ExtUserPtr.Company : '';
-                const themeBGcolor = '#47a3ad';
-                let params = {
-                  recipient: contact[i].email,
-                  subject: `${template.ExtUserPtr.Name} has requested you to sign ${template.ExtUserPtr.Name}`,
-                  from: sender,
-                  html:
-                    "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+                  const hostUrl = baseUrl.origin + '/loadmf/signmicroapp';
+                  let signPdf = `${hostUrl}/login/${res.id}/${contact[i].email}/${objectId}/${serverParams}`;
+                  const openSignUrl = 'https://www.opensignlabs.com/contact-us';
+                  const orgName = template.ExtUserPtr.Company ? template.ExtUserPtr.Company : '';
+                  const themeBGcolor = '#47a3ad';
+                  const email_html =
+                    "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'> <div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src='" +
                     imgPng +
-                    " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+                    "' height='50' style='padding:20px; width:170px; height:40px;' /></div><div style='padding: 2px;font-family: system-ui;background-color:" +
                     themeBGcolor +
-                    ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+                    ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px; margin-bottom: 10px;'> " +
                     template.ExtUserPtr.Name +
                     ' has requested you to review and sign <strong> ' +
                     template.Name +
@@ -181,33 +224,83 @@ export default async function createDocumentWithTemplate(request, response) {
                     localExpireDate +
                     "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
                     signPdf +
-                    "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+                    "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px;'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
                     sender +
-                    ' directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= ' +
+                    ' directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href=' +
                     openSignUrl +
-                    ' target=_blank>here</a>.</p> </div></div></body> </html>',
-                };
-                sendMail = await axios.post(url, params, { headers: headers });
-              } catch (error) {
-                console.log('error', error);
-              }
-            }
+                    ' target=_blank>here</a>.</p> </div></div></body> </html>';
 
-            if (sendMail.data.result.status === 'success') {
-              const user = contact.find(x => x.email === template.ExtUserPtr.Email);
-              if (user && user.email) {
-                return response.json({
-                  objectId: res.id,
-                  url: `${baseUrl.origin}/loadmf/signmicroapp/login/${res.id}/${user.email}/${user.contactPtr.objectId}/${serverParams}`,
-                  message: 'Document sent successfully!',
-                });
-              } else {
-                return response.json({
-                  objectId: res.id,
-                  message: 'Document sent successfully!',
-                });
+                  let replaceVar;
+                  const variables = {
+                    document_title: template.Name,
+                    sender_name: template.ExtUserPtr.Name,
+                    sender_mail: template.ExtUserPtr.Email,
+                    sender_phone: template.ExtUserPtr.Phone,
+                    receiver_name: contact[i].name,
+                    receiver_email: contact[i].email,
+                    receiver_phone: contact[i].phone,
+                    expiry_date: localExpireDate,
+                    company_name: orgName,
+                    signing_url: signPdf,
+                  };
+                  if (email_subject && email_body) {
+                    replaceVar = replaceMailVaribles(email_subject, email_body, variables);
+                  } else if (email_subject) {
+                    replaceVar = replaceMailVaribles(email_subject, '', variables);
+                    replaceVar = { subject: replaceVar.subject, body: email_html };
+                  } else if (email_body) {
+                    replaceVar = replaceMailVaribles(
+                      `${template.ExtUserPtr.Name} has requested you to sign ${template.Name}`,
+                      email_body,
+                      variables
+                    );
+                  } else {
+                    replaceVar = {
+                      subject: `${template.ExtUserPtr.Name} has requested you to sign ${template.Name}`,
+                      body: email_html,
+                    };
+                  }
+
+                  const subject = replaceVar.subject;
+                  const html = replaceVar.body;
+                  let params = {
+                    recipient: contact[i].email,
+                    subject: subject,
+                    from: sender,
+                    html: html,
+                  };
+                  sendMail = await axios.post(url, params, { headers: headers });
+                } catch (error) {
+                  console.log('error', error);
+                }
               }
             }
+            // if (sendMail.data.result.status === 'success') {
+            try {
+              const doc = {
+                objectId: res.id,
+                file: template?.URL,
+                name: template?.Name,
+                note: template?.Note || '',
+                description: template?.Description || '',
+                signers: contact?.map(x => ({ name: x.name, email: x.email, phone: x.phone })),
+                createdAt: res.createdAt,
+              };
+              if (template.ExtUserPtr && template.ExtUserPtr?.Webhook) {
+                sendDoctoWebhook(doc, template.ExtUserPtr?.Webhook, userPtr?.id);
+              }
+            } catch (err) {
+              console.log('Err', err);
+            }
+            return response.json({
+              objectId: res.id,
+              signurl: contact.map(x => ({
+                email: x.email,
+                url: `${baseUrl.origin}/loadmf/signmicroapp/login/${res.id}/${x.email}/${x.contactPtr.objectId}/${serverParams}`,
+              })),
+              message: 'Document sent successfully!',
+            });
+            // }
           } else {
             return response.status(400).json({ error: 'Please provide signers properly!' });
           }
