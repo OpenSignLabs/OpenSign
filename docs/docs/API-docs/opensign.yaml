@@ -830,24 +830,7 @@ paths:
       tags:
       - Webhook
       summary: Save or Update Webhook
-      description: |
-        The save or update Webhook API allow you to save webhook url which is used to trigger events
-        ### events:
-        
-        1. **viewed:**
-            - When signer viewed document this event will trigger.
-            
-        2. **created:**
-            - When document is created this event will trigger.
-            
-        3. **signed:**
-            - When document is signed by signer this event will trigger.
-
-        4. **completed:**
-            - When document is signed by all signers this event will trigger.
-            
-        5. **declined:**
-            - When document is declined by signer this event will trigger.
+      description: "The save or update Webhook API allow you to save webhook url which is used to trigger events\n### events:\n\n1. **viewed:**\n    - When signer viewed document this event will trigger.\n    ```\n    {\n        \"event\": \"viewed\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"viewedBy\": \"SIGNER_EMAIL\",\n        \"viewedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n2. **created:**\n    - When document is created this event will trigger.\n    ```\n    {\n        \"event\": \"created\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"createdAt\": \"TIMESTAMP\"\n      }\n    \n3. **signed:**\n    - When document is signed by signer this event will trigger.\n    ```\n    {\n        \"event\": \"signed\",\n        \"objectId\":\"DOCUMENT_ID\"\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          },\n        ]\n        \"signedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n    }  \n4. **completed:**\n    - When document is signed by all signers this event will trigger.\n     ```\n    {\n        \"event\": \"completed\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"completedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n    \n5. **declined:**\n    - When document is declined by signer this event will trigger.\n    ```\n    {\n        \"event\": \"declined\",\n        \"file\": \"DOCUMENT_URL\",\n        \"name\": \"DOCUMENT_NAME\",\n        \"note\": \"Please review and sign this document\",\n        \"description\": \"\",\n        \"signers\": [\n          {\n            \"name\": \"SIGNER_NAME\",\n            \"email\": \"SIGNER_EMAIL\",\n            \"phone\": \"SIGNER_PHONE\"\n          }\n        ],\n        \"declinedBy\": \"SIGNER_EMAIL\",\n        \"declinedAt\": \"TIMESTAMP\",\n        \"createdAt\": \"TIMESTAMP\"\n      }\n"
       operationId: save&updateWebhook
       requestBody:
         description: Provide url to create Webhook
@@ -1097,7 +1080,7 @@ components:
       properties:
         error:
           type: string
-          example: "Webhook url already exists!"
+          example: Webhook url already exists!
     inline_response_404_2:
       type: object
       properties:
@@ -1135,6 +1118,11 @@ components:
           items:
             $ref: '#/components/schemas/draftdocument_body_signers'
     createdocument_body:
+      required:
+      - file
+      - folderId
+      - signers
+      - title
       type: object
       properties:
         file:
@@ -1157,6 +1145,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/createdocument_body_signers'
+        folderId:
+          type: string
+        send_email:
+          type: boolean
+          example: true
+        email_subject:
+          type: string
+          description: Custom mail subject for signature request
+        email_body:
+          type: string
+          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
     inline_response_200_d:
       type: object
       properties:
@@ -1180,6 +1179,10 @@ components:
           format: string
           example: https://url-to-sign-document.com
     createdocumentwithbinary_body:
+      required:
+      - file
+      - signers
+      - title
       type: object
       properties:
         file:
@@ -1194,6 +1197,17 @@ components:
         signers:
           type: string
           format: array
+        folderId:
+          type: string
+        send_email:
+          type: boolean
+          example: true
+        email_subject:
+          type: string
+          description: Custom mail subject for signature request
+        email_body:
+          type: string
+          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
     createdocumenttemplate_id_Signers:
       type: object
       properties:
@@ -1211,12 +1225,25 @@ components:
           type: string
           example: "123123131"
     createdocument_template_id_body:
+      required:
+      - signers
       type: object
       properties:
         signers:
           type: array
           items:
             $ref: '#/components/schemas/createdocumenttemplate_id_Signers'
+        folderId:
+          type: string
+        send_email:
+          type: boolean
+          example: true
+        email_subject:
+          type: string
+          description: Custom mail subject for signature request
+        email_body:
+          type: string
+          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
     inline_response_200_2:
       type: object
       properties:
