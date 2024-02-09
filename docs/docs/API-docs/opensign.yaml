@@ -798,6 +798,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
   /webhook:
     get:
       tags:
