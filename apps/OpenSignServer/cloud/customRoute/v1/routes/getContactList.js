@@ -10,9 +10,8 @@ export default async function getContactList(request, response) {
     if (token !== undefined) {
       // Valid Token then proceed request
       const userPtr = token.get('userId');
-
-      const limit = request?.query?.limit ? request.query.limit : 100;
-      const skip = request?.query?.skip ? request.query.skip : 0;
+      const limit = request?.query?.limit ? parseInt(request.query.limit) : 100;
+      const skip = request?.query?.skip ? parseInt(request.query.skip) : 0;
       const Contactbook = new Parse.Query('contracts_Contactbook');
       Contactbook.equalTo('CreatedBy', userPtr);
       Contactbook.notEqualTo('IsDeleted', true);
@@ -23,9 +22,9 @@ export default async function getContactList(request, response) {
         const parseRes = JSON.parse(JSON.stringify(res));
         const contactlist = parseRes.map(x => ({
           objectId: x.objectId,
-          Name: x.Name,
-          Email: x.Email,
-          Phone: x.Phone,
+          name: x.Name,
+          email: x.Email,
+          phone: x.Phone,
           createdAt: x.createdAt,
           updatedAt: x.updatedAt,
         }));

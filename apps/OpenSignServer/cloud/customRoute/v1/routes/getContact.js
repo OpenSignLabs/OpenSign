@@ -21,9 +21,9 @@ export default async function getContact(request, response) {
         const parseRes = JSON.parse(JSON.stringify(res));
         return response.json({
           objectId: parseRes.objectId,
-          Name: parseRes.Name,
-          Email: parseRes.Email,
-          Phone: parseRes.Phone,
+          name: parseRes.Name,
+          email: parseRes.Email,
+          phone: parseRes.Phone,
           createdAt: parseRes.createdAt,
           updatedAt: parseRes.updatedAt,
         });
