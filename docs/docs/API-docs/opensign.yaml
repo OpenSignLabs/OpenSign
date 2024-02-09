@@ -438,6 +438,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
     delete:
       tags:
       - Documents
@@ -642,6 +644,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
   /template/{template_id}:
     get:
       tags:
@@ -678,6 +682,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
     put:
       tags:
       - Templates
@@ -725,6 +731,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
     delete:
       tags:
       - Templates
@@ -760,6 +768,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
   /templatelist:
     get:
       tags:
@@ -1454,12 +1464,6 @@ components:
         result:
           type: string
           example: Webhook updated successfully!
-    inline_response_401:
-      type: object
-      properties:
-        result:
-          type: string
-          example: Webhook url already exists!
     inline_response_200_9:
       type: object
       properties:
