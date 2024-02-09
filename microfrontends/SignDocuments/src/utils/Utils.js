@@ -92,9 +92,14 @@ export const onChangeInput = (
   const isSigners = xyPostion.some((data) => data.signerPtr);
 
   if (isSigners) {
-    const filterSignerPos = xyPostion.filter(
-      (data) => data.signerObjId === signerObjId
-    );
+    let filterSignerPos;
+    if (signerObjId) {
+      filterSignerPos = xyPostion.filter(
+        (data) => data.signerObjId === signerObjId
+      );
+    } else {
+      filterSignerPos = xyPostion.filter((data) => data.Role === "prefill");
+    }
     const getPlaceHolder = filterSignerPos[0].placeHolder;
 
     if (initial) {
@@ -139,7 +144,9 @@ export const onChangeInput = (
         });
 
         const newUpdateSigner = xyPostion.map((obj, ind) => {
-          if (obj.signerObjId === signerObjId) {
+          if (obj.Role === "prefill") {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          } else if (obj.signerObjId === signerObjId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
           return obj;
@@ -237,6 +244,11 @@ export const widgets = [
     icon: "fa-regular fa-circle-dot",
     iconSize: "20px"
   }
+  // {
+  //   type: "label",
+  //   icon: "fa-solid fa-text-width",
+  //   iconSize: "20px"
+  // }
 ];
 
 export const getWidgetType = (item, marginLeft) => {
@@ -367,11 +379,18 @@ export const defaultWidthHeight = (type) => {
         width: 50,
         height: 20
       };
+      return obj;
     case "radio":
       obj = {
         width: 15,
-        height: 20
+        height: 30
       };
+      return obj;
+      // case "label":
+      //   obj = {
+      //     width: 150,
+      //     height: 25
+      //   };
       return obj;
     default:
       obj = {
@@ -1005,7 +1024,9 @@ export const multiSignEmbed = async (
                 return page.getHeight() - y - scaleHeight;
               }
             } else {
-              return page.getHeight() - resizePos - scaleHeight;
+              const widgetHeight = imgData.type === "radio" ? 10 : scaleHeight;
+              return page.getHeight() - resizePos - widgetHeight;
+              // - scaleHeight;
             }
           }
         }
@@ -1033,7 +1054,8 @@ export const multiSignEmbed = async (
         imgData.type === "company" ||
         imgData.type === "job title" ||
         imgData.type === "date" ||
-        imgData.type === "email"
+        imgData.type === "email" ||
+        imgData.type === "label"
       ) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
@@ -1057,19 +1079,35 @@ export const multiSignEmbed = async (
         });
         dropdown.enableReadOnly();
       } else if (imgData.type === "radio") {
-        const rocketField = form.createRadioGroup(randomboxId);
+        // page.drawText("first", {
+        //   x: xPos(imgData) + 50,
+        //   y: yPos(imgData),
+        //   size: 18
+        // });
+        // page.drawText("second", {
+        //   x: xPos(imgData) + 50,
+        //   y: yPos(imgData) - 18,
+        //   size: 18
+        // });
+        // page.drawText("third", {
+        //   x: xPos(imgData) + 50,
+        //   y: yPos(imgData) - 34,
+        //   size: 18
+        // });
+
+        const radioGroup = form.createRadioGroup(randomboxId);
         let addYPosition = 18;
 
         for (let i = 1; i <= imgData?.widgetOption.length; i++) {
           const data = imgData?.widgetOption[i - 1];
           let yPosition;
           if (i > 1) {
-            yPosition = yPos(imgData) + addYPosition;
+            yPosition = yPos(imgData) - addYPosition;
           } else {
             yPosition = yPos(imgData);
           }
 
-          rocketField.addOptionToPage(data, page, {
+          radioGroup.addOptionToPage(data, page, {
             x: xPos(imgData),
             y: yPosition,
             width: 11,
@@ -1080,8 +1118,8 @@ export const multiSignEmbed = async (
           }
         }
 
-        rocketField.select(imgData.widgetValue);
-        rocketField.enableReadOnly();
+        radioGroup.select(imgData.widgetValue);
+        radioGroup.enableReadOnly();
       } else {
         page.drawImage(img, {
           x: xPos(imgData),

@@ -845,6 +845,20 @@ option {
   flex-direction: column;
   justify-content: flex-start;
 }
+ 
+.labelTextArea {
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.labelTextArea {
+  padding: 10px;
+  max-width: 100%;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
+}
 @media screen and (max-width:766px) {
 
   .validateInputText {

@@ -4,22 +4,14 @@ import RecipientList from "../../premitives/RecipientList";
 import { useDrag } from "react-dnd";
 import AllWidgets from "../WidgetComponent/allWidgets";
 import { widgets } from "../../utils/Utils";
-import Scrollbar from "react-scrollbars-custom";
 
 function FieldsComponent({
-  pdfUrl,
   dragSignature,
   signRef,
   handleDivClick,
   handleMouseLeave,
-  isDragSign,
   themeColor,
   dragStamp,
-  dragRef,
-  isDragStamp,
-  dragSignatureSS,
-  dragStampSS,
-  isDragSignatureSS,
   isSignYourself,
   addPositionOfSignature,
   signersdata,
@@ -39,7 +31,6 @@ function FieldsComponent({
   handleRoleChange,
   handleOnBlur,
   title,
-  setIsDraggingEnable,
   isdraggingEnable
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
@@ -176,6 +167,18 @@ function FieldsComponent({
       isDragRadio: !!monitor.isDragging()
     })
   });
+  // const [, label] = useDrag({
+  //   type: "BOX",
+
+  //   item: {
+  //     type: "BOX",
+  //     id: 14,
+  //     text: "label"
+  //   },
+  //   collect: (monitor) => ({
+  //     isDragLabel: !!monitor.isDragging()
+  //   })
+  // });
   const isMobile = window.innerWidth < 767;
   const scrollContainerRef = useRef(null);
   const [widget, setWidget] = useState([]);
@@ -213,6 +216,7 @@ function FieldsComponent({
       image,
       email,
       radio
+      // label
     ];
     const getWidgetArray = widgets;
     const newUpdateSigner = getWidgetArray.map((obj, ind) => {
@@ -224,6 +228,7 @@ function FieldsComponent({
 
   const filterWidgets = widget.filter(
     (data) => data.type !== "dropdown" && data.type !== "radio"
+    //  && data.type !== "label"
   );
   const updateWidgets = isSignYourself ? filterWidgets : widget;
 

@@ -28,14 +28,18 @@ function DropdownWidgetOption(props) {
   };
 
   const handleAddInput = () => {
+    const flage = true;
     setDropdownOptionList((prevInputs) => [...prevInputs, ""]);
+    props.handleSaveWidgetsOptions(null, null, flage, false);
   };
 
   const handleDeleteInput = (ind) => {
+    const flage = true;
     const getUpdatedOptions = dropdownOptionList.filter(
       (data, index) => index !== ind
     );
     setDropdownOptionList(getUpdatedOptions);
+    props.handleSaveWidgetsOptions(null, null, false, flage);
   };
   const handleSaveOption = () => {
     props.handleSaveWidgetsOptions(dropdownName, dropdownOptionList);
