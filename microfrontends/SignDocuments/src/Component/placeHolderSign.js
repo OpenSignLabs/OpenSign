@@ -902,7 +902,12 @@ function PlaceHolderSign() {
     }
   ];
 
-  const handleSaveWidgetsOptions = (dropdownName, dropdownOptions) => {
+  const handleSaveWidgetsOptions = (
+    dropdownName,
+    dropdownOptions,
+    addOption,
+    deleteOption
+  ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -918,14 +923,28 @@ function PlaceHolderSign() {
         const addSignPos = getPosData.map((position, ind) => {
           if (position.key === signKey) {
             if (widgetType === "radio") {
-              return {
-                ...position,
-                widgetName: dropdownName,
-                widgetOption: dropdownOptions,
-                Height: position.Height
-                  ? position.Height + 15
-                  : defaultWidthHeight(widgetType).width + 15
-              };
+              if (addOption) {
+                return {
+                  ...position,
+
+                  Height: position.Height
+                    ? position.Height + 15
+                    : defaultWidthHeight(widgetType).height + 15
+                };
+              } else if (deleteOption) {
+                return {
+                  ...position,
+                  Height: position.Height
+                    ? position.Height - 15
+                    : defaultWidthHeight(widgetType).height - 15
+                };
+              } else {
+                return {
+                  ...position,
+                  widgetName: dropdownName,
+                  widgetOption: dropdownOptions
+                };
+              }
             } else {
               return {
                 ...position,
