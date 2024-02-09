@@ -17,7 +17,7 @@ export default async function getWebhook(request, response) {
 
       if (parseUser && parseUser.Webhook) {
         return response.json({
-          Webhook: parseUser.Webhook,
+          webhook: parseUser.Webhook,
         });
       } else {
         return response.json({});

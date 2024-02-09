@@ -37,6 +37,8 @@ export default async function getTemplatetList(request, response) {
       'SignedUrl',
       'ExtUserPtr.Name',
       'Signers.Name',
+      'Signers.Email',
+      'Signers.Phone',
     ];
     const orderBy = '-updatedAt';
     const strParams = JSON.stringify(params);
@@ -51,12 +53,12 @@ export default async function getTemplatetList(request, response) {
     if (res.data && res.data.results.length > 0) {
       const updateRes = res.data.results.map(x => ({
         objectId: x.objectId,
-        Title: x.Name,
-        Note: x.Note || '',
-        Folder: x?.Folder?.Name || 'OpenSign™ Drive',
-        File: x?.SignedUrl || x.URL,
-        Owner: x?.ExtUserPtr?.Name,
-        Signers: x?.Signers?.map(y => y?.Name) || '',
+        title: x.Name,
+        note: x.Note || '',
+        folder: { objectId: x?.Folder?.objectId, name: x?.Folder?.Name } || '',
+        file: x?.SignedUrl || x.URL,
+        owner: x?.ExtUserPtr?.Name,
+        signers: x?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) || [],
         createdAt: x.createdAt,
         updatedAt: x.updatedAt,
       }));
