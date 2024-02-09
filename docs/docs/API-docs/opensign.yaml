@@ -863,11 +863,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_200_8'
         "401":
-          description: Successful operation
+          description: Webhook url already exists!
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_401'
+                $ref: '#/components/schemas/inline_response_401_w'
         "404":
           description: User not found!
           content:
@@ -1092,6 +1092,12 @@ components:
         error:
           type: string
           example: "Something went wrong, please try again later!"
+    inline_response_401_w:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Webhook url already exists!"
     inline_response_404_2:
       type: object
       properties:
