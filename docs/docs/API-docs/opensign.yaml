@@ -1120,7 +1120,6 @@ components:
     createdocument_body:
       required:
       - file
-      - folderId
       - signers
       - title
       type: object
