@@ -22,12 +22,14 @@ export default async function getDocument(request, response) {
         const document = JSON.parse(JSON.stringify(res));
         return response.json({
           objectId: document.objectId,
-          Title: document.Name,
-          Note: document.Note || '',
-          Folder: document?.Folder?.Name || 'OpenSign™ Drive',
-          File: document?.SignedUrl || document.URL,
-          Owner: document?.ExtUserPtr?.Name,
-          Signers: document?.Signers?.map(y => y?.Name) || '',
+          title: document.Name,
+          note: document.Note || '',
+          folder: { objectId: document?.Folder?.objectId, name: document?.Folder?.Name } || '',
+          file: document?.SignedUrl || document.URL,
+          owner: document?.ExtUserPtr?.Name,
+          signers:
+            document?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) ||
+            [],
           createdAt: document.createdAt,
           updatedAt: document.updatedAt,
         });

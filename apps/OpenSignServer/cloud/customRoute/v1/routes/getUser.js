@@ -20,11 +20,11 @@ export default async function getUser(request, response) {
       const parseRes = JSON.parse(JSON.stringify(user));
       return response.json({
         objectId: parseRes.objectId,
-        Name: parseRes.Name,
-        Email: parseRes.Email,
-        Phone: parseRes.Phone,
-        JobTitle: parseRes.JobTitle,
-        Company: parseRes.Company,
+        name: parseRes.Name,
+        email: parseRes.Email,
+        phone: parseRes.Phone,
+        jobTitle: parseRes.JobTitle,
+        company: parseRes.Company,
         createdAt: parseRes.createdAt,
         updatedAt: parseRes.updatedAt,
       });

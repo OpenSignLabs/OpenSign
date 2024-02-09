@@ -22,12 +22,14 @@ export default async function getTemplate(request, response) {
         const template = JSON.parse(JSON.stringify(res));
         return response.json({
           objectId: template.objectId,
-          Title: template.Name,
-          Note: template.Note || '',
-          Folder: template?.Folder?.Name || 'OpenSign™ Drive',
-          File: template?.SignedUrl || x.URL,
-          Owner: template?.ExtUserPtr?.Name,
-          Signers: template?.Signers?.map(y => y?.Name) || '',
+          title: template.Name,
+          note: template.Note || '',
+          folder: { objectId: template?.Folder?.objectId, name: template?.Folder?.Name } || '',
+          file: template?.SignedUrl || x.URL,
+          owner: template?.ExtUserPtr?.Name,
+          signers:
+            template?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) ||
+            [],
           createdAt: template.createdAt,
           updatedAt: template.updatedAt,
         });
