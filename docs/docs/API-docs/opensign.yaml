@@ -835,7 +835,7 @@ paths:
         ### events:
         
         1. **viewed:**
-            - When signer view document this event will trigger.
+            - When signer viewed document this event will trigger.
             
         2. **created:**
             - When document is created this event will trigger.
@@ -844,7 +844,7 @@ paths:
             - When document is signed by signer this event will trigger.
 
         4. **completed:**
-            - When document is singed by signers this event will trigger.
+            - When document is signed by all signers this event will trigger.
             
         5. **declined:**
             - When document is declined by signer this event will trigger.
