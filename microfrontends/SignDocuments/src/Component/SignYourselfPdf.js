@@ -334,6 +334,25 @@ function SignYourSelf() {
     const newDate = moment(milliseconds).format("MM/DD/YYYY");
     return newDate;
   };
+  const getWidgetValue = (type) => {
+    switch (type) {
+      case "name":
+        return pdfDetails[0].ExtUserPtr.Name;
+      case "company":
+        return pdfDetails[0].ExtUserPtr.Company;
+      case "job title":
+        return pdfDetails[0].ExtUserPtr.JobTitle;
+      case "email":
+        return pdfDetails[0].ExtUserPtr.Email;
+      case "checkbox":
+        const flag = true;
+        return flag;
+      case "date":
+        return getDate();
+      default:
+        return "";
+    }
+  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     const key = Math.floor(1000 + Math.random() * 9000);
@@ -345,20 +364,7 @@ function SignYourSelf() {
 
     const dragTypeValue = item?.text ? item.text : monitor.type;
 
-    const widgetValue =
-      dragTypeValue === "name"
-        ? pdfDetails[0].ExtUserPtr.Name
-        : dragTypeValue === "company"
-          ? pdfDetails[0].ExtUserPtr.Company
-          : dragTypeValue === "job title"
-            ? pdfDetails[0].ExtUserPtr.JobTitle
-            : dragTypeValue === "email"
-              ? pdfDetails[0].ExtUserPtr.Email
-              : dragTypeValue === "checkbox"
-                ? true
-                : dragTypeValue === "date"
-                  ? getDate()
-                  : "";
+    const widgetValue = getWidgetValue(dragTypeValue);
     const widgetWidth = defaultWidthHeight(dragTypeValue).width;
     const widgetHeight = defaultWidthHeight(dragTypeValue).height;
 

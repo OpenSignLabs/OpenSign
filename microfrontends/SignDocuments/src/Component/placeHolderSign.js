@@ -207,6 +207,7 @@ function PlaceHolderSign() {
       });
     }
   }, [divRef.current]);
+
   //function for get document details
   const getDocumentDetails = async () => {
     //getting document details
@@ -364,8 +365,6 @@ function PlaceHolderSign() {
         let dropData = [];
         let placeHolder;
         const dragTypeValue = item?.text ? item.text : monitor.type;
-        // const widgetWidth = defaultWidthHeight(dragTypeValue).width;
-        // const widgetHeight = defaultWidthHeight(dragTypeValue).height;
 
         if (item === "onclick") {
           const dropObj = {
@@ -498,6 +497,7 @@ function PlaceHolderSign() {
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
         }
+        setCurrWidgetsDetails("");
         setWidgetType(dragTypeValue);
         setSignKey(key);
         if (isMobile) {

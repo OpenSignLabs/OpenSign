@@ -55,7 +55,6 @@ function DropdownWidgetOption(props) {
       isOpen={props.showDropdown}
       title={props.title}
       closeOff={true}
-      // handleClose={() => props.setShowDropdown(false)}
     >
       <div style={{ height: "100%", padding: 20 }}>
         <form
@@ -148,6 +147,15 @@ function DropdownWidgetOption(props) {
           >
             Save
           </button>
+          {props.currWidgetsDetails?.widgetOption?.length > 0 && (
+            <button
+              type="submit"
+              className="finishBtn cancelBtn"
+              onClick={() => props.setShowDropdown(false)}
+            >
+              Cancel
+            </button>
+          )}
         </form>
       </div>
     </ModalUi>

@@ -65,7 +65,7 @@ function PlaceholderType(props) {
   }, []);
 
   useEffect(() => {
-    if (props.isNeedSign) {
+    if (props.isNeedSign && props.pos.type === "date") {
       // props.pos.widgetValue
       const updateDate = new Date();
       setStartDate(updateDate);
@@ -73,45 +73,50 @@ function PlaceholderType(props) {
   }, []);
 
   useEffect(() => {
-    onChangeInput(
-      isCheckedRadio.selectValue,
-      props.pos.key,
-      props.xyPostion,
-      props.index,
-      props.setXyPostion,
-      props.data && props.data.signerObjId,
-      false
-    );
+    if (props.pos?.type && props.pos.type === "radio" && props.isNeedSign) {
+      console.log("props.pos?.type", props.pos?.type);
+      onChangeInput(
+        isCheckedRadio.selectValue,
+        props.pos.key,
+        props.xyPostion,
+        props.index,
+        props.setXyPostion,
+        props.data && props.data.Id,
+        false
+      );
+    }
   }, [isCheckedRadio]);
   useEffect(() => {
-    if (props.selectDate) {
-      const updateDate = new Date(props.saveDateFormat);
-      setStartDate(updateDate);
-      const dateObj = {
-        date: props.saveDateFormat,
-        format: props.selectDate
-          ? props.selectDate?.format
+    if (props.pos?.type && props.pos.type === "date") {
+      if (props.selectDate) {
+        const updateDate = new Date(props.saveDateFormat);
+        setStartDate(updateDate);
+        const dateObj = {
+          date: props.saveDateFormat,
+          format: props.selectDate
+            ? props.selectDate?.format
+            : props.pos?.dateFormat
+              ? props.pos?.dateFormat
+              : "MM/dd/YYYY"
+        };
+        props.setSelectDate(dateObj);
+      }
+
+      onChangeInput(
+        props.saveDateFormat,
+        props.pos.key,
+        props.xyPostion,
+        props.index,
+        props.setXyPostion,
+        props.data && props.data.Id,
+        false,
+        props.selectDate?.format
+          ? props.selectDate.format
           : props.pos?.dateFormat
             ? props.pos?.dateFormat
             : "MM/dd/YYYY"
-      };
-      props.setSelectDate(dateObj);
+      );
     }
-
-    onChangeInput(
-      props.saveDateFormat,
-      props.pos.key,
-      props.xyPostion,
-      props.index,
-      props.setXyPostion,
-      props.data && props.data.signerObjId,
-      false,
-      props.selectDate?.format
-        ? props.selectDate.format
-        : props.pos?.dateFormat
-          ? props.pos?.dateFormat
-          : "MM/dd/YYYY"
-    );
   }, [props.saveDateFormat]);
 
   const dateValue = (value) => {
@@ -131,19 +136,21 @@ function PlaceholderType(props) {
   ));
 
   useEffect(() => {
-    const senderUser = localStorage.getItem(`Extand_Class`);
-    const jsonSender = JSON.parse(senderUser);
+    if (props.pos?.type) {
+      const senderUser = localStorage.getItem(`Extand_Class`);
+      const jsonSender = JSON.parse(senderUser);
 
-    if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
-      onChangeInput(
-        jsonSender && jsonSender[0],
-        null,
-        props.xyPostion,
-        null,
-        props.setXyPostion,
-        props.signerObjId,
-        true
-      );
+      if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
+        onChangeInput(
+          jsonSender && jsonSender[0],
+          null,
+          props.xyPostion,
+          null,
+          props.setXyPostion,
+          props.data.Id,
+          true
+        );
+      }
     }
   }, [type]);
 
@@ -223,7 +230,7 @@ function PlaceholderType(props) {
               props.xyPostion,
               props.index,
               props.setXyPostion,
-              props.data && props.data.signerObjId,
+              props.data && props.data.Id,
               false
             )
           }
@@ -251,7 +258,7 @@ function PlaceholderType(props) {
               props.xyPostion,
               props.index,
               props.setXyPostion,
-              props.data && props.data.signerObjId,
+              props.data && props.data?.Id,
               false
             );
           }}
@@ -271,7 +278,7 @@ function PlaceholderType(props) {
               props.xyPostion,
               props.index,
               props.setXyPostion,
-              props.data && props.data.signerObjId,
+              props.data && props.data?.Id,
               false
             );
           }}
@@ -334,7 +341,7 @@ function PlaceholderType(props) {
               props.xyPostion,
               props.index,
               props.setXyPostion,
-              props.data && props.data.signerObjId,
+              props.data && props.data?.Id,
               false
             )
           }
@@ -367,7 +374,7 @@ function PlaceholderType(props) {
               props.xyPostion,
               props.index,
               props.setXyPostion,
-              props.data && props.data.signerObjId,
+              props.data && props.data?.Id,
               false
             )
           }
@@ -400,7 +407,7 @@ function PlaceholderType(props) {
               props.xyPostion,
               props.index,
               props.setXyPostion,
-              props.data && props.data.signerObjId,
+              props.data && props.data?.Id,
               false
             )
           }
@@ -418,28 +425,6 @@ function PlaceholderType(props) {
     case "date":
       return (
         <div>
-          {/* <input
-            placeholder="mm/dd/yyyy"
-            className="inputPlaceholder"
-            style={{ outlineColor: "#007bff" }}
-            type="date"
-            disabled={props.isPlaceholder ? true : false}
-            onBlur={handleInputBlur}
-            //  value={props.selectDate && formatDate(props.selectDate)}
-            // value={props.selectDate && props.selectDate}
-            onChange={(e) => {
-              props.setSelectDate(e.target.value);
-              onChangeInput(
-                e.target.value,
-                props.pos.key,
-                props.xyPostion,
-                props.index,
-                props.setXyPostion,
-                props.data && props.data.signerObjId,
-                false
-              );
-            }}
-          /> */}
           <DatePicker
             disabled={
               props.isNeedSign && props.data?.signerObjId !== props.signerObjId
@@ -457,19 +442,6 @@ function PlaceholderType(props) {
             }
             onChange={(date) => {
               setStartDate(date);
-
-              // onChangeInput(
-              //   props.saveDateFormat,
-              //   props.pos.key,
-              //   props.xyPostion,
-              //   props.index,
-              //   props.setXyPostion,
-              //   props.data && props.data.signerObjId,
-              //   false,
-              //   props.selectDate?.format
-              //     ? props.selectDate.format
-              //     : "MM/dd/YYYY"
-              // );
             }}
             popperPlacement="top-end"
             customInput={<ExampleCustomInput />}
@@ -527,7 +499,7 @@ function PlaceholderType(props) {
               props.xyPostion,
               props.index,
               props.setXyPostion,
-              props.data && props.data.signerObjId,
+              props.data && props.data?.Id,
               false
             )
           }

@@ -99,15 +99,17 @@ function Placeholder(props) {
 
   //onclick placeholder function to open signature pad
   const handlePlaceholderClick = () => {
-    if (
-      props.pos.type === "text" ||
-      props.pos.type === "checkbox" ||
-      props.pos.type === "name" ||
-      props.pos.type === "company" ||
-      props.pos.type === "job title" ||
-      props.pos.type === "date" ||
-      props.pos.type === "email"
-    ) {
+    const widgetTypeExist = [
+      "text",
+      "checkbox",
+      "name",
+      "company",
+      "job title",
+      "date",
+      "email"
+    ].includes(props.pos.type);
+
+    if (widgetTypeExist) {
       setDraggingEnabled(false);
     }
     if ((props.isNeedSign || props.isSignYourself) && !props.isDragging) {
@@ -167,13 +169,16 @@ function Placeholder(props) {
         <>
           {props.isPlaceholder && (
             <>
-              {(props.pos.type === "checkbox" ||
-                props.pos.type === "text" ||
-                props.pos.type === "email" ||
-                props.pos.type === "name" ||
-                props.pos.type === "company" ||
-                props.pos.type === "job title" ||
-                props.pos.type === "radio") && (
+              {[
+                "checkbox",
+                "text",
+                "email",
+                "name",
+                "company",
+                "job title",
+                "dropdown",
+                "radio"
+              ].includes(props.pos.type) && (
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
@@ -181,6 +186,8 @@ function Placeholder(props) {
                       props.setIsCheckboxRequired(true);
                     } else if (props.pos.type === "radio") {
                       props.setIsRadio(true);
+                    } else if (props.pos.type === "dropdown") {
+                      props?.setShowDropdown(true);
                     } else {
                       props.setIsValidate(true);
                     }
@@ -214,7 +221,8 @@ function Placeholder(props) {
                       props.pos.type === "email" ||
                       props.pos.type === "name" ||
                       props.pos.type === "company" ||
-                      props.pos.type === "job title"
+                      props.pos.type === "job title" ||
+                      props.pos.type === "dropdown"
                         ? "49px"
                         : "23px",
                     top:
@@ -222,7 +230,8 @@ function Placeholder(props) {
                       props.pos.type === "email" ||
                       props.pos.type === "name" ||
                       props.pos.type === "company" ||
-                      props.pos.type === "job title"
+                      props.pos.type === "job title" ||
+                      props.pos.type === "dropdown"
                         ? "-17px"
                         : "-28px"
                   }}
@@ -261,10 +270,14 @@ function Placeholder(props) {
               id="menu-container"
               style={{
                 zIndex: "99",
-                top: isMobile ? "-17px" : "-27px",
-                left: props.isPlaceholder ? "-12px" : "5px"
+                top: "-19px",
+                right: props.isPlaceholder ? "60px" : "44px"
               }}
-              className={isShowDateFormat ? "dropdown show" : "dropdown"}
+              className={
+                isShowDateFormat
+                  ? "dropdown signUserIcon show"
+                  : "dropdown signUserIcon"
+              }
               onClick={(e) => {
                 setIsShowDateFormat(!isShowDateFormat);
                 e.stopPropagation();
