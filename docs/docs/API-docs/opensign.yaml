@@ -803,7 +803,25 @@ paths:
       tags:
       - Webhook
       summary: Get Webhook
-      description: The Get Webhook API allow you to get webhook url
+      description: |
+        The save or update Webhook API allow you to save webhook url which is used to trigger events
+        ### events:
+        
+        1. **viewed:**
+            - When signer view document this event will trigger.
+            
+        2. **created:**
+            - When document is created this event will trigger.
+            
+        3. **signed:**
+            - When document is signed by signer this event will trigger.
+
+        4. **completed:**
+            - When document is singed by signers this event will trigger.
+            
+        5. **declined:**
+            - When document is declined by signer this event will trigger.
+
       operationId: getWebhook
       responses:
         "200":
