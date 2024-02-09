@@ -21,18 +21,18 @@ export const calculateInitialWidthHeight = (type, widgetData) => {
     getHeight: height
   };
 };
-export const addInitialData = (signerPos, setXyPostion, value, signerObjId) => {
+export const addInitialData = (signerPos, setXyPostion, value, userId) => {
   return signerPos.map((item) => {
     if (item.placeHolder && item.placeHolder.length > 0) {
       // If there is a nested array, recursively add the field to the last object
-      if (item.signerObjId === signerObjId) {
+      if (item.Id === userId) {
         return {
           ...item,
           placeHolder: addInitialData(
             item.placeHolder,
             setXyPostion,
             value,
-            signerObjId
+            userId
           )
         };
       } else {
@@ -44,7 +44,7 @@ export const addInitialData = (signerPos, setXyPostion, value, signerObjId) => {
       // If there is no nested array, add the new field
       return {
         ...item,
-        pos: addInitialData(item.pos, setXyPostion, value, signerObjId)
+        pos: addInitialData(item.pos, setXyPostion, value, userId)
         // Adjust this line to add the desired field
       };
     } else {
@@ -85,30 +85,23 @@ export const onChangeInput = (
   xyPostion,
   index,
   setXyPostion,
-  signerObjId,
+  userId,
   initial,
   dateFormat
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
-
+  let filterSignerPos;
   if (isSigners) {
-    let filterSignerPos;
-    if (signerObjId) {
-      filterSignerPos = xyPostion.filter(
-        (data) => data.signerObjId === signerObjId
-      );
+    if (userId) {
+      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
     } else {
       filterSignerPos = xyPostion.filter((data) => data.Role === "prefill");
     }
-    const getPlaceHolder = filterSignerPos[0].placeHolder;
+    console.log("filter", filterSignerPos);
+    const getPlaceHolder = filterSignerPos[0]?.placeHolder;
 
     if (initial) {
-      const xyData = addInitialData(
-        xyPostion,
-        setXyPostion,
-        value,
-        signerObjId
-      );
+      const xyData = addInitialData(xyPostion, setXyPostion, value, userId);
       setXyPostion(xyData);
     } else {
       const getPageNumer = getPlaceHolder.filter(
@@ -146,7 +139,7 @@ export const onChangeInput = (
         const newUpdateSigner = xyPostion.map((obj, ind) => {
           if (obj.Role === "prefill") {
             return { ...obj, placeHolder: newUpdateSignPos };
-          } else if (obj.signerObjId === signerObjId) {
+          } else if (obj.Id === userId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
           return obj;
@@ -386,12 +379,12 @@ export const defaultWidthHeight = (type) => {
         height: 30
       };
       return obj;
-      // case "label":
-      //   obj = {
-      //     width: 150,
-      //     height: 25
-      //   };
-      return obj;
+    // case "label":
+    //   obj = {
+    //     width: 150,
+    //     height: 25
+    //   };
+    // return obj;
     default:
       obj = {
         width: 150,
@@ -946,6 +939,16 @@ export const multiSignEmbed = async (
         imgData.type === "initials" ||
         imgData.type === "image"
       ) {
+        console.log(images[id]);
+        if (
+          (imgData.ImageType && imgData.ImageType === "image/png") ||
+          imgData.ImageType === "image/jpeg"
+        ) {
+          img = await pdfDoc.embedJpg(images[id]);
+        } else {
+          img = await pdfDoc.embedPng(images[id]);
+        }
+      } else if (!imgData.type) {
         if (
           (imgData.ImageType && imgData.ImageType === "image/png") ||
           imgData.ImageType === "image/jpeg"
@@ -1079,22 +1082,6 @@ export const multiSignEmbed = async (
         });
         dropdown.enableReadOnly();
       } else if (imgData.type === "radio") {
-        // page.drawText("first", {
-        //   x: xPos(imgData) + 50,
-        //   y: yPos(imgData),
-        //   size: 18
-        // });
-        // page.drawText("second", {
-        //   x: xPos(imgData) + 50,
-        //   y: yPos(imgData) - 18,
-        //   size: 18
-        // });
-        // page.drawText("third", {
-        //   x: xPos(imgData) + 50,
-        //   y: yPos(imgData) - 34,
-        //   size: 18
-        // });
-
         const radioGroup = form.createRadioGroup(randomboxId);
         let addYPosition = 18;
 

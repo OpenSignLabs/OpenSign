@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 import "../css/./signature.css";
 import { themeColor } from "../utils/ThemeColor/backColor";
 import { DndProvider } from "react-dnd";
@@ -20,7 +21,8 @@ import {
   getHostUrl,
   randomId,
   addZIndex,
-  createDocument
+  createDocument,
+  defaultWidthHeight
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import "../css/AddUser.css";
@@ -32,6 +34,7 @@ import AddRoleModal from "./component/AddRoleModal";
 import PlaceholderCopy from "./component/PlaceholderCopy";
 import ModalComponent from "./component/modalComponent";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
+import DropdownWidgetOption from "./WidgetComponent/dropdownWidgetOption";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -49,6 +52,8 @@ const TemplatePlaceholder = () => {
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
+  const [isCheckboxRequired, setIsCheckboxRequired] = useState(false);
+  const [selectRequiredType, setSelectRequiredType] = useState("Optional");
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -73,6 +78,12 @@ const TemplatePlaceholder = () => {
   const [isSigners, setIsSigners] = useState(false);
   const [zIndex, setZIndex] = useState(1);
   const [isdraggingEnable, setIsDraggingEnable] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [widgetType, setWidgetType] = useState("");
+  const [isRadio, setIsRadio] = useState(false);
+  const [validateError, setValidateError] = useState("");
+  const [isValidate, setIsValidate] = useState(false);
+  const [textValidate, setTextValidate] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -158,6 +169,8 @@ const TemplatePlaceholder = () => {
   const [IsReceipent, setIsReceipent] = useState(true);
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
+  const checkboxType = ["Optional", "Required", "Read only"];
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -327,6 +340,12 @@ const TemplatePlaceholder = () => {
     }
   };
 
+  const getDate = () => {
+    const date = new Date();
+    const milliseconds = date.getTime();
+    const newDate = moment(milliseconds).format("MM/DD/YYYY");
+    return newDate;
+  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
@@ -346,27 +365,36 @@ const TemplatePlaceholder = () => {
         //   (data) => data.signerObjId === signerObjId
         // );
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+        const dragTypeValue = item?.text ? item.text : monitor.type;
         let dropData = [];
         let placeHolder;
         if (item === "onclick") {
           const dropObj = {
-            xPosition: window.innerWidth / 2 - 100,
+            //onclick put placeholder center on pdf
+            xPosition: window.innerWidth / 2 - 150,
             yPosition: window.innerHeight / 2 - 60,
-            isStamp: monitor.type === "stamp" && true,
+            isStamp:
+              (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             isDrag: false,
             scale: scale,
             isMobile: isMobile,
             yBottom: window.innerHeight / 2 - 60,
             zIndex: posZIndex,
-            type: monitor.type
+            type: dragTypeValue,
+            widgetValue:
+              dragTypeValue === "checkbox"
+                ? false
+                : dragTypeValue === "date"
+                  ? getDate()
+                  : ""
           };
           dropData.push(dropObj);
           placeHolder = {
             pageNumber: pageNumber,
             pos: dropData
           };
-        } else if (item.type === "BOX") {
+        } else {
           const offset = monitor.getClientOffset();
           //adding and updating drop position in array when user drop signature button in div
           const containerRect = document
@@ -379,7 +407,8 @@ const TemplatePlaceholder = () => {
           const dropObj = {
             xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
             yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
-            isStamp: isDragStamp || isDragStampSS ? true : false,
+            isStamp:
+              (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             isDrag: false,
             firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
@@ -388,7 +417,13 @@ const TemplatePlaceholder = () => {
             scale: scale,
             isMobile: isMobile,
             zIndex: posZIndex,
-            type: item.text
+            type: item.text,
+            widgetValue:
+              dragTypeValue === "checkbox"
+                ? false
+                : dragTypeValue === "date"
+                  ? getDate()
+                  : ""
           };
 
           dropData.push(dropObj);
@@ -457,9 +492,18 @@ const TemplatePlaceholder = () => {
           }
           setSignerPos((prev) => [...prev, placeHolderPos]);
         }
-        if (isMobile) {
-          setIsDraggingEnable(false);
+
+        if (dragTypeValue === "dropdown") {
+          setShowDropdown(true);
+        } else if (dragTypeValue === "checkbox") {
+          setIsCheckboxRequired(true);
+        } else if (dragTypeValue === "radio") {
+          setIsRadio(true);
         }
+        setCurrWidgetsDetails("");
+        setWidgetType(dragTypeValue);
+        setSignKey(key);
+
         setIsMailSend(false);
       } else {
         setIsReceipent(false);
@@ -969,6 +1013,154 @@ const TemplatePlaceholder = () => {
     setIsModalRole(false);
   };
 
+  //function for base on condition to add checkbox widget status and input text validation in signerPos array
+  const handleApplyWidgetsStatus = (textValidate) => {
+    let regularExpression = textValidate;
+    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+    if (filterSignerPos.length > 0) {
+      const getPlaceHolder = filterSignerPos[0].placeHolder;
+
+      const getPageNumer = getPlaceHolder.filter(
+        (data) => data.pageNumber === pageNumber
+      );
+
+      if (getPageNumer.length > 0) {
+        const getXYdata = getPageNumer[0].pos;
+
+        const getPosData = getXYdata;
+        const addSignPos = getPosData.map((position, ind) => {
+          if (position.key === signKey) {
+            if (widgetType === "checkbox") {
+              if (selectRequiredType === "Read only") {
+                return {
+                  ...position,
+                  widgetStatus: selectRequiredType,
+                  widgetValue: true
+                };
+              } else {
+                return {
+                  ...position,
+                  widgetStatus: selectRequiredType
+                };
+              }
+            } else {
+              return {
+                ...position,
+                validation: regularExpression
+              };
+            }
+          }
+          return position;
+        });
+
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+        const newUpdateSigner = signerPos.map((obj, ind) => {
+          if (obj.Id === uniqueId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+
+        setSignerPos(newUpdateSigner);
+        setIsCheckboxRequired(false);
+
+        setSelectRequiredType("Optional");
+      }
+    }
+  };
+
+  const handleSaveWidgetsOptions = (
+    dropdownName,
+    dropdownOptions,
+    addOption,
+    deleteOption
+  ) => {
+    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+    if (filterSignerPos.length > 0) {
+      const getPlaceHolder = filterSignerPos[0].placeHolder;
+
+      const getPageNumer = getPlaceHolder.filter(
+        (data) => data.pageNumber === pageNumber
+      );
+
+      if (getPageNumer.length > 0) {
+        const getXYdata = getPageNumer[0].pos;
+
+        const getPosData = getXYdata;
+        const addSignPos = getPosData.map((position, ind) => {
+          if (position.key === signKey) {
+            if (widgetType === "radio") {
+              if (addOption) {
+                return {
+                  ...position,
+
+                  Height: position.Height
+                    ? position.Height + 15
+                    : defaultWidthHeight(widgetType).height + 15
+                };
+              } else if (deleteOption) {
+                return {
+                  ...position,
+                  Height: position.Height
+                    ? position.Height - 15
+                    : defaultWidthHeight(widgetType).height - 15
+                };
+              } else {
+                return {
+                  ...position,
+                  widgetName: dropdownName,
+                  widgetOption: dropdownOptions
+                };
+              }
+            } else {
+              return {
+                ...position,
+                widgetName: dropdownName,
+                widgetOption: dropdownOptions
+              };
+            }
+          }
+          return position;
+        });
+
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+        const newUpdateSigner = signerPos.map((obj, ind) => {
+          if (obj.Id === uniqueId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+
+        setSignerPos(newUpdateSigner);
+      }
+    }
+  };
+
+  const handleValidateInput = (e) => {
+    if (
+      textValidate === "email" ||
+      textValidate === "number" ||
+      textValidate === "text"
+    ) {
+      handleApplyWidgetsStatus(textValidate);
+      setIsValidate(false);
+    } else {
+      setValidateError("please enter accurate validation.");
+      setTimeout(() => {
+        setValidateError("");
+      }, 1500);
+    }
+  };
   return (
     <div>
       <Title title={"Template"} />
@@ -1087,6 +1279,128 @@ const TemplatePlaceholder = () => {
                 type={"signersAlert"}
                 setIsShowEmail={setIsShowEmail}
               />
+
+              {/* checkbox widget status component */}
+              <ModalUi isOpen={isCheckboxRequired} title={"Checkbox"}>
+                <div style={{ height: "100%", padding: 20 }}>
+                  {checkboxType.map((data, key) => {
+                    return (
+                      <div
+                        key={key}
+                        style={{ display: "flex", flexDirection: "column" }}
+                      >
+                        <label
+                          key={key}
+                          style={{ fontSize: "16px", fontWeight: "500" }}
+                        >
+                          <input
+                            style={{ accentColor: "red", marginRight: "10px" }}
+                            type="radio"
+                            value={data}
+                            onChange={() => setSelectRequiredType(data)}
+                            checked={selectRequiredType === data}
+                          />
+
+                          {data}
+                        </label>
+                      </div>
+                    );
+                  })}
+
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
+                  <button
+                    onClick={() => {
+                      handleApplyWidgetsStatus();
+                    }}
+                    style={{
+                      background: themeColor()
+                    }}
+                    type="button"
+                    // disabled={!selectCopyType}
+                    className="finishBtn"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </ModalUi>
+              <ModalUi
+                //isValidate
+                isOpen={isValidate}
+                handleClose={() => {
+                  setIsValidate(false);
+                }}
+                title={"Validation"}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
+                  <div className="validateText">
+                    <label
+                      style={{
+                        marginRight: "5px",
+                        fontSize: "14px",
+                        fontWeight: "500"
+                      }}
+                    >
+                      Regular expression:
+                    </label>
+
+                    <input
+                      placeholder="email, number, text"
+                      className="drodown-input validateInputText"
+                      onChange={(e) => setTextValidate(e.target.value)}
+                    />
+                    {validateError && (
+                      <p style={{ color: "red", fontSize: "12px" }}>
+                        {validateError}
+                      </p>
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
+                  <button
+                    onClick={() => {
+                      handleValidateInput();
+                    }}
+                    style={{
+                      background: themeColor()
+                    }}
+                    type="button"
+                    // disabled={!selectCopyType}
+                    className="finishBtn"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </ModalUi>
+              <DropdownWidgetOption
+                title="RadioGroup"
+                showDropdown={isRadio}
+                setShowDropdown={setIsRadio}
+                handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                currWidgetsDetails={currWidgetsDetails}
+              />
+              <DropdownWidgetOption
+                title="Dropdown options"
+                showDropdown={showDropdown}
+                setShowDropdown={setShowDropdown}
+                handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                currWidgetsDetails={currWidgetsDetails}
+              />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}
@@ -1144,6 +1458,12 @@ const TemplatePlaceholder = () => {
                     setSignKey={setSignKey}
                     setSignerObjId={setSignerObjId}
                     isDragging={isDragging}
+                    setShowDropdown={setShowDropdown}
+                    setCurrWidgetsDetails={setCurrWidgetsDetails}
+                    setWidgetType={setWidgetType}
+                    setIsRadio={setIsRadio}
+                    setIsCheckboxRequired={setIsCheckboxRequired}
+                    setIsValidate={setIsValidate}
                   />
                 )}
               </div>
