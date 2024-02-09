@@ -222,7 +222,7 @@ paths:
       tags:
       - Documents
       summary: Draft Document
-      description: The draft Document API allows you to generate document in which you can add signers and widgets from Ui
+      description: "The Draft Document API enables you to create and manage document drafts. These drafts can be further enriched by adding signers and incorporating interactive widgets through our user interface at https://app.opensignlabs.com(for cloud version). This API is designed to streamline the process of document preparation, allowing for a seamless transition from draft to final document.\n\n### Features:\n-\tSave Document Drafts: Securely save your documents in a draft state.\n-\tAdd Signers: Assign signers to your document directly from the API.\n"
       operationId: draftedocument
       requestBody:
         content:
@@ -918,22 +918,21 @@ components:
           type: string
           format: string
           example: x1Hbnms2Pg
-        Title:
+        title:
           type: string
           example: sample template
-        Note:
+        note:
           type: string
           example: template note
-        Folder:
-          type: string
-          example: folder name
-        File:
+        folder:
+          $ref: '#/components/schemas/template_folder'
+        file:
           type: string
           example: https://templateuser.com
-        Owner:
+        owner:
           type: string
           example: template creator name
-        Signers:
+        signers:
           type: array
           items:
             $ref: '#/components/schemas/template_Signers'
@@ -950,15 +949,15 @@ components:
           type: string
           format: string
           example: ph1bhx2jp
-        Name:
+        name:
           type: string
           format: string
           example: joe bee
-        Email:
+        email:
           type: string
           format: string
           example: joebee@example.com
-        Phone:
+        phone:
           type: string
           format: string
           example: "4131231231"
@@ -975,23 +974,23 @@ components:
           type: string
           format: string
           example: FGik23bhUJ
-        Name:
+        name:
           type: string
           format: string
           example: Joe Bee
-        Email:
+        email:
           type: string
           format: string
           example: joebee@example.com
-        Phone:
+        phone:
           type: string
           format: string
           example: "4567832123"
-        JobTitle:
+        jobTitle:
           type: string
           format: string
           example: dev
-        Company:
+        company:
           type: string
           format: string
           example: opensign
@@ -1008,27 +1007,25 @@ components:
           type: string
           format: string
           example: FGik23bhUJ
-        Title:
-          type: string
-          format: string
-          example: sample doc
-        Note:
-          type: string
-          format: string
-          example: please sign document
-        Folder:
-          type: string
-          format: string
-          example: OpenSign™ Drive
-        File:
+        file:
           type: string
           format: string
           example: https://exampleurl.com
-        Owner:
+        title:
+          type: string
+          format: string
+          example: sample doc
+        note:
+          type: string
+          format: string
+          example: please sign document
+        folder:
+          $ref: '#/components/schemas/document_folder'
+        owner:
           type: string
           format: string
           example: joe bee
-        Signers:
+        signers:
           type: array
           items:
             $ref: '#/components/schemas/template_Signers'
@@ -1446,7 +1443,7 @@ components:
     inline_response_200_7:
       type: object
       properties:
-        Webhook:
+        webhook:
           type: string
           example: https://your-webhook-url@example.com
     webhook_body:
@@ -1473,9 +1470,15 @@ components:
     template_Signers:
       type: object
       properties:
-        Name:
+        name:
           type: string
-          example: joe
+          example: joe bee
+        email:
+          type: string
+          example: joebee@example.com
+        phone:
+          type: string
+          example: "456213871"
     inline_response_400_1:
       type: object
       properties:
@@ -1598,6 +1601,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/createtemplate_body_widgets'
+    template_folder:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: x1Hbnms2Pg
+        name:
+          type: string
+          example: folder name
+    document_folder:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: FGik23bhUJ
+        name:
+          type: string
+          format: string
+          example: folder name
   securitySchemes:
     x-api-token:
       type: apiKey
