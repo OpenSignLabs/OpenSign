@@ -21,7 +21,11 @@ export default async function getTemplatetList(request, response) {
     const clsName = 'contracts_Template';
     const params = {
       Type: { $ne: 'Folder' },
-      CreatedBy: userPtr,
+      CreatedBy: {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: userPtr.id,
+      },
       IsArchive: { $ne: true },
     };
     const keys = [

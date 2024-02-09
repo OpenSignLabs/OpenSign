@@ -60,7 +60,6 @@ export default async function createDocumentwithCoordinate(request, response) {
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.SERVER_URL);
-  console.log('send_email ', send_email);
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
