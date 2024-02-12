@@ -19,7 +19,7 @@ export default async function createContact(request, response) {
       const contactbook = new Parse.Query('contracts_Contactbook');
       contactbook.equalTo('Email', email);
       contactbook.equalTo('CreatedBy', userPtr);
-
+      contactbook.notEqualTo('IsDeleted', true);
       const userExists = await contactbook.first({ useMasterKey: true });
 
       if (userExists) {
