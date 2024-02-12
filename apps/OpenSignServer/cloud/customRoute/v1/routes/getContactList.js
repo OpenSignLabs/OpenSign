@@ -17,6 +17,7 @@ export default async function getContactList(request, response) {
       Contactbook.notEqualTo('IsDeleted', true);
       Contactbook.limit(limit);
       Contactbook.skip(skip);
+      Contactbook.descending('createdAt');
       const res = await Contactbook.find({ useMasterKey: true });
       if (res && res.length > 0) {
         const parseRes = JSON.parse(JSON.stringify(res));
