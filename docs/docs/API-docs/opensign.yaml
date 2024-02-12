@@ -1608,26 +1608,32 @@ components:
       properties:
         type:
           type: string
+          description: "Allowed values - signature, stamp."
           format: string
           example: signature
         page:
           type: number
+          description: "The page number on which the widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 1
         x:
           type: number
+          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 244
         "y":
           type: number
+          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 71
         w:
           type: number
+          description: "Width of widget. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 38
         h:
           type: number
+          description: "Height of widget. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 46
     createdocument_body_signers:
@@ -1658,26 +1664,32 @@ components:
       properties:
         type:
           type: string
+          description: "Allowed values - signature, stamp."
           format: string
-          example: stamp
+          example: signature
         page:
           type: number
+          description: "The page number on which the widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 1
         x:
           type: number
+          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 244
         "y":
           type: number
+          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 71
         w:
           type: number
+          description: "Width of widget. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 38
         h:
           type: number
+          description: "Height of widget. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 46
     createtemplate_body_signers:
