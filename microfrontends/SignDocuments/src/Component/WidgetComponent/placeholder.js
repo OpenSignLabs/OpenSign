@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import BorderResize from "../component/borderResize";
 import PlaceholderBorder from "./placeholderBorder";
 import { Rnd } from "react-rnd";
-import { defaultWidthHeight, isMobile, onChangeInput } from "../../utils/Utils";
+import { defaultWidthHeight, isMobile } from "../../utils/Utils";
 import PlaceholderType from "./placeholderType";
 import moment from "moment";
 import "../LegaDrive/LegaDrive.css";
@@ -486,7 +486,7 @@ function Placeholder(props) {
       }
       onDragStop={(event, dragElement) =>
         props.handleStop &&
-        props.handleStop(event, dragElement, props.signerObjId, props.pos.key)
+        props.handleStop(event, dragElement, props.data.Id, props.pos.key)
       }
       default={{
         x: props.xPos(props.pos, props.isSignYourself),

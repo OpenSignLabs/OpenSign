@@ -38,6 +38,7 @@ function Header({
   completeBtnTitle,
   setIsEditTemplate
 }) {
+  const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
   const isGuestSigner = localStorage.getItem("isGuestSigner");
@@ -533,16 +534,16 @@ function Header({
             <>
               {!isMailSend &&
                 signersdata.length > 0 &&
-                signersdata.length !== signerPos.length && (
+                signersdata.length !== filterPrefill.length && (
                   <div>
-                    {signerPos.length === 0 ? (
+                    {filterPrefill.length === 0 ? (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add {signersdata.length - signerPos.length} recipients
-                        signature
+                        Add {signersdata.length - filterPrefill.length}{" "}
+                        recipients signature
                       </span>
                     ) : (
                       <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add {signersdata.length - signerPos.length} more
+                        Add {signersdata.length - filterPrefill.length} more
                         recipients signature
                       </span>
                     )}

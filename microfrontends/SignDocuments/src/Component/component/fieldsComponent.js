@@ -167,18 +167,18 @@ function FieldsComponent({
       isDragRadio: !!monitor.isDragging()
     })
   });
-  // const [, label] = useDrag({
-  //   type: "BOX",
+  const [, label] = useDrag({
+    type: "BOX",
 
-  //   item: {
-  //     type: "BOX",
-  //     id: 14,
-  //     text: "label"
-  //   },
-  //   collect: (monitor) => ({
-  //     isDragLabel: !!monitor.isDragging()
-  //   })
-  // });
+    item: {
+      type: "BOX",
+      id: 14,
+      text: "label"
+    },
+    collect: (monitor) => ({
+      isDragLabel: !!monitor.isDragging()
+    })
+  });
   const isMobile = window.innerWidth < 767;
   const scrollContainerRef = useRef(null);
   const [widget, setWidget] = useState([]);
@@ -215,8 +215,8 @@ function FieldsComponent({
       date,
       image,
       email,
-      radio
-      // label
+      radio,
+      label
     ];
     const getWidgetArray = widgets;
     const newUpdateSigner = getWidgetArray.map((obj, ind) => {
@@ -227,8 +227,8 @@ function FieldsComponent({
   }, []);
 
   const filterWidgets = widget.filter(
-    (data) => data.type !== "dropdown" && data.type !== "radio"
-    //  && data.type !== "label"
+    (data) =>
+      data.type !== "dropdown" && data.type !== "radio" && data.type !== "label"
   );
   const updateWidgets = isSignYourself ? filterWidgets : widget;
 

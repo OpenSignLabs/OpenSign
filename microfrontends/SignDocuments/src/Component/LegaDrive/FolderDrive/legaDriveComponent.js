@@ -40,7 +40,6 @@ function PdfFileComponent({
   //to focus input box on press rename to change doc name
   useEffect(() => {
     if (rename && inputRef.current) {
-      // console.log("ref", inputRef.current)
       setTimeout(() => {
         inputRef.current.focus();
       }, 10);
@@ -477,7 +476,7 @@ function PdfFileComponent({
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
               >
-                <i class="fa-solid fa-font"></i>
+                <i className="fa-solid fa-font"></i>
                 <span style={{ marginLeft: "8px" }}>Rename</span>
               </ContextMenu.Item>
             </ContextMenu.Content>
@@ -542,7 +541,7 @@ function PdfFileComponent({
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
               >
-                <i class="fa-solid fa-font"></i>
+                <i className="fa-solid fa-font"></i>
                 <span style={{ marginLeft: "8px" }}>Rename</span>
               </ContextMenu.Item>
             </ContextMenu.Content>
@@ -628,7 +627,7 @@ function PdfFileComponent({
                         onClick={() => handleMenuItemClick(menu.type, data)}
                         className="ContextMenuItem"
                       >
-                        <i class={menu.icon}></i>
+                        <i className={menu.icon}></i>
                         <span style={{ marginLeft: "8px" }}>{menu.type}</span>
                       </ContextMenu.Item>
                     );

@@ -74,7 +74,6 @@ function PlaceholderType(props) {
 
   useEffect(() => {
     if (props.pos?.type && props.pos.type === "radio" && props.isNeedSign) {
-      console.log("props.pos?.type", props.pos?.type);
       onChangeInput(
         isCheckedRadio.selectValue,
         props.pos.key,
@@ -131,7 +130,7 @@ function PlaceholderType(props) {
       ref={ref}
     >
       {dateValue(value)}
-      <i class="fa-solid fa-calendar" style={{ marginLeft: "5px" }}></i>
+      <i className="fa-solid fa-calendar" style={{ marginLeft: "5px" }}></i>
     </div>
   ));
 
@@ -543,7 +542,26 @@ function PlaceholderType(props) {
           })}
         </div>
       );
-
+    case "label":
+      return (
+        <textarea
+          onChange={(e) => {
+            onChangeInput(
+              e.target.value,
+              props.pos.key,
+              props.xyPostion,
+              props.index,
+              props.setXyPostion,
+              null,
+              false
+            );
+          }}
+          className="labelTextArea"
+          name="story"
+          cols="50"
+          style={{ zIndex: "99", height: "100%", width: "100%" }}
+        />
+      );
     default:
       return props.pos.SignUrl ? (
         <div style={{ pointerEvents: "none" }}>
