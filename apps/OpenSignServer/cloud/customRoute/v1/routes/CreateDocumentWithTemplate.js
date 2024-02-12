@@ -318,6 +318,6 @@ export default async function createDocumentWithTemplate(request, response) {
     if (err.code === 101) {
       return response.status(404).json({ error: 'Invalid template id!' });
     }
-    return response.status(400).json({ error: 'Something went wrong!' });
+    return response.status(400).json({ error: 'Something went wrong, please try again later!' });
   }
 }

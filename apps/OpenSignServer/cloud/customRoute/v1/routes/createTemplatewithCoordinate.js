@@ -186,6 +186,6 @@ export default async function createTemplatewithCoordinate(request, response) {
     }
   } catch (err) {
     console.log('err ', err);
-    return response.status(400).json({ error: 'Something went wrong!' });
+    return response.status(400).json({ error: 'Something went wrong, please try again later!' });
   }
 }
