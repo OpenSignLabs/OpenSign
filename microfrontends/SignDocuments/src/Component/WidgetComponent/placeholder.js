@@ -237,32 +237,35 @@ function Placeholder(props) {
                   }}
                 ></i>
               )}
-
-              <i
-                data-tut="reactourLinkUser"
-                className="fa-regular fa-user signUserIcon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  props.handleLinkUser(props.data.Id);
-                  props.setUniqueId(props.data.Id);
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  props.handleLinkUser(props.data.Id);
-                  props.setUniqueId(props.data.Id);
-                }}
-                style={{
-                  color: "#188ae2",
-                  right:
-                    props.pos.type === "checkbox" || props.pos.type === "radio"
-                      ? "8px"
-                      : "32px",
-                  top:
-                    props.pos.type === "checkbox" || props.pos.type === "radio"
-                      ? "-28px"
-                      : "-18px"
-                }}
-              ></i>
+              {props.pos.type !== "label" && (
+                <i
+                  data-tut="reactourLinkUser"
+                  className="fa-regular fa-user signUserIcon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    props.handleLinkUser(props.data.Id);
+                    props.setUniqueId(props.data.Id);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    props.handleLinkUser(props.data.Id);
+                    props.setUniqueId(props.data.Id);
+                  }}
+                  style={{
+                    color: "#188ae2",
+                    right:
+                      props.pos.type === "checkbox" ||
+                      props.pos.type === "radio"
+                        ? "8px"
+                        : "32px",
+                    top:
+                      props.pos.type === "checkbox" ||
+                      props.pos.type === "radio"
+                        ? "-28px"
+                        : "-18px"
+                  }}
+                ></i>
+              )}
             </>
           )}
           {props.pos.type === "date" && selectDate && (
@@ -315,22 +318,6 @@ function Placeholder(props) {
                       onClick={() => {
                         setIsShowDateFormat(!isShowDateFormat);
                         setSelectDate(data);
-
-                        // {
-                        //   props.isPlaceholder &&
-                        //     onChangeInput(
-                        //       data.date,
-                        //       props.pos.key,
-                        //       props.xyPostion,
-                        //       props.index,
-                        //       props.setXyPostion,
-                        //       props.data && props.data.signerObjId,
-                        //       false,
-                        //       selectDate?.format
-                        //         ? selectDate.format
-                        //         : "MM/dd/YYYY"
-                        //     );
-                        // }
                       }}
                       className="dropdown-item itemColor"
                       style={{ fontSize: "12px" }}
