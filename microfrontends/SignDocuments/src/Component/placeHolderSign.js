@@ -351,8 +351,8 @@ function PlaceHolderSign() {
   };
 
   const getSignerPos = (item, monitor) => {
-    setSignerObjId("");
-    setContractName("");
+    //  setSignerObjId("");
+    // setContractName("");
     if (uniqueId) {
       const posZIndex = zIndex + 1;
       setZIndex(posZIndex);
@@ -427,6 +427,7 @@ function PlaceHolderSign() {
           pos: dropData
         };
       }
+
       if (signer && dragTypeValue !== "label") {
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
 
@@ -1247,6 +1248,7 @@ function PlaceHolderSign() {
       }, 1500);
     }
   };
+
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1590,6 +1592,7 @@ function PlaceHolderSign() {
                 Id={uniqueId}
               />
               <DropdownWidgetOption
+                type="radio"
                 title="RadioGroup"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
@@ -1597,6 +1600,7 @@ function PlaceHolderSign() {
                 currWidgetsDetails={currWidgetsDetails}
               />
               <DropdownWidgetOption
+                type="dropdown"
                 title="Dropdown options"
                 showDropdown={showDropdown}
                 setShowDropdown={setShowDropdown}

@@ -1388,6 +1388,7 @@ const TemplatePlaceholder = () => {
                 </div>
               </ModalUi>
               <DropdownWidgetOption
+                type="radio"
                 title="RadioGroup"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
@@ -1395,6 +1396,7 @@ const TemplatePlaceholder = () => {
                 currWidgetsDetails={currWidgetsDetails}
               />
               <DropdownWidgetOption
+                type="dropdown"
                 title="Dropdown options"
                 showDropdown={showDropdown}
                 setShowDropdown={setShowDropdown}

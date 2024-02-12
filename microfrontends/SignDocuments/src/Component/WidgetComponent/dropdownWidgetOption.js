@@ -7,7 +7,7 @@ function DropdownWidgetOption(props) {
     "option-2"
   ]);
 
-  const [dropdownName, setDropdownName] = useState("Field-1");
+  const [dropdownName, setDropdownName] = useState(props.type);
 
   useEffect(() => {
     if (
