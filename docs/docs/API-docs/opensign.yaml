@@ -289,7 +289,7 @@ paths:
       description: |
         The Create Document API allows users to generate new documents by providing data with base64 encoded file.
 
-        Upload you pdf in [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
+        Upload you pdf in our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
       operationId: createdocument
       requestBody:
         content:
@@ -318,44 +318,13 @@ paths:
                 $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
-  /createdocumentwithbinary:
-    post:
-      tags:
-      - Documents
-      summary: Create Document from binary
-      description: |
-        The Create Document API allows users to generate new documents by providing data through `multipart/form-data`.
-
-        Upload you pdf in [**Debug PDF**](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
-      operationId: createdocumentwithbinary
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/createdocumentwithbinary_body'
-        required: true
-      responses:
-        "200":
-          description: Document created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_1'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
   /createdocument/{template_id}:
     post:
       tags:
       - Documents
       summary: Create Document from Template
       description: |
-        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug PDF**](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) or using the Create Template API.
+        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug UI**](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) or using the Create Template API.
       operationId: createdocumentwithtemplateid
       parameters:
       - name: template_id
@@ -653,50 +622,13 @@ paths:
       tags:
       - Templates
       summary: Create Template
-      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template. \n\nUpload you pdf in [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF.\n"
+      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template. \n\nUpload you pdf in our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF.\n"
       operationId: createtemplate
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/createtemplate_body'
-        required: true
-      responses:
-        "200":
-          description: Template created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_5'
-        "400":
-          description: "Something went wrong, please try again later!"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400_1'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /createtemplatewithbinary:
-    post:
-      tags:
-      - Templates
-      summary: Create Template from binary
-      description: |
-        The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents.
-
-        Upload you pdf in [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
-      operationId: createtemplatewithbinary
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/createtemplatewithbinary_body'
         required: true
       responses:
         "200":
@@ -1284,38 +1216,6 @@ components:
           type: string
           format: string
           example: https://url-to-sign-document.com
-    createdocumentwithbinary_body:
-      required:
-      - file
-      - signers
-      - title
-      type: object
-      properties:
-        file:
-          type: string
-          format: binary
-        title:
-          type: string
-        description:
-          type: string
-        note:
-          type: string
-        signers:
-          type: string
-          format: array
-        folderId:
-          type: string
-        send_email:
-          type: boolean
-          description: |
-            This parameter allows you to specify whether you want emails to be sent to signers. The default value is "true". If the value of this parameter is "true" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.
-          example: true
-        email_subject:
-          type: string
-          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
-        email_body:
-          type: string
-          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
     createdocumenttemplate_id_Signers:
       type: object
       properties:
@@ -1488,21 +1388,6 @@ components:
         message:
           type: string
           example: Template created successfully!
-    createtemplatewithbinary_body:
-      type: object
-      properties:
-        file:
-          type: string
-          format: binary
-        title:
-          type: string
-        description:
-          type: string
-        note:
-          type: string
-        signers:
-          type: string
-          format: array
     inline_response_404_6:
       type: object
       properties:
@@ -1613,27 +1498,27 @@ components:
           example: signature
         page:
           type: number
-          description: "The page number on which the widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 1
         x:
           type: number
-          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 244
         "y":
           type: number
-          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 71
         w:
           type: number
-          description: "Width of widget. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "Width of widget. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 38
         h:
           type: number
-          description: "Height of widget. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 46
     createdocument_body_signers:
@@ -1669,27 +1554,27 @@ components:
           example: signature
         page:
           type: number
-          description: "The page number on which the widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 1
         x:
           type: number
-          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 244
         "y":
           type: number
-          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 71
         w:
           type: number
-          description: "Width of widget. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "Width of widget. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 38
         h:
           type: number
-          description: "Height of widget. use our [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
           format: number
           example: 46
     createtemplate_body_signers:
