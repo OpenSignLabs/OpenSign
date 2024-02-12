@@ -376,7 +376,7 @@ function Placeholder(props) {
             onTouchEnd={(e) => {
               e.stopPropagation();
               if (props.data) {
-                props.handleDeleteSign(props.pos.key, props.data.Id);
+                props.handleDeleteSign(props.pos.key, props.data?.Id);
               } else {
                 props.handleDeleteSign(props.pos.key);
                 props.setIsStamp(false);
@@ -473,7 +473,7 @@ function Placeholder(props) {
       }
       onDragStop={(event, dragElement) =>
         props.handleStop &&
-        props.handleStop(event, dragElement, props.data.Id, props.pos.key)
+        props.handleStop(event, dragElement, props.data?.Id, props.pos?.key)
       }
       default={{
         x: props.xPos(props.pos, props.isSignYourself),
