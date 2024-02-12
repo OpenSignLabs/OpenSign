@@ -33,7 +33,7 @@ export default async function updateDocument(request, response) {
               updateQuery.set('Note', request?.body?.note);
             }
             if (request?.body?.description) {
-              updateQuery.set('Name', request?.body?.description);
+              updateQuery.set('Description', request?.body?.description);
             }
             if (request?.body?.folderId) {
               updateQuery.set('Folder', {

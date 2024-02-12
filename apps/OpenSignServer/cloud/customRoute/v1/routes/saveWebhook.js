@@ -18,14 +18,21 @@ export default async function saveWebhook(request, response) {
       const isUrlExist = parseUser?.Webhook && parseUser?.Webhook === Url;
 
       if (!isUrlExist) {
-        const updateQuery = new Parse.Object('contracts_Users');
-        updateQuery.id = user.id;
-        updateQuery.set('Webhook', Url);
-        const res = await updateQuery.save(null, { useMasterKey: true });
-        if (res) {
-          return response.json({
-            result: 'Webhook updated successfully!',
-          });
+        try {
+          const updateQuery = new Parse.Object('contracts_Users');
+          updateQuery.id = user.id;
+          updateQuery.set('Webhook', Url);
+          const res = await updateQuery.save(null, { useMasterKey: true });
+          if (res) {
+            return response.json({
+              result: 'Webhook updated successfully!',
+            });
+          }
+        } catch (err) {
+          console.log('Err ', err);
+          return response
+            .status(400)
+            .json({ error: 'Something went wrong, please try again later!' });
         }
       } else {
         return response.status(401).json({ error: 'Webhook url already exists!' });
