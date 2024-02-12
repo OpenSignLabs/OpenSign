@@ -97,7 +97,7 @@ export const onChangeInput = (
     } else {
       filterSignerPos = xyPostion.filter((data) => data.Role === "prefill");
     }
-    console.log("filter", filterSignerPos);
+
     const getPlaceHolder = filterSignerPos[0]?.placeHolder;
 
     if (initial) {
@@ -236,12 +236,12 @@ export const widgets = [
     type: "radio",
     icon: "fa-regular fa-circle-dot",
     iconSize: "20px"
+  },
+  {
+    type: "label",
+    icon: "fa-solid fa-text-width",
+    iconSize: "20px"
   }
-  // {
-  //   type: "label",
-  //   icon: "fa-solid fa-text-width",
-  //   iconSize: "20px"
-  // }
 ];
 
 export const getWidgetType = (item, marginLeft) => {
@@ -338,26 +338,26 @@ export const defaultWidthHeight = (type) => {
       return obj;
     case "name":
       obj = {
-        width: 60,
+        width: 150,
         height: 25
       };
       return obj;
 
     case "company":
       obj = {
-        width: 60,
+        width: 150,
         height: 25
       };
       return obj;
     case "job title":
       obj = {
-        width: 60,
+        width: 150,
         height: 25
       };
       return obj;
     case "date":
       obj = {
-        width: 100,
+        width: 120,
         height: 20
       };
       return obj;
@@ -369,7 +369,7 @@ export const defaultWidthHeight = (type) => {
       return obj;
     case "email":
       obj = {
-        width: 50,
+        width: 150,
         height: 20
       };
       return obj;
@@ -379,12 +379,12 @@ export const defaultWidthHeight = (type) => {
         height: 30
       };
       return obj;
-    // case "label":
-    //   obj = {
-    //     width: 150,
-    //     height: 25
-    //   };
-    // return obj;
+    case "label":
+      obj = {
+        width: 150,
+        height: 17
+      };
+      return obj;
     default:
       obj = {
         width: 150,
@@ -939,7 +939,6 @@ export const multiSignEmbed = async (
         imgData.type === "initials" ||
         imgData.type === "image"
       ) {
-        console.log(images[id]);
         if (
           (imgData.ImageType && imgData.ImageType === "image/png") ||
           imgData.ImageType === "image/jpeg"

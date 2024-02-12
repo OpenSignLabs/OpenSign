@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
+import Parse from "parse";
 import "../css/./signature.css";
+import { PDFDocument } from "pdf-lib";
 import { themeColor } from "../utils/ThemeColor/backColor";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -23,7 +25,8 @@ import {
   getHostUrl,
   addZIndex,
   randomId,
-  defaultWidthHeight
+  defaultWidthHeight,
+  multiSignEmbed
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import { useNavigate } from "react-router-dom";
@@ -158,7 +161,7 @@ function PlaceHolderSign() {
     })
   });
 
-  const [{ isDragStampSS }, dragStampSS] = useDrag({
+  const [, dragStampSS] = useDrag({
     type: "BOX",
     item: {
       id: 4,
@@ -351,85 +354,82 @@ function PlaceHolderSign() {
     setSignerObjId("");
     setContractName("");
     if (uniqueId) {
+      const posZIndex = zIndex + 1;
+      setZIndex(posZIndex);
       const signer = signersdata.find((x) => x.Id === uniqueId);
-      if (signer) {
-        const posZIndex = zIndex + 1;
-        setZIndex(posZIndex);
-        const newWidth = containerWH.width;
-        const scale = pdfOriginalWidth / newWidth;
-        const key = randomId();
-        // let filterSignerPos = signerPos.filter(
-        //   (data) => data.signerObjId === signerObjId
-        // );
+      const newWidth = containerWH.width;
+      const scale = pdfOriginalWidth / newWidth;
+      const key = randomId();
+      let dropData = [];
+      let placeHolder;
+      const dragTypeValue = item?.text ? item.text : monitor.type;
+      if (item === "onclick") {
+        const dropObj = {
+          //onclick put placeholder center on pdf
+          xPosition: window.innerWidth / 2 - 150,
+          yPosition: window.innerHeight / 2 - 60,
+          isStamp:
+            (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
+          key: key,
+          isDrag: false,
+          scale: scale,
+          isMobile: isMobile,
+          yBottom: window.innerHeight / 2 - 60,
+          zIndex: posZIndex,
+          type: dragTypeValue,
+          widgetValue:
+            dragTypeValue === "checkbox"
+              ? false
+              : dragTypeValue === "date"
+                ? getDate()
+                : ""
+        };
+        dropData.push(dropObj);
+        placeHolder = {
+          pageNumber: pageNumber,
+          pos: dropData
+        };
+      } else {
+        const offset = monitor.getClientOffset();
+        //adding and updating drop position in array when user drop signature button in div
+        const containerRect = document
+          .getElementById("container")
+          .getBoundingClientRect();
+        const x = offset.x - containerRect.left;
+        const y = offset.y - containerRect.top;
+        const ybottom = containerRect.bottom - offset.y;
+
+        const dropObj = {
+          xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
+          yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
+          isStamp:
+            (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
+          key: key,
+          isDrag: false,
+          firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
+          firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
+          yBottom: ybottom,
+          scale: scale,
+          isMobile: isMobile,
+          zIndex: posZIndex,
+          type: item.text,
+          widgetValue:
+            dragTypeValue === "checkbox"
+              ? false
+              : dragTypeValue === "date"
+                ? getDate()
+                : ""
+        };
+
+        dropData.push(dropObj);
+        placeHolder = {
+          pageNumber: pageNumber,
+          pos: dropData
+        };
+      }
+      if (signer && dragTypeValue !== "label") {
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-        let dropData = [];
-        let placeHolder;
-        const dragTypeValue = item?.text ? item.text : monitor.type;
 
-        if (item === "onclick") {
-          const dropObj = {
-            //onclick put placeholder center on pdf
-            xPosition: window.innerWidth / 2 - 150,
-            yPosition: window.innerHeight / 2 - 60,
-            isStamp:
-              (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
-            key: key,
-            isDrag: false,
-            scale: scale,
-            isMobile: isMobile,
-            yBottom: window.innerHeight / 2 - 60,
-            zIndex: posZIndex,
-            type: dragTypeValue,
-            widgetValue:
-              dragTypeValue === "checkbox"
-                ? false
-                : dragTypeValue === "date"
-                  ? getDate()
-                  : ""
-          };
-          dropData.push(dropObj);
-          placeHolder = {
-            pageNumber: pageNumber,
-            pos: dropData
-          };
-        } else {
-          const offset = monitor.getClientOffset();
-          //adding and updating drop position in array when user drop signature button in div
-          const containerRect = document
-            .getElementById("container")
-            .getBoundingClientRect();
-          const x = offset.x - containerRect.left;
-          const y = offset.y - containerRect.top;
-          const ybottom = containerRect.bottom - offset.y;
-
-          const dropObj = {
-            xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
-            yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
-            isStamp:
-              (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
-            key: key,
-            isDrag: false,
-            firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
-            firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
-            yBottom: ybottom,
-            scale: scale,
-            isMobile: isMobile,
-            zIndex: posZIndex,
-            type: item.text,
-            widgetValue:
-              dragTypeValue === "checkbox"
-                ? false
-                : dragTypeValue === "date"
-                  ? getDate()
-                  : ""
-          };
-
-          dropData.push(dropObj);
-          placeHolder = {
-            pageNumber: pageNumber,
-            pos: dropData
-          };
-        }
         const { blockColor, Role } = signer;
         //adding placholder in existing signer pos array (placaholder)
         if (filterSignerPos.length > 0) {
@@ -497,11 +497,57 @@ function PlaceHolderSign() {
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
         }
-        setCurrWidgetsDetails("");
         setWidgetType(dragTypeValue);
         setSignKey(key);
         if (isMobile) {
           setIsDraggingEnable(false);
+        }
+      } else {
+        let filterSignerPos = signerPos.filter(
+          (data) => data.Role === "prefill"
+        );
+
+        if (filterSignerPos.length > 0) {
+          const getPlaceHolder = filterSignerPos[0].placeHolder;
+          const updatePlace = getPlaceHolder.filter(
+            (data) => data.pageNumber !== pageNumber
+          );
+          const getPageNumer = getPlaceHolder.filter(
+            (data) => data.pageNumber === pageNumber
+          );
+
+          //add entry of position for same signer on multiple page
+          if (getPageNumer.length > 0) {
+            const getPos = getPageNumer[0].pos;
+            const newSignPos = getPos.concat(dropData);
+            let xyPos = {
+              pageNumber: pageNumber,
+              pos: newSignPos
+            };
+            updatePlace.push(xyPos);
+            const updatesignerPos = signerPos.map((x) =>
+              x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
+            );
+            setSignerPos(updatesignerPos);
+          } else {
+            const updatesignerPos = signerPos.map((x) =>
+              x.Role === "prefill"
+                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+                : x
+            );
+            setSignerPos(updatesignerPos);
+          }
+        } else {
+          let placeHolderPos;
+          placeHolderPos = {
+            signerPtr: {},
+            signerObjId: "",
+            blockColor: "#f58f8c",
+            placeHolder: [placeHolder],
+            Role: "prefill",
+            Id: key
+          };
+          setSignerPos((prev) => [...prev, placeHolderPos]);
         }
       }
     }
@@ -541,9 +587,14 @@ function PlaceHolderSign() {
       const ybottom = containerRect.height - dragElement.y;
 
       if (keyValue >= 0) {
-        const filterSignerPos = updateSignPos.filter(
-          (data) => data.Id === signId
-        );
+        let filterSignerPos;
+        if (signId) {
+          filterSignerPos = updateSignPos.filter((data) => data.Id === signId);
+        } else {
+          filterSignerPos = updateSignPos.filter(
+            (data) => data.Role === "prefill"
+          );
+        }
 
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -576,9 +627,16 @@ function PlaceHolderSign() {
               return obj;
             });
             const newUpdateSigner = updateSignPos.map((obj, ind) => {
-              if (obj.Id === signId) {
-                return { ...obj, placeHolder: newUpdateSignPos };
+              if (signId) {
+                if (obj.Id === signId) {
+                  return { ...obj, placeHolder: newUpdateSignPos };
+                }
+              } else {
+                if (obj.Role === "prefill") {
+                  return { ...obj, placeHolder: newUpdateSignPos };
+                }
               }
+
               return obj;
             });
 
@@ -595,10 +653,6 @@ function PlaceHolderSign() {
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
-    // const filterSignerPos = signerPos.filter(
-    //   (data) => data.signerObjId === signerId
-    // );
-
     const filterSignerPos = signerPos.filter((data) => data.Id === Id);
 
     if (filterSignerPos.length > 0) {
@@ -681,9 +735,58 @@ function PlaceHolderSign() {
     setSignBtnPosition([xySignature]);
   };
 
+  function sanitizeFileName(fileName) {
+    // Remove spaces and invalid characters
+    return fileName.replace(/[^a-zA-Z0-9._-]/g, "");
+  }
+  //embed prefill label widget data
+  const embedPrefilllData = async () => {
+    const prefillExist = signerPos.filter((data) => data.Role === "prefill");
+    if (prefillExist && prefillExist.length > 0) {
+      const placeholder = prefillExist[0].placeHolder;
+      const pdfUrl = pdfDetails[0].URL;
+      const existingPdfBytes = await fetch(pdfUrl).then((res) =>
+        res.arrayBuffer()
+      );
+      const pdfDoc = await PDFDocument.load(existingPdfBytes, {
+        ignoreEncryption: true
+      });
+
+      const flag = false;
+      try {
+        const pdfBytes = await multiSignEmbed(
+          placeholder,
+          pdfDoc,
+          pdfOriginalWidth,
+          flag,
+          containerWH
+        );
+
+        const parseBaseUrl = localStorage.getItem("baseUrl");
+        const parseAppId = localStorage.getItem("parseAppId");
+        Parse.initialize(parseAppId);
+        Parse.serverURL = parseBaseUrl;
+        Parse.initialize(parseAppId);
+        const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";
+        const pdfFile = new Parse.File(fileName, { base64: pdfBytes });
+
+        // Save the Parse File if needed
+        const pdfData = await pdfFile.save();
+
+        const pdfUrl = pdfData.url();
+        return pdfUrl;
+      } catch (e) {
+        console.log("error", e);
+      }
+    } else {
+      return pdfDetails[0].URL;
+    }
+  };
+
   const alertSendEmail = async () => {
-    if (signerPos.length === signersdata.length) {
-      const IsSignerNotExist = signerPos?.some((x) => !x.signerObjId);
+    const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
+    if (filterPrefill.length === signersdata.length) {
+      const IsSignerNotExist = filterPrefill?.some((x) => !x.signerObjId);
       if (IsSignerNotExist) {
         setSignerExistModal(true);
       } else {
@@ -698,11 +801,12 @@ function PlaceHolderSign() {
         mssg: "sure",
         alert: true
       };
-
       setIsSendAlert(alert);
     }
   };
+
   const sendEmailToSigners = async () => {
+    const pdfUrl = await embedPrefilllData();
     setIsUiLoading(true);
     setIsSendAlert({});
 
@@ -792,12 +896,13 @@ function PlaceHolderSign() {
       let updateExpiryDate, data;
       updateExpiryDate = new Date();
       updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
+      const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
 
       try {
         if (updateExpiryDate) {
           data = {
-            Placeholders: signerPos,
-            SignedUrl: pdfDetails[0].URL,
+            Placeholders: filterPrefill,
+            SignedUrl: pdfUrl,
             Signers: signers,
             ExpiryDate: {
               iso: updateExpiryDate,
@@ -806,8 +911,8 @@ function PlaceHolderSign() {
           };
         } else {
           data = {
-            Placeholders: signerPos,
-            SignedUrl: pdfDetails[0].URL,
+            Placeholders: filterPrefill,
+            SignedUrl: pdfUrl,
             Signers: signers
           };
         }
