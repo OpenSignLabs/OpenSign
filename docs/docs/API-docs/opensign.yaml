@@ -7,13 +7,14 @@ info:
   contact:
     email: contact@opensignlabs.com
   license:
-    name: AGPL 3.0
+    name: AGPL v 3.0
     url: http://github.com/opensignlabs/opensign/LICENSE
   version: 1.0.0
 externalDocs:
   description: Find out more about OpenSign
   url: http://docs.opensignlabs.com
 servers:
+- url: https://app.opensignlabs.com/api/v1
 - url: https://staging-app.opensignlabs.com/api/v1
 tags:
 - name: OpenSign
@@ -41,8 +42,8 @@ paths:
     get:
       tags:
       - User
-      summary: Get your details
-      description: The Get User API enables you to get your own details.
+      summary: Get your account details
+      description: The Get User API enables you to get your own account details.
       operationId: getUser
       responses:
         "200":
@@ -70,7 +71,7 @@ paths:
       tags:
       - Contacts
       summary: Create Contact
-      description: The Create contact API allows you to effortlessly create new contacts that can act as signers for your important documents.
+      description: The Create Contact API allows you to effortlessly create new contacts that can act as signers for your important documents.
       operationId: createcontact
       requestBody:
         description: Provide below parameter to create contact
@@ -86,12 +87,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/contact'
-        "404":
+        "401":
+          description: Contact already exists!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401_1'
+        "400":
           description: "Something went wrong, please try again later!"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_404_1'
+                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -125,6 +132,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/contact'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "404":
           description: Contact not found!
           content:
@@ -163,6 +176,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/delete'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "404":
           description: Contact not found!
           content:
@@ -209,6 +228,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -222,7 +247,12 @@ paths:
       tags:
       - Documents
       summary: Draft Document
-      description: "The Draft Document API enables you to create and manage document drafts. These drafts can be further enriched by adding signers and incorporating interactive widgets through our user interface at https://app.opensignlabs.com(for cloud version). This API is designed to streamline the process of document preparation, allowing for a seamless transition from draft to final document.\n\n### Features:\n-\tSave Document Drafts: Securely save your documents in a draft state.\n-\tAdd Signers: Assign signers to your document directly from the API.\n"
+      description: |
+        The Draft Document API enables you to create and manage document drafts. These drafts can be further enriched by adding signers and incorporating interactive widgets through our user interface at [ https://app.opensignlabs.com]( https://app.opensignlabs.com) (for cloud version). This API is designed to streamline the process of document preparation, allowing for a seamless transition from draft to final document.
+
+        ### Features:
+        -  Save Document Drafts: Securely save your documents in a draft state.
+        -  Add Signers: Assign signers to your document directly from the API.
       operationId: draftedocument
       requestBody:
         content:
@@ -237,6 +267,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_d'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -251,9 +287,9 @@ paths:
       - Documents
       summary: Create Document
       description: |
-        The Create Document API allows users to generate new documents by providing data with base64 encoded file. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios.
+        The Create Document API allows users to generate new documents by providing data with base64 encoded file.
 
-        **Upload you pdf in [debug PDF](https://staging-app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF**
+        Upload you pdf in [debug PDF](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
       operationId: createdocument
       requestBody:
         content:
@@ -268,6 +304,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -282,9 +324,9 @@ paths:
       - Documents
       summary: Create Document from binary
       description: |
-        The Create Document API allows users to generate new documents by providing data through `multipart/form-data`. This flexible method allows for the inclusion of various data types, making it suitable for a wide range of document creation scenarios.
+        The Create Document API allows users to generate new documents by providing data through `multipart/form-data`.
 
-        **Upload you pdf in [debug PDF](https://staging-app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF**
+        Upload you pdf in [debug PDF](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
       operationId: createdocumentwithbinary
       requestBody:
         content:
@@ -312,7 +354,8 @@ paths:
       tags:
       - Documents
       summary: Create Document from Template
-      description: The Create Document API allows you to generate new documents by providing template_id.
+      description: |
+        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [debug PDF](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) or using the Create Template API.
       operationId: createdocumentwithtemplateid
       parameters:
       - name: template_id
@@ -343,7 +386,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_400_1'
+                $ref: '#/components/schemas/inline_response_400_cc'
         "405":
           description: Invalid API Token!
           content:
@@ -377,6 +420,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/document'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "404":
           description: Document not found!
           content:
@@ -395,7 +444,7 @@ paths:
       tags:
       - Documents
       summary: Update Document
-      description: The Update Document API allows users to modify and update the details of a specific document.
+      description: "The Update Document API allows users to modify and update the details of a specific document. Note that this API only allows to update a few parameters, you cannot change the file once it the document is created."
       operationId: updateDocument
       parameters:
       - name: document_id
@@ -464,6 +513,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/delete'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "404":
           description: Document not found!
           content:
@@ -579,6 +634,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_dt'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -592,7 +653,7 @@ paths:
       tags:
       - Templates
       summary: Create Template
-      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template . \n\n**Upload you pdf in [debug PDF](https://staging-app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF**\n"
+      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template. \n\nUpload you pdf in [debug PDF](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF.\n"
       operationId: createtemplate
       requestBody:
         content:
@@ -607,6 +668,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -623,7 +690,7 @@ paths:
       description: |
         The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents.
 
-        **Upload you pdf in [debug PDF](https://staging-app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF**
+        Upload you pdf in [debug PDF](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
       operationId: createtemplatewithbinary
       requestBody:
         content:
@@ -638,6 +705,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_5'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -670,6 +743,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/template'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "404":
           description: Template not found!
           content:
@@ -756,6 +835,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/delete'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "404":
           description: Template not found!
           content:
@@ -857,6 +942,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_8'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
         "401":
           description: Webhook url already exists!
           content:
@@ -1078,7 +1169,13 @@ components:
           type: string
           format: string
           example: "1232131321"
-    inline_response_404_1:
+    inline_response_401_1:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Contact already exists!
+    inline_response_400_1:
       type: object
       properties:
         error:
@@ -1157,10 +1254,11 @@ components:
           type: string
         send_email:
           type: boolean
+          description: "This parameter allows you to specify whether you want emails to be sent to signers. The default value is \"true\". If the value of this parameter is \"true\" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.          \n"
           example: true
         email_subject:
           type: string
-          description: Custom mail subject for signature request
+          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
@@ -1209,10 +1307,12 @@ components:
           type: string
         send_email:
           type: boolean
+          description: |
+            This parameter allows you to specify whether you want emails to be sent to signers. The default value is "true". If the value of this parameter is "true" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.
           example: true
         email_subject:
           type: string
-          description: Custom mail subject for signature request
+          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
@@ -1245,10 +1345,12 @@ components:
           type: string
         send_email:
           type: boolean
+          description: |
+            This parameter allows you to specify whether you want emails to be sent to signers. The default value is "true". If the value of this parameter is "true" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.
           example: true
         email_subject:
           type: string
-          description: Custom mail subject for signature request
+          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
@@ -1479,7 +1581,7 @@ components:
         phone:
           type: string
           example: "456213871"
-    inline_response_400_1:
+    inline_response_400_cc:
       type: object
       properties:
         error:
