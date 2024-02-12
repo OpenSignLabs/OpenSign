@@ -289,7 +289,7 @@ paths:
       description: |
         The Create Document API allows users to generate new documents by providing data with base64 encoded file.
 
-        Upload you pdf in [debug PDF](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
+        Upload you pdf in [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
       operationId: createdocument
       requestBody:
         content:
@@ -326,7 +326,7 @@ paths:
       description: |
         The Create Document API allows users to generate new documents by providing data through `multipart/form-data`.
 
-        Upload you pdf in [debug PDF](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
+        Upload you pdf in [**Debug PDF**](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
       operationId: createdocumentwithbinary
       requestBody:
         content:
@@ -355,7 +355,7 @@ paths:
       - Documents
       summary: Create Document from Template
       description: |
-        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [debug PDF](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) or using the Create Template API.
+        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug PDF**](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) or using the Create Template API.
       operationId: createdocumentwithtemplateid
       parameters:
       - name: template_id
@@ -653,7 +653,7 @@ paths:
       tags:
       - Templates
       summary: Create Template
-      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template. \n\nUpload you pdf in [debug PDF](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF.\n"
+      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template. \n\nUpload you pdf in [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF.\n"
       operationId: createtemplate
       requestBody:
         content:
@@ -690,7 +690,7 @@ paths:
       description: |
         The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents.
 
-        Upload you pdf in [debug PDF](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
+        Upload you pdf in [**Debug PDF**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
       operationId: createtemplatewithbinary
       requestBody:
         content:
