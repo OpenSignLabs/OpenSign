@@ -169,16 +169,9 @@ function Placeholder(props) {
         <>
           {props.isPlaceholder && (
             <>
-              {[
-                "checkbox",
-                "text",
-                "email",
-                "name",
-                "company",
-                "job title",
-                "dropdown",
-                "radio"
-              ].includes(props.pos.type) && (
+              {["checkbox", "text", "dropdown", "radio"].includes(
+                props.pos.type
+              ) && (
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
@@ -217,21 +210,11 @@ function Placeholder(props) {
                   style={{
                     color: "#188ae2",
                     right:
-                      props.pos.type === "text" ||
-                      props.pos.type === "email" ||
-                      props.pos.type === "name" ||
-                      props.pos.type === "company" ||
-                      props.pos.type === "job title" ||
-                      props.pos.type === "dropdown"
+                      props.pos.type === "text" || props.pos.type === "dropdown"
                         ? "49px"
                         : "23px",
                     top:
-                      props.pos.type === "text" ||
-                      props.pos.type === "email" ||
-                      props.pos.type === "name" ||
-                      props.pos.type === "company" ||
-                      props.pos.type === "job title" ||
-                      props.pos.type === "dropdown"
+                      props.pos.type === "text" || props.pos.type === "dropdown"
                         ? "-17px"
                         : "-28px"
                   }}
@@ -334,6 +317,7 @@ function Placeholder(props) {
             onClick={(e) => {
               if (props.data) {
                 props.setSignerObjId(props.data.signerObjId);
+                props.setUniqueId(props.data.Id);
               }
               e.stopPropagation();
               props.setIsPageCopy(true);
@@ -342,6 +326,7 @@ function Placeholder(props) {
             onTouchEnd={(e) => {
               if (props.data) {
                 props.setSignerObjId(props.data.signerObjId);
+                props.setUniqueId(props.data.Id);
               }
               e.stopPropagation();
               props.setIsPageCopy(true);
@@ -430,9 +415,6 @@ function Placeholder(props) {
       bounds="parent"
       className="signYourselfBlock"
       style={{
-        // borderRadius:"50%",
-        // display:"flex",
-        // alignItem:"center",
         border: "1px solid #007bff",
         borderRadius: "2px",
         textAlign:
@@ -446,7 +428,12 @@ function Placeholder(props) {
               ? "pointer"
               : "not-allowed"
             : "all-scroll",
-        zIndex: "1",
+        zIndex:
+          props.pos.type === "date"
+            ? "99"
+            : props?.pos?.zIndex
+              ? props.pos.zIndex
+              : "5",
         background: props.data ? props.data.blockColor : "rgb(203 233 237)"
       }}
       onDrag={() => {

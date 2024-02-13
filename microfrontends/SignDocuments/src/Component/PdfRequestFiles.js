@@ -1059,7 +1059,9 @@ function PdfRequestFiles() {
         }}
       >
         <div style={{ height: "100%", padding: 20 }}>
-          <p>Please input a properly validated input value.</p>
+          <p>
+            The input does not meet the criteria set by the regular expression.
+          </p>
 
           <div
             style={{

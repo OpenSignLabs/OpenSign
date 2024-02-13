@@ -35,6 +35,7 @@ import PlaceholderCopy from "./component/PlaceholderCopy";
 import ModalComponent from "./component/modalComponent";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import DropdownWidgetOption from "./WidgetComponent/dropdownWidgetOption";
+import InputValidation from "./WidgetComponent/inputValidation";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -1028,7 +1029,7 @@ const TemplatePlaceholder = () => {
         const getXYdata = getPageNumer[0].pos;
 
         const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position, ind) => {
+        const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
             if (widgetType === "checkbox") {
               if (selectRequiredType === "Read only") {
@@ -1053,13 +1054,13 @@ const TemplatePlaceholder = () => {
           return position;
         });
 
-        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+        const newUpdateSignPos = getPlaceHolder.map((obj) => {
           if (obj.pageNumber === pageNumber) {
             return { ...obj, pos: addSignPos };
           }
           return obj;
         });
-        const newUpdateSigner = signerPos.map((obj, ind) => {
+        const newUpdateSigner = signerPos.map((obj) => {
           if (obj.Id === uniqueId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
@@ -1147,19 +1148,8 @@ const TemplatePlaceholder = () => {
   };
 
   const handleValidateInput = (e) => {
-    if (
-      textValidate === "email" ||
-      textValidate === "number" ||
-      textValidate === "text"
-    ) {
-      handleApplyWidgetsStatus(textValidate);
-      setIsValidate(false);
-    } else {
-      setValidateError("please enter accurate validation.");
-      setTimeout(() => {
-        setValidateError("");
-      }, 1500);
-    }
+    handleApplyWidgetsStatus(textValidate);
+    setIsValidate(false);
   };
   return (
     <div>
@@ -1331,62 +1321,13 @@ const TemplatePlaceholder = () => {
                   </button>
                 </div>
               </ModalUi>
-              <ModalUi
-                //isValidate
-                isOpen={isValidate}
-                handleClose={() => {
-                  setIsValidate(false);
-                }}
-                title={"Validation"}
-              >
-                <div style={{ height: "100%", padding: 20 }}>
-                  <div className="validateText">
-                    <label
-                      style={{
-                        marginRight: "5px",
-                        fontSize: "14px",
-                        fontWeight: "500"
-                      }}
-                    >
-                      Regular expression:
-                    </label>
-
-                    <input
-                      placeholder="email, number, text"
-                      className="drodown-input validateInputText"
-                      onChange={(e) => setTextValidate(e.target.value)}
-                    />
-                    {validateError && (
-                      <p style={{ color: "red", fontSize: "12px" }}>
-                        {validateError}
-                      </p>
-                    )}
-                  </div>
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
-                  <button
-                    onClick={() => {
-                      handleValidateInput();
-                    }}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    // disabled={!selectCopyType}
-                    className="finishBtn"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </ModalUi>
+              <InputValidation
+                setIsValidate={setIsValidate}
+                handleValidateInput={handleValidateInput}
+                isValidate={isValidate}
+                setTextValidate={setTextValidate}
+                textValidate={textValidate}
+              />
               <DropdownWidgetOption
                 type="radio"
                 title="RadioGroup"
@@ -1512,6 +1453,7 @@ const TemplatePlaceholder = () => {
                   initial={true}
                   setIsDraggingEnable={setIsDraggingEnable}
                   isdraggingEnable={isdraggingEnable}
+                  isTemplateFlow={true}
                 />
               </div>
             ) : (
@@ -1554,6 +1496,7 @@ const TemplatePlaceholder = () => {
                         initial={true}
                         setIsDraggingEnable={setIsDraggingEnable}
                         isdraggingEnable={isdraggingEnable}
+                        isTemplateFlow={true}
                       />
                     </div>
                   </div>

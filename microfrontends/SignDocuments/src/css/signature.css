@@ -45,12 +45,13 @@
   position: absolute;
   left: 0px;
   top: 0px;
-  font-size: 12px;
+  /* font-size: 12px; */
   border: 1px solid #007bff;
   border-radius: 2px;
 
 }
-.radioButton{
+
+.radioButton {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -60,6 +61,7 @@
   border: 1px solid #007bff;
   border-radius: 50px;
 }
+
 .inputPlaceholder:focus {
   outline: none;
   border: 1px solid #188ae2;
@@ -144,6 +146,10 @@
   width: 14px;
   height: 14px;
 
+}
+
+.borderResize :hover {
+  cursor: sw-resize;
 }
 
 .dropdown-date-menu {
@@ -834,18 +840,29 @@ option {
 }
 
 .validateInputText {
-  width: 60%;
+  width: 76%;
 }
 
-.radioGroupInput{
+.regxSelect {
+  border: 1px solid #8ad5ce;
+  width: 80%;
+}
+
+.regxSelect:focus {
+  outline: none;
+  border: 1px solid #8ad5ce;
+}
+
+.radioGroupInput {
   width: 100%;
 }
-.radioGroup{
+
+.radioGroup {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
- 
+
 .labelTextArea {
   font-size: 0.8rem;
   letter-spacing: 1px;
@@ -859,9 +876,13 @@ option {
   border: 1px solid #ccc;
   box-shadow: 1px 1px 1px #999;
 }
+
 @media screen and (max-width:766px) {
 
   .validateInputText {
+    width: 93%;
+  }
+  .regxSelect{
     width: 100%;
   }
 
