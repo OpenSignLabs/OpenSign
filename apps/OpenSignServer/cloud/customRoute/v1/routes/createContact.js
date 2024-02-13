@@ -11,10 +11,17 @@ export default async function createContact(request, response) {
   }
   const tokenQuery = new Parse.Query('appToken');
   tokenQuery.equalTo('token', reqToken);
+  tokenQuery.include('userId');
   const token = await tokenQuery.first({ useMasterKey: true });
   if (token !== undefined) {
     // Valid Token then proceed request
-    const userPtr = token.get('userId');
+    const parseUser = JSON.parse(JSON.stringify(token));
+    const userPtr = {
+      __type: 'Pointer',
+      className: '_User',
+      objectId: parseUser.userId.objectId,
+    };
+
     try {
       const contactbook = new Parse.Query('contracts_Contactbook');
       contactbook.equalTo('Email', email);
@@ -23,6 +30,13 @@ export default async function createContact(request, response) {
       const userExists = await contactbook.first({ useMasterKey: true });
 
       if (userExists) {
+        if (request.posthog) {
+          request.posthog?.capture({
+            distinctId: parseUser.userId.email,
+            event: 'create_contact',
+            properties: { response_code: 401 },
+          });
+        }
         return response
           .status(401)
           .json({ error: 'Contact already exists!', objectId: userExists.id });
@@ -72,8 +86,8 @@ export default async function createContact(request, response) {
               contactQuery.set('UserId', user);
 
               const acl = new Parse.ACL();
-              acl.setReadAccess(userPtr.id, true);
-              acl.setWriteAccess(userPtr.id, true);
+              acl.setReadAccess(userPtr.objectId, true);
+              acl.setWriteAccess(userPtr.objectId, true);
               acl.setReadAccess(user.id, true);
               acl.setWriteAccess(user.id, true);
               contactQuery.setACL(acl);
@@ -103,18 +117,18 @@ export default async function createContact(request, response) {
               const body = {
                 appName: 'contracts',
                 roleName: 'contracts_Guest',
-                userId: userRes.id,
+                userId: userRes.objectId,
               };
               await axios.post(roleurl, body, { headers: headers });
-              contactQuery.set('CreatedBy', userPtr);
+              contactQuery.set('CreatedBy', userPtr.objectId);
               contactQuery.set('UserId', {
                 __type: 'Pointer',
                 className: '_User',
                 objectId: userRes.id,
               });
               const acl = new Parse.ACL();
-              acl.setReadAccess(userPtr.id, true);
-              acl.setWriteAccess(userPtr.id, true);
+              acl.setReadAccess(userPtr.objectId, true);
+              acl.setWriteAccess(userPtr.objectId, true);
               acl.setReadAccess(userRes.id, true);
               acl.setWriteAccess(userRes.id, true);
 
@@ -143,8 +157,22 @@ export default async function createContact(request, response) {
         } catch (err) {
           console.log('err ', err);
           if (err.code === 137) {
+            if (request.posthog) {
+              request.posthog?.capture({
+                distinctId: parseUser.userId.email,
+                event: 'create_contact',
+                properties: { response_code: 401 },
+              });
+            }
             return response.status(401).json({ error: 'Contact already exists!' });
           } else {
+            if (request.posthog) {
+              request.posthog?.capture({
+                distinctId: parseUser.userId.email,
+                event: 'create_contact',
+                properties: { response_code: 400 },
+              });
+            }
             return response
               .status(400)
               .json({ error: 'Something went wrong, please try again later!' });
@@ -152,6 +180,13 @@ export default async function createContact(request, response) {
         }
       }
     } catch (err) {
+      if (request.posthog) {
+        request.posthog?.capture({
+          distinctId: parseUser.userId.email,
+          event: 'create_contact',
+          properties: { response_code: 400 },
+        });
+      }
       return response.status(400).json({ error: 'Something went wrong, please try again later!' });
     }
   } else {

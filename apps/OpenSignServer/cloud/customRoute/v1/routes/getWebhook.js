@@ -5,16 +5,28 @@ export default async function getWebhook(request, response) {
   }
   const tokenQuery = new Parse.Query('appToken');
   tokenQuery.equalTo('token', reqToken);
+  tokenQuery.include('userId');
   const token = await tokenQuery.first({ useMasterKey: true });
   if (token !== undefined) {
     // Valid Token then proceed request
-    const userPtr = token.get('userId');
+    const parseUser = JSON.parse(JSON.stringify(token));
+    const userPtr = {
+      __type: 'Pointer',
+      className: '_User',
+      objectId: parseUser.userId.objectId,
+    };
     const query = new Parse.Query('contracts_Users');
     query.equalTo('UserId', userPtr);
     const user = await query.first({ useMasterKey: true });
     if (user) {
       const parseUser = JSON.parse(JSON.stringify(user));
-
+      if (request.posthog) {
+        request.posthog?.capture({
+          distinctId: parseUser.userId.email,
+          event: 'get_webhook',
+          properties: { response_code: 200 },
+        });
+      }
       if (parseUser && parseUser.Webhook) {
         return response.json({
           webhook: parseUser.Webhook,
@@ -23,6 +35,13 @@ export default async function getWebhook(request, response) {
         return response.json({});
       }
     } else {
+      if (request.posthog) {
+        request.posthog?.capture({
+          distinctId: parseUser.userId.email,
+          event: 'get_webhook',
+          properties: { response_code: 404 },
+        });
+      }
       return response.status(404).json({ error: 'User not found!' });
     }
   } else {

@@ -6,10 +6,17 @@ export default async function getTemplate(request, response) {
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
+    tokenQuery.include('userId');
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const userPtr = token.get('userId');
+      const parseUser = JSON.parse(JSON.stringify(token));
+      const userPtr = {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: parseUser.userId.objectId,
+      };
+
       const Template = new Parse.Query('contracts_Template');
       Template.equalTo('objectId', request.params.template_id);
       Template.equalTo('CreatedBy', userPtr);
@@ -20,6 +27,14 @@ export default async function getTemplate(request, response) {
       const res = await Template.first({ useMasterKey: true });
       if (res) {
         const template = JSON.parse(JSON.stringify(res));
+
+        if (request.posthog) {
+          request.posthog?.capture({
+            distinctId: parseUser.userId.email,
+            event: 'get_template',
+            properties: { response_code: 200 },
+          });
+        }
         return response.json({
           objectId: template.objectId,
           title: template.Name,
@@ -34,6 +49,13 @@ export default async function getTemplate(request, response) {
           updatedAt: template.updatedAt,
         });
       } else {
+        if (request.posthog) {
+          request.posthog?.capture({
+            distinctId: parseUser.userId.email,
+            event: 'get_template',
+            properties: { response_code: 404 },
+          });
+        }
         return response.status(404).json({ error: 'Template not found!' });
       }
     } else {
