@@ -21,11 +21,17 @@ export default async function createDocument(request, response) {
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
+    tokenQuery.include('userId');
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
+      const parseUser = JSON.parse(JSON.stringify(token));
+      const userPtr = {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: parseUser.userId.objectId,
+      };
       // Valid Token then proceed request
       if (signers && signers.length > 0) {
-        const userPtr = token.get('userId');
         let fileUrl;
         if (request.files?.[0]) {
           const file = new Parse.File(request.files?.[0]?.originalname, {
@@ -112,15 +118,29 @@ export default async function createDocument(request, response) {
         const newACL = new Parse.ACL();
         newACL.setPublicReadAccess(false);
         newACL.setPublicWriteAccess(false);
-        newACL.setReadAccess(userPtr.id, true);
-        newACL.setWriteAccess(userPtr.id, true);
+        newACL.setReadAccess(userPtr.objectId, true);
+        newACL.setWriteAccess(userPtr.objectId, true);
         object.setACL(newACL);
         const res = await object.save(null, { useMasterKey: true });
+        if (request.posthog) {
+          request.posthog?.capture({
+            distinctId: parseUser.userId.email,
+            event: 'draft_document',
+            properties: { response_code: 200 },
+          });
+        }
         return response.json({
           objectId: res.id,
           url: protocol + '/load/signmicroapp/placeholdersign/' + res.id,
         });
       } else {
+        if (request.posthog) {
+          request.posthog?.capture({
+            distinctId: parseUser.userId.email,
+            event: 'draft_document',
+            properties: { response_code: 400 },
+          });
+        }
         return response.status(400).json({ error: 'Please provide signers!' });
       }
     } else {
