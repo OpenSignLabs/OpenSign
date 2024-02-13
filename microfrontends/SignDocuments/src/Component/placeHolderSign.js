@@ -36,6 +36,7 @@ import Title from "./component/Title";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import ModalUi from "../premitives/ModalUi";
 import DropdownWidgetOption from "../Component/WidgetComponent/dropdownWidgetOption";
+import InputValidation from "./WidgetComponent/inputValidation";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -1176,6 +1177,7 @@ function PlaceHolderSign() {
   //function for base on condition to add checkbox widget status and input text validation in signerPos array
   const handleApplyWidgetsStatus = (textValidate) => {
     let regularExpression = textValidate;
+
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1228,25 +1230,14 @@ function PlaceHolderSign() {
 
         setSignerPos(newUpdateSigner);
         setIsCheckboxRequired(false);
-
+        setTextValidate("");
         setSelectRequiredType("Optional");
       }
     }
   };
   const handleValidateInput = (e) => {
-    if (
-      textValidate === "email" ||
-      textValidate === "number" ||
-      textValidate === "text"
-    ) {
-      handleApplyWidgetsStatus(textValidate);
-      setIsValidate(false);
-    } else {
-      setValidateError("please enter accurate validation.");
-      setTimeout(() => {
-        setValidateError("");
-      }, 1500);
-    }
+    handleApplyWidgetsStatus(textValidate);
+    setIsValidate(false);
   };
 
   return (
@@ -1523,63 +1514,13 @@ function PlaceHolderSign() {
                   </button>
                 </div>
               </ModalUi>
-              <ModalUi
-                //isValidate
-                isOpen={isValidate}
-                handleClose={() => {
-                  setIsValidate(false);
-                }}
-                title={"Validation"}
-              >
-                <div style={{ height: "100%", padding: 20 }}>
-                  <div className="validateText">
-                    <label
-                      style={{
-                        marginRight: "5px",
-                        fontSize: "14px",
-                        fontWeight: "500"
-                      }}
-                    >
-                      Regular expression:
-                    </label>
-
-                    <input
-                      placeholder="email, number, text"
-                      className="drodown-input validateInputText"
-                      onChange={(e) => setTextValidate(e.target.value)}
-                    />
-                    {validateError && (
-                      <p style={{ color: "red", fontSize: "12px" }}>
-                        {validateError}
-                      </p>
-                    )}
-                  </div>
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
-                  <button
-                    onClick={() => {
-                      handleValidateInput();
-                    }}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    // disabled={!selectCopyType}
-                    className="finishBtn"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </ModalUi>
-
+              <InputValidation
+                setIsValidate={setIsValidate}
+                handleValidateInput={handleValidateInput}
+                isValidate={isValidate}
+                setTextValidate={setTextValidate}
+                textValidate={textValidate}
+              />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}

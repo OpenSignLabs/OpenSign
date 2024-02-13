@@ -21,7 +21,6 @@ function FieldsComponent({
   setContractName,
   isSigners,
   dataTut,
-  dataTut2,
   isMailSend,
   handleAddSigner,
   setUniqueId,
@@ -31,7 +30,8 @@ function FieldsComponent({
   handleRoleChange,
   handleOnBlur,
   title,
-  isdraggingEnable
+  isdraggingEnable,
+  isTemplateFlow
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
 
@@ -230,7 +230,12 @@ function FieldsComponent({
     (data) =>
       data.type !== "dropdown" && data.type !== "radio" && data.type !== "label"
   );
-  const updateWidgets = isSignYourself ? filterWidgets : widget;
+  const labelWidget = widget.filter((data) => data.type !== "label");
+  const updateWidgets = isSignYourself
+    ? filterWidgets
+    : isTemplateFlow
+      ? labelWidget
+      : widget;
 
   return (
     <>

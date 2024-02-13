@@ -10,6 +10,7 @@ function PlaceholderType(props) {
   const [startDate, setStartDate] = useState(new Date());
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
+  const [textValue, setTextValue] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isCheckedRadio, setIsCheckedRadio] = useState({
     isChecked: false,
@@ -17,7 +18,8 @@ function PlaceholderType(props) {
   });
 
   const validateExpression = (regexValidation) => {
-    let isValidate = regexValidation.test(inputValue);
+    const regexObject = new RegExp(regexValidation);
+    let isValidate = regexObject.test(inputValue);
     if (!isValidate) {
       props.setValidateAlert(true);
       inputRef.current.focus();
@@ -42,10 +44,18 @@ function PlaceholderType(props) {
           regexValidation = /^[a-zA-Z\s]+$/;
           validateExpression(regexValidation);
           break;
+        default:
+          regexValidation = validateType;
+          validateExpression(regexValidation);
       }
     }
   };
 
+  const handleTextValid = (e, regx) => {
+    const textInput = e.target.value;
+    const sanitizedValue = textInput.replace(regx, "");
+    setTextValue(sanitizedValue);
+  };
   function checkRegularExpress(validateType) {
     switch (validateType) {
       case "email":
@@ -56,6 +66,8 @@ function PlaceholderType(props) {
         break;
       case "text":
         setValidatePlaceholder("enter text");
+      default:
+        setValidatePlaceholder(validateType);
     }
   }
   useEffect(() => {
@@ -125,7 +137,7 @@ function PlaceholderType(props) {
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       className="inputPlaceholder"
-      style={{ overflow: "hidden" }}
+      style={{ overflow: "hidden", fontSize: calculateFontSize() }}
       onClick={onClick}
       ref={ref}
     >
@@ -153,6 +165,11 @@ function PlaceholderType(props) {
     }
   }, [type]);
 
+  const calculateFontSize = () => {
+    const fontSize = 10 + Math.min(props.pos.Width, props.pos.Height) * 0.1;
+    const size = fontSize ? fontSize : 12;
+    return size + "px";
+  };
   switch (props.pos.type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -169,6 +186,7 @@ function PlaceholderType(props) {
         <div
           style={{
             fontSize: "10px",
+
             color: "black",
             justifyContent: "center"
           }}
@@ -241,6 +259,12 @@ function PlaceholderType(props) {
           className="inputPlaceholder"
           ref={inputRef}
           placeholder={validatePlaceholder}
+          style={{ fontSize: calculateFontSize() }}
+          value={
+            textValue
+              ? textValue
+              : props.pos.widgetValue && props.pos.widgetValue
+          }
           type="text"
           tabIndex="0"
           disabled={
@@ -250,6 +274,7 @@ function PlaceholderType(props) {
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
+            // props.pos?.validation && handleTextValid(e, props.pos?.validation);
             setInputValue(e.target.value);
             onChangeInput(
               e.target.value,
@@ -292,7 +317,10 @@ function PlaceholderType(props) {
           })}
         </select>
       ) : (
-        <div className="inputPlaceholder">
+        <div
+          className="inputPlaceholder"
+          style={{ fontSize: calculateFontSize() }}
+        >
           {props.pos.widgetName ? props.pos.widgetName : props.pos.type}
         </div>
       );
@@ -329,11 +357,17 @@ function PlaceholderType(props) {
           tabIndex="0"
           ref={inputRef}
           placeholder={"name"}
+          style={{ fontSize: calculateFontSize() }}
           className="inputPlaceholder"
           type="text"
-          value={props.pos.widgetValue}
+          value={
+            textValue
+              ? textValue
+              : props.pos.widgetValue && props.pos.widgetValue
+          }
           onBlur={handleInputBlur}
-          onChange={(e) =>
+          onChange={(e) => {
+            handleTextValid(e, /[^a-zA-Z\s]/g);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -342,14 +376,14 @@ function PlaceholderType(props) {
               props.setXyPostion,
               props.data && props.data?.Id,
               false
-            )
-          }
+            );
+          }}
         />
       ) : (
         <div
           style={{
             color: "black",
-            fontSize: "14px"
+            fontSize: calculateFontSize()
           }}
         >
           <span>{props.pos.type}</span>
@@ -364,9 +398,15 @@ function PlaceholderType(props) {
           type="text"
           ref={inputRef}
           placeholder={"company"}
-          value={props.pos.widgetValue && props.pos.widgetValue}
+          style={{ fontSize: calculateFontSize() }}
+          value={
+            textValue
+              ? textValue
+              : props.pos.widgetValue && props.pos.widgetValue
+          }
           onBlur={handleInputBlur}
-          onChange={(e) =>
+          onChange={(e) => {
+            handleTextValid(e, /[^a-zA-Z\s]/g);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -375,14 +415,14 @@ function PlaceholderType(props) {
               props.setXyPostion,
               props.data && props.data?.Id,
               false
-            )
-          }
+            );
+          }}
         />
       ) : (
         <div
           style={{
             color: "black",
-            fontSize: "14px"
+            fontSize: calculateFontSize()
           }}
         >
           <span>{props.pos.type}</span>
@@ -397,9 +437,15 @@ function PlaceholderType(props) {
           type="text"
           ref={inputRef}
           placeholder={"job title"}
-          value={props.pos.widgetValue && props.pos.widgetValue}
+          style={{ fontSize: calculateFontSize() }}
+          value={
+            textValue
+              ? textValue
+              : props.pos.widgetValue && props.pos.widgetValue
+          }
           onBlur={handleInputBlur}
-          onChange={(e) =>
+          onChange={(e) => {
+            handleTextValid(e, /[^a-zA-Z\s]/g);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -408,14 +454,14 @@ function PlaceholderType(props) {
               props.setXyPostion,
               props.data && props.data?.Id,
               false
-            )
-          }
+            );
+          }}
         />
       ) : (
         <div
           style={{
             color: "black",
-            fontSize: "14px"
+            fontSize: calculateFontSize()
           }}
         >
           <span>{props.pos.type}</span>
@@ -452,7 +498,6 @@ function PlaceholderType(props) {
                   : "dd MMMM, YYYY"
             }
           />
-          {/* <div style={{ position: "absolute" }}>{props.selectDate}</div> */}
         </div>
       );
 
@@ -489,9 +534,15 @@ function PlaceholderType(props) {
           type="text"
           ref={inputRef}
           placeholder={"email"}
-          value={props.pos.widgetValue && props.pos.widgetValue}
+          style={{ fontSize: calculateFontSize() }}
+          value={
+            textValue
+              ? textValue
+              : props.pos.widgetValue && props.pos.widgetValue
+          }
           onBlur={handleInputBlur}
-          onChange={(e) =>
+          onChange={(e) => {
+            handleTextValid(e, /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -500,14 +551,14 @@ function PlaceholderType(props) {
               props.setXyPostion,
               props.data && props.data?.Id,
               false
-            )
-          }
+            );
+          }}
         />
       ) : (
         <div
           style={{
             color: "black",
-            fontSize: "14px"
+            fontSize: calculateFontSize()
           }}
         >
           <span>{props.pos.type}</span>

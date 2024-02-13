@@ -357,7 +357,7 @@ export const defaultWidthHeight = (type) => {
       return obj;
     case "date":
       obj = {
-        width: 120,
+        width: 100,
         height: 20
       };
       return obj;
@@ -939,6 +939,7 @@ export const multiSignEmbed = async (
         imgData.type === "initials" ||
         imgData.type === "image"
       ) {
+        console.log(images[id]);
         if (
           (imgData.ImageType && imgData.ImageType === "image/png") ||
           imgData.ImageType === "image/jpeg"

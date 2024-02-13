@@ -361,9 +361,7 @@ function SignYourSelf() {
     let filterDropPos = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
     );
-
     const dragTypeValue = item?.text ? item.text : monitor.type;
-
     const widgetValue = getWidgetValue(dragTypeValue);
     const widgetWidth = defaultWidthHeight(dragTypeValue).width;
     const widgetHeight = defaultWidthHeight(dragTypeValue).height;
@@ -437,9 +435,7 @@ function SignYourSelf() {
           dragTypeValue === "job title" ||
           dragTypeValue === "email"
             ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
-            : dragTypeValue === "initials"
-              ? defaultWidthHeight(dragTypeValue).height
-              : ""
+            : defaultWidthHeight(dragTypeValue).height
       };
 
       dropData.push(dropObj);

@@ -66,6 +66,7 @@ function PlaceholderCopy(props) {
     let newPageNumber = 1;
     const signerPosition = props.xyPostion;
     const signerId = props.signerObjId ? props.signerObjId : props.Id;
+
     //handle placeholder array and copy for multiple signers placeholder at requested location
     if (signerId) {
       //get current signers data
