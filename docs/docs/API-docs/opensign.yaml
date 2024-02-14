@@ -1192,6 +1192,7 @@ components:
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+          example: ""
     inline_response_200_d:
       type: object
       properties:
@@ -1241,6 +1242,7 @@ components:
             $ref: '#/components/schemas/createdocumenttemplate_id_Signers'
         folderId:
           type: string
+          example: ""
         send_email:
           type: boolean
           description: |
@@ -1249,9 +1251,11 @@ components:
         email_subject:
           type: string
           description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+          example: ""
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+          example: ""
     inline_response_200_2:
       type: object
       properties:
@@ -1290,7 +1294,7 @@ components:
           example: document description
         folderId:
           type: string
-          format: string
+          example: ""
     inline_response_200_3:
       type: object
       properties:
@@ -1408,7 +1412,7 @@ components:
           example: template description
         folderId:
           type: string
-          format: string
+          example: ""
     inline_response_404_7:
       type: object
       properties:
