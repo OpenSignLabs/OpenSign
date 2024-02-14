@@ -514,19 +514,16 @@ paths:
         1. **Draft Documents:**
             - Documents that are currently in draft status.
 
-        2. **Signature Requests:**
-            - Documents that require the your signature.
-
-        3. **In-Progress Documents:**
+        2. **In-Progress Documents:**
             - Documents that are currently in progress.
 
-        4. **Completed Documents:**
+        3. **Completed Documents:**
             - Documents that have been successfully completed with all required signatures.
 
-        5. **Expired Documents:**
+        4. **Expired Documents:**
             - Documents that have expired and are no longer accessible.
 
-        6. **Declined Documents:**
+        5. **Declined Documents:**
             - Documents that have been declined by the user.
       operationId: getdocumentlist
       parameters:
@@ -540,7 +537,6 @@ paths:
           type: string
           enum:
           - draftdocuments
-          - signaturerequest
           - inprogressdocuments
           - completedocuments
           - expiredocuments
@@ -1184,6 +1180,7 @@ components:
             $ref: '#/components/schemas/createdocument_body_signers'
         folderId:
           type: string
+          example: ""
         send_email:
           type: boolean
           description: "This parameter allows you to specify whether you want emails to be sent to signers. The default value is \"true\". If the value of this parameter is \"true\" and no 'email_subject'/'email_body' parameters are specified default email templates will be used.          \n"
@@ -1191,6 +1188,7 @@ components:
         email_subject:
           type: string
           description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+          example: ""
         email_body:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
@@ -1293,7 +1291,6 @@ components:
         folderId:
           type: string
           format: string
-          example: Bjsba2bhoP
     inline_response_200_3:
       type: object
       properties:
@@ -1412,7 +1409,6 @@ components:
         folderId:
           type: string
           format: string
-          example: xjsba1GaxP
     inline_response_404_7:
       type: object
       properties:
@@ -1587,15 +1583,15 @@ components:
         email:
           type: string
           format: string
-          example: joebee@exampl.com
+          example: ""
         name:
           type: string
           format: string
-          example: joe bee
+          example: ""
         phone:
           type: string
           format: string
-          example: "123121312"
+          example: ""
         widgets:
           type: array
           items:
