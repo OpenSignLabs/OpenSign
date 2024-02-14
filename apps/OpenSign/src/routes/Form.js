@@ -148,6 +148,7 @@ const Forms = (props) => {
   const dropboxCancel = async () => {};
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsSubmit(true);
     try {
       const currentUser = Parse.User.current();

@@ -104,11 +104,27 @@ const PlanSubscriptions = () => {
                         <div
                           className={`${
                             item.subtitle.length <= 32
-                              ? "w-[150px]  text-center"
+                              ? "w-[150px] text-center"
                               : ""
                           } text-sm text-center my-2`}
                         >
-                          <p>{item.subtitle}</p>
+                          <p
+                            style={{
+                              backgroundColor: item.subtitlecolor
+                                ? item.subtitlecolor
+                                : "white"
+                            }}
+                          >
+                            {item.subtitle.includes("<") ? (
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: item.subtitle
+                                }}
+                              />
+                            ) : (
+                              <span>{item.subtitle}</span>
+                            )}
+                          </p>
                         </div>
                       </div>
 
