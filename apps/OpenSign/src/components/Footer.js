@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Package from "../../package.json";
 import axios from "axios";
-import { NavLink } from "react-router-dom";
 import { openInNewTab } from "../constant/Utils";
 const Footer = () => {
   const [showButton, setShowButton] = useState(false);

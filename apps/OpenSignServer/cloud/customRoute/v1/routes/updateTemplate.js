@@ -10,7 +10,7 @@ export default async function updateTemplate(request, response) {
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const allowedKeys = ['name', 'note', 'description'];
+      const allowedKeys = ['name', 'note', 'description', 'folderId'];
       const objectKeys = Object.keys(request.body);
       const isValid = objectKeys.every(key => allowedKeys.includes(key)) && objectKeys.length > 0;
       const parseUser = JSON.parse(JSON.stringify(token));
@@ -53,7 +53,7 @@ export default async function updateTemplate(request, response) {
               if (request.posthog) {
                 request.posthog?.capture({
                   distinctId: parseUser.userId.email,
-                  event: 'update_template',
+                  event: 'api_update_template',
                   properties: { response_code: 200 },
                 });
               }
@@ -67,7 +67,7 @@ export default async function updateTemplate(request, response) {
           if (request.posthog) {
             request.posthog?.capture({
               distinctId: parseUser.userId.email,
-              event: 'update_template',
+              event: 'api_update_template',
               properties: { response_code: 404 },
             });
           }
@@ -77,7 +77,7 @@ export default async function updateTemplate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'update_template',
+            event: 'api_update_template',
             properties: { response_code: 400 },
           });
         }

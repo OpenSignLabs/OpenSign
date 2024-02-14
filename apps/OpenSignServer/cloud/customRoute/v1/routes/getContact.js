@@ -29,7 +29,7 @@ export default async function getContact(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'get_contact',
+            event: 'api_get_contact',
             properties: { response_code: 200 },
           });
         }
@@ -45,7 +45,7 @@ export default async function getContact(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'get_contact',
+            event: 'api_get_contact',
             properties: { response_code: 404 },
           });
         }

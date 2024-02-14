@@ -182,7 +182,7 @@ export default async function createTemplatewithCoordinate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'create_template',
+            event: 'api_create_template',
             properties: { response_code: 200 },
           });
         }
@@ -194,7 +194,7 @@ export default async function createTemplatewithCoordinate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'create_template',
+            event: 'api_create_template',
             properties: { response_code: 400 },
           });
         }
