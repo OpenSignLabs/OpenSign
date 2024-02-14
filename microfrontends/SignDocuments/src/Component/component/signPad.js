@@ -24,7 +24,8 @@ function SignPad({
   myInitial,
   isInitial,
   setIsInitial,
-  setIsStamp
+  setIsStamp,
+  widgetType
 }) {
   const [penColor, setPenColor] = useState("blue");
   const allColor = [bluePen, redPen, blackPen];
@@ -236,12 +237,6 @@ function SignPad({
     setSignature(dataUrl);
   };
 
-  const getFirstChar = () => {
-    const trimmedString = currentUserName.trim();
-    const firstCharacter = trimmedString.charAt(0);
-    const userName = isInitial ? firstCharacter : signValue;
-    setSignValue(userName);
-  };
   return (
     <div>
       {isSignPad && (
@@ -272,7 +267,9 @@ function SignPad({
                   >
                     {isStamp ? (
                       <span style={{ color: themeColor() }} className="signTab">
-                        Upload stamp image
+                        {widgetType === "image"
+                          ? "Upload image"
+                          : "Upload stamp image"}
                       </span>
                     ) : (
                       <>

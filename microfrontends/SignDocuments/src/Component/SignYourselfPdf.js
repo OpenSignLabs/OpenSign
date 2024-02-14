@@ -84,13 +84,13 @@ function SignYourSelf() {
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
+  const [widgetType, setWidgetType] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
   });
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
-  const [isdraggingEnable, setIsDraggingEnable] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [{ isOver }, drop] = useDrop({
@@ -110,8 +110,6 @@ function SignYourSelf() {
       id: 1,
       text: "signature"
     },
-    canDrag: isdraggingEnable,
-
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
     })
@@ -123,7 +121,7 @@ function SignYourSelf() {
       id: 2,
       text: "stamp"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
     })
@@ -137,11 +135,6 @@ function SignYourSelf() {
       id: 3,
       text: "drag me"
     },
-    canDrag: isdraggingEnable,
-    // options: {
-    //   // Set the delay for touch dragging
-    //   delay: { touch: 500 }, // Set the delay in milliseconds
-    // },
     collect: (monitor) => ({
       isDragSignatureSS: !!monitor.isDragging()
     })
@@ -154,7 +147,7 @@ function SignYourSelf() {
       id: 4,
       text: "drag me"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragStampSS: !!monitor.isDragging()
     })
@@ -187,9 +180,6 @@ function SignYourSelf() {
   useEffect(() => {
     if (documentId) {
       getDocumentDetails(true);
-    }
-    if (!isMobile) {
-      setIsDraggingEnable(true);
     }
   }, []);
 
@@ -478,9 +468,7 @@ function SignYourSelf() {
     } else if (dragTypeValue === "initials") {
       setIsInitial(true);
     }
-    if (isMobile) {
-      setIsDraggingEnable(false);
-    }
+    setWidgetType(dragTypeValue);
   };
 
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
@@ -529,7 +517,7 @@ function SignYourSelf() {
       });
 
       const flag = true;
-      //embed document's object id to all pages in pdf document
+
       await embedDocId(pdfDoc, documentId, allPages);
 
       //embed multi signature in pdf
@@ -964,6 +952,7 @@ function SignYourSelf() {
               isInitial={isInitial}
               setIsInitial={setIsInitial}
               setIsStamp={setIsStamp}
+              widgetType={widgetType}
             />
             {/* render email component to send email after finish signature on document */}
             <EmailComponent
@@ -1022,6 +1011,7 @@ function SignYourSelf() {
                   containerWH={containerWH}
                   setIsPageCopy={setIsPageCopy}
                   setIsInitial={setIsInitial}
+                  setWidgetType={setWidgetType}
                 />
               )}
             </div>
@@ -1055,8 +1045,6 @@ function SignYourSelf() {
                   isSignYourself={true}
                   addPositionOfSignature={addPositionOfSignature}
                   isMailSend={false}
-                  setIsDraggingEnable={setIsDraggingEnable}
-                  isdraggingEnable={isdraggingEnable}
                 />
               </div>
             ) : (

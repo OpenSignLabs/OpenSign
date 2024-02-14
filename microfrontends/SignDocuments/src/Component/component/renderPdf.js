@@ -412,6 +412,7 @@ function RenderPdf({
                                   pdfDetails={pdfDetails[0]}
                                   isDragging={isDragging}
                                   setIsInitial={setIsInitial}
+                                  setWidgetType={setWidgetType}
                                 />
                               )
                             );
@@ -584,6 +585,7 @@ function RenderPdf({
                                       pdfDetails={pdfDetails[0]}
                                       isDragging={isDragging}
                                       setIsInitial={setIsInitial}
+                                      setWidgetType={setWidgetType}
                                     />
                                   </React.Fragment>
                                 )

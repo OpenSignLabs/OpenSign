@@ -78,7 +78,6 @@ const TemplatePlaceholder = () => {
   const [isResize, setIsResize] = useState(false);
   const [isSigners, setIsSigners] = useState(false);
   const [zIndex, setZIndex] = useState(1);
-  const [isdraggingEnable, setIsDraggingEnable] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [widgetType, setWidgetType] = useState("");
   const [isRadio, setIsRadio] = useState(false);
@@ -183,9 +182,6 @@ const TemplatePlaceholder = () => {
 
   useEffect(() => {
     fetchTemplate();
-    if (!isMobile) {
-      setIsDraggingEnable(true);
-    }
   }, []);
 
   useEffect(() => {
@@ -1451,8 +1447,6 @@ const TemplatePlaceholder = () => {
                   handleOnBlur={handleOnBlur}
                   title={"Roles"}
                   initial={true}
-                  setIsDraggingEnable={setIsDraggingEnable}
-                  isdraggingEnable={isdraggingEnable}
                   isTemplateFlow={true}
                 />
               </div>
@@ -1494,8 +1488,6 @@ const TemplatePlaceholder = () => {
                         addPositionOfSignature={addPositionOfSignature}
                         title={"Roles"}
                         initial={true}
-                        setIsDraggingEnable={setIsDraggingEnable}
-                        isdraggingEnable={isdraggingEnable}
                         isTemplateFlow={true}
                       />
                     </div>

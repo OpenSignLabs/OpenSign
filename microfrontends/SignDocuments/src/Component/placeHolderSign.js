@@ -37,6 +37,7 @@ import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import ModalUi from "../premitives/ModalUi";
 import DropdownWidgetOption from "../Component/WidgetComponent/dropdownWidgetOption";
 import InputValidation from "./WidgetComponent/inputValidation";
+import CheckboxStatus from "./WidgetComponent/checkboxStatus";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -93,10 +94,9 @@ function PlaceHolderSign() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isCheckboxRequired, setIsCheckboxRequired] = useState(false);
   const [selectRequiredType, setSelectRequiredType] = useState("Optional");
-  const [isdraggingEnable, setIsDraggingEnable] = useState(false);
+
   const [isValidate, setIsValidate] = useState(false);
   const [textValidate, setTextValidate] = useState("");
-  const [validateError, setValidateError] = useState("");
   const [widgetType, setWidgetType] = useState("");
   const [isUiLoading, setIsUiLoading] = useState(false);
   const [isRadio, setIsRadio] = useState(false);
@@ -116,7 +116,7 @@ function PlaceHolderSign() {
     "#66ccff",
     "#ffffcc"
   ];
-  const checkboxType = ["Optional", "Required", "Read only"];
+
   const isMobile = window.innerWidth < 767;
   const [{ isOver }, drop] = useDrop({
     accept: "BOX",
@@ -132,7 +132,7 @@ function PlaceHolderSign() {
       id: 1,
       text: "signature"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragSign: !!monitor.isDragging()
     })
@@ -144,7 +144,7 @@ function PlaceHolderSign() {
       id: 2,
       text: "stamp"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragStamp: !!monitor.isDragging()
     })
@@ -156,7 +156,7 @@ function PlaceHolderSign() {
       id: 3,
       text: "signature"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragSignatureSS: !!monitor.isDragging()
     })
@@ -168,7 +168,7 @@ function PlaceHolderSign() {
       id: 4,
       text: "stamp"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragStampSS: !!monitor.isDragging()
     })
@@ -195,9 +195,6 @@ function PlaceHolderSign() {
   useEffect(() => {
     if (documentId) {
       getDocumentDetails();
-    }
-    if (!isMobile) {
-      setIsDraggingEnable(true);
     }
   }, []);
 
@@ -501,9 +498,6 @@ function PlaceHolderSign() {
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);
-        if (isMobile) {
-          setIsDraggingEnable(false);
-        }
       } else {
         let filterSignerPos = signerPos.filter(
           (data) => data.Role === "prefill"
@@ -808,12 +802,10 @@ function PlaceHolderSign() {
   };
 
   const sendEmailToSigners = async () => {
-    const pdfUrl = await embedPrefilllData();
     setIsUiLoading(true);
+    const pdfUrl = await embedPrefilllData();
     setIsSendAlert({});
-
     let sendMail;
-
     const expireDate = pdfDetails?.[0].ExpiryDate.iso;
     const newDate = new Date(expireDate);
     const localExpireDate = newDate.toLocaleDateString("en-US", {
@@ -1240,6 +1232,7 @@ function PlaceHolderSign() {
     setIsValidate(false);
   };
 
+  console.log("currentdetails", currWidgetsDetails);
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1262,7 +1255,7 @@ function PlaceHolderSign() {
                   justifyContent: "center",
                   flexDirection: "column",
                   alignItems: "center",
-                  zIndex: "20",
+                  zIndex: "999",
                   backgroundColor: "#e6f2f2",
                   opacity: 0.8
                 }}
@@ -1464,56 +1457,15 @@ function PlaceHolderSign() {
                 </div>
               </ModalUi>
               {/* checkbox widget status component */}
-              <ModalUi isOpen={isCheckboxRequired} title={"Checkbox"}>
-                <div style={{ height: "100%", padding: 20 }}>
-                  {checkboxType.map((data, key) => {
-                    return (
-                      <div
-                        key={key}
-                        style={{ display: "flex", flexDirection: "column" }}
-                      >
-                        <label
-                          key={key}
-                          style={{ fontSize: "16px", fontWeight: "500" }}
-                        >
-                          <input
-                            style={{ accentColor: "red", marginRight: "10px" }}
-                            type="radio"
-                            value={data}
-                            onChange={() => setSelectRequiredType(data)}
-                            checked={selectRequiredType === data}
-                          />
-
-                          {data}
-                        </label>
-                      </div>
-                    );
-                  })}
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
-                  <button
-                    onClick={() => {
-                      handleApplyWidgetsStatus();
-                    }}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    // disabled={!selectCopyType}
-                    className="finishBtn"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </ModalUi>
+              <CheckboxStatus
+                setSelectRequiredType={setSelectRequiredType}
+                selectRequiredType={selectRequiredType}
+                isCheckboxRequired={isCheckboxRequired}
+                setIsCheckboxRequired={setIsCheckboxRequired}
+                handleApplyWidgetsStatus={handleApplyWidgetsStatus}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
+              />
               <InputValidation
                 setIsValidate={setIsValidate}
                 handleValidateInput={handleValidateInput}
@@ -1539,6 +1491,7 @@ function PlaceHolderSign() {
                 setShowDropdown={setIsRadio}
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1547,6 +1500,7 @@ function PlaceHolderSign() {
                 setShowDropdown={setShowDropdown}
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               {/* pdf header which contain funish back button */}
               <Header
@@ -1638,8 +1592,6 @@ function PlaceHolderSign() {
                   setUniqueId={setUniqueId}
                   setRoleName={setRoleName}
                   initial={true}
-                  setIsDraggingEnable={setIsDraggingEnable}
-                  isdraggingEnable={isdraggingEnable}
                 />
               </div>
             ) : (
@@ -1675,8 +1627,6 @@ function PlaceHolderSign() {
                         isSignYourself={false}
                         addPositionOfSignature={addPositionOfSignature}
                         initial={true}
-                        setIsDraggingEnable={setIsDraggingEnable}
-                        isdraggingEnable={isdraggingEnable}
                       />
                     </div>
                   </div>

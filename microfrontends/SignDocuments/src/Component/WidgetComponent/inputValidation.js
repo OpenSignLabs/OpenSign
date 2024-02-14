@@ -42,16 +42,18 @@ function InputValidation(props) {
               className="regxSelect"
               onChange={(e) => props.setTextValidate(e.target.value)}
             >
-              {options.map((data) => {
-                return <option value={data}>{data}</option>;
+              <option style={{ fontSize: "13px" }} value="">
+                Select...
+              </option>
+              {options.map((data, ind) => {
+                return (
+                  <option style={{ fontSize: "13px" }} key={ind} value={data}>
+                    {data}
+                  </option>
+                );
               })}
             </select>
           </div>
-          {/* {validateError && (
-            <p style={{ color: "red", fontSize: "12px" }}>{validateError}</p>
-          )} */}
-
-          {/* <CustomSelect/> */}
         </div>
 
         <div
