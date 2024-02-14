@@ -44,6 +44,7 @@
     "parse-server-s3-adapter": "^1.2.0",
     "pdf-lib": "^1.16.0",
     "pdfkit": "^0.13.0",
+    "posthog-node": "^3.6.2",
     "razorpay": "^2.8.6",
     "request": "^2.88.2"
   },

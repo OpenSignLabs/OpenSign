@@ -11,6 +11,8 @@ import GoogleSignInBtn from "../components/LoginGoogle";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
+import ModalUi from "../primitives/ModalUi";
+import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 
 function Login(props) {
   const navigate = useNavigate();
@@ -1131,100 +1133,76 @@ function Login(props) {
               {state.toastDescription}
             </div>
           </div>
-          {isModal && (
-            <div
-              className="modal fade show"
-              id="exampleModal"
-              tabIndex="-1"
-              role="dialog"
-              style={{
-                display: "block",
-                zIndex: 1,
-                backgroundColor: "rgba(0,0,0,0.5)"
-              }}
-            >
-              <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title font-semibold">
-                      Additional Info
-                    </h5>
-                    <span>
-                      <span></span>
-                    </span>
-                  </div>
-                  <div className="modal-body">
-                    <form className="text-sm">
-                      <div className="form-group">
-                        <label
-                          htmlFor="Company"
-                          style={{ display: "flex" }}
-                          className="col-form-label"
-                        >
-                          Company{" "}
-                          <span style={{ fontSize: 13, color: "red" }}>*</span>
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="Company"
-                          value={userDetails.Company}
-                          onChange={(e) =>
-                            setUserDetails({
-                              ...userDetails,
-                              Company: e.target.value
-                            })
-                          }
-                          required
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label
-                          htmlFor="JobTitle"
-                          style={{ display: "flex" }}
-                          className="col-form-label"
-                        >
-                          Job Title
-                          <span style={{ fontSize: 13, color: "red" }}>*</span>
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="JobTitle"
-                          value={userDetails.Destination}
-                          onChange={(e) =>
-                            setUserDetails({
-                              ...userDetails,
-                              Destination: e.target.value
-                            })
-                          }
-                          required
-                        />
-                      </div>
-                      <div className="mt-4">
-                        <button
-                          type="button"
-                          className="bg-[#17a2b8] text-sm p-2 text-white rounded uppercase"
-                          onClick={(e) => handleSubmitbtn(e)}
-                          style={{ marginRight: 10 }}
-                        >
-                          Login
-                        </button>
-                        <button
-                          type="button"
-                          className="bg-[#6c757d] text-sm p-2 text-white rounded uppercase"
-                          onClick={handleCloseModal}
-                          style={{ width: 90 }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
+          <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>
+            <form className="px-4 py-3">
+              <div className="mb-3">
+                <label
+                  htmlFor="Company"
+                  style={{ display: "flex" }}
+                  className="block text-xs text-gray-700 font-semibold"
+                >
+                  Company <span style={{ fontSize: 13, color: "red" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  id="Company"
+                  value={userDetails.Company}
+                  onChange={(e) =>
+                    setUserDetails({
+                      ...userDetails,
+                      Company: e.target.value
+                    })
+                  }
+                  required
+                />
               </div>
-            </div>
-          )}
+              <div className="mb-3">
+                <label
+                  htmlFor="JobTitle"
+                  style={{ display: "flex" }}
+                  className="block text-xs text-gray-700 font-semibold"
+                >
+                  Job Title
+                  <span style={{ fontSize: 13, color: "red" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  id="JobTitle"
+                  value={userDetails.Destination}
+                  onChange={(e) =>
+                    setUserDetails({
+                      ...userDetails,
+                      Destination: e.target.value
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div className="mt-4">
+                <button
+                  type="button"
+                  className="px-3 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                  onClick={(e) => handleSubmitbtn(e)}
+                  style={{
+                    marginRight: 10,
+                    backgroundColor: modalSubmitBtnColor
+                  }}
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  className="py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                  onClick={handleCloseModal}
+                  style={{ width: 75, backgroundColor: modalCancelBtnColor }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </ModalUi>
         </>
       ) : (
         <div

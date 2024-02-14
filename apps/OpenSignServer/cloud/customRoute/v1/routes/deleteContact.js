@@ -6,10 +6,17 @@ export default async function deleteContact(request, response) {
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
+    tokenQuery.include('userId');
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const userPtr = token.get('userId');
+      const parseUser = JSON.parse(JSON.stringify(token));
+      const userPtr = {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: parseUser.userId.objectId,
+      };
+
       const Contactbook = new Parse.Query('contracts_Contactbook');
       Contactbook.equalTo('objectId', request.params.contact_id);
       Contactbook.equalTo('CreatedBy', userPtr);
@@ -25,6 +32,13 @@ export default async function deleteContact(request, response) {
           deleteQuery.set('IsDeleted', true);
           const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
           if (deleteRes) {
+            if (request.posthog) {
+              request.posthog?.capture({
+                distinctId: parseUser.userId.email,
+                event: 'delete_contact',
+                properties: { response_code: 200 },
+              });
+            }
             return response.json({
               objectId: request.params.contact_id,
               deletedAt: deleteRes.get('updatedAt'),
@@ -32,6 +46,13 @@ export default async function deleteContact(request, response) {
           }
         }
       } else {
+        if (request.posthog) {
+          request.posthog?.capture({
+            distinctId: parseUser.userId.email,
+            event: 'delete_contact',
+            properties: { response_code: 404 },
+          });
+        }
         return response.status(404).json({ error: 'Contact not found!' });
       }
     } else {

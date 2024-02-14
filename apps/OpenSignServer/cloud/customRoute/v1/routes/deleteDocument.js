@@ -6,10 +6,17 @@ export default async function deleteDocument(request, response) {
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
+    tokenQuery.include('userId');
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const userPtr = token.get('userId');
+      const parseUser = JSON.parse(JSON.stringify(token));
+      const userPtr = {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: parseUser.userId.objectId,
+      };
+
       const Document = new Parse.Query('contracts_Document');
       Document.equalTo('objectId', request.params.document_id);
       Document.equalTo('CreatedBy', userPtr);
@@ -25,6 +32,13 @@ export default async function deleteDocument(request, response) {
           deleteQuery.set('IsArchive', true);
           const deleteRes = await deleteQuery.save(null, { useMasterKey: true });
           if (deleteRes) {
+            if (request.posthog) {
+              request.posthog?.capture({
+                distinctId: parseUser.userId.email,
+                event: 'delete_document',
+                properties: { response_code: 200 },
+              });
+            }
             return response.json({
               objectId: request.params.document_id,
               deletedAt: deleteRes.get('updatedAt'),
@@ -32,6 +46,13 @@ export default async function deleteDocument(request, response) {
           }
         }
       } else {
+        if (request.posthog) {
+          request.posthog?.capture({
+            distinctId: parseUser.userId.email,
+            event: 'delete_document',
+            properties: { response_code: 404 },
+          });
+        }
         return response.status(404).json({ error: 'Document not found!' });
       }
     } else {

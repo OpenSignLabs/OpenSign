@@ -18,10 +18,16 @@ export default async function createTemplate(request, response) {
     }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
+    tokenQuery.include('userId');
     const token = await tokenQuery.first({ useMasterKey: true });
     if (token !== undefined) {
       // Valid Token then proceed request
-      const userPtr = token.get('userId');
+      const parseUser = JSON.parse(JSON.stringify(token));
+      const userPtr = {
+        __type: 'Pointer',
+        className: '_User',
+        objectId: parseUser.userId.objectId,
+      };
       let fileUrl;
       if (base64File) {
         const file = new Parse.File(`${name}.pdf`, {
@@ -100,10 +106,17 @@ export default async function createTemplate(request, response) {
       const newACL = new Parse.ACL();
       newACL.setPublicReadAccess(false);
       newACL.setPublicWriteAccess(false);
-      newACL.setReadAccess(userPtr.id, true);
-      newACL.setWriteAccess(userPtr.id, true);
+      newACL.setReadAccess(userPtr.objectId, true);
+      newACL.setWriteAccess(userPtr.objectId, true);
       object.setACL(newACL);
       const res = await object.save(null, { useMasterKey: true });
+      if (request.posthog) {
+        request.posthog?.capture({
+          distinctId: parseUser.userId.email,
+          event: 'draft_template',
+          properties: { response_code: 200 },
+        });
+      }
       return response.json({
         objectId: res.id,
         url: protocol + '/load/signmicroapp/template/' + res.id,
