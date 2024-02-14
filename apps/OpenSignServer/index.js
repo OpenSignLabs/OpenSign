@@ -20,7 +20,7 @@ import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
-
+import { PostHog } from 'posthog-node';
 const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 // console.log("configuration ", configuration);
 if (process.env.USE_LOCAL !== 'TRUE') {
@@ -154,6 +154,16 @@ function getUserIP(request) {
     return request.socket.remoteAddress;
   }
 }
+app.use(function (req, res, next) {
+  const ph_project_api_key = process.env.PH_PROJECT_API_KEY;
+  try {
+    req.posthog = new PostHog(ph_project_api_key);
+  } catch (err) {
+    // console.log('Err', err);
+    req.posthog = '';
+  }
+  next();
+});
 // Serve static assets from the /public folder
 app.use('/public', express.static(path.join(__dirname, '/public')));
 
