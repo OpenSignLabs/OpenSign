@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Package from "../../package.json";
 import axios from "axios";
+import { NavLink } from "react-router-dom";
+import { openInNewTab } from "../constant/Utils";
 const Footer = () => {
   const [showButton, setShowButton] = useState(false);
   const [version, setVersion] = useState("");
@@ -37,12 +39,18 @@ const Footer = () => {
   }, []);
 
   const appName = "OpenSign™";
-
+  const openUrl = () => {
+    openInNewTab(
+      "https://github.com/OpenSignLabs/OpenSign/releases/tag/" + version
+    );
+  };
   return (
     <>
       <div className="bg-[#222c3c] text-[#98a6ba] text-center text-[13px] py-3">
         All Rights Reserved &copy; {new Date().getFullYear()} &nbsp;
-        {appName} ( version: {version ? version : `${Package.version} `})
+        <span onClick={openUrl} className="hover:underline cursor-pointer">
+          {appName} ( version: {version ? version : `${Package.version} `})
+        </span>
       </div>
       <button
         className={`${
