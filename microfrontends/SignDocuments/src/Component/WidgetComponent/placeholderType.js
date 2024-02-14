@@ -67,7 +67,7 @@ function PlaceholderType(props) {
       case "text":
         setValidatePlaceholder("enter text");
       default:
-        setValidatePlaceholder(validateType);
+        setValidatePlaceholder("enter text");
     }
   }
   useEffect(() => {

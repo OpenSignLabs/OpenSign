@@ -133,14 +133,6 @@ function Placeholder(props) {
         props.setSignKey(props.pos.key);
         props.setIsStamp(props.pos?.isStamp ? props.pos.isStamp : false);
       }
-    } else if (
-      props.isPlaceholder &&
-      props.pos.type === "dropdown" &&
-      !props.isDragging
-    ) {
-      props?.setShowDropdown(true);
-      props?.setSignKey(props.pos.key);
-      props.setUniqueId(props.data.Id);
     } else if (!props.pos.type) {
       if (
         !props.pos.type &&
@@ -405,6 +397,7 @@ function Placeholder(props) {
         bottomRight:
           props.data && props.isNeedSign
             ? props.data?.signerObjId === props.signerObjId &&
+              props.pos.type !== "checkbox" &&
               props.pos.type !== "radio"
               ? true
               : false
@@ -479,6 +472,7 @@ function Placeholder(props) {
           );
       }}
       onClick={() => {
+        !props.isNeedSign && props.setWidgetType(props.pos.type);
         props.isNeedSign && props.data?.signerObjId === props.signerObjId
           ? handlePlaceholderClick()
           : props.isPlaceholder
@@ -501,7 +495,7 @@ function Placeholder(props) {
               : -11
           }
         />
-      ) : props.data && props.isNeedSign ? (
+      ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
         props.data?.signerObjId === props.signerObjId &&
         props.pos.type !== "radio" ? (
           <BorderResize />
@@ -528,7 +522,8 @@ function Placeholder(props) {
             height: props.posHeight(props.pos, props.isSignYourself),
             zIndex: "10"
           }}
-          onTouchEnd={(e) => {
+          onTouchEnd={() => {
+            !props.isNeedSign && props.setWidgetType(props.pos.type);
             props.isNeedSign && props.data?.signerObjId === props.signerObjId
               ? handlePlaceholderClick()
               : props.isPlaceholder

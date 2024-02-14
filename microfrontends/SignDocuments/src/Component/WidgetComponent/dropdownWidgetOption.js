@@ -45,7 +45,8 @@ function DropdownWidgetOption(props) {
     props.handleSaveWidgetsOptions(dropdownName, dropdownOptionList);
     props.setShowDropdown(false);
     setDropdownOptionList(["option-1", "option-2"]);
-    setDropdownName("Field-1");
+    setDropdownName(props.type);
+    props.setCurrWidgetsDetails([]);
   };
 
   return (
@@ -90,7 +91,8 @@ function DropdownWidgetOption(props) {
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    marginBottom: "5px"
+                    marginBottom: "5px",
+                    alignItems: "center"
                   }}
                 >
                   <input
@@ -151,7 +153,12 @@ function DropdownWidgetOption(props) {
             <button
               type="submit"
               className="finishBtn cancelBtn"
-              onClick={() => props.setShowDropdown(false)}
+              onClick={() => {
+                setDropdownOptionList(["option-1", "option-2"]);
+                setDropdownName(props.type);
+                props.setCurrWidgetsDetails([]);
+                props.setShowDropdown(false);
+              }}
             >
               Cancel
             </button>

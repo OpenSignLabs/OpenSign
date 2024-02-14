@@ -30,7 +30,7 @@ function FieldsComponent({
   handleRoleChange,
   handleOnBlur,
   title,
-  isdraggingEnable,
+
   isTemplateFlow
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
@@ -42,7 +42,7 @@ function FieldsComponent({
       id: 5,
       text: "dropdown"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragDropdown: !!monitor.isDragging()
     })
@@ -54,7 +54,7 @@ function FieldsComponent({
       id: 6,
       text: "checkbox"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragCheck: !!monitor.isDragging()
     })
@@ -66,7 +66,7 @@ function FieldsComponent({
       id: 7,
       text: "text"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragText: !!monitor.isDragging()
     })
@@ -78,7 +78,7 @@ function FieldsComponent({
       id: 8,
       text: "initials"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragInitial: !!monitor.isDragging()
     })
@@ -90,7 +90,7 @@ function FieldsComponent({
       id: 9,
       text: "name"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragName: !!monitor.isDragging()
     })
@@ -102,7 +102,7 @@ function FieldsComponent({
       id: 10,
       text: "company"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragCompany: !!monitor.isDragging()
     })
@@ -114,7 +114,7 @@ function FieldsComponent({
       id: 11,
       text: "job title"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragJobtitle: !!monitor.isDragging()
     })
@@ -126,7 +126,7 @@ function FieldsComponent({
       id: 12,
       text: "date"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragDate: !!monitor.isDragging()
     })
@@ -138,7 +138,7 @@ function FieldsComponent({
       id: 13,
       text: "image"
     },
-    canDrag: isdraggingEnable,
+
     collect: (monitor) => ({
       isDragImage: !!monitor.isDragging()
     })
@@ -150,7 +150,6 @@ function FieldsComponent({
       id: 14,
       text: "email"
     },
-    canDrag: isdraggingEnable,
     collect: (monitor) => ({
       isDragEmail: !!monitor.isDragging()
     })
