@@ -31,7 +31,7 @@ export default async function getTemplate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'get_template',
+            event: 'api_get_template',
             properties: { response_code: 200 },
           });
         }
@@ -40,7 +40,7 @@ export default async function getTemplate(request, response) {
           title: template.Name,
           note: template.Note || '',
           folder: { objectId: template?.Folder?.objectId, name: template?.Folder?.Name } || '',
-          file: template?.SignedUrl || x.URL,
+          file: template?.SignedUrl || template?.URL,
           owner: template?.ExtUserPtr?.Name,
           signers:
             template?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) ||
@@ -52,7 +52,7 @@ export default async function getTemplate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'get_template',
+            event: 'api_get_template',
             properties: { response_code: 404 },
           });
         }

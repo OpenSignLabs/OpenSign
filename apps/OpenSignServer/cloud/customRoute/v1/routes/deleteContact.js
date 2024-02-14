@@ -35,7 +35,7 @@ export default async function deleteContact(request, response) {
             if (request.posthog) {
               request.posthog?.capture({
                 distinctId: parseUser.userId.email,
-                event: 'delete_contact',
+                event: 'api_delete_contact',
                 properties: { response_code: 200 },
               });
             }
@@ -49,7 +49,7 @@ export default async function deleteContact(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'delete_contact',
+            event: 'api_delete_contact',
             properties: { response_code: 404 },
           });
         }
