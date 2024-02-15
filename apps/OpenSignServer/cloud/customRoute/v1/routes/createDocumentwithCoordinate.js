@@ -57,6 +57,7 @@ export default async function createDocumentwithCoordinate(request, response) {
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   const email_subject = request.body.email_subject;
   const email_body = request.body.email_body;
+  const sendInOrder = request.body.sendInOrder || false;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.SERVER_URL);
@@ -111,6 +112,9 @@ export default async function createDocumentwithCoordinate(request, response) {
         }
         if (description) {
           object.set('Description', description);
+        }
+        if (sendInOrder) {
+          object.set('SendinOrder', sendInOrder);
         }
         object.set('URL', fileUrl);
         object.set('CreatedBy', userPtr);
@@ -248,6 +252,9 @@ export default async function createDocumentwithCoordinate(request, response) {
         if (send_email === false) {
           console.log("don't send mail");
         } else {
+          if (sendInOrder) {
+            contact.splice(1);
+          }
           for (let i = 0; i < contact.length; i++) {
             try {
               const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
