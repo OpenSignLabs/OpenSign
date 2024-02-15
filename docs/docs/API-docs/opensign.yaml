@@ -1129,6 +1129,10 @@ components:
           items:
             $ref: '#/components/schemas/contact'
     draftdocument_body:
+      required:
+      - file
+      - signers
+      - title
       type: object
       properties:
         file:
@@ -1340,6 +1344,10 @@ components:
           type: string
           example: Report not available!
     drafttemplate_body:
+      required:
+      - file
+      - signers
+      - title
       type: object
       properties:
         file:
@@ -1362,6 +1370,10 @@ components:
           type: boolean
           example: false
     createtemplate_body:
+      required:
+      - file
+      - signers
+      - title
       type: object
       properties:
         file:
@@ -1382,6 +1394,7 @@ components:
           example: sample description
         signers:
           type: array
+          description: You can provide signer optionally if you it as default signer
           items:
             $ref: '#/components/schemas/createtemplate_body_signers'
         sendInOrder:
