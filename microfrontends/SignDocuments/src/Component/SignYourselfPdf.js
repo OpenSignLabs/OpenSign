@@ -81,6 +81,7 @@ function SignYourSelf() {
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState({});
   const [isPageCopy, setIsPageCopy] = useState(false);
+  const [selectWidgetId, setSelectWidgetId] = useState("");
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
@@ -469,6 +470,7 @@ function SignYourSelf() {
       setIsInitial(true);
     }
     setWidgetType(dragTypeValue);
+    setSelectWidgetId(key);
   };
 
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
@@ -1017,6 +1019,8 @@ function SignYourSelf() {
                   setIsPageCopy={setIsPageCopy}
                   setIsInitial={setIsInitial}
                   setWidgetType={setWidgetType}
+                  setSelectWidgetId={setSelectWidgetId}
+                  selectWidgetId={selectWidgetId}
                 />
               )}
             </div>

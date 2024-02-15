@@ -21,7 +21,7 @@ function RenderPdf({
   drop,
   signerPos,
   successEmail,
-  nodeRef,
+
   handleTabDrag,
   handleStop,
   isDragging,
@@ -31,7 +31,7 @@ function RenderPdf({
   setSignKey,
   pdfDetails,
   xyPostion,
-  pdfRef,
+
   pdfUrl,
   numPages,
   pageDetails,
@@ -47,7 +47,7 @@ function RenderPdf({
   index,
   containerWH,
   setIsResize,
-  setZIndex,
+
   handleLinkUser,
   setUniqueId,
   signersdata,
@@ -60,7 +60,9 @@ function RenderPdf({
   setWidgetType,
   setValidateAlert,
   setIsRadio,
-  setCurrWidgetsDetails
+  setCurrWidgetsDetails,
+  setSelectWidgetId,
+  selectWidgetId
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -369,6 +371,8 @@ function RenderPdf({
                                         setCurrWidgetsDetails={
                                           setCurrWidgetsDetails
                                         }
+                                        setSelectWidgetId={setSelectWidgetId}
+                                        selectWidgetId={selectWidgetId}
                                       />
                                     </React.Fragment>
                                   );
@@ -413,6 +417,8 @@ function RenderPdf({
                                   isDragging={isDragging}
                                   setIsInitial={setIsInitial}
                                   setWidgetType={setWidgetType}
+                                  setSelectWidgetId={setSelectWidgetId}
+                                  selectWidgetId={selectWidgetId}
                                 />
                               )
                             );
@@ -539,6 +545,8 @@ function RenderPdf({
                                           setCurrWidgetsDetails={
                                             setCurrWidgetsDetails
                                           }
+                                          setSelectWidgetId={setSelectWidgetId}
+                                          selectWidgetId={selectWidgetId}
                                         />
                                       </React.Fragment>
                                     );
@@ -586,6 +594,8 @@ function RenderPdf({
                                       isDragging={isDragging}
                                       setIsInitial={setIsInitial}
                                       setWidgetType={setWidgetType}
+                                      setSelectWidgetId={setSelectWidgetId}
+                                      selectWidgetId={selectWidgetId}
                                     />
                                   </React.Fragment>
                                 )
@@ -606,6 +616,10 @@ function RenderPdf({
               }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
+              onClick={() => {
+                console.log("click on pdf");
+                setSelectWidgetId("");
+              }}
               // ref={pdfRef}
               file={
                 pdfUrl

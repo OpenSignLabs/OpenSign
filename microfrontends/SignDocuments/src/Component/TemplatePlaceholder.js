@@ -81,7 +81,7 @@ const TemplatePlaceholder = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [widgetType, setWidgetType] = useState("");
   const [isRadio, setIsRadio] = useState(false);
-  const [validateError, setValidateError] = useState("");
+  const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isValidate, setIsValidate] = useState(false);
   const [textValidate, setTextValidate] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
@@ -500,6 +500,7 @@ const TemplatePlaceholder = () => {
         setCurrWidgetsDetails("");
         setWidgetType(dragTypeValue);
         setSignKey(key);
+        setSelectWidgetId(key);
 
         setIsMailSend(false);
       } else {
@@ -1405,6 +1406,8 @@ const TemplatePlaceholder = () => {
                     setIsRadio={setIsRadio}
                     setIsCheckboxRequired={setIsCheckboxRequired}
                     setIsValidate={setIsValidate}
+                    setSelectWidgetId={setSelectWidgetId}
+                    selectWidgetId={selectWidgetId}
                   />
                 )}
               </div>
