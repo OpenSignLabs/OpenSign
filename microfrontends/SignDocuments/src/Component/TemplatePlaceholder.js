@@ -668,7 +668,8 @@ const TemplatePlaceholder = () => {
           Signers: signers,
           Name: pdfDetails[0]?.Name || "",
           Note: pdfDetails[0]?.Note || "",
-          Description: pdfDetails[0]?.Description || ""
+          Description: pdfDetails[0]?.Description || "",
+          SendinOrder: pdfDetails[0]?.SendinOrder || false
         };
 
         await axios
