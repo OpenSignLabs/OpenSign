@@ -101,6 +101,7 @@ function PlaceHolderSign() {
   const [isUiLoading, setIsUiLoading] = useState(false);
   const [isRadio, setIsRadio] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
+  const [selectWidgetId, setSelectWidgetId] = useState("");
 
   const color = [
     "#93a3db",
@@ -427,6 +428,7 @@ function PlaceHolderSign() {
       }
 
       if (signer && dragTypeValue !== "label") {
+        setSelectWidgetId(key);
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
 
         const { blockColor, Role } = signer;
@@ -499,6 +501,7 @@ function PlaceHolderSign() {
         setWidgetType(dragTypeValue);
         setSignKey(key);
       } else {
+        setSelectWidgetId(key);
         let filterSignerPos = signerPos.filter(
           (data) => data.Role === "prefill"
         );
@@ -1552,6 +1555,8 @@ function PlaceHolderSign() {
                     setWidgetType={setWidgetType}
                     setIsRadio={setIsRadio}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
+                    setSelectWidgetId={setSelectWidgetId}
+                    selectWidgetId={selectWidgetId}
                   />
                 )}
               </div>

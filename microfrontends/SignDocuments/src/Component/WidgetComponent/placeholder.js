@@ -99,6 +99,7 @@ function Placeholder(props) {
 
   //onclick placeholder function to open signature pad
   const handlePlaceholderClick = () => {
+    props.setSelectWidgetId(props.pos.key);
     const widgetTypeExist = [
       "text",
       "checkbox",
@@ -133,6 +134,13 @@ function Placeholder(props) {
         props.setSignKey(props.pos.key);
         props.setIsStamp(props.pos?.isStamp ? props.pos.isStamp : false);
       }
+    } else if (
+      props.isPlaceholder &&
+      !props.isDragging &&
+      props.pos.type !== "label"
+    ) {
+      props.handleLinkUser(props.data.Id);
+      props.setUniqueId(props.data.Id);
     } else if (!props.pos.type) {
       if (
         !props.pos.type &&
@@ -380,7 +388,7 @@ function Placeholder(props) {
 
   return (
     <Rnd
-      //   ref={nodeRef}
+      //ref={nodeRef}
       key={props.pos.key}
       lockAspectRatio={
         props.pos.Width
@@ -401,7 +409,9 @@ function Placeholder(props) {
               props.pos.type !== "radio"
               ? true
               : false
-            : props.pos.type !== "radio" && true,
+            : props.pos.type !== "radio" &&
+              props.pos.key === props.selectWidgetId &&
+              true,
         bottomLeft: false,
         topLeft: false
       }}
@@ -480,7 +490,9 @@ function Placeholder(props) {
             : props.isSignYourself && handlePlaceholderClick();
       }}
     >
-      {props.isShowBorder && props.pos.type !== "radio" ? (
+      {props.isShowBorder &&
+      props.pos.type !== "radio" &&
+      props.pos.key === props.selectWidgetId ? (
         <BorderResize
           right={
             (props.pos.type === "checkbox" || props.pos.type === "radio") &&
@@ -503,10 +515,11 @@ function Placeholder(props) {
           <></>
         )
       ) : (
-        props.pos.type !== "radio" && <BorderResize />
+        props.pos.type !== "radio" &&
+        props.pos.key === props.selectWidgetId && <BorderResize />
       )}
 
-      {props.isShowBorder && (
+      {props.isShowBorder && props.pos.key === props.selectWidgetId && (
         <PlaceholderBorder
           setDraggingEnabled={setDraggingEnabled}
           pos={props.pos}
@@ -531,7 +544,8 @@ function Placeholder(props) {
                 : props.isSignYourself && handlePlaceholderClick();
           }}
         >
-          <PlaceholderIcon />
+          {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
+
           <PlaceholderType
             pos={props.pos}
             xyPostion={props.xyPostion}
@@ -556,7 +570,7 @@ function Placeholder(props) {
         </div>
       ) : (
         <>
-          <PlaceholderIcon />
+          {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
 
           <PlaceholderType
             pos={props.pos}

@@ -254,7 +254,8 @@ function PlaceholderType(props) {
         />
       );
     case "text":
-      return (
+      return props.isSignYourself ||
+        (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <input
           className="inputPlaceholder"
           ref={inputRef}
@@ -287,6 +288,15 @@ function PlaceholderType(props) {
             );
           }}
         />
+      ) : (
+        <div
+          style={{
+            color: "black",
+            fontSize: calculateFontSize()
+          }}
+        >
+          <span>{props.pos.type}</span>
+        </div>
       );
     case "dropdown":
       return props.data?.signerObjId === props.signerObjId ? (
