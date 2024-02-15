@@ -362,9 +362,13 @@ function PdfRequestFiles() {
         });
 
         const flag = false;
+        const extUserPtr = pdfDetails[0].ExtUserPtr;
+        const HeaderDocId = extUserPtr?.HeaderDocId;
         //embed document's object id to all pages in pdf document
-        if (!isDocId) {
-          await embedDocId(pdfDoc, documentId, allPages);
+        if (!HeaderDocId) {
+          if (!isDocId) {
+            await embedDocId(pdfDoc, documentId, allPages);
+          }
         }
         //embed multi signature in pdf
         const pdfBytes = await multiSignEmbed(
@@ -631,7 +635,7 @@ function PdfRequestFiles() {
                 justifyContent: "center",
                 flexDirection: "column",
                 alignItems: "center",
-                zIndex: "20",
+                zIndex: "999",
                 backgroundColor: "#e6f2f2",
                 opacity: 0.8
               }}

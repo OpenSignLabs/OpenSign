@@ -1326,11 +1326,12 @@ const TemplatePlaceholder = () => {
               />
               <DropdownWidgetOption
                 type="radio"
-                title="RadioGroup"
+                title="Radio group"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1339,6 +1340,7 @@ const TemplatePlaceholder = () => {
                 setShowDropdown={setShowDropdown}
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}

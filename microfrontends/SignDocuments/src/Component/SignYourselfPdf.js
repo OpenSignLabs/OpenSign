@@ -518,8 +518,13 @@ function SignYourSelf() {
 
       const flag = true;
 
-      await embedDocId(pdfDoc, documentId, allPages);
+      const extUserPtr = pdfDetails[0].ExtUserPtr;
+      const HeaderDocId = extUserPtr?.HeaderDocId;
 
+      //embed document's object id to all pages in pdf document
+      if (!HeaderDocId) {
+        await embedDocId(pdfDoc, documentId, allPages);
+      }
       //embed multi signature in pdf
       const pdfBytes = await multiSignEmbed(
         xyPostion,

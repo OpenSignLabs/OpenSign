@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
@@ -6,6 +6,7 @@ import dp from "../assets/images/dp.png";
 import Title from "../components/Title";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
+
 function UserProfile() {
   const navigate = useNavigate();
   let UserProfile = JSON.parse(localStorage.getItem("UserInformation"));
@@ -17,9 +18,19 @@ function UserProfile() {
   const [Image, setImage] = useState(localStorage.getItem("profileImg"));
   const [isLoader, setIsLoader] = useState(false);
   const [percentage, setpercentage] = useState(0);
+  const [isDisableDocId, setIsDisableDocId] = useState(false);
 
   Parse.serverURL = parseBaseUrl;
   Parse.initialize(parseAppId);
+
+  useEffect(() => {
+    const extClass = localStorage.getItem("Extand_Class");
+    const jsonSender = JSON.parse(extClass);
+    const HeaderDocId = jsonSender[0]?.HeaderDocId;
+    if (HeaderDocId) {
+      setIsDisableDocId(HeaderDocId);
+    }
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoader(true);
@@ -33,6 +44,7 @@ function UserProfile() {
         object.set("name", name);
         object.set("ProfilePic", Image);
         object.set("phone", phn);
+
         object.save().then(
           async (response) => {
             if (response) {
@@ -66,8 +78,12 @@ function UserProfile() {
     const extClass = localStorage.getItem("extended_class");
     const extData = JSON.parse(localStorage.getItem("Extand_Class"));
     const ExtUserId = extData[0].objectId;
-    // console.log("UserId ", ExtUserId);
-    const body = { Phone: obj.Phone, Name: obj.Name };
+
+    const body = {
+      Phone: obj.Phone,
+      Name: obj.Name,
+      HeaderDocId: isDisableDocId
+    };
     await axios.put(
       parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
       body,
@@ -136,6 +152,10 @@ function UserProfile() {
     let _redirect = `/`;
     return <Navigate to={_redirect} />;
   }
+
+  const handleDisableDocId = () => {
+    setIsDisableDocId((prevChecked) => !prevChecked);
+  };
 
   return (
     <React.Fragment>
@@ -239,6 +259,22 @@ function UserProfile() {
                   {UserProfile && UserProfile.emailVerified
                     ? "Verified"
                     : "Not verified"}
+                </span>
+              </li>
+              <li className="flex justify-between items-center border-y-[1px] border-gray-300 py-2 break-all">
+                <span className="font-semibold">Disable DocumentId :</span>{" "}
+                <span>
+                  <label className="relative inline-flex items-center cursor-pointer mb-0">
+                    <input
+                      disabled={editmode ? false : true}
+                      checked={isDisableDocId}
+                      onChange={handleDisableDocId}
+                      type="checkbox"
+                      value=""
+                      className="sr-only peer"
+                    />
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  </label>
                 </span>
               </li>
             </ul>

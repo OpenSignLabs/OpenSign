@@ -1486,7 +1486,7 @@ function PlaceHolderSign() {
               />
               <DropdownWidgetOption
                 type="radio"
-                title="RadioGroup"
+                title="Radio group"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
