@@ -34,7 +34,8 @@ const Forms = (props) => {
     Name: "",
     Description: "",
     Note: "Please review and sign this document",
-    TimeToCompleteDays: 15
+    TimeToCompleteDays: 15,
+    SendinOrder: "false"
   });
   const [fileupload, setFileUpload] = useState([]);
   const [fileload, setfileload] = useState(false);
@@ -161,6 +162,8 @@ const Forms = (props) => {
           "TimeToCompleteDays",
           parseInt(formData?.TimeToCompleteDays)
         );
+        const isChecked = formData.SendinOrder === "true" ? true : false;
+        object.set("SendinOrder", isChecked);
       }
       object.set("URL", fileupload);
       object.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
@@ -363,6 +366,32 @@ const Forms = (props) => {
                 onChange={(e) => handleStrInput(e)}
                 required
               />
+            </div>
+          )}
+          {props.title !== "Sign Yourself" && (
+            <div className="text-xs mt-2">
+              <label className="block">Send In Order</label>
+              <div className="flex items-center gap-2 ml-2 mb-1">
+                <input
+                  type="radio"
+                  value={"true"}
+                  name="SendinOrder"
+                  checked={formData.SendinOrder === "true"}
+                  className=""
+                  onChange={handleStrInput}
+                />
+                <div className="text-center">Yes</div>
+              </div>
+              <div className="flex items-center gap-2 ml-2 mb-1">
+                <input
+                  type="radio"
+                  value={"false"}
+                  name="SendinOrder"
+                  checked={formData.SendinOrder === "false"}
+                  onChange={handleStrInput}
+                />
+                <div className="text-center">No</div>
+              </div>
             </div>
           )}
           <div className="flex items-center mt-3 gap-2 text-white">

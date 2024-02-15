@@ -11,6 +11,7 @@ export default async function createDocument(request, response) {
   const base64File = request.body.file;
   const send_email = request.body.send_email || true;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
+  const SendinOrder = request.body.sendInOrder || false;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
 
@@ -68,6 +69,9 @@ export default async function createDocument(request, response) {
         }
         if (description) {
           object.set('Description', description);
+        }
+        if (SendinOrder) {
+          object.set('SendinOrder', SendinOrder);
         }
         object.set('URL', fileUrl);
         object.set('CreatedBy', userPtr);
