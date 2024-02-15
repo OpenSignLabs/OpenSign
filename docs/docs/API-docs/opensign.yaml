@@ -1193,6 +1193,9 @@ components:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
           example: ""
+        sendInOrder:
+          type: boolean
+          example: false
     inline_response_200_d:
       type: object
       properties:
@@ -1256,6 +1259,9 @@ components:
           type: string
           description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
           example: ""
+        sendInOrder:
+          type: boolean
+          example: false
     inline_response_200_2:
       type: object
       properties:
