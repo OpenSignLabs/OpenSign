@@ -225,7 +225,7 @@ export default async function createDocumentWithTemplate(request, response) {
                     sender +
                     "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
                     orgName +
-                    "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+                    "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
                     localExpireDate +
                     "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
                     signPdf +
@@ -300,7 +300,7 @@ export default async function createDocumentWithTemplate(request, response) {
             if (request.posthog) {
               request.posthog?.capture({
                 distinctId: parseUser.userId.email,
-                event: 'create_document_with_templateid',
+                event: 'api_create_document_with_templateid',
                 properties: { response_code: 200 },
               });
             }
@@ -317,7 +317,7 @@ export default async function createDocumentWithTemplate(request, response) {
             if (request.posthog) {
               request.posthog?.capture({
                 distinctId: parseUser.userId.email,
-                event: 'create_document_with_templateid',
+                event: 'api_create_document_with_templateid',
                 properties: { response_code: 400 },
               });
             }
@@ -327,7 +327,7 @@ export default async function createDocumentWithTemplate(request, response) {
           if (request.posthog) {
             request.posthog?.capture({
               distinctId: parseUser.userId.email,
-              event: 'create_document_with_templateid',
+              event: 'api_create_document_with_templateid',
               properties: { response_code: 400 },
             });
           }
@@ -337,7 +337,7 @@ export default async function createDocumentWithTemplate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'create_document_with_templateid',
+            event: 'api_create_document_with_templateid',
             properties: { response_code: 404 },
           });
         }

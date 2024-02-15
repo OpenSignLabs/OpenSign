@@ -35,7 +35,7 @@ export default async function deleteDocument(request, response) {
             if (request.posthog) {
               request.posthog?.capture({
                 distinctId: parseUser.userId.email,
-                event: 'delete_document',
+                event: 'api_delete_document',
                 properties: { response_code: 200 },
               });
             }
@@ -49,7 +49,7 @@ export default async function deleteDocument(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'delete_document',
+            event: 'api_delete_document',
             properties: { response_code: 404 },
           });
         }

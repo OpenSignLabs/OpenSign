@@ -60,11 +60,11 @@ export default async function createDocumentwithCoordinate(request, response) {
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.SERVER_URL);
+  const reqToken = request.headers['x-api-token'];
+  if (!reqToken) {
+    return response.status(400).json({ error: 'Please Provide API Token' });
+  }
   try {
-    const reqToken = request.headers['x-api-token'];
-    if (!reqToken) {
-      return response.status(400).json({ error: 'Please Provide API Token' });
-    }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
     tokenQuery.include('userId');
@@ -278,7 +278,7 @@ export default async function createDocumentwithCoordinate(request, response) {
                 sender +
                 "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
                 orgName +
-                "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+                "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
                 localExpireDate +
                 "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
                 signPdf +
@@ -337,7 +337,7 @@ export default async function createDocumentwithCoordinate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'create_document',
+            event: 'api_create_document',
             properties: { response_code: 200 },
           });
         }
@@ -354,7 +354,7 @@ export default async function createDocumentwithCoordinate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'create_document',
+            event: 'api_create_document',
             properties: { response_code: 400 },
           });
         }

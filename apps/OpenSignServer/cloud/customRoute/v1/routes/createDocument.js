@@ -125,7 +125,7 @@ export default async function createDocument(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'draft_document',
+            event: 'api_draft_document',
             properties: { response_code: 200 },
           });
         }
@@ -137,7 +137,7 @@ export default async function createDocument(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'draft_document',
+            event: 'api_draft_document',
             properties: { response_code: 400 },
           });
         }
