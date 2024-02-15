@@ -368,7 +368,7 @@ const Forms = (props) => {
               />
             </div>
           )}
-          {props.title === "Request Signature" && (
+          {props.title !== "Sign Yourself" && (
             <div className="text-xs mt-2">
               <label className="block">Send In Order</label>
               <div className="flex items-center gap-2 ml-2 mb-1">

@@ -105,8 +105,9 @@ export default async function createDocumentWithTemplate(request, response) {
             object.set('IsSendMail', send_email);
             if (sendInOrder) {
               object.set('SendinOrder', sendInOrder);
+            } else if (template?.SendinOrder && template?.SendinOrder) {
+              object.set('SendinOrder', template?.SendinOrder);
             }
-
             let templateSigner = template?.Signers ? template?.Signers : [];
             let contact = [];
             if (signers && signers.length > 0) {
