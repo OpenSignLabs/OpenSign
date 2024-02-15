@@ -54,6 +54,8 @@ export default async function createDocumentWithTemplate(request, response) {
   const send_email = request.body.send_email;
   const email_subject = request.body.email_subject;
   const email_body = request.body.email_body;
+  const sendInOrder = request.body.sendInOrder || false;
+
   try {
     const reqToken = request.headers['x-api-token'];
     if (!reqToken) {
@@ -101,6 +103,9 @@ export default async function createDocumentWithTemplate(request, response) {
               object.set('Description', template.Description);
             }
             object.set('IsSendMail', send_email);
+            if (sendInOrder) {
+              object.set('SendinOrder', sendInOrder);
+            }
 
             let templateSigner = template?.Signers ? template?.Signers : [];
             let contact = [];
@@ -196,6 +201,9 @@ export default async function createDocumentWithTemplate(request, response) {
               console.log("don't send mail");
             } else {
               for (let i = 0; i < contact.length; i++) {
+                if (sendInOrder) {
+                  contact.splice(1);
+                }
                 try {
                   const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
                   let url = `${process.env.SERVER_URL}/functions/sendmailv3/`;
