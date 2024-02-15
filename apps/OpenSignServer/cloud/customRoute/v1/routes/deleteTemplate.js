@@ -1,9 +1,9 @@
 export default async function deletedTemplate(request, response) {
+  const reqToken = request.headers['x-api-token'];
+  if (!reqToken) {
+    return response.status(400).json({ error: 'Please Provide API Token' });
+  }
   try {
-    const reqToken = request.headers['x-api-token'];
-    if (!reqToken) {
-      return response.status(400).json({ error: 'Please Provide API Token' });
-    }
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
     tokenQuery.include('userId');
@@ -23,6 +23,13 @@ export default async function deletedTemplate(request, response) {
       if (res) {
         const isArchive = res.get('IsArchive');
         if (isArchive && isArchive) {
+          if (request.posthog) {
+            request.posthog?.capture({
+              distinctId: parseUser.userId.email,
+              event: 'api_delete_template',
+              properties: { response_code: 404 },
+            });
+          }
           return response.status(404).json({ error: 'Template not found!' });
         } else {
           const template = Parse.Object.extend('contracts_Template');
@@ -34,7 +41,7 @@ export default async function deletedTemplate(request, response) {
             if (request.posthog) {
               request.posthog?.capture({
                 distinctId: parseUser.userId.email,
-                event: 'delete_template',
+                event: 'api_delete_template',
                 properties: { response_code: 200 },
               });
             }
@@ -48,7 +55,7 @@ export default async function deletedTemplate(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'delete_template',
+            event: 'api_delete_template',
             properties: { response_code: 404 },
           });
         }

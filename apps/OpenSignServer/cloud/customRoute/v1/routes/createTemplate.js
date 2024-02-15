@@ -9,7 +9,7 @@ export default async function createTemplate(request, response) {
   const folderId = request.body?.folderId;
   const base64File = request.body.file;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
-  const protocol = customAPIurl();
+  const baseUrl = new URL(process.env.SERVER_URL);
 
   try {
     const reqToken = request.headers['x-api-token'];
@@ -113,13 +113,13 @@ export default async function createTemplate(request, response) {
       if (request.posthog) {
         request.posthog?.capture({
           distinctId: parseUser.userId.email,
-          event: 'draft_template',
+          event: 'api_draft_template',
           properties: { response_code: 200 },
         });
       }
       return response.json({
         objectId: res.id,
-        url: protocol + '/load/signmicroapp/template/' + res.id,
+        url: baseUrl.p + '/load/signmicroapp/template/' + res.id,
       });
     } else {
       return response.status(405).json({ error: 'Invalid API Token!' });

@@ -38,7 +38,7 @@ export default async function getContactList(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'get_contact_list',
+            event: 'api_get_contact_list',
             properties: { response_code: 200 },
           });
         }
@@ -47,7 +47,7 @@ export default async function getContactList(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'get_contact_list',
+            event: 'api_get_contact_list',
             properties: { response_code: 200 },
           });
         }

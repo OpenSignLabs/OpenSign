@@ -29,7 +29,7 @@ export default async function getDocument(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'get_document',
+            event: 'api_get_document',
             properties: { response_code: 200 },
           });
         }
@@ -50,7 +50,7 @@ export default async function getDocument(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'get_document',
+            event: 'api_get_document',
             properties: { response_code: 404 },
           });
         }
