@@ -8,6 +8,7 @@ export default async function createTemplate(request, response) {
   const signers = request.body?.signers;
   const folderId = request.body?.folderId;
   const base64File = request.body.file;
+  const SendinOrder = request.body.sendInOrder || false;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
   const baseUrl = new URL(process.env.SERVER_URL);
 
@@ -61,6 +62,9 @@ export default async function createTemplate(request, response) {
       object.set('URL', fileUrl);
       object.set('CreatedBy', userPtr);
       object.set('ExtUserPtr', extUserPtr);
+      if (SendinOrder) {
+        object.set('SendinOrder', SendinOrder);
+      }
       if (signers && signers.length > 0) {
         let parseSigners;
         if (base64File) {
