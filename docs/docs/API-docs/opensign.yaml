@@ -1151,6 +1151,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/draftdocument_body_signers'
+        sendInOrder:
+          type: boolean
+          example: false
     createdocument_body:
       required:
       - file
@@ -1355,6 +1358,9 @@ components:
           type: string
           format: string
           example: sample description
+        sendInOrder:
+          type: boolean
+          example: false
     createtemplate_body:
       type: object
       properties:
@@ -1378,6 +1384,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/createtemplate_body_signers'
+        sendInOrder:
+          type: boolean
+          example: false
     inline_response_200_dt:
       type: object
       properties:
