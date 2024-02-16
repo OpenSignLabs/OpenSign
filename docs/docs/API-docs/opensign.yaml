@@ -923,6 +923,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/template_Signers'
+        sendInOrder:
+          type: boolean
+          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
@@ -1016,6 +1019,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/template_Signers'
+        sendInOrder:
+          type: boolean
+          example: false
         createdAt:
           $ref: '#/components/schemas/date'
         updatedAt:
