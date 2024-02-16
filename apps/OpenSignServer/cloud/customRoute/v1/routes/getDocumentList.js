@@ -28,22 +28,22 @@ export default async function getDocumentList(request, response) {
       const skip = request?.query?.skip ? request.query.skip : 0;
       let reportId;
       switch (docType) {
-        case 'draftdocuments':
+        case 'draft':
           reportId = 'ByHuevtCFY';
           break;
         case 'signaturerequest':
           reportId = '4Hhwbp482K';
           break;
-        case 'inprogressdocuments':
+        case 'inprogress':
           reportId = '1MwEuxLEkF';
           break;
-        case 'completedocuments':
+        case 'completed':
           reportId = 'kQUoW4hUXz';
           break;
-        case 'expiredocuments':
+        case 'expired':
           reportId = 'zNqBHXHsYH';
           break;
-        case 'declinedocuments':
+        case 'declined':
           reportId = 'UPr2Fm5WY3';
           break;
         default:
