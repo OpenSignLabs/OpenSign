@@ -939,7 +939,6 @@ export const multiSignEmbed = async (
         imgData.type === "initials" ||
         imgData.type === "image"
       ) {
-        console.log(images[id]);
         if (
           (imgData.ImageType && imgData.ImageType === "image/png") ||
           imgData.ImageType === "image/jpeg"
