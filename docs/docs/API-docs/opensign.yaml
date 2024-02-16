@@ -253,6 +253,8 @@ paths:
         ### Features:
         -  Save Document Drafts: Securely save your documents in a draft state.
         -  Add Signers: Assign signers to your document directly from the API.
+        ### Note:
+        You cannot add roles and widgets from this API. You will have to do it from the link received in the response.
       operationId: draftedocument
       requestBody:
         content:
@@ -571,40 +573,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_404_5'
-        "405":
-          description: Invalid API Token!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidtoken'
-      security:
-      - x-api-token: []
-  /drafttemplate:
-    post:
-      tags:
-      - Templates
-      summary: Draft Template
-      description: The Draft Template API allows you to create customizable draft templates .The API returns a unique **template_id** that can be used to generate documents based on the specified template and **url** to edit template.
-      operationId: drafttemplate
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/drafttemplate_body'
-        required: true
-      responses:
-        "200":
-          description: Template created successfully!
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_dt'
-        "400":
-          description: "Something went wrong, please try again later!"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400_1'
         "405":
           description: Invalid API Token!
           content:
@@ -1343,32 +1311,6 @@ components:
         error:
           type: string
           example: Report not available!
-    drafttemplate_body:
-      required:
-      - file
-      - signers
-      - title
-      type: object
-      properties:
-        file:
-          type: string
-          format: base64
-          example: base64 encoded file
-        title:
-          type: string
-          format: string
-          example: sample template
-        note:
-          type: string
-          format: string
-          example: sample note
-        description:
-          type: string
-          format: string
-          example: sample description
-        sendInOrder:
-          type: boolean
-          example: false
     createtemplate_body:
       required:
       - file
@@ -1400,14 +1342,6 @@ components:
         sendInOrder:
           type: boolean
           example: false
-    inline_response_200_dt:
-      type: object
-      properties:
-        objectId:
-          type: number
-        url:
-          type: string
-          example: https://url-to-edit-template.com
     inline_response_200_5:
       type: object
       properties:
@@ -1485,6 +1419,9 @@ components:
     template_Signers:
       type: object
       properties:
+        role:
+          type: string
+          example: ceo
         name:
           type: string
           example: joe bee
@@ -1494,6 +1431,10 @@ components:
         phone:
           type: string
           example: "456213871"
+        widgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/template_Signers_widgets'
     inline_response_400_cc:
       type: object
       properties:
@@ -1649,6 +1590,34 @@ components:
           type: string
           format: string
           example: folder name
+    template_Signers_widgets:
+      type: object
+      properties:
+        type:
+          type: string
+          description: "Allowed values - signature, stamp."
+          format: string
+          example: signature
+        x:
+          type: number
+          format: number
+          example: 244
+        "y":
+          type: number
+          format: number
+          example: 71
+        w:
+          type: number
+          format: number
+          example: 38
+        h:
+          type: number
+          format: number
+          example: 46
+        page:
+          type: number
+          format: number
+          example: 1
   securitySchemes:
     x-api-token:
       type: apiKey
