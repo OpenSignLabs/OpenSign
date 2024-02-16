@@ -30,9 +30,9 @@ function RemoteApp({ app }) {
             boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.33)",
             backgroundColor: "#ffffff",
             width: "100%",
-            overflow: "hidden",
             borderRadius: 3,
-            minHeight: "70vh"
+            height: "100%",
+            minHeight: "100vh"
           }}
         >
           {RemoteComponent && <RemoteComponent />}

@@ -8,15 +8,19 @@ export default async function TemplateAfterSave(request) {
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
       } else {
-        await updateSelfDoc(request.object.id);
+        if (request?.object?.id && request?.user) {
+          await updateSelfDoc(request.object.id);
+        }
       }
     } else {
-      if (request.user) {
+      if (request?.user) {
         const signers = request.object.get('Signers');
         if (signers && signers.length > 0) {
           await updateAclDoc(request.object.id);
         } else {
-          await updateSelfDoc(request.object.id);
+          if (request?.object?.id) {
+            await updateSelfDoc(request.object.id);
+          }
         }
       }
     }
@@ -30,6 +34,7 @@ export default async function TemplateAfterSave(request) {
     // console.log(objId)
     const Query = new Parse.Query('contracts_Template');
     Query.include('Signers');
+    Query.include('CreatedBy');
     const updateACL = await Query.get(objId, { useMasterKey: true });
     const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
@@ -52,8 +57,10 @@ export default async function TemplateAfterSave(request) {
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
-    newACL.setReadAccess(request.user, true);
-    newACL.setWriteAccess(request.user, true);
+    if (res?.CreatedBy) {
+      newACL.setReadAccess(res?.CreatedBy?.objectId, true);
+      newACL.setWriteAccess(res?.CreatedBy?.objectId, true);
+    }
 
     UsersPtr.forEach(x => {
       newACL.setReadAccess(x.objectId, true);
@@ -66,17 +73,20 @@ export default async function TemplateAfterSave(request) {
 
   async function updateSelfDoc(objId) {
     // console.log("Inside updateSelfDoc func")
-    
+
     const Query = new Parse.Query('contracts_Template');
+    Query.include('CreatedBy');
     const updateACL = await Query.get(objId, { useMasterKey: true });
-    // const res = JSON.parse(JSON.stringify(updateACL));
+    const res = JSON.parse(JSON.stringify(updateACL));
     // console.log("res");
     // console.log(JSON.stringify(res));
     const newACL = new Parse.ACL();
     newACL.setPublicReadAccess(false);
     newACL.setPublicWriteAccess(false);
-    newACL.setReadAccess(request.user, true);
-    newACL.setWriteAccess(request.user, true);
+    if (res?.CreatedBy) {
+      newACL.setReadAccess(res?.CreatedBy?.objectId, true);
+      newACL.setWriteAccess(res?.CreatedBy?.objectId, true);
+    }
     updateACL.setACL(newACL);
     updateACL.save(null, { useMasterKey: true });
   }

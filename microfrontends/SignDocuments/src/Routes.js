@@ -10,6 +10,7 @@ import LegaDrive from "./Component/LegaDrive/LegaDrive";
 import PageNotFound from "./Component/PageNotFound";
 import TemplatePlaceHolder from "./Component/TemplatePlaceholder";
 import Parse from "parse";
+import DebugUi from "./Component/DebugUi";
 Parse.serverURL = localStorage.getItem("baseUrl");
 Parse.initialize(localStorage.getItem("parseAppId"));
 // `AppRoutes` is used to define route path of app and
@@ -50,6 +51,7 @@ function AppRoutes() {
         <Route path="/legadrive" element={<LegaDrive />} />
         {/* Page Not Found */}
         <Route path="/template/:templateId" element={<TemplatePlaceHolder />} />
+        <Route path="/debugpdf" element={<DebugUi />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>

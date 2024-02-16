@@ -11,14 +11,27 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          $or: [{Signers:{$eq:[]}}, { Signers: null }, { Signers: { $exists: true }, Placeholders: null }],
+          $or: [
+            { Signers: { $eq: [] } },
+            { Signers: null },
+            { Signers: { $exists: true }, Placeholders: null },
+          ],
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
             objectId: currentUserId,
           },
         },
-        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+        ],
       };
     // Need your sign report
     case '4Hhwbp482K':
@@ -53,6 +66,8 @@ export default function reportJson(id, userId) {
           'URL',
           'ExtUserPtr.Name',
           'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
           'Signers.UserId',
           'AuditTrail',
         ],
@@ -77,7 +92,16 @@ export default function reportJson(id, userId) {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
         },
-        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+        ],
       };
     // completed documents report
     case 'kQUoW4hUXz':
@@ -99,8 +123,11 @@ export default function reportJson(id, userId) {
           'Note',
           'Folder.Name',
           'URL',
+          'SignedUrl',
           'ExtUserPtr.Name',
           'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
           'TimeToCompleteDays',
         ],
       };
@@ -120,7 +147,16 @@ export default function reportJson(id, userId) {
           },
         },
 
-        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+        ],
       };
     //  Expired Documents report
     case 'zNqBHXHsYH':
@@ -150,7 +186,16 @@ export default function reportJson(id, userId) {
             objectId: currentUserId,
           },
         },
-        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+        ],
       };
     //  Recently sent for signatures report show on dashboard
     case 'd9k3UfYHBc':
@@ -172,7 +217,15 @@ export default function reportJson(id, userId) {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
         },
-        keys: ['Name', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: [
+          'Name',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+        ],
       };
     //  Recent signature requests report show on dashboard
     case '5Go51Q7T8r':
@@ -200,7 +253,16 @@ export default function reportJson(id, userId) {
             },
           },
         },
-        keys: ['Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name', 'Signers.UserId', 'AuditTrail'],
+        keys: [
+          'Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.UserId',
+          'AuditTrail',
+          'Signers.Email',
+          'Signers.Phone',
+        ],
       };
     // Drafts report show on dashboard
     case 'kC5mfynCi4':
@@ -211,14 +273,27 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          $or: [{Signers:{$eq:[]}}, { Signers: null }, { Signers: { $exists: true }, Placeholders: null }],
+          $or: [
+            { Signers: { $eq: [] } },
+            { Signers: null },
+            { Signers: { $exists: true }, Placeholders: null },
+          ],
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
             objectId: currentUserId,
           },
         },
-        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+        ],
       };
     // contact book report
     case '5KhaPr482K':
@@ -249,7 +324,16 @@ export default function reportJson(id, userId) {
             objectId: currentUserId,
           },
         },
-        keys: ['Name', 'Note', 'Folder.Name', 'URL', 'ExtUserPtr.Name', 'Signers.Name'],
+        keys: [
+          'Name',
+          'Note',
+          'Folder.Name',
+          'URL',
+          'ExtUserPtr.Name',
+          'Signers.Name',
+          'Signers.Email',
+          'Signers.Phone',
+        ],
       };
     default:
       return null;

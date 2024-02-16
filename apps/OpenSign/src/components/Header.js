@@ -4,6 +4,7 @@ import FullScreenButton from "./FullScreenButton";
 import { useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
+import { openInNewTab } from "../constant/Utils";
 const Header = ({ showSidebar }) => {
   const navigation = useNavigate();
   const { width } = useWindowSize();
@@ -118,6 +119,12 @@ const Header = ({ showSidebar }) => {
             <ul>
               <li
                 className="hover:bg-gray-100 rounded-t-lg py-1 px-2 cursor-pointer font-normal"
+                onClick={() => openInNewTab("https://docs.opensignlabs.com")}
+              >
+                <i className="fa-solid fa-book"></i> Docs
+              </li>
+              <li
+                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
                 onClick={() => {
                   setIsOpen(false);
                   navigation("/profile");

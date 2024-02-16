@@ -79,6 +79,7 @@ function PdfRequestFiles() {
   const [isExpired, setIsExpired] = useState(false);
   const [alreadySign, setAlreadySign] = useState(false);
   const [containerWH, setContainerWH] = useState({});
+  const [sendInOrder, setSendInOrder] = useState(false);
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -182,6 +183,52 @@ function PdfRequestFiles() {
           checkAlreadySign.length > 0
         ) {
           setAlreadySign(true);
+        } else {
+          const obj = documentData?.[0];
+          setSendInOrder(obj?.SendinOrder || false);
+          if (
+            obj &&
+            obj.Signers &&
+            obj.Signers.length > 0 &&
+            obj.Placeholders &&
+            obj.Placeholders.length > 0
+          ) {
+            const params = {
+              event: "viewed",
+              body: {
+                objectId: documentData?.[0].objectId,
+                file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
+                name: documentData?.[0].Name,
+                note: documentData?.[0].Note || "",
+                description: documentData?.[0].Description || "",
+                signers: documentData?.[0].Signers?.map((x) => ({
+                  name: x?.Name,
+                  email: x?.Email,
+                  phone: x?.Phone
+                })),
+                viewedBy: jsonSender.email,
+                viewedAt: new Date(),
+                createdAt: documentData?.[0].createdAt
+              }
+            };
+
+            try {
+              await axios.post(
+                `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+                params,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-Parse-Application-Id":
+                      localStorage.getItem("parseAppId"),
+                    sessiontoken: localStorage.getItem("accesstoken")
+                  }
+                }
+              );
+            } catch (err) {
+              console.log("Err ", err);
+            }
+          }
         }
 
         let signers = [];
@@ -283,175 +330,292 @@ function PdfRequestFiles() {
       });
   };
 
+  const checkSendInOrder = () => {
+    if (sendInOrder) {
+      const index = pdfDetails?.[0].Signers.findIndex(
+        (x) => x.Email === jsonSender.email
+      );
+      const newIndex = index - 1;
+      if (newIndex !== -1) {
+        const user = pdfDetails?.[0].Signers[newIndex];
+        const isPrevUserSigned =
+          pdfDetails?.[0].AuditTrail &&
+          pdfDetails?.[0].AuditTrail.some(
+            (x) =>
+              x.UserPtr.objectId === user.objectId && x.Activity === "Signed"
+          );
+        if (isPrevUserSigned) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  };
   //function for embed signature or image url in pdf
   async function embedImages() {
-    const checkUser = signerPos.filter(
-      (data) => data.signerObjId === signerObjectId
-    );
-    if (checkUser && checkUser.length > 0) {
-      let checkSignUrl = [];
-      const checkSign = checkUser[0].placeHolder.filter(
-        (data, ind) => data.pos
+    const validateSigning = checkSendInOrder();
+    if (validateSigning) {
+      const checkUser = signerPos.filter(
+        (data) => data.signerObjId === signerObjectId
       );
-      for (let i = 0; i < checkSign.length; i++) {
-        const posData = checkSign[i].pos.filter((pos) => !pos.SignUrl);
-        if (posData && posData.length > 0) {
-          checkSignUrl.push(posData);
-        }
-      }
-
-      if (checkSignUrl && checkSignUrl.length > 0) {
-        setIsAlert({
-          isShow: true,
-          alertMessage: "Please complete your signature!"
-        });
-      } else {
-        setIsUiLoading(true);
-        const pngUrl = checkUser[0].placeHolder;
-        // Load a PDFDocument from the existing PDF bytes
-        const existingPdfBytes = await fetch(pdfUrl).then((res) =>
-          res.arrayBuffer()
+      if (checkUser && checkUser.length > 0) {
+        let checkSignUrl = [];
+        const checkSign = checkUser[0].placeHolder.filter(
+          (data, ind) => data.pos
         );
-        const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-          ignoreEncryption: true
-        });
-        // let pdfBase64;
-
-        //checking if signature is only one then send image url in jpeg formate to server
-        // if (pngUrl.length === 1 && pngUrl[0].pos.length === 1) {
-        //   if (isDocId) {
-        //     try {
-        //       pdfBase64 = await getBase64FromUrl(pdfUrl);
-        //     } catch (err) {
-        //       console.log(err);
-        //     }
-        //   } else {
-        //     //embed document's object id to all pages in pdf document
-        //     try {
-        //       await embedDocId(pdfDoc, documentId, allPages);
-        //     } catch (err) {
-        //       console.log(err);
-        //     }
-        //     try {
-        //       pdfBase64 = await pdfDoc.saveAsBase64({
-        //         useObjectStreams: false
-        //       });
-        //     } catch (err) {
-        //       console.log(err);
-        //     }
-        //   }
-        //   for (let pngData of pngUrl) {
-        //     const imgUrlList = pngData.pos;
-        //     const pageNo = pngData.pageNumber;
-        //     imgUrlList.map(async (data) => {
-        //       //cheking signUrl is defau;t signature url of custom url
-        //       let ImgUrl = data.SignUrl;
-        //       const checkUrl = urlValidator(ImgUrl);
-        //       //if default signature url then convert it in base 64
-        //       if (checkUrl) {
-        //         ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
-        //       }
-        //       //function for called convert png signatre to jpeg in base 64
-        //       convertPNGtoJPEG(ImgUrl)
-        //         .then((jpegBase64Data) => {
-        //           const removeBase64Fromjpeg = "data:image/jpeg;base64,";
-        //           const newImgUrl = jpegBase64Data.replace(
-        //             removeBase64Fromjpeg,
-        //             ""
-        //           );
-
-        //           //function for call to embed signature in pdf and get digital signature pdf
-        //           signPdfFun(
-        //             newImgUrl,
-        //             documentId,
-        //             signerObjectId,
-        //             pdfOriginalWidth,
-        //             pngUrl,
-        //             containerWH,
-        //             setIsAlert,
-        //             data,
-        //             pdfBase64,
-        //             pageNo
-        //           )
-        //             .then((res) => {
-        //               if (res && res.status === "success") {
-        //                 setPdfUrl(res.data);
-        //                 setIsSigned(true);
-        //                 setSignedSigners([]);
-        //                 setUnSignedSigners([]);
-        //                 getDocumentDetails();
-        //               } else {
-        //                 setIsAlert({
-        //                   isShow: true,
-        //                   alertMessage: "something went wrong"
-        //                 });
-        //               }
-        //             })
-        //             .catch((err) => {
-        //               setIsAlert({
-        //                 isShow: true,
-        //                 alertMessage: "something went wrong"
-        //               });
-        //             });
-        //         })
-        //         .catch((error) => {
-        //           console.error("Error:", error);
-        //         });
-        //     });
-        //   }
-        // }
-        // //else if signature is more than one then embed all sign with the use of pdf-lib
-        // else if (pngUrl.length > 0 && pngUrl[0].pos.length > 0) {
-        const flag = false;
-        //embed document's object id to all pages in pdf document
-        if (!isDocId) {
-          await embedDocId(pdfDoc, documentId, allPages);
+        for (let i = 0; i < checkSign.length; i++) {
+          const posData = checkSign[i].pos.filter((pos) => !pos.SignUrl);
+          if (posData && posData.length > 0) {
+            checkSignUrl.push(posData);
+          }
         }
-        //embed multi signature in pdf
-        const pdfBytes = await multiSignEmbed(
-          pngUrl,
-          pdfDoc,
-          pdfOriginalWidth,
-          flag,
-          containerWH
-        );
-        //function for call to embed signature in pdf and get digital signature pdf
-        try {
-          const res = await signPdfFun(
-            pdfBytes,
-            documentId,
-            signerObjectId,
-            pdfOriginalWidth,
-            pngUrl,
-            containerWH,
-            setIsAlert
+
+        if (checkSignUrl && checkSignUrl.length > 0) {
+          setIsAlert({
+            isShow: true,
+            alertMessage: "Please complete your signature!"
+          });
+        } else {
+          setIsUiLoading(true);
+          const pngUrl = checkUser[0].placeHolder;
+          // Load a PDFDocument from the existing PDF bytes
+          const existingPdfBytes = await fetch(pdfUrl).then((res) =>
+            res.arrayBuffer()
           );
-          if (res && res.status === "success") {
-            setPdfUrl(res.data);
-            setIsSigned(true);
-            setSignedSigners([]);
-            setUnSignedSigners([]);
-            getDocumentDetails();
-          } else {
+          const pdfDoc = await PDFDocument.load(existingPdfBytes, {
+            ignoreEncryption: true
+          });
+          // let pdfBase64;
+
+          //checking if signature is only one then send image url in jpeg formate to server
+          // if (pngUrl.length === 1 && pngUrl[0].pos.length === 1) {
+          //   if (isDocId) {
+          //     try {
+          //       pdfBase64 = await getBase64FromUrl(pdfUrl);
+          //     } catch (err) {
+          //       console.log(err);
+          //     }
+          //   } else {
+          //     //embed document's object id to all pages in pdf document
+          //     try {
+          //       await embedDocId(pdfDoc, documentId, allPages);
+          //     } catch (err) {
+          //       console.log(err);
+          //     }
+          //     try {
+          //       pdfBase64 = await pdfDoc.saveAsBase64({
+          //         useObjectStreams: false
+          //       });
+          //     } catch (err) {
+          //       console.log(err);
+          //     }
+          //   }
+          //   for (let pngData of pngUrl) {
+          //     const imgUrlList = pngData.pos;
+          //     const pageNo = pngData.pageNumber;
+          //     imgUrlList.map(async (data) => {
+          //       //cheking signUrl is defau;t signature url of custom url
+          //       let ImgUrl = data.SignUrl;
+          //       const checkUrl = urlValidator(ImgUrl);
+          //       //if default signature url then convert it in base 64
+          //       if (checkUrl) {
+          //         ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
+          //       }
+          //       //function for called convert png signatre to jpeg in base 64
+          //       convertPNGtoJPEG(ImgUrl)
+          //         .then((jpegBase64Data) => {
+          //           const removeBase64Fromjpeg = "data:image/jpeg;base64,";
+          //           const newImgUrl = jpegBase64Data.replace(
+          //             removeBase64Fromjpeg,
+          //             ""
+          //           );
+
+          //           //function for call to embed signature in pdf and get digital signature pdf
+          //           signPdfFun(
+          //             newImgUrl,
+          //             documentId,
+          //             signerObjectId,
+          //             pdfOriginalWidth,
+          //             pngUrl,
+          //             containerWH,
+          //             setIsAlert,
+          //             data,
+          //             pdfBase64,
+          //             pageNo
+          //           )
+          //             .then((res) => {
+          //               if (res && res.status === "success") {
+          //                 setPdfUrl(res.data);
+          //                 setIsSigned(true);
+          //                 setSignedSigners([]);
+          //                 setUnSignedSigners([]);
+          //                 getDocumentDetails();
+          //               } else {
+          //                 setIsAlert({
+          //                   isShow: true,
+          //                   alertMessage: "something went wrong"
+          //                 });
+          //               }
+          //             })
+          //             .catch((err) => {
+          //               setIsAlert({
+          //                 isShow: true,
+          //                 alertMessage: "something went wrong"
+          //               });
+          //             });
+          //         })
+          //         .catch((error) => {
+          //           console.error("Error:", error);
+          //         });
+          //     });
+          //   }
+          // }
+          // //else if signature is more than one then embed all sign with the use of pdf-lib
+          // else if (pngUrl.length > 0 && pngUrl[0].pos.length > 0) {
+          const flag = false;
+          //embed document's object id to all pages in pdf document
+          if (!isDocId) {
+            await embedDocId(pdfDoc, documentId, allPages);
+          }
+          //embed multi signature in pdf
+          const pdfBytes = await multiSignEmbed(
+            pngUrl,
+            pdfDoc,
+            pdfOriginalWidth,
+            flag,
+            containerWH
+          );
+          //function for call to embed signature in pdf and get digital signature pdf
+          try {
+            const res = await signPdfFun(
+              pdfBytes,
+              documentId,
+              signerObjectId,
+              pdfOriginalWidth,
+              pngUrl,
+              containerWH,
+              setIsAlert
+            );
+            if (res && res.status === "success") {
+              setPdfUrl(res.data);
+              setIsSigned(true);
+              setSignedSigners([]);
+              setUnSignedSigners([]);
+              getDocumentDetails();
+              if (sendInOrder) {
+                const index = pdfDetails?.[0].Signers.findIndex(
+                  (x) => x.Email === jsonSender.email
+                );
+                const newIndex = index + 1;
+                const user = pdfDetails?.[0].Signers[newIndex];
+                if (user) {
+                  let sendMail;
+                  // console.log("pdfDetails", pdfDetails);
+                  const expireDate = pdfDetails?.[0].ExpiryDate.iso;
+                  const newDate = new Date(expireDate);
+                  const localExpireDate = newDate.toLocaleDateString("en-US", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                  });
+                  let sender = pdfDetails?.[0].ExtUserPtr.Email;
+
+                  try {
+                    const imgPng =
+                      "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
+                    let url = `${localStorage.getItem(
+                      "baseUrl"
+                    )}functions/sendmailv3/`;
+                    const headers = {
+                      "Content-Type": "application/json",
+                      "X-Parse-Application-Id":
+                        localStorage.getItem("parseAppId"),
+                      sessionToken: localStorage.getItem("accesstoken")
+                    };
+                    const serverUrl = localStorage.getItem("baseUrl");
+                    const newServer = serverUrl.replaceAll("/", "%2F");
+                    const objectId = user.objectId;
+                    const serverParams = `${newServer}&${localStorage.getItem(
+                      "parseAppId"
+                    )}&${localStorage.getItem("_appName")}`;
+
+                    const hostUrl =
+                      window.location.origin + "/loadmf/signmicroapp";
+                    let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${user.Email}/${objectId}/${serverParams}`;
+                    const openSignUrl =
+                      "https://www.opensignlabs.com/contact-us";
+                    const orgName = pdfDetails[0]?.ExtUserPtr.Company
+                      ? pdfDetails[0].ExtUserPtr.Company
+                      : "";
+                    const themeBGcolor = themeColor();
+                    let params = {
+                      recipient: user.Email,
+                      subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
+                      from: sender,
+
+                      html:
+                        "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+                        imgPng +
+                        " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+                        themeBGcolor +
+                        ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+                        pdfDetails?.[0].ExtUserPtr.Name +
+                        " has requested you to review and sign <strong> " +
+                        pdfDetails?.[0].Name +
+                        "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+                        sender +
+                        "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+                        orgName +
+                        "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+                        localExpireDate +
+                        "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+                        signPdf +
+                        "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+                        sender +
+                        " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+                        openSignUrl +
+                        " target=_blank>here</a>.</p> </div></div></body> </html>"
+                    };
+                    sendMail = await axios.post(url, params, {
+                      headers: headers
+                    });
+                  } catch (error) {
+                    console.log("error", error);
+                  }
+                }
+              }
+            } else {
+              setIsAlert({
+                isShow: true,
+                alertMessage: "something went wrong"
+              });
+            }
+          } catch (err) {
             setIsAlert({
               isShow: true,
               alertMessage: "something went wrong"
             });
           }
-        } catch (err) {
-          setIsAlert({
-            isShow: true,
-            alertMessage: "something went wrong"
-          });
         }
-      }
 
-      setIsSignPad(false);
-      // }
+        setIsSignPad(false);
+        // }
+      } else {
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
+      }
     } else {
       setIsAlert({
         isShow: true,
-        alertMessage: "something went wrong"
+        alertMessage:
+          "Please wait for your turn to sign this document, as it has been set up by the creator to be signed in a specific order; you'll be notified when it's your turn."
       });
     }
   }
@@ -609,7 +773,7 @@ function PdfRequestFiles() {
           }
         }
       )
-      .then((result) => {
+      .then(async (result) => {
         const res = result.data;
         if (res) {
           const currentDecline = {
@@ -618,6 +782,40 @@ function PdfRequestFiles() {
           };
           setIsDecline(currentDecline);
           setIsUiLoading(false);
+          const params = {
+            event: "declined",
+            body: {
+              objectId: pdfDetails?.[0].objectId,
+              file: pdfDetails?.[0]?.SignedUrl || pdfDetails?.[0]?.URL,
+              name: pdfDetails?.[0].Name,
+              note: pdfDetails?.[0].Note || "",
+              description: pdfDetails?.[0].Description || "",
+              signers: pdfDetails?.[0].Signers?.map((x) => ({
+                name: x?.Name,
+                email: x?.Email,
+                phone: x?.Phone
+              })),
+              declinedBy: jsonSender.email,
+              declinedAt: new Date(),
+              createdAt: pdfDetails?.[0].createdAt
+            }
+          };
+
+          try {
+            await axios.post(
+              `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+              params,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                  sessiontoken: localStorage.getItem("accesstoken")
+                }
+              }
+            );
+          } catch (err) {
+            console.log("Err ", err);
+          }
         }
       })
       .catch((err) => {

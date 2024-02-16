@@ -19,7 +19,8 @@ import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
-
+import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
+import { PostHog } from 'posthog-node';
 const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 // console.log("configuration ", configuration);
 if (process.env.USE_LOCAL !== 'TRUE') {
@@ -73,6 +74,7 @@ export const config = {
     import('./cloud/main.js');
   },
   appId: process.env.APP_ID || 'myAppId',
+  maxLimit: 500,
   masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::1'], // '::1'
   serverURL: process.env.SERVER_URL || 'http://localhost:8080/app', // Don't forget to change to https if needed
@@ -129,7 +131,8 @@ export const config = {
 
 export const app = express();
 app.use(cors());
-
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(function (req, res, next) {
   // console.log("req ", req.headers);
   // console.log("x-forwarded-for", req.headers["x-forwarded-for"]);
@@ -151,6 +154,16 @@ function getUserIP(request) {
     return request.socket.remoteAddress;
   }
 }
+app.use(function (req, res, next) {
+  const ph_project_api_key = process.env.PH_PROJECT_API_KEY;
+  try {
+    req.posthog = new PostHog(ph_project_api_key);
+  } catch (err) {
+    // console.log('Err', err);
+    req.posthog = '';
+  }
+  next();
+});
 // Serve static assets from the /public folder
 app.use('/public', express.static(path.join(__dirname, '/public')));
 
@@ -163,6 +176,9 @@ if (!process.env.TESTING) {
 }
 // Mount your custom express app
 app.use('/', customRoute);
+
+// Mount v1
+app.use('/v1', v1);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
