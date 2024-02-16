@@ -538,11 +538,11 @@ paths:
         schema:
           type: string
           enum:
-          - draftdocuments
-          - inprogressdocuments
-          - completedocuments
-          - expiredocuments
-          - declinedocuments
+          - draft
+          - inprogress
+          - completed
+          - expired
+          - declined
       - name: limit
         in: query
         required: false
