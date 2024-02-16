@@ -68,7 +68,7 @@ export default async function getDocumentList(request, response) {
             if (request.posthog) {
               request.posthog?.capture({
                 distinctId: parseUser.userId.email,
-                event: 'api_get_document_list_by_status',
+                event: `api_get_document_list_${docType}`,
                 properties: { response_code: 200, doc_type: docType },
               });
             }
@@ -111,7 +111,7 @@ export default async function getDocumentList(request, response) {
           if (request.posthog) {
             request.posthog?.capture({
               distinctId: parseUser.userId.email,
-              event: 'api_get_document_list_by_status',
+              event: `api_get_document_list_${docType}`,
               properties: { response_code: 400, doc_type: docType },
             });
           }
@@ -123,7 +123,7 @@ export default async function getDocumentList(request, response) {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
-            event: 'api_get_document_list_by_status',
+            event: `api_get_document_list_${docType}`,
             properties: { response_code: 404, doc_type: docType },
           });
         }
