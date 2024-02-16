@@ -668,7 +668,8 @@ const TemplatePlaceholder = () => {
           Signers: signers,
           Name: pdfDetails[0]?.Name || "",
           Note: pdfDetails[0]?.Note || "",
-          Description: pdfDetails[0]?.Description || ""
+          Description: pdfDetails[0]?.Description || "",
+          SendinOrder: pdfDetails[0]?.SendinOrder || false
         };
 
         await axios
@@ -726,7 +727,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourFirst"]',
       content: () => (
         <TourContentWithBtn
-          message={`Select a recipient from this list to add a place-holder where he is supposed to sign.The placeholder will appear in the same colour as the recipient name once you drop it on the document.`}
+          message={`Select a role from this list to add a place-holder where he is supposed to sign.The placeholder will appear in the same colour as the recipient name once you drop it on the document.`}
           isChecked={handleDontShow}
         />
       ),
@@ -749,7 +750,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourThird"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag the placeholder for a recipient anywhere on the document.Remember, it will appear in the same colour as the name of the recipient for easy reference.`}
+          message={`Drag the placeholder for a role anywhere on the document.Remember, it will appear in the same colour as the name of the recipient for easy reference.`}
           isChecked={handleDontShow}
         />
       ),
@@ -1020,11 +1021,11 @@ const TemplatePlaceholder = () => {
               <ModalUi
                 headerColor={"#dc3545"}
                 isOpen={!IsReceipent}
-                title={"Receipent required"}
+                title={"Roles"}
                 handleClose={() => setIsReceipent(true)}
               >
                 <div style={{ height: "100%", padding: 20 }}>
-                  <p>Please add receipent.</p>
+                  <p>Please add a role</p>
                 </div>
               </ModalUi>
               {/* this modal is used show send mail  message and after send mail success message */}

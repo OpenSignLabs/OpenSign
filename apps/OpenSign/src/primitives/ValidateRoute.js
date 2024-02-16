@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Parse from "parse";
-
-const ValidateRoute = ({ children }) => {
+import { Outlet } from "react-router-dom";
+const ValidateRoute = () => {
   useEffect(() => {
     (async () => {
       try {
@@ -28,7 +28,7 @@ const ValidateRoute = ({ children }) => {
       localStorage.removeItem("accesstoken");
     }
   };
-  return <div>{children}</div>;
+  return <div>{<Outlet />}</div>;
 };
 
 export default ValidateRoute;

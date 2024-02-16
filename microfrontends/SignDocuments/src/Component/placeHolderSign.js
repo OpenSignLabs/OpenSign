@@ -661,8 +661,11 @@ function PlaceHolderSign() {
       year: "numeric"
     });
     let sender = pdfDetails?.[0].ExtUserPtr.Email;
-    const signerMail = signersdata;
+    let signerMail = signersdata.slice();
 
+    if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
+      signerMail.splice(1);
+    }
     for (let i = 0; i < signerMail.length; i++) {
       try {
         const imgPng =
@@ -691,7 +694,6 @@ function PlaceHolderSign() {
           recipient: signerMail[i].Email,
           subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
           from: sender,
-
           html:
             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
             imgPng +
