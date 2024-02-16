@@ -24,6 +24,7 @@ export default async function getTemplate(request, response) {
       Template.include('Signers');
       Template.include('Folder');
       Template.include('ExtUserPtr');
+      Template.include('Placeholders.signerPtr');
       const res = await Template.first({ useMasterKey: true });
       if (res) {
         const template = JSON.parse(JSON.stringify(res));
@@ -43,8 +44,23 @@ export default async function getTemplate(request, response) {
           file: template?.SignedUrl || template?.URL,
           owner: template?.ExtUserPtr?.Name,
           signers:
-            template?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) ||
-            [],
+            template?.Placeholders?.map(y => ({
+              role: y.Role,
+              name: y?.signerPtr?.Name || '',
+              email: y?.signerPtr?.Email || '',
+              phone: y?.signerPtr?.Phone || '',
+              widgets: y.placeHolder?.flatMap(x =>
+                x?.pos.map(w => ({
+                  type: w?.type ? w.type : w.isStamp ? 'stamp' : 'signature',
+                  x: w.xPosition,
+                  y: w.yPosition,
+                  w: w?.Width || 150,
+                  h: w?.Height || 60,
+                  page: x?.pageNumber,
+                }))
+              ),
+            })) || [],
+          sendInOrder: template?.SendinOrder || false,
           createdAt: template.createdAt,
           updatedAt: template.updatedAt,
         });

@@ -42,6 +42,7 @@ export default async function getTemplatetList(request, response) {
         'Signers.Name',
         'Signers.Email',
         'Signers.Phone',
+        'Placeholders',
       ];
       const orderBy = '-updatedAt';
       const strParams = JSON.stringify(params);
@@ -51,7 +52,7 @@ export default async function getTemplatetList(request, response) {
         'X-Parse-Application-Id': appId,
         'X-Parse-Master-Key': process.env.MASTER_KEY,
       };
-      const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr`;
+      const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr`;
       const res = await axios.get(url, { headers: headers });
       if (res.data && res.data.results.length > 0) {
         if (request.posthog) {
@@ -61,17 +62,33 @@ export default async function getTemplatetList(request, response) {
             properties: { response_code: 200 },
           });
         }
-        const updateRes = res.data.results.map(x => ({
-          objectId: x.objectId,
-          title: x.Name,
-          note: x.Note || '',
-          folder: { objectId: x?.Folder?.objectId, name: x?.Folder?.Name } || '',
-          file: x?.SignedUrl || x.URL,
-          owner: x?.ExtUserPtr?.Name,
+        const updateRes = res.data.results.map(template => ({
+          objectId: template.objectId,
+          title: template.Name,
+          note: template.Note || '',
+          folder: { objectId: template?.Folder?.objectId, name: template?.Folder?.Name } || '',
+          file: template?.SignedUrl || template.URL,
+          owner: template?.ExtUserPtr?.Name,
           signers:
-            x?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) || [],
-          createdAt: x.createdAt,
-          updatedAt: x.updatedAt,
+            template?.Placeholders?.map(y => ({
+              role: y.Role,
+              name: y?.signerPtr?.Name || '',
+              email: y?.signerPtr?.Email || '',
+              phone: y?.signerPtr?.Phone || '',
+              widgets: y.placeHolder?.flatMap(x =>
+                x?.pos.map(w => ({
+                  type: w?.type ? w.type : w.isStamp ? 'stamp' : 'signature',
+                  x: w.xPosition,
+                  y: w.yPosition,
+                  w: w?.Width || 150,
+                  h: w?.Height || 60,
+                  page: x?.pageNumber,
+                }))
+              ),
+            })) || [],
+          sendInOrder: template?.SendinOrder || false,
+          createdAt: template.createdAt,
+          updatedAt: template.updatedAt,
         }));
 
         return response.json({ result: updateRes });

@@ -252,10 +252,12 @@ export default async function createDocumentwithCoordinate(request, response) {
         if (send_email === false) {
           console.log("don't send mail");
         } else {
+          let contactMail = contact;
           if (sendInOrder) {
-            contact.splice(1);
+            contactMail = contact.slice();
+            contactMail.splice(1);
           }
-          for (let i = 0; i < contact.length; i++) {
+          for (let i = 0; i < contactMail.length; i++) {
             try {
               const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
               let url = `${process.env.SERVER_URL}/functions/sendmailv3/`;
@@ -265,10 +267,10 @@ export default async function createDocumentwithCoordinate(request, response) {
                 'X-Parse-Master-Key': process.env.MASTER_KEY,
               };
 
-              const objectId = contact[i].contactPtr.objectId;
+              const objectId = contactMail[i].contactPtr.objectId;
 
               const hostUrl = baseUrl.origin + '/loadmf/signmicroapp';
-              let signPdf = `${hostUrl}/login/${res.id}/${contact[i].email}/${objectId}/${serverParams}`;
+              let signPdf = `${hostUrl}/login/${res.id}/${contactMail[i].email}/${objectId}/${serverParams}`;
               const openSignUrl = 'https://www.opensignlabs.com/contact-us';
               const orgName = parseExtUser.Company ? parseExtUser.Company : '';
               const themeBGcolor = '#47a3ad';
@@ -300,9 +302,9 @@ export default async function createDocumentwithCoordinate(request, response) {
                 sender_name: parseExtUser.Name,
                 sender_mail: parseExtUser.Email,
                 sender_phone: parseExtUser.Phone,
-                receiver_name: contact[i].name,
-                receiver_email: contact[i].email,
-                receiver_phone: contact[i].phone,
+                receiver_name: contactMail[i].name,
+                receiver_email: contactMail[i].email,
+                receiver_phone: contactMail[i].phone,
                 expiry_date: localExpireDate,
                 company_name: orgName,
                 signing_url: signPdf,
@@ -328,7 +330,7 @@ export default async function createDocumentwithCoordinate(request, response) {
               const html = replaceVar.body;
 
               let params = {
-                recipient: contact[i].email,
+                recipient: contactMail[i].email,
                 subject: subject,
                 from: sender,
                 html: html,
