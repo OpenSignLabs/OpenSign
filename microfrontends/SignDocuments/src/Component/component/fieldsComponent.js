@@ -159,7 +159,7 @@ function FieldsComponent({
 
     item: {
       type: "BOX",
-      id: 14,
+      id: 15,
       text: "radio"
     },
     collect: (monitor) => ({
@@ -171,7 +171,7 @@ function FieldsComponent({
 
     item: {
       type: "BOX",
-      id: 14,
+      id: 16,
       text: "label"
     },
     collect: (monitor) => ({
@@ -368,191 +368,6 @@ function FieldsComponent({
           </div>
 
           <div className="signLayoutContainer1">
-            {/* {pdfUrl ? (
-              <>
-                <button className={signStyle} disabled={true}>
-                  <span
-                    style={{
-                      fontWeight: "400",
-                      fontSize: "15px",
-                      padding: "3px 20px 0px 20px",
-                      color: "#bfbfbf"
-                    }}
-                  >
-                    Signature
-                  </span>
-
-                  <img
-                    alt="sign img"
-                    style={{
-                      width: "30px",
-                      height: "28px",
-                      background: "#d3edeb"
-                    }}
-                    src={sign}
-                  />
-                </button>
-                <button className={signStyle} disabled={true}>
-                  <span
-                    style={{
-                      fontWeight: "400",
-                      fontSize: "15px",
-                      padding: "3px 0px 0px 35px",
-                      color: "#bfbfbf"
-                    }}
-                  >
-                    Stamp
-                  </span>
-
-                  <img
-                    alt="stamp img"
-                    style={{
-                      width: "25px",
-                      height: "28px",
-                      background: "#d3edeb"
-                    }}
-                    src={stamp}
-                  />
-                </button>
-              </>
-            ) : (
-              <>
-                <div
-                  ref={(element) => {
-                    dragSignature(element);
-                    if (element) {
-                      signRef.current = element;
-                    }
-                  }}
-                  className={signStyle}
-                  onMouseMove={handleDivClick}
-                  onMouseDown={handleMouseLeave}
-                  style={{
-                    opacity: isDragSign ? 0.5 : 1,
-                    boxShadow:
-                      "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)"
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: "400",
-                      fontSize: "15px",
-                      padding: "3px 20px 0px 20px",
-                      color: "black"
-                    }}
-                  >
-                    Signature
-                  </span>
-                  <img
-                    alt="sign img"
-                    style={{
-                      width: "30px",
-                      height: "28px",
-                      background: themeColor(),
-                    }}
-                    src={sign}
-                  />
-                  
-                </div>
-                <div
-                  ref={(element) => {
-                    dragStamp(element);
-                    dragRef.current = element;
-                    if (isDragStamp) {
-                      
-                    }
-                  }}
-                  className={!pdfUrl ? signStyle : "disableSign"}
-                  disabled={pdfUrl && true}
-                  onMouseMove={handleDivClick}
-                  onMouseDown={handleMouseLeave}
-                  style={{
-                    opacity: isDragStamp ? 0.5 : 1,
-                    boxShadow:
-                      "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)"
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: "400",
-                      fontSize: "15px",
-                      padding: "3px 0px 0px 35px",
-                      color: !pdfUrl ? "black" : "#bfbfbf"
-                    }}
-                  >
-                    Stamp
-                  </span>
-
-                  <img
-                    alt="stamp img"
-                    style={{
-                      width: "25px",
-                      height: "28px",
-                      background: themeColor()
-                    }}
-                    src={stamp}
-                  />
-                </div>
-              </>
-            )} */}
-            {/* {updateWidgets.map((item, ind) => {
-              return (
-                <div
-                  key={ind}
-                  ref={(element) => {
-                    item.ref(element);
-                    if (element) {
-                      signRef.current = element;
-                    }
-                  }}
-                  className={signStyle}
-                  onMouseMove={handleDivClick}
-                  onMouseDown={handleMouseLeave}
-                  style={{
-                    opacity: isDragSign ? 0.5 : 1,
-                    boxShadow:
-                      "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)"
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginLeft: "5px"
-                    }}
-                  >
-                    <i
-                      class="fa-sharp fa-solid fa-grip-vertical"
-                      style={{ color: "#908d8d", fontSize: "13px" }}
-                    ></i>
-                    <span
-                      style={{
-                        fontWeight: "400",
-                        fontSize: "15px",
-                        // padding: "3px 20px 0px 20px",
-                        color: "black",
-                        marginLeft: "5px"
-                      }}
-                    >
-                      {item.type}
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      backgroundColor: themeColor(),
-                      padding: "0 5px",
-                      display: "flex",
-                      alignItems: "center"
-                    }}
-                  >
-                    <i
-                      style={{ color: "white", fontSize: item.iconSize }}
-                      className={item.icon}
-                    ></i>
-                  </div>
-                </div>
-              );
-            })} */}
             <AllWidgets
               updateWidgets={updateWidgets}
               handleDivClick={handleDivClick}

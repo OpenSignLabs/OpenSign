@@ -427,8 +427,8 @@ function PlaceHolderSign() {
         };
       }
 
+      setSelectWidgetId(key);
       if (signer && dragTypeValue !== "label") {
-        setSelectWidgetId(key);
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
 
         const { blockColor, Role } = signer;
@@ -454,6 +454,7 @@ function PlaceHolderSign() {
             const updatesignerPos = signerPos.map((x) =>
               x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
             );
+
             setSignerPos(updatesignerPos);
           } else {
             const updatesignerPos = signerPos.map((x) =>
@@ -465,6 +466,7 @@ function PlaceHolderSign() {
           }
         } else {
           //adding new placeholder for selected signer in pos array (placeholder)
+          const signerData = signerPos;
           let placeHolderPos;
           if (contractName) {
             placeHolderPos = {
@@ -489,7 +491,10 @@ function PlaceHolderSign() {
               Id: uniqueId
             };
           }
-          setSignerPos((prev) => [...prev, placeHolderPos]);
+
+          signerData.push(placeHolderPos);
+
+          setSignerPos(signerData);
         }
         if (dragTypeValue === "dropdown") {
           setShowDropdown(true);
@@ -500,8 +505,7 @@ function PlaceHolderSign() {
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);
-      } else {
-        setSelectWidgetId(key);
+      } else if (dragTypeValue === "label") {
         let filterSignerPos = signerPos.filter(
           (data) => data.Role === "prefill"
         );
@@ -548,6 +552,7 @@ function PlaceHolderSign() {
           };
           setSignerPos((prev) => [...prev, placeHolderPos]);
         }
+        setSignKey(key);
       }
     }
   };
@@ -1235,7 +1240,6 @@ function PlaceHolderSign() {
     setIsValidate(false);
   };
 
-  console.log("currentdetails", currWidgetsDetails);
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />

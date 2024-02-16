@@ -62,7 +62,8 @@ function RenderPdf({
   setIsRadio,
   setCurrWidgetsDetails,
   setSelectWidgetId,
-  selectWidgetId
+  selectWidgetId,
+  unSignedWidgetId
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -270,6 +271,7 @@ function RenderPdf({
                         pdfDetails={pdfDetails}
                         setIsInitial={setIsInitial}
                         setValidateAlert={setValidateAlert}
+                        unSignedWidgetId={unSignedWidgetId}
                       />
                     </React.Fragment>
                   )
@@ -441,7 +443,12 @@ function RenderPdf({
               }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
-              // ref={pdfRef}
+              // ref={pdfRef}'
+              onClick={() => {
+                if (setSelectWidgetId) {
+                  setSelectWidgetId("");
+                }
+              }}
               file={
                 pdfUrl
                   ? pdfUrl
@@ -617,8 +624,9 @@ function RenderPdf({
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
               onClick={() => {
-                console.log("click on pdf");
-                setSelectWidgetId("");
+                if (setSelectWidgetId) {
+                  setSelectWidgetId("");
+                }
               }}
               // ref={pdfRef}
               file={

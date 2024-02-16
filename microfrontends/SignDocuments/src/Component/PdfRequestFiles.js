@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import SignPad from "./component/signPad";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import { useNavigate } from "react-router-dom";
+import Tour from "reactour";
 import {
   contractDocument,
   multiSignEmbed,
@@ -66,6 +67,7 @@ function PdfRequestFiles() {
   const [isDecline, setIsDecline] = useState({ isDeclined: false });
   const [currentSigner, setCurrentSigner] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
+  const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
   const [defaultSignAlert, setDefaultSignAlert] = useState({
     isShow: false,
     alertMessage: ""
@@ -85,6 +87,7 @@ function PdfRequestFiles() {
   const [alreadySign, setAlreadySign] = useState(false);
   const [containerWH, setContainerWH] = useState({});
   const [validateAlert, setValidateAlert] = useState(false);
+  const [widgetsTour, setWidgetsTour] = useState(false);
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -297,6 +300,7 @@ function PdfRequestFiles() {
       (data) => data.signerObjId === signerObjectId
     );
     if (checkUser && checkUser.length > 0) {
+      let unSignUrlData;
       let checkWidgetSign = 0;
       let allXyPos = 0;
       let checkedRequireCount = 0;
@@ -307,49 +311,74 @@ function PdfRequestFiles() {
         const posSignUrlData = checkUser[0].placeHolder[i].pos.filter(
           (pos) => pos?.SignUrl
         );
-        const posWidgetData = checkUser[0].placeHolder[i].pos.filter(
-          (pos) => pos?.widgetValue && pos?.type !== "checkbox"
+        unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
+          (pos) => !pos?.SignUrl && !pos.widgetValue
         );
-        const checkboxReadOnly = checkUser[0].placeHolder[i].pos.filter(
-          (pos) =>
-            pos?.widgetValue &&
-            pos?.type === "checkbox" &&
-            pos?.widgetStatus === "Read only"
-        ).length;
-        const checkboxRequire = checkUser[0].placeHolder[i].pos.filter(
-          (pos) => pos?.type === "checkbox" && pos?.widgetStatus === "Required"
-        );
-        CheckboxRequireCount = CheckboxRequireCount + checkboxRequire?.length;
-        checkedRequireCount =
-          checkedRequireCount +
-          checkUser[0].placeHolder[i].pos?.filter(
-            (pos) =>
-              pos?.widgetValue &&
-              pos?.type === "checkbox" &&
-              pos?.widgetStatus === "Required"
-          )?.length;
-        optionalCheckbox = checkUser[0].placeHolder[i].pos.filter(
-          (pos) => pos.type === "checkbox" && pos.widgetStatus === "Optional"
-        ).length;
-        checkWidgetSign =
-          checkWidgetSign +
-          posSignUrlData.length +
-          posWidgetData.length +
-          checkboxReadOnly +
-          checkedRequireCount +
-          optionalCheckbox;
-        allXyPos = allXyPos + checkUser[0].placeHolder[i].pos.length;
+        console.log("unsigned", unSignUrlData);
+
+        // const posWidgetData = checkUser[0].placeHolder[i].pos.filter(
+        //   (pos) => pos?.widgetValue && pos?.type !== "checkbox"
+        // );
+        // const checkboxReadOnly = checkUser[0].placeHolder[i].pos.filter(
+        //   (pos) =>
+        //     pos?.widgetValue &&
+        //     pos?.type === "checkbox" &&
+        //     pos?.widgetStatus === "Read only"
+        // ).length;
+        // const checkboxRequire = checkUser[0].placeHolder[i].pos.filter(
+        //   (pos) => pos?.type === "checkbox" && pos?.widgetStatus === "Required"
+        // );
+        // CheckboxRequireCount = CheckboxRequireCount + checkboxRequire?.length;
+        // checkedRequireCount =
+        //   checkedRequireCount +
+        //   checkUser[0].placeHolder[i].pos?.filter(
+        //     (pos) =>
+        //       pos?.widgetValue &&
+        //       pos?.type === "checkbox" &&
+        //       pos?.widgetStatus === "Required"
+        //   )?.length;
+        // optionalCheckbox = checkUser[0].placeHolder[i].pos.filter(
+        //   (pos) => pos.type === "checkbox" && pos.widgetStatus === "Optional"
+        // ).length;
+        // checkWidgetSign =
+        //   checkWidgetSign +
+        //   posSignUrlData.length +
+        //   posWidgetData.length +
+        //   checkboxReadOnly +
+        //   checkedRequireCount +
+        //   optionalCheckbox;
+        // allXyPos = allXyPos + checkUser[0].placeHolder[i].pos.length;
       }
-      if (CheckboxRequireCount !== checkedRequireCount) {
-        setIsAlert({
-          isShow: true,
-          alertMessage: "Please check the required checkbox to continue."
-        });
-      } else if (allXyPos !== checkWidgetSign) {
-        setIsAlert({
-          isShow: true,
-          alertMessage: "Please complete your signature!"
-        });
+      // if (CheckboxRequireCount !== checkedRequireCount) {
+      //   setIsAlert({
+      //     isShow: true,
+      //     alertMessage: "Please check the required checkbox to continue."
+      //   });
+      // } else if (allXyPos !== checkWidgetSign) {
+      //   setIsAlert({
+      //     isShow: true,
+      //     alertMessage: "Please complete your signature!"
+      //   });
+      // }
+      let checkboxExist;
+      let optionRequiredCheckbox;
+      checkboxExist = unSignUrlData.some((data) => data.type === "checkbox");
+
+      if (checkboxExist) {
+        optionRequiredCheckbox = unSignUrlData.filter(
+          (data) => data.widgetStatus !== "Optional"
+        );
+      }
+      if (
+        checkboxExist &&
+        optionRequiredCheckbox &&
+        optionRequiredCheckbox.length > 0
+      ) {
+        setUnSignedWidgetId(optionRequiredCheckbox[0].key);
+        setWidgetsTour(true);
+      } else if (!checkboxExist && unSignUrlData && unSignUrlData.length > 0) {
+        setUnSignedWidgetId(unSignUrlData[0].key);
+        setWidgetsTour(true);
       } else {
         setIsUiLoading(true);
         const pngUrl = checkUser[0].placeHolder;
@@ -380,34 +409,34 @@ function PdfRequestFiles() {
         );
 
         //function for call to embed signature in pdf and get digital signature pdf
-        try {
-          const res = await signPdfFun(
-            pdfBytes,
-            documentId,
-            signerObjectId,
-            pdfOriginalWidth,
-            pngUrl,
-            containerWH,
-            setIsAlert
-          );
-          if (res && res.status === "success") {
-            setPdfUrl(res.data);
-            setIsSigned(true);
-            setSignedSigners([]);
-            setUnSignedSigners([]);
-            getDocumentDetails();
-          } else {
-            setIsAlert({
-              isShow: true,
-              alertMessage: "something went wrong"
-            });
-          }
-        } catch (err) {
-          setIsAlert({
-            isShow: true,
-            alertMessage: "something went wrong"
-          });
-        }
+        // try {
+        //   const res = await signPdfFun(
+        //     pdfBytes,
+        //     documentId,
+        //     signerObjectId,
+        //     pdfOriginalWidth,
+        //     pngUrl,
+        //     containerWH,
+        //     setIsAlert
+        //   );
+        //   if (res && res.status === "success") {
+        //     setPdfUrl(res.data);
+        //     setIsSigned(true);
+        //     setSignedSigners([]);
+        //     setUnSignedSigners([]);
+        //     getDocumentDetails();
+        //   } else {
+        //     setIsAlert({
+        //       isShow: true,
+        //       alertMessage: "something went wrong"
+        //     });
+        //   }
+        // } catch (err) {
+        //   setIsAlert({
+        //     isShow: true,
+        //     alertMessage: "something went wrong"
+        //   });
+        // }
       }
 
       setIsSignPad(false);
@@ -419,6 +448,26 @@ function PdfRequestFiles() {
       });
     }
   }
+
+  //function for update TourStatus
+  const closeTour = async () => {
+    setWidgetsTour(false);
+  };
+
+  const tourConfig = [
+    {
+      selector: '[data-tut="IsSigned"]',
+      content: "Please fill out this placeholder.",
+      // content: () => (
+      //   <TourContentWithBtn
+      //     message={`Please fill out this placeholder.`}
+      //     isChecked={handleDontShow}
+      //   />
+      // ),
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
@@ -690,6 +739,15 @@ function PdfRequestFiles() {
                 </button>
               </div>
             </ModalUi>
+
+            <Tour
+              onRequestClose={closeTour}
+              steps={tourConfig}
+              isOpen={widgetsTour}
+              rounded={5}
+              closeWithMask={false}
+            />
+
             {/* this modal is used to show decline alert */}
             <CustomModal
               containerWH={containerWH}
@@ -896,6 +954,7 @@ function PdfRequestFiles() {
                   containerWH={containerWH}
                   setIsInitial={setIsInitial}
                   setValidateAlert={setValidateAlert}
+                  unSignedWidgetId={unSignedWidgetId}
                 />
               )}
             </div>

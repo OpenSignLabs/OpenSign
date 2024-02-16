@@ -99,7 +99,10 @@ function Placeholder(props) {
 
   //onclick placeholder function to open signature pad
   const handlePlaceholderClick = () => {
-    props.setSelectWidgetId(props.pos.key);
+    if (props.setSelectWidgetId) {
+      props.setSelectWidgetId(props.pos.key);
+    }
+
     const widgetTypeExist = [
       "text",
       "checkbox",
@@ -268,11 +271,13 @@ function Placeholder(props) {
                 setIsShowDateFormat(!isShowDateFormat);
                 e.stopPropagation();
                 props.setSignKey(props.pos.key);
+                props.setUniqueId(props.data.Id);
               }}
               onTouchEnd={(e) => {
                 e.stopPropagation();
                 setIsShowDateFormat(!isShowDateFormat);
                 props.setSignKey(props.pos.key);
+                props.setUniqueId(props.data.Id);
               }}
             >
               <i
@@ -388,6 +393,7 @@ function Placeholder(props) {
 
   return (
     <Rnd
+      data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
       //ref={nodeRef}
       key={props.pos.key}
       lockAspectRatio={
