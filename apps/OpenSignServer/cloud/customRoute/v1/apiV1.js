@@ -9,7 +9,7 @@ import getDocument from './routes/getDocument.js';
 import getContact from './routes/getContact.js';
 import deleteContact from './routes/deleteContact.js';
 import getContactList from './routes/getContactList.js';
-import createDocument from './routes/createDocument.js';
+import draftDocument from './routes/draftDocument.js';
 import createTemplate from './routes/createTemplate.js';
 import getTemplate from './routes/getTemplate.js';
 import deletedTemplate from './routes/deleteTemplate.js';
@@ -56,7 +56,7 @@ app.post('/createdocumentwithbinary', upload.array('file', 1), createDocumentwit
 app.post('/createdocument', createDocumentwithCoordinate);
 
 // create Document with base64 without placeholder
-app.post('/draftdocument', createDocument);
+app.post('/draftdocument', draftDocument);
 
 // create Document with templateId
 app.post('/createdocument/:template_id', createDocumentWithTemplate);

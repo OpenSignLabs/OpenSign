@@ -61,38 +61,70 @@ export default async function getDocumentList(request, response) {
           'X-Parse-Application-Id': appId,
           'X-Parse-Master-Key': process.env.MASTER_KEY,
         };
-        const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr`;
-        const res = await axios.get(url, { headers: headers });
-        if (res.data && res.data.results.length > 0) {
+        const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys},Placeholders&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr`;
+        try {
+          const res = await axios.get(url, { headers: headers });
+          if (res.data && res.data.results.length > 0) {
+            if (request.posthog) {
+              request.posthog?.capture({
+                distinctId: parseUser.userId.email,
+                event: 'api_get_document_list_by_status',
+                properties: { response_code: 200, doc_type: docType },
+              });
+            }
+            const updateRes = res.data.results.map(x => ({
+              objectId: x.objectId,
+              title: x.Name,
+              note: x.Note || '',
+              folder: { objectId: x?.Folder?.objectId, name: x?.Folder?.Name } || '',
+              file: x?.SignedUrl || x.URL,
+              owner: x?.ExtUserPtr?.Name,
+              signers:
+                x?.Placeholders?.map(y => ({
+                  role: y.Role,
+                  name: y?.signerPtr?.Name || '',
+                  email: y?.signerPtr?.Email || '',
+                  phone: y?.signerPtr?.Phone || '',
+                  widgets: y.placeHolder?.flatMap(x =>
+                    x?.pos.map(w => ({
+                      type: w?.type ? w.type : w.isStamp ? 'stamp' : 'signature',
+                      x: w.xPosition,
+                      y: w.yPosition,
+                      w: w?.Width || 150,
+                      h: w?.Height || 60,
+                      page: x?.pageNumber,
+                    }))
+                  ),
+                })) ||
+                x?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) ||
+                [],
+              sendInOrder: x?.SendinOrder || false,
+              createdAt: x.createdAt,
+              updatedAt: x.updatedAt,
+            }));
+            return response.json({ result: updateRes });
+          } else {
+            return response.json({ result: [] });
+          }
+        } catch (err) {
+          console.log('err in getdocument list', err);
           if (request.posthog) {
             request.posthog?.capture({
               distinctId: parseUser.userId.email,
               event: 'api_get_document_list_by_status',
-              properties: { response_code: 200 },
+              properties: { response_code: 400, doc_type: docType },
             });
           }
-          const updateRes = res.data.results.map(x => ({
-            objectId: x.objectId,
-            title: x.Name,
-            note: x.Note || '',
-            folder: { objectId: x?.Folder?.objectId, name: x?.Folder?.Name } || '',
-            file: x?.SignedUrl || x.URL,
-            owner: x?.ExtUserPtr?.Name,
-            signers:
-              x?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) || [],
-            createdAt: x.createdAt,
-            updatedAt: x.updatedAt,
-          }));
-          return response.json({ result: updateRes });
-        } else {
-          return response.json({ result: [] });
+          return response
+            .status(400)
+            .json({ error: 'Something went wrong, please try again later!' });
         }
       } else {
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
             event: 'api_get_document_list_by_status',
-            properties: { response_code: 404 },
+            properties: { response_code: 404, doc_type: docType },
           });
         }
         return response.status(404).json({ error: 'Report not available!' });

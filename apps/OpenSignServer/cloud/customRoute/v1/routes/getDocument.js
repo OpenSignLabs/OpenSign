@@ -23,6 +23,7 @@ export default async function getDocument(request, response) {
       Document.include('Signers');
       Document.include('Folder');
       Document.include('ExtUserPtr');
+      Document.include('Placeholders.signerPtr');
       const res = await Document.first({ useMasterKey: true });
       if (res) {
         const document = JSON.parse(JSON.stringify(res));
@@ -41,8 +42,25 @@ export default async function getDocument(request, response) {
           file: document?.SignedUrl || document.URL,
           owner: document?.ExtUserPtr?.Name,
           signers:
+            document?.Placeholders?.map(y => ({
+              role: y.Role,
+              name: y?.signerPtr?.Name || '',
+              email: y?.signerPtr?.Email || '',
+              phone: y?.signerPtr?.Phone || '',
+              widgets: y.placeHolder?.flatMap(x =>
+                x?.pos.map(w => ({
+                  type: w?.type ? w.type : w.isStamp ? 'stamp' : 'signature',
+                  x: w.xPosition,
+                  y: w.yPosition,
+                  w: w?.Width || 150,
+                  h: w?.Height || 60,
+                  page: x?.pageNumber,
+                }))
+              ),
+            })) ||
             document?.Signers?.map(y => ({ name: y?.Name, email: y?.Email, phone: y?.Phone })) ||
             [],
+          sendInOrder: document?.SendinOrder || false,
           createdAt: document.createdAt,
           updatedAt: document.updatedAt,
         });

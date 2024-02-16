@@ -157,7 +157,7 @@ const Forms = (props) => {
       object.set("Name", formData?.Name);
       object.set("Description", formData?.Description);
       object.set("Note", formData?.Note);
-      if (props.title === "Request Signature") {
+      if (props.title === "Request Signatures") {
         object.set(
           "TimeToCompleteDays",
           parseInt(formData?.TimeToCompleteDays)
@@ -352,7 +352,7 @@ const Forms = (props) => {
           </div>
           <SelectFolder onSuccess={handleFolder} folderCls={props.Cls} />
 
-          {props.title === "Request Signature" && (
+          {props.title === "Request Signatures" && (
             <div className="text-xs mt-2">
               <label className="block">
                 Time To Complete (Days)

@@ -8,9 +8,9 @@ export const formJson = {
     Cls: documentCls
   },
 
-  //json form for request signature
+  //json form for request signatures
   "8mZzFxbG1z": {
-    title: "Request Signature",
+    title: "Request Signatures",
     msgVar: "Document",
     redirectRoute: "placeHolderSign",
     Cls: documentCls,
