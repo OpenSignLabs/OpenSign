@@ -301,65 +301,12 @@ function PdfRequestFiles() {
     );
     if (checkUser && checkUser.length > 0) {
       let unSignUrlData;
-      let checkWidgetSign = 0;
-      let allXyPos = 0;
-      let checkedRequireCount = 0;
-      let optionalCheckbox = 0;
-      let CheckboxRequireCount = 0;
 
       for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
-        const posSignUrlData = checkUser[0].placeHolder[i].pos.filter(
-          (pos) => pos?.SignUrl
-        );
         unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
           (pos) => !pos?.SignUrl && !pos.widgetValue
         );
-        console.log("unsigned", unSignUrlData);
-
-        // const posWidgetData = checkUser[0].placeHolder[i].pos.filter(
-        //   (pos) => pos?.widgetValue && pos?.type !== "checkbox"
-        // );
-        // const checkboxReadOnly = checkUser[0].placeHolder[i].pos.filter(
-        //   (pos) =>
-        //     pos?.widgetValue &&
-        //     pos?.type === "checkbox" &&
-        //     pos?.widgetStatus === "Read only"
-        // ).length;
-        // const checkboxRequire = checkUser[0].placeHolder[i].pos.filter(
-        //   (pos) => pos?.type === "checkbox" && pos?.widgetStatus === "Required"
-        // );
-        // CheckboxRequireCount = CheckboxRequireCount + checkboxRequire?.length;
-        // checkedRequireCount =
-        //   checkedRequireCount +
-        //   checkUser[0].placeHolder[i].pos?.filter(
-        //     (pos) =>
-        //       pos?.widgetValue &&
-        //       pos?.type === "checkbox" &&
-        //       pos?.widgetStatus === "Required"
-        //   )?.length;
-        // optionalCheckbox = checkUser[0].placeHolder[i].pos.filter(
-        //   (pos) => pos.type === "checkbox" && pos.widgetStatus === "Optional"
-        // ).length;
-        // checkWidgetSign =
-        //   checkWidgetSign +
-        //   posSignUrlData.length +
-        //   posWidgetData.length +
-        //   checkboxReadOnly +
-        //   checkedRequireCount +
-        //   optionalCheckbox;
-        // allXyPos = allXyPos + checkUser[0].placeHolder[i].pos.length;
       }
-      // if (CheckboxRequireCount !== checkedRequireCount) {
-      //   setIsAlert({
-      //     isShow: true,
-      //     alertMessage: "Please check the required checkbox to continue."
-      //   });
-      // } else if (allXyPos !== checkWidgetSign) {
-      //   setIsAlert({
-      //     isShow: true,
-      //     alertMessage: "Please complete your signature!"
-      //   });
-      // }
       let checkboxExist;
       let optionRequiredCheckbox;
       checkboxExist = unSignUrlData.some((data) => data.type === "checkbox");
@@ -409,38 +356,37 @@ function PdfRequestFiles() {
         );
 
         //function for call to embed signature in pdf and get digital signature pdf
-        // try {
-        //   const res = await signPdfFun(
-        //     pdfBytes,
-        //     documentId,
-        //     signerObjectId,
-        //     pdfOriginalWidth,
-        //     pngUrl,
-        //     containerWH,
-        //     setIsAlert
-        //   );
-        //   if (res && res.status === "success") {
-        //     setPdfUrl(res.data);
-        //     setIsSigned(true);
-        //     setSignedSigners([]);
-        //     setUnSignedSigners([]);
-        //     getDocumentDetails();
-        //   } else {
-        //     setIsAlert({
-        //       isShow: true,
-        //       alertMessage: "something went wrong"
-        //     });
-        //   }
-        // } catch (err) {
-        //   setIsAlert({
-        //     isShow: true,
-        //     alertMessage: "something went wrong"
-        //   });
-        // }
+        try {
+          const res = await signPdfFun(
+            pdfBytes,
+            documentId,
+            signerObjectId,
+            pdfOriginalWidth,
+            pngUrl,
+            containerWH,
+            setIsAlert
+          );
+          if (res && res.status === "success") {
+            setPdfUrl(res.data);
+            setIsSigned(true);
+            setSignedSigners([]);
+            setUnSignedSigners([]);
+            getDocumentDetails();
+          } else {
+            setIsAlert({
+              isShow: true,
+              alertMessage: "something went wrong"
+            });
+          }
+        } catch (err) {
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
+          });
+        }
       }
 
       setIsSignPad(false);
-      // }
     } else {
       setIsAlert({
         isShow: true,
@@ -741,6 +687,9 @@ function PdfRequestFiles() {
             </ModalUi>
 
             <Tour
+              showNumber={false}
+              showNavigation={false}
+              showNavigationNumber={false}
               onRequestClose={closeTour}
               steps={tourConfig}
               isOpen={widgetsTour}
