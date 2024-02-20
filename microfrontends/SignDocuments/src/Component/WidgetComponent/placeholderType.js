@@ -12,6 +12,7 @@ function PlaceholderType(props) {
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [checkedValue, setCheckedValue] = useState(false);
   const [isCheckedRadio, setIsCheckedRadio] = useState({
     isChecked: false,
     selectValue: ""
@@ -170,6 +171,28 @@ function PlaceholderType(props) {
     const size = fontSize ? fontSize : 12;
     return size + "px";
   };
+
+  const handleChecked = () => {
+    if (props.isPlaceholder) {
+      if (props.pos?.widgetStatus === "Read only") {
+        if (checkedValue) {
+          return checkedValue;
+        } else {
+          const isChecked = true;
+          return isChecked;
+        }
+      } else {
+        if (checkedValue) {
+          return !checkedValue;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      return props.pos?.widgetValue;
+    }
+  };
+
   switch (props.pos.type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -234,23 +257,35 @@ function PlaceholderType(props) {
           disabled={
             props.isNeedSign && props.data?.signerObjId !== props.signerObjId
               ? true
-              : props.isNeedSign && props.pos?.widgetStatus === "Read only"
-                ? true
-                : props.isPlaceholder
+              : props.isNeedSign &&
+                props.pos?.widgetStatus === "Read only" &&
+                true
+            // : props.isPlaceholder
           }
           onBlur={handleInputBlur}
-          checked={props.pos.widgetValue}
-          onChange={(e) =>
+          checked={handleChecked()}
+          onChange={(e) => {
+            let isChecked = e.target.checked;
+            if (props.isPlaceholder) {
+              if (props.pos.widgetStatus === "Read only") {
+                setCheckedValue(true);
+                isChecked = true;
+              } else {
+                setCheckedValue(false);
+                isChecked = false;
+              }
+            }
+
             onChangeInput(
-              e.target.checked,
+              isChecked,
               props.pos.key,
               props.xyPostion,
               props.index,
               props.setXyPostion,
               props.data && props.data.Id,
               false
-            )
-          }
+            );
+          }}
         />
       );
     case "text":
