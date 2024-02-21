@@ -653,7 +653,6 @@ function PlaceholderType(props) {
             );
           }}
           className="labelTextArea"
-          name="story"
           cols="50"
           style={{
             zIndex: "99",

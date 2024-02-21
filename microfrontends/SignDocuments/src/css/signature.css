@@ -863,18 +863,25 @@ option {
   justify-content: flex-start;
 }
 
+
+
 .labelTextArea {
   font-size: 0.8rem;
   letter-spacing: 1px;
-}
-
-.labelTextArea {
   padding: 10px;
   max-width: 100%;
   line-height: 1.5;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  box-shadow: 1px 1px 1px #999;
+
+  /* border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999; */
+  border: 1px solid #007bff;
+  border-radius: 2px;
+  font-family:  inherit;
+}
+
+.labelTextArea:focus {
+  outline: none;
+  border: 1px solid #188ae2;
 }
 
 @media screen and (max-width:766px) {
@@ -882,7 +889,8 @@ option {
   .validateInputText {
     width: 93%;
   }
-  .regxSelect{
+
+  .regxSelect {
     width: 100%;
   }
 

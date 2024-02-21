@@ -466,7 +466,7 @@ function PlaceHolderSign() {
           }
         } else {
           //adding new placeholder for selected signer in pos array (placeholder)
-          const signerData = signerPos;
+          // const signerData = signerPos;
           let placeHolderPos;
           if (contractName) {
             placeHolderPos = {
@@ -492,9 +492,10 @@ function PlaceHolderSign() {
             };
           }
 
-          signerData.push(placeHolderPos);
-
-          setSignerPos(signerData);
+          // signerData.push(placeHolderPos);
+          console.log("signersddata", placeHolderPos);
+          //  setSignerPos(signerData);
+          setSignerPos((prev) => [...prev, placeHolderPos]);
         }
         if (dragTypeValue === "dropdown") {
           setShowDropdown(true);
@@ -506,6 +507,7 @@ function PlaceHolderSign() {
         setWidgetType(dragTypeValue);
         setSignKey(key);
       } else if (dragTypeValue === "label") {
+        console.log("go here");
         let filterSignerPos = signerPos.filter(
           (data) => data.Role === "prefill"
         );
@@ -576,8 +578,10 @@ function PlaceHolderSign() {
     setIsDragging(true);
   };
 
+  console.log("signerpos", signerPos);
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
+    console.log("handle stop");
     if (!isResize && isDragging) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
