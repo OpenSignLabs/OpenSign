@@ -403,13 +403,8 @@ function PdfRequestFiles() {
   const tourConfig = [
     {
       selector: '[data-tut="IsSigned"]',
-      content: "Please fill out this placeholder.",
-      // content: () => (
-      //   <TourContentWithBtn
-      //     message={`Please fill out this placeholder.`}
-      //     isChecked={handleDontShow}
-      //   />
-      // ),
+      content:
+        "Ensure this field is accurately filled and meets all requirements.",
       position: "top",
       style: { fontSize: "13px" }
     }
