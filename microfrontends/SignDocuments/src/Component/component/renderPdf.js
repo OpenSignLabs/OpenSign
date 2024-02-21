@@ -495,6 +495,8 @@ function RenderPdf({
           >
             <EmailToast isShow={successEmail} />
             {pdfLoadFail.status &&
+              signerPos &&
+              signerPos.length > 0 &&
               (pdfRequest
                 ? signerPos.map((data, key) => {
                     return (

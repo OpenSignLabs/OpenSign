@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { getWidgetType } from "../../utils/Utils";
 
 function AllWidgets(props) {
