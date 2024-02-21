@@ -21,24 +21,32 @@ import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
-const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
 // console.log("configuration ", configuration);
+let fsAdapter;
 if (process.env.USE_LOCAL !== 'TRUE') {
-  const s3Options = {
-    bucket: process.env.DO_SPACE, // globalConfig.S3FilesAdapter.bucket,
-    baseUrl: process.env.DO_BASEURL,
-    region: process.env.DO_REGION,
-    directAccess: true,
-    preserveFileName: true,
-    s3overrides: {
-      accessKeyId: process.env.DO_ACCESS_KEY_ID,
-      secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
-      endpoint: spacesEndpoint,
-    },
-  };
-  var fsAdapter = new S3Adapter(s3Options);
+  try {
+    const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
+    const s3Options = {
+      bucket: process.env.DO_SPACE, // globalConfig.S3FilesAdapter.bucket,
+      baseUrl: process.env.DO_BASEURL,
+      region: process.env.DO_REGION,
+      directAccess: true,
+      preserveFileName: true,
+      s3overrides: {
+        accessKeyId: process.env.DO_ACCESS_KEY_ID,
+        secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
+        endpoint: spacesEndpoint,
+      },
+    };
+    fsAdapter = new S3Adapter(s3Options);
+  } catch (err) {
+    console.log('err ', err);
+    fsAdapter = new FSFilesAdapter({
+      filesSubDirectory: 'files', // optional, defaults to ./files
+    });
+  }
 } else {
-  var fsAdapter = new FSFilesAdapter({
+  fsAdapter = new FSFilesAdapter({
     filesSubDirectory: 'files', // optional, defaults to ./files
   });
 }
@@ -78,14 +86,14 @@ export const config = {
   masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::1'], // '::1'
   serverURL: process.env.SERVER_URL || 'http://localhost:8080/app', // Don't forget to change to https if needed
-  verifyUserEmails: true,
+  verifyUserEmails: process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY ? true : false,
   publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Open Sign',
   allowClientClassCreation: false,
-  emailAdapter:
-    process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY
-      ? {
+  ...(process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY
+    ? {
+        emailAdapter: {
           module: 'parse-server-api-mail-adapter',
           options: {
             // The email address from which emails are sent.
@@ -116,8 +124,9 @@ export const config = {
               } else if (transporterMail) await transporterMail.sendMail(payload);
             },
           },
-        }
-      : null,
+        },
+      }
+    : {}),
   filesAdapter: fsAdapter,
   auth: {
     google: {
@@ -170,9 +179,13 @@ app.use('/public', express.static(path.join(__dirname, '/public')));
 // Serve the Parse API on the /parse URL prefix
 if (!process.env.TESTING) {
   const mountPath = process.env.PARSE_MOUNT || '/app';
-  const server = new ParseServer(config);
-  await server.start();
-  app.use(mountPath, server.app);
+  try {
+    const server = new ParseServer(config);
+    await server.start();
+    app.use(mountPath, server.app);
+  } catch (err) {
+    console.log('Err ', err);
+  }
 }
 // Mount your custom express app
 app.use('/', customRoute);
