@@ -4,30 +4,29 @@ import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import { createTransport } from 'nodemailer';
 
-let transporterSMTP;
-let mailgunClient;
-let mailgunDomain;
-if (process.env.SMTP_ENABLE) {
-  transporterSMTP = createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT || 465,
-    secure: process.env.SMTP_SECURE || true,
-    auth: {
-      user: process.env.SMTP_USER_EMAIL,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-} else {
-  const mailgun = new Mailgun(formData);
-  mailgunClient = mailgun.client({
-    username: 'api',
-    key: process.env.MAILGUN_API_KEY,
-  });
-  mailgunDomain = process.env.MAILGUN_DOMAIN;
-}
-
 async function sendmail(req) {
   try {
+    let transporterSMTP;
+    let mailgunClient;
+    let mailgunDomain;
+    if (process.env.SMTP_ENABLE) {
+      transporterSMTP = createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT || 465,
+        secure: process.env.SMTP_SECURE || true,
+        auth: {
+          user: process.env.SMTP_USER_EMAIL,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+    } else {
+      const mailgun = new Mailgun(formData);
+      mailgunClient = mailgun.client({
+        username: 'api',
+        key: process.env.MAILGUN_API_KEY,
+      });
+      mailgunDomain = process.env.MAILGUN_DOMAIN;
+    }
     if (req.params.url) {
       let Pdf = fs.createWriteStream('test.pdf');
       const writeToLocalDisk = () => {
