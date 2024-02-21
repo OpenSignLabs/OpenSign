@@ -402,7 +402,7 @@ function PlaceholderType(props) {
           tabIndex="0"
           ref={inputRef}
           placeholder={"name"}
-          style={{ fontSize: calculateFontSize() }}
+          style={{ fontSize: calculateFontSize(), textAlign: "center" }}
           className="inputPlaceholder"
           type="text"
           value={

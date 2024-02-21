@@ -39,7 +39,7 @@ function Header({
   setIsEditTemplate
 }) {
   const filterPrefill =
-    signerPos && signerPos.filter((data) => data.Role !== "prefill");
+    signerPos && signerPos?.filter((data) => data.Role !== "prefill");
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
   const isGuestSigner = localStorage.getItem("isGuestSigner");

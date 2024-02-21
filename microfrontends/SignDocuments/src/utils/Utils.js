@@ -94,8 +94,6 @@ export const onChangeInput = (
   if (isSigners) {
     if (userId) {
       filterSignerPos = xyPostion.filter((data) => data.Id === userId);
-    } else {
-      filterSignerPos = xyPostion.filter((data) => data.Role === "prefill");
     }
 
     const getPlaceHolder = filterSignerPos[0]?.placeHolder;
@@ -129,17 +127,15 @@ export const onChangeInput = (
           return url;
         });
 
-        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+        const newUpdateSignPos = getPlaceHolder.map((obj) => {
           if (obj.pageNumber === index) {
             return { ...obj, pos: addSignPos };
           }
           return obj;
         });
 
-        const newUpdateSigner = xyPostion.map((obj, ind) => {
-          if (obj.Role === "prefill") {
-            return { ...obj, placeHolder: newUpdateSignPos };
-          } else if (obj.Id === userId) {
+        const newUpdateSigner = xyPostion.map((obj) => {
+          if (obj.Id === userId) {
             return { ...obj, placeHolder: newUpdateSignPos };
           }
           return obj;

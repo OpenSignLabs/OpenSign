@@ -151,30 +151,6 @@ function PlaceHolderSign() {
     })
   });
 
-  const [{ isDragSignatureSS }, dragSignatureSS] = useDrag({
-    type: "BOX",
-    item: {
-      id: 3,
-      text: "signature"
-    },
-
-    collect: (monitor) => ({
-      isDragSignatureSS: !!monitor.isDragging()
-    })
-  });
-
-  const [, dragStampSS] = useDrag({
-    type: "BOX",
-    item: {
-      id: 4,
-      text: "stamp"
-    },
-
-    collect: (monitor) => ({
-      isDragStampSS: !!monitor.isDragging()
-    })
-  });
-
   const rowLevel =
     localStorage.getItem("rowlevel") &&
     JSON.parse(localStorage.getItem("rowlevel"));
@@ -282,6 +258,7 @@ function PlaceHolderSign() {
               blockColor: x.blockColor
             };
           });
+
           setSignerPos(documentData[0].Placeholders);
           setSignersData(updatedSigners);
           setIsSelectId(0);
@@ -362,6 +339,7 @@ function PlaceHolderSign() {
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
+
       if (item === "onclick") {
         const dropObj = {
           //onclick put placeholder center on pdf
@@ -411,7 +389,7 @@ function PlaceHolderSign() {
           scale: scale,
           isMobile: isMobile,
           zIndex: posZIndex,
-          type: item.text,
+          type: dragTypeValue,
           widgetValue:
             dragTypeValue === "checkbox"
               ? false
@@ -428,10 +406,16 @@ function PlaceHolderSign() {
       }
 
       setSelectWidgetId(key);
-      if (signer && dragTypeValue !== "label") {
-        let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+      if (signer) {
+        let filterSignerPos;
+        if (dragTypeValue === "label") {
+          filterSignerPos = signerPos.filter((data) => data.Role === "prefill");
+        } else {
+          filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+        }
 
         const { blockColor, Role } = signer;
+
         //adding placholder in existing signer pos array (placaholder)
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -451,50 +435,73 @@ function PlaceHolderSign() {
               pos: newSignPos
             };
             updatePlace.push(xyPos);
-            const updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
-            );
+            let updatesignerPos;
+            if (dragTypeValue === "label") {
+              updatesignerPos = signerPos.map((x) =>
+                x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
+              );
+            } else {
+              updatesignerPos = signerPos.map((x) =>
+                x.Id === uniqueId ? { ...x, placeHolder: updatePlace } : x
+              );
+            }
 
             setSignerPos(updatesignerPos);
           } else {
-            const updatesignerPos = signerPos.map((x) =>
-              x.Id === uniqueId
-                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-                : x
-            );
+            let updatesignerPos;
+            if (dragTypeValue === "label") {
+              updatesignerPos = signerPos.map((x) =>
+                x.Role === "prefill"
+                  ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+                  : x
+              );
+            } else {
+              updatesignerPos = signerPos.map((x) =>
+                x.Id === uniqueId
+                  ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
+                  : x
+              );
+            }
             setSignerPos(updatesignerPos);
           }
         } else {
           //adding new placeholder for selected signer in pos array (placeholder)
           // const signerData = signerPos;
           let placeHolderPos;
-          if (contractName) {
-            placeHolderPos = {
-              signerPtr: {
-                __type: "Pointer",
-                className: `${contractName}`,
-                objectId: signerObjId
-              },
-              signerObjId: signerObjId,
-              blockColor: blockColor ? blockColor : color[isSelectListId],
-              placeHolder: [placeHolder],
-              Role: Role ? Role : roleName,
-              Id: uniqueId
-            };
-          } else {
+          if (dragTypeValue === "label") {
             placeHolderPos = {
               signerPtr: {},
               signerObjId: "",
-              blockColor: blockColor ? blockColor : color[isSelectListId],
+              blockColor: "#f58f8c",
               placeHolder: [placeHolder],
-              Role: Role ? Role : roleName,
-              Id: uniqueId
+              Role: "prefill",
+              Id: key
             };
+          } else {
+            if (contractName) {
+              placeHolderPos = {
+                signerPtr: {
+                  __type: "Pointer",
+                  className: `${contractName}`,
+                  objectId: signerObjId
+                },
+                signerObjId: signerObjId,
+                blockColor: blockColor ? blockColor : color[isSelectListId],
+                placeHolder: [placeHolder],
+                Role: Role ? Role : roleName,
+                Id: uniqueId
+              };
+            } else {
+              placeHolderPos = {
+                signerPtr: {},
+                signerObjId: "",
+                blockColor: blockColor ? blockColor : color[isSelectListId],
+                placeHolder: [placeHolder],
+                Role: Role ? Role : roleName,
+                Id: uniqueId
+              };
+            }
           }
-
-          // signerData.push(placeHolderPos);
-          console.log("signersddata", placeHolderPos);
-          //  setSignerPos(signerData);
           setSignerPos((prev) => [...prev, placeHolderPos]);
         }
         if (dragTypeValue === "dropdown") {
@@ -505,55 +512,6 @@ function PlaceHolderSign() {
           setIsRadio(true);
         }
         setWidgetType(dragTypeValue);
-        setSignKey(key);
-      } else if (dragTypeValue === "label") {
-        console.log("go here");
-        let filterSignerPos = signerPos.filter(
-          (data) => data.Role === "prefill"
-        );
-
-        if (filterSignerPos.length > 0) {
-          const getPlaceHolder = filterSignerPos[0].placeHolder;
-          const updatePlace = getPlaceHolder.filter(
-            (data) => data.pageNumber !== pageNumber
-          );
-          const getPageNumer = getPlaceHolder.filter(
-            (data) => data.pageNumber === pageNumber
-          );
-
-          //add entry of position for same signer on multiple page
-          if (getPageNumer.length > 0) {
-            const getPos = getPageNumer[0].pos;
-            const newSignPos = getPos.concat(dropData);
-            let xyPos = {
-              pageNumber: pageNumber,
-              pos: newSignPos
-            };
-            updatePlace.push(xyPos);
-            const updatesignerPos = signerPos.map((x) =>
-              x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
-            );
-            setSignerPos(updatesignerPos);
-          } else {
-            const updatesignerPos = signerPos.map((x) =>
-              x.Role === "prefill"
-                ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
-                : x
-            );
-            setSignerPos(updatesignerPos);
-          }
-        } else {
-          let placeHolderPos;
-          placeHolderPos = {
-            signerPtr: {},
-            signerObjId: "",
-            blockColor: "#f58f8c",
-            placeHolder: [placeHolder],
-            Role: "prefill",
-            Id: key
-          };
-          setSignerPos((prev) => [...prev, placeHolderPos]);
-        }
         setSignKey(key);
       }
     }
@@ -578,7 +536,6 @@ function PlaceHolderSign() {
     setIsDragging(true);
   };
 
-  console.log("signerpos", signerPos);
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
     console.log("handle stop");
@@ -690,7 +647,7 @@ function PlaceHolderSign() {
             }
             return obj;
           });
-
+          console.log("signerpos3");
           setSignerPos(newUpdateSigner);
         } else {
           const updateFilter = signerPos.filter((data) => data.Id !== Id);
@@ -1150,6 +1107,7 @@ function PlaceHolderSign() {
         }
         return { ...x };
       });
+
       setSignerPos(updatePlaceHolder);
 
       const updateSigner = signersdata.map((x) => {
@@ -1587,9 +1545,6 @@ function PlaceHolderSign() {
                   dragRef={dragRef}
                   isDragStamp={isDragStamp}
                   isSignYourself={false}
-                  isDragSignatureSS={isDragSignatureSS}
-                  dragSignatureSS={dragSignatureSS}
-                  dragStampSS={dragStampSS}
                   addPositionOfSignature={addPositionOfSignature}
                   signerPos={signerPos}
                   signersdata={signersdata}

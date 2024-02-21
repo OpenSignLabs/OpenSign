@@ -128,32 +128,6 @@ function SignYourSelf() {
     })
   });
 
-  const [{ isDragSignatureSS }, dragSignatureSS] = useDrag({
-    type: "BOX",
-
-    item: {
-      type: "BOX",
-      id: 3,
-      text: "drag me"
-    },
-    collect: (monitor) => ({
-      isDragSignatureSS: !!monitor.isDragging()
-    })
-  });
-
-  const [, dragStampSS] = useDrag({
-    type: "BOX",
-    item: {
-      type: "BOX",
-      id: 4,
-      text: "drag me"
-    },
-
-    collect: (monitor) => ({
-      isDragStampSS: !!monitor.isDragging()
-    })
-  });
-
   const index = xyPostion.findIndex((object) => {
     return object.pageNumber === pageNumber;
   });
@@ -1046,9 +1020,6 @@ function SignYourSelf() {
                   dragStamp={dragStamp}
                   dragRef={dragRef}
                   isDragStamp={isDragStamp}
-                  isDragSignatureSS={isDragSignatureSS}
-                  dragSignatureSS={dragSignatureSS}
-                  dragStampSS={dragStampSS}
                   handleAllDelete={handleAllDelete}
                   xyPostion={xyPostion}
                   isSignYourself={true}
