@@ -41,6 +41,8 @@
     "version": "curl -s https://api.github.com/repos/opensignlabs/opensign/releases/latest | grep '\"tag_name\":' | awk -F '\"' '{print $4}' > ./public/version.txt",
     "build": "npm run version && rm -rf public/mfbuild && npm run micro && CI=false && mf-cra build",
     "micro": "cd ../../microfrontends/SignDocuments && npm install && npm run build",
+    "docker-build": "npm run version && rm -rf public/mfbuild && npm run docker-micro && CI=false && mf-cra build",
+    "docker-micro": "cd ./microfrontends/SignDocuments && npm install && npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "release": "standard-version",
