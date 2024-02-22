@@ -34,7 +34,7 @@ Environment Varaibles:
 
 # Steps to Generate Self Sign Certificate
 ```
-# execute below command and use passphrase emudhra
+# execute below command and use passphrase 'opensign'
 openssl genrsa -des3 -out ./cert/local_dev.key 2048
 openssl req -key ./cert/local_dev.key -new -x509 -days 365 -out ./cert/local_dev.crt
 openssl pkcs12 -inkey ./cert/local_dev.key -in ./cert/local_dev.crt -export -out ./cert/local_dev.pfx
