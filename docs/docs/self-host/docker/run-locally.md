@@ -58,8 +58,7 @@ In order to address this, your document storage system must be instructed to acc
 
 # Build Local Environment
 
-Command to build project -
-- Execute `make build`
+Command to build & run project (make sure that you have docker install and running) -
+- Execute `make build``
 
-Command to run project -
-- Execute `make run`
+Note: this command only works on linux and mac. If you want to run it in windows use [WSL system](https://youtu.be/1kFFwknneD8?si=FKriXPwFqZPLUagI).  
