@@ -5,7 +5,7 @@ FROM node:16
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json first to leverage Docker cache
-COPY ./package*.json ./
+COPY apps/OpenSignServer/package*.json ./
 
 # Install application dependencies
 RUN npm install
@@ -14,7 +14,7 @@ RUN npm install
 # RUN apk add --no-cache make gcc g++ python3
 
 # Copy the current directory contents into the container
-COPY ./ .
+COPY apps/OpenSignServer/ .
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
