@@ -1,5 +1,9 @@
+---
+sidebar_position: 1
+title: Installation instructions
+---
 
-# INSTALLATON INSTRUCTIONS
+# INSTALLATION INSTRUCTIONS
 
 You can use our app as a cloud version from [OpenSignLabs](https://www.opensignlabs.com)
 
