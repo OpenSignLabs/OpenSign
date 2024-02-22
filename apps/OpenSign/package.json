@@ -42,7 +42,7 @@
     "build": "npm run version && rm -rf public/mfbuild && npm run micro && CI=false && mf-cra build",
     "micro": "cd ../../microfrontends/SignDocuments && npm install && npm run build",
     "docker-build": "npm run version && rm -rf public/mfbuild && npm run docker-micro && CI=false && mf-cra build",
-    "docker-micro": "cd ./SignDocuments && npm install && npm run build",
+    "docker-micro": "cd ./SignDocuments && npm install && npm run docker-build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "release": "standard-version",
