@@ -33,7 +33,7 @@ Below are the steps to follow -
   ```
 - Run the project locally using
   ```
-  npm run start
+  npm run start-dev
   ```
 You should be able to access the application from http://localhost:3000 after this.
 Create an account by signing-up and start contributing.
