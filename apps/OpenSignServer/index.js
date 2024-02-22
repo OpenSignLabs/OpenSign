@@ -40,7 +40,7 @@ if (process.env.USE_LOCAL !== 'TRUE') {
     };
     fsAdapter = new S3Adapter(s3Options);
   } catch (err) {
-    console.log('err ', err);
+    console.log('Please provide AWS credintials in env file! Defaulting to local storage.');
     fsAdapter = new FSFilesAdapter({
       filesSubDirectory: 'files', // optional, defaults to ./files
     });
@@ -74,7 +74,6 @@ if (process.env.SMTP_ENABLE) {
 
   mailgunDomain = process.env.MAILGUN_DOMAIN;
 }
-
 export const config = {
   databaseURI:
     process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
@@ -83,7 +82,7 @@ export const config = {
   },
   appId: process.env.APP_ID || 'myAppId',
   maxLimit: 500,
-  masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
+  masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::1'], // '::1'
   serverURL: process.env.SERVER_URL || 'http://localhost:8080/app', // Don't forget to change to https if needed
   verifyUserEmails: process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY ? true : false,
@@ -91,6 +90,8 @@ export const config = {
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Open Sign',
   allowClientClassCreation: false,
+  allowExpiredAuthDataToken: false,
+  encodeParseObjectInCloudFunction: true,
   ...(process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY
     ? {
         emailAdapter: {
@@ -184,7 +185,7 @@ if (!process.env.TESTING) {
     await server.start();
     app.use(mountPath, server.app);
   } catch (err) {
-    console.log('Err ', err);
+    console.log(err);
   }
 }
 // Mount your custom express app
@@ -209,8 +210,12 @@ if (!process.env.TESTING) {
   httpServer.headersTimeout = 100000; // in milliseconds
   httpServer.listen(port, function () {
     console.log('parse-server-example running on port ' + port + '.');
-    const migrate = `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=http://localhost:8080/app MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
+    const isWindows = process.platform === 'win32';
+    // console.log('isWindows', isWindows);
 
+    const migrate = isWindows
+      ? `set APPLICATION_ID=${process.env.APP_ID}&& set SERVER_URL=http://localhost:8080/app&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
+      : `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=http://localhost:8080/app MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
     exec(migrate, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error: ${error.message}`);
@@ -224,6 +229,4 @@ if (!process.env.TESTING) {
       console.log(`Command output: ${stdout}`);
     });
   });
-  // This will enable the Live Query real-time server
-  await ParseServer.createLiveQueryServer(httpServer);
 }
