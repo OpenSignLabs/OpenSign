@@ -46,7 +46,7 @@ Create an account by signing-up and start contributing.
 
 ### AWS S3 -
 - Step 1 : Create a S3 bucket
-  - Login to AWS console
+  - Login to [AWS console](https://aws.amazon.com/console/)
   - Navigate to S3 under services
   - Hit "Create Bucket" button on upper right corner
   - Remove the check from "block all public access" checkbox(we need this in order to provide access to not-logged in users after OTP verification)
