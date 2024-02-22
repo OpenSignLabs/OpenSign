@@ -270,14 +270,18 @@ function Placeholder(props) {
               onClick={(e) => {
                 setIsShowDateFormat(!isShowDateFormat);
                 e.stopPropagation();
-                props.setSignKey(props.pos.key);
-                props.setUniqueId(props.data.Id);
+                if (props.data) {
+                  props.setSignKey(props.pos.key);
+                  props.setUniqueId(props.data.Id);
+                }
               }}
               onTouchEnd={(e) => {
                 e.stopPropagation();
                 setIsShowDateFormat(!isShowDateFormat);
-                props.setSignKey(props.pos.key);
-                props.setUniqueId(props.data.Id);
+                if (props.data) {
+                  props.setSignKey(props.pos.key);
+                  props.setUniqueId(props.data.Id);
+                }
               }}
             >
               <i

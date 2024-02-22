@@ -11,11 +11,11 @@ function DropdownWidgetOption(props) {
 
   useEffect(() => {
     if (
-      props.currWidgetsDetails?.widgetName &&
-      props.currWidgetsDetails?.widgetOption
+      props.currWidgetsDetails?.options?.name &&
+      props.currWidgetsDetails?.options?.values
     ) {
-      setDropdownName(props.currWidgetsDetails?.widgetName);
-      setDropdownOptionList(props.currWidgetsDetails?.widgetOption);
+      setDropdownName(props.currWidgetsDetails?.options?.name);
+      setDropdownOptionList(props.currWidgetsDetails?.options?.values);
     }
   }, [props.currWidgetsDetails]);
 
@@ -149,7 +149,7 @@ function DropdownWidgetOption(props) {
           >
             Save
           </button>
-          {props.currWidgetsDetails?.widgetOption?.length > 0 && (
+          {props.currWidgetsDetails?.options?.values?.length > 0 && (
             <button
               type="submit"
               className="finishBtn cancelBtn"

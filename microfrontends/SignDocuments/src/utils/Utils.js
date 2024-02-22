@@ -67,7 +67,10 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
       ) {
         return {
           ...item,
-          widgetValue: widgetData,
+          options: {
+            ...item.options,
+            response: widgetData
+          },
           Width: calculateInitialWidthHeight(item.type, widgetData).getWidth,
           Height: calculateInitialWidthHeight(item.type, widgetData).getHeight
         };
@@ -109,22 +112,32 @@ export const onChangeInput = (
       if (getPageNumer.length > 0) {
         const getXYdata = getPageNumer[0].pos;
         const getPosData = getXYdata;
-        const addSignPos = getPosData.map((url, ind) => {
-          if (url.key === signKey) {
+        const addSignPos = getPosData.map((position, ind) => {
+          if (position.key === signKey) {
             if (dateFormat) {
               return {
-                ...url,
-                widgetValue: value,
-                dateFormat: dateFormat
+                ...position,
+                options: {
+                  ...position.options,
+                  response: value,
+                  validation: {
+                    type: "date-format",
+                    format: dateFormat // This indicates the required date format explicitly.
+                  }
+                }
               };
             } else {
               return {
-                ...url,
-                widgetValue: value
+                ...position,
+
+                options: {
+                  ...position.options,
+                  response: value
+                }
               };
             }
           }
-          return url;
+          return position;
         });
 
         const newUpdateSignPos = getPlaceHolder.map((obj) => {
@@ -147,11 +160,14 @@ export const onChangeInput = (
   } else {
     let getXYdata = xyPostion[index].pos;
 
-    const updatePosition = getXYdata.map((positionData, ind) => {
+    const updatePosition = getXYdata.map((positionData) => {
       if (positionData.key === signKey) {
         return {
           ...positionData,
-          widgetValue: value
+          options: {
+            ...positionData.options,
+            response: value
+          }
         };
       }
       return positionData;
@@ -493,7 +509,11 @@ export function onSaveImage(xyPostion, index, signKey, imgWH, image) {
         Width: getIMGWH.newWidth,
         Height: getIMGWH.newHeight,
         SignUrl: image.src,
-        ImageType: image.imgType
+        ImageType: image.imgType,
+        options: {
+          ...position.options,
+          response: image.src
+        }
       };
     }
     return position;
@@ -549,7 +569,11 @@ export function onSaveSign(
         ...position,
         Width: posWidth,
         Height: posHeight,
-        SignUrl: signatureImg
+        SignUrl: signatureImg,
+        options: {
+          ...position.options,
+          response: signatureImg
+        }
       };
     }
     return position;
@@ -613,7 +637,7 @@ export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
     const getPageNo = xyPostion[i].pageNumber;
     const getPosData = getXYdata;
 
-    const addSign = getPosData.map((position, ind) => {
+    const addSign = getPosData.map((position) => {
       getIMGWH = calculateImgAspectRatio(imgWH, position);
       if (position.type) {
         if (position?.type === "signature") {
@@ -622,7 +646,11 @@ export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
             SignUrl: defaultSignImg,
             Width: getIMGWH.newWidth,
             Height: getIMGWH.newHeight,
-            ImageType: "default"
+            ImageType: "default",
+            options: {
+              ...position.options,
+              response: defaultSignImg
+            }
           };
         }
       } else if (position && !position.isStamp) {
@@ -631,7 +659,11 @@ export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
           SignUrl: defaultSignImg,
           Width: getIMGWH.newWidth,
           Height: getIMGWH.newHeight,
-          ImageType: "default"
+          ImageType: "default",
+          options: {
+            ...position.options,
+            response: defaultSignImg
+          }
         };
       }
       return position;
@@ -1030,6 +1062,15 @@ export const multiSignEmbed = async (
         }
       };
       const randomboxId = "randombox_" + imgData.key;
+      const widgetTypeExist = [
+        "text",
+        "name",
+        "company",
+        "job title",
+        "date",
+        "email",
+        "label"
+      ].includes(imgData.type);
       if (imgData.type === "checkbox") {
         const checkBox = form.createCheckBox(randomboxId);
 
@@ -1039,25 +1080,17 @@ export const multiSignEmbed = async (
           width: scaleWidth,
           height: scaleHeight
         });
-        if (imgData.widgetValue) {
+        if (imgData.options.response) {
           checkBox.check();
         } else {
           checkBox.uncheck();
         }
 
         checkBox.enableReadOnly();
-      } else if (
-        imgData.type === "text" ||
-        imgData.type === "name" ||
-        imgData.type === "company" ||
-        imgData.type === "job title" ||
-        imgData.type === "date" ||
-        imgData.type === "email" ||
-        imgData.type === "label"
-      ) {
+      } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
-        const textContent = imgData.widgetValue;
+        const textContent = imgData.options?.response;
         page.drawText(textContent, {
           x: xPos(imgData),
           y: yPos(imgData) + 10,
@@ -1067,8 +1100,8 @@ export const multiSignEmbed = async (
         });
       } else if (imgData.type === "dropdown") {
         const dropdown = form.createDropdown(randomboxId);
-        dropdown.addOptions(imgData.widgetOption);
-        dropdown.select(imgData.widgetValue);
+        dropdown.addOptions(imgData?.options?.values);
+        dropdown.select(imgData.options?.response);
         dropdown.addToPage(page, {
           x: xPos(imgData),
           y: yPos(imgData),
@@ -1080,8 +1113,8 @@ export const multiSignEmbed = async (
         const radioGroup = form.createRadioGroup(randomboxId);
         let addYPosition = 18;
 
-        for (let i = 1; i <= imgData?.widgetOption.length; i++) {
-          const data = imgData?.widgetOption[i - 1];
+        for (let i = 1; i <= imgData?.options?.values.length; i++) {
+          const data = imgData?.options?.values[i - 1];
           let yPosition;
           if (i > 1) {
             yPosition = yPos(imgData) - addYPosition;
@@ -1100,7 +1133,7 @@ export const multiSignEmbed = async (
           }
         }
 
-        radioGroup.select(imgData.widgetValue);
+        radioGroup.select(imgData.options?.response);
         radioGroup.enableReadOnly();
       } else {
         page.drawImage(img, {
@@ -1164,49 +1197,9 @@ export const handleImageResize = (
       (data) => data.pageNumber === pageNumber
     );
     if (getPageNumer.length > 0) {
-      // const getXYdata = getPageNumer[0].pos.filter(
-      //   (data, ind) => data.key === key && data.Width && data.Height
-      // );
-      // if (getXYdata.length > 0) {
-      //   const getXYdata = getPageNumer[0].pos;
-      //   const getPosData = getXYdata;
-      //   const addSignPos = getPosData.map((url, ind) => {
-      //     if (url.key === key) {
-      //       return {
-      //         ...url,
-      //         Width: ref.offsetWidth,
-      //         Height: ref.offsetHeight,
-      //         IsResize: showResize ? true : false
-      //       };
-      //     }
-      //     return url;
-      //   });
-
-      //   const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-      //     if (obj.pageNumber === pageNumber) {
-      //       return { ...obj, pos: addSignPos };
-      //     }
-      //     return obj;
-      //   });
-
-      //   // const newUpdateSigner = signerPos.map((obj, ind) => {
-      //   //   if (obj.signerObjId === signerId) {
-      //   //     return { ...obj, placeHolder: newUpdateSignPos };
-      //   //   }
-      //   //   return obj;
-      //   // });
-
-      //   const newUpdateSigner = signerPos.map((obj, ind) => {
-      //     if (obj.Id === signerId) {
-      //       return { ...obj, placeHolder: newUpdateSignPos };
-      //     }
-      //     return obj;
-      //   });
-      //   setSignerPos(newUpdateSigner);
-      // } else {
       const getXYdata = getPageNumer[0].pos;
       const getPosData = getXYdata;
-      const addSignPos = getPosData.map((url, ind) => {
+      const addSignPos = getPosData.map((url) => {
         if (url.key === key) {
           return {
             ...url,
@@ -1218,19 +1211,13 @@ export const handleImageResize = (
         return url;
       });
 
-      const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+      const newUpdateSignPos = getPlaceHolder.map((obj) => {
         if (obj.pageNumber === pageNumber) {
           return { ...obj, pos: addSignPos };
         }
         return obj;
       });
 
-      // const newUpdateSigner = signerPos.map((obj, ind) => {
-      //   if (obj.signerObjId === signerId) {
-      //     return { ...obj, placeHolder: newUpdateSignPos };
-      //   }
-      //   return obj;
-      // });
       const newUpdateSigner = signerPos.map((obj, ind) => {
         if (obj.Id === signerId) {
           return { ...obj, placeHolder: newUpdateSignPos };
@@ -1240,7 +1227,6 @@ export const handleImageResize = (
 
       setSignerPos(newUpdateSigner);
     }
-    // }
   }
 };
 

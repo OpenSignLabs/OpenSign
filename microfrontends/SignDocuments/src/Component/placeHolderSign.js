@@ -321,11 +321,157 @@ function PlaceHolderSign() {
     const newDate = moment(milliseconds).format("MM/DD/YYYY");
     return newDate;
   };
+  const addWidgetOptions = (type) => {
+    let option = {};
+
+    switch (type) {
+      case "signature":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "stamp":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "checkbox":
+        option = {
+          name: "",
+          values: [],
+          status: "Optional",
+          response: false,
+          validation: {}
+        };
+        return option;
+      case "text":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "initials":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "name":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+
+      case "company":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+      case "job title":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+      case "date":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: getDate()
+        };
+        return option;
+      case "image":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "email":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {
+            type: "email",
+            pattern: ""
+          }
+        };
+        return option;
+      case "dropdown":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "radio":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "label":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+    }
+  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
   };
-
   const getSignerPos = (item, monitor) => {
     //  setSignerObjId("");
     // setContractName("");
@@ -351,15 +497,9 @@ function PlaceHolderSign() {
           isDrag: false,
           scale: scale,
           isMobile: isMobile,
-          yBottom: window.innerHeight / 2 - 60,
           zIndex: posZIndex,
           type: dragTypeValue,
-          widgetValue:
-            dragTypeValue === "checkbox"
-              ? false
-              : dragTypeValue === "date"
-                ? getDate()
-                : ""
+          options: addWidgetOptions(dragTypeValue)
         };
         dropData.push(dropObj);
         placeHolder = {
@@ -374,28 +514,17 @@ function PlaceHolderSign() {
           .getBoundingClientRect();
         const x = offset.x - containerRect.left;
         const y = offset.y - containerRect.top;
-        const ybottom = containerRect.bottom - offset.y;
-
         const dropObj = {
           xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
           yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
           isStamp:
             (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
           key: key,
-          isDrag: false,
-          firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
-          firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
-          yBottom: ybottom,
           scale: scale,
           isMobile: isMobile,
           zIndex: posZIndex,
           type: dragTypeValue,
-          widgetValue:
-            dragTypeValue === "checkbox"
-              ? false
-              : dragTypeValue === "date"
-                ? getDate()
-                : ""
+          options: addWidgetOptions(dragTypeValue)
         };
 
         dropData.push(dropObj);
@@ -538,7 +667,6 @@ function PlaceHolderSign() {
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
-    console.log("handle stop");
     if (!isResize && isDragging) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
@@ -647,7 +775,6 @@ function PlaceHolderSign() {
             }
             return obj;
           });
-          console.log("signerpos3");
           setSignerPos(newUpdateSigner);
         } else {
           const updateFilter = signerPos.filter((data) => data.Id !== Id);
@@ -988,13 +1115,12 @@ function PlaceHolderSign() {
         const getXYdata = getPageNumer[0].pos;
 
         const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position, ind) => {
+        const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
             if (widgetType === "radio") {
               if (addOption) {
                 return {
                   ...position,
-
                   Height: position.Height
                     ? position.Height + 15
                     : defaultWidthHeight(widgetType).height + 15
@@ -1009,15 +1135,21 @@ function PlaceHolderSign() {
               } else {
                 return {
                   ...position,
-                  widgetName: dropdownName,
-                  widgetOption: dropdownOptions
+                  options: {
+                    ...position.options,
+                    name: dropdownName,
+                    values: dropdownOptions
+                  }
                 };
               }
             } else {
               return {
                 ...position,
-                widgetName: dropdownName,
-                widgetOption: dropdownOptions
+                options: {
+                  ...position.options,
+                  name: dropdownName,
+                  values: dropdownOptions
+                }
               };
             }
           }
@@ -1138,6 +1270,8 @@ function PlaceHolderSign() {
 
   //function for base on condition to add checkbox widget status and input text validation in signerPos array
   const handleApplyWidgetsStatus = (textValidate) => {
+    const options = ["email", "number", "text"];
+    const regexType = options.includes(textValidate);
     let regularExpression = textValidate;
 
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
@@ -1158,19 +1292,32 @@ function PlaceHolderSign() {
               if (selectRequiredType === "Read only") {
                 return {
                   ...position,
-                  widgetStatus: selectRequiredType,
-                  widgetValue: true
+                  options: {
+                    ...position.options,
+                    status: selectRequiredType,
+                    response: true
+                  }
                 };
               } else {
                 return {
                   ...position,
-                  widgetStatus: selectRequiredType
+                  options: {
+                    ...position.options,
+                    status: selectRequiredType,
+                    response: false
+                  }
                 };
               }
             } else {
               return {
                 ...position,
-                validation: regularExpression
+                options: {
+                  ...position.options,
+                  validation: {
+                    type: regexType ? regularExpression : "regex",
+                    pattern: !regexType ? regularExpression : ""
+                  }
+                }
               };
             }
           }
