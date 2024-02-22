@@ -30,8 +30,8 @@ Environment Varaibles:
 | MAILGUN_API_KEY  | YOUR_MAILGUNAPI_KEY  | Mailgun API Key |
 | MAILGUN_DOMAIN  | YOUR_MAILGUNAPI_DOMAIN | Mailgun API Domain |
 | MAILGUN_SENDER  | - | Mailgun Sender Mail ID |
-| PFX_BASE64  | - | Base64 encoded PFX or p12 document signing certificate file. You can generate base64 encoded self sign certificate using the passphrase `opensign` |
-| PASS_PHRASE | - | Pass phrase of PFX or p12 document signing certificate file. `opensign` |
+| PFX_BASE64  | - | Base64 encoded PFX or p12 document signing certificate file. You can generate base64 encoded self sign certificate using the passphrase. |
+| PASS_PHRASE | opensign | Pass phrase of PFX or p12 document signing certificate file.|
 
 # Steps to Generate Self Sign Certificate
 ```
