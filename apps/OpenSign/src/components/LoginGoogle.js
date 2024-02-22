@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Parse from "parse";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useScript } from "../hook/useScript";
 import ModalUi from "../primitives/ModalUi";
 import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
