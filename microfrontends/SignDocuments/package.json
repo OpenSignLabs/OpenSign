@@ -40,6 +40,7 @@
   "scripts": {
     "start": "mf-cra start",
     "build": "CI=false && PUBLIC_URL=./mfbuild BUILD_PATH='./mfbuild' mf-cra build && mv mfbuild ../../apps/OpenSign/public",
+    "docker-build": "CI=false && PUBLIC_URL=./mfbuild BUILD_PATH='./mfbuild' mf-cra build && mv mfbuild ../public",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
