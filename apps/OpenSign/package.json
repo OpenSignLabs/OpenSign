@@ -76,7 +76,7 @@
     "eslint": "^8.51.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.33.2",
-    "lint-staged": "^15.0.1",
+    "lint-staged": "^15.2.2",
     "postcss": "^8.4.35",
     "prettier": "^2.8.0",
     "pretty-quick": "^3.1.3",
