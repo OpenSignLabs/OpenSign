@@ -23,7 +23,10 @@ Below are the steps to follow -
   ```
   cp .env.frontend_dev apps/OpenSign/.env
   ```
-- CD to /apps/OpenSign directory
+- Switch to OpenSign directory.
+  ```
+  cd apps/OpenSign
+  ```  
 - Install NPM packages using
   ```
   npm install
