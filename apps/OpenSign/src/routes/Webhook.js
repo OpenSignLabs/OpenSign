@@ -124,7 +124,7 @@ function Webhook() {
               type="button"
               onClick={() =>
                 openInNewTab(
-                  "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
+                  "https://docs.opensignlabs.com/docs/API-docs/save-update-webhook"
                 )
               }
               className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"

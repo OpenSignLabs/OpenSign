@@ -84,6 +84,7 @@ function PlaceHolderSign() {
   const [signerExistModal, setSignerExistModal] = useState(false);
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [mailStatus, setMailStatus] = useState("");
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -724,6 +725,72 @@ function PlaceHolderSign() {
     }
 
     if (sendMail.data.result.status === "success") {
+      setMailStatus("success");
+      const signers = signersdata?.map((x) => {
+        return {
+          __type: "Pointer",
+          className: "contracts_Contactbook",
+          objectId: x.objectId
+        };
+      });
+      const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
+        ? pdfDetails[0].TimeToCompleteDays
+        : 15;
+      const currentUser = signersdata.find((x) => x.Email === currentId);
+      setCurrentId(currentUser?.objectId);
+      let updateExpiryDate, data;
+      updateExpiryDate = new Date();
+      updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
+
+      try {
+        if (updateExpiryDate) {
+          data = {
+            Placeholders: signerPos,
+            SignedUrl: pdfDetails[0].URL,
+            Signers: signers,
+            ExpiryDate: {
+              iso: updateExpiryDate,
+              __type: "Date"
+            }
+          };
+        } else {
+          data = {
+            Placeholders: signerPos,
+            SignedUrl: pdfDetails[0].URL,
+            Signers: signers
+          };
+        }
+
+        await axios
+          .put(
+            `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+              "_appName"
+            )}_Document/${documentId}`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+              }
+            }
+          )
+          .then((result) => {
+            setIsSend(true);
+            setIsMailSend(true);
+            const loadObj = {
+              isLoad: false
+            };
+            setIsLoading(loadObj);
+          })
+          .catch((err) => {
+            console.log("axois err ", err);
+          });
+      } catch (e) {
+        console.log("error", e);
+      }
+    } else {
+      setMailStatus("failed");
       const signers = signersdata?.map((x) => {
         return {
           __type: "Pointer",
@@ -1059,7 +1126,11 @@ function PlaceHolderSign() {
                 }}
               >
                 <div style={{ height: "100%", padding: 20 }}>
-                  <p>You have successfully sent mails to all recipients!</p>
+                  {mailStatus === "success" ? (
+                    <p>You have successfully sent mails to all recipients!</p>
+                  ) : (
+                    <p>Please setup mail adapter to send mail!</p>
+                  )}
                   {currentId && (
                     <p>Do you want to sign documents right now ?</p>
                   )}
