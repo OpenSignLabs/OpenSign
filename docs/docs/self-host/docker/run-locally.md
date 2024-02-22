@@ -12,14 +12,14 @@ Environment Varaibles:
 | CI  | false  | Set CI to false while running the app locally |
 | PUBLIC_URL  | http://localhost:3000  | Set it to the URL form where the app home page will be accessed |
 | GENERATE_SOURCEMAP  | false | Set it to true if you want to generate the Sourcemap for debugging |
-| REACT_APP_SERVERURL  | http://localhost:8080/app  | Set it to the URL from where APIs will be accessible, for local development it should be localhost:3000/api/app (use your local port number instead) |
+| REACT_APP_SERVERURL  | http://localhost:8080/app  | Set it to the URL from where APIs will be accessible, for local development it should be localhost:8080/app (use your local port number instead) |
 | REACT_APP_APPID  | opensignstgn  | A 12 character long random app identifier. The value of this should be same as APP_ID which is a variable used by backend API. |
 | APP_ID  | opensignstgn  | A 12 character long random app identifier. The value of this should be same as REACT_APP_APPID which is a variable used by Frontend React App. |
 | appName  | open_sign_server  | Name of the app. It will be visible in the verification emails sent out. |
 | MASTER_KEY  | XnAadwKxxByMr  | A 12 character long random secret key that allows access to all the data. It is used in Parse dashboard config to view all the data in the database. |
 | MONGODB_URI  | mongodb://host.docker.internal:27017/OpenSignDB  | Mongodb URI to connect to |
 | PARSE_MOUNT  |/app  | Path on which APIs should be mounted. Do not change this. This variable shall be removed & value hardcoded in the source code in coming versions. |
-| SERVER_URL  | http://127.0.0.1:8080/app  | Set it to the URL from where APIs will be accessible to the NodeJS functions, for local development it should be localhost:3000/api/app (use your local port number instead) |
+| SERVER_URL  | http://localhost:8080/app  | Set it to the URL from where APIs will be accessible to the NodeJS functions, for local development it should be localhost:8080/app (use your local port number instead) |
 | DO_SPACE  | DOSPACENAME  | Digital ocean space name or AWS S3 bucket name for uploading documents |
 | DO_ENDPOINT  | ams3.digitaloceanspaces.com  | Digital ocean spaces endpoint or AWS S3 endpoint for uploading documents |
 | DO_BASEURL  |https://DOSPACENAME.ams3.digitaloceanspaces.com  | Digital ocean baseurl or AWS S3 base URL |
