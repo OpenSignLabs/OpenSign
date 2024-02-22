@@ -5,6 +5,7 @@ import { themeColor } from "../utils/ThemeColor/backColor";
 import axios from "axios";
 import moment from "moment";
 import Loader from "./component/loader";
+import loader from "../assests/loader2.gif";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -17,7 +18,6 @@ import {
   embedDocId,
   multiSignEmbed,
   pdfNewWidthFun,
-  addDefaultSignatureImg,
   onImageSelect,
   calculateInitialWidthHeight,
   defaultWidthHeight
@@ -66,6 +66,7 @@ function SignYourSelf() {
   const [documentStatus, setDocumentStatus] = useState({ isCompleted: false });
   const [myInitial, setMyInitial] = useState("");
   const [isInitial, setIsInitial] = useState(false);
+  const [isUiLoading, setIsUiLoading] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -176,6 +177,7 @@ function SignYourSelf() {
 
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
+      setIsUiLoading(false);
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
@@ -318,6 +320,130 @@ function SignYourSelf() {
         return "";
     }
   };
+  const addWidgetOptions = (type) => {
+    let option = {};
+
+    switch (type) {
+      case "signature":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "stamp":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "checkbox":
+        option = {
+          name: "",
+          values: [],
+          status: "Read only",
+          response: true,
+          validation: {}
+        };
+        return option;
+      case "text":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "initials":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "name":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: getWidgetValue(type),
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+
+      case "company":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: getWidgetValue(type),
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+      case "job title":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: getWidgetValue(type),
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+      case "date":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: getDate(),
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+      case "image":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "email":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: getWidgetValue(type),
+          validation: {
+            type: "email",
+            pattern: ""
+          }
+        };
+        return option;
+    }
+  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     const key = Math.floor(1000 + Math.random() * 9000);
@@ -330,7 +456,9 @@ function SignYourSelf() {
     const widgetValue = getWidgetValue(dragTypeValue);
     const widgetWidth = defaultWidthHeight(dragTypeValue).width;
     const widgetHeight = defaultWidthHeight(dragTypeValue).height;
-
+    const widgetTypeExist = ["name", "company", "job title", "email"].includes(
+      dragTypeValue
+    );
     if (item === "onclick") {
       dropObj = {
         xPosition: containerWH.width / 2 - widgetWidth / 2,
@@ -341,25 +469,18 @@ function SignYourSelf() {
         key: key,
         type: dragTypeValue,
         yBottom: window.innerHeight / 2 - 60,
-        widgetValue: widgetValue,
-        Width:
-          dragTypeValue === "name" ||
-          dragTypeValue === "company" ||
-          dragTypeValue === "job title" ||
-          dragTypeValue === "email"
-            ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
-            : dragTypeValue === "initials"
-              ? defaultWidthHeight(dragTypeValue).width
-              : "",
-        Height:
-          dragTypeValue === "company" ||
-          dragTypeValue === "name" ||
-          dragTypeValue === "job title" ||
-          dragTypeValue === "email"
-            ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
-            : dragTypeValue === "initials"
-              ? defaultWidthHeight(dragTypeValue).height
-              : ""
+
+        Width: widgetTypeExist
+          ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
+          : dragTypeValue === "initials"
+            ? defaultWidthHeight(dragTypeValue).width
+            : "",
+        Height: widgetTypeExist
+          ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
+          : dragTypeValue === "initials"
+            ? defaultWidthHeight(dragTypeValue).height
+            : "",
+        options: addWidgetOptions(dragTypeValue)
       };
 
       dropData.push(dropObj);
@@ -377,30 +498,18 @@ function SignYourSelf() {
       dropObj = {
         xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
         yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
-        isDrag: false,
+        // isDrag: false,
         isStamp:
           (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
         key: key,
-        firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
-        firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
-        yBottom: ybottom,
         type: dragTypeValue,
-
-        widgetValue: widgetValue,
-        Width:
-          dragTypeValue === "name" ||
-          dragTypeValue === "company" ||
-          dragTypeValue === "job title" ||
-          dragTypeValue === "email"
-            ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
-            : defaultWidthHeight(dragTypeValue).width,
-        Height:
-          dragTypeValue === "company" ||
-          dragTypeValue === "name" ||
-          dragTypeValue === "job title" ||
-          dragTypeValue === "email"
-            ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
-            : defaultWidthHeight(dragTypeValue).height
+        Width: widgetTypeExist
+          ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
+          : defaultWidthHeight(dragTypeValue).width,
+        Height: widgetTypeExist
+          ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
+          : defaultWidthHeight(dragTypeValue).height,
+        options: addWidgetOptions(dragTypeValue)
       };
 
       dropData.push(dropObj);
@@ -453,10 +562,12 @@ function SignYourSelf() {
     let allXyPos = 0;
 
     for (let i = 0; i < xyPostion.length; i++) {
-      const posSignUrlData = xyPostion[i].pos.filter((pos) => pos.SignUrl);
-      const posWidgetData = xyPostion[i].pos.filter((pos) => pos.widgetValue);
+      // const posSignUrlData = xyPostion[i].pos.filter((pos) => pos.SignUrl);
+      const posWidgetData = xyPostion[i].pos.filter(
+        (pos) => pos.options.response
+      );
 
-      checkSigned = checkSigned + posSignUrlData.length + posWidgetData.length;
+      checkSigned = checkSigned + posWidgetData.length;
       allXyPos = allXyPos + xyPostion[i].pos.length;
     }
     if (xyPostion.length === 0) {
@@ -476,11 +587,7 @@ function SignYourSelf() {
       setTimeout(() => {
         setIsCeleb(false);
       }, 3000);
-      const loadObj = {
-        isLoad: true,
-        message: "This might take some time"
-      };
-      setIsLoading(loadObj);
+      setIsUiLoading(true);
       const url = pdfDetails[0] && pdfDetails[0].URL;
 
       const existingPdfBytes = await fetch(url).then((res) =>
@@ -719,13 +826,6 @@ function SignYourSelf() {
     }
   };
 
-  //function for add default signature url in local array
-  const addDefaultSignature = () => {
-    const getXyData = addDefaultSignatureImg(xyPostion, defaultSignImg);
-
-    setXyPostion(getXyData);
-    setShowAlreadySignDoc({ status: false });
-  };
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
@@ -807,231 +907,259 @@ function SignYourSelf() {
       ) : noData ? (
         <Nodata />
       ) : (
-        <div className="signatureContainer" ref={divRef}>
-          {/* this component used for UI interaction and show their functionality */}
-          {pdfLoadFail && !checkTourStatus && (
-            <Tour
-              onRequestClose={closeTour}
-              steps={tourConfig}
-              isOpen={signTour}
-              rounded={5}
-              closeWithMask={false}
-            />
+        <div>
+          {isUiLoading && (
+            <div
+              style={{
+                position: "absolute",
+                height: "100vh",
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+                alignItems: "center",
+                zIndex: "999",
+                backgroundColor: "#e6f2f2",
+                opacity: 0.8
+              }}
+            >
+              <img
+                alt="no img"
+                src={loader}
+                style={{ width: "100px", height: "100px" }}
+              />
+              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                This might take some time
+              </span>
+            </div>
           )}
 
-          {/* this component used to render all pdf pages in left side */}
+          <div className="signatureContainer" ref={divRef}>
+            {/* this component used for UI interaction and show their functionality */}
+            {pdfLoadFail && !checkTourStatus && (
+              <Tour
+                onRequestClose={closeTour}
+                steps={tourConfig}
+                isOpen={signTour}
+                rounded={5}
+                closeWithMask={false}
+              />
+            )}
 
-          <RenderAllPdfPage
-            pdfUrl={pdfUrl}
-            signPdfUrl={pdfDetails[0] && pdfDetails[0].URL}
-            allPages={allPages}
-            setAllPages={setAllPages}
-            setPageNumber={setPageNumber}
-            setSignBtnPosition={setSignBtnPosition}
-            pageNumber={pageNumber}
-          />
+            {/* this component used to render all pdf pages in left side */}
 
-          {/* pdf render view */}
-          <div
-            style={{
-              marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
-              marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
-            }}
-          >
-            <ModalUi
-              headerColor={"#dc3545"}
-              isOpen={isAlert.isShow}
-              title={"Alert"}
-              handleClose={() => {
-                setIsAlert({
-                  isShow: false,
-                  alertMessage: ""
-                });
+            <RenderAllPdfPage
+              pdfUrl={pdfUrl}
+              signPdfUrl={pdfDetails[0] && pdfDetails[0].URL}
+              allPages={allPages}
+              setAllPages={setAllPages}
+              setPageNumber={setPageNumber}
+              setSignBtnPosition={setSignBtnPosition}
+              pageNumber={pageNumber}
+            />
+
+            {/* pdf render view */}
+            <div
+              style={{
+                marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
+                marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
               }}
             >
-              <div style={{ height: "100%", padding: 20 }}>
-                <p>{isAlert.alertMessage}</p>
+              <ModalUi
+                headerColor={"#dc3545"}
+                isOpen={isAlert.isShow}
+                title={"Alert"}
+                handleClose={() => {
+                  setIsAlert({
+                    isShow: false,
+                    alertMessage: ""
+                  });
+                }}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
+                  <p>{isAlert.alertMessage}</p>
 
-                <div
-                  style={{
-                    height: "1px",
-                    backgroundColor: "#9f9f9f",
-                    width: "100%",
-                    marginTop: "15px",
-                    marginBottom: "15px"
-                  }}
-                ></div>
-                <button
-                  onClick={() => {
-                    setIsAlert({
-                      isShow: false,
-                      alertMessage: ""
-                    });
-                  }}
-                  type="button"
-                  className="finishBtn cancelBtn"
-                >
-                  Ok
-                </button>
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
+                  <button
+                    onClick={() => {
+                      setIsAlert({
+                        isShow: false,
+                        alertMessage: ""
+                      });
+                    }}
+                    type="button"
+                    className="finishBtn cancelBtn"
+                  >
+                    Ok
+                  </button>
+                </div>
+              </ModalUi>
+
+              {/* this modal is used show this document is already sign */}
+              <ModalUi
+                isOpen={showAlreadySignDoc.status}
+                title={"Sign Documents"}
+                handleClose={() => {
+                  setShowAlreadySignDoc({ status: false });
+                }}
+              >
+                <div style={{ height: "100%", padding: 20 }}>
+                  <p>{showAlreadySignDoc.mssg}</p>
+
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
+                  <button
+                    className="finishBtn cancelBtn"
+                    onClick={() => setShowAlreadySignDoc({ status: false })}
+                  >
+                    Close
+                  </button>
+                </div>
+              </ModalUi>
+
+              <PlaceholderCopy
+                isPageCopy={isPageCopy}
+                setIsPageCopy={setIsPageCopy}
+                xyPostion={xyPostion}
+                setXyPostion={setXyPostion}
+                allPages={allPages}
+                pageNumber={pageNumber}
+                signKey={signKey}
+              />
+              {/* this is modal of signature pad */}
+              <SignPad
+                isSignPad={isSignPad}
+                isStamp={isStamp}
+                setIsImageSelect={setIsImageSelect}
+                setIsSignPad={setIsSignPad}
+                setImage={setImage}
+                isImageSelect={isImageSelect}
+                imageRef={imageRef}
+                onImageChange={onImageChange}
+                setSignature={setSignature}
+                image={image}
+                onSaveImage={saveImage}
+                onSaveSign={saveSign}
+                defaultSign={defaultSignImg}
+                myInitial={myInitial}
+                isInitial={isInitial}
+                setIsInitial={setIsInitial}
+                setIsStamp={setIsStamp}
+                widgetType={widgetType}
+              />
+              {/* render email component to send email after finish signature on document */}
+              <EmailComponent
+                isEmail={isEmail}
+                pdfUrl={pdfUrl}
+                isCeleb={isCeleb}
+                setIsEmail={setIsEmail}
+                pdfName={pdfDetails[0] && pdfDetails[0].Name}
+                setSuccessEmail={setSuccessEmail}
+                sender={jsonSender}
+                setIsAlert={setIsAlert}
+              />
+              {/* pdf header which contain funish back button */}
+              <Header
+                pageNumber={pageNumber}
+                allPages={allPages}
+                changePage={changePage}
+                pdfUrl={pdfUrl}
+                documentStatus={documentStatus}
+                embedImages={embedImages}
+                pdfDetails={pdfDetails}
+                isShowHeader={true}
+                currentSigner={true}
+                alreadySign={pdfUrl ? true : false}
+                isSignYourself={true}
+                setIsEmail={setIsEmail}
+              />
+
+              <div data-tut="reactourSecond">
+                {containerWH && (
+                  <RenderPdf
+                    pageNumber={pageNumber}
+                    pdfOriginalWidth={pdfOriginalWidth}
+                    pdfNewWidth={pdfNewWidth}
+                    drop={drop}
+                    successEmail={successEmail}
+                    nodeRef={nodeRef}
+                    handleTabDrag={handleTabDrag}
+                    handleStop={handleStop}
+                    isDragging={isDragging}
+                    setIsSignPad={setIsSignPad}
+                    setIsStamp={setIsStamp}
+                    handleDeleteSign={handleDeleteSign}
+                    setSignKey={setSignKey}
+                    pdfDetails={pdfDetails}
+                    setIsDragging={setIsDragging}
+                    xyPostion={xyPostion}
+                    pdfRef={pdfRef}
+                    pdfUrl={pdfUrl}
+                    numPages={numPages}
+                    pageDetails={pageDetails}
+                    setPdfLoadFail={setPdfLoadFail}
+                    pdfLoadFail={pdfLoadFail}
+                    setXyPostion={setXyPostion}
+                    index={index}
+                    containerWH={containerWH}
+                    setIsPageCopy={setIsPageCopy}
+                    setIsInitial={setIsInitial}
+                    setWidgetType={setWidgetType}
+                    setSelectWidgetId={setSelectWidgetId}
+                    selectWidgetId={selectWidgetId}
+                  />
+                )}
               </div>
-            </ModalUi>
+            </div>
 
-            {/* this modal is used show this document is already sign */}
-            <ModalUi
-              isOpen={showAlreadySignDoc.status}
-              title={"Sign Documents"}
-              handleClose={() => {
-                setShowAlreadySignDoc({ status: false });
-              }}
+            {/*if document is not completed then render signature and stamp button in the right side */}
+            {/*else document is  completed then render signed by signer name in the right side */}
+            <div
+              style={{ maxHeight: window.innerHeight - 70 + "px" }}
+              className="autoSignScroll"
             >
-              <div style={{ height: "100%", padding: 20 }}>
-                <p>{showAlreadySignDoc.mssg}</p>
-
-                <div
-                  style={{
-                    height: "1px",
-                    backgroundColor: "#9f9f9f",
-                    width: "100%",
-                    marginTop: "15px",
-                    marginBottom: "15px"
-                  }}
-                ></div>
-                <button
-                  className="finishBtn cancelBtn"
-                  onClick={() => setShowAlreadySignDoc({ status: false })}
-                >
-                  Close
-                </button>
-              </div>
-            </ModalUi>
-
-            <PlaceholderCopy
-              isPageCopy={isPageCopy}
-              setIsPageCopy={setIsPageCopy}
-              xyPostion={xyPostion}
-              setXyPostion={setXyPostion}
-              allPages={allPages}
-              pageNumber={pageNumber}
-              signKey={signKey}
-            />
-            {/* this is modal of signature pad */}
-            <SignPad
-              isSignPad={isSignPad}
-              isStamp={isStamp}
-              setIsImageSelect={setIsImageSelect}
-              setIsSignPad={setIsSignPad}
-              setImage={setImage}
-              isImageSelect={isImageSelect}
-              imageRef={imageRef}
-              onImageChange={onImageChange}
-              setSignature={setSignature}
-              image={image}
-              onSaveImage={saveImage}
-              onSaveSign={saveSign}
-              defaultSign={defaultSignImg}
-              myInitial={myInitial}
-              isInitial={isInitial}
-              setIsInitial={setIsInitial}
-              setIsStamp={setIsStamp}
-              widgetType={widgetType}
-            />
-            {/* render email component to send email after finish signature on document */}
-            <EmailComponent
-              isEmail={isEmail}
-              pdfUrl={pdfUrl}
-              isCeleb={isCeleb}
-              setIsEmail={setIsEmail}
-              pdfName={pdfDetails[0] && pdfDetails[0].Name}
-              setSuccessEmail={setSuccessEmail}
-              sender={jsonSender}
-              setIsAlert={setIsAlert}
-            />
-            {/* pdf header which contain funish back button */}
-            <Header
-              pageNumber={pageNumber}
-              allPages={allPages}
-              changePage={changePage}
-              pdfUrl={pdfUrl}
-              documentStatus={documentStatus}
-              embedImages={embedImages}
-              pdfDetails={pdfDetails}
-              isShowHeader={true}
-              currentSigner={true}
-              alreadySign={pdfUrl ? true : false}
-              isSignYourself={true}
-              setIsEmail={setIsEmail}
-            />
-
-            <div data-tut="reactourSecond">
-              {containerWH && (
-                <RenderPdf
-                  pageNumber={pageNumber}
-                  pdfOriginalWidth={pdfOriginalWidth}
-                  pdfNewWidth={pdfNewWidth}
-                  drop={drop}
-                  successEmail={successEmail}
-                  nodeRef={nodeRef}
-                  handleTabDrag={handleTabDrag}
-                  handleStop={handleStop}
-                  isDragging={isDragging}
-                  setIsSignPad={setIsSignPad}
-                  setIsStamp={setIsStamp}
-                  handleDeleteSign={handleDeleteSign}
-                  setSignKey={setSignKey}
-                  pdfDetails={pdfDetails}
-                  setIsDragging={setIsDragging}
-                  xyPostion={xyPostion}
-                  pdfRef={pdfRef}
-                  pdfUrl={pdfUrl}
-                  numPages={numPages}
-                  pageDetails={pageDetails}
-                  setPdfLoadFail={setPdfLoadFail}
-                  pdfLoadFail={pdfLoadFail}
-                  setXyPostion={setXyPostion}
-                  index={index}
-                  containerWH={containerWH}
-                  setIsPageCopy={setIsPageCopy}
-                  setIsInitial={setIsInitial}
-                  setWidgetType={setWidgetType}
-                  setSelectWidgetId={setSelectWidgetId}
-                  selectWidgetId={selectWidgetId}
-                />
+              {!documentStatus.isCompleted ? (
+                <div>
+                  <FieldsComponent
+                    dataTut="reactourFirst"
+                    pdfUrl={pdfUrl}
+                    dragSignature={dragSignature}
+                    signRef={signRef}
+                    handleDivClick={handleDivClick}
+                    handleMouseLeave={handleMouseLeave}
+                    isDragSign={isDragSign}
+                    themeColor={themeColor}
+                    dragStamp={dragStamp}
+                    dragRef={dragRef}
+                    isDragStamp={isDragStamp}
+                    handleAllDelete={handleAllDelete}
+                    xyPostion={xyPostion}
+                    isSignYourself={true}
+                    addPositionOfSignature={addPositionOfSignature}
+                    isMailSend={false}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <Signedby pdfDetails={pdfDetails[0]} />
+                </div>
               )}
             </div>
-          </div>
-
-          {/*if document is not completed then render signature and stamp button in the right side */}
-          {/*else document is  completed then render signed by signer name in the right side */}
-          <div
-            style={{ maxHeight: window.innerHeight - 70 + "px" }}
-            className="autoSignScroll"
-          >
-            {!documentStatus.isCompleted ? (
-              <div>
-                <FieldsComponent
-                  dataTut="reactourFirst"
-                  pdfUrl={pdfUrl}
-                  dragSignature={dragSignature}
-                  signRef={signRef}
-                  handleDivClick={handleDivClick}
-                  handleMouseLeave={handleMouseLeave}
-                  isDragSign={isDragSign}
-                  themeColor={themeColor}
-                  dragStamp={dragStamp}
-                  dragRef={dragRef}
-                  isDragStamp={isDragStamp}
-                  handleAllDelete={handleAllDelete}
-                  xyPostion={xyPostion}
-                  isSignYourself={true}
-                  addPositionOfSignature={addPositionOfSignature}
-                  isMailSend={false}
-                />
-              </div>
-            ) : (
-              <div>
-                <Signedby pdfDetails={pdfDetails[0]} />
-              </div>
-            )}
           </div>
         </div>
       )}

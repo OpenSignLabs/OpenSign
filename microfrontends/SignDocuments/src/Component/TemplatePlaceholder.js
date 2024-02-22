@@ -348,6 +348,154 @@ const TemplatePlaceholder = () => {
     getSignerPos(item, monitor);
   };
 
+  const addWidgetOptions = (type) => {
+    let option = {};
+
+    switch (type) {
+      case "signature":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "stamp":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "checkbox":
+        option = {
+          name: "",
+          values: [],
+          status: "Optional",
+          response: false,
+          validation: {}
+        };
+        return option;
+      case "text":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+
+      case "initials":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "name":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+
+      case "company":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+      case "job title":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {
+            type: "text",
+            pattern: ""
+          }
+        };
+        return option;
+      case "date":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: getDate()
+        };
+        return option;
+      case "image":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "email":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {
+            type: "email",
+            pattern: ""
+          }
+        };
+        return option;
+      case "dropdown":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "radio":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+      case "label":
+        option = {
+          name: "",
+          values: [],
+          status: "",
+          response: "",
+          validation: {}
+        };
+        return option;
+    }
+  };
+
   // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor) => {
     if (uniqueId) {
@@ -373,18 +521,11 @@ const TemplatePlaceholder = () => {
             isStamp:
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
-            isDrag: false,
             scale: scale,
             isMobile: isMobile,
-            yBottom: window.innerHeight / 2 - 60,
             zIndex: posZIndex,
             type: dragTypeValue,
-            widgetValue:
-              dragTypeValue === "checkbox"
-                ? false
-                : dragTypeValue === "date"
-                  ? getDate()
-                  : ""
+            options: addWidgetOptions(dragTypeValue)
           };
           dropData.push(dropObj);
           placeHolder = {
@@ -407,20 +548,11 @@ const TemplatePlaceholder = () => {
             isStamp:
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
-            isDrag: false,
-            firstXPos: signBtnPosition[0] && signBtnPosition[0].xPos,
-            firstYPos: signBtnPosition[0] && signBtnPosition[0].yPos,
-            yBottom: ybottom,
             scale: scale,
             isMobile: isMobile,
             zIndex: posZIndex,
             type: item.text,
-            widgetValue:
-              dragTypeValue === "checkbox"
-                ? false
-                : dragTypeValue === "date"
-                  ? getDate()
-                  : ""
+            options: addWidgetOptions(dragTypeValue)
           };
 
           dropData.push(dropObj);
@@ -1013,6 +1145,8 @@ const TemplatePlaceholder = () => {
 
   //function for base on condition to add checkbox widget status and input text validation in signerPos array
   const handleApplyWidgetsStatus = (textValidate) => {
+    const options = ["email", "number", "text"];
+    const regexType = options.includes(textValidate);
     let regularExpression = textValidate;
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1032,19 +1166,32 @@ const TemplatePlaceholder = () => {
               if (selectRequiredType === "Read only") {
                 return {
                   ...position,
-                  widgetStatus: selectRequiredType,
-                  widgetValue: true
+                  options: {
+                    ...position.options,
+                    status: selectRequiredType,
+                    response: true
+                  }
                 };
               } else {
                 return {
                   ...position,
-                  widgetStatus: selectRequiredType
+                  options: {
+                    ...position.options,
+                    status: selectRequiredType,
+                    response: false
+                  }
                 };
               }
             } else {
               return {
                 ...position,
-                validation: regularExpression
+                options: {
+                  ...position.options,
+                  validation: {
+                    type: regexType ? regularExpression : "regex",
+                    pattern: !regexType ? regularExpression : ""
+                  }
+                }
               };
             }
           }
@@ -1111,15 +1258,21 @@ const TemplatePlaceholder = () => {
               } else {
                 return {
                   ...position,
-                  widgetName: dropdownName,
-                  widgetOption: dropdownOptions
+                  options: {
+                    ...position.options,
+                    name: dropdownName,
+                    values: dropdownOptions
+                  }
                 };
               }
             } else {
               return {
                 ...position,
-                widgetName: dropdownName,
-                widgetOption: dropdownOptions
+                options: {
+                  ...position.options,
+                  name: dropdownName,
+                  values: dropdownOptions
+                }
               };
             }
           }

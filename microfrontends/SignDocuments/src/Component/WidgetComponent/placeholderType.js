@@ -11,7 +11,6 @@ function PlaceholderType(props) {
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState("");
-  const [inputValue, setInputValue] = useState("");
   const [checkedValue, setCheckedValue] = useState(false);
   const [isCheckedRadio, setIsCheckedRadio] = useState({
     isChecked: false,
@@ -20,7 +19,8 @@ function PlaceholderType(props) {
 
   const validateExpression = (regexValidation) => {
     const regexObject = new RegExp(regexValidation);
-    let isValidate = regexObject.test(inputValue);
+
+    let isValidate = regexObject.test(textValue);
     if (!isValidate) {
       props.setValidateAlert(true);
       inputRef.current.focus();
@@ -29,9 +29,10 @@ function PlaceholderType(props) {
 
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
-    const validateType = props.pos?.validation;
+    const validateType = props.pos?.options.validation.type;
+
     let regexValidation;
-    if (props.pos?.validation) {
+    if (validateType) {
       switch (validateType) {
         case "email":
           regexValidation = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -46,7 +47,7 @@ function PlaceholderType(props) {
           validateExpression(regexValidation);
           break;
         default:
-          regexValidation = validateType;
+          regexValidation = props.pos?.options.validation.pattern;
           validateExpression(regexValidation);
       }
     }
@@ -54,8 +55,16 @@ function PlaceholderType(props) {
 
   const handleTextValid = (e, regx) => {
     const textInput = e.target.value;
-    const sanitizedValue = textInput.replace(regx, "");
-    setTextValue(sanitizedValue);
+    setTextValue(textInput);
+    // console.log('textInput',textInput)
+    // let isValidate = regx.test(textValue);
+    // console.log('isValidate',isValidate,regx)
+    // if (isValidate) {
+    //   const sanitizedValue = textInput.replace(regx, "");
+    //   setTextValue(sanitizedValue);
+    // } else {
+    //   setTextValue('');
+    // }
   };
   function checkRegularExpress(validateType) {
     switch (validateType) {
@@ -72,14 +81,13 @@ function PlaceholderType(props) {
     }
   }
   useEffect(() => {
-    if (props.pos.validation) {
-      checkRegularExpress(props.pos.validation);
+    if (props.pos?.options?.validation?.type) {
+      checkRegularExpress(props.pos?.options?.validation?.type);
     }
   }, []);
 
   useEffect(() => {
     if (props.isNeedSign && props.pos.type === "date") {
-      // props.pos.widgetValue
       const updateDate = new Date();
       setStartDate(updateDate);
     }
@@ -107,8 +115,8 @@ function PlaceholderType(props) {
           date: props.saveDateFormat,
           format: props.selectDate
             ? props.selectDate?.format
-            : props.pos?.dateFormat
-              ? props.pos?.dateFormat
+            : props.pos?.options?.validation?.format
+              ? props.pos?.options?.validation?.format
               : "MM/dd/YYYY"
         };
         props.setSelectDate(dateObj);
@@ -124,8 +132,8 @@ function PlaceholderType(props) {
         false,
         props.selectDate?.format
           ? props.selectDate.format
-          : props.pos?.dateFormat
-            ? props.pos?.dateFormat
+          : props.pos?.options?.validation?.format
+            ? props.pos?.options?.validation?.format
             : "MM/dd/YYYY"
       );
     }
@@ -174,7 +182,7 @@ function PlaceholderType(props) {
 
   const handleChecked = () => {
     if (props.isPlaceholder) {
-      if (props.pos?.widgetStatus === "Read only") {
+      if (props.pos?.options?.status === "Read only") {
         if (checkedValue) {
           return checkedValue;
         } else {
@@ -189,7 +197,7 @@ function PlaceholderType(props) {
         }
       }
     } else {
-      return props.pos?.widgetValue;
+      return props.pos?.options?.response;
     }
   };
 
@@ -253,12 +261,12 @@ function PlaceholderType(props) {
           className="inputPlaceholder"
           style={{ outlineColor: "#007bff" }}
           type="checkbox"
-          defaultChecked={props.pos?.widgetStatus === "Read only"}
+          defaultChecked={props.pos?.options?.status === "Read only"}
           disabled={
             props.isNeedSign && props.data?.signerObjId !== props.signerObjId
               ? true
               : props.isNeedSign &&
-                props.pos?.widgetStatus === "Read only" &&
+                props.pos?.options?.status === "Read only" &&
                 true
             // : props.isPlaceholder
           }
@@ -267,7 +275,7 @@ function PlaceholderType(props) {
           onChange={(e) => {
             let isChecked = e.target.checked;
             if (props.isPlaceholder) {
-              if (props.pos.widgetStatus === "Read only") {
+              if (props.pos?.options?.status === "Read only") {
                 setCheckedValue(true);
                 isChecked = true;
               } else {
@@ -297,9 +305,11 @@ function PlaceholderType(props) {
           placeholder={validatePlaceholder}
           style={{ fontSize: calculateFontSize() }}
           value={
-            textValue
+            props.pos?.options?.validation
               ? textValue
-              : props.pos.widgetValue && props.pos.widgetValue
+                ? textValue
+                : props.pos.options?.response && props.pos.options.response
+              : textValue
           }
           type="text"
           tabIndex="0"
@@ -311,7 +321,10 @@ function PlaceholderType(props) {
           onBlur={handleInputBlur}
           onChange={(e) => {
             // props.pos?.validation && handleTextValid(e, props.pos?.validation);
-            setInputValue(e.target.value);
+            // if (!props.pos.options?.validation) {
+            //   setTextValue(e.target.value);
+            // }
+            setTextValue(e.target.value);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -338,6 +351,7 @@ function PlaceholderType(props) {
         <select
           className="inputPlaceholder"
           id="myDropdown"
+          style={{ fontSize: "12px" }}
           value={selectOption}
           onChange={(e) => {
             setSelectOption(e.target.value);
@@ -354,11 +368,15 @@ function PlaceholderType(props) {
         >
           {/* Default/Title option */}
           <option value="" disabled hidden>
-            {props.pos.widgetName}
+            {props.pos.options.name}
           </option>
 
-          {props.pos.widgetOption.map((data, ind) => {
-            return <option value={data}>{data}</option>;
+          {props.pos?.options?.values.map((data, ind) => {
+            return (
+              <option key={ind} value={data}>
+                {data}
+              </option>
+            );
           })}
         </select>
       ) : (
@@ -366,7 +384,7 @@ function PlaceholderType(props) {
           className="inputPlaceholder"
           style={{ fontSize: calculateFontSize() }}
         >
-          {props.pos.widgetName ? props.pos.widgetName : props.pos.type}
+          {props.pos?.options?.name ? props.pos.options.name : props.pos.type}
         </div>
       );
     case "initials":
@@ -402,13 +420,13 @@ function PlaceholderType(props) {
           tabIndex="0"
           ref={inputRef}
           placeholder={"name"}
-          style={{ fontSize: calculateFontSize(), textAlign: "center" }}
+          style={{ fontSize: calculateFontSize() }}
           className="inputPlaceholder"
           type="text"
           value={
             textValue
               ? textValue
-              : props.pos.widgetValue && props.pos.widgetValue
+              : props.pos.options.response && props.pos.options.response
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
@@ -447,7 +465,7 @@ function PlaceholderType(props) {
           value={
             textValue
               ? textValue
-              : props.pos.widgetValue && props.pos.widgetValue
+              : props.pos.options.response && props.pos.options.response
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
@@ -486,7 +504,7 @@ function PlaceholderType(props) {
           value={
             textValue
               ? textValue
-              : props.pos.widgetValue && props.pos.widgetValue
+              : props.pos.options.response && props.pos.options.response
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
@@ -519,16 +537,15 @@ function PlaceholderType(props) {
             disabled={
               props.isNeedSign && props.data?.signerObjId !== props.signerObjId
             }
-            // disabled={props.isPlaceholder ? true : false}
             onBlur={handleInputBlur}
             closeOnScroll={true}
             className="inputPlaceholder"
             style={{ outlineColor: "#007bff" }}
             selected={
-              // props.pos?.widgetValue ? props.pos.widgetValue :
               startDate
                 ? startDate
-                : props.pos?.widgetValue && new Date(props.pos.widgetValue)
+                : props.pos.options?.response &&
+                  new Date(props.pos.options.response)
             }
             onChange={(date) => {
               setStartDate(date);
@@ -538,8 +555,8 @@ function PlaceholderType(props) {
             dateFormat={
               props.selectDate
                 ? props.selectDate?.format
-                : props.pos?.dateFormat
-                  ? props.pos?.dateFormat
+                : props.pos?.options?.validation?.format
+                  ? props.pos?.options?.validation?.format
                   : "dd MMMM, YYYY"
             }
           />
@@ -583,11 +600,14 @@ function PlaceholderType(props) {
           value={
             textValue
               ? textValue
-              : props.pos.widgetValue && props.pos.widgetValue
+              : props.pos.options?.response && props.pos.options.response
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
-            handleTextValid(e, /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/);
+            handleTextValid(
+              e,
+              /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+            );
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -612,13 +632,12 @@ function PlaceholderType(props) {
     case "radio":
       return (
         <div>
-          {props.pos?.widgetOption?.map((data, ind) => {
+          {props.pos.options?.values.map((data, ind) => {
             return (
               <input
                 key={ind}
                 style={{
                   width: props.pos.Width,
-                  // height: props.pos.Height,
                   display: "flex",
                   justifyContent: "center",
                   marginBottom: "6px",
@@ -648,7 +667,7 @@ function PlaceholderType(props) {
               props.xyPostion,
               props.index,
               props.setXyPostion,
-              null,
+              props.data && props.data?.Id,
               false
             );
           }}

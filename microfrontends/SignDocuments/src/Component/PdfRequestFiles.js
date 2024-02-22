@@ -304,7 +304,7 @@ function PdfRequestFiles() {
 
       for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
         unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
-          (pos) => !pos?.SignUrl && !pos.widgetValue
+          (pos) => !pos?.SignUrl && !pos.options.response
         );
       }
       let checkboxExist;
@@ -313,7 +313,7 @@ function PdfRequestFiles() {
 
       if (checkboxExist) {
         optionRequiredCheckbox = unSignUrlData.filter(
-          (data) => data.widgetStatus !== "Optional"
+          (data) => data.options.status !== "Optional"
         );
       }
       if (

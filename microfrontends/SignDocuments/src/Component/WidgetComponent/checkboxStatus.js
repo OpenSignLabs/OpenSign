@@ -6,8 +6,8 @@ function CheckboxStatus(props) {
   const checkboxType = ["Optional", "Required", "Read only"];
 
   useEffect(() => {
-    if (props.currWidgetsDetails?.widgetStatus) {
-      props.setSelectRequiredType(props.currWidgetsDetails?.widgetStatus);
+    if (props.currWidgetsDetails?.options?.status) {
+      props.setSelectRequiredType(props.currWidgetsDetails?.options?.status);
     }
   }, [props.currWidgetsDetails]);
 
@@ -53,7 +53,7 @@ function CheckboxStatus(props) {
         >
           Apply
         </button>
-        {props.currWidgetsDetails?.widgetStatus && (
+        {props.currWidgetsDetails?.options?.status && (
           <button
             type="submit"
             className="finishBtn cancelBtn"
