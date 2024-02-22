@@ -11,9 +11,9 @@ jobs:
       matrix:
         include:
           - image: amolshejole/OpenSign
-            dockerfile: apps/OpenSign/Dockerfile
+            dockerfile: apps/OpenSign/Dockerhubfile
           - image: amolshejole/OpenSignServer
-            dockerfile: apps/OpenSignServer/Dockerfile
+            dockerfile: apps/OpenSignServer/Dockerhubfile
     steps:
       -
         name: Checkout
