@@ -29,8 +29,8 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.7.7",
     "reactour": "^1.19.2",
-    "redux": "^4.2.1",
-    "redux-thunk": "^2.4.2",
+    "redux": "^5.0.1",
+    "redux-thunk": "^3.1.0",
     "serve": "^14.2.1",
     "styled-components": "^4.4.1",
     "web-vitals": "^2.1.4"
