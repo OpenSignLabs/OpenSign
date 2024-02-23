@@ -84,9 +84,9 @@ export const config = {
   maxLimit: 500,
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::1'], // '::1'
-  serverURL: process.env.SERVER_URL || 'http://localhost:8080/api/app', // Don't forget to change to https if needed
+  serverURL: process.env.SERVER_URL || 'http://localhost:8080/app', // Don't forget to change to https if needed
   verifyUserEmails: process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY ? true : false,
-  publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/api/app',
+  publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Open Sign',
   allowClientClassCreation: false,
@@ -175,11 +175,11 @@ app.use(function (req, res, next) {
   next();
 });
 // Serve static assets from the /public folder
-app.use('/api/public', express.static(path.join(__dirname, '/public')));
+app.use('/public', express.static(path.join(__dirname, '/public')));
 
 // Serve the Parse API on the /parse URL prefix
 if (!process.env.TESTING) {
-  const mountPath = process.env.PARSE_MOUNT || '/api/app';
+  const mountPath = process.env.PARSE_MOUNT || '/app';
   try {
     const server = new ParseServer(config);
     await server.start();
@@ -189,17 +189,17 @@ if (!process.env.TESTING) {
   }
 }
 // Mount your custom express app
-app.use('/api', customRoute);
+app.use('/', customRoute);
 
 // Mount v1
-app.use('/api/v1', v1);
+app.use('/v1', v1);
 
 // Parse Server plays nicely with the rest of your web routes
-app.get('/api', function (req, res) {
+app.get('/', function (req, res) {
   // res.statusCode = 200;
   // res.setHeader('Content-Type', 'text/plain');
   // res.end('I dream of being a website.  Please star the parse-server repo on GitHub!');
-  res.status(200).send('opensign-server is running !!!');
+  res.status(200).send('open-sign-server is running !!!');
 });
 
 if (!process.env.TESTING) {
@@ -209,13 +209,13 @@ if (!process.env.TESTING) {
   httpServer.keepAliveTimeout = 100000; // in milliseconds
   httpServer.headersTimeout = 100000; // in milliseconds
   httpServer.listen(port, function () {
-    console.log('opensign-server running on port ' + port + '.');
+    console.log('parse-server-example running on port ' + port + '.');
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);
 
     const migrate = isWindows
-      ? `set APPLICATION_ID=${process.env.APP_ID}&& set SERVER_URL=http://localhost:8080/api/app&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
-      : `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=http://localhost:8080/api/app MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
+      ? `set APPLICATION_ID=${process.env.APP_ID}&& set SERVER_URL=http://localhost:8080/app&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
+      : `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=http://localhost:8080/app MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
     exec(migrate, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error: ${error.message}`);
