@@ -1,8 +1,22 @@
 ---
 title: Localhost Setup with Docker
 ---
-## Setup OpenSign™ with Docker on Localhost
+import ReactPlayer from 'react-player';
 
+      
+## Steps:
+  1. Setup WSL 2 in windows to install it refer below video
+<div>
+    <ReactPlayer playing controls url='https://youtu.be/1kFFwknneD8?si=FKriXPwFqZPLUagI' />
+</div>
+      
+   2. You must have docker desktop installed in windows.
+   3. Enable wsl in docker desktop on this path `Setting > Resources > WSL Inegration`
+   4. watch below video to run docker in your windows
+<div>
+    <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
+</div>
+## Setup OpenSign™ with Docker on Localhost
 To set up OpenSign™ locally using Docker, the following prerequisites are required:
 
 Environment Varaibles:
