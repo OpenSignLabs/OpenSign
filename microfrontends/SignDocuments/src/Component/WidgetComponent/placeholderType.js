@@ -3,6 +3,7 @@ import { onChangeInput } from "../../utils/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../css/signature.css";
+import RegexParser from "regex-parser";
 
 function PlaceholderType(props) {
   const type = props.pos.type;
@@ -18,8 +19,12 @@ function PlaceholderType(props) {
   });
 
   const validateExpression = (regexValidation) => {
-    const regexObject = new RegExp(regexValidation);
+    let regexObject = regexValidation;
+    if (props.pos?.options.validation.type === "regex") {
+      regexObject = RegexParser(regexValidation);
+    }
 
+    // new RegExp(regexValidation);
     let isValidate = regexObject.test(textValue);
     if (!isValidate) {
       props.setValidateAlert(true);
