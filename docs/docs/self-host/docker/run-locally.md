@@ -16,7 +16,7 @@ import ReactPlayer from 'react-player';
 
 ![docker](https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20201448.png) 
       
-   4. Clone repository for [opensign™ github](https://github.com/OpenSignLabs/OpenSign).
+   4. Clone repository from [opensign™ github](https://github.com/OpenSignLabs/OpenSign).
    5. Go to your desired destination in your windows then open powershell in that folder using `Shift + right click of mouse` and select powersehll option from options. 
    6. Open powershell and tyoe `git clone <repo url>` and hit `Enter`.
    7. Then open OpenSign folder with vs code and go to `apps > mongo > mongo-init.sh` and change type of this file from `CRLF` to `LF` and then save this file.
