@@ -5,17 +5,31 @@ import ReactPlayer from 'react-player';
 
       
 ## Steps to run OpenSign™ with docker in windows:
-  1. Setup WSL 2 in windows to install it refer below video
+  1. Setup WSL 2 in windows. To install WSL 2 refer below video
+
 <div>
     <ReactPlayer playing controls url='https://youtu.be/1kFFwknneD8?si=FKriXPwFqZPLUagI' />
 </div>
       
-   2. You must have docker desktop installed in windows.
-   3. Enable wsl in docker desktop on this path `Setting > Resources > WSL Inegration`
-   4. watch below video to run docker in your windows
+   2. You must have to install docker desktop in windows.
+   3. Enable wsl in docker desktop on this path `Setting > Resources > WSL Inegration`.
+
+![docker](https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20201448.png) 
+      
+   4. Clone repository for [opensign™ github](https://github.com/OpenSignLabs/OpenSign).
+   5. Go to your desired destination in your windows then open powershell in that folder using `Shift + right click of mouse` and select powersehll option from options. 
+   6. Open powershell and tyoe `git clone <repo url>` and hit `Enter`.
+   7. Then open OpenSign folder with vs code and go to `apps > mongo > mongo-init.sh` and change type of this file from `CRLF` to `LF` and then save this file.
+
+![docker](https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20175944.png) 
+
+   8. Open ubuntu/WSL terminal and write command to navigate to folder where you have clone OpenSign project for e.g. `cd mnt/c/testing/docker/OpenSign` and hit `Enter`.
+   9. Now type command `Make build` and it will start build image for docker it will take some time and then run. for more specific steps watch below video.
+
 <div>
     <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
 </div>
+
 ## Setup OpenSign™ with Docker on Localhost
 To set up OpenSign™ locally using Docker, the following prerequisites are required:
 
