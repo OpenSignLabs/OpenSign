@@ -1,6 +1,3 @@
-import { customAPIurl } from '../../../../Utils.js';
-
-const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createTemplate(request, response) {
   const name = request.body?.title;
   const note = request.body?.note;
