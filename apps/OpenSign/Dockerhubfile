@@ -15,8 +15,6 @@ COPY apps/OpenSign/ .
 COPY microfrontends/ .
 COPY apps/OpenSign/.husky .
 
-RUN npm run docker-build
-
 # Make port 3000 available to the world outside this container
 EXPOSE 3000
 
@@ -24,4 +22,4 @@ EXPOSE 3000
 # ENV NODE_ENV production
 
 # Run the application
-CMD ["npm", "start"]
+CMD ["npm", "run docker-build && npm start"]
