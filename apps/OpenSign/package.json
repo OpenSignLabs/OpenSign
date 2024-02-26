@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "@babel/runtime-corejs2": "^7.23.9",
-    "autoprefixer": "^10.4.16",
+    "autoprefixer": "^10.4.17",
     "commitizen": "^4.3.0",
     "eslint": "^8.51.0",
     "eslint-plugin-prettier": "^4.2.1",
