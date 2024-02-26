@@ -35,7 +35,7 @@
     "react-select": "^5.8.0",
     "react-signature-canvas": "^1.0.6",
     "reactour": "^1.19.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^3.5.2"
   },
   "scripts": {
     "start": "mf-cra start",
