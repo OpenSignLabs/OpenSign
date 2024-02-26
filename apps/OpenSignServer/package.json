@@ -38,7 +38,7 @@
     "parse": "4.3.1",
     "parse-dbtool": "^1.2.0",
     "parse-server": "6.3.1",
-    "parse-server-api-mail-adapter": "^3.0.0",
+    "parse-server-api-mail-adapter": "^3.1.1",
     "parse-server-fs-adapter": "1.0.1",
     "parse-server-s3-adapter": "^1.2.0",
     "pdf-lib": "^1.16.0",
