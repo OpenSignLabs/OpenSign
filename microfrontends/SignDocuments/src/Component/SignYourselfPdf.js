@@ -35,6 +35,7 @@ import PlaceholderCopy from "./component/PlaceholderCopy";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import Title from "./component/Title";
 import ModalUi from "../premitives/ModalUi";
+import DropdownWidgetOption from "./WidgetComponent/dropdownWidgetOption";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -86,6 +87,8 @@ function SignYourSelf() {
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
+  const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
+  const [isCheckbox, setIsCheckbox] = useState(false);
   const [widgetType, setWidgetType] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
@@ -348,7 +351,6 @@ function SignYourSelf() {
         option = {
           name: "",
           values: [],
-          status: "Read only",
           response: true,
           validation: {}
         };
@@ -544,16 +546,18 @@ function SignYourSelf() {
       dragTypeValue === "initials"
     ) {
       setIsSignPad(true);
-      setSignKey(key);
     }
 
     if (dragTypeValue === "stamp" || dragTypeValue === "image") {
       setIsStamp(true);
     } else if (dragTypeValue === "initials") {
       setIsInitial(true);
+    } else if (dragTypeValue === "checkbox") {
+      setIsCheckbox(true);
     }
     setWidgetType(dragTypeValue);
     setSelectWidgetId(key);
+    setSignKey(key);
   };
 
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
@@ -897,6 +901,63 @@ function SignYourSelf() {
     }
   };
 
+  const handleSaveWidgetsOptions = (
+    dropdownName,
+    dropdownOptions,
+    minCount,
+    maxCount,
+    isReadOnly,
+    addOption,
+    deleteOption
+  ) => {
+    const getPageNumer = xyPostion.filter(
+      (data) => data.pageNumber === pageNumber
+    );
+
+    if (getPageNumer.length > 0) {
+      const getXYdata = getPageNumer[0].pos;
+      const getPosData = getXYdata;
+      const addSignPos = getPosData.map((position) => {
+        if (position.key === signKey) {
+          if (addOption) {
+            return {
+              ...position,
+              Height: position.Height
+                ? position.Height + 15
+                : defaultWidthHeight(widgetType).height + 15
+            };
+          } else if (deleteOption) {
+            return {
+              ...position,
+              Height: position.Height
+                ? position.Height - 15
+                : defaultWidthHeight(widgetType).height - 15
+            };
+          } else {
+            return {
+              ...position,
+              options: {
+                ...position.options,
+                name: dropdownName,
+                values: dropdownOptions,
+                isReadOnly: isReadOnly,
+                response: []
+              }
+            };
+          }
+        }
+        return position;
+      });
+      const updateXYposition = xyPostion.map((obj, ind) => {
+        if (ind === index) {
+          return { ...obj, pos: addSignPos };
+        }
+        return obj;
+      });
+      setXyPostion(updateXYposition);
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Self Sign"} />
@@ -1031,7 +1092,16 @@ function SignYourSelf() {
                   </button>
                 </div>
               </ModalUi>
-
+              <DropdownWidgetOption
+                type="checkbox"
+                title="Checkbox"
+                showDropdown={isCheckbox}
+                setShowDropdown={setIsCheckbox}
+                handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
+                isSignYourself={true}
+              />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}
@@ -1062,7 +1132,7 @@ function SignYourSelf() {
                 setIsStamp={setIsStamp}
                 widgetType={widgetType}
               />
-              {/* render email component to send email after finish signature on document */}
+              {/*render email component to send email after finish signature on document */}
               <EmailComponent
                 isEmail={isEmail}
                 pdfUrl={pdfUrl}
@@ -1122,6 +1192,8 @@ function SignYourSelf() {
                     setWidgetType={setWidgetType}
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
+                    setIsCheckbox={setIsCheckbox}
+                    setCurrWidgetsDetails={setCurrWidgetsDetails}
                   />
                 )}
               </div>

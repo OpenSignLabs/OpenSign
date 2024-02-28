@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import moment from "moment";
 import Parse from "parse";
 import "../css/./signature.css";
 import { PDFDocument } from "pdf-lib";
@@ -26,7 +25,8 @@ import {
   addZIndex,
   randomId,
   defaultWidthHeight,
-  multiSignEmbed
+  multiSignEmbed,
+  addWidgetOptions
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import { useNavigate } from "react-router-dom";
@@ -102,7 +102,8 @@ function PlaceHolderSign() {
   const [isRadio, setIsRadio] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
   const [selectWidgetId, setSelectWidgetId] = useState("");
-
+  const [isCheckbox, setIsCheckbox] = useState(false);
+  const [hint, setHint] = useState("");
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -126,6 +127,7 @@ function PlaceHolderSign() {
       isOver: !!monitor.isOver()
     })
   });
+
   const [{ isDragSign }, dragSignature] = useDrag({
     type: "BOX",
     item: {
@@ -315,163 +317,11 @@ function PlaceHolderSign() {
     }
   };
 
-  const getDate = () => {
-    const date = new Date();
-    const milliseconds = date.getTime();
-    const newDate = moment(milliseconds).format("MM/DD/YYYY");
-    return newDate;
-  };
-  const addWidgetOptions = (type) => {
-    let option = {};
-
-    switch (type) {
-      case "signature":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-
-      case "stamp":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-
-      case "checkbox":
-        option = {
-          name: "",
-          values: [],
-          status: "Optional",
-          response: false,
-          validation: {}
-        };
-        return option;
-      case "text":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-
-      case "initials":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-      case "name":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {
-            type: "text",
-            pattern: ""
-          }
-        };
-        return option;
-
-      case "company":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {
-            type: "text",
-            pattern: ""
-          }
-        };
-        return option;
-      case "job title":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {
-            type: "text",
-            pattern: ""
-          }
-        };
-        return option;
-      case "date":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getDate()
-        };
-        return option;
-      case "image":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-      case "email":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {
-            type: "email",
-            pattern: ""
-          }
-        };
-        return option;
-      case "dropdown":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-      case "radio":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-      case "label":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-    }
-  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
   };
+
   const getSignerPos = (item, monitor) => {
     //  setSignerObjId("");
     // setContractName("");
@@ -636,7 +486,8 @@ function PlaceHolderSign() {
         if (dragTypeValue === "dropdown") {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
-          setIsCheckboxRequired(true);
+          // setIsCheckboxRequired(true);
+          setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
         }
@@ -864,7 +715,6 @@ function PlaceHolderSign() {
 
         // Save the Parse File if needed
         const pdfData = await pdfFile.save();
-
         const pdfUrl = pdfData.url();
         return pdfUrl;
       } catch (e) {
@@ -1100,6 +950,9 @@ function PlaceHolderSign() {
   const handleSaveWidgetsOptions = (
     dropdownName,
     dropdownOptions,
+    minCount,
+    maxCount,
+    isReadOnly,
     addOption,
     deleteOption
   ) => {
@@ -1139,6 +992,36 @@ function PlaceHolderSign() {
                     ...position.options,
                     name: dropdownName,
                     values: dropdownOptions
+                  }
+                };
+              }
+            } else if (widgetType === "checkbox") {
+              if (addOption) {
+                return {
+                  ...position,
+                  Height: position.Height
+                    ? position.Height + 15
+                    : defaultWidthHeight(widgetType).height + 15
+                };
+              } else if (deleteOption) {
+                return {
+                  ...position,
+                  Height: position.Height
+                    ? position.Height - 15
+                    : defaultWidthHeight(widgetType).height - 15
+                };
+              } else {
+                return {
+                  ...position,
+                  options: {
+                    ...position.options,
+                    name: dropdownName,
+                    values: dropdownOptions,
+                    validation: {
+                      minRequiredCount: minCount,
+                      maxRequiredCount: maxCount
+                    },
+                    isReadOnly: isReadOnly
                   }
                 };
               }
@@ -1313,6 +1196,7 @@ function PlaceHolderSign() {
                 ...position,
                 options: {
                   ...position.options,
+                  hint: hint,
                   validation: {
                     type: regexType ? regularExpression : "regex",
                     pattern: !regexType ? regularExpression : ""
@@ -1573,7 +1457,7 @@ function PlaceHolderSign() {
                 </div>
               </ModalUi>
               {/* checkbox widget status component */}
-              <CheckboxStatus
+              {/* <CheckboxStatus
                 setSelectRequiredType={setSelectRequiredType}
                 selectRequiredType={selectRequiredType}
                 isCheckboxRequired={isCheckboxRequired}
@@ -1581,11 +1465,13 @@ function PlaceHolderSign() {
                 handleApplyWidgetsStatus={handleApplyWidgetsStatus}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
-              />
+              /> */}
               <InputValidation
                 setIsValidate={setIsValidate}
                 handleValidateInput={handleValidateInput}
                 isValidate={isValidate}
+                hint={hint}
+                setHint={setHint}
                 setTextValidate={setTextValidate}
                 textValidate={textValidate}
               />
@@ -1605,6 +1491,15 @@ function PlaceHolderSign() {
                 title="Radio group"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
+                handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
+              />
+              <DropdownWidgetOption
+                type="checkbox"
+                title="Checkbox"
+                showDropdown={isCheckbox}
+                setShowDropdown={setIsCheckbox}
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
@@ -1667,6 +1562,7 @@ function PlaceHolderSign() {
                     setIsValidate={setIsValidate}
                     setWidgetType={setWidgetType}
                     setIsRadio={setIsRadio}
+                    setIsCheckbox={setIsCheckbox}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}

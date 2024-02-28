@@ -63,7 +63,8 @@ function RenderPdf({
   setCurrWidgetsDetails,
   setSelectWidgetId,
   selectWidgetId,
-  unSignedWidgetId
+  unSignedWidgetId,
+  setIsCheckbox
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -283,23 +284,46 @@ function RenderPdf({
     );
   };
 
-  const handleUserName = (Id, Role) => {
+  const handleUserName = (Id, Role, type) => {
     if (Id) {
       const checkSign = signersdata.find((sign) => sign.Id === Id);
       if (checkSign?.Name) {
         return (
           <>
-            <div style={{ color: "black", fontSize: 11 }}>
+            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
               {checkSign?.Name}
             </div>
-            <div style={{ color: "black", fontSize: 11 }}> {`(${Role})`} </div>
+            {type && (
+              <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+            )}
+            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+              {`(${Role})`}
+            </div>
           </>
         );
       } else {
-        return <div style={{ color: "black", fontSize: 11 }}> {Role} </div>;
+        return (
+          <>
+            {type && (
+              <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+            )}
+            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+              {Role}
+            </div>
+          </>
+        );
       }
     } else {
-      return <div style={{ color: "black", fontSize: 11 }}> {Role} </div>;
+      return (
+        <>
+          {type && (
+            <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+          )}
+          <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+            {Role}
+          </div>
+        </>
+      );
     }
   };
 
@@ -370,6 +394,7 @@ function RenderPdf({
                                         setIsValidate={setIsValidate}
                                         setWidgetType={setWidgetType}
                                         setIsRadio={setIsRadio}
+                                        setIsCheckbox={setIsCheckbox}
                                         setCurrWidgetsDetails={
                                           setCurrWidgetsDetails
                                         }
@@ -549,6 +574,7 @@ function RenderPdf({
                                           setIsValidate={setIsValidate}
                                           setWidgetType={setWidgetType}
                                           setIsRadio={setIsRadio}
+                                          setIsCheckbox={setIsCheckbox}
                                           setCurrWidgetsDetails={
                                             setCurrWidgetsDetails
                                           }

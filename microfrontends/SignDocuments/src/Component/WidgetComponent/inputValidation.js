@@ -12,6 +12,34 @@ function InputValidation(props) {
       }}
       title={"Validation"}
     >
+      <div style={{ height: "100%", padding: "10px 20px" }}>
+        <div className="validateText">
+          <label
+            style={{
+              marginRight: "5px",
+              fontSize: "14px",
+              fontWeight: "500"
+            }}
+          >
+            Hint:
+          </label>
+          <div style={{ position: "relative" }}>
+            <input
+              value={props.hint}
+              style={{
+                position: "absolute",
+                top: "0",
+                left: "0",
+                height: "100%",
+                padding: 10
+              }}
+              placeholder="Enter hint"
+              className="drodown-input validateInputText"
+              onChange={(e) => props.setHint(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
       <div style={{ height: "100%", padding: 20 }}>
         <div className="validateText">
           <label
@@ -23,7 +51,6 @@ function InputValidation(props) {
           >
             Regular expression:
           </label>
-
           <div style={{ position: "relative" }}>
             <input
               value={props.textValidate}
@@ -55,7 +82,6 @@ function InputValidation(props) {
             </select>
           </div>
         </div>
-
         <div
           style={{
             height: "1px",

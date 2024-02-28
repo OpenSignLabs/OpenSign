@@ -88,6 +88,7 @@ function PdfRequestFiles() {
   const [containerWH, setContainerWH] = useState({});
   const [validateAlert, setValidateAlert] = useState(false);
   const [widgetsTour, setWidgetsTour] = useState(false);
+  const [minRequiredCount, setminRequiredCount] = useState();
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -300,28 +301,53 @@ function PdfRequestFiles() {
       (data) => data.signerObjId === signerObjectId
     );
     if (checkUser && checkUser.length > 0) {
-      let unSignUrlData;
+      let unSignUrlData,
+        checkboxExist,
+        isReadOnly,
+        minCountAlert = false,
+        checkboxKey;
 
       for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
-        unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
-          (pos) => !pos?.SignUrl && !pos.options.response
+        checkboxExist = checkUser[0].placeHolder[i].pos.some(
+          (data) => data.type === "checkbox"
         );
-      }
-      let checkboxExist;
-      let optionRequiredCheckbox;
-      checkboxExist = unSignUrlData.some((data) => data.type === "checkbox");
 
-      if (checkboxExist) {
-        optionRequiredCheckbox = unSignUrlData.filter(
-          (data) => data.options.status !== "Optional"
-        );
+        if (checkboxExist) {
+          isReadOnly = checkUser[0].placeHolder[i].pos.filter(
+            (position) => !position.options.isReadOnly
+          );
+
+          if (isReadOnly && isReadOnly.length > 0) {
+            for (let i = 0; i < isReadOnly.length; i++) {
+              const minCount =
+                isReadOnly[i].options.validation?.minRequiredCount;
+              const response = isReadOnly[i].options?.response?.length;
+              const defaultValue = isReadOnly[i].options?.defaultValue?.length;
+              if (!response) {
+                if (!defaultValue) {
+                  if (!minCountAlert) {
+                    minCountAlert = true;
+                    checkboxKey = isReadOnly[i].key;
+                    setminRequiredCount(minCount);
+                  }
+                }
+              } else if (minCount > 0 && minCount > response) {
+                if (!minCountAlert) {
+                  minCountAlert = true;
+                  checkboxKey = isReadOnly[i].key;
+                  setminRequiredCount(minCount);
+                }
+              }
+            }
+          }
+        } else {
+          unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
+            (pos) => !pos?.SignUrl && !pos.options.response
+          );
+        }
       }
-      if (
-        checkboxExist &&
-        optionRequiredCheckbox &&
-        optionRequiredCheckbox.length > 0
-      ) {
-        setUnSignedWidgetId(optionRequiredCheckbox[0].key);
+      if (checkboxExist && isReadOnly && minCountAlert) {
+        setUnSignedWidgetId(checkboxKey);
         setWidgetsTour(true);
       } else if (!checkboxExist && unSignUrlData && unSignUrlData.length > 0) {
         setUnSignedWidgetId(unSignUrlData[0].key);
@@ -403,8 +429,9 @@ function PdfRequestFiles() {
   const tourConfig = [
     {
       selector: '[data-tut="IsSigned"]',
-      content:
-        "Ensure this field is accurately filled and meets all requirements.",
+      content: minRequiredCount
+        ? `Please confirm that you have selected at least ${minRequiredCount} checkboxes.`
+        : "Ensure this field is accurately filled and meets all requirements.",
       position: "top",
       style: { fontSize: "13px" }
     }
