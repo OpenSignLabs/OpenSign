@@ -393,34 +393,34 @@ function PdfRequestFiles() {
         );
 
         //function for call to embed signature in pdf and get digital signature pdf
-        // try {
-        //   const res = await signPdfFun(
-        //     pdfBytes,
-        //     documentId,
-        //     signerObjectId,
-        //     pdfOriginalWidth,
-        //     pngUrl,
-        //     containerWH,
-        //     setIsAlert
-        //   );
-        //   if (res && res.status === "success") {
-        //     setPdfUrl(res.data);
-        //     setIsSigned(true);
-        //     setSignedSigners([]);
-        //     setUnSignedSigners([]);
-        //     getDocumentDetails();
-        //   } else {
-        //     setIsAlert({
-        //       isShow: true,
-        //       alertMessage: "something went wrong"
-        //     });
-        //   }
-        // } catch (err) {
-        //   setIsAlert({
-        //     isShow: true,
-        //     alertMessage: "something went wrong"
-        //   });
-        // }
+        try {
+          const res = await signPdfFun(
+            pdfBytes,
+            documentId,
+            signerObjectId,
+            pdfOriginalWidth,
+            pngUrl,
+            containerWH,
+            setIsAlert
+          );
+          if (res && res.status === "success") {
+            setPdfUrl(res.data);
+            setIsSigned(true);
+            setSignedSigners([]);
+            setUnSignedSigners([]);
+            getDocumentDetails();
+          } else {
+            setIsAlert({
+              isShow: true,
+              alertMessage: "something went wrong"
+            });
+          }
+        } catch (err) {
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
+          });
+        }
       }
 
       setIsSignPad(false);
