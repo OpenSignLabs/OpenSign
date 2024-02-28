@@ -17,6 +17,7 @@ function PlaceholderType(props) {
     isChecked: false,
     selectValue: ""
   });
+  const [selectedCheckbox, setSelectedCheckbox] = useState([]);
 
   const validateExpression = (regexValidation) => {
     let regexObject = regexValidation;
@@ -86,7 +87,9 @@ function PlaceholderType(props) {
     }
   }
   useEffect(() => {
-    if (props.pos?.options?.validation?.type) {
+    if (props.pos?.options?.hint) {
+      setValidatePlaceholder(props.pos?.options.hint);
+    } else if (props.pos?.options?.validation?.type) {
       checkRegularExpress(props.pos?.options?.validation?.type);
     }
   }, []);
@@ -99,22 +102,74 @@ function PlaceholderType(props) {
   }, []);
 
   useEffect(() => {
-    if (props.pos?.type && props.pos.type === "radio" && props.isNeedSign) {
+    const isCheckedValue = isCheckedRadio?.selectValue
+      ? isCheckedRadio.selectValue
+      : selectedCheckbox;
+    if (props.pos?.type && props.pos.type === "checkbox") {
+      let isDefaultValue;
+      if (props.isNeedSign) {
+        isDefaultValue = props.pos.options?.defaultValue;
+      }
+      if (isDefaultValue && isDefaultValue.length > 0) {
+        onChangeInput(
+          isCheckedValue,
+          props.pos.key,
+          props.xyPostion,
+          props.index,
+          props.setXyPostion,
+          props.data && props.data.Id,
+          false,
+          null,
+          null,
+          null,
+          true
+        );
+      } else {
+        onChangeInput(
+          isCheckedValue,
+          props.pos.key,
+          props.xyPostion,
+          props.index,
+          props.setXyPostion,
+          props.data && props.data.Id,
+          false,
+          null,
+          props.isPlaceholder,
+          isCheckedRadio.selectedKey
+        );
+      }
+    } else if (props.pos?.type && props.pos.type === "radio") {
       onChangeInput(
-        isCheckedRadio.selectValue,
+        isCheckedValue,
         props.pos.key,
         props.xyPostion,
         props.index,
         props.setXyPostion,
         props.data && props.data.Id,
-        false
+        false,
+        null
       );
     }
   }, [isCheckedRadio]);
+
+  //for handle default checked options
+  useEffect(() => {
+    if (props.pos?.type && props.pos.type === "checkbox" && props.isNeedSign) {
+      const isDefaultValue = props.pos.options?.defaultValue;
+      setSelectedCheckbox(isDefaultValue);
+    }
+  }, []);
   useEffect(() => {
     if (props.pos?.type && props.pos.type === "date") {
       if (props.selectDate) {
-        const updateDate = new Date(props.saveDateFormat);
+        let updateDate;
+        if (props.selectDate.format === "dd-MM-yyyy") {
+          const [day, month, year] = props.saveDateFormat.split("-");
+          updateDate = new Date(`${year}-${month}-${day}`);
+        } else {
+          updateDate = new Date(props.saveDateFormat);
+        }
+        // const updateDate = new Date(props.saveDateFormat);
         setStartDate(updateDate);
         const dateObj = {
           date: props.saveDateFormat,
@@ -206,6 +261,30 @@ function PlaceholderType(props) {
     }
   };
 
+  //function for show checked checkbox
+  const selectCheckbox = (ind) => {
+    const res = props.pos.options?.response;
+    const defaultCheck = props.pos.options?.defaultValue;
+    if (res) {
+      const isSelectIndex = res.indexOf(ind);
+      if (isSelectIndex > -1) {
+        return true;
+      } else {
+        return false;
+      }
+      // }
+    } else if (defaultCheck) {
+      const isSelectIndex = defaultCheck.indexOf(ind);
+      if (isSelectIndex > -1) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  };
+
   switch (props.pos.type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -219,21 +298,15 @@ function PlaceholderType(props) {
           }}
         />
       ) : (
-        <div
-          style={{
-            fontSize: "10px",
-
-            color: "black",
-            justifyContent: "center"
-          }}
-        >
-          <div>{props.pos.type}</div>
-
+        <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
           {props?.handleUserName &&
-            props?.handleUserName(props?.data.Id, props?.data.Role)}
+            props?.handleUserName(
+              props?.data.Id,
+              props?.data.Role,
+              props.pos.type
+            )}
         </div>
       );
-
     case "stamp":
       return props.pos.SignUrl ? (
         <img
@@ -246,60 +319,104 @@ function PlaceholderType(props) {
           }}
         />
       ) : (
-        <div
-          style={{
-            fontSize: "12px",
-            color: "black",
-            justifyContent: "center"
-          }}
-        >
-          <div>{props.pos.type}</div>
-
+        <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
           {props?.handleUserName &&
-            props?.handleUserName(props?.data.Id, props?.data.Role)}
+            props?.handleUserName(
+              props?.data.Id,
+              props?.data.Role,
+              props.pos.type
+            )}
         </div>
       );
-
     case "checkbox":
       return (
-        <input
-          className="inputPlaceholder"
-          style={{ outlineColor: "#007bff" }}
-          type="checkbox"
-          defaultChecked={props.pos?.options?.status === "Read only"}
-          disabled={
-            props.isNeedSign && props.data?.signerObjId !== props.signerObjId
-              ? true
-              : props.isNeedSign &&
-                props.pos?.options?.status === "Read only" &&
-                true
-            // : props.isPlaceholder
-          }
-          onBlur={handleInputBlur}
-          checked={handleChecked()}
-          onChange={(e) => {
-            let isChecked = e.target.checked;
-            if (props.isPlaceholder) {
-              if (props.pos?.options?.status === "Read only") {
-                setCheckedValue(true);
-                isChecked = true;
-              } else {
-                setCheckedValue(false);
-                isChecked = false;
-              }
-            }
+        // <input
+        //   className="inputPlaceholder"
+        //   style={{ outlineColor: "#007bff" }}
+        //   type="checkbox"
+        //   defaultChecked={props.pos?.options?.status === "Read only"}
+        //   disabled={
+        //     props.isNeedSign && props.data?.signerObjId !== props.signerObjId
+        //       ? true
+        //       : props.isNeedSign &&
+        //         props.pos?.options?.status === "Read only" &&
+        //         true
+        //     // : props.isPlaceholder
+        //   }
+        //   onBlur={handleInputBlur}
+        //   checked={handleChecked()}
+        //   onChange={(e) => {
+        //     let isChecked = e.target.checked;
+        //     if (props.isPlaceholder) {
+        //       if (props.pos?.options?.status === "Read only") {
+        //         setCheckedValue(true);
+        //         isChecked = true;
+        //       } else {
+        //         setCheckedValue(false);
+        //         isChecked = false;
+        //       }
+        //     }
 
-            onChangeInput(
-              isChecked,
-              props.pos.key,
-              props.xyPostion,
-              props.index,
-              props.setXyPostion,
-              props.data && props.data.Id,
-              false
+        //     onChangeInput(
+        //       isChecked,
+        //       props.pos.key,
+        //       props.xyPostion,
+        //       props.index,
+        //       props.setXyPostion,
+        //       props.data && props.data.Id,
+        //       false
+        //     );
+        //   }}
+        // />
+        <div>
+          {props.pos.options?.values?.map((data, ind) => {
+            return (
+              <input
+                key={ind}
+                style={{
+                  width: props.pos.Width,
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: "6px",
+                  marginTop: "5px"
+                }}
+                disabled={
+                  props.isNeedSign &&
+                  props.pos.options?.isReadOnly &&
+                  props.pos.options?.isReadOnly
+                }
+                type="checkbox"
+                checked={selectCheckbox(ind)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    const maxRequired =
+                      props.pos.options?.validation?.maxRequiredCount;
+                    const maxCountInt = maxRequired && parseInt(maxRequired);
+                    if (maxCountInt > 0) {
+                      if (selectedCheckbox.length <= maxCountInt - 1) {
+                        setSelectedCheckbox((prev) => [...prev, ind]);
+                      }
+                    } else {
+                      setSelectedCheckbox((prev) => [...prev, ind]);
+                    }
+                  } else {
+                    const removeOption = selectedCheckbox.filter(
+                      (data) => data !== ind
+                    );
+                    setSelectedCheckbox(removeOption);
+                  }
+                }}
+                onClick={() => {
+                  setIsCheckedRadio({
+                    isChecked: !isCheckedRadio,
+                    selectValue: "",
+                    selectedKey: ind
+                  });
+                }}
+              />
             );
-          }}
-        />
+          })}
+        </div>
       );
     case "text":
       return props.isSignYourself ||
@@ -404,20 +521,15 @@ function PlaceholderType(props) {
           }}
         />
       ) : (
-        <div
-          style={{
-            fontSize: "10px",
-            color: "black",
-            justifyContent: "center"
-          }}
-        >
-          <div>{props.pos.type}</div>
-
+        <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
           {props?.handleUserName &&
-            props?.handleUserName(props?.data.Id, props?.data.Role)}
+            props?.handleUserName(
+              props?.data.Id,
+              props?.data.Role,
+              props.pos.type
+            )}
         </div>
       );
-
     case "name":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
@@ -457,7 +569,6 @@ function PlaceholderType(props) {
           <span>{props.pos.type}</span>
         </div>
       );
-
     case "company":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
@@ -496,7 +607,6 @@ function PlaceholderType(props) {
           <span>{props.pos.type}</span>
         </div>
       );
-
     case "job title":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
@@ -567,7 +677,6 @@ function PlaceholderType(props) {
           />
         </div>
       );
-
     case "image":
       return props.pos.SignUrl ? (
         <img
@@ -580,17 +689,13 @@ function PlaceholderType(props) {
           }}
         />
       ) : (
-        <div
-          style={{
-            fontSize: "10px",
-            color: "black",
-            justifyContent: "center"
-          }}
-        >
-          <div>{props.pos.type}</div>
-
+        <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
           {props?.handleUserName &&
-            props?.handleUserName(props?.data.Id, props?.data.Role)}
+            props?.handleUserName(
+              props?.data.Id,
+              props?.data.Role,
+              props.pos.type
+            )}
         </div>
       );
     case "email":
@@ -649,6 +754,7 @@ function PlaceholderType(props) {
                   marginTop: "5px"
                 }}
                 type="radio"
+                disabled={props.isPlaceholder}
                 checked={isCheckedRadio.selectValue === data}
                 // checked={isCheckedRadio.isChecked}
                 onClick={() => {
@@ -664,7 +770,29 @@ function PlaceholderType(props) {
       );
     case "label":
       return (
+        // <textarea
+        //   onChange={(e) => {
+        //     onChangeInput(
+        //       e.target.value,
+        //       props.pos.key,
+        //       props.xyPostion,
+        //       props.index,
+        //       props.setXyPostion,
+        //       props.data && props.data?.Id,
+        //       false
+        //     );
+        //   }}
+        //   className="labelTextArea"
+        //   cols="50"
+        //   style={{
+        //     zIndex: "99",
+        //     height: "100%",
+        //     width: "100%",
+        //     resize: "none"
+        //   }}
+        // />
         <textarea
+          rows={1}
           onChange={(e) => {
             onChangeInput(
               e.target.value,
@@ -678,12 +806,6 @@ function PlaceholderType(props) {
           }}
           className="labelTextArea"
           cols="50"
-          style={{
-            zIndex: "99",
-            height: "100%",
-            width: "100%",
-            resize: "none"
-          }}
         />
       );
     default:

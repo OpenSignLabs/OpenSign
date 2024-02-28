@@ -10,12 +10,15 @@ import "../LegaDrive/LegaDrive.css";
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
-  const [selectDate, setSelectDate] = useState();
+  const [selectDate, setSelectDate] = useState({
+    date: moment(new Date().getTime()).format("MM/DD/YYYY"),
+    format: "MM/dd/YYYY"
+  });
   const [dateFormat, setDateFormat] = useState([]);
   const [saveDateFormat, setSaveDateFormat] = useState("");
   const dateFormatArr = [
     "L",
-    // "DD/MM/YYYY",
+    "DD-MM-YYYY",
     "YYYY-MM-DD",
     "MM.DD.YYYY",
     "MM-DD-YYYY",
@@ -29,6 +32,8 @@ function Placeholder(props) {
     switch (data) {
       case "L":
         return "MM/dd/yyyy";
+      case "DD-MM-YYYY":
+        return "dd-MM-yyyy";
       case "DD/MM/YYYY":
         return "dd/MM/yyyy";
       case "LL":
@@ -52,7 +57,13 @@ function Placeholder(props) {
   const changeDateFormat = () => {
     const updateDate = [];
     dateFormatArr.map((data) => {
-      const date = new Date(selectDate?.date);
+      let date;
+      if (selectDate.format === "dd-MM-yyyy") {
+        const [day, month, year] = selectDate.date.split("-");
+        date = new Date(`${year}-${month}-${day}`);
+      } else {
+        date = new Date(selectDate?.date);
+      }
       const milliseconds = date.getTime();
       const newDate = moment(milliseconds).format(data);
       const dateObj = {
@@ -142,8 +153,12 @@ function Placeholder(props) {
       !props.isDragging &&
       props.pos.type !== "label"
     ) {
-      props.handleLinkUser(props.data.Id);
-      props.setUniqueId(props.data.Id);
+      // props.handleLinkUser(props.data.Id);
+      // props.setUniqueId(props.data.Id);
+      if (props.pos.key === props.selectWidgetId) {
+        props.handleLinkUser(props.data.Id);
+        props.setUniqueId(props.data.Id);
+      }
     } else if (!props.pos.type) {
       if (
         !props.pos.type &&
@@ -166,6 +181,23 @@ function Placeholder(props) {
     }
   };
 
+  const handleWidgetsOnclick = () => {
+    if (props.pos.type === "radio") {
+      props.setIsRadio(true);
+    } else if (props.pos.type === "dropdown") {
+      props?.setShowDropdown(true);
+    }
+    if (props.pos.type === "checkbox") {
+      props?.setIsCheckbox(true);
+    } else if (props.pos.type === "text") {
+      props.setIsValidate(true);
+    }
+
+    props.setSignKey(props.pos.key);
+    props.setUniqueId(props.data.Id);
+    props.setWidgetType(props.pos.type);
+    props.setCurrWidgetsDetails(props.pos);
+  };
   const PlaceholderIcon = () => {
     return (
       props.isShowBorder && (
@@ -178,36 +210,11 @@ function Placeholder(props) {
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (props.pos.type === "checkbox") {
-                      props.setIsCheckboxRequired(true);
-                    } else if (props.pos.type === "radio") {
-                      props.setIsRadio(true);
-                    } else if (props.pos.type === "dropdown") {
-                      props?.setShowDropdown(true);
-                    } else {
-                      props.setIsValidate(true);
-                    }
-
-                    props.setSignKey(props.pos.key);
-                    props.setUniqueId(props.data.Id);
-                    props.setWidgetType(props.pos.type);
-                    props.setCurrWidgetsDetails(props.pos);
+                    handleWidgetsOnclick();
                   }}
                   onTouchEnd={(e) => {
                     e.stopPropagation();
-                    if (props.pos.type === "checkbox") {
-                      props.setIsCheckboxRequired(true);
-                    }
-                    if (props.pos.type === "radio") {
-                      props.setIsRadio(true);
-                    } else {
-                      props.setIsValidate(true);
-                    }
-
-                    props.setSignKey(props.pos.key);
-                    props.setUniqueId(props.data.Id);
-                    props.setWidgetType(props.pos.type);
-                    props.setCurrWidgetsDetails(props.pos);
+                    handleWidgetsOnclick();
                   }}
                   className="fa-solid fa-gear settingIcon"
                   style={{
@@ -428,8 +435,8 @@ function Placeholder(props) {
       bounds="parent"
       className="signYourselfBlock"
       style={{
-        border: "1px solid #007bff",
-        borderRadius: "2px",
+        border: props.pos.type !== "checkbox" && "1px solid #007bff",
+        borderRadius: props.pos.type !== "checkbox" && "2px",
         textAlign:
           props.pos.type !== "name" &&
           props.pos.type !== "company" &&
@@ -447,7 +454,9 @@ function Placeholder(props) {
             : props?.pos?.zIndex
               ? props.pos.zIndex
               : "5",
-        background: props.data ? props.data.blockColor : "rgb(203 233 237)"
+        background: props.data
+          ? props.pos.type !== "checkbox" && props.data.blockColor
+          : props.pos.type !== "checkbox" && "rgb(203 233 237)"
       }}
       onDrag={() => {
         setDraggingEnabled(true);

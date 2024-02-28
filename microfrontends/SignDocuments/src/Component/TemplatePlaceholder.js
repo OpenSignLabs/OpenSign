@@ -22,7 +22,8 @@ import {
   randomId,
   addZIndex,
   createDocument,
-  defaultWidthHeight
+  defaultWidthHeight,
+  addWidgetOptions
 } from "../utils/Utils";
 import RenderPdf from "./component/renderPdf";
 import "../css/AddUser.css";
@@ -84,6 +85,7 @@ const TemplatePlaceholder = () => {
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isValidate, setIsValidate] = useState(false);
   const [textValidate, setTextValidate] = useState("");
+  const [hint, setHint] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -170,6 +172,7 @@ const TemplatePlaceholder = () => {
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
+  const [isCheckbox, setIsCheckbox] = useState(false);
   const checkboxType = ["Optional", "Required", "Read only"];
   const senderUser =
     localStorage.getItem(
@@ -348,154 +351,6 @@ const TemplatePlaceholder = () => {
     getSignerPos(item, monitor);
   };
 
-  const addWidgetOptions = (type) => {
-    let option = {};
-
-    switch (type) {
-      case "signature":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-
-      case "stamp":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-
-      case "checkbox":
-        option = {
-          name: "",
-          values: [],
-          status: "Optional",
-          response: false,
-          validation: {}
-        };
-        return option;
-      case "text":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-
-      case "initials":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-      case "name":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {
-            type: "text",
-            pattern: ""
-          }
-        };
-        return option;
-
-      case "company":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {
-            type: "text",
-            pattern: ""
-          }
-        };
-        return option;
-      case "job title":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {
-            type: "text",
-            pattern: ""
-          }
-        };
-        return option;
-      case "date":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getDate()
-        };
-        return option;
-      case "image":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-      case "email":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {
-            type: "email",
-            pattern: ""
-          }
-        };
-        return option;
-      case "dropdown":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-      case "radio":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-      case "label":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
-        };
-        return option;
-    }
-  };
-
   // `getSignerPos` is used to get placeholder position when user place it and save it in array
   const getSignerPos = (item, monitor) => {
     if (uniqueId) {
@@ -625,7 +480,8 @@ const TemplatePlaceholder = () => {
         if (dragTypeValue === "dropdown") {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
-          setIsCheckboxRequired(true);
+          // setIsCheckboxRequired(true);
+          setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
         }
@@ -1187,6 +1043,7 @@ const TemplatePlaceholder = () => {
                 ...position,
                 options: {
                   ...position.options,
+                  hint: hint,
                   validation: {
                     type: regexType ? regularExpression : "regex",
                     pattern: !regexType ? regularExpression : ""
@@ -1222,6 +1079,9 @@ const TemplatePlaceholder = () => {
   const handleSaveWidgetsOptions = (
     dropdownName,
     dropdownOptions,
+    minCount,
+    maxCount,
+    isReadOnly,
     addOption,
     deleteOption
   ) => {
@@ -1262,6 +1122,36 @@ const TemplatePlaceholder = () => {
                     ...position.options,
                     name: dropdownName,
                     values: dropdownOptions
+                  }
+                };
+              }
+            } else if (widgetType === "checkbox") {
+              if (addOption) {
+                return {
+                  ...position,
+                  Height: position.Height
+                    ? position.Height + 15
+                    : defaultWidthHeight(widgetType).height + 15
+                };
+              } else if (deleteOption) {
+                return {
+                  ...position,
+                  Height: position.Height
+                    ? position.Height - 15
+                    : defaultWidthHeight(widgetType).height - 15
+                };
+              } else {
+                return {
+                  ...position,
+                  options: {
+                    ...position.options,
+                    name: dropdownName,
+                    values: dropdownOptions,
+                    validation: {
+                      minRequiredCount: minCount,
+                      maxRequiredCount: maxCount
+                    },
+                    isReadOnly: isReadOnly
                   }
                 };
               }
@@ -1475,6 +1365,7 @@ const TemplatePlaceholder = () => {
                 setIsValidate={setIsValidate}
                 handleValidateInput={handleValidateInput}
                 isValidate={isValidate}
+                setHint={setHint}
                 setTextValidate={setTextValidate}
                 textValidate={textValidate}
               />
@@ -1483,6 +1374,15 @@ const TemplatePlaceholder = () => {
                 title="Radio group"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
+                handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
+              />
+              <DropdownWidgetOption
+                type="checkbox"
+                title="Checkbox"
+                showDropdown={isCheckbox}
+                setShowDropdown={setIsCheckbox}
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
@@ -1561,6 +1461,7 @@ const TemplatePlaceholder = () => {
                     setIsValidate={setIsValidate}
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
+                    setIsCheckbox={setIsCheckbox}
                   />
                 )}
               </div>

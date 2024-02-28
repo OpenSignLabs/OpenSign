@@ -6,8 +6,10 @@ function DropdownWidgetOption(props) {
     "option-1",
     "option-2"
   ]);
-
+  const [minCount, setMinCount] = useState(0);
+  const [maxCount, setMaxCount] = useState(0);
   const [dropdownName, setDropdownName] = useState(props.type);
+  const [isReadOnly, setIsReadOnly] = useState(false);
 
   useEffect(() => {
     if (
@@ -16,6 +18,13 @@ function DropdownWidgetOption(props) {
     ) {
       setDropdownName(props.currWidgetsDetails?.options?.name);
       setDropdownOptionList(props.currWidgetsDetails?.options?.values);
+      setMinCount(
+        props.currWidgetsDetails?.options?.validation?.minRequiredCount
+      );
+      setMaxCount(
+        props.currWidgetsDetails?.options?.validation?.maxRequiredCount
+      );
+      setIsReadOnly(props.currWidgetsDetails?.options?.isReadOnly);
     }
   }, [props.currWidgetsDetails]);
 
@@ -30,7 +39,7 @@ function DropdownWidgetOption(props) {
   const handleAddInput = () => {
     const flage = true;
     setDropdownOptionList((prevInputs) => [...prevInputs, ""]);
-    props.handleSaveWidgetsOptions(null, null, flage, false);
+    props.handleSaveWidgetsOptions(null, null, null, null, null, flage, false);
   };
 
   const handleDeleteInput = (ind) => {
@@ -39,14 +48,23 @@ function DropdownWidgetOption(props) {
       (data, index) => index !== ind
     );
     setDropdownOptionList(getUpdatedOptions);
-    props.handleSaveWidgetsOptions(null, null, false, flage);
+    props.handleSaveWidgetsOptions(null, null, null, null, null, false, flage);
   };
   const handleSaveOption = () => {
-    props.handleSaveWidgetsOptions(dropdownName, dropdownOptionList);
+    props.handleSaveWidgetsOptions(
+      dropdownName,
+      dropdownOptionList,
+      minCount,
+      maxCount,
+      isReadOnly
+    );
     props.setShowDropdown(false);
     setDropdownOptionList(["option-1", "option-2"]);
     setDropdownName(props.type);
     props.setCurrWidgetsDetails([]);
+    setIsReadOnly(false);
+    setMinCount(0);
+    setMaxCount(0);
   };
 
   return (
@@ -58,6 +76,20 @@ function DropdownWidgetOption(props) {
       closeOff={true}
     >
       <div style={{ height: "100%", padding: 20 }}>
+        {props.type === "checkbox" && !props.isSignYourself && (
+          <>
+            <input
+              type="checkbox"
+              checked={isReadOnly}
+              onChange={(e) => {
+                setIsReadOnly(e.target.checked);
+              }}
+            />
+
+            <label style={{ marginLeft: "10px" }}>Is read only</label>
+          </>
+        )}
+
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -65,6 +97,31 @@ function DropdownWidgetOption(props) {
           }}
         >
           <div className="dropdownContainer">
+            {props.type === "checkbox" && !props.isSignYourself && (
+              <>
+                <label style={{ fontSize: "13px", fontWeight: "600" }}>
+                  Minimun required count
+                </label>
+                <input
+                  required
+                  defaultValue={0}
+                  value={minCount}
+                  onChange={(e) => setMinCount(e.target.value)}
+                  className="drodown-input"
+                />
+                <label style={{ fontSize: "13px", fontWeight: "600" }}>
+                  Maximum required count
+                </label>
+                <input
+                  required
+                  defaultValue={0}
+                  value={maxCount}
+                  onChange={(e) => setMaxCount(e.target.value)}
+                  className="drodown-input"
+                />
+              </>
+            )}
+
             <label style={{ fontSize: "13px", fontWeight: "600" }}>Name</label>
             <input
               required

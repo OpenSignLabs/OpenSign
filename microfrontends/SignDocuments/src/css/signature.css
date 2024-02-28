@@ -866,17 +866,16 @@ option {
 
 
 .labelTextArea {
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-  padding: 10px;
-  max-width: 100%;
-  line-height: 1.5;
-
-  /* border: 1px solid #ccc;
-  box-shadow: 1px 1px 1px #999; */
-  border: 1px solid #007bff;
-  border-radius: 2px;
-  font-family:  inherit;
+ 
+    font-size: 12px;
+    min-width: 100%;
+    min-height: 100%;
+    border: 1px solid #007bff;
+    outline: none;
+    z-index: 999;
+    border-radius: 2px;
+    resize: none;
+ 
 }
 
 .labelTextArea:focus {

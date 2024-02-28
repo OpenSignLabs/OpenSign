@@ -1,5 +1,6 @@
 import axios from "axios";
 import { rgb } from "pdf-lib";
+import moment from "moment";
 import { themeColor } from "./ThemeColor/backColor";
 
 export const isMobile = window.innerWidth < 767;
@@ -82,6 +83,10 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
     }
   });
 };
+const handleDefaultValue = (ind, defaultValue) => {
+  const updateDefault = defaultValue.filter((data) => data !== ind);
+  return updateDefault;
+};
 export const onChangeInput = (
   value,
   signKey,
@@ -90,7 +95,10 @@ export const onChangeInput = (
   setXyPostion,
   userId,
   initial,
-  dateFormat
+  dateFormat,
+  isPlaceholder,
+  selectedKey,
+  isDefaultEmpty
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
   let filterSignerPos;
@@ -98,9 +106,7 @@ export const onChangeInput = (
     if (userId) {
       filterSignerPos = xyPostion.filter((data) => data.Id === userId);
     }
-
     const getPlaceHolder = filterSignerPos[0]?.placeHolder;
-
     if (initial) {
       const xyData = addInitialData(xyPostion, setXyPostion, value, userId);
       setXyPostion(xyData);
@@ -108,7 +114,6 @@ export const onChangeInput = (
       const getPageNumer = getPlaceHolder.filter(
         (data) => data.pageNumber === index
       );
-
       if (getPageNumer.length > 0) {
         const getXYdata = getPageNumer[0].pos;
         const getPosData = getXYdata;
@@ -126,10 +131,38 @@ export const onChangeInput = (
                   }
                 }
               };
+            } else if (isPlaceholder) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  defaultValue: value
+                }
+              };
+            } else if (selectedKey) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  response: value,
+                  defaultValue: handleDefaultValue(
+                    selectedKey,
+                    position.options.defaultValue
+                  )
+                }
+              };
+            } else if (isDefaultEmpty) {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  response: value,
+                  defaultValue: []
+                }
+              };
             } else {
               return {
                 ...position,
-
                 options: {
                   ...position.options,
                   response: value
@@ -139,7 +172,6 @@ export const onChangeInput = (
           }
           return position;
         });
-
         const newUpdateSignPos = getPlaceHolder.map((obj) => {
           if (obj.pageNumber === index) {
             return { ...obj, pos: addSignPos };
@@ -256,6 +288,51 @@ export const widgets = [
   }
 ];
 
+const getDate = () => {
+  const date = new Date();
+  const milliseconds = date.getTime();
+  const newDate = moment(milliseconds).format("MM/DD/YYYY");
+  return newDate;
+};
+
+export const addWidgetOptions = (type) => {
+  const defaultOpt = {
+    name: "",
+    status: "required"
+  };
+  switch (type) {
+    case "signature":
+      return defaultOpt;
+    case "stamp":
+      return defaultOpt;
+    case "checkbox":
+      return defaultOpt;
+    case "text":
+      return defaultOpt;
+    case "initials":
+      return defaultOpt;
+    case "name":
+      return { ...defaultOpt, validation: { type: "text", pattern: "" } };
+    case "company":
+      return { ...defaultOpt, validation: { type: "text", pattern: "" } };
+    case "job title":
+      return { ...defaultOpt, validation: { type: "text", pattern: "" } };
+    case "date":
+      return { ...defaultOpt, response: getDate() };
+    case "image":
+      return defaultOpt;
+    case "email":
+      return { ...defaultOpt, validation: { type: "email", pattern: "" } };
+    case "dropdown":
+      return defaultOpt;
+    case "radio":
+      return defaultOpt;
+    case "label":
+      return defaultOpt;
+    default:
+      return {};
+  }
+};
 export const getWidgetType = (item, marginLeft) => {
   return (
     <>
@@ -309,100 +386,37 @@ export const getWidgetType = (item, marginLeft) => {
 };
 
 export const defaultWidthHeight = (type) => {
-  let obj;
   switch (type) {
     case "signature":
-      obj = {
-        width: 150,
-        height: 60
-      };
-      return obj;
-
+      return { width: 150, height: 60 };
     case "stamp":
-      obj = {
-        width: 150,
-        height: 60
-      };
-      return obj;
+      return { width: 150, height: 60 };
     case "checkbox":
-      obj = {
-        width: 15,
-        height: 15
-      };
-      return obj;
+      return { width: 15, height: 15 };
     case "text":
-      obj = {
-        width: 150,
-        height: 25
-      };
-      return obj;
+      return { width: 150, height: 25 };
     case "dropdown":
-      obj = {
-        width: 120,
-        height: 22
-      };
-      return obj;
+      return { width: 120, height: 22 };
     case "initials":
-      obj = {
-        width: 50,
-        height: 50
-      };
-      return obj;
+      return { width: 50, height: 50 };
     case "name":
-      obj = {
-        width: 150,
-        height: 25
-      };
-      return obj;
-
+      return { width: 150, height: 25 };
     case "company":
-      obj = {
-        width: 150,
-        height: 25
-      };
-      return obj;
+      return { width: 150, height: 25 };
     case "job title":
-      obj = {
-        width: 150,
-        height: 25
-      };
-      return obj;
+      return { width: 150, height: 25 };
     case "date":
-      obj = {
-        width: 100,
-        height: 20
-      };
-      return obj;
+      return { width: 100, height: 20 };
     case "image":
-      obj = {
-        width: 150,
-        height: 60
-      };
-      return obj;
+      return { width: 70, height: 70 };
     case "email":
-      obj = {
-        width: 150,
-        height: 20
-      };
-      return obj;
+      return { width: 150, height: 20 };
     case "radio":
-      obj = {
-        width: 15,
-        height: 30
-      };
-      return obj;
+      return { width: 15, height: 30 };
     case "label":
-      obj = {
-        width: 150,
-        height: 17
-      };
-      return obj;
+      return { width: 150, height: 17 };
     default:
-      obj = {
-        width: 150,
-        height: 60
-      };
-      return obj;
+      return { width: 150, height: 60 };
   }
 };
 
@@ -1020,7 +1034,7 @@ export const multiSignEmbed = async (
         }
       };
 
-      const yPos = (pos) => {
+      const yPos = (pos, ind) => {
         const resizePos = pos.yPosition;
         if (signyourself) {
           if (isMobile) {
@@ -1054,7 +1068,12 @@ export const multiSignEmbed = async (
                 return page.getHeight() - y - scaleHeight;
               }
             } else {
-              const widgetHeight = imgData.type === "radio" ? 10 : scaleHeight;
+              const widgetHeight =
+                imgData.type === "radio"
+                  ? 10
+                  : imgData.type === "checkbox"
+                    ? 10
+                    : scaleHeight;
               return page.getHeight() - resizePos - widgetHeight;
               // - scaleHeight;
             }
@@ -1072,21 +1091,58 @@ export const multiSignEmbed = async (
         "label"
       ].includes(imgData.type);
       if (imgData.type === "checkbox") {
-        const checkBox = form.createCheckBox(randomboxId);
+        let addYPosition, isCheck;
 
-        checkBox.addToPage(page, {
-          x: xPos(imgData),
-          y: yPos(imgData),
-          width: scaleWidth,
-          height: scaleHeight
-        });
-        if (imgData.options.response) {
-          checkBox.check();
-        } else {
-          checkBox.uncheck();
+        if (imgData?.options?.values.length > 0) {
+          imgData?.options?.values.forEach((item, ind) => {
+            const checkboxRandomId = "checkbox" + randomId();
+            let yPosition;
+            const height = 10;
+            if (imgData?.options?.response) {
+              isCheck = imgData?.options?.response?.includes(ind);
+            } else if (imgData?.options?.defaultValue) {
+              isCheck = imgData?.options?.defaultValue?.includes(ind);
+            }
+
+            const checkbox = form.createCheckBox(checkboxRandomId);
+            if (ind > 0) {
+              yPosition = yPos(imgData, ind) - addYPosition;
+              addYPosition = addYPosition + height + 10;
+            } else {
+              yPosition = yPos(imgData, ind);
+              addYPosition = height + 10;
+            }
+
+            checkbox.addToPage(page, {
+              x: xPos(imgData),
+              y: yPosition,
+              width: height,
+              height: height
+            });
+            if (isCheck) {
+              checkbox.check();
+            } else {
+              checkbox.uncheck();
+            }
+            checkbox.enableReadOnly();
+          });
         }
 
-        checkBox.enableReadOnly();
+        // const checkBox = form.createCheckBox(randomboxId);
+
+        // checkBox.addToPage(page, {
+        //   x: xPos(imgData),
+        //   y: yPos(imgData),
+        //   width: scaleWidth,
+        //   height: scaleHeight
+        // });
+        // if (imgData.options.response) {
+        //   checkBox.check();
+        // } else {
+        //   checkBox.uncheck();
+        // }
+
+        // checkBox.enableReadOnly();
       } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
