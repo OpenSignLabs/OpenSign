@@ -22,7 +22,7 @@ const EditTemplate = ({ template, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const data = {...formData }
+    const data = { ...formData };
     onSuccess(data);
   };
 
@@ -43,7 +43,7 @@ const EditTemplate = ({ template, onSuccess }) => {
                 fontWeight: "700"
               }}
             >
-              {template.URL?.split("/")[3]?.split("_")[1]}
+              {template.URL?.split("/")?.pop()?.split("_")[1]}
             </div>
           </div>
           <div className="form-section">

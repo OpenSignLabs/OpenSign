@@ -308,7 +308,7 @@ export const addWidgetOptions = (type) => {
     case "checkbox":
       return defaultOpt;
     case "text":
-      return defaultOpt;
+      return { ...defaultOpt, validation: { type: "text", pattern: "" } };
     case "initials":
       return defaultOpt;
     case "name":
@@ -326,7 +326,7 @@ export const addWidgetOptions = (type) => {
     case "dropdown":
       return defaultOpt;
     case "radio":
-      return defaultOpt;
+      return { ...defaultOpt, values: [] };
     case "label":
       return defaultOpt;
     default:

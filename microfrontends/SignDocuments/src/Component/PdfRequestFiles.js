@@ -314,16 +314,26 @@ function PdfRequestFiles() {
 
         if (checkboxExist) {
           isReadOnly = checkUser[0].placeHolder[i].pos.filter(
-            (position) => !position.options.isReadOnly
+            (position) => !position.options?.isReadOnly
           );
 
           if (isReadOnly && isReadOnly.length > 0) {
             for (let i = 0; i < isReadOnly.length; i++) {
               const minCount =
-                isReadOnly[i].options.validation?.minRequiredCount;
+                isReadOnly[i].options?.validation?.minRequiredCount;
+              const maxCount =
+                isReadOnly[i].options?.validation?.maxRequiredCount;
               const response = isReadOnly[i].options?.response?.length;
               const defaultValue = isReadOnly[i].options?.defaultValue?.length;
-              if (!response) {
+              if (minCount === 0 && maxCount === 0) {
+                if (!minCountAlert) {
+                  minCountAlert = false;
+                }
+              } else if (minCount === 0 && maxCount > 0) {
+                if (!minCountAlert) {
+                  minCountAlert = false;
+                }
+              } else if (!response) {
                 if (!defaultValue) {
                   if (!minCountAlert) {
                     minCountAlert = true;
@@ -346,6 +356,7 @@ function PdfRequestFiles() {
           );
         }
       }
+
       if (checkboxExist && isReadOnly && minCountAlert) {
         setUnSignedWidgetId(checkboxKey);
         setWidgetsTour(true);
@@ -382,34 +393,34 @@ function PdfRequestFiles() {
         );
 
         //function for call to embed signature in pdf and get digital signature pdf
-        try {
-          const res = await signPdfFun(
-            pdfBytes,
-            documentId,
-            signerObjectId,
-            pdfOriginalWidth,
-            pngUrl,
-            containerWH,
-            setIsAlert
-          );
-          if (res && res.status === "success") {
-            setPdfUrl(res.data);
-            setIsSigned(true);
-            setSignedSigners([]);
-            setUnSignedSigners([]);
-            getDocumentDetails();
-          } else {
-            setIsAlert({
-              isShow: true,
-              alertMessage: "something went wrong"
-            });
-          }
-        } catch (err) {
-          setIsAlert({
-            isShow: true,
-            alertMessage: "something went wrong"
-          });
-        }
+        // try {
+        //   const res = await signPdfFun(
+        //     pdfBytes,
+        //     documentId,
+        //     signerObjectId,
+        //     pdfOriginalWidth,
+        //     pngUrl,
+        //     containerWH,
+        //     setIsAlert
+        //   );
+        //   if (res && res.status === "success") {
+        //     setPdfUrl(res.data);
+        //     setIsSigned(true);
+        //     setSignedSigners([]);
+        //     setUnSignedSigners([]);
+        //     getDocumentDetails();
+        //   } else {
+        //     setIsAlert({
+        //       isShow: true,
+        //       alertMessage: "something went wrong"
+        //     });
+        //   }
+        // } catch (err) {
+        //   setIsAlert({
+        //     isShow: true,
+        //     alertMessage: "something went wrong"
+        //   });
+        // }
       }
 
       setIsSignPad(false);

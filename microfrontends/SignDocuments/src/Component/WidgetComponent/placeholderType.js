@@ -24,7 +24,6 @@ function PlaceholderType(props) {
     if (props.pos?.options.validation.type === "regex") {
       regexObject = RegexParser(regexValidation);
     }
-
     // new RegExp(regexValidation);
     let isValidate = regexObject.test(textValue);
     if (!isValidate) {
@@ -62,6 +61,7 @@ function PlaceholderType(props) {
   const handleTextValid = (e, regx) => {
     const textInput = e.target.value;
     setTextValue(textInput);
+
     // console.log('textInput',textInput)
     // let isValidate = regx.test(textValue);
     // console.log('isValidate',isValidate,regx)
