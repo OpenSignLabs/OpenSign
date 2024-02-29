@@ -3,6 +3,11 @@ title: Localhost Setup with Docker
 ---
 import ReactPlayer from 'react-player';
 
+## Steps to run OpenSign™ with docker in macos/linux:
+  1. Firstly install docker and then run it.
+  1. Now open terminal then type `git clone https://github.com/OpenSignLabs/OpenSign` and hit `Enter` it will clone OpenSign project in your local.
+  2. then type `cd OpenSign` command and hit `Enter` this will open OpenSign project in terminal.
+  3. then type `make build`
       
 ## Steps to run OpenSign™ with docker in windows:
   1. Setup WSL 2 in windows. To install WSL 2 refer below video
@@ -11,20 +16,19 @@ import ReactPlayer from 'react-player';
     <ReactPlayer playing controls url='https://youtu.be/1kFFwknneD8?si=FKriXPwFqZPLUagI' />
 </div>
       
-   2. You must have to install docker desktop in windows.
-   3. Enable wsl in docker desktop on this path `Setting > Resources > WSL Inegration`.
+   2. Now install docker desktop in windows and open docker desktop.
+   3. Enable wsl in docker desktop by moving on this location `Setting > Resources > WSL Inegration` and click on check box and then click on `apply & restart` button and now minimize it.
 
 ![docker](https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20201448.png) 
       
-   4. Clone repository from [opensign™ github](https://github.com/OpenSignLabs/OpenSign).
-   5. Go to your desired destination in your windows then open powershell in that folder using `Shift + right click of mouse` and select powersehll option from options. 
-   6. Open powershell and tyoe `git clone <repo url>` and hit `Enter`.
-   7. Then open OpenSign folder with vs code and go to `apps > mongo > mongo-init.sh` and change type of this file from `CRLF` to `LF` and then save this file.
+   4. Go to your desired destination in your windows then open powershell in that folder using `Shift + right click of mouse` and select `Open Powershell window here` from options. 
+   5. Open powershell and type `git clone https://github.com/OpenSignLabs/OpenSign` and hit `Enter` it will clone OpenSign project in you local.
+   6. Then open OpenSign folder with vs code and go to `apps > mongo > mongo-init.sh` and change type of this file from `CRLF` to `LF` and then save this file and close vs code.
 
 ![docker](https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20175944.png) 
 
-   8. Open ubuntu/WSL terminal and write command to navigate to folder where you have clone OpenSign project for e.g. `cd mnt/c/testing/docker/OpenSign` and hit `Enter`.
-   9. Now type command `Make build` and it will start build image for docker it will take some time and then run. for more specific steps watch below video.
+   7. Open ubuntu/WSL terminal and write command to navigate to folder where you have clone OpenSign project for e.g. `cd mnt/c/testing/docker/OpenSign` and hit `Enter`.
+   8. Now type command `Make build` and it will start build image for docker, it will take some time to build and start. for more specific steps watch below video.
 
 <div>
     <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
