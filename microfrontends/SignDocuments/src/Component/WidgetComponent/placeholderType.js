@@ -12,7 +12,6 @@ function PlaceholderType(props) {
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState("");
-  const [checkedValue, setCheckedValue] = useState(false);
   const [isCheckedRadio, setIsCheckedRadio] = useState({
     isChecked: false,
     selectValue: ""
@@ -239,28 +238,6 @@ function PlaceholderType(props) {
     const size = fontSize ? fontSize : 12;
     return size + "px";
   };
-
-  const handleChecked = () => {
-    if (props.isPlaceholder) {
-      if (props.pos?.options?.status === "Read only") {
-        if (checkedValue) {
-          return checkedValue;
-        } else {
-          const isChecked = true;
-          return isChecked;
-        }
-      } else {
-        if (checkedValue) {
-          return !checkedValue;
-        } else {
-          return false;
-        }
-      }
-    } else {
-      return props.pos?.options?.response;
-    }
-  };
-
   //function for show checked checkbox
   const selectCheckbox = (ind) => {
     const res = props.pos.options?.response;
@@ -330,44 +307,6 @@ function PlaceholderType(props) {
       );
     case "checkbox":
       return (
-        // <input
-        //   className="inputPlaceholder"
-        //   style={{ outlineColor: "#007bff" }}
-        //   type="checkbox"
-        //   defaultChecked={props.pos?.options?.status === "Read only"}
-        //   disabled={
-        //     props.isNeedSign && props.data?.signerObjId !== props.signerObjId
-        //       ? true
-        //       : props.isNeedSign &&
-        //         props.pos?.options?.status === "Read only" &&
-        //         true
-        //     // : props.isPlaceholder
-        //   }
-        //   onBlur={handleInputBlur}
-        //   checked={handleChecked()}
-        //   onChange={(e) => {
-        //     let isChecked = e.target.checked;
-        //     if (props.isPlaceholder) {
-        //       if (props.pos?.options?.status === "Read only") {
-        //         setCheckedValue(true);
-        //         isChecked = true;
-        //       } else {
-        //         setCheckedValue(false);
-        //         isChecked = false;
-        //       }
-        //     }
-
-        //     onChangeInput(
-        //       isChecked,
-        //       props.pos.key,
-        //       props.xyPostion,
-        //       props.index,
-        //       props.setXyPostion,
-        //       props.data && props.data.Id,
-        //       false
-        //     );
-        //   }}
-        // />
         <div>
           {props.pos.options?.values?.map((data, ind) => {
             return (

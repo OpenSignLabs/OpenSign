@@ -54,8 +54,6 @@ const TemplatePlaceholder = () => {
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
-  const [isCheckboxRequired, setIsCheckboxRequired] = useState(false);
-  const [selectRequiredType, setSelectRequiredType] = useState("Optional");
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -480,7 +478,6 @@ const TemplatePlaceholder = () => {
         if (dragTypeValue === "dropdown") {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
-          // setIsCheckboxRequired(true);
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
@@ -1018,39 +1015,17 @@ const TemplatePlaceholder = () => {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
-            if (widgetType === "checkbox") {
-              if (selectRequiredType === "Read only") {
-                return {
-                  ...position,
-                  options: {
-                    ...position.options,
-                    status: selectRequiredType,
-                    response: true
-                  }
-                };
-              } else {
-                return {
-                  ...position,
-                  options: {
-                    ...position.options,
-                    status: selectRequiredType,
-                    response: false
-                  }
-                };
-              }
-            } else {
-              return {
-                ...position,
-                options: {
-                  ...position.options,
-                  hint: hint,
-                  validation: {
-                    type: regexType ? regularExpression : "regex",
-                    pattern: !regexType ? regularExpression : ""
-                  }
+            return {
+              ...position,
+              options: {
+                ...position.options,
+                hint: hint,
+                validation: {
+                  type: regexType ? regularExpression : "regex",
+                  pattern: !regexType ? regularExpression : ""
                 }
-              };
-            }
+              }
+            };
           }
           return position;
         });
@@ -1067,11 +1042,7 @@ const TemplatePlaceholder = () => {
           }
           return obj;
         });
-
         setSignerPos(newUpdateSigner);
-        setIsCheckboxRequired(false);
-
-        setSelectRequiredType("Optional");
       }
     }
   };
@@ -1309,58 +1280,6 @@ const TemplatePlaceholder = () => {
                 type={"signersAlert"}
                 setIsShowEmail={setIsShowEmail}
               />
-
-              {/* checkbox widget status component */}
-              <ModalUi isOpen={isCheckboxRequired} title={"Checkbox"}>
-                <div style={{ height: "100%", padding: 20 }}>
-                  {checkboxType.map((data, key) => {
-                    return (
-                      <div
-                        key={key}
-                        style={{ display: "flex", flexDirection: "column" }}
-                      >
-                        <label
-                          key={key}
-                          style={{ fontSize: "16px", fontWeight: "500" }}
-                        >
-                          <input
-                            style={{ accentColor: "red", marginRight: "10px" }}
-                            type="radio"
-                            value={data}
-                            onChange={() => setSelectRequiredType(data)}
-                            checked={selectRequiredType === data}
-                          />
-
-                          {data}
-                        </label>
-                      </div>
-                    );
-                  })}
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
-                  <button
-                    onClick={() => {
-                      handleApplyWidgetsStatus();
-                    }}
-                    style={{
-                      background: themeColor()
-                    }}
-                    type="button"
-                    // disabled={!selectCopyType}
-                    className="finishBtn"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </ModalUi>
               <InputValidation
                 setIsValidate={setIsValidate}
                 handleValidateInput={handleValidateInput}
@@ -1457,7 +1376,6 @@ const TemplatePlaceholder = () => {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     setWidgetType={setWidgetType}
                     setIsRadio={setIsRadio}
-                    setIsCheckboxRequired={setIsCheckboxRequired}
                     setIsValidate={setIsValidate}
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}

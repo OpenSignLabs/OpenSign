@@ -321,15 +321,17 @@ function PdfRequestFiles() {
             for (let i = 0; i < isReadOnly.length; i++) {
               const minCount =
                 isReadOnly[i].options?.validation?.minRequiredCount;
+              const parseMin = minCount && parseInt(minCount);
               const maxCount =
                 isReadOnly[i].options?.validation?.maxRequiredCount;
+              const parseMax = maxCount && parseInt(maxCount);
               const response = isReadOnly[i].options?.response?.length;
               const defaultValue = isReadOnly[i].options?.defaultValue?.length;
-              if (minCount === 0 && maxCount === 0) {
+              if (parseMin === 0 && parseMax === 0) {
                 if (!minCountAlert) {
                   minCountAlert = false;
                 }
-              } else if (minCount === 0 && maxCount > 0) {
+              } else if (parseMin === 0 && parseMax > 0) {
                 if (!minCountAlert) {
                   minCountAlert = false;
                 }
@@ -338,14 +340,14 @@ function PdfRequestFiles() {
                   if (!minCountAlert) {
                     minCountAlert = true;
                     checkboxKey = isReadOnly[i].key;
-                    setminRequiredCount(minCount);
+                    setminRequiredCount(parseMin);
                   }
                 }
-              } else if (minCount > 0 && minCount > response) {
+              } else if (parseMin > 0 && parseMin > response) {
                 if (!minCountAlert) {
                   minCountAlert = true;
                   checkboxKey = isReadOnly[i].key;
-                  setminRequiredCount(minCount);
+                  setminRequiredCount(parseMin);
                 }
               }
             }

@@ -49,23 +49,22 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
         // Adjust this line to add the desired field
       };
     } else {
-      const widgetData =
-        item.type === "name"
-          ? value?.Name
-          : item.type === "company"
-            ? value?.Company
-            : item.type === "job title"
-              ? value?.JobTitle
-              : item.type === "email"
-                ? value?.Email
-                : "";
-
-      if (
-        item.type === "name" ||
-        item.type === "company" ||
-        item.type === "job title" ||
-        item.type === "email"
-      ) {
+      function widgetDataValue(type) {
+        switch (type) {
+          case "name":
+            return value?.Name;
+          case "company":
+            return value?.Company;
+          case "job title":
+            return value?.JobTitle;
+          case "email":
+            return value?.Email;
+          default:
+            return "";
+        }
+      }
+      const widgetData = widgetDataValue(item.type);
+      if (["name", "company", "job title", "email"].includes(item.type)) {
         return {
           ...item,
           options: {
@@ -973,26 +972,21 @@ export const multiSignEmbed = async (
       })
     );
 
-    imgUrlList.forEach(async (imgData, id) => {
+    imgUrlList.forEach(async (position, id) => {
       let img;
-      if (
-        imgData.type === "signature" ||
-        imgData.type === "stamp" ||
-        imgData.type === "initials" ||
-        imgData.type === "image"
-      ) {
+      if (["signature", "stamp", "initials", "image"].includes(position.type)) {
         if (
-          (imgData.ImageType && imgData.ImageType === "image/png") ||
-          imgData.ImageType === "image/jpeg"
+          (position.ImageType && position.ImageType === "image/png") ||
+          position.ImageType === "image/jpeg"
         ) {
           img = await pdfDoc.embedJpg(images[id]);
         } else {
           img = await pdfDoc.embedPng(images[id]);
         }
-      } else if (!imgData.type) {
+      } else if (!position.type) {
         if (
-          (imgData.ImageType && imgData.ImageType === "image/png") ||
-          imgData.ImageType === "image/jpeg"
+          (position.ImageType && position.ImageType === "image/png") ||
+          position.ImageType === "image/jpeg"
         ) {
           img = await pdfDoc.embedJpg(images[id]);
         } else {
@@ -1000,11 +994,12 @@ export const multiSignEmbed = async (
         }
       }
       let scaleWidth, scaleHeight;
-      scaleWidth = placeholderWidth(imgData, scale, signyourself);
-      scaleHeight = placeholderHeight(imgData, scale, signyourself);
+      scaleWidth = placeholderWidth(position, scale, signyourself);
+      scaleHeight = placeholderHeight(position, scale, signyourself);
 
       const xPos = (pos) => {
         const resizePos = pos.xPosition;
+
         if (signyourself) {
           if (isMobile) {
             return resizePos * scale;
@@ -1069,18 +1064,29 @@ export const multiSignEmbed = async (
               }
             } else {
               const widgetHeight =
-                imgData.type === "radio"
+                position.type === "radio"
                   ? 10
-                  : imgData.type === "checkbox"
+                  : position.type === "checkbox"
                     ? 10
                     : scaleHeight;
-              return page.getHeight() - resizePos - widgetHeight;
-              // - scaleHeight;
+              const newHeight = ind
+                ? ind > 0
+                  ? widgetHeight
+                  : 0
+                : widgetHeight;
+
+              if (ind && ind > 0 && position.type === "checkbox") {
+                return page.getHeight() - resizePos - newHeight;
+              } else if (!ind && position.type === "checkbox") {
+                return page.getHeight() - resizePos;
+              } else {
+                return page.getHeight() - resizePos - newHeight;
+              }
             }
           }
         }
       };
-      const randomboxId = "randombox_" + imgData.key;
+      const randomboxId = "randombox_" + position.key;
       const widgetTypeExist = [
         "text",
         "name",
@@ -1089,32 +1095,31 @@ export const multiSignEmbed = async (
         "date",
         "email",
         "label"
-      ].includes(imgData.type);
-      if (imgData.type === "checkbox") {
+      ].includes(position.type);
+      if (position.type === "checkbox") {
         let addYPosition, isCheck;
 
-        if (imgData?.options?.values.length > 0) {
-          imgData?.options?.values.forEach((item, ind) => {
+        if (position?.options?.values.length > 0) {
+          position?.options?.values.forEach((item, ind) => {
             const checkboxRandomId = "checkbox" + randomId();
             let yPosition;
             const height = 10;
-            if (imgData?.options?.response) {
-              isCheck = imgData?.options?.response?.includes(ind);
-            } else if (imgData?.options?.defaultValue) {
-              isCheck = imgData?.options?.defaultValue?.includes(ind);
+            if (position?.options?.response) {
+              isCheck = position?.options?.response?.includes(ind);
+            } else if (position?.options?.defaultValue) {
+              isCheck = position?.options?.defaultValue?.includes(ind);
             }
 
             const checkbox = form.createCheckBox(checkboxRandomId);
             if (ind > 0) {
-              yPosition = yPos(imgData, ind) - addYPosition;
+              yPosition = yPos(position, ind) - addYPosition;
               addYPosition = addYPosition + height + 10;
             } else {
-              yPosition = yPos(imgData, ind);
-              addYPosition = height + 10;
+              yPosition = yPos(position, ind);
+              addYPosition = height;
             }
-
             checkbox.addToPage(page, {
-              x: xPos(imgData),
+              x: xPos(position),
               y: yPosition,
               width: height,
               height: height
@@ -1127,59 +1132,43 @@ export const multiSignEmbed = async (
             checkbox.enableReadOnly();
           });
         }
-
-        // const checkBox = form.createCheckBox(randomboxId);
-
-        // checkBox.addToPage(page, {
-        //   x: xPos(imgData),
-        //   y: yPos(imgData),
-        //   width: scaleWidth,
-        //   height: scaleHeight
-        // });
-        // if (imgData.options.response) {
-        //   checkBox.check();
-        // } else {
-        //   checkBox.uncheck();
-        // }
-
-        // checkBox.enableReadOnly();
       } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
-        const textContent = imgData.options?.response;
+        const textContent = position.options?.response;
         page.drawText(textContent, {
-          x: xPos(imgData),
-          y: yPos(imgData) + 10,
+          x: xPos(position),
+          y: yPos(position) + 10,
           size: fontSize,
           font,
           color: rgb(0, 0, 0)
         });
-      } else if (imgData.type === "dropdown") {
+      } else if (position.type === "dropdown") {
         const dropdown = form.createDropdown(randomboxId);
-        dropdown.addOptions(imgData?.options?.values);
-        dropdown.select(imgData.options?.response);
+        dropdown.addOptions(position?.options?.values);
+        dropdown.select(position.options?.response);
         dropdown.addToPage(page, {
-          x: xPos(imgData),
-          y: yPos(imgData),
+          x: xPos(position),
+          y: yPos(position),
           width: scaleWidth,
           height: scaleHeight
         });
         dropdown.enableReadOnly();
-      } else if (imgData.type === "radio") {
+      } else if (position.type === "radio") {
         const radioGroup = form.createRadioGroup(randomboxId);
         let addYPosition = 18;
 
-        for (let i = 1; i <= imgData?.options?.values.length; i++) {
-          const data = imgData?.options?.values[i - 1];
+        for (let i = 1; i <= position?.options?.values.length; i++) {
+          const data = position?.options?.values[i - 1];
           let yPosition;
           if (i > 1) {
-            yPosition = yPos(imgData) - addYPosition;
+            yPosition = yPos(position) - addYPosition;
           } else {
-            yPosition = yPos(imgData);
+            yPosition = yPos(position);
           }
 
           radioGroup.addOptionToPage(data, page, {
-            x: xPos(imgData),
+            x: xPos(position),
             y: yPosition,
             width: 11,
             height: 11
@@ -1189,12 +1178,12 @@ export const multiSignEmbed = async (
           }
         }
 
-        radioGroup.select(imgData.options?.response);
+        radioGroup.select(position.options?.response);
         radioGroup.enableReadOnly();
       } else {
         page.drawImage(img, {
-          x: xPos(imgData),
-          y: yPos(imgData),
+          x: xPos(position),
+          y: yPos(position),
           width: scaleWidth,
           height: scaleHeight
         });

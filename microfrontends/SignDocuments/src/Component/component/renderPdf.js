@@ -21,7 +21,6 @@ function RenderPdf({
   drop,
   signerPos,
   successEmail,
-
   handleTabDrag,
   handleStop,
   isDragging,
@@ -31,7 +30,6 @@ function RenderPdf({
   setSignKey,
   pdfDetails,
   xyPostion,
-
   pdfUrl,
   numPages,
   pageDetails,
@@ -47,7 +45,6 @@ function RenderPdf({
   index,
   containerWH,
   setIsResize,
-
   handleLinkUser,
   setUniqueId,
   signersdata,
@@ -55,7 +52,6 @@ function RenderPdf({
   setSignerObjId,
   setShowDropdown,
   setIsInitial,
-  setIsCheckboxRequired,
   setIsValidate,
   setWidgetType,
   setValidateAlert,
@@ -391,9 +387,6 @@ function RenderPdf({
                                         posWidth={posWidth}
                                         posHeight={posHeight}
                                         isDragging={isDragging}
-                                        setIsCheckboxRequired={
-                                          setIsCheckboxRequired
-                                        }
                                         setIsValidate={setIsValidate}
                                         setWidgetType={setWidgetType}
                                         setIsRadio={setIsRadio}
@@ -571,9 +564,6 @@ function RenderPdf({
                                           posWidth={posWidth}
                                           posHeight={posHeight}
                                           isDragging={isDragging}
-                                          setIsCheckboxRequired={
-                                            setIsCheckboxRequired
-                                          }
                                           setIsValidate={setIsValidate}
                                           setWidgetType={setWidgetType}
                                           setIsRadio={setIsRadio}
