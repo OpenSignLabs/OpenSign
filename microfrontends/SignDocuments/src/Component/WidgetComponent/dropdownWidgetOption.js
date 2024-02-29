@@ -10,6 +10,9 @@ function DropdownWidgetOption(props) {
   const [maxCount, setMaxCount] = useState(0);
   const [dropdownName, setDropdownName] = useState(props.type);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [status, setStatus] = useState("required");
+  const [defaultValue, setDefaultValue] = useState("");
+  const statusArr = ["required", "optional"];
 
   useEffect(() => {
     if (
@@ -25,9 +28,12 @@ function DropdownWidgetOption(props) {
         props.currWidgetsDetails?.options?.validation?.maxRequiredCount
       );
       setIsReadOnly(props.currWidgetsDetails?.options?.isReadOnly);
+      setStatus(props.currWidgetsDetails?.options?.status || "required");
+      setDefaultValue(props.currWidgetsDetails?.options?.defaultValue);
+    } else {
+      setStatus("required");
     }
   }, [props.currWidgetsDetails]);
-
   const handleInputChange = (index, value) => {
     setDropdownOptionList((prevInputs) => {
       const newInputs = [...prevInputs];
@@ -56,7 +62,11 @@ function DropdownWidgetOption(props) {
       dropdownOptionList,
       minCount,
       maxCount,
-      isReadOnly
+      isReadOnly,
+      null,
+      null,
+      status,
+      defaultValue
     );
     props.setShowDropdown(false);
     setDropdownOptionList(["option-1", "option-2"]);
@@ -105,6 +115,71 @@ function DropdownWidgetOption(props) {
           }}
         >
           <div className="dropdownContainer">
+            <label style={{ fontSize: "13px", fontWeight: "600" }}>
+              Name<span style={{ color: "red", fontSize: 13 }}> *</span>
+            </label>
+            <input
+              required
+              defaultValue={dropdownName}
+              value={dropdownName}
+              onChange={(e) => setDropdownName(e.target.value)}
+              className="drodown-input"
+            />
+            {props.type !== "checkbox" && (
+              <>
+                <label
+                  style={{ fontSize: "13px", fontWeight: "600", marginTop: 2 }}
+                >
+                  status
+                </label>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 10,
+                    marginBottom: "0.5rem"
+                  }}
+                >
+                  {statusArr.map((data, ind) => {
+                    return (
+                      <div
+                        key={ind}
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: 5,
+                          alignItems: "center"
+                        }}
+                      >
+                        <input
+                          style={{ accentColor: "red" }}
+                          type="radio"
+                          name="status"
+                          onChange={(e) => setStatus(data.toLowerCase())}
+                          checked={status.toLowerCase() === data.toLowerCase()}
+                        />
+                        <div style={{ fontSize: "13px", fontWeight: "500" }}>
+                          {data}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+            {props.type !== "checkbox" && (
+              <>
+                <label style={{ fontSize: "13px", fontWeight: "600" }}>
+                  Default value
+                </label>
+                <input
+                  // defaultValue={dropdownName}
+                  value={defaultValue}
+                  onChange={(e) => setDefaultValue(e.target.value)}
+                  className="drodown-input"
+                />
+              </>
+            )}
             {props.type === "checkbox" && !props.isSignYourself && (
               <>
                 <label style={{ fontSize: "13px", fontWeight: "600" }}>
@@ -135,15 +210,6 @@ function DropdownWidgetOption(props) {
                 />
               </>
             )}
-
-            <label style={{ fontSize: "13px", fontWeight: "600" }}>Name</label>
-            <input
-              required
-              defaultValue={dropdownName}
-              value={dropdownName}
-              onChange={(e) => setDropdownName(e.target.value)}
-              className="drodown-input"
-            />
             <label
               style={{ fontSize: "13px", fontWeight: "600", marginTop: "5px" }}
             >

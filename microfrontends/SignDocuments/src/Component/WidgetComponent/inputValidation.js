@@ -4,6 +4,23 @@ import ModalUi from "../../premitives/ModalUi";
 
 function InputValidation(props) {
   const options = ["email", "number", "text"];
+  useEffect(() => {
+    if (
+      props.currWidgetsDetails?.options?.validation?.pattern ||
+      props.currWidgetsDetails.options?.validation?.type
+    ) {
+      props.setHint(props.currWidgetsDetails?.options?.hint || "");
+      if (props.currWidgetsDetails.options?.validation.type === "regex") {
+        props.setTextValidate(
+          props.currWidgetsDetails.options?.validation?.pattern || "text"
+        );
+      } else {
+        props.setTextValidate(
+          props.currWidgetsDetails.options?.validation?.type || "text"
+        );
+      }
+    }
+  }, [props.currWidgetsDetails]);
   return (
     <ModalUi
       isOpen={props.isValidate}
@@ -94,6 +111,8 @@ function InputValidation(props) {
         <button
           onClick={() => {
             props.handleValidateInput();
+            props.setHint("");
+            props.setTextValidate("");
           }}
           style={{
             background: themeColor()

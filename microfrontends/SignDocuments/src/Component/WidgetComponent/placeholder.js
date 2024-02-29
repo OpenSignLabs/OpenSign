@@ -188,13 +188,13 @@ function Placeholder(props) {
       props.setIsRadio(true);
     } else if (props.pos.type === "dropdown") {
       props?.setShowDropdown(true);
-    }
-    if (props.pos.type === "checkbox") {
+    } else if (props.pos.type === "checkbox") {
       props?.setIsCheckbox(true);
     } else if (props.pos.type === "text") {
       props.setIsValidate(true);
+    } else {
+      props?.handleNameModal(true);
     }
-
     props.setSignKey(props.pos.key);
     props.setUniqueId(props.data.Id);
     props.setWidgetType(props.pos.type);
@@ -206,32 +206,28 @@ function Placeholder(props) {
         <>
           {props.isPlaceholder && (
             <>
-              {["checkbox", "text", "dropdown", "radio"].includes(
-                props.pos.type
-              ) && (
-                <i
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWidgetsOnclick();
-                  }}
-                  onTouchEnd={(e) => {
-                    e.stopPropagation();
-                    handleWidgetsOnclick();
-                  }}
-                  className="fa-solid fa-gear settingIcon"
-                  style={{
-                    color: "#188ae2",
-                    right:
-                      props.pos.type === "text" || props.pos.type === "dropdown"
-                        ? "49px"
-                        : "23px",
-                    top:
-                      props.pos.type === "text" || props.pos.type === "dropdown"
-                        ? "-17px"
-                        : "-28px"
-                  }}
-                ></i>
-              )}
+              <i
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleWidgetsOnclick();
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  handleWidgetsOnclick();
+                }}
+                className="fa-solid fa-gear settingIcon"
+                style={{
+                  color: "#188ae2",
+                  right:
+                    props.pos.type === "text" || props.pos.type === "dropdown"
+                      ? "49px"
+                      : "23px",
+                  top:
+                    props.pos.type === "text" || props.pos.type === "dropdown"
+                      ? "-17px"
+                      : "-28px"
+                }}
+              ></i>
               {props.pos.type !== "label" && (
                 <i
                   data-tut="reactourLinkUser"

@@ -37,6 +37,7 @@ import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import ModalUi from "../premitives/ModalUi";
 import DropdownWidgetOption from "../Component/WidgetComponent/dropdownWidgetOption";
 import InputValidation from "./WidgetComponent/inputValidation";
+import NameModal from "./WidgetComponent/NameModal";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -100,6 +101,7 @@ function PlaceHolderSign() {
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [hint, setHint] = useState("");
+  const [isNameModal, setIsNameModal] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -485,6 +487,8 @@ function PlaceHolderSign() {
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
+        } else {
+          setIsNameModal(true);
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);
@@ -949,7 +953,9 @@ function PlaceHolderSign() {
     maxCount,
     isReadOnly,
     addOption,
-    deleteOption
+    deleteOption,
+    status,
+    defaultValue
   ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -986,7 +992,9 @@ function PlaceHolderSign() {
                   options: {
                     ...position.options,
                     name: dropdownName,
-                    values: dropdownOptions
+                    values: dropdownOptions,
+                    status: status,
+                    defaultValue: defaultValue
                   }
                 };
               }
@@ -1026,7 +1034,9 @@ function PlaceHolderSign() {
                 options: {
                   ...position.options,
                   name: dropdownName,
-                  values: dropdownOptions
+                  status: status,
+                  values: dropdownOptions,
+                  defaultValue: defaultValue
                 }
               };
             }
@@ -1052,6 +1062,56 @@ function PlaceHolderSign() {
     }
   };
 
+  const handleWidgetdefaultdata = (defaultdata) => {
+    // console.log("data ", defaultdata);
+    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+    if (filterSignerPos.length > 0) {
+      const getPlaceHolder = filterSignerPos[0].placeHolder;
+
+      const getPageNumer = getPlaceHolder.filter(
+        (data) => data.pageNumber === pageNumber
+      );
+
+      if (getPageNumer.length > 0) {
+        const getXYdata = getPageNumer[0].pos;
+        const getPosData = getXYdata;
+        const addSignPos = getPosData.map((position, ind) => {
+          if (position.key === signKey) {
+            return {
+              ...position,
+              options: {
+                ...position.options,
+                name: defaultdata.name,
+                status: defaultdata.status,
+                defaultValue: defaultdata.defaultValue
+              }
+            };
+          }
+          return position;
+        });
+
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+        const newUpdateSigner = signerPos.map((obj, ind) => {
+          if (obj.Id === uniqueId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+        console.log("newUpdateSigner ", newUpdateSigner);
+        setSignerPos(newUpdateSigner);
+      }
+    }
+    handleNameModal();
+  };
+
+  const handleNameModal = () => {
+    setIsNameModal(!isNameModal);
+  };
   //function for update TourStatus
   const closeTour = async () => {
     setPlaceholderTour(false);
@@ -1442,6 +1502,8 @@ function PlaceHolderSign() {
                 setHint={setHint}
                 setTextValidate={setTextValidate}
                 textValidate={textValidate}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
@@ -1481,6 +1543,7 @@ function PlaceHolderSign() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
+
               {/* pdf header which contain funish back button */}
               <Header
                 isPlaceholder={true}
@@ -1533,6 +1596,7 @@ function PlaceHolderSign() {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
+                    handleNameModal={handleNameModal}
                   />
                 )}
               </div>
@@ -1650,6 +1714,12 @@ function PlaceHolderSign() {
           isAddUser={isAddUser}
           uniqueId={uniqueId}
           closePopup={closePopup}
+        />
+        <NameModal
+          defaultdata={currWidgetsDetails}
+          isOpen={isNameModal}
+          handleClose={handleNameModal}
+          handleData={handleWidgetdefaultdata}
         />
       </div>
     </>
