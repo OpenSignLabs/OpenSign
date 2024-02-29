@@ -5,10 +5,13 @@ import ReactPlayer from 'react-player';
 
 ## Steps to run OpenSign™ with docker in macos/linux:
   1. Firstly install docker and make sure it is running while moving to next steps.
-  1. Now open terminal then type `git clone https://github.com/OpenSignLabs/OpenSign` and hit `Enter` it will clone OpenSign project in your local.
-  2. then type `cd OpenSign` command and hit `Enter` this will open OpenSign project in terminal.
-  3. then type `make build`
-      
+  2. Now open terminal then type `git clone https://github.com/OpenSignLabs/OpenSign` and hit `Enter` it will clone OpenSign project in your local.
+  3. Then type `cd OpenSign` command and hit `Enter` it will open OpenSign project in terminal.
+  4. Then type `make build` command it will start create container image. It will take sometime to build and start.
+  5. Next time if you want to run docker image just open docker and run opensign container by clicking on play button from actions.
+
+*Note: If you want our updated feature in your docker container just delete opensign container and just follow steps again.* 
+ 
 ## Steps to run OpenSign™ with docker in windows:
   1. Setup WSL 2 in windows. To install WSL 2 refer below video
 
@@ -29,6 +32,9 @@ import ReactPlayer from 'react-player';
 
    7. Open ubuntu/WSL terminal and write command to navigate to folder where you have clone OpenSign project for e.g. `cd mnt/c/testing/docker/OpenSign` and hit `Enter`.
    8. Now type command `Make build` and it will start build image for docker, it will take some time to build and start. for more specific steps watch below video.
+   9. Next time if you want to run docker image just open docker and run opensign container by clicking on play button from actions.
+
+*Note: If you want our updated feature in your docker container just delete opensign container and just follow steps from 2 step again.* 
 
 <div>
     <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
@@ -87,10 +93,3 @@ is present on the requested resource. If an opaque response serves your needs, s
 In order to address this, your document storage system must be instructed to accept requests from other hosts; below the relevant documentation links:
 - [How to Configure CORS on DigitalOcean Spaces](https://docs.digitalocean.com/products/spaces/how-to/configure-cors/)
 - [Configuring cross-origin resource sharing on AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enabling-cors-examples.html)
-
-# Build Local Environment
-
-Command to build & run project (make sure that you have docker install and running) -
-- Execute `make build``
-
-Note: this command only works on linux and mac. If you want to run it in windows use [WSL system](https://youtu.be/1kFFwknneD8?si=FKriXPwFqZPLUagI).  
