@@ -15,6 +15,7 @@ import HandleError from "./component/HandleError";
 import Nodata from "./component/Nodata";
 import SignerListPlace from "./component/signerListPlace";
 import Header from "./component/header";
+import NameModal from "./WidgetComponent/NameModal";
 import {
   pdfNewWidthFun,
   contractUsers,
@@ -84,6 +85,7 @@ const TemplatePlaceholder = () => {
   const [isValidate, setIsValidate] = useState(false);
   const [textValidate, setTextValidate] = useState("");
   const [hint, setHint] = useState("");
+  const [isNameModal, setIsNameModal] = useState(false);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -448,6 +450,8 @@ const TemplatePlaceholder = () => {
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
+        } else {
+          setIsNameModal(true);
         }
         setCurrWidgetsDetails("");
         setWidgetType(dragTypeValue);
@@ -1021,7 +1025,9 @@ const TemplatePlaceholder = () => {
     maxCount,
     isReadOnly,
     addOption,
-    deleteOption
+    deleteOption,
+    status,
+    defaultValue
   ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1059,7 +1065,9 @@ const TemplatePlaceholder = () => {
                   options: {
                     ...position.options,
                     name: dropdownName,
-                    values: dropdownOptions
+                    values: dropdownOptions,
+                    status: status,
+                    defaultValue: defaultValue
                   }
                 };
               }
@@ -1099,7 +1107,9 @@ const TemplatePlaceholder = () => {
                 options: {
                   ...position.options,
                   name: dropdownName,
-                  values: dropdownOptions
+                  status: status,
+                  values: dropdownOptions,
+                  defaultValue: defaultValue
                 }
               };
             }
@@ -1125,6 +1135,54 @@ const TemplatePlaceholder = () => {
     }
   };
 
+  const handleWidgetdefaultdata = (defaultdata) => {
+    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
+    if (filterSignerPos.length > 0) {
+      const getPlaceHolder = filterSignerPos[0].placeHolder;
+
+      const getPageNumer = getPlaceHolder.filter(
+        (data) => data.pageNumber === pageNumber
+      );
+
+      if (getPageNumer.length > 0) {
+        const getXYdata = getPageNumer[0].pos;
+        const getPosData = getXYdata;
+        const addSignPos = getPosData.map((position, ind) => {
+          if (position.key === signKey) {
+            return {
+              ...position,
+              options: {
+                ...position.options,
+                name: defaultdata.name,
+                status: defaultdata.status,
+                defaultValue: defaultdata.defaultValue
+              }
+            };
+          }
+          return position;
+        });
+
+        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
+          if (obj.pageNumber === pageNumber) {
+            return { ...obj, pos: addSignPos };
+          }
+          return obj;
+        });
+        const newUpdateSigner = signerPos.map((obj, ind) => {
+          if (obj.Id === uniqueId) {
+            return { ...obj, placeHolder: newUpdateSignPos };
+          }
+          return obj;
+        });
+        console.log("newUpdateSigner ", newUpdateSigner);
+        setSignerPos(newUpdateSigner);
+      }
+    }
+    handleNameModal();
+  };
+  const handleNameModal = () => {
+    setIsNameModal(!isNameModal);
+  };
   const handleValidateInput = (e) => {
     handleApplyWidgetsStatus(textValidate);
     setIsValidate(false);
@@ -1254,6 +1312,8 @@ const TemplatePlaceholder = () => {
                 setHint={setHint}
                 setTextValidate={setTextValidate}
                 textValidate={textValidate}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               <DropdownWidgetOption
                 type="radio"
@@ -1347,6 +1407,7 @@ const TemplatePlaceholder = () => {
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
                     setIsCheckbox={setIsCheckbox}
+                    handleNameModal={handleNameModal}
                   />
                 )}
               </div>
@@ -1467,6 +1528,12 @@ const TemplatePlaceholder = () => {
           onSuccess={handleEditTemplateForm}
         />
       </ModalUi>
+      <NameModal
+        defaultdata={currWidgetsDetails}
+        isOpen={isNameModal}
+        handleClose={handleNameModal}
+        handleData={handleWidgetdefaultdata}
+      />
     </div>
   );
 };
