@@ -40,7 +40,7 @@ import ReactPlayer from 'react-player';
     <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
 </div>
 
-## Information for ENV variables which are used to setup OpenSign™ with Docker on Localhost
+## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
 To set up OpenSign™ locally using Docker, the following prerequisites are required:
 
 Environment Varaibles:
