@@ -37,7 +37,6 @@ import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import ModalUi from "../premitives/ModalUi";
 import DropdownWidgetOption from "../Component/WidgetComponent/dropdownWidgetOption";
 import InputValidation from "./WidgetComponent/inputValidation";
-import CheckboxStatus from "./WidgetComponent/checkboxStatus";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -92,9 +91,6 @@ function PlaceHolderSign() {
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isCheckboxRequired, setIsCheckboxRequired] = useState(false);
-  const [selectRequiredType, setSelectRequiredType] = useState("Optional");
-
   const [isValidate, setIsValidate] = useState(false);
   const [textValidate, setTextValidate] = useState("");
   const [widgetType, setWidgetType] = useState("");
@@ -486,7 +482,6 @@ function PlaceHolderSign() {
         if (dragTypeValue === "dropdown") {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
-          // setIsCheckboxRequired(true);
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
@@ -1171,39 +1166,17 @@ function PlaceHolderSign() {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position, ind) => {
           if (position.key === signKey) {
-            if (widgetType === "checkbox") {
-              if (selectRequiredType === "Read only") {
-                return {
-                  ...position,
-                  options: {
-                    ...position.options,
-                    status: selectRequiredType,
-                    response: true
-                  }
-                };
-              } else {
-                return {
-                  ...position,
-                  options: {
-                    ...position.options,
-                    status: selectRequiredType,
-                    response: false
-                  }
-                };
-              }
-            } else {
-              return {
-                ...position,
-                options: {
-                  ...position.options,
-                  hint: hint,
-                  validation: {
-                    type: regexType ? regularExpression : "regex",
-                    pattern: !regexType ? regularExpression : ""
-                  }
+            return {
+              ...position,
+              options: {
+                ...position.options,
+                hint: hint,
+                validation: {
+                  type: regexType ? regularExpression : "regex",
+                  pattern: !regexType ? regularExpression : ""
                 }
-              };
-            }
+              }
+            };
           }
           return position;
         });
@@ -1222,9 +1195,7 @@ function PlaceHolderSign() {
         });
 
         setSignerPos(newUpdateSigner);
-        setIsCheckboxRequired(false);
         setTextValidate("");
-        setSelectRequiredType("Optional");
       }
     }
   };
@@ -1456,16 +1427,6 @@ function PlaceHolderSign() {
                   </button>
                 </div>
               </ModalUi>
-              {/* checkbox widget status component */}
-              {/* <CheckboxStatus
-                setSelectRequiredType={setSelectRequiredType}
-                selectRequiredType={selectRequiredType}
-                isCheckboxRequired={isCheckboxRequired}
-                setIsCheckboxRequired={setIsCheckboxRequired}
-                handleApplyWidgetsStatus={handleApplyWidgetsStatus}
-                currWidgetsDetails={currWidgetsDetails}
-                setCurrWidgetsDetails={setCurrWidgetsDetails}
-              /> */}
               <InputValidation
                 setIsValidate={setIsValidate}
                 handleValidateInput={handleValidateInput}
@@ -1558,7 +1519,6 @@ function PlaceHolderSign() {
                     setUniqueId={setUniqueId}
                     isDragging={isDragging}
                     setShowDropdown={setShowDropdown}
-                    setIsCheckboxRequired={setIsCheckboxRequired}
                     setIsValidate={setIsValidate}
                     setWidgetType={setWidgetType}
                     setIsRadio={setIsRadio}

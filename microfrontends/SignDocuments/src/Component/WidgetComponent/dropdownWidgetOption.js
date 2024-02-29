@@ -67,6 +67,14 @@ function DropdownWidgetOption(props) {
     setMaxCount(0);
   };
 
+  const handleSetMinMax = (e) => {
+    const minValue = e.target.value;
+    if (minValue > dropdownOptionList.length) {
+      return "";
+    } else {
+      return minValue;
+    }
+  };
   return (
     //props.showDropdown
     <ModalUi
@@ -106,7 +114,10 @@ function DropdownWidgetOption(props) {
                   required
                   defaultValue={0}
                   value={minCount}
-                  onChange={(e) => setMinCount(e.target.value)}
+                  onChange={(e) => {
+                    const count = handleSetMinMax(e);
+                    setMinCount(count);
+                  }}
                   className="drodown-input"
                 />
                 <label style={{ fontSize: "13px", fontWeight: "600" }}>
@@ -116,7 +127,10 @@ function DropdownWidgetOption(props) {
                   required
                   defaultValue={0}
                   value={maxCount}
-                  onChange={(e) => setMaxCount(e.target.value)}
+                  onChange={(e) => {
+                    const count = handleSetMinMax(e);
+                    setMaxCount(count);
+                  }}
                   className="drodown-input"
                 />
               </>
