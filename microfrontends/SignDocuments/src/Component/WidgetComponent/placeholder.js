@@ -50,6 +50,8 @@ function Placeholder(props) {
         return "MMM dd, YYYY";
       case "DD MMMM, YYYY":
         return "dd MMMM, YYYY";
+      default:
+        return "dd/MM/yyyy";
     }
   };
 

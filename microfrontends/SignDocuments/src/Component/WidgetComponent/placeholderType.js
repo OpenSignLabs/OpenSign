@@ -57,19 +57,9 @@ function PlaceholderType(props) {
     }
   };
 
-  const handleTextValid = (e, regx) => {
+  const handleTextValid = (e) => {
     const textInput = e.target.value;
     setTextValue(textInput);
-
-    // console.log('textInput',textInput)
-    // let isValidate = regx.test(textValue);
-    // console.log('isValidate',isValidate,regx)
-    // if (isValidate) {
-    //   const sanitizedValue = textInput.replace(regx, "");
-    //   setTextValue(sanitizedValue);
-    // } else {
-    //   setTextValue('');
-    // }
   };
   function checkRegularExpress(validateType) {
     switch (validateType) {
@@ -81,6 +71,7 @@ function PlaceholderType(props) {
         break;
       case "text":
         setValidatePlaceholder("enter text");
+        break;
       default:
         setValidatePlaceholder("enter text");
     }
@@ -381,10 +372,6 @@ function PlaceholderType(props) {
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
-            // props.pos?.validation && handleTextValid(e, props.pos?.validation);
-            // if (!props.pos.options?.validation) {
-            //   setTextValue(e.target.value);
-            // }
             setTextValue(e.target.value);
             onChangeInput(
               e.target.value,
@@ -486,7 +473,7 @@ function PlaceholderType(props) {
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
-            handleTextValid(e, /[^a-zA-Z\s]/g);
+            handleTextValid(e);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -524,7 +511,7 @@ function PlaceholderType(props) {
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
-            handleTextValid(e, /[^a-zA-Z\s]/g);
+            handleTextValid(e);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -562,7 +549,7 @@ function PlaceholderType(props) {
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
-            handleTextValid(e, /[^a-zA-Z\s]/g);
+            handleTextValid(e);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -653,10 +640,7 @@ function PlaceholderType(props) {
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
-            handleTextValid(
-              e,
-              /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-            );
+            handleTextValid(e);
             onChangeInput(
               e.target.value,
               props.pos.key,
