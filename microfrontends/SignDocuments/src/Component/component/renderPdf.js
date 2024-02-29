@@ -1,15 +1,12 @@
 import React from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page, pdfjs } from "react-pdf";
-
 import {
-  addZIndex,
   defaultWidthHeight,
   handleImageResize,
   handleSignYourselfImageResize
 } from "../../utils/Utils";
 import EmailToast from "./emailToast";
-// import PlaceholderBorder from "./placeholderBorder";
 import Placeholder from "../WidgetComponent/placeholder";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;

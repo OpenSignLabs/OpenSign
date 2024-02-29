@@ -133,31 +133,6 @@ const TemplatePlaceholder = () => {
       isDragStamp: !!monitor.isDragging()
     })
   });
-
-  const [{ isDragSignatureSS }, dragSignatureSS] = useDrag({
-    type: "BOX",
-    item: {
-      type: "BOX",
-      id: 3,
-      text: "signature"
-    },
-    collect: (monitor) => ({
-      isDragSignatureSS: !!monitor.isDragging()
-    })
-  });
-
-  const [{ isDragStampSS }, dragStampSS] = useDrag({
-    type: "BOX",
-    item: {
-      type: "BOX",
-      id: 4,
-      text: "stamp"
-    },
-    collect: (monitor) => ({
-      isDragStampSS: !!monitor.isDragging()
-    })
-  });
-
   const [uniqueId, setUniqueId] = useState("");
   const [isModalRole, setIsModalRole] = useState(false);
   const [roleName, setRoleName] = useState("");
@@ -171,7 +146,7 @@ const TemplatePlaceholder = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
   const [isCheckbox, setIsCheckbox] = useState(false);
-  const checkboxType = ["Optional", "Required", "Read only"];
+
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -338,12 +313,6 @@ const TemplatePlaceholder = () => {
     }
   };
 
-  const getDate = () => {
-    const date = new Date();
-    const milliseconds = date.getTime();
-    const newDate = moment(milliseconds).format("MM/DD/YYYY");
-    return newDate;
-  };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
@@ -393,8 +362,6 @@ const TemplatePlaceholder = () => {
             .getBoundingClientRect();
           const x = offset.x - containerRect.left;
           const y = offset.y - containerRect.top;
-          const ybottom = containerRect.bottom - offset.y;
-
           const dropObj = {
             xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
             yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,
@@ -1401,9 +1368,6 @@ const TemplatePlaceholder = () => {
                   dragRef={dragRef}
                   isDragStamp={isDragStamp}
                   isSignYourself={false}
-                  isDragSignatureSS={isDragSignatureSS}
-                  dragSignatureSS={dragSignatureSS}
-                  dragStampSS={dragStampSS}
                   addPositionOfSignature={addPositionOfSignature}
                   signerPos={signerPos}
                   signersdata={signersdata}

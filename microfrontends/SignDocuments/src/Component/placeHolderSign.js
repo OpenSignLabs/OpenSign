@@ -1149,8 +1149,11 @@ function PlaceHolderSign() {
   //function for base on condition to add checkbox widget status and input text validation in signerPos array
   const handleApplyWidgetsStatus = (textValidate) => {
     const options = ["email", "number", "text"];
-    const regexType = options.includes(textValidate);
-    let regularExpression = textValidate;
+    let regularExpression, regexType;
+    if (textValidate) {
+      regexType = options.includes(textValidate);
+      regularExpression = textValidate;
+    }
 
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1172,7 +1175,11 @@ function PlaceHolderSign() {
                 ...position.options,
                 hint: hint,
                 validation: {
-                  type: regexType ? regularExpression : "regex",
+                  type: textValidate
+                    ? regexType
+                      ? regularExpression
+                      : "regex"
+                    : "text",
                   pattern: !regexType ? regularExpression : ""
                 }
               }
