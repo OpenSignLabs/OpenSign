@@ -10,7 +10,7 @@ import ReactPlayer from 'react-player';
   4. Then type `make build` command it will start create container image. It will take sometime to build and start.
   5. Next time if you want to run docker image just open docker and run opensign container by clicking on play button from actions.
 
-*Note: If you want our updated feature in your docker container just delete opensign container and just follow steps again.* 
+*Note: If you want our updated features in your docker container just delete opensign container and just follow steps again.* 
  
 ## Steps to run OpenSign™ with docker in windows:
   1. Setup WSL 2 in windows. To install WSL 2 refer below video
@@ -34,14 +34,14 @@ import ReactPlayer from 'react-player';
    8. Now type command `Make build` and it will start build image for docker, it will take some time to build and start. for more specific steps watch below video.
    9. Next time if you want to run docker image just open docker and run opensign container by clicking on play button from actions.
 
-*Note: If you want our updated feature in your docker container just delete opensign container and just follow steps from 2 step again.* 
+*Note: If you want our updated features in your docker container just delete opensign container and just follow steps from 2 step again.* 
 
 <div>
     <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
 </div>
 
 ## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
-To set up OpenSign™ locally using Docker, the following prerequisites are required:
+To set up OpenSign™ locally using Docker, the following prerequisites are required: 
 
 Environment Varaibles:
 
