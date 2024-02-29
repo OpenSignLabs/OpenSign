@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { themeColor } from "../../utils/ThemeColor/backColor";
 import ModalUi from "../../premitives/ModalUi";
 
