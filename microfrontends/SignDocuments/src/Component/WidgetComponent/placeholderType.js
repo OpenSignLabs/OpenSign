@@ -33,7 +33,7 @@ function PlaceholderType(props) {
 
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
-    const validateType = props.pos?.options.validation.type;
+    const validateType = props.pos?.options?.validation?.type;
 
     let regexValidation;
     if (validateType) {
@@ -269,9 +269,9 @@ function PlaceholderType(props) {
         <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
           {props?.handleUserName &&
             props?.handleUserName(
-              props?.data.Id,
-              props?.data.Role,
-              props.pos.type
+              props?.data?.Id,
+              props?.data?.Role,
+              props?.pos?.type
             )}
         </div>
       );
@@ -290,15 +290,15 @@ function PlaceholderType(props) {
         <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
           {props?.handleUserName &&
             props?.handleUserName(
-              props?.data.Id,
-              props?.data.Role,
-              props.pos.type
+              props?.data?.Id,
+              props?.data?.Role,
+              props?.pos?.type
             )}
         </div>
       );
     case "checkbox":
       return (
-        <div>
+        <div style={{ zIndex: props.isSignYourself && "99" }}>
           {props.pos.options?.values?.map((data, ind) => {
             return (
               <input
@@ -310,6 +310,7 @@ function PlaceholderType(props) {
                   marginBottom: "6px",
                   marginTop: "5px"
                 }}
+                onBlur={handleInputBlur}
                 disabled={
                   props.isNeedSign &&
                   props.pos.options?.isReadOnly &&
@@ -318,7 +319,7 @@ function PlaceholderType(props) {
                 type="checkbox"
                 checked={selectCheckbox(ind)}
                 onChange={(e) => {
-                  if (e.target.checked) {
+                  if (e.target.checked && !props.isPlaceholder) {
                     const maxRequired =
                       props.pos.options?.validation?.maxRequiredCount;
                     const maxCountInt = maxRequired && parseInt(maxRequired);
@@ -337,11 +338,12 @@ function PlaceholderType(props) {
                   }
                 }}
                 onClick={() => {
-                  setIsCheckedRadio({
-                    isChecked: !isCheckedRadio,
-                    selectValue: "",
-                    selectedKey: ind
-                  });
+                  !props.isPlaceholder &&
+                    setIsCheckedRadio({
+                      isChecked: !isCheckedRadio,
+                      selectValue: "",
+                      selectedKey: ind
+                    });
                 }}
               />
             );
@@ -450,9 +452,9 @@ function PlaceholderType(props) {
         <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
           {props?.handleUserName &&
             props?.handleUserName(
-              props?.data.Id,
-              props?.data.Role,
-              props.pos.type
+              props?.data?.Id,
+              props?.data?.Role,
+              props?.pos?.type
             )}
         </div>
       );
@@ -618,9 +620,9 @@ function PlaceholderType(props) {
         <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
           {props?.handleUserName &&
             props?.handleUserName(
-              props?.data.Id,
-              props?.data.Role,
-              props.pos.type
+              props?.data?.Id,
+              props?.data?.Role,
+              props?.pos?.type
             )}
         </div>
       );
@@ -693,27 +695,6 @@ function PlaceholderType(props) {
       );
     case "label":
       return (
-        // <textarea
-        //   onChange={(e) => {
-        //     onChangeInput(
-        //       e.target.value,
-        //       props.pos.key,
-        //       props.xyPostion,
-        //       props.index,
-        //       props.setXyPostion,
-        //       props.data && props.data?.Id,
-        //       false
-        //     );
-        //   }}
-        //   className="labelTextArea"
-        //   cols="50"
-        //   style={{
-        //     zIndex: "99",
-        //     height: "100%",
-        //     width: "100%",
-        //     resize: "none"
-        //   }}
-        // />
         <textarea
           rows={1}
           onChange={(e) => {
@@ -754,7 +735,7 @@ function PlaceholderType(props) {
         >
           {props.pos.isStamp ? <div>stamp</div> : <div>signature</div>}
           {props?.handleUserName &&
-            props?.handleUserName(props?.data.Id, props?.data.Role)}
+            props?.handleUserName(props?.data?.Id, props?.data?.Role)}
         </div>
       );
   }

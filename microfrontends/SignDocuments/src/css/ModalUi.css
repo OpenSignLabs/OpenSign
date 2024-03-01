@@ -38,7 +38,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     z-index: 901;
     max-height: 80%;
-    min-width: 30%;
+    min-width: 40%;
     overflow-y: auto;
     scrollbar-width: none;
     /* Firefox */
@@ -77,6 +77,15 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
+}
+
+.defaultOptions {
+    font-size: 12px;
+    margin-left: 5px;
+
+}
+.defaultOptions:focus{
+    outline: none;
 }
 
 @media (max-width:767px) {

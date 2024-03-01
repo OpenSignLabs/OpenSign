@@ -155,8 +155,6 @@ function Placeholder(props) {
       !props.isDragging &&
       props.pos.type !== "label"
     ) {
-      // props.handleLinkUser(props.data.Id);
-      // props.setUniqueId(props.data.Id);
       if (props.pos.key === props.selectWidgetId) {
         props.handleLinkUser(props.data.Id);
         props.setUniqueId(props.data.Id);
@@ -190,8 +188,6 @@ function Placeholder(props) {
       props?.setShowDropdown(true);
     } else if (props.pos.type === "checkbox") {
       props?.setIsCheckbox(true);
-    } else if (props.pos.type === "text") {
-      props.setIsValidate(true);
     } else {
       props?.handleNameModal(true);
     }
@@ -206,28 +202,28 @@ function Placeholder(props) {
         <>
           {props.isPlaceholder && (
             <>
-              <i
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleWidgetsOnclick();
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  handleWidgetsOnclick();
-                }}
-                className="fa-solid fa-gear settingIcon"
-                style={{
-                  color: "#188ae2",
-                  right:
-                    props.pos.type === "text" || props.pos.type === "dropdown"
-                      ? "49px"
-                      : "23px",
-                  top:
-                    props.pos.type === "text" || props.pos.type === "dropdown"
-                      ? "-17px"
-                      : "-28px"
-                }}
-              ></i>
+              {props.type !== "date" && (
+                <i
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWidgetsOnclick();
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    handleWidgetsOnclick();
+                  }}
+                  className="fa-solid fa-gear settingIcon"
+                  style={{
+                    color: "#188ae2",
+                    right: ["checkbox", "radio"].includes(props.pos.type)
+                      ? "24px"
+                      : "47px",
+                    top: ["checkbox", "radio"].includes(props.pos.type)
+                      ? "-28px"
+                      : "-19px"
+                  }}
+                ></i>
+              )}
               {props.pos.type !== "label" && (
                 <i
                   data-tut="reactourLinkUser"
@@ -425,6 +421,7 @@ function Placeholder(props) {
               ? true
               : false
             : props.pos.type !== "radio" &&
+              props.pos.type !== "checkbox" &&
               props.pos.key === props.selectWidgetId &&
               true,
         bottomLeft: false,
@@ -509,6 +506,7 @@ function Placeholder(props) {
     >
       {props.isShowBorder &&
       props.pos.type !== "radio" &&
+      props.pos.type !== "checkbox" &&
       props.pos.key === props.selectWidgetId ? (
         <BorderResize
           right={
@@ -526,13 +524,15 @@ function Placeholder(props) {
         />
       ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
         props.data?.signerObjId === props.signerObjId &&
-        props.pos.type !== "radio" ? (
+        props.pos.type !== "radio" &&
+        props.pos.type !== "checkbox" ? (
           <BorderResize />
         ) : (
           <></>
         )
       ) : (
         props.pos.type !== "radio" &&
+        props.pos.type !== "checkbox" &&
         props.pos.key === props.selectWidgetId && <BorderResize />
       )}
 

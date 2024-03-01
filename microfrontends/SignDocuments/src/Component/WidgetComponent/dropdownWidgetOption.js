@@ -13,6 +13,7 @@ function DropdownWidgetOption(props) {
   const [status, setStatus] = useState("required");
   const [defaultValue, setDefaultValue] = useState("");
   const statusArr = ["required", "optional"];
+  const [defaultCheckbox, setDefaultCheckbox] = useState([]);
 
   useEffect(() => {
     if (
@@ -30,6 +31,7 @@ function DropdownWidgetOption(props) {
       setIsReadOnly(props.currWidgetsDetails?.options?.isReadOnly);
       setStatus(props.currWidgetsDetails?.options?.status || "required");
       setDefaultValue(props.currWidgetsDetails?.options?.defaultValue);
+      setDefaultCheckbox(props.currWidgetsDetails?.options?.defaultValue);
     } else {
       setStatus("required");
     }
@@ -56,7 +58,12 @@ function DropdownWidgetOption(props) {
     setDropdownOptionList(getUpdatedOptions);
     props.handleSaveWidgetsOptions(null, null, null, null, null, false, flage);
   };
+
   const handleSaveOption = () => {
+    const defaultData =
+      defaultCheckbox && defaultCheckbox.length > 0
+        ? defaultCheckbox
+        : defaultValue;
     props.handleSaveWidgetsOptions(
       dropdownName,
       dropdownOptionList,
@@ -66,7 +73,7 @@ function DropdownWidgetOption(props) {
       null,
       null,
       status,
-      defaultValue
+      defaultData
     );
     props.setShowDropdown(false);
     setDropdownOptionList(["option-1", "option-2"]);
@@ -75,6 +82,7 @@ function DropdownWidgetOption(props) {
     setIsReadOnly(false);
     setMinCount(0);
     setMaxCount(0);
+    setDefaultCheckbox([]);
   };
 
   const handleSetMinMax = (e) => {
@@ -85,6 +93,17 @@ function DropdownWidgetOption(props) {
       return minValue;
     }
   };
+
+  // const handleDefaultCheck = (index) => {
+  //   const getDefaultCheck = defaultCheckbox.includes(index);
+
+  //   if (getDefaultCheck[0] === index) {
+  //     return "check";
+  //   } else {
+  //     return "uncheck";
+  //   }
+  //   // return "check";
+  // };
   return (
     //props.showDropdown
     <ModalUi
@@ -239,7 +258,30 @@ function DropdownWidgetOption(props) {
                     value={option}
                     onChange={(e) => handleInputChange(index, e.target.value)}
                   />
-
+                  {props.type === "checkbox" && !props.isSignYourself && (
+                    <select
+                      // defaultValue={handleDefaultCheck(index)}
+                      className="defaultOptions"
+                      onChange={(e) => {
+                        if (e.target.value === "check") {
+                          const getDefaultCheck =
+                            defaultCheckbox?.includes(index);
+                          if (!getDefaultCheck) {
+                            setDefaultCheckbox((prev) => [...prev, index]);
+                          }
+                        } else {
+                          const removeOption = defaultCheckbox.filter(
+                            (data) => data !== index
+                          );
+                          setDefaultCheckbox(removeOption);
+                        }
+                      }}
+                    >
+                      {" "}
+                      <option>check</option>
+                      <option>uncheck</option>
+                    </select>
+                  )}
                   <i
                     className="fa-solid fa-rectangle-xmark"
                     onClick={() => handleDeleteInput(index)}
@@ -295,6 +337,7 @@ function DropdownWidgetOption(props) {
                 setDropdownName(props.type);
                 props.setCurrWidgetsDetails([]);
                 props.setShowDropdown(false);
+                setDefaultCheckbox([]);
               }}
             >
               Cancel
