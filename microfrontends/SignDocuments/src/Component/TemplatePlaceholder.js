@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import moment from "moment";
 import "../css/./signature.css";
 import { themeColor } from "../utils/ThemeColor/backColor";
 import { DndProvider } from "react-dnd";
@@ -37,7 +36,6 @@ import PlaceholderCopy from "./component/PlaceholderCopy";
 import ModalComponent from "./component/modalComponent";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import DropdownWidgetOption from "./WidgetComponent/dropdownWidgetOption";
-import InputValidation from "./WidgetComponent/inputValidation";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -82,9 +80,6 @@ const TemplatePlaceholder = () => {
   const [widgetType, setWidgetType] = useState("");
   const [isRadio, setIsRadio] = useState(false);
   const [selectWidgetId, setSelectWidgetId] = useState("");
-  const [isValidate, setIsValidate] = useState(false);
-  const [textValidate, setTextValidate] = useState("");
-  const [hint, setHint] = useState("");
   const [isNameModal, setIsNameModal] = useState(false);
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
@@ -105,7 +100,7 @@ const TemplatePlaceholder = () => {
     "#ffffcc"
   ];
   const isMobile = window.innerWidth < 767;
-  const [{ isOver }, drop] = useDrop({
+  const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
     collect: (monitor) => ({
@@ -967,57 +962,6 @@ const TemplatePlaceholder = () => {
     setIsModalRole(false);
   };
 
-  //function for base on condition to add checkbox widget status and input text validation in signerPos array
-  const handleApplyWidgetsStatus = (textValidate) => {
-    const options = ["email", "number", "text"];
-    const regexType = options.includes(textValidate);
-    let regularExpression = textValidate;
-    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-    if (filterSignerPos.length > 0) {
-      const getPlaceHolder = filterSignerPos[0].placeHolder;
-
-      const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-
-      if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position) => {
-          if (position.key === signKey) {
-            return {
-              ...position,
-              options: {
-                ...position.options,
-                hint: hint,
-                validation: {
-                  type: regexType ? regularExpression : "regex",
-                  pattern: !regexType ? regularExpression : ""
-                }
-              }
-            };
-          }
-          return position;
-        });
-
-        const newUpdateSignPos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === pageNumber) {
-            return { ...obj, pos: addSignPos };
-          }
-          return obj;
-        });
-        const newUpdateSigner = signerPos.map((obj) => {
-          if (obj.Id === uniqueId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
-          }
-          return obj;
-        });
-        setSignerPos(newUpdateSigner);
-      }
-    }
-  };
-
   const handleSaveWidgetsOptions = (
     dropdownName,
     dropdownOptions,
@@ -1136,6 +1080,16 @@ const TemplatePlaceholder = () => {
   };
 
   const handleWidgetdefaultdata = (defaultdata) => {
+    const options = ["email", "number", "text"];
+    let inputype;
+    if (defaultdata.textvalidate) {
+      inputype = options.includes(defaultdata.textvalidate)
+        ? defaultdata.textvalidate
+        : "regex";
+    } else {
+      inputype = "text";
+    }
+
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1149,15 +1103,33 @@ const TemplatePlaceholder = () => {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position, ind) => {
           if (position.key === signKey) {
-            return {
-              ...position,
-              options: {
-                ...position.options,
-                name: defaultdata.name,
-                status: defaultdata.status,
-                defaultValue: defaultdata.defaultValue
-              }
-            };
+            if (position.type === "text") {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata?.name || "text",
+                  status: defaultdata?.status || "required",
+                  hint: defaultdata?.hint || "",
+                  defaultValue: defaultdata?.defaultValue || "",
+                  validation: {
+                    type: inputype,
+                    pattern:
+                      inputype === "regex" ? defaultdata.textvalidate : ""
+                  }
+                }
+              };
+            } else {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata.name,
+                  status: defaultdata.status,
+                  defaultValue: defaultdata.defaultValue
+                }
+              };
+            }
           }
           return position;
         });
@@ -1174,19 +1146,16 @@ const TemplatePlaceholder = () => {
           }
           return obj;
         });
-        console.log("newUpdateSigner ", newUpdateSigner);
         setSignerPos(newUpdateSigner);
       }
     }
+    setCurrWidgetsDetails({});
     handleNameModal();
   };
   const handleNameModal = () => {
     setIsNameModal(!isNameModal);
   };
-  const handleValidateInput = (e) => {
-    handleApplyWidgetsStatus(textValidate);
-    setIsValidate(false);
-  };
+
   return (
     <div>
       <Title title={"Template"} />
@@ -1305,16 +1274,6 @@ const TemplatePlaceholder = () => {
                 type={"signersAlert"}
                 setIsShowEmail={setIsShowEmail}
               />
-              <InputValidation
-                setIsValidate={setIsValidate}
-                handleValidateInput={handleValidateInput}
-                isValidate={isValidate}
-                setHint={setHint}
-                setTextValidate={setTextValidate}
-                textValidate={textValidate}
-                currWidgetsDetails={currWidgetsDetails}
-                setCurrWidgetsDetails={setCurrWidgetsDetails}
-              />
               <DropdownWidgetOption
                 type="radio"
                 title="Radio group"
@@ -1403,7 +1362,6 @@ const TemplatePlaceholder = () => {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     setWidgetType={setWidgetType}
                     setIsRadio={setIsRadio}
-                    setIsValidate={setIsValidate}
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
                     setIsCheckbox={setIsCheckbox}

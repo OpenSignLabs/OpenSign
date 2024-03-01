@@ -441,6 +441,7 @@ function RenderPdf({
                                   setWidgetType={setWidgetType}
                                   setSelectWidgetId={setSelectWidgetId}
                                   selectWidgetId={selectWidgetId}
+                                  handleUserName={handleUserName}
                                 />
                               )
                             );
@@ -622,6 +623,7 @@ function RenderPdf({
                                       setWidgetType={setWidgetType}
                                       setSelectWidgetId={setSelectWidgetId}
                                       selectWidgetId={selectWidgetId}
+                                      handleUserName={handleUserName}
                                     />
                                   </React.Fragment>
                                 )

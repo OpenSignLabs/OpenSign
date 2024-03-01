@@ -36,7 +36,6 @@ import Title from "./component/Title";
 import TourContentWithBtn from "../premitives/TourContentWithBtn";
 import ModalUi from "../premitives/ModalUi";
 import DropdownWidgetOption from "../Component/WidgetComponent/dropdownWidgetOption";
-import InputValidation from "./WidgetComponent/inputValidation";
 import NameModal from "./WidgetComponent/NameModal";
 
 function PlaceHolderSign() {
@@ -92,16 +91,14 @@ function PlaceHolderSign() {
   const [isDontShow, setIsDontShow] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isValidate, setIsValidate] = useState(false);
-  const [textValidate, setTextValidate] = useState("");
   const [widgetType, setWidgetType] = useState("");
   const [isUiLoading, setIsUiLoading] = useState(false);
   const [isRadio, setIsRadio] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isCheckbox, setIsCheckbox] = useState(false);
-  const [hint, setHint] = useState("");
   const [isNameModal, setIsNameModal] = useState(false);
+  const [widgetName, setWidgetName] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -118,7 +115,7 @@ function PlaceHolderSign() {
   ];
 
   const isMobile = window.innerWidth < 767;
-  const [{ isOver }, drop] = useDrop({
+  const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
     collect: (monitor) => ({
@@ -317,6 +314,9 @@ function PlaceHolderSign() {
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
+    if (item && item.text) {
+      setWidgetName(item.text);
+    }
     getSignerPos(item, monitor);
   };
 
@@ -1063,7 +1063,16 @@ function PlaceHolderSign() {
   };
 
   const handleWidgetdefaultdata = (defaultdata) => {
-    // console.log("data ", defaultdata);
+    const options = ["email", "number", "text"];
+    let inputype;
+    if (defaultdata.textvalidate) {
+      inputype = options.includes(defaultdata.textvalidate)
+        ? defaultdata.textvalidate
+        : "regex";
+    } else {
+      inputype = "text";
+    }
+
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1077,15 +1086,33 @@ function PlaceHolderSign() {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position, ind) => {
           if (position.key === signKey) {
-            return {
-              ...position,
-              options: {
-                ...position.options,
-                name: defaultdata.name,
-                status: defaultdata.status,
-                defaultValue: defaultdata.defaultValue
-              }
-            };
+            if (position.type === "text") {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata?.name || "text",
+                  status: defaultdata?.status || "required",
+                  hint: defaultdata?.hint || "",
+                  defaultValue: defaultdata?.defaultValue || "",
+                  validation: {
+                    type: inputype,
+                    pattern:
+                      inputype === "regex" ? defaultdata.textvalidate : ""
+                  }
+                }
+              };
+            } else {
+              return {
+                ...position,
+                options: {
+                  ...position.options,
+                  name: defaultdata.name,
+                  status: defaultdata.status,
+                  defaultValue: defaultdata.defaultValue
+                }
+              };
+            }
           }
           return position;
         });
@@ -1102,10 +1129,10 @@ function PlaceHolderSign() {
           }
           return obj;
         });
-        console.log("newUpdateSigner ", newUpdateSigner);
         setSignerPos(newUpdateSigner);
       }
     }
+    setCurrWidgetsDetails({});
     handleNameModal();
   };
 
@@ -1204,71 +1231,6 @@ function PlaceHolderSign() {
 
   const closePopup = () => {
     setIsAddUser({});
-  };
-
-  //function for base on condition to add checkbox widget status and input text validation in signerPos array
-  const handleApplyWidgetsStatus = (textValidate) => {
-    const options = ["email", "number", "text"];
-    let regularExpression, regexType;
-    if (textValidate) {
-      regexType = options.includes(textValidate);
-      regularExpression = textValidate;
-    }
-
-    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-    if (filterSignerPos.length > 0) {
-      const getPlaceHolder = filterSignerPos[0].placeHolder;
-
-      const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-
-      if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position, ind) => {
-          if (position.key === signKey) {
-            return {
-              ...position,
-              options: {
-                ...position.options,
-                hint: hint,
-                validation: {
-                  type: textValidate
-                    ? regexType
-                      ? regularExpression
-                      : "regex"
-                    : "text",
-                  pattern: !regexType ? regularExpression : ""
-                }
-              }
-            };
-          }
-          return position;
-        });
-
-        const newUpdateSignPos = getPlaceHolder.map((obj, ind) => {
-          if (obj.pageNumber === pageNumber) {
-            return { ...obj, pos: addSignPos };
-          }
-          return obj;
-        });
-        const newUpdateSigner = signerPos.map((obj, ind) => {
-          if (obj.Id === uniqueId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
-          }
-          return obj;
-        });
-
-        setSignerPos(newUpdateSigner);
-        setTextValidate("");
-      }
-    }
-  };
-  const handleValidateInput = (e) => {
-    handleApplyWidgetsStatus(textValidate);
-    setIsValidate(false);
   };
 
   return (
@@ -1494,17 +1456,6 @@ function PlaceHolderSign() {
                   </button>
                 </div>
               </ModalUi>
-              <InputValidation
-                setIsValidate={setIsValidate}
-                handleValidateInput={handleValidateInput}
-                isValidate={isValidate}
-                hint={hint}
-                setHint={setHint}
-                setTextValidate={setTextValidate}
-                textValidate={textValidate}
-                currWidgetsDetails={currWidgetsDetails}
-                setCurrWidgetsDetails={setCurrWidgetsDetails}
-              />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
                 setIsPageCopy={setIsPageCopy}
@@ -1589,7 +1540,6 @@ function PlaceHolderSign() {
                     setUniqueId={setUniqueId}
                     isDragging={isDragging}
                     setShowDropdown={setShowDropdown}
-                    setIsValidate={setIsValidate}
                     setWidgetType={setWidgetType}
                     setIsRadio={setIsRadio}
                     setIsCheckbox={setIsCheckbox}
@@ -1716,6 +1666,7 @@ function PlaceHolderSign() {
           closePopup={closePopup}
         />
         <NameModal
+          widgetName={widgetName}
           defaultdata={currWidgetsDetails}
           isOpen={isNameModal}
           handleClose={handleNameModal}
