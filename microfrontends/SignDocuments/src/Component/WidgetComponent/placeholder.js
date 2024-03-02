@@ -77,19 +77,6 @@ function Placeholder(props) {
     setDateFormat(updateDate);
   };
   useEffect(() => {
-    //set default current date and default format MM/dd/yyyy
-    if (props.isPlaceholder || props.isSignYourself) {
-      const date = new Date();
-      const milliseconds = date.getTime();
-      const newDate = moment(milliseconds).format("MM/DD/YYYY");
-      const dateObj = {
-        date: newDate,
-        format: "MM/dd/YYYY"
-      };
-      setSelectDate(dateObj);
-    }
-  }, []);
-  useEffect(() => {
     if (props.isPlaceholder || props.isSignYourself) {
       selectDate && changeDateFormat();
     }
@@ -101,9 +88,7 @@ function Placeholder(props) {
         setIsShowDateFormat(!isShowDateFormat);
       }
     };
-
     document.addEventListener("click", closeMenuOnOutsideClick);
-
     return () => {
       // Cleanup the event listener when the component unmounts
       document.removeEventListener("click", closeMenuOnOutsideClick);
