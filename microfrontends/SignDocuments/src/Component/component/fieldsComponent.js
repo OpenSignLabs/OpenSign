@@ -379,7 +379,7 @@ function FieldsComponent({
       )}
       {isSignersModal && (
         <ModalUi
-          title={"Recipients"}
+          title={"Roles"}
           isOpen={isSignersModal}
           handleClose={handleModal}
         >
@@ -407,7 +407,7 @@ function FieldsComponent({
                 textAlign: "center"
               }}
             >
-              Please add Recipient
+              Please add a role
             </div>
           )}
         </ModalUi>

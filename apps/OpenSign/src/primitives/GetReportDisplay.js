@@ -5,6 +5,7 @@ import axios from "axios";
 import "../styles/report.css";
 import ModalUi from "./ModalUi";
 import AppendFormInForm from "../components/AppendFormInForm";
+import { modalSubmitBtnColor, modalCancelBtnColor } from "../constant/const";
 const ReportTable = ({
   ReportName,
   List,
@@ -342,13 +343,15 @@ const ReportTable = ({
                             <div className="flex items-center mt-3 gap-2 text-white">
                               <button
                                 onClick={() => handleDelete(item)}
-                                className="bg-[#1ab6ce] rounded-sm shadow-md text-[12px] font-semibold uppercase text-white py-1.5 px-3 focus:outline-none"
+                                className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                style={{ backgroundColor: modalSubmitBtnColor }}
                               >
                                 Yes
                               </button>
                               <button
                                 onClick={handleCloseDeleteModal}
-                                className="bg-[#188ae2] rounded-sm shadow-md text-[12px] font-semibold uppercase text-white py-1.5 px-3 text-center ml-[2px] focus:outline-none"
+                                className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                style={{ backgroundColor: modalCancelBtnColor }}
                               >
                                 No
                               </button>
@@ -371,7 +374,7 @@ const ReportTable = ({
                     )}
                     {heading.includes("Folder") && (
                       <td className="px-4 py-2">
-                        {item?.Folder?.Name || "OpenSignDrive"}
+                        {item?.Folder?.Name || "OpenSign™ Drive"}
                       </td>
                     )}
                     <td className="px-4 py-2">

@@ -113,6 +113,7 @@ const SignersInput = (props) => {
             value={selected}
             onChange={onChange}
             closeMenuOnSelect={false}
+            required={props.required}
           />
         </div>
         <div
@@ -146,6 +147,7 @@ const SignersInput = (props) => {
               right: "auto",
               bottom: "auto",
               transform: "translate(-50%, -50%)",
+              border: "1px transparent",
               padding: 0
             },
             overlay: {
@@ -157,18 +159,15 @@ const SignersInput = (props) => {
         >
           <div className="min-w-full md:min-w-[500px]">
             <div
-              type="button"
-              className="flex justify-between items-center p-3 border-b-[1px] border-gray-300"
+              className="flex justify-between rounded-t items-center py-[10px] px-[20px] text-white"
+              style={{ background: "#32a3ac" }}
             >
-              <div className=" text-black text-xl font-semibold pl-3">
-                Add Signer
-              </div>
-              <button onClick={handleModalCloseClick}>
-                <i
-                  style={{ fontSize: 25 }}
-                  className="fa fa-times-circle"
-                  aria-hidden="true"
-                ></i>
+              <div className="text-[1.2rem] font-normal">Add Signer</div>
+              <button
+                onClick={handleModalCloseClick}
+                className="text-[1.5rem] cursor-pointer focus:outline-none"
+              >
+                &times;
               </button>
             </div>
 

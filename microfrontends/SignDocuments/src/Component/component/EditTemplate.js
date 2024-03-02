@@ -7,7 +7,8 @@ const EditTemplate = ({ template, onSuccess }) => {
   const [formData, setFormData] = useState({
     Name: template?.Name || "",
     Note: template?.Note || "",
-    Description: template?.Description || ""
+    Description: template?.Description || "",
+    SendinOrder: template?.SendinOrder ? `${template?.SendinOrder}` : "false"
   });
 
   const handleStrInput = (e) => {
@@ -22,7 +23,8 @@ const EditTemplate = ({ template, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const data = { ...formData };
+    const isChecked = formData.SendinOrder === "true" ? true : false;
+    const data = { ...formData, SendinOrder: isChecked };
     onSuccess(data);
   };
 
@@ -85,6 +87,45 @@ const EditTemplate = ({ template, onSuccess }) => {
               onChange={(e) => handleStrInput(e)}
               className="addUserInput"
             />
+          </div>
+          <div className="form-section">
+            <label style={{ fontSize: 13 }}>Send In Order</label>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginLeft: 8,
+                marginBottom: 5
+              }}
+            >
+              <input
+                type="radio"
+                value={"true"}
+                name="SendinOrder"
+                checked={formData.SendinOrder === "true"}
+                onChange={handleStrInput}
+              />
+              <div style={{ fontSize: 12 }}>Yes</div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginLeft: 8,
+                marginBottom: 5
+              }}
+            >
+              <input
+                type="radio"
+                value={"false"}
+                name="SendinOrder"
+                checked={formData.SendinOrder === "false"}
+                onChange={handleStrInput}
+              />
+              <div style={{ fontSize: 12 }}>No</div>
+            </div>
           </div>
           {/* <SelectFolder onSuccess={handleFolder} folderCls={"contracts_Template"} /> */}
           <div className="buttoncontainer">

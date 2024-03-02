@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
+import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 
 const AppendFormInForm = (props) => {
   const [name, setName] = useState("");
@@ -293,14 +294,16 @@ const AppendFormInForm = (props) => {
           <div className="mt-4 flex justify-start">
             <button
               type="submit"
-              className="bg-[#1ab6ce] text-sm text-white px-4 py-2 rounded shadow focus:outline-none"
+              style={{ backgroundColor: modalSubmitBtnColor }}
+              className="mr-2 px-[20px] py-1.5 text-white rounded shadow-md text-center focus:outline-none "
             >
               Submit
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
-              className="bg-[#188ae2] text-sm text-white px-4 py-2 rounded ml-2 shadow focus:outline-none"
+              style={{ backgroundColor: modalCancelBtnColor }}
+              className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
             >
               Reset
             </button>

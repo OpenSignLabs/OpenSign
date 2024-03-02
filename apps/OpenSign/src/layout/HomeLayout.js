@@ -8,15 +8,16 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 
-const HomeLayout = ({ children }) => {
+const HomeLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { width } = useWindowSize();
   const [isOpen, setIsOpen] = useState(true);
   const arr = useSelector((state) => state.TourSteps);
   const [isUserValid, setIsUserValid] = useState(true);
-
+  const [isLoader, setIsLoader] = useState(true);
   useEffect(() => {
     (async () => {
       try {
@@ -27,6 +28,7 @@ const HomeLayout = ({ children }) => {
         });
         if (user) {
           setIsUserValid(true);
+          setIsLoader(false);
         } else {
           setIsUserValid(false);
         }
@@ -184,7 +186,7 @@ const HomeLayout = ({ children }) => {
       console.log("err ", err);
     } finally {
       localStorage.removeItem("accesstoken");
-      navigate("/", { replace: true });
+      navigate("/", { replace: true, state: { from: location } });
     }
   };
   return (
@@ -194,27 +196,48 @@ const HomeLayout = ({ children }) => {
       </div>
       {isUserValid ? (
         <>
-          <div className="flex md:flex-row flex-col z-50">
-            <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
-
-            <div className="relative h-screen flex flex-col justify-between w-full overflow-y-auto">
-              <div className="bg-[#eef1f5] p-3">{children}</div>
-              <div className="z-30">
-                <Footer />
-              </div>
+          {isLoader ? (
+            <div
+              style={{
+                height: "100vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "45px",
+                  color: "#3dd3e0"
+                }}
+                className="loader-37"
+              ></div>
             </div>
-          </div>
-          <Tour
-            onRequestClose={closeTour}
-            steps={tourConfigs}
-            isOpen={isTour}
-            closeWithMask={false}
-            disableKeyboardNavigation={["esc"]}
-            // disableInteraction={true}
-            scrollOffset={-100}
-            rounded={5}
-            showCloseButton={isCloseBtn}
-          />
+          ) : (
+            <>
+              <div className="flex md:flex-row flex-col z-50">
+                <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
+
+                <div className="relative h-screen flex flex-col justify-between w-full overflow-y-auto">
+                  <div className="bg-[#eef1f5] p-3">{<Outlet />}</div>
+                  <div className="z-30">
+                    <Footer />
+                  </div>
+                </div>
+              </div>
+              <Tour
+                onRequestClose={closeTour}
+                steps={tourConfigs}
+                isOpen={isTour}
+                closeWithMask={false}
+                disableKeyboardNavigation={["esc"]}
+                // disableInteraction={true}
+                scrollOffset={-100}
+                rounded={5}
+                showCloseButton={isCloseBtn}
+              />
+            </>
+          )}
         </>
       ) : (
         <ModalUi title={"Session Expired"} isOpen={true} showClose={false}>
