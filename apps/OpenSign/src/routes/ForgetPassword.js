@@ -4,13 +4,15 @@ import { fetchAppInfo, forgetPassword } from "../redux/actions";
 import Title from "../components/Title";
 import { NavLink } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
-
+import Parse from "parse";
+import Alert from "../primitives/Alert";
 function ForgotPassword(props) {
   const [state, setState] = useState({
     email: "",
     password: "",
     hideNav: ""
   });
+  const [sentStatus, setSentStatus] = useState("");
   const handleChange = (event) => {
     const { name, value } = event.target;
     setState({ ...state, [name]: value });
@@ -23,7 +25,7 @@ function ForgotPassword(props) {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     localStorage.setItem("appLogo", props.appInfo.applogo);
     localStorage.setItem("appName", props.appInfo.appname);
@@ -33,9 +35,21 @@ function ForgotPassword(props) {
       "userSettings",
       JSON.stringify(props.appInfo.settings)
     );
-
     if (state.email) {
-      props.forgetPassword(state.email);
+      const username = state.email;
+      let baseUrl = localStorage.getItem("BaseUrl12");
+      let parseAppId = localStorage.getItem("AppID12");
+      try {
+        Parse.serverURL = baseUrl;
+        Parse.initialize(parseAppId);
+        await Parse.User.requestPasswordReset(username);
+        setSentStatus("success");
+      } catch (err) {
+        console.log("err ", err.code);
+        setSentStatus("failed");
+      } finally {
+        setTimeout(() => setSentStatus(""), 1000);
+      }
     }
   };
 
@@ -51,6 +65,14 @@ function ForgotPassword(props) {
   return (
     <div className="bg-white">
       <Title title="Forgot password page" />
+      {sentStatus === "success" && (
+        <Alert type="success">
+          Reset password link has been sent to your email id
+        </Alert>
+      )}
+      {sentStatus === "failed" && (
+        <Alert type={"danger"}>Please setup email adapter </Alert>
+      )}
       <div>
         <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
           <div className="w-[250px] h-[66px] inline-block">

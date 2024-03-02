@@ -20,10 +20,6 @@ module.exports = {
     "react-router-dom": {
       singleton: true,
       requiredVersion: dependencies["react-router-dom"]
-    },
-    "rjsf-conditionals": {
-      singleton: true,
-      requiredVersion: dependencies["rjsf-conditionals"]
     }
   }
 };

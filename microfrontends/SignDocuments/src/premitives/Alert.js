@@ -5,20 +5,47 @@ const Alert = ({ children, type }) => {
   function theme(color) {
     switch (color) {
       case "success":
-        return "border-[#c3e6cb] bg-[#d4edda] text-[#155724]";
+        return {
+          border: `1px solid #c3e6cb`, // Border color
+          backgroundColor: "#d4edda", // Background color
+          color: "#155724" // Text color
+        };
+
       case "info":
-        return "border-[#adcdeb] bg-[#c1daf0] text-[#153756]";
+        return {
+          border: `1px solid #adcdeb`, // Border color
+          backgroundColor: "#c1daf0", // Background color
+          color: "#153756" // Text color
+        };
       case "danger":
-        return "border-[#f0a8a8] bg-[#f4bebe] text-[#c42121]";
+        return {
+          border: `1px solid #f0a8a8`, // Border color
+          backgroundColor: "#f4bebe", // Background color
+          color: "#c42121" // Text color
+        };
       default:
-        return "border-[#d6d6d6] bg-[#d9d9d9] text-[#575757]";
+        return {
+          border: `1px solid #d6d6d6`, // Border color
+          backgroundColor: "#d9d9d9", // Background color
+          color: "#575757" // Text color
+        };
     }
   }
   return (
     <>
       {children && (
         <div
-          className={`z-40 fixed top-20 left-1/2 transform -translate-x-1/2 border-[1px] text-sm ${textcolor} rounded py-[.75rem] px-[1.25rem] `}
+          style={{
+            ...textcolor,
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            fontSize: "0.875rem", // Corresponds to text-sm in Tailwind CSS
+            borderRadius: "5px", // Rounded corners
+            padding: "10px 15px", // Padding
+            zIndex: 40
+          }}
         >
           {children}
         </div>

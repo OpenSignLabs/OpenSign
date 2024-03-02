@@ -99,6 +99,7 @@ function PlaceHolderSign() {
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [isNameModal, setIsNameModal] = useState(false);
   const [widgetName, setWidgetName] = useState(false);
+  const [mailStatus, setMailStatus] = useState("");
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -759,8 +760,11 @@ function PlaceHolderSign() {
       year: "numeric"
     });
     let sender = pdfDetails?.[0].ExtUserPtr.Email;
-    const signerMail = signersdata;
+    let signerMail = signersdata.slice();
 
+    if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
+      signerMail.splice(1);
+    }
     for (let i = 0; i < signerMail.length; i++) {
       try {
         const imgPng =
@@ -789,7 +793,6 @@ function PlaceHolderSign() {
           recipient: signerMail[i].Email,
           subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
           from: sender,
-
           html:
             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
             imgPng +
@@ -820,6 +823,72 @@ function PlaceHolderSign() {
     }
 
     if (sendMail.data.result.status === "success") {
+      setMailStatus("success");
+      const signers = signersdata?.map((x) => {
+        return {
+          __type: "Pointer",
+          className: "contracts_Contactbook",
+          objectId: x.objectId
+        };
+      });
+      const addExtraDays = pdfDetails[0]?.TimeToCompleteDays
+        ? pdfDetails[0].TimeToCompleteDays
+        : 15;
+      const currentUser = signersdata.find((x) => x.Email === currentId);
+      setCurrentId(currentUser?.objectId);
+      let updateExpiryDate, data;
+      updateExpiryDate = new Date();
+      updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
+
+      try {
+        if (updateExpiryDate) {
+          data = {
+            Placeholders: signerPos,
+            SignedUrl: pdfDetails[0].URL,
+            Signers: signers,
+            ExpiryDate: {
+              iso: updateExpiryDate,
+              __type: "Date"
+            }
+          };
+        } else {
+          data = {
+            Placeholders: signerPos,
+            SignedUrl: pdfDetails[0].URL,
+            Signers: signers
+          };
+        }
+
+        await axios
+          .put(
+            `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+              "_appName"
+            )}_Document/${documentId}`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+              }
+            }
+          )
+          .then((result) => {
+            setIsSend(true);
+            setIsMailSend(true);
+            const loadObj = {
+              isLoad: false
+            };
+            setIsLoading(loadObj);
+          })
+          .catch((err) => {
+            console.log("axois err ", err);
+          });
+      } catch (e) {
+        console.log("error", e);
+      }
+    } else {
+      setMailStatus("failed");
       const signers = signersdata?.map((x) => {
         return {
           __type: "Pointer",
@@ -1370,7 +1439,11 @@ function PlaceHolderSign() {
                 }}
               >
                 <div style={{ height: "100%", padding: 20 }}>
-                  <p>You have successfully sent mails to all recipients!</p>
+                  {mailStatus === "success" ? (
+                    <p>You have successfully sent mails to all recipients!</p>
+                  ) : (
+                    <p>Please setup mail adapter to send mail!</p>
+                  )}
                   {currentId && (
                     <p>Do you want to sign documents right now ?</p>
                   )}

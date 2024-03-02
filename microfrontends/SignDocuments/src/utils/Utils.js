@@ -1391,7 +1391,8 @@ export const createDocument = async (template, placeholders, signerData) => {
         className: "_User",
         objectId: Doc.CreatedBy.objectId
       },
-      Signers: signers
+      Signers: signers,
+      SendinOrder: Doc?.SendinOrder || false
     };
 
     try {
