@@ -109,7 +109,8 @@ const NameModal = (props) => {
             required
           />
         </div>
-        {props.widgetName === "text" && (
+        {(props.defaultdata?.type === "text" ||
+          props.widgetName === "text") && (
           <>
             <div className="form-section">
               <label htmlFor="textvalidate" style={{ fontSize: 13 }}>
@@ -187,7 +188,15 @@ const NameModal = (props) => {
                   invalid default value
                 </p>
               ) : (
-                <p style={{ color: "transparent", fontSize: 8 }}>.</p>
+                <p
+                  style={{
+                    color: "transparent",
+                    fontSize: 10,
+                    margin: "3px 8px"
+                  }}
+                >
+                  .
+                </p>
               )}
             </div>
           </>
@@ -234,7 +243,8 @@ const NameModal = (props) => {
             })}
           </div>
         </div>
-        {props.widgetName === "text" && (
+        {(props.defaultdata?.type === "text" ||
+          props?.widgetName === "text") && (
           <div className="form-section">
             <label htmlFor="hint" style={{ fontSize: 13 }}>
               Hint
