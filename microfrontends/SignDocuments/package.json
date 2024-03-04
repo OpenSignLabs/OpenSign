@@ -29,7 +29,7 @@
     "react-konva": "^18.2.10",
     "react-pdf": "^7.7.0",
     "react-rnd": "^10.4.1",
-    "react-router-dom": "^6.16.0",
+    "react-router-dom": "^6.22.2",
     "react-scripts": "5.0.1",
     "react-scrollbars-custom": "^4.1.1",
     "react-select": "^5.8.0",
