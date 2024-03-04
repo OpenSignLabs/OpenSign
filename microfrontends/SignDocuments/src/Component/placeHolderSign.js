@@ -493,6 +493,7 @@ function PlaceHolderSign() {
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);
+        setCurrWidgetsDetails({})
       }
     }
   };
@@ -1132,6 +1133,9 @@ function PlaceHolderSign() {
         });
 
         setSignerPos(newUpdateSigner);
+        if(!addOption && !deleteOption){
+          handleNameModal()
+        }
       }
     }
   };
@@ -1211,9 +1215,13 @@ function PlaceHolderSign() {
   };
 
   const handleNameModal = () => {
-    setIsNameModal(!isNameModal);
+    setIsNameModal(false);
     setCurrWidgetsDetails({})
+    setShowDropdown(false);
+    setIsRadio(false)
+    setIsCheckbox(false)
   };
+  
   //function for update TourStatus
   const closeTour = async () => {
     setPlaceholderTour(false);
@@ -1554,6 +1562,7 @@ function PlaceHolderSign() {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
+                handleClose={handleNameModal}
               />
               <DropdownWidgetOption
                 type="checkbox"
@@ -1563,6 +1572,7 @@ function PlaceHolderSign() {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
+                handleClose={handleNameModal}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1572,6 +1582,7 @@ function PlaceHolderSign() {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
+                handleClose={handleNameModal}
               />
 
               {/* pdf header which contain funish back button */}

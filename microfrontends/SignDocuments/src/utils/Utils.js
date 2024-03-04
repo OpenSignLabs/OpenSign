@@ -93,9 +93,8 @@ export const onChangeInput = (
   userId,
   initial,
   dateFormat,
-  isPlaceholder,
-  selectedKey,
-  isDefaultEmpty
+  isDefaultEmpty,
+  isRadio
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
   let filterSignerPos;
@@ -135,7 +134,7 @@ export const onChangeInput = (
                 options: {
                   ...position.options,
                   response: value,
-                  defaultValue: []
+                  defaultValue: isRadio? "": []
                 }
               };
             } else {
@@ -192,79 +191,7 @@ export const onChangeInput = (
     setXyPostion(updatePlaceholder);
   }
 };
-
-// export const widgets = [
-//   {
-//     type: "signature",
-//     icon: "fa-solid fa-pen-nib",
-//     iconSize: "20px"
-//   },
-//   {
-//     type: "stamp",
-//     icon: "fa-solid fa-stamp",
-//     iconSize: "19px"
-//   },
-//   {
-//     type: "dropdown",
-//     icon: "fa-solid fa-circle-chevron-down",
-//     iconSize: "19px"
-//   },
-//   {
-//     type: "checkbox",
-//     icon: "fa-solid fa-square-check",
-//     iconSize: "22px"
-//   },
-//   {
-//     type: "text",
-//     icon: "fa-solid fa-font",
-//     iconSize: "21px"
-//   },
-//   {
-//     type: "initials",
-//     icon: "fa-solid fa-signature",
-//     iconSize: "15px"
-//   },
-//   {
-//     type: "name",
-//     icon: "fa-solid fa-user",
-//     iconSize: "21px"
-//   },
-//   {
-//     type: "company",
-//     icon: "fa-solid fa-building",
-//     iconSize: "25px"
-//   },
-//   {
-//     type: "job title",
-//     icon: "fa-solid fa-address-card",
-//     iconSize: "17px"
-//   },
-//   {
-//     type: "date",
-//     icon: "fa-solid fa-calendar-days",
-//     iconSize: "20px"
-//   },
-//   {
-//     type: "image",
-//     icon: "fa-solid fa-image",
-//     iconSize: "20px"
-//   },
-//   {
-//     type: "email",
-//     icon: "fa-solid fa-envelope",
-//     iconSize: "20px"
-//   },
-//   {
-//     type: "radio",
-//     icon: "fa-regular fa-circle-dot",
-//     iconSize: "20px"
-//   },
-//   {
-//     type: "label",
-//     icon: "fa-solid fa-text-width",
-//     iconSize: "20px"
-//   }
-// ];
+ 
 
 export const widgets = [
   {
@@ -443,7 +370,7 @@ export const defaultWidthHeight = (type) => {
     case "stamp":
       return { width: 150, height: 60 };
     case "checkbox":
-      return { width: 15, height: 15 };
+      return { width: 15, height: 30 };
     case "text":
       return { width: 150, height: 25 };
     case "dropdown":
@@ -998,10 +925,16 @@ export const multiSignEmbed = async (
   containerWH
 ) => {
   for (let item of pngUrl) {
+    let updateItem ; 
+    if(signyourself){
+      updateItem =item
+    }else{
+       updateItem = item.pos.filter((data) => data?.options?.status === 'required')
+    }
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const pageNo = item.pageNumber;
-    const imgUrlList = item.pos;
+    const imgUrlList = signyourself ?updateItem.pos : updateItem;
     const pages = pdfDoc.getPages();
     const form = pdfDoc.getForm();
     const page = pages[pageNo - 1];

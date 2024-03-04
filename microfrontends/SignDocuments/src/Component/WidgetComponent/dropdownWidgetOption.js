@@ -15,6 +15,17 @@ function DropdownWidgetOption(props) {
   const statusArr = ["required", "optional"];
   const [defaultCheckbox, setDefaultCheckbox] = useState([]);
 
+
+  const resetState = () => {
+    setDropdownOptionList(["option-1", "option-2"]);
+    setDropdownName(props.type);
+     setIsReadOnly(false);
+    setMinCount(0);
+    setMaxCount(0);
+    setDefaultCheckbox([]);
+    setDefaultValue("")
+  };
+  
   useEffect(() => {
     if (
       props.currWidgetsDetails?.options?.name &&
@@ -34,9 +45,11 @@ function DropdownWidgetOption(props) {
       setDefaultCheckbox(props.currWidgetsDetails?.options?.defaultValue|| []);
     } else {
       setStatus("required");
+        resetState();
     }
   }, [props.currWidgetsDetails]);
-  const handleInputChange = (index, value) => {
+ 
+ const handleInputChange = (index, value) => {
     setDropdownOptionList((prevInputs) => {
       const newInputs = [...prevInputs];
       newInputs[index] = value;
@@ -44,19 +57,23 @@ function DropdownWidgetOption(props) {
     });
   };
 
+//function add add checkbox option and add width of checkbox
   const handleAddInput = () => {
-    const flage = true;
-    setDropdownOptionList((prevInputs) => [...prevInputs, ""]);
-    props.handleSaveWidgetsOptions(null, null, null, null, null, flage, false);
+    const deleteOption = false;
+    const addOption = true
+     setDropdownOptionList((prevInputs) => [...prevInputs, ""]);
+     props.handleSaveWidgetsOptions(null, null, null, null, null, addOption, deleteOption);
   };
 
+//function add add checkbox option and delete width of checkbox
   const handleDeleteInput = (ind) => {
-    const flage = true;
+    const deleteOption = true;
+    const addOption = false
     const getUpdatedOptions = dropdownOptionList.filter(
       (data, index) => index !== ind
     );
     setDropdownOptionList(getUpdatedOptions);
-    props.handleSaveWidgetsOptions(null, null, null, null, null, false, flage);
+    props.handleSaveWidgetsOptions(null, null, null, null, null, addOption, deleteOption);
   };
  
  
@@ -77,10 +94,10 @@ function DropdownWidgetOption(props) {
       status,
       defaultData
     );
-    props.setShowDropdown(false);
+   //  props.setShowDropdown(false);
     setDropdownOptionList(["option-1", "option-2"]);
     setDropdownName(props.type);
-    props.setCurrWidgetsDetails({});
+  //  props.setCurrWidgetsDetails({});
     setIsReadOnly(false);
     setMinCount(0);
     setMaxCount(0);
@@ -347,12 +364,8 @@ function DropdownWidgetOption(props) {
               type="submit"
               className="finishBtn cancelBtn"
               onClick={() => {
-                setDropdownOptionList(["option-1", "option-2"]);
-                setDropdownName(props.type);
-                props.setCurrWidgetsDetails([]);
-                props.setShowDropdown(false);
-                setDefaultCheckbox([]);
-                 setDefaultValue("")
+                props.handleClose && props.handleClose()
+                resetState()
               }}
             >
               Cancel

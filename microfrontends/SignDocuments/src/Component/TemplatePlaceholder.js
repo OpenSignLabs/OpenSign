@@ -451,11 +451,11 @@ const TemplatePlaceholder = () => {
         } else if(dragTypeValue !== 'label' && dragTypeValue !== 'signature')  {
           setIsNameModal(true);
         }
-        setCurrWidgetsDetails("");
+        setCurrWidgetsDetails({});
         setWidgetType(dragTypeValue);
         setSignKey(key);
         setSelectWidgetId(key);
-
+      
         setIsMailSend(false);
       } else {
         setIsReceipent(false);
@@ -1079,6 +1079,9 @@ const TemplatePlaceholder = () => {
         });
 
         setSignerPos(newUpdateSigner);
+        if(!addOption && !deleteOption){
+          handleNameModal()
+        }
       }
     }
   };
@@ -1157,8 +1160,11 @@ const TemplatePlaceholder = () => {
     handleNameModal();
   };
   const handleNameModal = () => {
-    setIsNameModal(!isNameModal);
+    setIsNameModal(false);
     setCurrWidgetsDetails({})
+    setShowDropdown(false);
+    setIsRadio(false)
+    setIsCheckbox(false)
   };
 
   return (
@@ -1287,7 +1293,8 @@ const TemplatePlaceholder = () => {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
-              />
+                handleClose={handleNameModal}
+             />
               <DropdownWidgetOption
                 type="checkbox"
                 title="Checkbox"
@@ -1296,6 +1303,7 @@ const TemplatePlaceholder = () => {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
+                handleClose={handleNameModal}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1305,6 +1313,7 @@ const TemplatePlaceholder = () => {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
+                handleClose={handleNameModal}
               />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}

@@ -10,15 +10,12 @@ import "../LegaDrive/LegaDrive.css";
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
-  const [selectDate, setSelectDate] = useState({
-    date: moment(new Date().getTime()).format("MM/DD/YYYY"),
-    format: "MM/dd/YYYY"
-  });
+  const [selectDate, setSelectDate] = useState();
   const [dateFormat, setDateFormat] = useState([]);
   const [saveDateFormat, setSaveDateFormat] = useState("");
   const dateFormatArr = [
     "L",
-    "DD-MM-YYYY",
+     "DD-MM-YYYY",
     "YYYY-MM-DD",
     "MM.DD.YYYY",
     "MM-DD-YYYY",
@@ -55,6 +52,22 @@ function Placeholder(props) {
     }
   };
 
+   
+
+
+  useEffect(() => {
+    //set default current date and default format MM/dd/yyyy
+    if (props.isPlaceholder || props.isSignYourself) {
+      const date = new Date();
+      const milliseconds = date.getTime();
+      const newDate = moment(milliseconds).format("MM/DD/YYYY");
+      const dateObj = {
+        date: newDate,
+        format: "MM/dd/YYYY"
+      };
+      setSelectDate(dateObj);
+    }
+  }, []);
   //function for add selected date and format in selectFormat
   const changeDateFormat = () => {
     const updateDate = [];
@@ -455,7 +468,7 @@ function Placeholder(props) {
               ? props.pos.zIndex
               : "5",
         background: props.data
-          ? props.pos.type !== "checkbox" && props.data.blockColor
+          ?   props.data.blockColor
           : props.pos.type !== "checkbox" && "rgb(203 233 237)"
       }}
       onDrag={() => {

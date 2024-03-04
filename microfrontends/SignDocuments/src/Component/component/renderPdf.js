@@ -443,6 +443,7 @@ function RenderPdf({
                                   selectWidgetId={selectWidgetId}
                                   handleUserName={handleUserName}
                                   setIsCheckbox={setIsCheckbox}
+                                  setValidateAlert={setValidateAlert}
                                   setCurrWidgetsDetails={
                                     setCurrWidgetsDetails
                                   }
@@ -629,6 +630,7 @@ function RenderPdf({
                                       selectWidgetId={selectWidgetId}
                                       handleUserName={handleUserName}
                                       setIsCheckbox={setIsCheckbox}
+                                      setValidateAlert={setValidateAlert}
                                       setCurrWidgetsDetails={
                                         setCurrWidgetsDetails
                                       }

@@ -68,6 +68,7 @@ function SignYourSelf() {
   const [myInitial, setMyInitial] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [isUiLoading, setIsUiLoading] = useState(false);
+  const [validateAlert, setValidateAlert] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -625,9 +626,8 @@ function SignYourSelf() {
         flag,
         containerWH
       );
-// console.log(pdfBytes)
-      //function for call to embed signature in pdf and get digital signature pdf
-      await signPdfFun(pdfBytes, documentId);
+        //function for call to embed signature in pdf and get digital signature pdf
+       await signPdfFun(pdfBytes, documentId);
      
     }
   }
@@ -943,7 +943,7 @@ function SignYourSelf() {
                 name: dropdownName,
                 values: dropdownOptions,
                 isReadOnly: isReadOnly,
-                response: []
+               
               }
             };
           }
@@ -957,9 +957,16 @@ function SignYourSelf() {
         return obj;
       });
       setXyPostion(updateXYposition);
+      if(!addOption && !deleteOption){
+        handleCloseModal()
+      }
     }
   };
 
+  const handleCloseModal = () => {
+    setCurrWidgetsDetails({})
+   setIsCheckbox(false)
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Self Sign"} />
@@ -1103,6 +1110,7 @@ function SignYourSelf() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 isSignYourself={true}
+                handleClose={handleCloseModal}
               />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
@@ -1196,6 +1204,7 @@ function SignYourSelf() {
                     selectWidgetId={selectWidgetId}
                     setIsCheckbox={setIsCheckbox}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
+                    setValidateAlert={setValidateAlert}
                   />
                 )}
               </div>
@@ -1237,6 +1246,37 @@ function SignYourSelf() {
           </div>
         </div>
       )}
+      <ModalUi
+        headerColor={"#dc3545"}
+        isOpen={validateAlert}
+        title={"Validation alert"}
+        handleClose={() => {
+          setValidateAlert(false);
+        }}
+      >
+        <div style={{ height: "100%", padding: 20 }}>
+          <p>
+            The input does not meet the criteria set by the regular expression.
+          </p>
+
+          <div
+            style={{
+              height: "1px",
+              backgroundColor: "#9f9f9f",
+              width: "100%",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          ></div>
+          <button
+            onClick={() => setValidateAlert(false)}
+            type="button"
+            className="finishBtn cancelBtn"
+          >
+            Close
+          </button>
+        </div>
+      </ModalUi>
     </DndProvider>
   );
 }

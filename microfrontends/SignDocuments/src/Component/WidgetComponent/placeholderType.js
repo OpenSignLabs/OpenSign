@@ -25,7 +25,7 @@ function PlaceholderType(props) {
     // new RegExp(regexValidation);
     let isValidate = regexObject.test(textValue);
     if (!isValidate) {
-      props.setValidateAlert(true);
+      props?.setValidateAlert(true);
       inputRef.current.focus();
     }
   };
@@ -102,6 +102,7 @@ function PlaceholderType(props) {
     }
   }, []);
   useEffect(() => {
+   
     if (props.pos?.type && props.pos.type === "date") {
       if (props.selectDate) {
         let updateDate;
@@ -109,7 +110,11 @@ function PlaceholderType(props) {
           const [day, month, year] = props.saveDateFormat.split("-");
           updateDate = new Date(`${year}-${month}-${day}`);
         } else {
-          updateDate = new Date();
+          
+          if(props?.saveDateFormat){
+            updateDate = new Date(props.saveDateFormat);
+          } 
+          
         }
         // const updateDate = new Date(props.saveDateFormat);
         setStartDate(updateDate);
@@ -222,8 +227,9 @@ function PlaceholderType(props) {
  const handleCheckboxValue =(isChecked,ind)=>{
   let updateSelectedCheckbox =[], checkedList;
   let isDefaultValue,isDefaultEmpty;
-  if (props.pos?.type &&  ["checkbox","radio"].includes(props.pos.type) ) {
-   updateSelectedCheckbox = selectedCheckbox
+  if (props.pos?.type === "checkbox") {
+   updateSelectedCheckbox = selectedCheckbox ? selectedCheckbox :[]
+  
    if(isChecked){
      updateSelectedCheckbox.push(ind)
     setSelectedCheckbox(updateSelectedCheckbox)
@@ -246,8 +252,6 @@ function PlaceholderType(props) {
       props.data && props.data.Id,
       false,
       null,
-      null,
-      null,
       isDefaultEmpty
     );
   }
@@ -255,7 +259,7 @@ function PlaceholderType(props) {
 
  //function to handle select radio widget and set value seletced by user
  const handleCheckRadio =(isChecked,data)=>{
-  let isDefaultValue,isDefaultEmpty;
+  let isDefaultValue,isDefaultEmpty,isRadio=true;
   if (props.isNeedSign) {
     isDefaultValue = props.pos.options?.defaultValue;
   }
@@ -268,7 +272,7 @@ function PlaceholderType(props) {
     setTextValue("")
   }
   onChangeInput(
-   textValue,
+    data,
       props.pos.key,
       props.xyPostion,
       props.index,
@@ -276,12 +280,11 @@ function PlaceholderType(props) {
       props.data && props.data.Id,
       false,
       null,
-      null,
-      null,
-      isDefaultEmpty
+      isDefaultEmpty,
+      isRadio
     );
-  
- }
+}
+ 
   switch (props.pos.type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -342,14 +345,15 @@ function PlaceholderType(props) {
                 onBlur={handleInputBlur}
                 disabled={
                   props.isNeedSign &&
-                  props.pos.options?.isReadOnly &&
-                  props.pos.options?.isReadOnly
+                  (props.pos.options?.isReadOnly ||
+                 props.data?.signerObjId !== props.signerObjId)
                 }
                 type="checkbox"
                 checked={selectCheckbox(ind)}
                 onChange={(e) => {
-                  if (e.target.checked && !props.isPlaceholder) {
-                    const maxRequired =
+                  if (e.target.checked) {
+                    if(!props.isPlaceholder){
+                      const maxRequired =
                       props.pos.options?.validation?.maxRequiredCount;
                     const maxCountInt = maxRequired && parseInt(maxRequired);
                     if (maxCountInt > 0) {
@@ -359,7 +363,10 @@ function PlaceholderType(props) {
                     } else {
                       handleCheckboxValue(e.target.checked,ind)
                     }
-                  } else {
+                    }
+                   
+                  } 
+                  else {
                       handleCheckboxValue(e.target.checked,ind)
                   }
                 }}
@@ -602,7 +609,7 @@ function PlaceholderType(props) {
                 ? props.selectDate?.format
                 : props.pos?.options?.validation?.format
                   ? props.pos?.options?.validation?.format
-                  : "dd MMMM, YYYY"
+                  : "MM/dd/YYYY"
             }
           />
         </div>
