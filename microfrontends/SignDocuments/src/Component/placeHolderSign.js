@@ -488,7 +488,7 @@ function PlaceHolderSign() {
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
-        } else {
+        } else if(dragTypeValue !== 'label' && dragTypeValue !== 'signature') {
           setIsNameModal(true);
         }
         setWidgetType(dragTypeValue);
@@ -704,7 +704,7 @@ function PlaceHolderSign() {
           flag,
           containerWH
         );
-
+    
         const parseBaseUrl = localStorage.getItem("baseUrl");
         const parseAppId = localStorage.getItem("parseAppId");
         Parse.initialize(parseAppId);
@@ -746,7 +746,7 @@ function PlaceHolderSign() {
       setIsSendAlert(alert);
     }
   };
-
+  
   const sendEmailToSigners = async () => {
     setIsUiLoading(true);
     const pdfUrl = await embedPrefilllData();
@@ -839,12 +839,15 @@ function PlaceHolderSign() {
       let updateExpiryDate, data;
       updateExpiryDate = new Date();
       updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
+      //filter label widgets after add label widgets data on pdf
+      const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
+
 
       try {
         if (updateExpiryDate) {
           data = {
-            Placeholders: signerPos,
-            SignedUrl: pdfDetails[0].URL,
+            Placeholders: filterPrefill,
+            SignedUrl: pdfUrl,
             Signers: signers,
             ExpiryDate: {
               iso: updateExpiryDate,
@@ -853,8 +856,8 @@ function PlaceHolderSign() {
           };
         } else {
           data = {
-            Placeholders: signerPos,
-            SignedUrl: pdfDetails[0].URL,
+            Placeholders: filterPrefill,
+            SignedUrl: pdfUrl,
             Signers: signers
           };
         }
@@ -880,6 +883,7 @@ function PlaceHolderSign() {
               isLoad: false
             };
             setIsLoading(loadObj);
+            setIsUiLoading(false);
           })
           .catch((err) => {
             console.log("axois err ", err);
@@ -1062,7 +1066,7 @@ function PlaceHolderSign() {
                     ...position.options,
                     name: dropdownName,
                     values: dropdownOptions,
-                    status: status,
+                    isReadOnly: isReadOnly,
                     defaultValue: defaultValue
                   }
                 };
@@ -1093,6 +1097,7 @@ function PlaceHolderSign() {
                       minRequiredCount: minCount,
                       maxRequiredCount: maxCount
                     },
+                    defaultValue: defaultValue,
                     isReadOnly: isReadOnly
                   }
                 };
@@ -1207,6 +1212,7 @@ function PlaceHolderSign() {
 
   const handleNameModal = () => {
     setIsNameModal(!isNameModal);
+    setCurrWidgetsDetails({})
   };
   //function for update TourStatus
   const closeTour = async () => {

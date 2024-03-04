@@ -3,9 +3,8 @@ import { themeColor } from "../../utils/ThemeColor/backColor";
 import { defaultWidthHeight, resizeBorderExtraWidth } from "../../utils/Utils";
 function PlaceholderBorder(props) {
   const getResizeBorderExtraWidth =
-    (props.pos.type === "checkbox" || props.pos.type === "radio") &&
-    props.isPlaceholder
-      ? 38
+    (props.pos.type === "checkbox" || props.pos.type === "radio") 
+ ? 38
       : resizeBorderExtraWidth();
   const defaultWidth = defaultWidthHeight(props.pos.type).width;
   const defaultHeight = defaultWidthHeight(props.pos.type).height;

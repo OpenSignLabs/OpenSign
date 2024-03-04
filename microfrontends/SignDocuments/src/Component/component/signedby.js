@@ -8,18 +8,17 @@ function Signedby({ pdfDetails }) {
   };
 
   return (
-  
-      <div className="signerComponent">
+       <div className="signerComponent">
         <div
           style={{
             background: themeColor(),
-            //  color:"white"
+              color:"white"
           }}
           className="signedStyle"
         >
           Signed By
         </div>
-        <div style={{ marginTop: "2px" }}>
+        <div style={{ marginTop: "2px",background:"white" }}>
           <div
             style={{
               display: "flex",
@@ -61,6 +60,9 @@ function Signedby({ pdfDetails }) {
           </div>
         </div>
       </div>
+    
+     
+    
      
   );
 }

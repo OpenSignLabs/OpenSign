@@ -98,7 +98,7 @@ function SignYourSelf() {
   const [isDontShow, setIsDontShow] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
-  const [{ isOver }, drop] = useDrop({
+  const [, drop] = useDrop({
     accept: "BOX",
     drop: (item, monitor) => addPositionOfSignature(item, monitor),
     collect: (monitor) => ({
@@ -180,7 +180,7 @@ function SignYourSelf() {
 
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
-      setIsUiLoading(false);
+      
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
@@ -195,6 +195,12 @@ function SignYourSelf() {
         };
         if (showComplete) {
           setShowAlreadySignDoc(alreadySign);
+        }else{
+          setIsUiLoading(false);
+          setIsSignPad(false);
+          setIsEmail(true);
+          setXyPostion([]);
+          setSignBtnPosition([]);
         }
       }
     } else if (
@@ -561,13 +567,12 @@ function SignYourSelf() {
   };
 
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
-  async function embedImages() {
+  async function embedWidgetsData() {
     let checkSigned = 0;
     let allXyPos = 0;
 
     for (let i = 0; i < xyPostion.length; i++) {
-      // const posSignUrlData = xyPostion[i].pos.filter((pos) => pos.SignUrl);
-      const posWidgetData = xyPostion[i].pos.filter(
+       const posWidgetData = xyPostion[i].pos.filter(
         (pos) => pos.options.response
       );
 
@@ -620,13 +625,10 @@ function SignYourSelf() {
         flag,
         containerWH
       );
-
+// console.log(pdfBytes)
       //function for call to embed signature in pdf and get digital signature pdf
-      signPdfFun(pdfBytes, documentId);
-      setIsSignPad(false);
-      setIsEmail(true);
-      setXyPostion([]);
-      setSignBtnPosition([]);
+      await signPdfFun(pdfBytes, documentId);
+     
     }
   }
 
@@ -1150,7 +1152,7 @@ function SignYourSelf() {
                 changePage={changePage}
                 pdfUrl={pdfUrl}
                 documentStatus={documentStatus}
-                embedImages={embedImages}
+                embedWidgetsData={embedWidgetsData}
                 pdfDetails={pdfDetails}
                 isShowHeader={true}
                 currentSigner={true}
@@ -1202,7 +1204,7 @@ function SignYourSelf() {
             {/*if document is not completed then render signature and stamp button in the right side */}
             {/*else document is  completed then render signed by signer name in the right side */}
             <div
-              style={{ maxHeight: window.innerHeight - 70 + "px" }}
+              style={{ maxHeight: window.innerHeight - 70 + "px",backgroundColor:"white" }}
               className="autoSignScroll"
             >
               {!documentStatus.isCompleted ? (

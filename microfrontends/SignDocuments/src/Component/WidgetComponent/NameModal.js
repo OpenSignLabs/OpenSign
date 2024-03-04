@@ -25,11 +25,13 @@ const NameModal = (props) => {
         textvalidate:
           props.defaultdata?.options?.validation?.type === "regex"
             ? props.defaultdata?.options?.validation?.pattern
-            : props.defaultdata?.options?.validation?.type || "text"
+            : props.defaultdata?.options?.validation?.type || ""
       });
     } else {
       setFormdata({
-        name: props.defaultdata?.options?.name || props?.widgetName || ""
+        ...formdata,
+        name: props.defaultdata?.options?.name || props?.widgetName || "",
+         
       });
     }
   }, [props.defaultdata, props.widgetName]);
@@ -114,7 +116,7 @@ const NameModal = (props) => {
           <>
             <div className="form-section">
               <label htmlFor="textvalidate" style={{ fontSize: 13 }}>
-                Regular expressions
+                Validation
               </label>
               <div
                 style={{
@@ -139,6 +141,7 @@ const NameModal = (props) => {
                       zIndex: 2
                     }}
                     name="textvalidate"
+                    placeholder="Enter custom expression"
                     value={formdata.textvalidate}
                     onChange={(e) => handleChange(e)}
                     onBlur={() => handleBlurRegex()}
@@ -202,9 +205,6 @@ const NameModal = (props) => {
           </>
         )}
         <div className="form-section">
-          <label htmlFor="name" style={{ fontSize: 13 }}>
-            Status
-          </label>
           <div
             style={{
               display: "flex",
@@ -274,7 +274,7 @@ const NameModal = (props) => {
           type="submit"
           className="finishBtn"
         >
-          Add
+         Save
         </button>
       </form>
     </ModalUi>

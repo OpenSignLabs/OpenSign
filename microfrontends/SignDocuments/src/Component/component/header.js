@@ -21,7 +21,7 @@ function Header({
   changePage,
   pdfUrl,
   documentStatus,
-  embedImages,
+  embedWidgetsData,
   pdfDetails,
   signerPos,
   signersdata,
@@ -423,9 +423,9 @@ function Header({
                         data-tut="reactourThird"
                         onClick={() => {
                           if (!pdfUrl) {
-                            embedImages();
+                            embedWidgetsData();
                           } else if (isPdfRequestFiles) {
-                            embedImages();
+                            embedWidgetsData();
                           }
                         }}
                         style={{
@@ -523,7 +523,7 @@ function Header({
                   className="finishBtn sendHover"
                   onClick={() => {
                     if (!pdfUrl) {
-                      embedImages();
+                      embedWidgetsData();
                     }
                   }}
                 >
@@ -669,7 +669,7 @@ function Header({
                       type="button"
                       className="finishBtn sendHover"
                       onClick={() => {
-                        embedImages();
+                        embedWidgetsData();
                       }}
                     >
                       Finish
@@ -767,7 +767,7 @@ function Header({
                 className="finishBtn sendHover"
                 onClick={() => {
                   if (!pdfUrl) {
-                    embedImages();
+                    embedWidgetsData();
                   }
                 }}
               >
