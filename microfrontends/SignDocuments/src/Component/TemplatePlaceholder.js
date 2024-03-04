@@ -143,7 +143,7 @@ const TemplatePlaceholder = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
   const [isCheckbox, setIsCheckbox] = useState(false);
-
+  const [widgetName, setWidgetName] = useState(false);
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -312,6 +312,9 @@ const TemplatePlaceholder = () => {
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
+    if (item && item.text) {
+      setWidgetName(item.text);
+    }
     getSignerPos(item, monitor);
   };
 
@@ -445,7 +448,7 @@ const TemplatePlaceholder = () => {
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
-        } else {
+        } else if(dragTypeValue !== 'label' && dragTypeValue !== 'signature')  {
           setIsNameModal(true);
         }
         setCurrWidgetsDetails("");
@@ -1155,6 +1158,7 @@ const TemplatePlaceholder = () => {
   };
   const handleNameModal = () => {
     setIsNameModal(!isNameModal);
+    setCurrWidgetsDetails({})
   };
 
   return (
@@ -1488,6 +1492,7 @@ const TemplatePlaceholder = () => {
         />
       </ModalUi>
       <NameModal
+         widgetName={widgetName}
         defaultdata={currWidgetsDetails}
         isOpen={isNameModal}
         handleClose={handleNameModal}

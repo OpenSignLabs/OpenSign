@@ -82,10 +82,8 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
     }
   });
 };
-const handleDefaultValue = (ind, defaultValue) => {
-  const updateDefault = defaultValue.filter((data) => data !== ind);
-  return updateDefault;
-};
+ 
+//function for save widgets value on onchange function
 export const onChangeInput = (
   value,
   signKey,
@@ -130,27 +128,8 @@ export const onChangeInput = (
                   }
                 }
               };
-            } else if (isPlaceholder) {
-              return {
-                ...position,
-                options: {
-                  ...position.options,
-                  defaultValue: value
-                }
-              };
-            } else if (selectedKey) {
-              return {
-                ...position,
-                options: {
-                  ...position.options,
-                  response: value,
-                  defaultValue: handleDefaultValue(
-                    selectedKey,
-                    position.options.defaultValue
-                  )
-                }
-              };
-            } else if (isDefaultEmpty) {
+            }   
+          else if (isDefaultEmpty) {
               return {
                 ...position,
                 options: {
@@ -214,6 +193,79 @@ export const onChangeInput = (
   }
 };
 
+// export const widgets = [
+//   {
+//     type: "signature",
+//     icon: "fa-solid fa-pen-nib",
+//     iconSize: "20px"
+//   },
+//   {
+//     type: "stamp",
+//     icon: "fa-solid fa-stamp",
+//     iconSize: "19px"
+//   },
+//   {
+//     type: "dropdown",
+//     icon: "fa-solid fa-circle-chevron-down",
+//     iconSize: "19px"
+//   },
+//   {
+//     type: "checkbox",
+//     icon: "fa-solid fa-square-check",
+//     iconSize: "22px"
+//   },
+//   {
+//     type: "text",
+//     icon: "fa-solid fa-font",
+//     iconSize: "21px"
+//   },
+//   {
+//     type: "initials",
+//     icon: "fa-solid fa-signature",
+//     iconSize: "15px"
+//   },
+//   {
+//     type: "name",
+//     icon: "fa-solid fa-user",
+//     iconSize: "21px"
+//   },
+//   {
+//     type: "company",
+//     icon: "fa-solid fa-building",
+//     iconSize: "25px"
+//   },
+//   {
+//     type: "job title",
+//     icon: "fa-solid fa-address-card",
+//     iconSize: "17px"
+//   },
+//   {
+//     type: "date",
+//     icon: "fa-solid fa-calendar-days",
+//     iconSize: "20px"
+//   },
+//   {
+//     type: "image",
+//     icon: "fa-solid fa-image",
+//     iconSize: "20px"
+//   },
+//   {
+//     type: "email",
+//     icon: "fa-solid fa-envelope",
+//     iconSize: "20px"
+//   },
+//   {
+//     type: "radio",
+//     icon: "fa-regular fa-circle-dot",
+//     iconSize: "20px"
+//   },
+//   {
+//     type: "label",
+//     icon: "fa-solid fa-text-width",
+//     iconSize: "20px"
+//   }
+// ];
+
 export const widgets = [
   {
     type: "signature",
@@ -226,14 +278,14 @@ export const widgets = [
     iconSize: "19px"
   },
   {
-    type: "dropdown",
-    icon: "fa-solid fa-circle-chevron-down",
-    iconSize: "19px"
+    type: "initials",
+    icon: "fa-solid fa-signature",
+    iconSize: "15px"
   },
   {
-    type: "checkbox",
-    icon: "fa-solid fa-square-check",
-    iconSize: "22px"
+    type: "label",
+    icon: "fa-solid fa-text-width",
+    iconSize: "20px"
   },
   {
     type: "text",
@@ -241,14 +293,39 @@ export const widgets = [
     iconSize: "21px"
   },
   {
-    type: "initials",
-    icon: "fa-solid fa-signature",
-    iconSize: "15px"
+    type: "checkbox",
+    icon: "fa-solid fa-square-check",
+    iconSize: "22px"
+  },
+  {
+    type: "dropdown",
+    icon: "fa-solid fa-circle-chevron-down",
+    iconSize: "19px"
+  },
+  {
+    type: "radio",
+    icon: "fa-regular fa-circle-dot",
+    iconSize: "20px"
+  },
+  {
+    type: "image",
+    icon: "fa-solid fa-image",
+    iconSize: "20px"
+  },
+  {
+    type: "date",
+    icon: "fa-solid fa-calendar-days",
+    iconSize: "20px"
   },
   {
     type: "name",
     icon: "fa-solid fa-user",
     iconSize: "21px"
+  },
+  {
+    type: "email",
+    icon: "fa-solid fa-envelope",
+    iconSize: "20px"
   },
   {
     type: "company",
@@ -260,31 +337,6 @@ export const widgets = [
     icon: "fa-solid fa-address-card",
     iconSize: "17px"
   },
-  {
-    type: "date",
-    icon: "fa-solid fa-calendar-days",
-    iconSize: "20px"
-  },
-  {
-    type: "image",
-    icon: "fa-solid fa-image",
-    iconSize: "20px"
-  },
-  {
-    type: "email",
-    icon: "fa-solid fa-envelope",
-    iconSize: "20px"
-  },
-  {
-    type: "radio",
-    icon: "fa-regular fa-circle-dot",
-    iconSize: "20px"
-  },
-  {
-    type: "label",
-    icon: "fa-solid fa-text-width",
-    iconSize: "20px"
-  }
 ];
 
 const getDate = () => {
@@ -1031,11 +1083,39 @@ export const multiSignEmbed = async (
 
       const yPos = (pos, ind) => {
         const resizePos = pos.yPosition;
+        const widgetHeight =
+                position.type === "radio"
+                  ? 10
+                  : position.type === "checkbox"
+                    ? 10
+                    : scaleHeight;
+              const newHeight = ind
+                ? ind > 0
+                  ? widgetHeight
+                  : 0
+                : widgetHeight;
+
+            
         if (signyourself) {
           if (isMobile) {
-            return page.getHeight() - resizePos * scale - scaleHeight;
+            if (ind && ind > 0 && position.type === "checkbox") {
+              return page.getHeight() - resizePos * scale - newHeight;
+            } else if (!ind && position.type === "checkbox") {
+              return page.getHeight() - resizePos * scale;
+            } else {
+              return page.getHeight() - resizePos * scale - newHeight;
+            }
+            // return page.getHeight() - resizePos * scale - scaleHeight;
           } else {
-            return page.getHeight() - resizePos - scaleHeight;
+            
+            if (ind && ind > 0 && position.type === "checkbox") {
+              return page.getHeight() - resizePos - newHeight;
+            } else if (!ind && position.type === "checkbox") {
+              return page.getHeight() - resizePos;
+            } else {
+              return page.getHeight() - resizePos - newHeight;
+            }
+            // return page.getHeight() - resizePos - scaleHeight;
           }
         } else {
           //checking both condition mobile and desktop view
@@ -1063,17 +1143,7 @@ export const multiSignEmbed = async (
                 return page.getHeight() - y - scaleHeight;
               }
             } else {
-              const widgetHeight =
-                position.type === "radio"
-                  ? 10
-                  : position.type === "checkbox"
-                    ? 10
-                    : scaleHeight;
-              const newHeight = ind
-                ? ind > 0
-                  ? widgetHeight
-                  : 0
-                : widgetHeight;
+              
 
               if (ind && ind > 0 && position.type === "checkbox") {
                 return page.getHeight() - resizePos - newHeight;
@@ -1104,7 +1174,7 @@ export const multiSignEmbed = async (
             const checkboxRandomId = "checkbox" + randomId();
             let yPosition;
             const height = 10;
-            if (position?.options?.response) {
+            if (position?.options?.response && position?.options?.response?.length >0) {
               isCheck = position?.options?.response?.includes(ind);
             } else if (position?.options?.defaultValue) {
               isCheck = position?.options?.defaultValue?.includes(ind);
@@ -1135,7 +1205,12 @@ export const multiSignEmbed = async (
       } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
-        const textContent = position.options?.response;
+        let textContent;
+        if (position?.options?.response) {
+          textContent = position.options?.response;
+        } else if (position?.options?.defaultValue) {
+          textContent = position?.options?.defaultValue;
+         }
         page.drawText(textContent, {
           x: xPos(position),
           y: yPos(position) + 10,
@@ -1146,7 +1221,13 @@ export const multiSignEmbed = async (
       } else if (position.type === "dropdown") {
         const dropdown = form.createDropdown(randomboxId);
         dropdown.addOptions(position?.options?.values);
-        dropdown.select(position.options?.response);
+        if (position?.options?.response) {
+          dropdown.select(position.options?.response);
+        } else if (position?.options?.defaultValue) {
+          dropdown.select( position?.options?.defaultValue);
+           
+        }
+      
         dropdown.addToPage(page, {
           x: xPos(position),
           y: yPos(position),
@@ -1177,8 +1258,12 @@ export const multiSignEmbed = async (
             addYPosition = addYPosition + 18;
           }
         }
-
-        radioGroup.select(position.options?.response);
+        if (position?.options?.response) {
+          radioGroup.select(position.options?.response);
+         } else if (position?.options?.defaultValue) {
+          radioGroup.select(position?.options?.defaultValue);
+        }
+       
         radioGroup.enableReadOnly();
       } else {
         page.drawImage(img, {

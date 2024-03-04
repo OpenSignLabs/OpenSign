@@ -7,16 +7,15 @@ import RegexParser from "regex-parser";
 
 function PlaceholderType(props) {
   const type = props.pos.type;
-  const [selectOption, setSelectOption] = useState("");
+  const [selectOption, setSelectOption] = useState(props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue :"");
   const [startDate, setStartDate] = useState(new Date());
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
-  const [textValue, setTextValue] = useState("");
-  const [isCheckedRadio, setIsCheckedRadio] = useState({
-    isChecked: false,
-    selectValue: ""
-  });
-  const [selectedCheckbox, setSelectedCheckbox] = useState([]);
+  const [textValue, setTextValue] = useState();
+ const [selectedCheckbox, setSelectedCheckbox] = useState([]);
+
+
+
 
   const validateExpression = (regexValidation) => {
     let regexObject = regexValidation;
@@ -31,6 +30,7 @@ function PlaceholderType(props) {
     }
   };
 
+  
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
     const validateType = props.pos?.options?.validation?.type;
@@ -89,58 +89,10 @@ function PlaceholderType(props) {
       const updateDate = new Date();
       setStartDate(updateDate);
     }
+    setTextValue(props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue :"")
   }, []);
 
-  useEffect(() => {
-    const isCheckedValue = isCheckedRadio?.selectValue
-      ? isCheckedRadio.selectValue
-      : selectedCheckbox;
-    if (props.pos?.type && props.pos.type === "checkbox") {
-      let isDefaultValue;
-      if (props.isNeedSign) {
-        isDefaultValue = props.pos.options?.defaultValue;
-      }
-      if (isDefaultValue && isDefaultValue.length > 0) {
-        onChangeInput(
-          isCheckedValue,
-          props.pos.key,
-          props.xyPostion,
-          props.index,
-          props.setXyPostion,
-          props.data && props.data.Id,
-          false,
-          null,
-          null,
-          null,
-          true
-        );
-      } else {
-        onChangeInput(
-          isCheckedValue,
-          props.pos.key,
-          props.xyPostion,
-          props.index,
-          props.setXyPostion,
-          props.data && props.data.Id,
-          false,
-          null,
-          props.isPlaceholder,
-          isCheckedRadio.selectedKey
-        );
-      }
-    } else if (props.pos?.type && props.pos.type === "radio") {
-      onChangeInput(
-        isCheckedValue,
-        props.pos.key,
-        props.xyPostion,
-        props.index,
-        props.setXyPostion,
-        props.data && props.data.Id,
-        false,
-        null
-      );
-    }
-  }, [isCheckedRadio]);
+  
 
   //for handle default checked options
   useEffect(() => {
@@ -157,7 +109,7 @@ function PlaceholderType(props) {
           const [day, month, year] = props.saveDateFormat.split("-");
           updateDate = new Date(`${year}-${month}-${day}`);
         } else {
-          updateDate = new Date(props.saveDateFormat);
+          updateDate = new Date();
         }
         // const updateDate = new Date(props.saveDateFormat);
         setStartDate(updateDate);
@@ -201,7 +153,7 @@ function PlaceholderType(props) {
       ref={ref}
     >
       {dateValue(value)}
-      <i className="fa-solid fa-calendar" style={{ marginLeft: "5px" }}></i>
+      <i className="fa-regular fa-calendar" style={{ marginLeft: "5px" }}></i>
     </div>
   ));
 
@@ -233,7 +185,7 @@ function PlaceholderType(props) {
   const selectCheckbox = (ind) => {
     const res = props.pos.options?.response;
     const defaultCheck = props.pos.options?.defaultValue;
-    if (res) {
+    if (res && res?.length>0) {
       const isSelectIndex = res.indexOf(ind);
       if (isSelectIndex > -1) {
         return true;
@@ -253,6 +205,83 @@ function PlaceholderType(props) {
     }
   };
 
+ const handleRadioCheck =(data)=>{
+  const defaultData =  props.pos.options?.defaultValue;
+   if(textValue  === data){
+    return true;
+  }else if(defaultData ===data)
+  {
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+ //function for set checked and unchecked value of checkbox 
+ const handleCheckboxValue =(isChecked,ind)=>{
+  let updateSelectedCheckbox =[], checkedList;
+  let isDefaultValue,isDefaultEmpty;
+  if (props.pos?.type &&  ["checkbox","radio"].includes(props.pos.type) ) {
+   updateSelectedCheckbox = selectedCheckbox
+   if(isChecked){
+     updateSelectedCheckbox.push(ind)
+    setSelectedCheckbox(updateSelectedCheckbox)
+   }else{
+   checkedList = selectedCheckbox.filter((data)=> data!==ind)
+      setSelectedCheckbox(checkedList)
+   }
+   if (props.isNeedSign) {
+    isDefaultValue = props.pos.options?.defaultValue;
+  }
+  if (isDefaultValue && isDefaultValue.length > 0) {
+    isDefaultEmpty = true;
+  }
+  onChangeInput(
+    checkedList ? checkedList :updateSelectedCheckbox,
+      props.pos.key,
+      props.xyPostion,
+      props.index,
+      props.setXyPostion,
+      props.data && props.data.Id,
+      false,
+      null,
+      null,
+      null,
+      isDefaultEmpty
+    );
+  }
+ }
+
+ //function to handle select radio widget and set value seletced by user
+ const handleCheckRadio =(isChecked,data)=>{
+  let isDefaultValue,isDefaultEmpty;
+  if (props.isNeedSign) {
+    isDefaultValue = props.pos.options?.defaultValue;
+  }
+  if (isDefaultValue ) {
+    isDefaultEmpty = true;
+  }
+  if(isChecked){
+    setTextValue(data)
+  }else{
+    setTextValue("")
+  }
+  onChangeInput(
+   textValue,
+      props.pos.key,
+      props.xyPostion,
+      props.index,
+      props.setXyPostion,
+      props.data && props.data.Id,
+      false,
+      null,
+      null,
+      null,
+      isDefaultEmpty
+    );
+  
+ }
   switch (props.pos.type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -325,26 +354,16 @@ function PlaceholderType(props) {
                     const maxCountInt = maxRequired && parseInt(maxRequired);
                     if (maxCountInt > 0) {
                       if (selectedCheckbox.length <= maxCountInt - 1) {
-                        setSelectedCheckbox((prev) => [...prev, ind]);
+                        handleCheckboxValue(e.target.checked,ind)
                       }
                     } else {
-                      setSelectedCheckbox((prev) => [...prev, ind]);
+                      handleCheckboxValue(e.target.checked,ind)
                     }
                   } else {
-                    const removeOption = selectedCheckbox.filter(
-                      (data) => data !== ind
-                    );
-                    setSelectedCheckbox(removeOption);
+                      handleCheckboxValue(e.target.checked,ind)
                   }
                 }}
-                onClick={() => {
-                  !props.isPlaceholder &&
-                    setIsCheckedRadio({
-                      isChecked: !isCheckedRadio,
-                      selectValue: "",
-                      selectedKey: ind
-                    });
-                }}
+                
               />
             );
           })}
@@ -358,13 +377,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={validatePlaceholder}
           style={{ fontSize: calculateFontSize() }}
-          value={
-            props.pos?.options?.validation
-              ? textValue
-                ? textValue
-                : props.pos.options?.response && props.pos.options.response
-              : textValue
-          }
+          value={textValue}
           type="text"
           tabIndex="0"
           disabled={
@@ -374,6 +387,7 @@ function PlaceholderType(props) {
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
+         
             setTextValue(e.target.value);
             onChangeInput(
               e.target.value,
@@ -468,11 +482,7 @@ function PlaceholderType(props) {
           style={{ fontSize: calculateFontSize() }}
           className="inputPlaceholder"
           type="text"
-          value={
-            textValue
-              ? textValue
-              : props.pos.options.response && props.pos.options.response
-          }
+          value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -506,11 +516,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"company"}
           style={{ fontSize: calculateFontSize() }}
-          value={
-            textValue
-              ? textValue
-              : props.pos.options.response && props.pos.options.response
-          }
+          value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -544,11 +550,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"job title"}
           style={{ fontSize: calculateFontSize() }}
-          value={
-            textValue
-              ? textValue
-              : props.pos.options.response && props.pos.options.response
-          }
+          value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -635,11 +637,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"email"}
           style={{ fontSize: calculateFontSize() }}
-          value={
-            textValue
-              ? textValue
-              : props.pos.options?.response && props.pos.options.response
-          }
+          value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -679,15 +677,22 @@ function PlaceholderType(props) {
                   marginTop: "5px"
                 }}
                 type="radio"
-                disabled={props.isPlaceholder}
-                checked={isCheckedRadio.selectValue === data}
+                disabled={
+                  props.isNeedSign &&
+                  props.pos.options?.isReadOnly &&
+                  props.pos.options?.isReadOnly
+                }
+                // disabled={props.isPlaceholder}
+                checked={handleRadioCheck(data)}
                 // checked={isCheckedRadio.isChecked}
-                onClick={() => {
-                  setIsCheckedRadio({
-                    isChecked: !isCheckedRadio,
-                    selectValue: data
-                  });
+                onChange={(e)=>{
+                  if(!props.isPlaceholder){
+                    handleCheckRadio(e.target.checked,data)
+                   
+                  }
+                 
                 }}
+                
               />
             );
           })}

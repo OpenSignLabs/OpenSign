@@ -284,7 +284,7 @@ if(jsonSender?.objectId){    await axios
   };
 
   //function for embed signature or image url in pdf
-  async function embedImages() {
+  async function embedWidgetsData() {
     const checkUser = signerPos.filter(
       (data) => data.signerObjId === signerObjectId
     );
@@ -808,7 +808,7 @@ if(jsonSender?.objectId){    await axios
                 signerPos={signerPos}
                 isSigned={isSigned}
                 isCompleted={isCompleted}
-                embedImages={embedImages}
+                embedWidgetsData={embedWidgetsData}
                 isShowHeader={true}
                 setIsDecline={setIsDecline}
                 decline={true}

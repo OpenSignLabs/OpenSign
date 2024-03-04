@@ -368,8 +368,9 @@ function PdfRequestFiles() {
       return true;
     }
   };
+  
   //function for embed signature or image url in pdf
-  async function embedImages() {
+  async function embedWidgetsData() {
     const validateSigning = checkSendInOrder();
     if (validateSigning) {
     const checkUser = signerPos.filter(
@@ -378,69 +379,122 @@ function PdfRequestFiles() {
     if (checkUser && checkUser.length > 0) {
       let unSignUrlData,
         checkboxExist,
-        isReadOnly,
-        minCountAlert = false,
-        checkboxKey;
+        requiredRadio,
+        showAlert = false,
+        widgetKey,
+        radioExist,
+        requiredCheckbox
+        ;
 
       for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
         checkboxExist = checkUser[0].placeHolder[i].pos.some(
           (data) => data.type === "checkbox"
         );
-
+        radioExist = checkUser[0].placeHolder[i].pos.some(
+          (data) => data.type === "radio"
+        );
         if (checkboxExist) {
-          isReadOnly = checkUser[0].placeHolder[i].pos.filter(
-            (position) => !position.options?.isReadOnly
+          requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
+            (position) => !position.options?.isReadOnly && position.type ==='checkbox'
           );
 
-          if (isReadOnly && isReadOnly.length > 0) {
-            for (let i = 0; i < isReadOnly.length; i++) {
+          if (requiredCheckbox && requiredCheckbox.length > 0) {
+            for (let i = 0; i < requiredCheckbox.length; i++) {
               const minCount =
-                isReadOnly[i].options?.validation?.minRequiredCount;
+              requiredCheckbox[i].options?.validation?.minRequiredCount;
               const parseMin = minCount && parseInt(minCount);
               const maxCount =
-                isReadOnly[i].options?.validation?.maxRequiredCount;
+              requiredCheckbox[i].options?.validation?.maxRequiredCount;
               const parseMax = maxCount && parseInt(maxCount);
-              const response = isReadOnly[i].options?.response?.length;
-              const defaultValue = isReadOnly[i].options?.defaultValue?.length;
+              const response = requiredCheckbox[i].options?.response?.length;
+              const defaultValue = requiredCheckbox[i].options?.defaultValue?.length;
               if (parseMin === 0 && parseMax === 0) {
-                if (!minCountAlert) {
-                  minCountAlert = false;
+                if (!showAlert) {
+                  showAlert = false;
                 }
               } else if (parseMin === 0 && parseMax > 0) {
-                if (!minCountAlert) {
-                  minCountAlert = false;
+                if (!showAlert) {
+                  showAlert = false;
                 }
               } else if (!response) {
                 if (!defaultValue) {
-                  if (!minCountAlert) {
-                    minCountAlert = true;
-                    checkboxKey = isReadOnly[i].key;
+                  if (!showAlert) {
+                    showAlert = true;
+                    widgetKey = requiredCheckbox[i].key;
                     setminRequiredCount(parseMin);
                   }
                 }
               } else if (parseMin > 0 && parseMin > response) {
-                if (!minCountAlert) {
-                  minCountAlert = true;
-                  checkboxKey = isReadOnly[i].key;
+                if (!showAlert) {
+                  showAlert = true;
+                  widgetKey = requiredCheckbox[i].key;
                   setminRequiredCount(parseMin);
                 }
               }
             }
           }
-        } else {
-          unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
-            (pos) => !pos?.SignUrl && !pos.options.response
+        } else if(radioExist) {
+          requiredRadio = checkUser[0].placeHolder[i].pos.filter(
+            (position) => !position.options?.isReadOnly && position.type ==='radio'
+          ); 
+        
+          if (requiredRadio && requiredRadio.length > 0) {
+            let checkSigned ;
+           for(let i=0; i < requiredRadio.length; i++){
+            checkSigned = requiredRadio[i]?.options.response
+              if(!checkSigned){
+               let checkDefaultSigned = requiredRadio[i]?.options.defaultValue
+                if(!checkDefaultSigned){
+                  if (!showAlert) {
+                    showAlert = true;
+                    widgetKey = requiredRadio[i].key;
+                  }
+                }
+              }
+           }
+          }
+        } else{
+           
+         const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
+            (position) => !position.options?.isReadOnly 
           );
+           if(requiredWidgets && requiredCheckbox.length >0){
+            unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
+              (pos) => !pos?.SignUrl && !pos.options.response
+            );
+            let checkSigned ;
+            for(let i=0; i < requiredWidgets.length; i++){
+             checkSigned = requiredWidgets[i]?.options?.response
+               if(!checkSigned){
+              const  checkSignUrl = requiredWidgets[i]?.pos?.SignUrl
+
+                let checkDefaultSigned = requiredWidgets[i]?.options?.defaultValue
+                if(!checkSignUrl){
+                  if(!checkDefaultSigned){
+                    if (!showAlert) {
+                      showAlert = true;
+                      widgetKey = requiredWidgets[i].key;
+                    }
+                  }
+                }
+                 
+               }
+            }
+           }
         }
       }
 
-      if (checkboxExist && isReadOnly && minCountAlert) {
-        setUnSignedWidgetId(checkboxKey);
+      if (checkboxExist && requiredCheckbox && showAlert) {
+        setUnSignedWidgetId(widgetKey);
         setWidgetsTour(true);
-      } else if (!checkboxExist && unSignUrlData && unSignUrlData.length > 0) {
-        setUnSignedWidgetId(unSignUrlData[0].key);
+      }else if(radioExist && showAlert ){
+        setUnSignedWidgetId(widgetKey);
         setWidgetsTour(true);
       } 
+      else if (showAlert) {
+        setUnSignedWidgetId(widgetKey);
+        setWidgetsTour(true);
+      }  
       else {
         setIsUiLoading(true);
         const pngUrl = checkUser[0].placeHolder;
@@ -555,6 +609,7 @@ function PdfRequestFiles() {
           flag,
           containerWH
         );
+       
         //function for call to embed signature in pdf and get digital signature pdf
         try {
           const res = await signPdfFun(
@@ -1188,7 +1243,7 @@ function PdfRequestFiles() {
                 signerPos={signerPos}
                 isSigned={isSigned}
                 isCompleted={isCompleted}
-                embedImages={embedImages}
+                embedWidgetsData={embedWidgetsData}
                 isShowHeader={true}
                 setIsDecline={setIsDecline}
                 decline={true}

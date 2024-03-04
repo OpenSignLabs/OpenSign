@@ -30,8 +30,8 @@ function DropdownWidgetOption(props) {
       );
       setIsReadOnly(props.currWidgetsDetails?.options?.isReadOnly);
       setStatus(props.currWidgetsDetails?.options?.status || "required");
-      setDefaultValue(props.currWidgetsDetails?.options?.defaultValue);
-      setDefaultCheckbox(props.currWidgetsDetails?.options?.defaultValue);
+      setDefaultValue(props.currWidgetsDetails?.options?.defaultValue || "");
+      setDefaultCheckbox(props.currWidgetsDetails?.options?.defaultValue|| []);
     } else {
       setStatus("required");
     }
@@ -58,12 +58,14 @@ function DropdownWidgetOption(props) {
     setDropdownOptionList(getUpdatedOptions);
     props.handleSaveWidgetsOptions(null, null, null, null, null, false, flage);
   };
-
+ 
+ 
   const handleSaveOption = () => {
     const defaultData =
       defaultCheckbox && defaultCheckbox.length > 0
         ? defaultCheckbox
         : defaultValue;
+      
     props.handleSaveWidgetsOptions(
       dropdownName,
       dropdownOptionList,
@@ -78,11 +80,12 @@ function DropdownWidgetOption(props) {
     props.setShowDropdown(false);
     setDropdownOptionList(["option-1", "option-2"]);
     setDropdownName(props.type);
-    props.setCurrWidgetsDetails([]);
+    props.setCurrWidgetsDetails({});
     setIsReadOnly(false);
     setMinCount(0);
     setMaxCount(0);
     setDefaultCheckbox([]);
+    setDefaultValue("")
   };
 
   const handleSetMinMax = (e) => {
@@ -94,16 +97,16 @@ function DropdownWidgetOption(props) {
     }
   };
 
-  // const handleDefaultCheck = (index) => {
-  //   const getDefaultCheck = defaultCheckbox.includes(index);
-
-  //   if (getDefaultCheck[0] === index) {
-  //     return "check";
-  //   } else {
-  //     return "uncheck";
-  //   }
-  //   // return "check";
-  // };
+  const handleDefaultCheck = (index) => {
+    const getDefaultCheck = defaultCheckbox.includes(index);
+    if (getDefaultCheck) {
+      return true;
+    } else {
+      return false;
+    }
+    
+  };
+ 
   return (
     //props.showDropdown
     <ModalUi
@@ -113,8 +116,17 @@ function DropdownWidgetOption(props) {
       closeOff={true}
     >
       <div style={{ height: "100%", padding: 20 }}>
-        {props.type === "checkbox" && !props.isSignYourself && (
-          <>
+     
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSaveOption();
+          }}
+        >
+          <div className="dropdownContainer">
+          {["checkbox","radio"].includes(props.type) && !props.isSignYourself && (
+          <div>
             <input
               type="checkbox"
               checked={isReadOnly}
@@ -124,16 +136,8 @@ function DropdownWidgetOption(props) {
             />
 
             <label style={{ marginLeft: "10px" }}>Is read only</label>
-          </>
+          </div>
         )}
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSaveOption();
-          }}
-        >
-          <div className="dropdownContainer">
             <label style={{ fontSize: "13px", fontWeight: "600" }}>
               Name<span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
@@ -144,65 +148,12 @@ function DropdownWidgetOption(props) {
               onChange={(e) => setDropdownName(e.target.value)}
               className="drodown-input"
             />
-            {props.type !== "checkbox" && (
-              <>
-                <label
-                  style={{ fontSize: "13px", fontWeight: "600", marginTop: 2 }}
-                >
-                  status
-                </label>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 10,
-                    marginBottom: "0.5rem"
-                  }}
-                >
-                  {statusArr.map((data, ind) => {
-                    return (
-                      <div
-                        key={ind}
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          gap: 5,
-                          alignItems: "center"
-                        }}
-                      >
-                        <input
-                          style={{ accentColor: "red" }}
-                          type="radio"
-                          name="status"
-                          onChange={(e) => setStatus(data.toLowerCase())}
-                          checked={status.toLowerCase() === data.toLowerCase()}
-                        />
-                        <div style={{ fontSize: "13px", fontWeight: "500" }}>
-                          {data}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
-            {props.type !== "checkbox" && (
-              <>
-                <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Default value
-                </label>
-                <input
-                  // defaultValue={dropdownName}
-                  value={defaultValue}
-                  onChange={(e) => setDefaultValue(e.target.value)}
-                  className="drodown-input"
-                />
-              </>
-            )}
+          
+              
             {props.type === "checkbox" && !props.isSignYourself && (
               <>
                 <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Minimun required count
+                  Minimun check
                 </label>
                 <input
                   required
@@ -215,7 +166,7 @@ function DropdownWidgetOption(props) {
                   className="drodown-input"
                 />
                 <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Maximum required count
+                  Maximum check
                 </label>
                 <input
                   required
@@ -251,6 +202,26 @@ function DropdownWidgetOption(props) {
                     alignItems: "center"
                   }}
                 >
+                    {props.type === "checkbox" && !props.isSignYourself && (
+                  <input type="checkbox"
+                   checked={handleDefaultCheck(index)}
+                   onChange={(e) => {
+                    
+                    if (e.target.checked) {
+                      const getDefaultCheck =
+                        defaultCheckbox?.includes(index);
+                      if (!getDefaultCheck) {
+                        setDefaultCheckbox((prev) => [...prev, index]);
+                      }
+                    } else {
+                      const removeOption = defaultCheckbox.filter(
+                        (data) => data !== index
+                      );
+                      setDefaultCheckbox(removeOption);
+                    }
+                  }}
+                  style={{width:"23px",height:"19px",marginRight:"5px"}} />
+                    )}
                   <input
                     required
                     className="drodown-input"
@@ -258,30 +229,7 @@ function DropdownWidgetOption(props) {
                     value={option}
                     onChange={(e) => handleInputChange(index, e.target.value)}
                   />
-                  {props.type === "checkbox" && !props.isSignYourself && (
-                    <select
-                      // defaultValue={handleDefaultCheck(index)}
-                      className="defaultOptions"
-                      onChange={(e) => {
-                        if (e.target.value === "check") {
-                          const getDefaultCheck =
-                            defaultCheckbox?.includes(index);
-                          if (!getDefaultCheck) {
-                            setDefaultCheckbox((prev) => [...prev, index]);
-                          }
-                        } else {
-                          const removeOption = defaultCheckbox.filter(
-                            (data) => data !== index
-                          );
-                          setDefaultCheckbox(removeOption);
-                        }
-                      }}
-                    >
-                      {" "}
-                      <option>check</option>
-                      <option>uncheck</option>
-                    </select>
-                  )}
+                   
                   <i
                     className="fa-solid fa-rectangle-xmark"
                     onClick={() => handleDeleteInput(index)}
@@ -305,6 +253,72 @@ function DropdownWidgetOption(props) {
                 className="fa-solid fa-square-plus"
               ></i>
             </div>
+            {["dropdown","radio"].includes(props.type) && (
+              <>
+              <label  style={{ fontSize: "13px", fontWeight: "600", marginTop: "5px" }}>Default value</label>
+                <select
+                   onChange={(e) => setDefaultValue(e.target.value)}
+                  className="drodown-input"
+                    name="defaultvalue"
+                    value={defaultValue}
+                    placeholder="select default value"
+                   >
+                    <option value="" disabled hidden style={{ fontSize: "13px" }}>
+                      Select...
+                    </option>
+                    {dropdownOptionList.map((data, ind) => {
+                      return (
+                        <option
+                          style={{ fontSize: "13px" }}
+                          key={ind}
+                          value={data}
+                        >
+                          {data}
+                        </option>
+                      );
+                    })}
+                  </select>
+               
+                
+              </>
+            )}
+               {props.type !== "checkbox" && props.type !== 'radio' && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 10,
+                    marginTop: "0.5rem"
+                  }}
+                >
+                  {statusArr.map((data, ind) => {
+                    return (
+                      <div
+                        key={ind}
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: 5,
+                          alignItems: "center"
+                        }}
+                      >
+                        <input
+                          style={{ accentColor: "red" }}
+                          type="radio"
+                          name="status"
+                          onChange={(e) => setStatus(data.toLowerCase())}
+                          checked={status.toLowerCase() === data.toLowerCase()}
+                        />
+                        <div style={{ fontSize: "13px", fontWeight: "500" }}>
+                          {data}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
 
           <div
@@ -338,6 +352,7 @@ function DropdownWidgetOption(props) {
                 props.setCurrWidgetsDetails([]);
                 props.setShowDropdown(false);
                 setDefaultCheckbox([]);
+                 setDefaultValue("")
               }}
             >
               Cancel

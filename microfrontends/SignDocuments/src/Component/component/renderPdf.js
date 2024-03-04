@@ -442,6 +442,10 @@ function RenderPdf({
                                   setSelectWidgetId={setSelectWidgetId}
                                   selectWidgetId={selectWidgetId}
                                   handleUserName={handleUserName}
+                                  setIsCheckbox={setIsCheckbox}
+                                  setCurrWidgetsDetails={
+                                    setCurrWidgetsDetails
+                                  }
                                 />
                               )
                             );
@@ -624,6 +628,10 @@ function RenderPdf({
                                       setSelectWidgetId={setSelectWidgetId}
                                       selectWidgetId={selectWidgetId}
                                       handleUserName={handleUserName}
+                                      setIsCheckbox={setIsCheckbox}
+                                      setCurrWidgetsDetails={
+                                        setCurrWidgetsDetails
+                                      }
                                     />
                                   </React.Fragment>
                                 )
