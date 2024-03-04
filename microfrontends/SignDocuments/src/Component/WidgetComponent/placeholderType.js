@@ -7,15 +7,14 @@ import RegexParser from "regex-parser";
 
 function PlaceholderType(props) {
   const type = props.pos.type;
-  const [selectOption, setSelectOption] = useState(props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue :"");
+  const [selectOption, setSelectOption] = useState(
+    props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
+  );
   const [startDate, setStartDate] = useState(new Date());
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState();
- const [selectedCheckbox, setSelectedCheckbox] = useState([]);
-
-
-
+  const [selectedCheckbox, setSelectedCheckbox] = useState([]);
 
   const validateExpression = (regexValidation) => {
     let regexObject = regexValidation;
@@ -30,7 +29,6 @@ function PlaceholderType(props) {
     }
   };
 
-  
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
     const validateType = props.pos?.options?.validation?.type;
@@ -89,10 +87,10 @@ function PlaceholderType(props) {
       const updateDate = new Date();
       setStartDate(updateDate);
     }
-    setTextValue(props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue :"")
+    setTextValue(
+      props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
+    );
   }, []);
-
-  
 
   //for handle default checked options
   useEffect(() => {
@@ -102,7 +100,6 @@ function PlaceholderType(props) {
     }
   }, []);
   useEffect(() => {
-   
     if (props.pos?.type && props.pos.type === "date") {
       if (props.selectDate) {
         let updateDate;
@@ -110,11 +107,9 @@ function PlaceholderType(props) {
           const [day, month, year] = props.saveDateFormat.split("-");
           updateDate = new Date(`${year}-${month}-${day}`);
         } else {
-          
-          if(props?.saveDateFormat){
+          if (props?.saveDateFormat) {
             updateDate = new Date(props.saveDateFormat);
-          } 
-          
+          }
         }
         // const updateDate = new Date(props.saveDateFormat);
         setStartDate(updateDate);
@@ -190,7 +185,7 @@ function PlaceholderType(props) {
   const selectCheckbox = (ind) => {
     const res = props.pos.options?.response;
     const defaultCheck = props.pos.options?.defaultValue;
-    if (res && res?.length>0) {
+    if (res && res?.length > 0) {
       const isSelectIndex = res.indexOf(ind);
       if (isSelectIndex > -1) {
         return true;
@@ -210,69 +205,70 @@ function PlaceholderType(props) {
     }
   };
 
- const handleRadioCheck =(data)=>{
-  const defaultData =  props.pos.options?.defaultValue;
-   if(textValue  === data){
-    return true;
-  }else if(defaultData ===data)
-  {
-    return true;
-  }
-  else{
-    return false;
-  }
-}
+  const handleRadioCheck = (data) => {
+    const defaultData = props.pos.options?.defaultValue;
+    if (textValue === data) {
+      return true;
+    } else if (defaultData === data) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
- //function for set checked and unchecked value of checkbox 
- const handleCheckboxValue =(isChecked,ind)=>{
-  let updateSelectedCheckbox =[], checkedList;
-  let isDefaultValue,isDefaultEmpty;
-  if (props.pos?.type === "checkbox") {
-   updateSelectedCheckbox = selectedCheckbox ? selectedCheckbox :[]
-  
-   if(isChecked){
-     updateSelectedCheckbox.push(ind)
-    setSelectedCheckbox(updateSelectedCheckbox)
-   }else{
-   checkedList = selectedCheckbox.filter((data)=> data!==ind)
-      setSelectedCheckbox(checkedList)
-   }
-   if (props.isNeedSign) {
-    isDefaultValue = props.pos.options?.defaultValue;
-  }
-  if (isDefaultValue && isDefaultValue.length > 0) {
-    isDefaultEmpty = true;
-  }
-  onChangeInput(
-    checkedList ? checkedList :updateSelectedCheckbox,
-      props.pos.key,
-      props.xyPostion,
-      props.index,
-      props.setXyPostion,
-      props.data && props.data.Id,
-      false,
-      null,
-      isDefaultEmpty
-    );
-  }
- }
+  //function for set checked and unchecked value of checkbox
+  const handleCheckboxValue = (isChecked, ind) => {
+    let updateSelectedCheckbox = [],
+      checkedList;
+    let isDefaultValue, isDefaultEmpty;
+    if (props.pos?.type === "checkbox") {
+      updateSelectedCheckbox = selectedCheckbox ? selectedCheckbox : [];
 
- //function to handle select radio widget and set value seletced by user
- const handleCheckRadio =(isChecked,data)=>{
-  let isDefaultValue,isDefaultEmpty,isRadio=true;
-  if (props.isNeedSign) {
-    isDefaultValue = props.pos.options?.defaultValue;
-  }
-  if (isDefaultValue ) {
-    isDefaultEmpty = true;
-  }
-  if(isChecked){
-    setTextValue(data)
-  }else{
-    setTextValue("")
-  }
-  onChangeInput(
-    data,
+      if (isChecked) {
+        updateSelectedCheckbox.push(ind);
+        setSelectedCheckbox(updateSelectedCheckbox);
+      } else {
+        checkedList = selectedCheckbox.filter((data) => data !== ind);
+        setSelectedCheckbox(checkedList);
+      }
+      if (props.isNeedSign) {
+        isDefaultValue = props.pos.options?.defaultValue;
+      }
+      if (isDefaultValue && isDefaultValue.length > 0) {
+        isDefaultEmpty = true;
+      }
+      onChangeInput(
+        checkedList ? checkedList : updateSelectedCheckbox,
+        props.pos.key,
+        props.xyPostion,
+        props.index,
+        props.setXyPostion,
+        props.data && props.data.Id,
+        false,
+        null,
+        isDefaultEmpty
+      );
+    }
+  };
+
+  //function to handle select radio widget and set value seletced by user
+  const handleCheckRadio = (isChecked, data) => {
+    let isDefaultValue,
+      isDefaultEmpty,
+      isRadio = true;
+    if (props.isNeedSign) {
+      isDefaultValue = props.pos.options?.defaultValue;
+    }
+    if (isDefaultValue) {
+      isDefaultEmpty = true;
+    }
+    if (isChecked) {
+      setTextValue(data);
+    } else {
+      setTextValue("");
+    }
+    onChangeInput(
+      data,
       props.pos.key,
       props.xyPostion,
       props.index,
@@ -283,8 +279,8 @@ function PlaceholderType(props) {
       isDefaultEmpty,
       isRadio
     );
-}
- 
+  };
+
   switch (props.pos.type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -346,31 +342,28 @@ function PlaceholderType(props) {
                 disabled={
                   props.isNeedSign &&
                   (props.pos.options?.isReadOnly ||
-                 props.data?.signerObjId !== props.signerObjId)
+                    props.data?.signerObjId !== props.signerObjId)
                 }
                 type="checkbox"
                 checked={selectCheckbox(ind)}
                 onChange={(e) => {
                   if (e.target.checked) {
-                    if(!props.isPlaceholder){
+                    if (!props.isPlaceholder) {
                       const maxRequired =
-                      props.pos.options?.validation?.maxRequiredCount;
-                    const maxCountInt = maxRequired && parseInt(maxRequired);
-                    if (maxCountInt > 0) {
-                      if (selectedCheckbox.length <= maxCountInt - 1) {
-                        handleCheckboxValue(e.target.checked,ind)
+                        props.pos.options?.validation?.maxRequiredCount;
+                      const maxCountInt = maxRequired && parseInt(maxRequired);
+                      if (maxCountInt > 0) {
+                        if (selectedCheckbox.length <= maxCountInt - 1) {
+                          handleCheckboxValue(e.target.checked, ind);
+                        }
+                      } else {
+                        handleCheckboxValue(e.target.checked, ind);
                       }
-                    } else {
-                      handleCheckboxValue(e.target.checked,ind)
                     }
-                    }
-                   
-                  } 
-                  else {
-                      handleCheckboxValue(e.target.checked,ind)
+                  } else {
+                    handleCheckboxValue(e.target.checked, ind);
                   }
                 }}
-                
               />
             );
           })}
@@ -394,7 +387,6 @@ function PlaceholderType(props) {
           }
           onBlur={handleInputBlur}
           onChange={(e) => {
-         
             setTextValue(e.target.value);
             onChangeInput(
               e.target.value,
@@ -686,20 +678,15 @@ function PlaceholderType(props) {
                 type="radio"
                 disabled={
                   props.isNeedSign &&
-                  props.pos.options?.isReadOnly &&
-                  props.pos.options?.isReadOnly
+                  (props.pos.options?.isReadOnly ||
+                    props.data?.signerObjId !== props.signerObjId)
                 }
-                // disabled={props.isPlaceholder}
                 checked={handleRadioCheck(data)}
-                // checked={isCheckedRadio.isChecked}
-                onChange={(e)=>{
-                  if(!props.isPlaceholder){
-                    handleCheckRadio(e.target.checked,data)
-                   
+                onChange={(e) => {
+                  if (!props.isPlaceholder) {
+                    handleCheckRadio(e.target.checked, data);
                   }
-                 
                 }}
-                
               />
             );
           })}
