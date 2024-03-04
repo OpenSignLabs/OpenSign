@@ -488,12 +488,12 @@ function PlaceHolderSign() {
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
-        } else if(dragTypeValue !== 'label' && dragTypeValue !== 'signature') {
+        } else if (dragTypeValue !== "label" && dragTypeValue !== "signature") {
           setIsNameModal(true);
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);
-        setCurrWidgetsDetails({})
+        setCurrWidgetsDetails({});
       }
     }
   };
@@ -705,7 +705,7 @@ function PlaceHolderSign() {
           flag,
           containerWH
         );
-    
+
         const parseBaseUrl = localStorage.getItem("baseUrl");
         const parseAppId = localStorage.getItem("parseAppId");
         Parse.initialize(parseAppId);
@@ -747,7 +747,7 @@ function PlaceHolderSign() {
       setIsSendAlert(alert);
     }
   };
-  
+
   const sendEmailToSigners = async () => {
     setIsUiLoading(true);
     const pdfUrl = await embedPrefilllData();
@@ -842,7 +842,6 @@ function PlaceHolderSign() {
       updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
       //filter label widgets after add label widgets data on pdf
       const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
-
 
       try {
         if (updateExpiryDate) {
@@ -1133,8 +1132,8 @@ function PlaceHolderSign() {
         });
 
         setSignerPos(newUpdateSigner);
-        if(!addOption && !deleteOption){
-          handleNameModal()
+        if (!addOption && !deleteOption) {
+          handleNameModal();
         }
       }
     }
@@ -1216,12 +1215,12 @@ function PlaceHolderSign() {
 
   const handleNameModal = () => {
     setIsNameModal(false);
-    setCurrWidgetsDetails({})
+    setCurrWidgetsDetails({});
     setShowDropdown(false);
-    setIsRadio(false)
-    setIsCheckbox(false)
+    setIsRadio(false);
+    setIsCheckbox(false);
   };
-  
+
   //function for update TourStatus
   const closeTour = async () => {
     setPlaceholderTour(false);
@@ -1636,7 +1635,7 @@ function PlaceHolderSign() {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
-                    handleNameModal={handleNameModal}
+                    handleNameModal={setIsNameModal}
                   />
                 )}
               </div>
