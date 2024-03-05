@@ -91,12 +91,13 @@ function PlaceholderType(props) {
       props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
     );
   }, []);
-
   //for handle default checked options
   useEffect(() => {
     if (props.pos?.type && props.pos.type === "checkbox" && props.isNeedSign) {
       const isDefaultValue = props.pos.options?.defaultValue;
-      setSelectedCheckbox(isDefaultValue);
+      if (isDefaultValue) {
+        setSelectedCheckbox(isDefaultValue);
+      }
     }
   }, []);
   useEffect(() => {
@@ -352,8 +353,12 @@ function PlaceholderType(props) {
                       const maxRequired =
                         props.pos.options?.validation?.maxRequiredCount;
                       const maxCountInt = maxRequired && parseInt(maxRequired);
+
                       if (maxCountInt > 0) {
-                        if (selectedCheckbox.length <= maxCountInt - 1) {
+                        if (
+                          selectedCheckbox &&
+                          selectedCheckbox?.length <= maxCountInt - 1
+                        ) {
                           handleCheckboxValue(e.target.checked, ind);
                         }
                       } else {
