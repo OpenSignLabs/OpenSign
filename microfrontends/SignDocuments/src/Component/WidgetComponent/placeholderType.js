@@ -708,6 +708,7 @@ function PlaceholderType(props) {
             );
           }}
           className="labelTextArea"
+          style={{ whiteSpace: "pre-wrap" }}
           cols="50"
         />
       );

@@ -181,7 +181,7 @@ function SignYourSelf() {
 
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
-      
+
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
@@ -196,7 +196,7 @@ function SignYourSelf() {
         };
         if (showComplete) {
           setShowAlreadySignDoc(alreadySign);
-        }else{
+        } else {
           setIsUiLoading(false);
           setIsSignPad(false);
           setIsEmail(true);
@@ -573,7 +573,7 @@ function SignYourSelf() {
     let allXyPos = 0;
 
     for (let i = 0; i < xyPostion.length; i++) {
-       const posWidgetData = xyPostion[i].pos.filter(
+      const posWidgetData = xyPostion[i].pos.filter(
         (pos) => pos.options.response
       );
 
@@ -626,9 +626,9 @@ function SignYourSelf() {
         flag,
         containerWH
       );
-        //function for call to embed signature in pdf and get digital signature pdf
-       await signPdfFun(pdfBytes, documentId);
-     
+      // console.log('pdf',pdfBytes)
+      //function for call to embed signature in pdf and get digital signature pdf
+      await signPdfFun(pdfBytes, documentId);
     }
   }
 
@@ -942,8 +942,7 @@ function SignYourSelf() {
                 ...position.options,
                 name: dropdownName,
                 values: dropdownOptions,
-                isReadOnly: isReadOnly,
-               
+                isReadOnly: isReadOnly
               }
             };
           }
@@ -957,15 +956,15 @@ function SignYourSelf() {
         return obj;
       });
       setXyPostion(updateXYposition);
-      if(!addOption && !deleteOption){
-        handleCloseModal()
+      if (!addOption && !deleteOption) {
+        handleCloseModal();
       }
     }
   };
 
   const handleCloseModal = () => {
-    setCurrWidgetsDetails({})
-   setIsCheckbox(false)
+    setCurrWidgetsDetails({});
+    setIsCheckbox(false);
   };
   return (
     <DndProvider backend={HTML5Backend}>
@@ -1213,7 +1212,10 @@ function SignYourSelf() {
             {/*if document is not completed then render signature and stamp button in the right side */}
             {/*else document is  completed then render signed by signer name in the right side */}
             <div
-              style={{ maxHeight: window.innerHeight - 70 + "px",backgroundColor:"white" }}
+              style={{
+                maxHeight: window.innerHeight - 70 + "px",
+                backgroundColor: "white"
+              }}
               className="autoSignScroll"
             >
               {!documentStatus.isCompleted ? (

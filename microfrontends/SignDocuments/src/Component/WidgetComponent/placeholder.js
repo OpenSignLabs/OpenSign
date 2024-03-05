@@ -15,7 +15,7 @@ function Placeholder(props) {
   const [saveDateFormat, setSaveDateFormat] = useState("");
   const dateFormatArr = [
     "L",
-     "DD-MM-YYYY",
+    "DD-MM-YYYY",
     "YYYY-MM-DD",
     "MM.DD.YYYY",
     "MM-DD-YYYY",
@@ -51,9 +51,6 @@ function Placeholder(props) {
         return "dd/MM/yyyy";
     }
   };
-
-   
-
 
   useEffect(() => {
     //set default current date and default format MM/dd/yyyy
@@ -190,7 +187,7 @@ function Placeholder(props) {
       props?.handleNameModal(true);
     }
 
-    if(props.isPlaceholder){
+    if (props.isPlaceholder) {
       props.setUniqueId(props.data.Id);
     }
     props.setSignKey(props.pos.key);
@@ -203,49 +200,52 @@ function Placeholder(props) {
         <>
           {(props.isPlaceholder || props.isSignYourself) && (
             <>
-            {props.pos.type === 'checkbox' && props.isSignYourself ?
-            (
-            <i
-                 onClick={(e) => {
-                   e.stopPropagation();
-                   handleWidgetsOnclick();
-                 }}
-                 onTouchEnd={(e) => {
-                   e.stopPropagation();
-                   handleWidgetsOnclick();
-                 }}
-                 className="fa-solid fa-gear settingIcon"
-                 style={{
-                   color: "#188ae2",
-                   right:'9px',
-                   top: "-28px"
-                      
-                 }}
-               ></i>): props.pos.type !== "date" && props.pos.type !== 'label' && props.pos.type !== 'signature'  && !props.isSignYourself &&(
+              {props.pos.type === "checkbox" && props.isSignYourself ? (
                 <i
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleWidgetsOnclick();
-                }}
-                onTouchEnd={(e) => {
-                  e.stopPropagation();
-                  handleWidgetsOnclick();
-                }}
-                className="fa-solid fa-gear settingIcon"
-                style={{
-                  color: "#188ae2",
-                  right: ["checkbox", "radio"].includes(props.pos.type)
-                    ? "24px"
-                    : "47px",
-                  top: ["checkbox", "radio"].includes(props.pos.type)
-                    ? "-28px"
-                    : "-19px"
-                }}
-              ></i>
-               )
-             }
-               
-              {props.pos.type !== "label" && !props.isSignYourself  && (
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWidgetsOnclick();
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    handleWidgetsOnclick();
+                  }}
+                  className="fa-solid fa-gear settingIcon"
+                  style={{
+                    color: "#188ae2",
+                    right: "9px",
+                    top: "-28px"
+                  }}
+                ></i>
+              ) : (
+                props.pos.type !== "date" &&
+                props.pos.type !== "label" &&
+                props.pos.type !== "signature" &&
+                !props.isSignYourself && (
+                  <i
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleWidgetsOnclick();
+                    }}
+                    onTouchEnd={(e) => {
+                      e.stopPropagation();
+                      handleWidgetsOnclick();
+                    }}
+                    className="fa-solid fa-gear settingIcon"
+                    style={{
+                      color: "#188ae2",
+                      right: ["checkbox", "radio"].includes(props.pos.type)
+                        ? "24px"
+                        : "47px",
+                      top: ["checkbox", "radio"].includes(props.pos.type)
+                        ? "-28px"
+                        : "-19px"
+                    }}
+                  ></i>
+                )
+              )}
+
+              {props.pos.type !== "label" && !props.isSignYourself && (
                 <i
                   data-tut="reactourLinkUser"
                   className="fa-regular fa-user signUserIcon"
@@ -273,7 +273,6 @@ function Placeholder(props) {
                         : "-18px"
                   }}
                 ></i>
-
               )}
             </>
           )}
@@ -367,11 +366,11 @@ function Placeholder(props) {
             style={{
               color: "#188ae2",
               right:
-                (props.pos.type === "checkbox" || props.pos.type === "radio") 
+                props.pos.type === "checkbox" || props.pos.type === "radio"
                   ? "-9px"
                   : "12px",
               top:
-                (props.pos.type === "checkbox" || props.pos.type === "radio") 
+                props.pos.type === "checkbox" || props.pos.type === "radio"
                   ? "-28px"
                   : "-18px"
             }}
@@ -400,11 +399,11 @@ function Placeholder(props) {
             style={{
               color: "#188ae2",
               right:
-                (props.pos.type === "checkbox" || props.pos.type === "radio") 
+                props.pos.type === "checkbox" || props.pos.type === "radio"
                   ? "-27px"
                   : "-8px",
               top:
-                (props.pos.type === "checkbox" || props.pos.type === "radio") 
+                props.pos.type === "checkbox" || props.pos.type === "radio"
                   ? "-28px"
                   : "-18px"
             }}
@@ -420,10 +419,11 @@ function Placeholder(props) {
       //ref={nodeRef}
       key={props.pos.key}
       lockAspectRatio={
-        props.pos.Width
+        props.pos.type !== "label" &&
+        (props.pos.Width
           ? props.pos.Width / props.pos.Height
           : defaultWidthHeight(props.pos.type).width /
-            defaultWidthHeight(props.pos.type).height
+            defaultWidthHeight(props.pos.type).height)
       }
       enableResizing={{
         top: false,
@@ -468,7 +468,7 @@ function Placeholder(props) {
               ? props.pos.zIndex
               : "5",
         background: props.data
-          ?   props.data.blockColor
+          ? props.data.blockColor
           : props.pos.type !== "checkbox" && "rgb(203 233 237)"
       }}
       onDrag={() => {
@@ -528,13 +528,13 @@ function Placeholder(props) {
       props.pos.key === props.selectWidgetId ? (
         <BorderResize
           right={
-            (props.pos.type === "checkbox" || props.pos.type === "radio") 
+            props.pos.type === "checkbox" || props.pos.type === "radio"
               ? -21
               : -12
           }
           top={
-            (props.pos.type === "checkbox" || props.pos.type === "radio") 
-             ? -21
+            props.pos.type === "checkbox" || props.pos.type === "radio"
+              ? -21
               : -11
           }
         />

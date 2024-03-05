@@ -705,7 +705,6 @@ function PlaceHolderSign() {
           flag,
           containerWH
         );
-
         const parseBaseUrl = localStorage.getItem("baseUrl");
         const parseAppId = localStorage.getItem("parseAppId");
         Parse.initialize(parseAppId);
@@ -1314,7 +1313,6 @@ function PlaceHolderSign() {
   const closePopup = () => {
     setIsAddUser({});
   };
-
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
