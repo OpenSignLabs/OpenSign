@@ -77,8 +77,11 @@ const Forms = (props) => {
     const url = process.env.REACT_APP_SERVERURL
       ? process.env.REACT_APP_SERVERURL
       : window.location.origin + "/api/app";
+    const appId = process.env.REACT_APP_APPID
+      ? process.env.REACT_APP_APPID
+      : "opensign";
     Parse.serverURL = url;
-    Parse.initialize("opensign");
+    Parse.initialize(appId);
     setfileload(true);
     const fileName = file.name;
     const name = sanitizeFileName(fileName);

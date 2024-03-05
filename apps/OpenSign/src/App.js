@@ -35,7 +35,9 @@ function App() {
   }, []);
 
   const handleCredentials = () => {
-    const appId = "opensign";
+    const appId = process.env.REACT_APP_APPID
+      ? process.env.REACT_APP_APPID
+      : "opensign";
     const baseurl = process.env.REACT_APP_SERVERURL
       ? process.env.REACT_APP_SERVERURL
       : window.location.origin + "/api/app";
