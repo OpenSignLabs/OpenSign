@@ -3,7 +3,9 @@ export const appInfo = {
   appTitle: "contracts",
   applogo: logo,
   appname: "contracts",
-  baseurl: process.env.REACT_APP_SERVERURL,
+  baseurl: process.env.REACT_APP_SERVERURL
+    ? process.env.REACT_APP_SERVERURL
+    : window.location.origin + "/api/app",
   defaultRole: "contracts_User",
   fbAppId: process.env.REACT_APP_FBAPPID
     ? `${process.env.REACT_APP_FBAPPID}`

@@ -74,8 +74,11 @@ const Forms = (props) => {
   };
 
   const handleFileUpload = async (file) => {
-    Parse.serverURL = process.env.REACT_APP_SERVERURL;
-    Parse.initialize(process.env.REACT_APP_APPID);
+    const url = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : window.location.origin + "/api/app";
+    Parse.serverURL = url;
+    Parse.initialize("opensign");
     setfileload(true);
     const fileName = file.name;
     const name = sanitizeFileName(fileName);
@@ -195,9 +198,7 @@ const Forms = (props) => {
         });
         setFileUpload([]);
         setpercentage(0);
-        navigate(
-          `/asmf/remoteUrl=aHR0cHM6Ly9xaWstYWktb3JnLmdpdGh1Yi5pby9TaWduLU1pY3JvYXBwVjIvcmVtb3RlRW50cnkuanM=&moduleToLoad=AppRoutes&remoteName=signmicroapp/${props?.redirectRoute}/${res.id}`
-        );
+        navigate(`/${props?.redirectRoute}/${res.id}`);
       }
     } catch (err) {
       console.log("err ", err);
@@ -280,7 +281,8 @@ const Forms = (props) => {
               <div className="flex gap-2 justify-center items-center">
                 <div className="flex justify-between items-center px-2 py-2 w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
                   <div className="break-all">
-                    file selected : {fileupload?.split("/")?.pop()?.split("_")[1]}
+                    file selected :{" "}
+                    {fileupload?.split("/")?.pop()?.split("_")[1]}
                   </div>
                   <div
                     onClick={() => {
