@@ -67,7 +67,7 @@ const ReportTable = ({
   const handlemicroapp = async (item, url, btnLabel) => {
     if (ReportName === "Templates") {
       if (btnLabel === "Edit") {
-        navigate(`/asmf/${url}/${item.objectId}`);
+        navigate(`/${url}/${item.objectId}`);
       } else {
         setActLoader({ [`${item.objectId}_${btnLabel}`]: true });
         try {
@@ -149,7 +149,7 @@ const ReportTable = ({
                 if (res.data && res.data.objectId) {
                   setActLoader({});
                   setIsAlert(true);
-                  navigate(`/asmf/${url}/${res.data.objectId}`, {
+                  navigate(`/${url}/${res.data.objectId}`, {
                     state: { title: "Use Template" }
                   });
                 }
@@ -177,7 +177,7 @@ const ReportTable = ({
       }
     } else {
       localStorage.removeItem("rowlevel");
-      navigate("/rpmf/" + url);
+      navigate(`/${url}`);
       localStorage.setItem("rowlevel", JSON.stringify(item));
     }
 
@@ -211,8 +211,10 @@ const ReportTable = ({
     setIsDeleteModal({});
     setActLoader({ [item.objectId]: true });
     try {
-      const url =
-        process.env.REACT_APP_SERVERURL + "/classes/contracts_Contactbook/";
+      const serverUrl = process.env.REACT_APP_SERVERURL
+        ? process.env.REACT_APP_SERVERURL
+        : window.location.origin + "/api/app";
+      const url = serverUrl + "/classes/contracts_Contactbook/";
       const body = { IsDeleted: true };
       const res = await axios.put(url + item.objectId, body, {
         headers: {

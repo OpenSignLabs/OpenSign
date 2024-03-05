@@ -2,8 +2,6 @@ import React from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { Stage, Layer, Rect } from "react-konva";
 const RenderDebugPdf = (props) => {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
   return (
     <div>
       <div
