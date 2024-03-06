@@ -467,8 +467,7 @@ function PdfRequestFiles() {
                   position.type !== "radio" &&
                   position.type !== "checkbox"
               );
-
-              if (requiredWidgets && requiredCheckbox?.length > 0) {
+              if (requiredWidgets && requiredWidgets?.length > 0) {
                 unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
                   (pos) => !pos?.SignUrl && !pos.options.response
                 );
@@ -535,7 +534,6 @@ function PdfRequestFiles() {
             containerWH
           );
 
-          // console.log('pdfte',pdfBytes)
           //function for call to embed signature in pdf and get digital signature pdf
           try {
             const res = await signPdfFun(

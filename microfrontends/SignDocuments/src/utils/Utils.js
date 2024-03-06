@@ -386,7 +386,7 @@ export const defaultWidthHeight = (type) => {
     case "image":
       return { width: 70, height: 70 };
     case "email":
-      return { width: 150, height: 20 };
+      return { width: 150, height: 25 };
     case "radio":
       return { width: 15, height: 30 };
     case "label":
@@ -448,7 +448,6 @@ export const convertPNGtoJPEG = (base64Data) => {
 
       resolve(jpegBase64Data);
     };
-
     img.onerror = (error) => {
       reject(error);
     };
@@ -1200,14 +1199,15 @@ export const multiSignEmbed = async (
           color: rgb(0, 0, 0)
         });
       } else if (position.type === "dropdown") {
-        const dropdown = form.createDropdown(randomboxId);
+        const dropdownRandomId = "dropdown" + randomId();
+        const dropdown = form.createDropdown(dropdownRandomId);
         dropdown.addOptions(position?.options?.values);
+
         if (position?.options?.response) {
           dropdown.select(position.options?.response);
         } else if (position?.options?.defaultValue) {
           dropdown.select(position?.options?.defaultValue);
         }
-
         dropdown.addToPage(page, {
           x: xPos(position),
           y: yPos(position),
@@ -1216,7 +1216,8 @@ export const multiSignEmbed = async (
         });
         dropdown.enableReadOnly();
       } else if (position.type === "radio") {
-        const radioGroup = form.createRadioGroup(randomboxId);
+        const radioRandomId = "radio" + randomId();
+        const radioGroup = form.createRadioGroup(radioRandomId);
         let addYPosition = 18;
 
         for (let i = 1; i <= position?.options?.values.length; i++) {
