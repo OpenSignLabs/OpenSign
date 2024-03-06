@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import AppendFormInForm from "../AppendFormInForm";
+import AddSigner from "../../AddSigner";
 import Modal from "react-modal";
 import Parse from "parse";
 function arrayMove(array, from, to) {
@@ -172,7 +172,7 @@ const SignersInput = (props) => {
             </div>
 
             {isModal && (
-              <AppendFormInForm
+              <AddSigner
                 valueKey={"objectId"}
                 displayKey={"Name"}
                 details={handleNewDetails}

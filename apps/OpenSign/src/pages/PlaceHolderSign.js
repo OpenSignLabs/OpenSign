@@ -12,10 +12,10 @@ import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
 import loader from "../assets/images/loader2.gif";
 import { useLocation, useParams } from "react-router-dom";
-import Loader from "../components/pdf/Loader";
+import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
 import SignerListPlace from "../components/pdf/SignerListPlace";
-import Header from "../components/pdf/Header";
+import Header from "../components/pdf/PdfHeader";
 import {
   pdfNewWidthFun,
   contractDocument,

@@ -3,7 +3,7 @@ import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalUi from "./ModalUi";
-import AppendFormInForm from "../components/AppendFormInForm";
+import AddSigner from "../components/AddSigner";
 import { modalSubmitBtnColor, modalCancelBtnColor } from "../constant/const";
 import Alert from "./Alert";
 const ReportTable = ({
@@ -498,7 +498,7 @@ const ReportTable = ({
         isOpen={isContactform}
         handleClose={handleContactFormModal}
       >
-        <AppendFormInForm
+        <AddSigner
           handleUserData={handleUserData}
           closePopup={handleContactFormModal}
         />

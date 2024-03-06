@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import CreateFolder from "./CreateFolder";
-import ModalUi from "../../primitives/ModalUi";
+import ModalUi from "../../../primitives/ModalUi";
 
 const SelectFolder = ({ required, onSuccess, folderCls }) => {
   const [isOpen, SetIsOpen] = useState(false);

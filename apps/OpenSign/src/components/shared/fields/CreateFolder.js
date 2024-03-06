@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
-import Alert from "../../primitives/Alert";
+import Alert from "../../../primitives/Alert";
 
 const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   const folderPtr = {

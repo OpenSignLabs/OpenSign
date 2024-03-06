@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Loader from "./Loader";
+import Loader from "../../primitives/LoaderWithMsg";
 import { contractDocument } from "../../constant/Utils";
 import HandleError from "../../primitives/HandleError";
 function DraftDocument() {

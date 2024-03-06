@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import folder from "../../assets/images/folder.png";
 import "../../styles/opensigndrive.css";
-import draftDoc from "../../assets/images/draftDoc1.png";
 import pdfLogo from "../../assets/images/pdf3.png";
 import axios from "axios";
 import * as ContextMenu from "@radix-ui/react-context-menu";
@@ -9,7 +8,7 @@ import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
-import SelectFolder from "../fields/SelectFolder"; //check this one
+import SelectFolder from "../shared/fields/SelectFolder"; //check this one
 import ModalUi from "../../primitives/ModalUi";
 import { themeColor } from "../../constant/const";
 
@@ -291,10 +290,6 @@ function DriveBody({
     }
   };
 
-  const handleDraftDoc = (data) => {
-    navigate(`/legagenie?${data.objectId}`);
-  };
-
   //component to handle type of document and render according to type
   const handleFolderData = (data, ind, listType) => {
     let createddate, status, isDecline, signerExist, isComplete, isPlaceholder;
@@ -373,25 +368,6 @@ function DriveBody({
           <td>_</td>
           <td>_</td>
         </tr>
-      ) : data.Type === "AIDoc" ? (
-        <tr onClick={() => handleDraftDoc(data)}>
-          <td
-            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-          >
-            <i
-              className="fa fa-file-text"
-              style={{ color: "#0ea3ed", marginRight: "8px", fontSize: "26px" }}
-            ></i>
-
-            <span style={{ fontSize: "12px", fontWeight: "500" }}>
-              {data.Name}
-            </span>
-          </td>
-          <td>{createddate}</td>
-          <td>LegaGenie Draft</td>
-          <td>_</td>
-          <td>_</td>
-        </tr>
       ) : (
         <tr onClick={() => checkPdfStatus(data)}>
           <td
@@ -437,71 +413,6 @@ function DriveBody({
                 alt="no img"
                 onClick={() => handleOnclikFolder(data)}
                 src={folder}
-                width={100}
-                height={103}
-              />
-              {rename === data.objectId ? (
-                <input
-                  onFocus={() => {
-                    inputRef.current.setSelectionRange(0, 0);
-                    const input = inputRef.current;
-                    if (input) {
-                      input.select();
-                    }
-                  }}
-                  autoFocus={true}
-                  type="text"
-                  onBlur={() => handledRenameDoc(data)}
-                  onKeyDown={(e) => handleEnterPress(e, data)}
-                  ref={inputRef}
-                  defaultValue={renameValue}
-                  // value={renameValue}
-                  onChange={(e) => setRenameValue(e.target.value)}
-                  style={{
-                    width: "100px",
-                    border: "1.5px solid black",
-                    borderRadius: "2px",
-                    fontSize: "10px"
-                  }}
-                />
-              ) : (
-                <span className="foldName">{data.Name}</span>
-              )}
-            </div>
-          </ContextMenu.Trigger>
-
-          <ContextMenu.Portal>
-            <ContextMenu.Content
-              className="ContextMenuContent"
-              sideOffset={5}
-              align="end"
-            >
-              <ContextMenu.Item
-                onClick={() => handleMenuItemClick("Rename", data)}
-                className="ContextMenuItem"
-              >
-                <i className="fa-solid fa-font"></i>
-                <span style={{ marginLeft: "8px" }}>Rename</span>
-              </ContextMenu.Item>
-            </ContextMenu.Content>
-          </ContextMenu.Portal>
-        </ContextMenu.Root>
-      </div>
-    ) : data.Type === "AIDoc" ? (
-      <div key={ind} className="folderBox">
-        <ContextMenu.Root>
-          <ContextMenu.Trigger className="ContextMenuTrigger">
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                cursor: "pointer"
-              }}
-            >
-              <img
-                alt="no img"
-                onClick={() => handleDraftDoc(data)}
-                src={draftDoc}
                 width={100}
                 height={103}
               />

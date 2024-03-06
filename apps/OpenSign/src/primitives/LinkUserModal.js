@@ -1,5 +1,5 @@
 import React from "react";
-import SelectSigners from "./SelectSigners";
+import SelectSigners from "../components/shared/fields/SelectSigners";
 import AddUser from "./AddUser";
 import ModalUi from "./ModalUi";
 

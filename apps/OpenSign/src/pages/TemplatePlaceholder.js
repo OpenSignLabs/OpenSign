@@ -9,10 +9,10 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
-import Loader from "../components/pdf/Loader";
+import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
 import SignerListPlace from "../components/pdf/SignerListPlace";
-import Header from "../components/pdf/Header";
+import Header from "../components/pdf/PdfHeader";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import {
   pdfNewWidthFun,
@@ -29,7 +29,7 @@ import Title from "../components/Title";
 import LinkUserModal from "../primitives/LinkUserModal";
 import EditTemplate from "../components/pdf/EditTemplate";
 import ModalUi from "../primitives/ModalUi";
-import AddRoleModal from "../primitives/AddRoleModal";
+import AddRoleModal from "../components/pdf/AddRoleModal";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";

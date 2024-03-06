@@ -1,8 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import redPen from "../../assets/images/redPen.png";
-import bluePen from "../../assets/images/bluePen.png";
-import blackPen from "../../assets/images/blackPen.png";
 import { themeColor } from "../../constant/const";
 
 function SignPad({
@@ -26,7 +23,7 @@ function SignPad({
   widgetType
 }) {
   const [penColor, setPenColor] = useState("blue");
-  const allColor = [bluePen, redPen, blackPen];
+  const allColor = ["blue", "red", "black"];
   const canvasRef = useRef(null);
   const [isDefaultSign, setIsDefaultSign] = useState(false);
   const [isTab, setIsTab] = useState("draw");
@@ -630,12 +627,10 @@ function SignPad({
                     <div style={{ display: "flex", flexDirection: "row" }}>
                       {allColor.map((data, key) => {
                         return (
-                          <img
-                            key={key}
-                            alt="pen img"
+                          <i
                             style={{
-                              border: "none",
                               margin: "5px",
+                              color: data,
                               borderBottom:
                                 key === 0 && penColor === "blue"
                                   ? "2px solid blue"
@@ -654,14 +649,14 @@ function SignPad({
                                 setPenColor("black");
                               }
                             }}
-                            src={data}
+                            key={key}
+                            className="fa solid fa-pen-nib"
                             width={20}
                             height={20}
-                          />
+                          ></i>
                         );
                       })}
                     </div>
-
                     <SaveBtn />
                   </div>
                 </>

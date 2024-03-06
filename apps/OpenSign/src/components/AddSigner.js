@@ -3,7 +3,7 @@ import Parse from "parse";
 import axios from "axios";
 import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 
-const AppendFormInForm = (props) => {
+const AddSigner = (props) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -312,4 +312,4 @@ const AppendFormInForm = (props) => {
   );
 };
 
-export default AppendFormInForm;
+export default AddSigner;

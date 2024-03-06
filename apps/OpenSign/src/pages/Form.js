@@ -6,8 +6,8 @@ import sanitizeFileName from "../primitives/sanitizeFileName";
 import Parse from "parse";
 import DropboxChooser from "../components/fields/DropboxChoose";
 import Alert from "../primitives/Alert";
-import SelectFolder from "../components/fields/SelectFolder";
-import SignersInput from "../components/fields/SignersInput";
+import SelectFolder from "../components/shared/fields/SelectFolder";
+import SignersInput from "../components/shared/fields/SignersInput";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 

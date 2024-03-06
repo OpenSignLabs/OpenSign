@@ -1,8 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import redPen from "../assets/images/redPen.png";
-import bluePen from "../assets/images/bluePen.png";
-import blackPen from "../assets/images/blackPen.png";
 import "../styles/managesign.css";
 import "../styles/signature.css";
 import axios from "axios";
@@ -18,7 +15,7 @@ const ManageSign = () => {
   const [warning, setWarning] = useState(false);
   const [nameWarning, setNameWarning] = useState(false);
   const [isvalue, setIsValue] = useState(false);
-  const allColor = [bluePen, redPen, blackPen];
+  const allColor = ["blue", "red", "black"];
   const [isLoader, setIsLoader] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [Initials, setInitials] = useState("");
@@ -316,6 +313,21 @@ const ManageSign = () => {
         overflow: "auto"
       }}
     >
+      {isLoader && (
+        <div className="absolute bg-black bg-opacity-75 inset-0 z-50 flex justify-center items-center">
+          <div style={{ height: "300px" }}>
+            <div
+              style={{
+                marginLeft: "45%",
+                marginTop: "150px",
+                fontSize: "45px",
+                color: "#3dd3e0"
+              }}
+              className="loader-37"
+            ></div>
+          </div>
+        </div>
+      )}
       {isSuccess && (
         <div
           className="alert alert-success successBox"
@@ -497,11 +509,10 @@ const ManageSign = () => {
                           >
                             {allColor.map((data, key) => {
                               return (
-                                <img
-                                  alt="black img"
+                                <i
                                   style={{
-                                    border: "none",
                                     margin: "5px",
+                                    color: data,
                                     borderBottom:
                                       key === 0 && penColor === "blue"
                                         ? "2px solid blue"
@@ -521,10 +532,10 @@ const ManageSign = () => {
                                     }
                                   }}
                                   key={key}
-                                  src={data}
+                                  className="fa solid fa-pen-nib"
                                   width={20}
                                   height={20}
-                                />
+                                ></i>
                               );
                             })}
                           </div>
@@ -533,7 +544,7 @@ const ManageSign = () => {
                       <div>
                         <div
                           type="button"
-                          className="clearbtn"
+                          className="clearbtn cursor-pointer"
                           onClick={() => handleClear()}
                         >
                           Clear
@@ -613,11 +624,10 @@ const ManageSign = () => {
                       <div style={{ display: "flex", flexDirection: "row" }}>
                         {allColor.map((data, key) => {
                           return (
-                            <img
-                              alt="pen"
+                            <i
                               style={{
-                                border: "none",
                                 margin: "5px",
+                                color: data,
                                 borderBottom:
                                   key === 0 && initialPen === "blue"
                                     ? "2px solid blue"
@@ -637,10 +647,10 @@ const ManageSign = () => {
                                 }
                               }}
                               key={key}
-                              src={data}
+                              className="fa solid fa-pen-nib"
                               width={20}
                               height={20}
-                            />
+                            ></i>
                           );
                         })}
                       </div>
@@ -649,7 +659,7 @@ const ManageSign = () => {
                   <div>
                     <div
                       type="button"
-                      className="clearbtn"
+                      className="clearbtn cursor-pointer"
                       onClick={() => handleClearInitials()}
                     >
                       Clear
@@ -677,11 +687,6 @@ const ManageSign = () => {
             </button>
           </div>
         </div>
-        {isLoader && (
-          <div className="loaderContainer">
-            <div className="loader"></div>
-          </div>
-        )}
       </div>
     </div>
   );
