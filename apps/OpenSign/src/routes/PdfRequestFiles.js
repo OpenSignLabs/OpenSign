@@ -23,7 +23,6 @@ import {
 } from "../constant/Utils";
 import Loader from "../components/pdf/Loader";
 import HandleError from "../primitives/HandleError";
-import Nodata from "../primitives/Nodata";
 import Header from "../components/pdf/Header";
 import RenderPdf from "../components/pdf/RenderPdf";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
@@ -58,7 +57,6 @@ function PdfRequestFiles() {
   const [pdfNewWidth, setPdfNewWidth] = useState();
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [signerPos, setSignerPos] = useState([]);
-  const [noData, setNoData] = useState(false);
   const [signerObjectId, setSignerObjectId] = useState();
   const [isUiLoading, setIsUiLoading] = useState(false);
   const [isDecline, setIsDecline] = useState({ isDeclined: false });
@@ -295,7 +293,7 @@ function PdfRequestFiles() {
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else {
-      setNoData(true);
+      setHandleError("No Data Found!");
       const loadObj = {
         isLoad: false
       };
@@ -977,8 +975,6 @@ function PdfRequestFiles() {
         <Loader isLoading={isLoading} />
       ) : handleError ? (
         <HandleError handleError={handleError} />
-      ) : noData ? (
-        <Nodata />
       ) : (
         <div>
           {isUiLoading && (

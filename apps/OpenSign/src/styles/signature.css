@@ -169,16 +169,6 @@
   box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
 }
 
-.emailToast {
-  position: absolute;
-  z-index: 10;
-  background: #aeedae;
-  padding: 0 3px 3px 3px;
-  margin: 2px;
-  border-radius: 2px;
-}
-
-
 .signatureBtn {
   border: 1.5px solid #47a3ad;
 

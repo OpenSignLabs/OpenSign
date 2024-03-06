@@ -6,8 +6,8 @@ import {
   handleImageResize,
   handleSignYourselfImageResize
 } from "../../constant/Utils";
-import EmailToast from "../../primitives/EmailToast";
 import Placeholder from "./Placeholder";
+import Alert from "../../primitives/Alert";
 
 function RenderPdf({
   pageNumber,
@@ -324,6 +324,7 @@ function RenderPdf({
 
   return (
     <>
+      {successEmail && <Alert type={"success"}>Email sent successfully!</Alert>}
       {isMobile && scale ? (
         <div
           style={{
@@ -333,7 +334,6 @@ function RenderPdf({
           ref={drop}
           id="container"
         >
-          <EmailToast isShow={successEmail} />
           {pdfLoadFail.status &&
             (pdfRequest
               ? signerPos.map((data, key) => {
@@ -514,7 +514,6 @@ function RenderPdf({
             ref={drop}
             id="container"
           >
-            <EmailToast isShow={successEmail} />
             {pdfLoadFail.status &&
               (pdfRequest
                 ? signerPos.map((data, key) => {

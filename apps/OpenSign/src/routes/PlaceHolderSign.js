@@ -14,7 +14,6 @@ import loader from "../assets/images/loader2.gif";
 import { useLocation, useParams } from "react-router-dom";
 import Loader from "../components/pdf/Loader";
 import HandleError from "../primitives/HandleError";
-import Nodata from "../primitives/Nodata";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/Header";
 import {
@@ -65,7 +64,6 @@ function PlaceHolderSign() {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
-  const [noData, setNoData] = useState(false);
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
@@ -274,8 +272,7 @@ function PlaceHolderSign() {
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else {
-      setNoData(true);
-
+      setHandleError("No Data Found!");
       const loadObj = {
         isLoad: false
       };
@@ -305,8 +302,7 @@ function PlaceHolderSign() {
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else if (res.length === 0) {
-      setNoData(true);
-
+      setHandleError("No Data Found!");
       const loadObj = {
         isLoad: false
       };
@@ -1315,8 +1311,6 @@ function PlaceHolderSign() {
           <Loader isLoading={isLoading} />
         ) : handleError ? (
           <HandleError handleError={handleError} />
-        ) : noData ? (
-          <Nodata />
         ) : (
           <div className="signatureContainer" ref={divRef}>
             {isUiLoading && (

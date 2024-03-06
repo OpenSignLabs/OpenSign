@@ -11,7 +11,6 @@ import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
 import Loader from "../components/pdf/Loader";
 import HandleError from "../primitives/HandleError";
-import Nodata from "../primitives/Nodata";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/Header";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
@@ -62,7 +61,6 @@ const TemplatePlaceholder = () => {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
-  const [noData, setNoData] = useState(false);
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
@@ -261,8 +259,7 @@ const TemplatePlaceholder = () => {
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
       } else {
-        setNoData(true);
-
+        setHandleError("No Data Found!");
         const loadObj = {
           isLoad: false
         };
@@ -301,8 +298,7 @@ const TemplatePlaceholder = () => {
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else if (res.length === 0) {
-      setNoData(true);
-
+      setHandleError("No Data Found!");
       const loadObj = {
         isLoad: false
       };
@@ -1168,8 +1164,6 @@ const TemplatePlaceholder = () => {
           <Loader isLoading={isLoading} />
         ) : handleError ? (
           <HandleError handleError={handleError} />
-        ) : noData ? (
-          <Nodata />
         ) : (
           <div className="signatureContainer" ref={divRef}>
             {/* this component used for UI interaction and show their functionality */}
