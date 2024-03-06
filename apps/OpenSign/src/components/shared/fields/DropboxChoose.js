@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { useDropScript } from "../../hook/useScript";
+import { useDropScript } from "../../../hook/useScript";
 
 const DROPBOX_APP_KEY = process.env.REACT_APP_DROPBOX_API_KEY; // App key
 const DROPBOX_SDK_URL = "https://www.dropbox.com/static/api/2/dropins.js";

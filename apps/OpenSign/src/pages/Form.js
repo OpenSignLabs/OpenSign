@@ -4,7 +4,7 @@ import { formJson } from "../json/FormJson";
 import AddUser from "../components/AddUser";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import Parse from "parse";
-import DropboxChooser from "../components/fields/DropboxChoose";
+import DropboxChooser from "../components/shared/fields/DropboxChoose";
 import Alert from "../primitives/Alert";
 import SelectFolder from "../components/shared/fields/SelectFolder";
 import SignersInput from "../components/shared/fields/SignersInput";
