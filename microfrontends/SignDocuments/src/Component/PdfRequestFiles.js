@@ -388,10 +388,6 @@ function PdfRequestFiles() {
           for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
             checkboxExist =
               checkUser[0].placeHolder[i].pos[j].type === "checkbox";
-
-            // radioExist = checkUser[0].placeHolder[i].pos[i].some(
-            //   (data) => data.type === "radio"
-            // );
             radioExist = checkUser[0].placeHolder[i].pos[j].type === "radio";
             if (checkboxExist) {
               requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(

@@ -518,16 +518,30 @@ function SignYourSelf() {
 
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
-    let checkSigned = 0;
-    let allXyPos = 0;
+    let showAlert = false;
 
-    for (let i = 0; i < xyPostion.length; i++) {
-      const posWidgetData = xyPostion[i].pos.filter(
-        (pos) => pos.options.response
+    for (let i = 0; i < xyPostion?.length; i++) {
+      const requiredWidgets = xyPostion[i].pos.filter(
+        (position) => position.type !== "checkbox"
       );
+      if (requiredWidgets && requiredWidgets?.length > 0) {
+        let checkSigned;
+        for (let i = 0; i < requiredWidgets?.length; i++) {
+          checkSigned = requiredWidgets[i]?.options?.response;
+          if (!checkSigned) {
+            const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
 
-      checkSigned = checkSigned + posWidgetData.length;
-      allXyPos = allXyPos + xyPostion[i].pos.length;
+            let checkDefaultSigned = requiredWidgets[i]?.options?.defaultValue;
+            if (!checkSignUrl) {
+              if (!checkDefaultSigned) {
+                if (!showAlert) {
+                  showAlert = true;
+                }
+              }
+            }
+          }
+        }
+      }
     }
     if (xyPostion.length === 0) {
       setIsAlert({
@@ -535,7 +549,7 @@ function SignYourSelf() {
         alertMessage: "Please complete your signature!"
       });
       return;
-    } else if (xyPostion.length > 0 && allXyPos !== checkSigned) {
+    } else if (showAlert) {
       setIsAlert({
         isShow: true,
         alertMessage: "Please complete your signature!"

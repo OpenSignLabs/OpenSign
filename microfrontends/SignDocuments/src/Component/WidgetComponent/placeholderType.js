@@ -15,7 +15,6 @@ function PlaceholderType(props) {
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
-
   const validateExpression = (regexValidation) => {
     let regexObject = regexValidation;
     if (props.pos?.options.validation.type === "regex") {
@@ -159,7 +158,19 @@ function PlaceholderType(props) {
   ));
 
   useEffect(() => {
-    if (props.pos?.type) {
+    if (
+      ["name", "email", "job title", "company"].includes(props.pos?.type) &&
+      props.isNeedSign &&
+      props.data?.signerObjId === props?.signerObjId
+    ) {
+      const defaultData = props.pos?.options?.defaultValue;
+      if (defaultData) {
+        setTextValue(defaultData);
+      }
+    }
+  }, [props.pos?.options?.defaultValue]);
+  useEffect(() => {
+    if (["name", "email", "job title", "company"].includes(props.pos?.type)) {
       const senderUser = localStorage.getItem(`Extand_Class`);
       const jsonSender = JSON.parse(senderUser);
 
@@ -486,7 +497,7 @@ function PlaceholderType(props) {
           style={{ fontSize: calculateFontSize() }}
           className="inputPlaceholder"
           type="text"
-          value={textValue ? textValue : props.pos?.options?.defaultValue}
+          value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -520,7 +531,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"company"}
           style={{ fontSize: calculateFontSize() }}
-          value={textValue ? textValue : props.pos?.options?.defaultValue}
+          value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -554,7 +565,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"job title"}
           style={{ fontSize: calculateFontSize() }}
-          value={textValue ? textValue : props.pos?.options?.defaultValue}
+          value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -641,7 +652,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"email"}
           style={{ fontSize: calculateFontSize() }}
-          value={textValue ? textValue : props.pos?.options?.defaultValue}
+          value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
