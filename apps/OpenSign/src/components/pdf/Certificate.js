@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/certificate.css";
 import opensignLogo from "../../assets/images/open-sign-logo.png";
 import {
   Page,

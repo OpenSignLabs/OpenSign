@@ -1405,7 +1405,6 @@ const TemplatePlaceholder = () => {
                   handleDivClick={handleDivClick}
                   handleMouseLeave={handleMouseLeave}
                   isDragSign={isDragSign}
-                  themeColor={themeColor}
                   dragStamp={dragStamp}
                   dragRef={dragRef}
                   isDragStamp={isDragStamp}
@@ -1463,7 +1462,6 @@ const TemplatePlaceholder = () => {
                         handleDivClick={handleDivClick}
                         handleMouseLeave={handleMouseLeave}
                         isDragSign={isDragSign}
-                        themeColor={themeColor}
                         dragStamp={dragStamp}
                         dragRef={dragRef}
                         isDragStamp={isDragStamp}

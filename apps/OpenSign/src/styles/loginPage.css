@@ -1,29 +1,25 @@
-.loginInput{
+.loginInput {
   padding: 10px;
-
   border-radius: 4px;
   width: 100%;
   font-size: 0.75rem;
- border: 1px solid #e2dddd;;
+  border: 1px solid #e2dddd;
   background-color: #e0e5f5;
-     color: black;
-    
-    padding-left: 1rem!important;
-    padding-right: 1rem!important;
-    padding-top: 0.5rem!important;
-    
-    font-family: inherit;
-    font-feature-settings: inherit;
-    font-variation-settings: inherit;
-    font-weight: inherit;
-    overflow: visible;
-    
- }
- .loginInput:focus{
+  color: black;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  padding-top: 0.5rem !important;
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-weight: inherit;
+  overflow: visible;
+}
+.loginInput:focus {
   outline: none;
   border: none;
- }
-.verifyBtn{
+}
+.verifyBtn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
   padding: 3px 30px;
   color: white;
@@ -35,7 +31,6 @@
   border: none;
   outline: none;
 }
-
 
 .verifyBtn:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
@@ -124,7 +119,6 @@
   margin-bottom: 12px;
 }
 
-
 .login-btn {
   width: 100% !important;
   display: block !important;
@@ -134,7 +128,6 @@
   .MLKI {
     float: inherit;
   }
-
 
   .login-btn {
     width: 210px !important;
@@ -154,10 +147,9 @@
   margin-left: 17px;
   margin-bottom: 12px;
 }
-.welcomeText{
+.welcomeText {
   font-size: 30px;
 }
- 
 
 @media only screen and (max-width: 600px) {
   .KLO1 {
@@ -183,28 +175,23 @@
     padding-top: 10px;
     border-bottom: 1px dashed #eeeeee;
   }
-
-
-
 }
-@media screen and (max-width:366px) {
-
+@media screen and (max-width: 366px) {
   .main-logo {
     width: 150px;
     height: 46px;
     display: inline-block;
   }
-  .welcomeText{
+  .welcomeText {
     font-size: 20px;
   }
   .KNLO {
     color: #878787;
     font-size: 10px;
   }
-  .btnContainer{
+  .btnContainer {
     display: flex;
     justify-content: center;
     align-items: center;
   }
-  
 }

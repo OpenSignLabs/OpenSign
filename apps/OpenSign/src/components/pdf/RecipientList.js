@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import "../../styles/signerListPlace.css";
 import { darkenColor, getFirstLetter } from "../../constant/Utils";
 
 const RecipientList = (props) => {

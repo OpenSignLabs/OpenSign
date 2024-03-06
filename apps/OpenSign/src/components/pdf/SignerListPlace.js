@@ -1,6 +1,5 @@
 import React from "react";
 import { themeColor } from "../../constant/const";
-import "../../styles/signerListPlace.css";
 import RecipientList from "./RecipientList";
 
 function SignerListPlace(props) {
@@ -22,7 +21,7 @@ function SignerListPlace(props) {
       {props.handleAddSigner && (
         <div
           data-tut="reactourAddbtn"
-          className="addSignerBtn"
+          className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad]  hover:text-white cursor-pointer"
           onClick={() => props.handleAddSigner()}
         >
           <i className="fa-solid fa-plus"></i>

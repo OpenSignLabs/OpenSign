@@ -1628,7 +1628,6 @@ function PlaceHolderSign() {
                   handleDivClick={handleDivClick}
                   handleMouseLeave={handleMouseLeave}
                   isDragSign={isDragSign}
-                  themeColor={themeColor}
                   dragStamp={dragStamp}
                   dragRef={dragRef}
                   isDragStamp={isDragStamp}
@@ -1676,7 +1675,6 @@ function PlaceHolderSign() {
                         handleDivClick={handleDivClick}
                         handleMouseLeave={handleMouseLeave}
                         isDragSign={isDragSign}
-                        themeColor={themeColor}
                         dragStamp={dragStamp}
                         dragRef={dragRef}
                         isDragStamp={isDragStamp}
