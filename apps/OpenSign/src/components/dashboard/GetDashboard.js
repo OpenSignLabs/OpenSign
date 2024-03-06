@@ -1,8 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import ErrorBoundary from "../ErrorBoundary";
-
 const DashboardCard = lazy(() => import("./DashboardCard"));
-
 const DashboardReport = lazy(() => import("./DashboardReport"));
 
 const GetDashboard = (props) => {
@@ -76,25 +73,23 @@ const GetDashboard = (props) => {
     }
   };
   return (
-    <ErrorBoundary>
-      <div>
-        {props.dashboard.map((val, key) => (
-          <div key={"a" + key} className="row">
-            {val.columns.map((col, i) =>
-              col.widget.data && col.widget.data.tourSection ? (
-                <div key={i} className={props.classnameArray[key][i]}>
-                  {renderSwitchWithTour(col)}
-                </div>
-              ) : (
-                <div key={i} className={props.classnameArray[key][i]}>
-                  {renderSwitch(col)}
-                </div>
-              )
-            )}
-          </div>
-        ))}
-      </div>
-    </ErrorBoundary>
+    <div>
+      {props.dashboard.map((val, key) => (
+        <div key={"a" + key} className="row">
+          {val.columns.map((col, i) =>
+            col.widget.data && col.widget.data.tourSection ? (
+              <div key={i} className={props.classnameArray[key][i]}>
+                {renderSwitchWithTour(col)}
+              </div>
+            ) : (
+              <div key={i} className={props.classnameArray[key][i]}>
+                {renderSwitch(col)}
+              </div>
+            )
+          )}
+        </div>
+      ))}
+    </div>
   );
 };
 

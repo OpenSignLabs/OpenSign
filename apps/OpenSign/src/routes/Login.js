@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
-import "../styles/toast.css";
 import "../styles/loader.css";
 import { connect } from "react-redux";
 import { fetchAppInfo, showTenantName } from "../redux/actions";
@@ -13,6 +12,7 @@ import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
 import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
+import Alert from "../primitives/Alert";
 
 function Login(props) {
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ function Login(props) {
   const { width } = useWindowSize();
   const [state, setState] = useState({
     email: "",
-    toastColor: "#5cb85c",
-    toastDescription: "",
+    alertType: "success",
+    alertMsg: "",
     password: "",
     passwordVisible: false,
     mobile: "",
@@ -354,13 +354,16 @@ function Login(props) {
                 setState({
                   ...state,
                   loading: false,
-                  toastColor: "#d9534f",
-                  toastDescription: `${error.message}`
+                  alertType: "danger",
+                  alertMsg: `${error.message}`
                 });
-                const x = document.getElementById("snackbar");
-                x.className = "show";
                 setTimeout(function () {
-                  x.className = x.className.replace("show", "");
+                  setState({
+                    ...state,
+                    loading: false,
+                    alertType: "danger",
+                    alertMsg: ""
+                  });
                 }, 2000);
                 console.log(error);
               }
@@ -370,13 +373,16 @@ function Login(props) {
             setState({
               ...state,
               loading: false,
-              toastColor: "#d9534f",
-              toastDescription: "Login failed: Invalid username or password."
+              alertType: "danger",
+              alertMsg: "Invalid username or password!"
             });
-            const x = document.getElementById("snackbar");
-            x.className = "show";
             setTimeout(function () {
-              x.className = x.className.replace("show", "");
+              setState({
+                ...state,
+                loading: false,
+                alertType: "danger",
+                alertMsg: ""
+              });
             }, 2000);
             console.error("Error while logging in user", error);
           });
@@ -647,13 +653,16 @@ function Login(props) {
         setState({
           ...state,
           loading: false,
-          toastColor: "#d9534f",
-          toastDescription: `${error.message}`
+          alertType: "danger",
+          alertMsg: `${error.message}`
         });
-        const x = document.getElementById("snackbar");
-        x.className = "show";
         setTimeout(function () {
-          x.className = x.className.replace("show", "");
+          setState({
+            ...state,
+            loading: false,
+            alertType: "danger",
+            alertMsg: ""
+          });
         }, 2000);
         console.log(error);
       }
@@ -717,13 +726,17 @@ function Login(props) {
                     setState({
                       ...state,
                       loading: false,
-                      toastColor: "#d9534f",
-                      toastDescription: `Does not have permissions to access this application.`
+                      alertType: "danger",
+                      alertMsg:
+                        "Does not have permissions to access this application!"
                     });
-                    const x = document.getElementById("snackbar");
-                    x.className = "show";
                     setTimeout(function () {
-                      x.className = x.className.replace("show", "");
+                      setState({
+                        ...state,
+                        loading: false,
+                        alertType: "danger",
+                        alertMsg: ""
+                      });
                     }, 2000);
                   }
                   // _currentRole = userRoles[0];
@@ -802,14 +815,16 @@ function Login(props) {
                       setState({
                         ...state,
                         loading: false,
-                        toastColor: "#d9534f",
-                        toastDescription:
-                          "You don`t have access to this application."
+                        alertType: "danger",
+                        alertMsg: "You don`t have access to this application!"
                       });
-                      const x = document.getElementById("snackbar");
-                      x.className = "show";
                       setTimeout(function () {
-                        x.className = x.className.replace("show", "");
+                        setState({
+                          ...state,
+                          loading: false,
+                          alertType: "danger",
+                          alertMsg: ""
+                        });
                       }, 2000);
                       localStorage.setItem("accesstoken", null);
                       console.error("Error while fetching Follow", error);
@@ -1124,14 +1139,7 @@ function Login(props) {
                 )}
               </div>
             </div>
-
-            <div
-              id="snackbar"
-              role="alert"
-              style={{ backgroundColor: state.toastColor }}
-            >
-              {state.toastDescription}
-            </div>
+            <Alert type={state.alertType}>{state.alertMsg}</Alert>
           </div>
           <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>
             <form className="px-4 py-3">

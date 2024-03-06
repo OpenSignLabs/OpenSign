@@ -7,6 +7,7 @@ import { fetchAppInfo, showTenantName } from "../redux/actions";
 import { useNavigate, NavLink } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
+import Alert from "../primitives/Alert";
 
 const Signup = (props) => {
   const { width } = useWindowSize();
@@ -21,8 +22,8 @@ const Signup = (props) => {
   const [jobTitle, setJobTitle] = useState("");
   const [state, setState] = useState({
     loading: false,
-    toastColor: "#5cb85c",
-    toastDescription: ""
+    alertType: "success",
+    alertMsg: ""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [lengthValid, setLengthValid] = useState(false);
@@ -358,19 +359,18 @@ const Signup = (props) => {
                           }
                         },
                         (error) => {
-                          /*   alert(
-                          "You dont have access to this application."
-                        ); */
                           setState({
                             loading: false,
-                            toastColor: "#d9534f",
-                            toastDescription:
-                              "You dont have access to this application."
+                            alertType: "danger",
+                            alertMsg:
+                              "You dont have access to this application!"
                           });
-                          const x = document.getElementById("snackbar");
-                          x.className = "show";
                           setTimeout(function () {
-                            x.className = x.className.replace("show", "");
+                            setState({
+                              loading: false,
+                              alertType: "danger",
+                              alertMsg: ""
+                            });
                           }, 2000);
                           localStorage.setItem("accesstoken", null);
                           console.error("Error while fetching Follow", error);
@@ -381,25 +381,29 @@ const Signup = (props) => {
                 } else {
                   setState({
                     loading: false,
-                    toastColor: "#d9534f",
-                    toastDescription: "User Role Not Found."
+                    alertType: "danger",
+                    alertMsg: "User Role Not Found!"
                   });
-                  const x = document.getElementById("snackbar");
-                  x.className = "show";
                   setTimeout(function () {
-                    x.className = x.className.replace("show", "");
+                    setState({
+                      loading: false,
+                      alertType: "danger",
+                      alertMsg: ""
+                    });
                   }, 2000);
                 }
               } else {
                 setState({
                   loading: false,
-                  toastColor: "#d9534f",
-                  toastDescription: "User Role Not Found."
+                  alertType: "danger",
+                  alertMsg: "User Role Not Found!"
                 });
-                const x = document.getElementById("snackbar");
-                x.className = "show";
                 setTimeout(function () {
-                  x.className = x.className.replace("show", "");
+                  setState({
+                    loading: false,
+                    alertType: "danger",
+                    alertMsg: ""
+                  });
                 }, 2000);
               }
             })
@@ -407,13 +411,16 @@ const Signup = (props) => {
               console.log("err", err);
               setState({
                 loading: false,
-                toastColor: "#d9534f",
-                toastDescription: `Does not have permissions to access this application.`
+                alertType: "danger",
+                alertMsg:
+                  "Does not have permissions to access this application!"
               });
-              const x = document.getElementById("snackbar");
-              x.className = "show";
               setTimeout(function () {
-                x.className = x.className.replace("show", "");
+                setState({
+                  loading: false,
+                  alertType: "danger",
+                  alertMsg: ""
+                });
               }, 2000);
             });
         }
@@ -421,13 +428,15 @@ const Signup = (props) => {
         // alert(`${error.message}`);
         setState({
           loading: false,
-          toastColor: "#d9534f",
-          toastDescription: `${error.message}`
+          alertType: "danger",
+          alertMsg: `${error.message}`
         });
-        const x = document.getElementById("snackbar");
-        x.className = "show";
         setTimeout(function () {
-          x.className = x.className.replace("show", "");
+          setState({
+            loading: false,
+            alertType: "danger",
+            alertMsg: ""
+          });
         }, 2000);
         console.log(error);
       }
@@ -644,10 +653,7 @@ const Signup = (props) => {
               )}
             </div>
           </div>
-
-          <div id="snackbar" style={{ backgroundColor: state.toastColor }}>
-            {state.toastDescription}
-          </div>
+          <Alert type={state.alertType}>{state.alertMsg}</Alert>
         </div>
       ) : (
         <div

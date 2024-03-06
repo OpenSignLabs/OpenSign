@@ -327,7 +327,7 @@ function Placeholder(props) {
                       className="dropdown-item itemColor"
                       style={{ fontSize: "12px" }}
                     >
-                      {data?.date ? data?.date : "nodata"}
+                      {data?.date ? data?.date : "No data"}
                     </span>
                   );
                 })}

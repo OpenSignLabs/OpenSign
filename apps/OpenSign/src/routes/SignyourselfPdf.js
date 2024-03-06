@@ -30,7 +30,6 @@ import { useParams } from "react-router-dom";
 import Tour from "reactour";
 import Signedby from "../components/pdf/Signedby";
 import HandleError from "../primitives/HandleError";
-import Nodata from "../primitives/Nodata";
 import Header from "../components/pdf/Header";
 import RenderPdf from "../components/pdf/RenderPdf";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
@@ -81,7 +80,6 @@ function SignYourSelf() {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [signerUserId, setSignerUserId] = useState();
   const [tourStatus, setTourStatus] = useState([]);
-  const [noData, setNoData] = useState(false);
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState({});
   const [isPageCopy, setIsPageCopy] = useState(false);
@@ -215,7 +213,7 @@ function SignYourSelf() {
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else {
-      setNoData(true);
+      setHandleError("No Data Found!");
       const loadObj = {
         isLoad: false
       };
@@ -298,7 +296,7 @@ function SignYourSelf() {
           }
         }
       } else {
-        setNoData(true);
+        setHandleError("No Data Found!");
       }
       const loadObj = {
         isLoad: false
@@ -967,8 +965,6 @@ function SignYourSelf() {
         <Loader isLoading={isLoading} />
       ) : handleError ? (
         <HandleError handleError={handleError} />
-      ) : noData ? (
-        <Nodata />
       ) : (
         <div>
           {isUiLoading && (

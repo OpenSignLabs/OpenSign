@@ -18,7 +18,7 @@ const Alert = ({ children, type }) => {
     <>
       {children && (
         <div
-          className={`z-40 fixed top-20 left-1/2 transform -translate-x-1/2 border-[1px] text-sm ${textcolor} rounded py-[.75rem] px-[1.25rem] `}
+          className={`z-40 fixed top-20 left-1/2 transform -translate-x-1/2 border-[1px] text-sm ${textcolor} rounded py-[.75rem] px-[1.25rem] z-50`}
         >
           {children}
         </div>
