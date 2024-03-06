@@ -486,7 +486,7 @@ function PlaceholderType(props) {
           style={{ fontSize: calculateFontSize() }}
           className="inputPlaceholder"
           type="text"
-          value={textValue}
+          value={textValue ? textValue : props.pos?.options?.defaultValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -520,7 +520,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"company"}
           style={{ fontSize: calculateFontSize() }}
-          value={textValue}
+          value={textValue ? textValue : props.pos?.options?.defaultValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -554,7 +554,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"job title"}
           style={{ fontSize: calculateFontSize() }}
-          value={textValue}
+          value={textValue ? textValue : props.pos?.options?.defaultValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
@@ -641,7 +641,7 @@ function PlaceholderType(props) {
           ref={inputRef}
           placeholder={"email"}
           style={{ fontSize: calculateFontSize() }}
-          value={textValue}
+          value={textValue ? textValue : props.pos?.options?.defaultValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);

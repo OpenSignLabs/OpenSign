@@ -69,7 +69,7 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
           ...item,
           options: {
             ...item.options,
-            response: widgetData
+            defaultValue: widgetData
           },
           Width: calculateInitialWidthHeight(item.type, widgetData).getWidth,
           Height: calculateInitialWidthHeight(item.type, widgetData).getHeight

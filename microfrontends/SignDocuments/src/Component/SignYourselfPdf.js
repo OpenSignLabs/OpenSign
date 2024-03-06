@@ -331,126 +331,75 @@ function SignYourSelf() {
     }
   };
   const addWidgetOptions = (type) => {
-    let option = {};
-
     switch (type) {
       case "signature":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "signature"
         };
-        return option;
-
       case "stamp":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "stamp"
         };
-        return option;
-
       case "checkbox":
-        option = {
-          name: "",
-          values: [],
-          response: true,
-          validation: {}
+        return {
+          name: "checkbox"
         };
-        return option;
+
       case "text":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "text"
         };
-        return option;
-
       case "initials":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "initials"
         };
-        return option;
       case "name":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getWidgetValue(type),
+        return {
+          name: "name",
+          defaultValue: getWidgetValue(type),
           validation: {
             type: "text",
             pattern: ""
           }
         };
-        return option;
-
       case "company":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getWidgetValue(type),
+        return {
+          name: "company",
+          defaultValue: getWidgetValue(type),
           validation: {
             type: "text",
             pattern: ""
           }
         };
-        return option;
       case "job title":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getWidgetValue(type),
+        return {
+          name: "job title",
+          defaultValue: getWidgetValue(type),
           validation: {
             type: "text",
             pattern: ""
           }
         };
-        return option;
       case "date":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getDate(),
-          validation: {
-            type: "text",
-            pattern: ""
-          }
+        return {
+          name: "date",
+          defaultValue: getDate()
         };
-        return option;
       case "image":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "image"
         };
-        return option;
       case "email":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getWidgetValue(type),
+        return {
+          name: "email",
+          defaultValue: getWidgetValue(type),
           validation: {
             type: "email",
             pattern: ""
           }
         };
-        return option;
+      default:
+        return {};
     }
   };
   //function for setting position after drop signature button over pdf
