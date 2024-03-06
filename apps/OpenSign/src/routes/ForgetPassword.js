@@ -37,11 +37,7 @@ function ForgotPassword(props) {
     );
     if (state.email) {
       const username = state.email;
-      let baseUrl = localStorage.getItem("BaseUrl12");
-      let parseAppId = localStorage.getItem("AppID12");
       try {
-        Parse.serverURL = baseUrl;
-        Parse.initialize(parseAppId);
         await Parse.User.requestPasswordReset(username);
         setSentStatus("success");
       } catch (err) {
@@ -54,7 +50,7 @@ function ForgotPassword(props) {
   };
 
   useEffect(() => {
-    props.fetchAppInfo(localStorage.getItem("domain"));
+    props.fetchAppInfo();
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);

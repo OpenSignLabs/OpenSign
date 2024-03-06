@@ -11,9 +11,6 @@ const AddUser = (props) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
-  Parse.serverURL = parseBaseUrl;
-  Parse.initialize(parseAppId);
-
   useEffect(() => {
     checkUserExist();
   }, []);
@@ -50,8 +47,6 @@ const AddUser = (props) => {
     e.preventDefault();
     e.stopPropagation();
     setIsLoader(true);
-    Parse.serverURL = parseBaseUrl;
-    Parse.initialize(parseAppId);
     try {
       const contactQuery = new Parse.Object("contracts_Contactbook");
       contactQuery.set("Name", name);

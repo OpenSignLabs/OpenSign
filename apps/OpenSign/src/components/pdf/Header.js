@@ -433,7 +433,7 @@ function Header({
           {recipient ? (
             pdfUrl || isAlreadySign.mssg ? (
               <div style={{ display: "flex", flexDirection: "row" }}>
-                {pdfDetails[0] && pdfDetails.length > 0 && (
+                {pdfDetails && pdfDetails.length > 0 && (
                   <CertificateComponent />
                 )}
                 <button

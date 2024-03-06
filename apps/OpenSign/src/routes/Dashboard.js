@@ -12,8 +12,6 @@ const Dashboard = (props) => {
   const [dashboard, setdashboard] = useState([]);
   const [classnameArray, setclassnameArray] = useState([]);
   const [loading, setloading] = useState(false);
-  const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
-  const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [defaultQuery, setDefaultQuery] = useState("");
 
   useEffect(() => {
@@ -32,8 +30,6 @@ const Dashboard = (props) => {
   const getDashboard = async (id) => {
     setloading(true);
     try {
-      Parse.serverURL = parseBaseUrl;
-      Parse.initialize(parseAppId);
       var forms = Parse.Object.extend("w_dashboard");
       var query = new Parse.Query(forms);
       query.equalTo("objectId", id);

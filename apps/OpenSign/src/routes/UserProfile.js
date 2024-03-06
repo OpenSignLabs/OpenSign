@@ -20,9 +20,6 @@ function UserProfile() {
   const [percentage, setpercentage] = useState(0);
   const [isDisableDocId, setIsDisableDocId] = useState(false);
 
-  Parse.serverURL = parseBaseUrl;
-  Parse.initialize(parseAppId);
-
   useEffect(() => {
     const extClass = localStorage.getItem("Extand_Class");
     const jsonSender = JSON.parse(extClass);

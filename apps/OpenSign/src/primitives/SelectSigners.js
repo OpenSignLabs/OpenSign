@@ -18,11 +18,6 @@ const SelectSigners = (props) => {
   const [selected, setSelected] = useState();
   const [userData, setUserData] = useState({});
   const [isError, setIsError] = useState(false);
-  const parseBaseUrl = localStorage.getItem("baseUrl");
-  const parseAppId = localStorage.getItem("parseAppId");
-  Parse.serverURL = parseBaseUrl;
-  Parse.initialize(parseAppId);
-
   // `handleOptions` is used to set just save from quick form to selected option in dropdown
   const handleOptions = (item) => {
     setSelected(item);

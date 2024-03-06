@@ -43,8 +43,8 @@ function App() {
       : window.location.origin + "/api/app";
     const appName = "contracts";
     try {
-      localStorage.setItem("BaseUrl12", `${baseurl}/`);
-      localStorage.setItem("AppID12", appId);
+      localStorage.setItem("baseUrl", `${baseurl}/`);
+      localStorage.setItem("parseAppId", appId);
       localStorage.setItem("domain", appName);
       setIsLoading(false);
     } catch (error) {

@@ -3,7 +3,8 @@ export const appInfo = {
   appTitle: "contracts",
   applogo: logo,
   appname: "contracts",
-  baseurl: process.env.REACT_APP_SERVERURL
+  appId: process.env.REACT_APP_APPID ? process.env.REACT_APP_APPID : "opensign",
+  baseUrl: process.env.REACT_APP_SERVERURL
     ? process.env.REACT_APP_SERVERURL
     : window.location.origin + "/api/app",
   defaultRole: "contracts_User",
