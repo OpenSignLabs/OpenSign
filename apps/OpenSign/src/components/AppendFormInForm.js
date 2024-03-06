@@ -49,8 +49,6 @@ const AppendFormInForm = (props) => {
     e.preventDefault();
     e.stopPropagation();
     setIsLoader(true);
-    Parse.serverURL = parseBaseUrl;
-    Parse.initialize(parseAppId);
     try {
       const contactQuery = new Parse.Object("contracts_Contactbook");
       contactQuery.set("Name", name);

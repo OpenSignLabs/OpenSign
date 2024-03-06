@@ -11,8 +11,6 @@ function ChangePassword() {
     evt.preventDefault();
     try {
       if (newpassword === confirmpassword) {
-        Parse.serverURL = localStorage.getItem("baseUrl");
-        Parse.initialize(localStorage.getItem("parseAppId"));
         Parse.User.logIn(localStorage.getItem("userEmail"), currentpassword)
           .then(async (user) => {
             if (user) {

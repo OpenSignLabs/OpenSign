@@ -16,8 +16,6 @@ const Signup = (props) => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
-  const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [company, setCompany] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [state, setState] = useState({
@@ -37,8 +35,8 @@ const Signup = (props) => {
     if (Parse.User.current()) {
       await Parse.User.logOut();
     }
-    let baseUrl = localStorage.getItem("BaseUrl12");
-    let appid = localStorage.getItem("AppID12");
+    let baseUrl = localStorage.getItem("baseUrl");
+    let appid = localStorage.getItem("parseAppId");
     let applogo = localStorage.getItem("appLogo");
     let domain = localStorage.getItem("domain");
     let appversion = localStorage.getItem("appVersion");
@@ -52,8 +50,8 @@ const Signup = (props) => {
 
     localStorage.clear();
 
-    localStorage.setItem("BaseUrl12", baseUrl);
-    localStorage.setItem("AppID12", appid);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("domain", domain);
     localStorage.setItem("appversion", appversion);
@@ -81,8 +79,6 @@ const Signup = (props) => {
       };
       localStorage.setItem("userDetails", JSON.stringify(userDetails));
       try {
-        Parse.serverURL = parseBaseUrl;
-        Parse.initialize(parseAppId);
         event.preventDefault();
         var user = new Parse.User();
         user.set("name", name);
@@ -130,12 +126,8 @@ const Signup = (props) => {
                 alert("User already exists with this username!");
                 setState({ loading: false });
               } else {
-                let baseUrl = localStorage.getItem("BaseUrl12");
-                let parseAppId = localStorage.getItem("AppID12");
                 // console.log("state.email ", email);
                 try {
-                  Parse.serverURL = baseUrl;
-                  Parse.initialize(parseAppId);
                   await Parse.User.requestPasswordReset(email).then(
                     async function (res1) {
                       if (res1.data === undefined) {
@@ -162,8 +154,8 @@ const Signup = (props) => {
   };
 
   const handleNavigation = async (sessionToken) => {
-    const baseUrl = localStorage.getItem("BaseUrl12");
-    const parseAppId = localStorage.getItem("AppID12");
+    const baseUrl = localStorage.getItem("baseUrl");
+    const parseAppId = localStorage.getItem("parseAppId");
     const res = await axios.get(baseUrl + "users/me", {
       headers: {
         "X-Parse-Session-Token": sessionToken,
@@ -237,8 +229,6 @@ const Signup = (props) => {
                         "extended_class",
                         element.extended_class
                       );
-                      localStorage.setItem("userpointer", element.userpointer);
-
                       await Parse.Cloud.run("getUserDetails", {
                         email: email
                       }).then(
@@ -443,11 +433,7 @@ const Signup = (props) => {
     }
   };
   useEffect(() => {
-    props.fetchAppInfo(
-      localStorage.getItem("domain"),
-      localStorage.getItem("BaseUrl12"),
-      localStorage.getItem("AppID12")
-    );
+    props.fetchAppInfo();
     // eslint-disable-next-line
   }, []);
 

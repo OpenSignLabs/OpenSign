@@ -7,15 +7,11 @@ import { connect } from "react-redux";
 import Title from "../components/Title";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const appId = localStorage.getItem("AppID12");
-const server = localStorage.getItem("BaseUrl12");
-Parse.serverURL = server;
-Parse.initialize(appId);
 const PgSignUp = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [parseBaseUrl] = useState(localStorage.getItem("BaseUrl12"));
-  const [parseAppId] = useState(localStorage.getItem("AppID12"));
+  const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
+  const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: ""
@@ -29,11 +25,7 @@ const PgSignUp = (props) => {
   // below useEffect is used to fetch App data and save to redux state
   useEffect(() => {
     // Parse.User.logOut()
-    props.fetchAppInfo(
-      localStorage.getItem("domain"),
-      localStorage.getItem("BaseUrl12"),
-      localStorage.getItem("AppID12")
-    );
+    props.fetchAppInfo();
     handleSignedUpUser();
     // eslint-disable-next-line
   }, []);
@@ -224,8 +216,8 @@ const PgSignUp = (props) => {
   };
 
   const handleNavigation = async (sessionToken) => {
-    const baseUrl = localStorage.getItem("BaseUrl12");
-    const parseAppId = localStorage.getItem("AppID12");
+    const baseUrl = localStorage.getItem("baseUrl");
+    const parseAppId = localStorage.getItem("parseAppId");
     const res = await axios.get(baseUrl + "users/me", {
       headers: {
         "X-Parse-Session-Token": sessionToken,
@@ -299,8 +291,6 @@ const PgSignUp = (props) => {
                         "extended_class",
                         element.extended_class
                       );
-                      localStorage.setItem("userpointer", element.userpointer);
-
                       const currentUser = Parse.User.current();
                       await Parse.Cloud.run("getUserDetails", {
                         email: currentUser.get("email")
@@ -407,11 +397,11 @@ const PgSignUp = (props) => {
                             localStorage.setItem("pageType", element.pageType);
                             setIsLoader(false);
                             const redirectUrl =
-                            location?.state?.from ||
-                            `/${element.pageType}/${element.pageId}`;
+                              location?.state?.from ||
+                              `/${element.pageType}/${element.pageId}`;
 
-                          // Redirect to the appropriate URL after successful login
-                          navigate(redirectUrl);
+                            // Redirect to the appropriate URL after successful login
+                            navigate(redirectUrl);
                           }
                         },
                         (error) => {

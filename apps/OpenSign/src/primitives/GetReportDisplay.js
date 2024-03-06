@@ -219,7 +219,7 @@ const ReportTable = ({
       const res = await axios.put(url + item.objectId, body, {
         headers: {
           "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("AppID12"),
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       });

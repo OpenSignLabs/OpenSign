@@ -44,11 +44,7 @@ function Login(props) {
       setState({ ...state, loading: true });
       GetLoginData();
     }
-    props.fetchAppInfo(
-      localStorage.getItem("domain"),
-      localStorage.getItem("BaseUrl12"),
-      localStorage.getItem("AppID12")
-    );
+    props.fetchAppInfo();
     // eslint-disable-next-line
   }, []);
   const handleChange = (event) => {
@@ -67,8 +63,6 @@ function Login(props) {
         let parseAppId = localStorage.getItem("parseAppId");
         localStorage.setItem("appLogo", props.appInfo.applogo);
         localStorage.setItem("appName", props.appInfo.appname);
-        Parse.serverURL = localStorage.getItem("baseUrl");
-        Parse.initialize(localStorage.getItem("parseAppId"));
         // Pass the username and password to logIn function
         await Parse.User.logIn(email, password)
           .then(async (user) => {
@@ -149,11 +143,6 @@ function Login(props) {
                                 "extended_class",
                                 element.extended_class
                               );
-                              localStorage.setItem(
-                                "userpointer",
-                                element.userpointer
-                              );
-
                               const currentUser = Parse.User.current();
                               await Parse.Cloud.run("getUserDetails", {
                                 email: currentUser.get("email")
@@ -397,8 +386,8 @@ function Login(props) {
     setState({ ...state, thirdpartyLoader: value });
   };
   const thirdpartyLoginfn = async (sessionToken, billingDate) => {
-    const baseUrl = localStorage.getItem("BaseUrl12");
-    const parseAppId = localStorage.getItem("AppID12");
+    const baseUrl = localStorage.getItem("baseUrl");
+    const parseAppId = localStorage.getItem("parseAppId");
     const res = await axios.get(baseUrl + "users/me", {
       headers: {
         "X-Parse-Session-Token": sessionToken,
@@ -486,7 +475,6 @@ function Login(props) {
                         "extended_class",
                         element.extended_class
                       );
-                      localStorage.setItem("userpointer", element.userpointer);
                       const currentUser = Parse.User.current();
                       await Parse.Cloud.run("getUserDetails", {
                         email: currentUser.get("email")
@@ -672,8 +660,6 @@ function Login(props) {
   const GetLoginData = async () => {
     setState({ ...state, loading: true });
     try {
-      Parse.serverURL = localStorage.getItem("baseUrl");
-      Parse.initialize(localStorage.getItem("parseAppId"));
       const user = await Parse.User.become(localStorage.getItem("accesstoken"));
       let _usss = user.toJSON();
       localStorage.setItem("UserInformation", JSON.stringify(_usss));
@@ -910,8 +896,8 @@ function Login(props) {
     let PageLanding = localStorage.getItem("PageLanding");
     let domain = localStorage.getItem("domain");
     let _appName = localStorage.getItem("_appName");
-    let baseUrl = localStorage.getItem("BaseUrl12");
-    let appid = localStorage.getItem("AppID12");
+    let baseUrl = localStorage.getItem("baseUrl");
+    let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
 
@@ -922,8 +908,8 @@ function Login(props) {
     localStorage.setItem("PageLanding", PageLanding);
     localStorage.setItem("domain", domain);
     localStorage.setItem("userSettings", appdata);
-    localStorage.setItem("BaseUrl12", baseUrl);
-    localStorage.setItem("AppID12", appid);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
   };
   return (
     <div className="bg-white">

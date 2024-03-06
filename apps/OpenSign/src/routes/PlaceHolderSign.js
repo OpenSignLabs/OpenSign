@@ -702,11 +702,6 @@ function PlaceHolderSign() {
           containerWH
         );
 
-        const parseBaseUrl = localStorage.getItem("baseUrl");
-        const parseAppId = localStorage.getItem("parseAppId");
-        Parse.initialize(parseAppId);
-        Parse.serverURL = parseBaseUrl;
-        Parse.initialize(parseAppId);
         const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";
         const pdfFile = new Parse.File(fileName, { base64: pdfBytes });
 

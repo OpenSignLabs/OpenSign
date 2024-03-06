@@ -14,6 +14,15 @@ import {
 } from "react-dnd-multi-backend";
 import DragElement from "./components/pdf/DragElement";
 import TagManager from "react-gtm-module";
+import Parse from "parse";
+const appId = process.env.REACT_APP_APPID
+  ? process.env.REACT_APP_APPID
+  : "opensign";
+const serverUrl = process.env.REACT_APP_SERVERURL
+  ? process.env.REACT_APP_SERVERURL
+  : window.location.origin + "/api/app";
+Parse.initialize(appId);
+Parse.serverURL = serverUrl;
 
 const HTML5toTouch = {
   backends: [

@@ -39,7 +39,7 @@ const Submenu = ({ item, closeSidebar }) => {
                     ? `/${childItem.pageType}/${childItem.objectId}`
                     : `/${childItem.objectId}`
                 }
-                className="block pl-6 md:pl-8 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white"
+                className="block pl-6 md:pl-8 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white cursor-pointer"
                 onClick={closeSidebar}
                 role="menuitem"
                 tabIndex={submenuOpen ? 0 : -1}
