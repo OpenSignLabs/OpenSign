@@ -131,20 +131,15 @@ function Header({
                 }}
               >
                 <i
-                  className="fa fa-certificate"
-                  style={{
-                    marginRight: "2px"
-                  }}
+                  className="fa-solid fa-award"
+                  style={{ marginRight: "2px" }}
                   aria-hidden="true"
                 ></i>
                 Certificate
               </div>
             ) : (
               <div
-                style={{
-                  border: "none",
-                  backgroundColor: "#fff"
-                }}
+                style={{ border: "none", backgroundColor: "#fff" }}
                 onClick={() =>
                   handleDownload(
                     blob,
@@ -155,10 +150,8 @@ function Header({
                 }
               >
                 <i
-                  className="fa fa-certificate"
-                  style={{
-                    marginRight: "2px"
-                  }}
+                  className="fa-solid fa-award"
+                  style={{ marginRight: "2px" }}
                   aria-hidden="true"
                 ></i>
                 Certificate
@@ -190,7 +183,7 @@ function Header({
             }}
           >
             <i
-              className="fa fa-certificate"
+              className="fa-solid fa-award"
               style={{
                 color: "white",
                 fontSize: "15px",

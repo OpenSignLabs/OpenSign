@@ -1,5 +1,5 @@
 import React from "react";
-import ModalUi from "./ModalUi";
+import ModalUi from "../../primitives/ModalUi";
 
 const AddRoleModal = (props) => {
   return (

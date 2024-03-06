@@ -21,9 +21,9 @@ import {
   onSaveImage,
   addDefaultSignatureImg
 } from "../constant/Utils";
-import Loader from "../components/pdf/Loader";
+import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
-import Header from "../components/pdf/Header";
+import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
 import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import Title from "../components/Title";

@@ -28,7 +28,6 @@ function EmailComponent({
       try {
         const imgPng =
           "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
-        // "https://qikinnovation.ams3.digitaloceanspaces.com/mailLogo_2023-08-18T12%3A51%3A31.573Z.png";
 
         let url = `${localStorage.getItem("baseUrl")}functions/sendmailv3/`;
         const headers = {

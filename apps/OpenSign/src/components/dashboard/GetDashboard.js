@@ -12,7 +12,21 @@ const GetDashboard = (props) => {
             data-tut={col.widget.data.tourSection}
             style={{ background: col.widget.bgColor }}
           >
-            <Suspense fallback={<div>please wait</div>}>
+            <Suspense
+              fallback={
+                <div style={{ height: "300px" }}>
+                  <div
+                    style={{
+                      marginLeft: "45%",
+                      marginTop: "150px",
+                      fontSize: "45px",
+                      color: "#3dd3e0"
+                    }}
+                    className="loader-37"
+                  ></div>
+                </div>
+              }
+            >
               <DashboardCard
                 Icon={col.widget.icon}
                 Label={col.widget.label}
