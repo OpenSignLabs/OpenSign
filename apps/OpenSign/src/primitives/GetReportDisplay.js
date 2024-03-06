@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/report.css";
 import ModalUi from "./ModalUi";
 import AppendFormInForm from "../components/AppendFormInForm";
 import { modalSubmitBtnColor, modalCancelBtnColor } from "../constant/const";
+import Alert from "./Alert";
 const ReportTable = ({
   ReportName,
   List,
@@ -149,6 +149,7 @@ const ReportTable = ({
                 if (res.data && res.data.objectId) {
                   setActLoader({});
                   setIsAlert(true);
+                  setTimeout(() => setIsAlert(false), 1500);
                   navigate(`/${url}/${res.data.objectId}`, {
                     state: { title: "Use Template" }
                   });
@@ -157,6 +158,7 @@ const ReportTable = ({
                 console.log("Err", err);
                 setIsAlert(true);
                 setIsErr(true);
+                setTimeout(() => setIsAlert(false), 1500);
                 setActLoader({});
               }
             } else {
@@ -166,12 +168,14 @@ const ReportTable = ({
           } else {
             setIsAlert(true);
             setIsErr(true);
+            setTimeout(() => setIsAlert(false), 1500);
             setActLoader({});
           }
         } catch (err) {
           console.log("err", err);
           setIsAlert(true);
           setIsErr(true);
+          setTimeout(() => setIsAlert(false), 1500);
           setActLoader({});
         }
       }
@@ -227,6 +231,7 @@ const ReportTable = ({
       if (res.data && res.data.updatedAt) {
         setActLoader({});
         setIsAlert(true);
+        setTimeout(() => setIsAlert(false), 1500);
         const upldatedList = List.filter((x) => x.objectId !== item.objectId);
         setList(upldatedList);
       }
@@ -234,6 +239,7 @@ const ReportTable = ({
       console.log("err", err);
       setIsAlert(true);
       setIsErr(true);
+      setTimeout(() => setIsAlert(false), 1500);
       setActLoader({});
     }
   };
@@ -242,17 +248,12 @@ const ReportTable = ({
   return (
     <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
       {isAlert && (
-        <div
-          className={`alert alert-${isErr ? "danger" : "success"} alertBox`}
-          role="alert"
-          onAnimationEnd={() => setIsAlert(false)}
-        >
+        <Alert type={isErr ? "danger" : "success"}>
           {isErr
             ? "Something went wrong, Please try again later!"
             : "Record deleted successfully!"}
-        </div>
+        </Alert>
       )}
-
       <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
         <div className="font-light">{ReportName}</div>
         {ReportName === "Templates" && (

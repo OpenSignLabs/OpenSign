@@ -4,13 +4,12 @@ import RecipientList from "./RecipientList";
 import { useDrag } from "react-dnd";
 import WidgetList from "./WidgetList";
 import { widgets } from "../../constant/Utils";
-
+import { themeColor } from "../../constant/const";
 function WidgetComponent({
   dragSignature,
   signRef,
   handleDivClick,
   handleMouseLeave,
-  themeColor,
   dragStamp,
   isSignYourself,
   addPositionOfSignature,
@@ -321,7 +320,7 @@ function WidgetComponent({
                   backgroundColor: themeColor,
                   color: "white"
                 }}
-                className="addSignerBtn"
+                className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad] hover:text-white cursor-pointer"
                 onClick={() => handleAddSigner()}
               >
                 <i className="fa-solid fa-plus"></i>

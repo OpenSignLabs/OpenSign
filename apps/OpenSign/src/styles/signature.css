@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Fasthand&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fasthand&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap");
 
 .placeholderBlock {
   padding: 0px;
@@ -13,7 +13,6 @@
   text-align: center;
   justify-content: center;
   border-width: 0.2px;
-
 }
 
 .dropdownContainer {
@@ -36,7 +35,6 @@
   /* Disable text selection in WebKit browsers */
   -moz-user-select: none;
   user-select: none;
-
 }
 
 .inputPlaceholder {
@@ -48,7 +46,6 @@
   /* font-size: 12px; */
   border: 1px solid #007bff;
   border-radius: 2px;
-
 }
 
 .radioButton {
@@ -80,7 +77,6 @@
   font-variation-settings: inherit;
   font-weight: inherit;
   overflow: visible;
-
 }
 
 .drodown-input:focus {
@@ -96,7 +92,6 @@
   font-size: 13px;
   border: none;
   margin-left: 10px;
-
 }
 
 .dropdownAdd:focus {
@@ -111,7 +106,6 @@
 }
 
 .signatureCanvas {
-
   border: 2px solid #888;
   background-color: rgb(255, 255, 255);
   width: 460px;
@@ -145,7 +139,6 @@
   display: inline-block;
   width: 14px;
   height: 14px;
-
 }
 
 .borderResize :hover {
@@ -155,7 +148,6 @@
 .dropdown-date-menu {
   min-width: 7rem;
 }
-
 
 .mailBtn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
@@ -377,7 +369,6 @@
 
 .finishBtn:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-
 }
 
 .saveBtn {
@@ -486,7 +477,6 @@
 .showScroll {
   height: 100%;
   overflow: scroll;
-
 }
 
 .showScroll::-webkit-scrollbar {
@@ -532,7 +522,6 @@
 }
 
 .pTagBody {
-
   font-size: 15px !important;
 }
 
@@ -569,7 +558,7 @@
   flex-direction: row;
   justify-content: space-between;
   background-color: #ebebeb;
-  position: "relative"
+  position: "relative";
 }
 
 .signatureHeader {
@@ -585,7 +574,6 @@
   width: 180px;
   background-color: white;
   height: 100%;
-
 }
 
 .modalBody {
@@ -597,7 +585,7 @@
   padding: 30px;
   display: flex;
   flex-direction: column;
-  align-items: center
+  align-items: center;
 }
 
 .signLayoutContainer2 {
@@ -625,7 +613,7 @@
 .DropdownMenuSubContent {
   min-width: 130px;
   background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, .15);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.25rem;
   padding: 5px;
   animation-duration: 400ms;
@@ -634,23 +622,23 @@
   z-index: 30 !important;
 }
 
-.DropdownMenuContent[data-side='top'],
-.DropdownMenuSubContent[data-side='top'] {
+.DropdownMenuContent[data-side="top"],
+.DropdownMenuSubContent[data-side="top"] {
   animation-name: slideDownAndFade;
 }
 
-.DropdownMenuContent[data-side='right'],
-.DropdownMenuSubContent[data-side='right'] {
+.DropdownMenuContent[data-side="right"],
+.DropdownMenuSubContent[data-side="right"] {
   animation-name: slideLeftAndFade;
 }
 
-.DropdownMenuContent[data-side='bottom'],
-.DropdownMenuSubContent[data-side='bottom'] {
+.DropdownMenuContent[data-side="bottom"],
+.DropdownMenuSubContent[data-side="bottom"] {
   animation-name: slideUpAndFade;
 }
 
-.DropdownMenuContent[data-side='left'],
-.DropdownMenuSubContent[data-side='left'] {
+.DropdownMenuContent[data-side="left"],
+.DropdownMenuSubContent[data-side="left"] {
   animation-name: slideRightAndFade;
 }
 
@@ -690,7 +678,6 @@
 }
 
 .selectEmail {
-
   align-items: center;
   justify-content: center;
   border-radius: 4px;
@@ -711,7 +698,6 @@ option {
   overflow-y: scroll;
 }
 
-
 .SelectTrigger:hover {
   border: none;
   outline: none;
@@ -721,7 +707,6 @@ option {
   border: none;
   outline: none;
 }
-
 
 .SelectTrigger:focus {
   /* box-shadow: 0 0 0 2px black; */
@@ -747,7 +732,8 @@ option {
   overflow: hidden;
   background-color: white;
   border-radius: 6px;
-  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35),
+    0px 10px 20px -15px rgba(22, 23, 24, 0.2);
 }
 
 .SelectViewport {
@@ -814,7 +800,6 @@ option {
 .fontOptionContainer {
   border: 1px solid #d6d3d3;
   margin: 10px 0px 5px 0px;
-
 }
 
 .dropDownStyle {
@@ -853,19 +838,15 @@ option {
   justify-content: flex-start;
 }
 
-
-
 .labelTextArea {
- 
-    font-size: 12px;
-    min-width: 100%;
-    min-height: 100%;
-    border: 1px solid #007bff;
-    outline: none;
-    z-index: 999;
-    border-radius: 2px;
-    resize: none;
- 
+  font-size: 12px;
+  min-width: 100%;
+  min-height: 100%;
+  border: 1px solid #007bff;
+  outline: none;
+  z-index: 999;
+  border-radius: 2px;
+  resize: none;
 }
 
 .labelTextArea:focus {
@@ -873,8 +854,7 @@ option {
   border: 1px solid #188ae2;
 }
 
-@media screen and (max-width:766px) {
-
+@media screen and (max-width: 766px) {
   .validateInputText {
     width: 93%;
   }
@@ -900,13 +880,10 @@ option {
   .signatureContainer {
     display: flex;
     flex-direction: column;
-
   }
-
 
   .signerComponent {
     display: none;
-
   }
 
   .preBtn1 {
@@ -968,10 +945,9 @@ option {
   to prevent sudden quick movement (as the
   navigation bar gets a new position at the top of the
   page (position:fixed and top:0) */
-  .stickyHead+.content {
+  .stickyHead + .content {
     padding-top: 60px;
   }
-
 
   .signLayoutContainer2 {
     display: flex;
@@ -981,7 +957,6 @@ option {
     padding: 2px 5px 10px 5px;
     position: sticky;
     align-items: center;
-
   }
 
   .headerBtn {
@@ -1006,9 +981,8 @@ option {
   }
 }
 
-@media screen and (max-width:487px) and (min-width:351px) {
+@media screen and (max-width: 487px) and (min-width: 351px) {
   .signatureCanvas {
-
     width: 300px;
     height: 120px;
   }
@@ -1030,17 +1004,14 @@ option {
   }
 
   .signTab {
-
     font-weight: 500 !important;
 
     font-size: 12px !important;
   }
-
 }
 
-@media screen and (max-width:350px) and (min-width:311px) {
+@media screen and (max-width: 350px) and (min-width: 311px) {
   .signatureCanvas {
-
     width: 280px;
     height: 112px;
   }
@@ -1054,7 +1025,6 @@ option {
   }
 
   .signTab {
-
     font-weight: 500 !important;
 
     font-size: 10px !important;
@@ -1065,7 +1035,6 @@ option {
   }
 
   .uploadImg {
-
     font-size: 10px !important;
   }
 
@@ -1074,9 +1043,8 @@ option {
   }
 }
 
-@media screen and (max-width:310px) {
+@media screen and (max-width: 310px) {
   .signatureCanvas {
-
     width: 230px;
     height: 92px;
   }
@@ -1090,7 +1058,6 @@ option {
   }
 
   .signTab {
-
     font-weight: 500 !important;
 
     font-size: 8px !important;
@@ -1101,7 +1068,6 @@ option {
   }
 
   .uploadImg {
-
     font-size: 10px !important;
   }
 
@@ -1207,56 +1173,53 @@ option {
 .defaultOptions {
   font-size: 12px;
   margin-left: 5px;
-
 }
-.defaultOptions:focus{
+.defaultOptions:focus {
   outline: none;
 }
 
-@media (max-width:767px) {
-
+@media (max-width: 767px) {
   .modalcontainer {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-      max-height: 80%;
-      min-width: 90%;
-      overflow-y: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-height: 80%;
+    min-width: 90%;
+    overflow-y: auto;
   }
 
   .dropdownModal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-      max-height: 80%;
-      min-width: 60%;
-      overflow-y: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-height: 80%;
+    min-width: 60%;
+    overflow-y: auto;
   }
 }
 
-@media (max-width:464px) {
+@media (max-width: 464px) {
   .dropdownModal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-      max-height: 80%;
-      min-width: 78%;
-      overflow-y: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-height: 80%;
+    min-width: 78%;
+    overflow-y: auto;
   }
-
 }

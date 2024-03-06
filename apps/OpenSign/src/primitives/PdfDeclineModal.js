@@ -1,6 +1,6 @@
 import React from "react";
-import "../styles/customModal.css";
 import "../styles/signature.css";
+import { rejectBtn } from "../constant/const";
 
 function CustomModal({
   show,
@@ -15,40 +15,34 @@ function CustomModal({
   return (
     show && (
       <div
-        className="parentDiv"
+        className="bg-black bg-opacity-[75%] absolute z-[50] flex flex-col items-center justify-center"
         style={{
           width: containerWH && containerWH.width,
           height: isMobile ? "100%" : containerWH && containerWH.height
         }}
       >
-        <div className="childDiv">
-          <div className="modalHeadDiv bg-danger">{headMsg && headMsg}</div>
-          <div className="modalBodyDIv">
-            <p className="pTagBody">{bodyMssg && bodyMssg}</p>
+        <div className="bg-white rounded outline-none md:w-[40%] w-[80%]">
+          <div className="bg-[#de4337] text-white p-[10px] rounded-t">
+            {headMsg && headMsg}
+          </div>
+          <div className="p-[15px]">
+            <p className="text-[15px]">{bodyMssg && bodyMssg}</p>
           </div>
           {footerMessage && (
             <>
-              <div
-                style={{
-                  height: "1px",
-                  backgroundColor: "#9f9f9f",
-                  width: "100%"
-                }}
-              ></div>
-              <div className="modalFooterDiv">
+              <div className="h-[1px] bg-[#9f9f9f] w-full"></div>
+              <div className="m-[15px] ">
                 <button
-                  style={{
-                    background: "#de4337"
-                  }}
+                  className={`${rejectBtn} text-white mr-2`}
+                  style={{ background: "#de4337" }}
                   type="button"
-                  className="finishBtn"
                   onClick={() => declineDoc()}
                 >
                   Yes
                 </button>
                 <button
                   type="button"
-                  className="finishBtn cancelBtn"
+                  className={rejectBtn}
                   onClick={() => setIsDecline({ isDeclined: false })}
                 >
                   Close
