@@ -453,7 +453,6 @@ export const signPdfFun = async (
     pdfFile: base64Url,
     docId: documentId,
     userId: signerObjectId
-    // };
   };
 
   const response = await axios
@@ -612,9 +611,8 @@ export const onChangeInput = (
   userId,
   initial,
   dateFormat,
-  isPlaceholder,
-  selectedKey,
-  isDefaultEmpty
+  isDefaultEmpty,
+  isRadio
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
   let filterSignerPos;
@@ -653,7 +651,7 @@ export const onChangeInput = (
                 options: {
                   ...position.options,
                   response: value,
-                  defaultValue: []
+                  defaultValue: isRadio ? "" : []
                 }
               };
             } else {
@@ -758,7 +756,7 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
           ...item,
           options: {
             ...item.options,
-            response: widgetData
+            defaultValue: widgetData
           },
           Width: calculateInitialWidthHeight(item.type, widgetData).getWidth,
           Height: calculateInitialWidthHeight(item.type, widgetData).getHeight
@@ -955,10 +953,18 @@ export const multiSignEmbed = async (
   containerWH
 ) => {
   for (let item of pngUrl) {
+    let updateItem = item.pos;
+    if (signyourself) {
+      updateItem = item;
+    } else {
+      updateItem = item.pos.filter(
+        (data) => data?.options?.status === "required"
+      );
+    }
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const pageNo = item.pageNumber;
-    const imgUrlList = item.pos;
+    const imgUrlList = signyourself ? updateItem.pos : updateItem;
     const pages = pdfDoc.getPages();
     const form = pdfDoc.getForm();
     const page = pages[pageNo - 1];
@@ -1038,14 +1044,17 @@ export const multiSignEmbed = async (
         }
       };
 
-      const yPos = (pos, ind) => {
+      const yPos = (pos, ind, labelDefaultHeight) => {
         const resizePos = pos.yPosition;
+        let newUpdateHeight = labelDefaultHeight
+          ? labelDefaultHeight
+          : scaleHeight;
         const widgetHeight =
           position.type === "radio"
             ? 10
             : position.type === "checkbox"
               ? 10
-              : scaleHeight;
+              : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
@@ -1053,7 +1062,7 @@ export const multiSignEmbed = async (
             if (ind && ind > 0 && position.type === "checkbox") {
               return page.getHeight() - resizePos * scale - newHeight;
             } else if (!ind && position.type === "checkbox") {
-              return page.getHeight() - resizePos * scale;
+              return page.getHeight() - resizePos * scale - 10;
             } else {
               return page.getHeight() - resizePos * scale - newHeight;
             }
@@ -1062,7 +1071,7 @@ export const multiSignEmbed = async (
             if (ind && ind > 0 && position.type === "checkbox") {
               return page.getHeight() - resizePos - newHeight;
             } else if (!ind && position.type === "checkbox") {
-              return page.getHeight() - resizePos;
+              return page.getHeight() - resizePos - 10;
             } else {
               return page.getHeight() - resizePos - newHeight;
             }
@@ -1075,12 +1084,12 @@ export const multiSignEmbed = async (
             //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
             if (pos.isMobile) {
               const y = resizePos * (pos.scale / scale);
-              return page.getHeight() - y * scale - scaleHeight;
+              return page.getHeight() - y * scale - newUpdateHeight;
             } else {
               if (pos.IsResize) {
-                return page.getHeight() - y * scale - scaleHeight;
+                return page.getHeight() - y * scale - newUpdateHeight;
               } else {
-                return page.getHeight() - y * scale - scaleHeight;
+                return page.getHeight() - y * scale - newUpdateHeight;
               }
             }
           } else {
@@ -1088,16 +1097,16 @@ export const multiSignEmbed = async (
             if (pos.isMobile) {
               if (pos.IsResize) {
                 const y = resizePos * pos.scale;
-                return page.getHeight() - y - scaleHeight;
+                return page.getHeight() - y - newUpdateHeight;
               } else {
                 const y = resizePos * pos.scale;
-                return page.getHeight() - y - scaleHeight;
+                return page.getHeight() - y - newUpdateHeight;
               }
             } else {
               if (ind && ind > 0 && position.type === "checkbox") {
                 return page.getHeight() - resizePos - newHeight;
-              } else if (!ind && position.type === "checkbox") {
-                return page.getHeight() - resizePos;
+              } else if (position.type === "checkbox") {
+                return page.getHeight() - resizePos - 10;
               } else {
                 return page.getHeight() - resizePos - newHeight;
               }
@@ -1105,15 +1114,13 @@ export const multiSignEmbed = async (
           }
         }
       };
-      const randomboxId = "randombox_" + position.key;
       const widgetTypeExist = [
         "text",
         "name",
         "company",
         "job title",
         "date",
-        "email",
-        "label"
+        "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
         let addYPosition, isCheck;
@@ -1135,10 +1142,10 @@ export const multiSignEmbed = async (
             const checkbox = form.createCheckBox(checkboxRandomId);
             if (ind > 0) {
               yPosition = yPos(position, ind) - addYPosition;
-              addYPosition = addYPosition + height + 10;
+              addYPosition = addYPosition + height + 8;
             } else {
               yPosition = yPos(position, ind);
-              addYPosition = height;
+              addYPosition = height + 8;
             }
             checkbox.addToPage(page, {
               x: xPos(position),
@@ -1153,6 +1160,56 @@ export const multiSignEmbed = async (
             }
             checkbox.enableReadOnly();
           });
+        }
+      } else if (position.type === "label") {
+        const font = await pdfDoc.embedFont("Helvetica");
+        const fontSize = 12;
+        let textContent;
+        if (position?.options?.response) {
+          textContent = position.options?.response;
+        } else if (position?.options?.defaultValue) {
+          textContent = position?.options?.defaultValue;
+        }
+
+        const fixedWidth = scaleWidth; // Set your fixed width
+        // Function to break text into lines based on the fixed width
+        const breakTextIntoLines = (textContent, width) => {
+          const lines = [];
+          let currentLine = "";
+
+          for (const word of textContent.split(" ")) {
+            const lineWidth = font.widthOfTextAtSize(
+              `${currentLine} ${word}`,
+              fontSize
+            );
+
+            if (lineWidth <= width) {
+              currentLine += ` ${word}`;
+            } else {
+              lines.push(currentLine.trim());
+              currentLine = `${word}`;
+            }
+          }
+          lines.push(currentLine.trim());
+          return lines;
+        };
+        const lines = breakTextIntoLines(textContent, fixedWidth);
+        // Set initial y-coordinate for the first line
+        const labelDefaultHeight = defaultWidthHeight(position.type).height;
+
+        let y = yPos(position, null, labelDefaultHeight) + 10;
+        let x = xPos(position);
+        //xPos(position)
+        // Embed each line on the page
+        for (const line of lines) {
+          page.drawText(line, {
+            x: x,
+            y,
+            font,
+            color: rgb(0, 0, 0),
+            size: fontSize
+          });
+          y -= 15; // Adjust the line height as needed
         }
       } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
@@ -1171,7 +1228,8 @@ export const multiSignEmbed = async (
           color: rgb(0, 0, 0)
         });
       } else if (position.type === "dropdown") {
-        const dropdown = form.createDropdown(randomboxId);
+        const dropdownRandomId = "dropdown" + randomId();
+        const dropdown = form.createDropdown(dropdownRandomId);
         dropdown.addOptions(position?.options?.values);
         if (position?.options?.response) {
           dropdown.select(position.options?.response);
@@ -1187,7 +1245,8 @@ export const multiSignEmbed = async (
         });
         dropdown.enableReadOnly();
       } else if (position.type === "radio") {
-        const radioGroup = form.createRadioGroup(randomboxId);
+        const radioRandomId = "radio" + randomId();
+        const radioGroup = form.createRadioGroup(radioRandomId);
         let addYPosition = 18;
 
         for (let i = 1; i <= position?.options?.values.length; i++) {
@@ -1356,6 +1415,7 @@ export const contactBook = async (objectId) => {
   return result;
 };
 
+//function for getting document details from contract_Documents class
 export const contractDocument = async (documentId) => {
   const data = {
     docId: documentId

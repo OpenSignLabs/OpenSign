@@ -69,6 +69,7 @@ function SignYourSelf() {
   const [myInitial, setMyInitial] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [isUiLoading, setIsUiLoading] = useState(false);
+  const [validateAlert, setValidateAlert] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -157,7 +158,9 @@ function SignYourSelf() {
   const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
-    getDocumentDetails(true);
+    if (documentId) {
+      getDocumentDetails(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -330,126 +333,75 @@ function SignYourSelf() {
     }
   };
   const addWidgetOptions = (type) => {
-    let option = {};
-
     switch (type) {
       case "signature":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "signature"
         };
-        return option;
-
       case "stamp":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "stamp"
         };
-        return option;
-
       case "checkbox":
-        option = {
-          name: "",
-          values: [],
-          response: true,
-          validation: {}
+        return {
+          name: "checkbox"
         };
-        return option;
+
       case "text":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "text"
         };
-        return option;
-
       case "initials":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "initials"
         };
-        return option;
       case "name":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getWidgetValue(type),
+        return {
+          name: "name",
+          defaultValue: getWidgetValue(type),
           validation: {
             type: "text",
             pattern: ""
           }
         };
-        return option;
-
       case "company":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getWidgetValue(type),
+        return {
+          name: "company",
+          defaultValue: getWidgetValue(type),
           validation: {
             type: "text",
             pattern: ""
           }
         };
-        return option;
       case "job title":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getWidgetValue(type),
+        return {
+          name: "job title",
+          defaultValue: getWidgetValue(type),
           validation: {
             type: "text",
             pattern: ""
           }
         };
-        return option;
       case "date":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getDate(),
-          validation: {
-            type: "text",
-            pattern: ""
-          }
+        return {
+          name: "date",
+          defaultValue: getDate()
         };
-        return option;
       case "image":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: "",
-          validation: {}
+        return {
+          name: "image"
         };
-        return option;
       case "email":
-        option = {
-          name: "",
-          values: [],
-          status: "",
-          response: getWidgetValue(type),
+        return {
+          name: "email",
+          defaultValue: getWidgetValue(type),
           validation: {
             type: "email",
             pattern: ""
           }
         };
-        return option;
+      default:
+        return {};
     }
   };
   //function for setting position after drop signature button over pdf
@@ -567,16 +519,30 @@ function SignYourSelf() {
 
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
-    let checkSigned = 0;
-    let allXyPos = 0;
+    let showAlert = false;
 
-    for (let i = 0; i < xyPostion.length; i++) {
-      const posWidgetData = xyPostion[i].pos.filter(
-        (pos) => pos.options.response
+    for (let i = 0; i < xyPostion?.length; i++) {
+      const requiredWidgets = xyPostion[i].pos.filter(
+        (position) => position.type !== "checkbox"
       );
+      if (requiredWidgets && requiredWidgets?.length > 0) {
+        let checkSigned;
+        for (let i = 0; i < requiredWidgets?.length; i++) {
+          checkSigned = requiredWidgets[i]?.options?.response;
+          if (!checkSigned) {
+            const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
 
-      checkSigned = checkSigned + posWidgetData.length;
-      allXyPos = allXyPos + xyPostion[i].pos.length;
+            let checkDefaultSigned = requiredWidgets[i]?.options?.defaultValue;
+            if (!checkSignUrl) {
+              if (!checkDefaultSigned) {
+                if (!showAlert) {
+                  showAlert = true;
+                }
+              }
+            }
+          }
+        }
+      }
     }
     if (xyPostion.length === 0) {
       setIsAlert({
@@ -584,7 +550,7 @@ function SignYourSelf() {
         alertMessage: "Please complete your signature!"
       });
       return;
-    } else if (xyPostion.length > 0 && allXyPos !== checkSigned) {
+    } else if (showAlert) {
       setIsAlert({
         isShow: true,
         alertMessage: "Please complete your signature!"
@@ -624,7 +590,7 @@ function SignYourSelf() {
         flag,
         containerWH
       );
-      // console.log(pdfBytes)
+      // console.log('pdf',pdfBytes)
       //function for call to embed signature in pdf and get digital signature pdf
       await signPdfFun(pdfBytes, documentId);
     }
@@ -940,8 +906,7 @@ function SignYourSelf() {
                 ...position.options,
                 name: dropdownName,
                 values: dropdownOptions,
-                isReadOnly: isReadOnly,
-                response: []
+                isReadOnly: isReadOnly
               }
             };
           }
@@ -955,9 +920,16 @@ function SignYourSelf() {
         return obj;
       });
       setXyPostion(updateXYposition);
+      if (!addOption && !deleteOption) {
+        handleCloseModal();
+      }
     }
   };
 
+  const handleCloseModal = () => {
+    setCurrWidgetsDetails({});
+    setIsCheckbox(false);
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Self Sign"} />
@@ -1099,6 +1071,7 @@ function SignYourSelf() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 isSignYourself={true}
+                handleClose={handleCloseModal}
               />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
@@ -1192,6 +1165,7 @@ function SignYourSelf() {
                     selectWidgetId={selectWidgetId}
                     setIsCheckbox={setIsCheckbox}
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
+                    setValidateAlert={setValidateAlert}
                   />
                 )}
               </div>
@@ -1236,6 +1210,37 @@ function SignYourSelf() {
           </div>
         </div>
       )}
+      <ModalUi
+        headerColor={"#dc3545"}
+        isOpen={validateAlert}
+        title={"Validation alert"}
+        handleClose={() => {
+          setValidateAlert(false);
+        }}
+      >
+        <div style={{ height: "100%", padding: 20 }}>
+          <p>
+            The input does not meet the criteria set by the regular expression.
+          </p>
+
+          <div
+            style={{
+              height: "1px",
+              backgroundColor: "#9f9f9f",
+              width: "100%",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          ></div>
+          <button
+            onClick={() => setValidateAlert(false)}
+            type="button"
+            className="finishBtn cancelBtn"
+          >
+            Close
+          </button>
+        </div>
+      </ModalUi>
     </DndProvider>
   );
 }

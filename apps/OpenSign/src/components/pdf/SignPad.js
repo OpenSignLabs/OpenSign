@@ -281,7 +281,6 @@ function SignPad({
                             }}
                             style={{
                               color: isTab === "draw" ? themeColor : "#515252",
-
                               marginLeft: "2px"
                             }}
                             className="signTab"
@@ -332,7 +331,6 @@ function SignPad({
                             }}
                             style={{
                               color: isTab === "type" ? themeColor : "#515252",
-
                               marginLeft: "2px"
                             }}
                             className="signTab"

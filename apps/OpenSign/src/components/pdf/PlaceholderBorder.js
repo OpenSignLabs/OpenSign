@@ -14,6 +14,7 @@ function PlaceholderBorder(props) {
 
   return (
     <div
+      onMouseEnter={props?.setDraggingEnabled(true)}
       className="borderResize"
       style={{
         borderColor: themeColor,

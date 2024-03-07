@@ -13,7 +13,7 @@ const WidgetNameModal = (props) => {
   });
   const [isValid, setIsValid] = useState(true);
   const statusArr = ["Required", "Optional"];
-  const inputOpt = ["email", "number", "text"];
+  const inputOpt = ["email", "number"];
 
   useEffect(() => {
     if (props.defaultdata) {
@@ -144,7 +144,7 @@ const WidgetNameModal = (props) => {
                     placeholder="Enter custom expression"
                     value={formdata.textvalidate}
                     onChange={(e) => handleChange(e)}
-                    onBlur={() => handleBlurRegex()}
+                    // onBlur={() => handleBlurRegex()}
                   />
                   <select
                     style={{ position: "absolute", left: 0, zIndex: 1 }}

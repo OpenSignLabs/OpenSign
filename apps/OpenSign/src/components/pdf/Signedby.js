@@ -24,7 +24,6 @@ function Signedby({ pdfDetails }) {
             display: "flex",
             flexDirection: "row",
             padding: "10px",
-
             background: "#93a3db"
           }}
         >
@@ -49,7 +48,6 @@ function Signedby({ pdfDetails }) {
                 fontWeight: "bold"
               }}
             >
-              {" "}
               {getFirstLetter(pdfDetails.ExtUserPtr.Name)}
             </span>
           </div>

@@ -55,6 +55,21 @@ function Placeholder(props) {
     }
   };
 
+  useEffect(() => {
+    //set default current date and default format MM/dd/yyyy
+    if (props.isPlaceholder || props.isSignYourself) {
+      const date = new Date();
+      const milliseconds = date.getTime();
+      const newDate = moment(milliseconds).format("MM/DD/YYYY");
+      const dateObj = {
+        date: newDate,
+        format: "MM/dd/YYYY"
+      };
+      setSelectDate(dateObj);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   //function for add selected date and format in selectFormat
   const changeDateFormat = () => {
     const updateDate = [];
@@ -410,10 +425,11 @@ function Placeholder(props) {
       //ref={nodeRef}
       key={props.pos.key}
       lockAspectRatio={
-        props.pos.Width
+        props.pos.type !== "label" &&
+        (props.pos.Width
           ? props.pos.Width / props.pos.Height
           : defaultWidthHeight(props.pos.type).width /
-            defaultWidthHeight(props.pos.type).height
+            defaultWidthHeight(props.pos.type).height)
       }
       enableResizing={{
         top: false,
@@ -458,7 +474,7 @@ function Placeholder(props) {
               ? props.pos.zIndex
               : "5",
         background: props.data
-          ? props.pos.type !== "checkbox" && props.data.blockColor
+          ? props.data.blockColor
           : props.pos.type !== "checkbox" && "rgb(203 233 237)"
       }}
       onDrag={() => {

@@ -151,7 +151,7 @@ const TemplatePlaceholder = () => {
 
   useEffect(() => {
     fetchTemplate();
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -447,7 +447,7 @@ const TemplatePlaceholder = () => {
         } else if (dragTypeValue !== "label" && dragTypeValue !== "signature") {
           setIsNameModal(true);
         }
-        setCurrWidgetsDetails("");
+        setCurrWidgetsDetails({});
         setWidgetType(dragTypeValue);
         setSignKey(key);
         setSelectWidgetId(key);
@@ -1074,6 +1074,9 @@ const TemplatePlaceholder = () => {
         });
 
         setSignerPos(newUpdateSigner);
+        if (!addOption && !deleteOption) {
+          handleNameModal();
+        }
       }
     }
   };
@@ -1152,8 +1155,11 @@ const TemplatePlaceholder = () => {
     handleNameModal();
   };
   const handleNameModal = () => {
-    setIsNameModal(!isNameModal);
+    setIsNameModal(false);
     setCurrWidgetsDetails({});
+    setShowDropdown(false);
+    setIsRadio(false);
+    setIsCheckbox(false);
   };
 
   return (
@@ -1305,6 +1311,7 @@ const TemplatePlaceholder = () => {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
+                handleClose={handleNameModal}
               />
               <DropdownWidgetOption
                 type="checkbox"
@@ -1314,6 +1321,7 @@ const TemplatePlaceholder = () => {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
+                handleClose={handleNameModal}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1323,6 +1331,7 @@ const TemplatePlaceholder = () => {
                 handleSaveWidgetsOptions={handleSaveWidgetsOptions}
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
+                handleClose={handleNameModal}
               />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
@@ -1388,7 +1397,7 @@ const TemplatePlaceholder = () => {
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
                     setIsCheckbox={setIsCheckbox}
-                    handleNameModal={handleNameModal}
+                    handleNameModal={setIsNameModal}
                   />
                 )}
               </div>

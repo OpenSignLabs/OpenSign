@@ -382,94 +382,100 @@ function PdfRequestFiles() {
           requiredCheckbox;
 
         for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
-          checkboxExist = checkUser[0].placeHolder[i].pos.some(
-            (data) => data.type === "checkbox"
-          );
-          radioExist = checkUser[0].placeHolder[i].pos.some(
-            (data) => data.type === "radio"
-          );
-          if (checkboxExist) {
-            requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
-              (position) =>
-                !position.options?.isReadOnly && position.type === "checkbox"
-            );
+          for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
+            checkboxExist =
+              checkUser[0].placeHolder[i].pos[j].type === "checkbox";
+            radioExist = checkUser[0].placeHolder[i].pos[j].type === "radio";
+            if (checkboxExist) {
+              requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
+                (position) =>
+                  !position.options?.isReadOnly && position.type === "checkbox"
+              );
 
-            if (requiredCheckbox && requiredCheckbox?.length > 0) {
-              for (let i = 0; i < requiredCheckbox.length; i++) {
-                const minCount =
-                  requiredCheckbox[i].options?.validation?.minRequiredCount;
-                const parseMin = minCount && parseInt(minCount);
-                const maxCount =
-                  requiredCheckbox[i].options?.validation?.maxRequiredCount;
-                const parseMax = maxCount && parseInt(maxCount);
-                const response = requiredCheckbox[i].options?.response?.length;
-                const defaultValue =
-                  requiredCheckbox[i].options?.defaultValue?.length;
-                if (parseMin === 0 && parseMax === 0) {
-                  if (!showAlert) {
-                    showAlert = false;
-                  }
-                } else if (parseMin === 0 && parseMax > 0) {
-                  if (!showAlert) {
-                    showAlert = false;
-                  }
-                } else if (!response) {
-                  if (!defaultValue) {
+              if (requiredCheckbox && requiredCheckbox.length > 0) {
+                for (let i = 0; i < requiredCheckbox.length; i++) {
+                  const minCount =
+                    requiredCheckbox[i].options?.validation?.minRequiredCount;
+                  const parseMin = minCount && parseInt(minCount);
+                  const maxCount =
+                    requiredCheckbox[i].options?.validation?.maxRequiredCount;
+                  const parseMax = maxCount && parseInt(maxCount);
+                  const response =
+                    requiredCheckbox[i].options?.response?.length;
+                  const defaultValue =
+                    requiredCheckbox[i].options?.defaultValue?.length;
+                  if (parseMin === 0 && parseMax === 0) {
+                    if (!showAlert) {
+                      showAlert = false;
+                      setminRequiredCount(null);
+                    }
+                  } else if (parseMin === 0 && parseMax > 0) {
+                    if (!showAlert) {
+                      showAlert = false;
+                      setminRequiredCount(null);
+                    }
+                  } else if (!response) {
+                    if (!defaultValue) {
+                      if (!showAlert) {
+                        showAlert = true;
+                        widgetKey = requiredCheckbox[i].key;
+                        setminRequiredCount(parseMin);
+                      }
+                    }
+                  } else if (parseMin > 0 && parseMin > response) {
                     if (!showAlert) {
                       showAlert = true;
                       widgetKey = requiredCheckbox[i].key;
                       setminRequiredCount(parseMin);
                     }
                   }
-                } else if (parseMin > 0 && parseMin > response) {
-                  if (!showAlert) {
-                    showAlert = true;
-                    widgetKey = requiredCheckbox[i].key;
-                    setminRequiredCount(parseMin);
-                  }
                 }
               }
-            }
-          } else if (radioExist) {
-            requiredRadio = checkUser[0].placeHolder[i].pos.filter(
-              (position) =>
-                !position.options?.isReadOnly && position.type === "radio"
-            );
-
-            if (requiredRadio && requiredRadio?.length > 0) {
-              let checkSigned;
-              for (let i = 0; i < requiredRadio.length; i++) {
-                checkSigned = requiredRadio[i]?.options.response;
-                if (!checkSigned) {
-                  let checkDefaultSigned =
-                    requiredRadio[i]?.options.defaultValue;
-                  if (!checkDefaultSigned) {
-                    if (!showAlert) {
-                      showAlert = true;
-                      widgetKey = requiredRadio[i].key;
+            } else if (radioExist) {
+              requiredRadio = checkUser[0].placeHolder[i].pos.filter(
+                (position) =>
+                  !position.options?.isReadOnly && position.type === "radio"
+              );
+              if (requiredRadio && requiredRadio?.length > 0) {
+                let checkSigned;
+                for (let i = 0; i < requiredRadio?.length; i++) {
+                  checkSigned = requiredRadio[i]?.options.response;
+                  if (!checkSigned) {
+                    let checkDefaultSigned =
+                      requiredRadio[i]?.options.defaultValue;
+                    if (!checkDefaultSigned) {
+                      if (!showAlert) {
+                        showAlert = true;
+                        widgetKey = requiredRadio[i].key;
+                        setminRequiredCount(null);
+                      }
                     }
                   }
                 }
               }
-            }
-          } else {
-            const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
-              (position) => !position.options?.isReadOnly
-            );
-            if (requiredWidgets && requiredCheckbox?.length > 0) {
-              let checkSigned;
-              for (let i = 0; i < requiredWidgets.length; i++) {
-                checkSigned = requiredWidgets[i]?.options?.response;
-                if (!checkSigned) {
-                  const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
+            } else {
+              const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
+                (position) =>
+                  position.options?.status === "required" &&
+                  position.type !== "radio" &&
+                  position.type !== "checkbox"
+              );
+              if (requiredWidgets && requiredWidgets?.length > 0) {
+                let checkSigned;
+                for (let i = 0; i < requiredWidgets?.length; i++) {
+                  checkSigned = requiredWidgets[i]?.options?.response;
+                  if (!checkSigned) {
+                    const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
 
-                  let checkDefaultSigned =
-                    requiredWidgets[i]?.options?.defaultValue;
-                  if (!checkSignUrl) {
-                    if (!checkDefaultSigned) {
-                      if (!showAlert) {
-                        showAlert = true;
-                        widgetKey = requiredWidgets[i].key;
+                    let checkDefaultSigned =
+                      requiredWidgets[i]?.options?.defaultValue;
+                    if (!checkSignUrl) {
+                      if (!checkDefaultSigned) {
+                        if (!showAlert) {
+                          showAlert = true;
+                          widgetKey = requiredWidgets[i].key;
+                          setminRequiredCount(null);
+                        }
                       }
                     }
                   }
@@ -498,93 +504,6 @@ function PdfRequestFiles() {
           const pdfDoc = await PDFDocument.load(existingPdfBytes, {
             ignoreEncryption: true
           });
-          // let pdfBase64;
-
-          //checking if signature is only one then send image url in jpeg formate to server
-          // if (pngUrl.length === 1 && pngUrl[0].pos.length === 1) {
-          //   if (isDocId) {
-          //     try {
-          //       pdfBase64 = await getBase64FromUrl(pdfUrl);
-          //     } catch (err) {
-          //       console.log(err);
-          //     }
-          //   } else {
-          //     //embed document's object id to all pages in pdf document
-          //     try {
-          //       await embedDocId(pdfDoc, documentId, allPages);
-          //     } catch (err) {
-          //       console.log(err);
-          //     }
-          //     try {
-          //       pdfBase64 = await pdfDoc.saveAsBase64({
-          //         useObjectStreams: false
-          //       });
-          //     } catch (err) {
-          //       console.log(err);
-          //     }
-          //   }
-          //   for (let pngData of pngUrl) {
-          //     const imgUrlList = pngData.pos;
-          //     const pageNo = pngData.pageNumber;
-          //     imgUrlList.map(async (data) => {
-          //       //cheking signUrl is defau;t signature url of custom url
-          //       let ImgUrl = data.SignUrl;
-          //       const checkUrl = urlValidator(ImgUrl);
-          //       //if default signature url then convert it in base 64
-          //       if (checkUrl) {
-          //         ImgUrl = await getBase64FromIMG(ImgUrl + "?get");
-          //       }
-          //       //function for called convert png signatre to jpeg in base 64
-          //       convertPNGtoJPEG(ImgUrl)
-          //         .then((jpegBase64Data) => {
-          //           const removeBase64Fromjpeg = "data:image/jpeg;base64,";
-          //           const newImgUrl = jpegBase64Data.replace(
-          //             removeBase64Fromjpeg,
-          //             ""
-          //           );
-
-          //           //function for call to embed signature in pdf and get digital signature pdf
-          //           signPdfFun(
-          //             newImgUrl,
-          //             documentId,
-          //             signerObjectId,
-          //             pdfOriginalWidth,
-          //             pngUrl,
-          //             containerWH,
-          //             setIsAlert,
-          //             data,
-          //             pdfBase64,
-          //             pageNo
-          //           )
-          //             .then((res) => {
-          //               if (res && res.status === "success") {
-          //                 setPdfUrl(res.data);
-          //                 setIsSigned(true);
-          //                 setSignedSigners([]);
-          //                 setUnSignedSigners([]);
-          //                 getDocumentDetails();
-          //               } else {
-          //                 setIsAlert({
-          //                   isShow: true,
-          //                   alertMessage: "something went wrong"
-          //                 });
-          //               }
-          //             })
-          //             .catch((err) => {
-          //               setIsAlert({
-          //                 isShow: true,
-          //                 alertMessage: "something went wrong"
-          //               });
-          //             });
-          //         })
-          //         .catch((error) => {
-          //           console.error("Error:", error);
-          //         });
-          //     });
-          //   }
-          // }
-          // //else if signature is more than one then embed all sign with the use of pdf-lib
-          // else if (pngUrl.length > 0 && pngUrl[0].pos.length > 0) {
           const flag = false;
           const extUserPtr = pdfDetails[0].ExtUserPtr;
           const HeaderDocId = extUserPtr?.HeaderDocId;
@@ -1266,9 +1185,7 @@ function PdfRequestFiles() {
                   {signedSigners.length > 0 && (
                     <>
                       <div
-                        style={{
-                          background: themeColor
-                        }}
+                        style={{ background: themeColor }}
                         className="signedStyle"
                       >
                         Signed by
