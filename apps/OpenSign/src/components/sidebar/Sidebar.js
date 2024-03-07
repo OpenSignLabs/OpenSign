@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
-import Menu from './Menu';
+import Menu from "./Menu";
 import Submenu from "./SubMenu";
-import SocialMedia from './SocialMedia';
+import SocialMedia from "./SocialMedia";
 
 import Parse from "parse";
 import dp from "../../assets/images/dp.png";
@@ -20,16 +20,10 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   }, []);
 
   const menuItem = async () => {
-    const parseBaseUrl = localStorage.getItem("baseUrl");
-    const parseAppId = localStorage.getItem("parseAppId");
-
     try {
-      Parse.serverURL = parseBaseUrl;
-      Parse.initialize(parseAppId);
       var sideMenu = Parse.Object.extend("w_menu");
       var query = new Parse.Query(sideMenu);
       query.equalTo("objectId", localStorage.getItem("defaultmenuid"));
-
       const results = await query.first();
       const resultjson = results.toJSON();
       let result = resultjson;
@@ -37,7 +31,6 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     } catch (e) {
       console.error("Problem", e);
     }
-
   };
 
   return (
@@ -47,7 +40,11 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     >
       <div className="flex px-2 py-3 gap-2 items-center shadow-md">
         <div className="w-[75px] h-[75px] rounded-full ring-[2px] ring-offset-2 ring-gray-400 overflow-hidden">
-          <img className="w-full h-full object-cover" src={image} alt="Profile" />
+          <img
+            className="w-full h-full object-cover"
+            src={image}
+            alt="Profile"
+          />
         </div>
         <div>
           <p className="text-[14px] font-bold">{username}</p>
@@ -57,14 +54,27 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         </div>
       </div>
       <nav aria-label="OpenSign Sidebar Navigation">
-        <ul className="text-sm" role="menubar" aria-label="OpenSign Sidebar Navigation">
-          {menuList.map((item) => (
+        <ul
+          className="text-sm"
+          role="menubar"
+          aria-label="OpenSign Sidebar Navigation"
+        >
+          {menuList.map((item) =>
             !item.children ? (
-              <Menu key={item.title} item={item} isOpen={isOpen} closeSidebar={closeSidebar} />
+              <Menu
+                key={item.title}
+                item={item}
+                isOpen={isOpen}
+                closeSidebar={closeSidebar}
+              />
             ) : (
-              <Submenu key={item.title} item={item} closeSidebar={closeSidebar} />
+              <Submenu
+                key={item.title}
+                item={item}
+                closeSidebar={closeSidebar}
+              />
             )
-          ))}
+          )}
         </ul>
       </nav>
       <footer className="mt-4 flex justify-center items-center text-[25px] text-black gap-3">

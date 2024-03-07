@@ -1,9 +1,6 @@
 import axios from "axios";
-import Parse from "parse";
-const parseAppId = localStorage.getItem("AppID12");
-const serverUrl = localStorage.getItem("BaseUrl12");
-Parse.serverURL = serverUrl;
-Parse.initialize(parseAppId);
+const parseAppId = localStorage.getItem("parseAppId");
+const serverUrl = localStorage.getItem("baseUrl");
 
 export const SaveFileSize = async (size, imageUrl) => {
   //checking server url and save file's size
