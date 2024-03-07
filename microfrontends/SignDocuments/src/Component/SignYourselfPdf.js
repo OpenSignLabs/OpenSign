@@ -451,8 +451,6 @@ function SignYourSelf() {
 
       const x = offset.x - containerRect.left;
       const y = offset.y - containerRect.top;
-      const ybottom = containerRect.bottom - offset.y;
-
       dropObj = {
         xPosition: signBtnPosition[0] ? x - signBtnPosition[0].xPos : x,
         yPosition: signBtnPosition[0] ? y - signBtnPosition[0].yPos : y,

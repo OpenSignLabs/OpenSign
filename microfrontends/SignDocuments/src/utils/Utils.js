@@ -91,7 +91,7 @@ export const onChangeInput = (
   index,
   setXyPostion,
   userId,
-  initial,
+  isDefault,
   dateFormat,
   isDefaultEmpty,
   isRadio
@@ -103,9 +103,10 @@ export const onChangeInput = (
       filterSignerPos = xyPostion.filter((data) => data.Id === userId);
     }
     const getPlaceHolder = filterSignerPos[0]?.placeHolder;
-    if (initial) {
+    if (isDefault) {
       const xyData = addInitialData(xyPostion, setXyPostion, value, userId);
       setXyPostion(xyData);
+      return xyData;
     } else {
       const getPageNumer = getPlaceHolder.filter(
         (data) => data.pageNumber === index
@@ -304,7 +305,7 @@ export const addWidgetOptions = (type) => {
     case "radio":
       return { ...defaultOpt, values: [] };
     case "label":
-      return defaultOpt;
+      return { ...defaultOpt, defaultValue: "Enter value" };
     default:
       return {};
   }
@@ -1083,7 +1084,6 @@ export const multiSignEmbed = async (
           }
         }
       };
-      const randomboxId = "randombox_" + position.key;
       const widgetTypeExist = [
         "text",
         "name",

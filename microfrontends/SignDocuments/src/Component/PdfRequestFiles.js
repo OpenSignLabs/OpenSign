@@ -9,7 +9,6 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useParams } from "react-router-dom";
 import SignPad from "./component/signPad";
 import RenderAllPdfPage from "./component/renderAllPdfPage";
-import { useNavigate } from "react-router-dom";
 import Tour from "reactour";
 import {
   contractDocument,
@@ -20,8 +19,7 @@ import {
   onImageSelect,
   onSaveSign,
   onSaveImage,
-  addDefaultSignatureImg,
-  getHostUrl
+  addDefaultSignatureImg
 } from "../utils/Utils";
 import Loader from "./component/loader";
 import HandleError from "./component/HandleError";
@@ -34,7 +32,6 @@ import DefaultSignature from "./component/defaultSignature";
 import ModalUi from "../premitives/ModalUi";
 
 function PdfRequestFiles() {
-  const navigate = useNavigate();
   const { docId } = useParams();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
@@ -377,8 +374,7 @@ function PdfRequestFiles() {
         (data) => data.signerObjId === signerObjectId
       );
       if (checkUser && checkUser.length > 0) {
-        let unSignUrlData,
-          checkboxExist,
+        let checkboxExist,
           requiredRadio,
           showAlert = false,
           widgetKey,
@@ -464,9 +460,6 @@ function PdfRequestFiles() {
                   position.type !== "checkbox"
               );
               if (requiredWidgets && requiredWidgets?.length > 0) {
-                unSignUrlData = checkUser[0].placeHolder[i].pos.filter(
-                  (pos) => !pos?.SignUrl && !pos.options.response
-                );
                 let checkSigned;
                 for (let i = 0; i < requiredWidgets?.length; i++) {
                   checkSigned = requiredWidgets[i]?.options?.response;

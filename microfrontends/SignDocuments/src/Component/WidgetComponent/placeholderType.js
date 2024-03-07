@@ -6,7 +6,7 @@ import "../../css/signature.css";
 import RegexParser from "regex-parser";
 
 function PlaceholderType(props) {
-  const type = props.pos.type;
+  const type = props?.pos?.type;
   const [selectOption, setSelectOption] = useState(
     props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
   );
@@ -73,34 +73,41 @@ function PlaceholderType(props) {
         setValidatePlaceholder("enter text");
     }
   }
+
   useEffect(() => {
-    if (props.pos?.options?.hint) {
+    if (props.isNeedSign && type === "date") {
+      const updateDate = new Date();
+      setStartDate(updateDate);
+    } else if (type && type === "checkbox" && props.isNeedSign) {
+      const isDefaultValue = props.pos.options?.defaultValue;
+      if (isDefaultValue) {
+        setSelectedCheckbox(isDefaultValue);
+      }
+    } else if (props.pos?.options?.hint) {
       setValidatePlaceholder(props.pos?.options.hint);
     } else if (props.pos?.options?.validation?.type) {
       checkRegularExpress(props.pos?.options?.validation?.type);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (props.isNeedSign && props.pos.type === "date") {
-      const updateDate = new Date();
-      setStartDate(updateDate);
     }
     setTextValue(
       props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
     );
   }, []);
-  //for handle default checked options
+
   useEffect(() => {
-    if (props.pos?.type && props.pos.type === "checkbox" && props.isNeedSign) {
-      const isDefaultValue = props.pos.options?.defaultValue;
-      if (isDefaultValue) {
-        setSelectedCheckbox(isDefaultValue);
+    if (
+      ["name", "email", "job title", "company"].includes(props.pos?.type) &&
+      props.isNeedSign &&
+      props.data?.signerObjId === props?.signerObjId
+    ) {
+      const defaultData = props.pos?.options?.defaultValue;
+      if (defaultData) {
+        setTextValue(defaultData);
       }
     }
-  }, []);
+  }, [props.pos?.options?.defaultValue]);
+
   useEffect(() => {
-    if (props.pos?.type && props.pos.type === "date") {
+    if (type && type === "date") {
       if (props.selectDate) {
         let updateDate;
         if (props.selectDate.format === "dd-MM-yyyy") {
@@ -122,22 +129,21 @@ function PlaceholderType(props) {
               : "MM/dd/YYYY"
         };
         props.setSelectDate(dateObj);
+        onChangeInput(
+          props.saveDateFormat,
+          props.pos.key,
+          props.xyPostion,
+          props.index,
+          props.setXyPostion,
+          props.data && props.data.Id,
+          false,
+          props.selectDate?.format
+            ? props.selectDate.format
+            : props.pos?.options?.validation?.format
+              ? props.pos?.options?.validation?.format
+              : "MM/dd/YYYY"
+        );
       }
-
-      onChangeInput(
-        props.saveDateFormat,
-        props.pos.key,
-        props.xyPostion,
-        props.index,
-        props.setXyPostion,
-        props.data && props.data.Id,
-        false,
-        props.selectDate?.format
-          ? props.selectDate.format
-          : props.pos?.options?.validation?.format
-            ? props.pos?.options?.validation?.format
-            : "MM/dd/YYYY"
-      );
     }
   }, [props.saveDateFormat]);
 
@@ -159,32 +165,22 @@ function PlaceholderType(props) {
 
   useEffect(() => {
     if (
-      ["name", "email", "job title", "company"].includes(props.pos?.type) &&
+      ["name", "email", "job title", "company"].includes(type) &&
       props.isNeedSign &&
-      props.data?.signerObjId === props?.signerObjId
+      props.data?.signerObjId === props.signerObjId
     ) {
-      const defaultData = props.pos?.options?.defaultValue;
-      if (defaultData) {
-        setTextValue(defaultData);
-      }
-    }
-  }, [props.pos?.options?.defaultValue]);
-  useEffect(() => {
-    if (["name", "email", "job title", "company"].includes(props.pos?.type)) {
+      const isDefault = true;
       const senderUser = localStorage.getItem(`Extand_Class`);
       const jsonSender = JSON.parse(senderUser);
-
-      if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
-        onChangeInput(
-          jsonSender && jsonSender[0],
-          null,
-          props.xyPostion,
-          null,
-          props.setXyPostion,
-          props.data.Id,
-          true
-        );
-      }
+      onChangeInput(
+        jsonSender && jsonSender[0],
+        null,
+        props.xyPostion,
+        null,
+        props.setXyPostion,
+        props.data.Id,
+        isDefault
+      );
     }
   }, [type]);
 
@@ -233,7 +229,7 @@ function PlaceholderType(props) {
     let updateSelectedCheckbox = [],
       checkedList;
     let isDefaultValue, isDefaultEmpty;
-    if (props.pos?.type === "checkbox") {
+    if (type === "checkbox") {
       updateSelectedCheckbox = selectedCheckbox ? selectedCheckbox : [];
 
       if (isChecked) {
@@ -293,7 +289,7 @@ function PlaceholderType(props) {
     );
   };
 
-  switch (props.pos.type) {
+  switch (type) {
     case "signature":
       return props.pos.SignUrl ? (
         <img
@@ -422,7 +418,7 @@ function PlaceholderType(props) {
             fontSize: calculateFontSize()
           }}
         >
-          <span>{props.pos.type}</span>
+          <span>{type}</span>
         </div>
       );
     case "dropdown":
@@ -463,7 +459,7 @@ function PlaceholderType(props) {
           className="inputPlaceholder"
           style={{ fontSize: calculateFontSize() }}
         >
-          {props.pos?.options?.name ? props.pos.options.name : props.pos.type}
+          {props.pos?.options?.name ? props.pos.options.name : type}
         </div>
       );
     case "initials":
@@ -500,6 +496,7 @@ function PlaceholderType(props) {
           value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
+            const isDefault = false;
             handleTextValid(e);
             onChangeInput(
               e.target.value,
@@ -508,7 +505,7 @@ function PlaceholderType(props) {
               props.index,
               props.setXyPostion,
               props.data && props.data?.Id,
-              false
+              isDefault
             );
           }}
         />
@@ -519,7 +516,7 @@ function PlaceholderType(props) {
             fontSize: calculateFontSize()
           }}
         >
-          <span>{props.pos.type}</span>
+          <span>{type}</span>
         </div>
       );
     case "company":
@@ -553,7 +550,7 @@ function PlaceholderType(props) {
             fontSize: calculateFontSize()
           }}
         >
-          <span>{props.pos.type}</span>
+          <span>{type}</span>
         </div>
       );
     case "job title":
@@ -587,7 +584,7 @@ function PlaceholderType(props) {
             fontSize: calculateFontSize()
           }}
         >
-          <span>{props.pos.type}</span>
+          <span>{type}</span>
         </div>
       );
     case "date":
@@ -674,7 +671,7 @@ function PlaceholderType(props) {
             fontSize: calculateFontSize()
           }}
         >
-          <span>{props.pos.type}</span>
+          <span>{type}</span>
         </div>
       );
     case "radio":
@@ -713,6 +710,7 @@ function PlaceholderType(props) {
         <textarea
           rows={1}
           onChange={(e) => {
+            setTextValue(e.target.value);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -723,6 +721,7 @@ function PlaceholderType(props) {
               false
             );
           }}
+          value={textValue}
           className="labelTextArea"
           style={{ whiteSpace: "pre-wrap" }}
           cols="50"

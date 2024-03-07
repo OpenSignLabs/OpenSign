@@ -189,17 +189,7 @@ function PlaceHolderSign() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
-      // const alreadyPlaceholder =
-      //   documentData[0].Placeholders && documentData[0].Placeholders;
-      // if (alreadyPlaceholder && alreadyPlaceholder.length > 0) {
-      //   setIsAlreadyPlace(true);
-      // }
-      // setSignersData(documentData[0]);
-      // setIsSelectId(0);
-      // setSignerObjId(documentData[0].Signers[0].objectId);
-      // setContractName(documentData[0].Signers[0].className);
       setPdfDetails(documentData);
-
       if (documentData[0].Signers && documentData[0].Signers.length > 0) {
         const currEmail = documentData[0].ExtUserPtr.Email;
         setCurrentId(currEmail);
@@ -621,7 +611,7 @@ function PlaceHolderSign() {
             return obj;
           });
 
-          const newUpdateSigner = signerPos.map((obj, ind) => {
+          const newUpdateSigner = signerPos.map((obj) => {
             if (obj.Id === Id) {
               return { ...obj, placeHolder: newUpdatePos };
             }
