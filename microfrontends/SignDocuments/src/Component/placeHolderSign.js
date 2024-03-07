@@ -716,8 +716,27 @@ function PlaceHolderSign() {
   };
 
   const alertSendEmail = async () => {
-    const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
-    if (filterPrefill.length === signersdata.length) {
+    const filterPrefill = signerPos?.filter((data) => data.Role !== "prefill");
+    const getPrefill = signerPos?.filter((data) => data.Role === "prefill");
+    let isLabel = false;
+    if (getPrefill && getPrefill.length > 0) {
+      const prefillPlaceholder = getPrefill[0].placeHolder;
+      if (prefillPlaceholder) {
+        prefillPlaceholder.map((data) => {
+          if (!isLabel) {
+            isLabel = data.pos.some((position) => !position.options.response);
+          }
+        });
+      }
+    }
+
+    if (getPrefill && isLabel) {
+      const alert = {
+        mssg: "label",
+        alert: true
+      };
+      setIsSendAlert(alert);
+    } else if (filterPrefill.length === signersdata.length) {
       const IsSignerNotExist = filterPrefill?.some((x) => !x.signerObjId);
       if (IsSignerNotExist) {
         setSignerExistModal(true);
@@ -1375,13 +1394,13 @@ function PlaceHolderSign() {
 
               <ModalUi
                 headerColor={
-                  isSendAlert.mssg === "sure"
+                  isSendAlert.mssg === "sure" || isSendAlert.mssg === "label"
                     ? "#dc3545"
                     : isSendAlert.mssg === "confirm" && themeColor()
                 }
                 isOpen={isSendAlert.alert}
                 title={
-                  isSendAlert.mssg === "sure"
+                  isSendAlert.mssg === "sure" || isSendAlert.mssg === "label"
                     ? "Fields required"
                     : isSendAlert.mssg === "confirm" && "Send Mail"
                 }
@@ -1390,6 +1409,8 @@ function PlaceHolderSign() {
                 <div style={{ height: "100%", padding: 20 }}>
                   {isSendAlert.mssg === "sure" ? (
                     <p>Please add field for all recipients.</p>
+                  ) : isSendAlert.mssg === "label" ? (
+                    <p>Please confirm that you have filled label widget.</p>
                   ) : (
                     isSendAlert.mssg === "confirm" && (
                       <p>

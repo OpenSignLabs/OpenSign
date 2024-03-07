@@ -710,7 +710,6 @@ function PlaceholderType(props) {
         <textarea
           rows={1}
           onChange={(e) => {
-            setTextValue(e.target.value);
             onChangeInput(
               e.target.value,
               props.pos.key,
@@ -721,7 +720,6 @@ function PlaceholderType(props) {
               false
             );
           }}
-          value={textValue}
           className="labelTextArea"
           style={{ whiteSpace: "pre-wrap" }}
           cols="50"
