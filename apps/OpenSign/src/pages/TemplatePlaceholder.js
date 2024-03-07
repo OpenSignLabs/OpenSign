@@ -1040,7 +1040,8 @@ const TemplatePlaceholder = () => {
                       minRequiredCount: minCount,
                       maxRequiredCount: maxCount
                     },
-                    isReadOnly: isReadOnly
+                    isReadOnly: isReadOnly,
+                    defaultValue: defaultValue
                   }
                 };
               }
