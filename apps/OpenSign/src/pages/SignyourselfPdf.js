@@ -805,7 +805,7 @@ function SignYourSelf() {
       selector: '[data-tut="reactourFirst"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag the signature or stamp placeholder onto the PDF to choose your desired signing location.`}
+          message={`Select and drag your preferred widgets onto the PDF to customize your document before signing. Choose the perfect spots for each modification to tailor the document to your needs.`}
           isChecked={handleDontShow}
         />
       ),
