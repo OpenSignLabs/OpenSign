@@ -479,7 +479,12 @@ export const signPdfFun = async (
   return response;
 };
 
-export const randomId = () => Math.floor(1000 + Math.random() * 9000);
+export const randomId = () => {
+  const randomBytes = crypto.getRandomValues(new Uint16Array(1));
+  const randomValue = randomBytes[0];
+  const randomDigit = 1000 + (randomValue % 9000);
+  return randomDigit;
+};
 
 export const createDocument = async (template, placeholders, signerData) => {
   if (template && template.length > 0) {
