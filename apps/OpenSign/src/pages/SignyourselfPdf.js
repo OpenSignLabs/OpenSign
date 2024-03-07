@@ -24,7 +24,8 @@ import {
   onSaveImage,
   onSaveSign,
   contractUsers,
-  contactBook
+  contactBook,
+  randomId
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -406,7 +407,7 @@ function SignYourSelf() {
   };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
-    const key = Math.floor(1000 + Math.random() * 9000);
+    const key = randomId();
     let dropData = [];
     let dropObj = {};
     let filterDropPos = xyPostion.filter(

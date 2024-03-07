@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
+import { randomId } from "../../constant/Utils";
 
 function PlaceholderCopy(props) {
   const copyType = ["All pages", "All pages but last", "All pages but first"];
   const [selectCopyType, setSelectCopyType] = useState("");
-
-  //get RandomKey Id
-  const randomKey = () => {
-    const randomId = Math.floor(1000 + Math.random() * 9000);
-    return randomId;
-  };
 
   //function for get copy placeholder position
   const getCopyPlaceholderPosition = (
@@ -88,7 +83,7 @@ function PlaceholderCopy(props) {
       );
 
       for (let i = 0; i < props.allPages; i++) {
-        const newId = randomKey();
+        const newId = randomId();
         currentPlaceholder.key = newId;
         //get exist placeholder position for particular page
         const existPlaceholder = filterSignerPosition[0].placeHolder.filter(
@@ -156,7 +151,7 @@ function PlaceholderCopy(props) {
         const existPlaceholderPosition =
           existPlaceholder[0] && existPlaceholder[0].pos;
 
-        const newId = randomKey();
+        const newId = randomId();
         currentPlaceholder.key = newId;
         //function for get copy to requested location of placeholder position
         const getPlaceholderObj = getCopyPlaceholderPosition(
