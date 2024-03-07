@@ -362,8 +362,7 @@ export async function getBase64FromUrl(url) {
     reader.readAsDataURL(blob);
     reader.onloadend = function () {
       const pdfBase = this.result;
-      const removeBase64Prefix = "data:application/octet-stream;base64,";
-      const suffixbase64 = pdfBase.replace(removeBase64Prefix, "");
+      const suffixbase64 = pdfBase.split(",").pop();
       resolve(suffixbase64);
     };
   });

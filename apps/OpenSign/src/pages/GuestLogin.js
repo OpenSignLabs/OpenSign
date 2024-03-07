@@ -124,7 +124,7 @@ function GuestLogin() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div style={{ padding: "2rem", background: "white" }}>
       {isLoading ? (
         <div
           style={{
