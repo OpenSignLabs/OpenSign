@@ -448,14 +448,14 @@ const TemplatePlaceholder = () => {
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
-        } else if(dragTypeValue !== 'label' && dragTypeValue !== 'signature')  {
+        } else if (dragTypeValue !== "label" && dragTypeValue !== "signature") {
           setIsNameModal(true);
         }
         setCurrWidgetsDetails({});
         setWidgetType(dragTypeValue);
         setSignKey(key);
         setSelectWidgetId(key);
-      
+
         setIsMailSend(false);
       } else {
         setIsReceipent(false);
@@ -1045,7 +1045,8 @@ const TemplatePlaceholder = () => {
                       minRequiredCount: minCount,
                       maxRequiredCount: maxCount
                     },
-                    isReadOnly: isReadOnly
+                    isReadOnly: isReadOnly,
+                    defaultValue: defaultValue
                   }
                 };
               }
@@ -1079,8 +1080,8 @@ const TemplatePlaceholder = () => {
         });
 
         setSignerPos(newUpdateSigner);
-        if(!addOption && !deleteOption){
-          handleNameModal()
+        if (!addOption && !deleteOption) {
+          handleNameModal();
         }
       }
     }
@@ -1161,10 +1162,10 @@ const TemplatePlaceholder = () => {
   };
   const handleNameModal = () => {
     setIsNameModal(false);
-    setCurrWidgetsDetails({})
+    setCurrWidgetsDetails({});
     setShowDropdown(false);
-    setIsRadio(false)
-    setIsCheckbox(false)
+    setIsRadio(false);
+    setIsCheckbox(false);
   };
 
   return (
@@ -1294,7 +1295,7 @@ const TemplatePlaceholder = () => {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
-             />
+              />
               <DropdownWidgetOption
                 type="checkbox"
                 title="Checkbox"
@@ -1501,7 +1502,7 @@ const TemplatePlaceholder = () => {
         />
       </ModalUi>
       <NameModal
-         widgetName={widgetName}
+        widgetName={widgetName}
         defaultdata={currWidgetsDetails}
         isOpen={isNameModal}
         handleClose={handleNameModal}
