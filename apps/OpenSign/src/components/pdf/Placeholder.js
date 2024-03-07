@@ -10,10 +10,7 @@ import "../../styles/opensigndrive.css";
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
-  const [selectDate, setSelectDate] = useState({
-    date: moment(new Date().getTime()).format("MM/DD/YYYY"),
-    format: "MM/dd/YYYY"
-  });
+  const [selectDate, setSelectDate] = useState();
   const [dateFormat, setDateFormat] = useState([]);
   const [saveDateFormat, setSaveDateFormat] = useState("");
   const dateFormatArr = [
@@ -342,7 +339,7 @@ function Placeholder(props) {
                       className="dropdown-item itemColor"
                       style={{ fontSize: "12px" }}
                     >
-                      {data?.date ? data?.date : "No data"}
+                      {data?.date ? data?.date : "nodata"}
                     </span>
                   );
                 })}
