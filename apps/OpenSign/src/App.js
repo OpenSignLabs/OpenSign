@@ -101,7 +101,7 @@ function App() {
                 />
               </Route>
               <Route
-                path="/loadmf/signmicroapp/login"
+                path="/loadmf/signmicroapp/login/:id/:userMail/:contactBookId/:serverUrl"
                 element={<GuestLogin />}
               />
               <Route
