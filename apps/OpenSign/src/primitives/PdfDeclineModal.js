@@ -15,7 +15,7 @@ function CustomModal({
   return (
     show && (
       <div
-        className="bg-black bg-opacity-[75%] absolute z-[50] flex flex-col items-center justify-center"
+        className="bg-black bg-opacity-[75%] absolute z-[999] flex flex-col items-center justify-center"
         style={{
           width: containerWH && containerWH.width,
           height: isMobile ? "100%" : containerWH && containerWH.height
