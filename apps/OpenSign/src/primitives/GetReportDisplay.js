@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/report.css";
 import ModalUi from "./ModalUi";
-import AppendFormInForm from "../components/AppendFormInForm";
+import AddSigner from "../components/AddSigner";
 import { modalSubmitBtnColor, modalCancelBtnColor } from "../constant/const";
+import Alert from "./Alert";
 const ReportTable = ({
   ReportName,
   List,
@@ -67,7 +67,7 @@ const ReportTable = ({
   const handlemicroapp = async (item, url, btnLabel) => {
     if (ReportName === "Templates") {
       if (btnLabel === "Edit") {
-        navigate(`/asmf/${url}/${item.objectId}`);
+        navigate(`/${url}/${item.objectId}`);
       } else {
         setActLoader({ [`${item.objectId}_${btnLabel}`]: true });
         try {
@@ -149,7 +149,8 @@ const ReportTable = ({
                 if (res.data && res.data.objectId) {
                   setActLoader({});
                   setIsAlert(true);
-                  navigate(`/asmf/${url}/${res.data.objectId}`, {
+                  setTimeout(() => setIsAlert(false), 1500);
+                  navigate(`/${url}/${res.data.objectId}`, {
                     state: { title: "Use Template" }
                   });
                 }
@@ -157,6 +158,7 @@ const ReportTable = ({
                 console.log("Err", err);
                 setIsAlert(true);
                 setIsErr(true);
+                setTimeout(() => setIsAlert(false), 1500);
                 setActLoader({});
               }
             } else {
@@ -166,18 +168,20 @@ const ReportTable = ({
           } else {
             setIsAlert(true);
             setIsErr(true);
+            setTimeout(() => setIsAlert(false), 1500);
             setActLoader({});
           }
         } catch (err) {
           console.log("err", err);
           setIsAlert(true);
           setIsErr(true);
+          setTimeout(() => setIsAlert(false), 1500);
           setActLoader({});
         }
       }
     } else {
       localStorage.removeItem("rowlevel");
-      navigate("/rpmf/" + url);
+      navigate(`/${url}`);
       localStorage.setItem("rowlevel", JSON.stringify(item));
     }
 
@@ -211,13 +215,15 @@ const ReportTable = ({
     setIsDeleteModal({});
     setActLoader({ [item.objectId]: true });
     try {
-      const url =
-        process.env.REACT_APP_SERVERURL + "/classes/contracts_Contactbook/";
+      const serverUrl = process.env.REACT_APP_SERVERURL
+        ? process.env.REACT_APP_SERVERURL
+        : window.location.origin + "/api/app";
+      const url = serverUrl + "/classes/contracts_Contactbook/";
       const body = { IsDeleted: true };
       const res = await axios.put(url + item.objectId, body, {
         headers: {
           "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("AppID12"),
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       });
@@ -225,6 +231,7 @@ const ReportTable = ({
       if (res.data && res.data.updatedAt) {
         setActLoader({});
         setIsAlert(true);
+        setTimeout(() => setIsAlert(false), 1500);
         const upldatedList = List.filter((x) => x.objectId !== item.objectId);
         setList(upldatedList);
       }
@@ -232,6 +239,7 @@ const ReportTable = ({
       console.log("err", err);
       setIsAlert(true);
       setIsErr(true);
+      setTimeout(() => setIsAlert(false), 1500);
       setActLoader({});
     }
   };
@@ -240,17 +248,12 @@ const ReportTable = ({
   return (
     <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
       {isAlert && (
-        <div
-          className={`alert alert-${isErr ? "danger" : "success"} alertBox`}
-          role="alert"
-          onAnimationEnd={() => setIsAlert(false)}
-        >
+        <Alert type={isErr ? "danger" : "success"}>
           {isErr
             ? "Something went wrong, Please try again later!"
             : "Record deleted successfully!"}
-        </div>
+        </Alert>
       )}
-
       <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
         <div className="font-light">{ReportName}</div>
         {ReportName === "Templates" && (
@@ -495,7 +498,7 @@ const ReportTable = ({
         isOpen={isContactform}
         handleClose={handleContactFormModal}
       >
-        <AppendFormInForm
+        <AddSigner
           handleUserData={handleUserData}
           closePopup={handleContactFormModal}
         />

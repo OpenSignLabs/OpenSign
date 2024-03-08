@@ -22,8 +22,9 @@ const Submenu = ({ item, closeSidebar }) => {
         <div className="flex justify-between items-center w-full">
           <span className="ml-3 lg:ml-4">{title}</span>
           <i
-            className={`${submenuOpen ? "fa-solid fa-angle-down" : "fa-solid fa-angle-right"
-              }`}
+            className={`${
+              submenuOpen ? "fa-solid fa-angle-down" : "fa-solid fa-angle-right"
+            }`}
             aria-hidden="true"
           ></i>
         </div>
@@ -33,13 +34,20 @@ const Submenu = ({ item, closeSidebar }) => {
           {children.map((childItem) => (
             <li key={childItem.title} role="none">
               <NavLink
-                to={`/${childItem.pageType}/${childItem.objectId}`}
-                className="block pl-6 md:pl-8 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white"
+                to={
+                  childItem.pageType
+                    ? `/${childItem.pageType}/${childItem.objectId}`
+                    : `/${childItem.objectId}`
+                }
+                className="block pl-6 md:pl-8 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white cursor-pointer"
                 onClick={closeSidebar}
                 role="menuitem"
                 tabIndex={submenuOpen ? 0 : -1}
               >
-                <i className={`${childItem.icon} text-[18px]`} aria-hidden="true"></i>
+                <i
+                  className={`${childItem.icon} text-[18px]`}
+                  aria-hidden="true"
+                ></i>
                 <span className="ml-3 lg:ml-4">{childItem.title}</span>
               </NavLink>
             </li>

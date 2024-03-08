@@ -11,8 +11,6 @@ const Header = ({ showSidebar }) => {
   let applogo = localStorage.getItem("appLogo") || "";
   let username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
-  const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
-  const [parseAppId] = useState(localStorage.getItem("parseAppId"));
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -22,8 +20,6 @@ const Header = ({ showSidebar }) => {
 
   const closeDropdown = () => {
     setIsOpen(false);
-    Parse.serverURL = parseBaseUrl;
-    Parse.initialize(parseAppId);
     Parse.User.logOut();
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
@@ -32,8 +28,8 @@ const Header = ({ showSidebar }) => {
     let PageLanding = localStorage.getItem("PageLanding");
     let domain = localStorage.getItem("domain");
     let _appName = localStorage.getItem("_appName");
-    let baseUrl = localStorage.getItem("BaseUrl12");
-    let appid = localStorage.getItem("AppID12");
+    let baseUrl = localStorage.getItem("baseUrl");
+    let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
 
@@ -44,8 +40,8 @@ const Header = ({ showSidebar }) => {
     localStorage.setItem("PageLanding", PageLanding);
     localStorage.setItem("domain", domain);
     localStorage.setItem("userSettings", appdata);
-    localStorage.setItem("BaseUrl12", baseUrl);
-    localStorage.setItem("AppID12", appid);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
 
     navigation("/");
   };
