@@ -218,7 +218,7 @@ export default async function createDocumentWithTemplate(request, response) {
 
                   const objectId = contactMail[i].contactPtr.objectId;
 
-                  const hostUrl = baseUrl.origin + '/loadmf/signmicroapp';
+                  const hostUrl = baseUrl.origin;
                   let signPdf = `${hostUrl}/login/${res.id}/${contactMail[i].email}/${objectId}/${serverParams}`;
                   const openSignUrl = 'https://www.opensignlabs.com/contact-us';
                   const orgName = template.ExtUserPtr.Company ? template.ExtUserPtr.Company : '';
@@ -319,7 +319,7 @@ export default async function createDocumentWithTemplate(request, response) {
               objectId: res.id,
               signurl: contact.map(x => ({
                 email: x.email,
-                url: `${baseUrl.origin}/loadmf/signmicroapp/login/${res.id}/${x.email}/${x.contactPtr.objectId}/${serverParams}`,
+                url: `${baseUrl.origin}/login/${res.id}/${x.email}/${x.contactPtr.objectId}/${serverParams}`,
               })),
               message: 'Document sent successfully!',
             });

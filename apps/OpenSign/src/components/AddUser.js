@@ -12,8 +12,6 @@ const AddUser = (props) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
-  Parse.serverURL = parseBaseUrl;
-  Parse.initialize(parseAppId);
 
   const checkUserExist = async () => {
     try {

@@ -45,18 +45,16 @@ function DashboardReport(props) {
       setActions(json.actions);
       setReportName(json.reportName);
       setHeading(json.heading);
-      Parse.serverURL = localStorage.getItem("BaseUrl12");
-      Parse.initialize(localStorage.getItem("AppID12"));
       const currentUser = Parse.User.current().id;
 
       const headers = {
         "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("AppID12"),
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
         sessiontoken: localStorage.getItem("accesstoken")
       };
       try {
         const params = { reportId: id, skip: skipUserRecord, limit: limit };
-        const url = `${localStorage.getItem("BaseUrl12")}/functions/getReport`;
+        const url = `${localStorage.getItem("baseUrl")}/functions/getReport`;
         const res = await axios.post(url, params, {
           headers: headers,
           signal: abortController.signal // is used to cancel fetch query

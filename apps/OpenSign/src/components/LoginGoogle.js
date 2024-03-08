@@ -48,8 +48,8 @@ const GoogleSignInBtn = ({
     if (Parse.User.current()) {
       await Parse.User.logOut();
     }
-    let baseUrl = localStorage.getItem("BaseUrl12");
-    let appid = localStorage.getItem("AppID12");
+    let baseUrl = localStorage.getItem("baseUrl");
+    let appid = localStorage.getItem("parseAppId");
     let applogo = localStorage.getItem("appLogo");
     let domain = localStorage.getItem("domain");
     let appversion = localStorage.getItem("appVersion");
@@ -63,8 +63,8 @@ const GoogleSignInBtn = ({
 
     localStorage.clear();
 
-    localStorage.setItem("BaseUrl12", baseUrl);
-    localStorage.setItem("AppID12", appid);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("domain", domain);
     localStorage.setItem("appversion", appversion);
@@ -191,8 +191,8 @@ const GoogleSignInBtn = ({
     let PageLanding = localStorage.getItem("PageLanding");
     let domain = localStorage.getItem("domain");
     let _appName = localStorage.getItem("_appName");
-    let baseUrl = localStorage.getItem("BaseUrl12");
-    let appid = localStorage.getItem("AppID12");
+    let baseUrl = localStorage.getItem("baseUrl");
+    let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
 
@@ -203,8 +203,8 @@ const GoogleSignInBtn = ({
     localStorage.setItem("PageLanding", PageLanding);
     localStorage.setItem("domain", domain);
     localStorage.setItem("userSettings", appdata);
-    localStorage.setItem("BaseUrl12", baseUrl);
-    localStorage.setItem("AppID12", appid);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
   };
   return (
     <div style={{ position: "relative" }}>

@@ -3,38 +3,19 @@ import axios from "axios";
 import { appInfo } from "../../constant/appinfo";
 
 //For fetching application Information
-export const fetchAppInfo = (str, burl, app_id) => async (dispatch) => {
-  Parse.serverURL = burl;
-  Parse.initialize(app_id);
-
-  const response = appInfo;
-  let _base = ""; // Define _base here and initialize it to an empty string
-  if (response && response.baseurl) {
-    _base = response.baseurl.charAt(response.baseurl.length - 1);
-  }
-  localStorage.removeItem("baseUrl");
-  localStorage.setItem("_appName", response.appname);
-  localStorage.setItem("_app_objectId", response.objectId);
-  if (_base === "/") {
-    localStorage.setItem("baseUrl", response.baseurl);
-  } else {
-    localStorage.setItem("baseUrl", `${response.baseurl}/`);
-  }
-  localStorage.setItem("appLogo", response.applogo);
-  localStorage.setItem("appVersion", response.version);
-  if (response.enableWebNotification) {
-    localStorage.setItem(
-      "enableWebNotification",
-      response.enableWebNotification
-    );
-  }
-  localStorage.setItem("parseAppId", app_id);
+export const fetchAppInfo = () => async (dispatch) => {
+  localStorage.setItem("_appName", appInfo.appname);
+  localStorage.setItem("_app_objectId", appInfo.objectId);
+  localStorage.setItem("baseUrl", `${appInfo.baseUrl}/`);
+  localStorage.setItem("parseAppId", appInfo.appId);
+  localStorage.setItem("appLogo", appInfo.applogo);
+  localStorage.setItem("appVersion", appInfo.version);
   localStorage.removeItem("userSettings");
-  localStorage.setItem("userSettings", JSON.stringify(response.settings));
-  localStorage.setItem("appTitle", response.appTitle);
-  localStorage.setItem("fev_Icon", response.fev_Icon);
+  localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
+  localStorage.setItem("appTitle", appInfo.appTitle);
+  localStorage.setItem("fev_Icon", appInfo.fev_Icon);
   // console.log("response ", response);
-  dispatch({ type: "FATCH_APPINFO", payload: response });
+  dispatch({ type: "FATCH_APPINFO", payload: appInfo });
 };
 
 //for simple login
@@ -43,8 +24,6 @@ export const login = (username, password) => async (dispatch) => {
   let baseUrl = localStorage.getItem("baseUrl");
   let parseAppId = localStorage.getItem("parseAppId");
   try {
-    Parse.serverURL = baseUrl;
-    Parse.initialize(parseAppId);
     await Parse.User.logIn(username, password).then(
       async function (res1) {
         var resultjson = res1.toJSON();
@@ -110,7 +89,6 @@ export const login = (username, password) => async (dispatch) => {
             localStorage.setItem("defaultmenuid", defaultmenuid);
             localStorage.setItem("pageType", pageType);
             localStorage.setItem("extended_class", element.extended_class);
-            localStorage.setItem("userpointer", element.userpointer);
             let _role = userGroup.replace(
               `${localStorage.getItem("domain")}_`,
               ""
@@ -165,12 +143,7 @@ export const login = (username, password) => async (dispatch) => {
 
 //for reset password
 export const forgetPassword = (username) => async () => {
-  // let res = {};
-  let baseUrl = localStorage.getItem("BaseUrl12");
-  let parseAppId = localStorage.getItem("AppID12");
   try {
-    Parse.serverURL = baseUrl;
-    Parse.initialize(parseAppId);
     await Parse.User.requestPasswordReset(username).then(
       async function (res1) {
         // var resultjson = res1;

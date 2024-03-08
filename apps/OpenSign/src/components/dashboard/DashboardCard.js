@@ -24,9 +24,6 @@ const DashboardCard = (props) => {
         };
         let body = {};
         let currentUser;
-
-        Parse.serverURL = parseBaseUrl;
-        Parse.initialize(parseAppId);
         let currentUser1 = Parse.User.current();
         currentUser = currentUser1.id;
         let res;
@@ -82,8 +79,6 @@ const DashboardCard = (props) => {
     } else {
       setLoading(true);
       try {
-        Parse.serverURL = parseBaseUrl;
-        Parse.initialize(parseAppId);
         const currentUser = Parse.User.current();
         let reg1 = /(\#.*?\#)/gi; // eslint-disable-line
         let _query = props.Data.query;
@@ -223,8 +218,6 @@ const DashboardCard = (props) => {
 
         if (restr.includes("#")) {
           try {
-            Parse.serverURL = parseBaseUrl;
-            Parse.initialize(parseAppId);
             const currentUser = Parse.User.current();
             let res;
             if (localStorage.getItem("Extand_Class")) {
