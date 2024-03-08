@@ -1,5 +1,5 @@
 import React, { useEffect, useState, forwardRef, useRef } from "react";
-import { onChangeInput } from "../../constant/Utils";
+import { getMonth, getYear, onChangeInput, range } from "../../constant/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
@@ -15,6 +15,21 @@ function PlaceholderType(props) {
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState();
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
+  const years = range(1990, getYear(new Date()) + 16, 1);
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
   const validateExpression = (regexValidation) => {
     let regexObject = regexValidation;
     if (props.pos?.options.validation.type === "regex") {
@@ -31,7 +46,6 @@ function PlaceholderType(props) {
   const handleInputBlur = () => {
     props.setDraggingEnabled(true);
     const validateType = props.pos?.options?.validation?.type;
-
     let regexValidation;
     if (validateType) {
       switch (validateType) {
@@ -293,6 +307,7 @@ function PlaceholderType(props) {
       isRadio
     );
   };
+
   switch (type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -595,6 +610,34 @@ function PlaceholderType(props) {
       return (
         <div>
           <DatePicker
+            renderCustomHeader={({ date, changeYear, changeMonth }) => (
+              <div className="flex justify-start ml-2 ">
+                <select
+                  className="bg-transparent outline-none"
+                  value={months[getMonth(date)]}
+                  onChange={({ target: { value } }) =>
+                    changeMonth(months.indexOf(value))
+                  }
+                >
+                  {months.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="bg-transparent outline-none"
+                  value={getYear(date)}
+                  onChange={({ target: { value } }) => changeYear(value)}
+                >
+                  {years.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             disabled={
               props.isNeedSign && props.data?.signerObjId !== props.signerObjId
             }
