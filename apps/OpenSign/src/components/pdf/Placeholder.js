@@ -239,9 +239,7 @@ function Placeholder(props) {
               ) : (
                 ((!props?.pos?.type && props.pos.isStamp) ||
                   (props?.pos?.type &&
-                    props?.pos?.type !== "date" &&
-                    props?.pos?.type !== "label" &&
-                    props?.pos?.type !== "signature" &&
+                    !["date", "label", "signature"].includes(props.pos.type) &&
                     !props.isSignYourself)) && (
                   <i
                     onClick={(e) => {
