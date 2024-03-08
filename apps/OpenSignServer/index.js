@@ -83,7 +83,7 @@ export const config = {
   appId: process.env.APP_ID || 'myAppId',
   maxLimit: 500,
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
-  masterKeyIps: ['0.0.0.0/0', '::1'], // '::1'
+  masterKeyIps: ['0.0.0.0/0', '::/0'], // '::1'
   serverURL: process.env.SERVER_URL || 'http://localhost:8080/app', // Don't forget to change to https if needed
   verifyUserEmails: process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY ? true : false,
   publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
