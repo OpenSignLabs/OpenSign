@@ -957,18 +957,24 @@ export const multiSignEmbed = async (
   containerWH
 ) => {
   for (let item of pngUrl) {
-    let updateItem = item.pos;
-    if (signyourself) {
-      updateItem = item;
+    const typeExist = item.pos.some((data) => data?.type);
+    let updateItem;
+    if (typeExist) {
+      if (signyourself) {
+        updateItem = item.pos;
+      } else {
+        updateItem = item.pos.filter(
+          (data) => data?.options?.status === "required"
+        );
+      }
     } else {
-      updateItem = item.pos.filter(
-        (data) => data?.options?.status === "required"
-      );
+      updateItem = item.pos;
     }
+
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const pageNo = item.pageNumber;
-    const imgUrlList = signyourself ? updateItem.pos : updateItem;
+    const imgUrlList = updateItem;
     const pages = pdfDoc.getPages();
     const form = pdfDoc.getForm();
     const page = pages[pageNo - 1];
