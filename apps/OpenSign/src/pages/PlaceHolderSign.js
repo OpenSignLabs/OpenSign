@@ -97,6 +97,7 @@ function PlaceHolderSign() {
   const [isNameModal, setIsNameModal] = useState(false);
   const [widgetName, setWidgetName] = useState(false);
   const [mailStatus, setMailStatus] = useState("");
+  const [isCurrUser, setIsCurrUser] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -848,6 +849,16 @@ function PlaceHolderSign() {
         : 15;
       const currentUser = signersdata.find((x) => x.Email === currentId);
       setCurrentId(currentUser?.objectId);
+      if (
+        pdfDetails?.[0]?.SendinOrder &&
+        pdfDetails?.[0]?.SendinOrder === true
+      ) {
+        const currentUserMail = Parse.User.current()?.getEmail();
+        const isCurrentUser = signerMail?.[0]?.Email === currentUserMail;
+        setIsCurrUser(isCurrentUser);
+      } else {
+        setIsCurrUser(currentUser?.objectId ? true : false);
+      }
       let updateExpiryDate, data;
       updateExpiryDate = new Date();
       updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
@@ -915,6 +926,7 @@ function PlaceHolderSign() {
         ? pdfDetails[0].TimeToCompleteDays
         : 15;
       const currentUser = signersdata.find((x) => x.Email === currentId);
+      setIsCurrUser(currentUser?.objectId ? true : false);
       setCurrentId(currentUser?.objectId);
       let updateExpiryDate, data;
       updateExpiryDate = new Date();
@@ -1464,7 +1476,7 @@ function PlaceHolderSign() {
                   ) : (
                     <p>Please setup mail adapter to send mail!</p>
                   )}
-                  {currentId && (
+                  {isCurrUser && (
                     <p>Do you want to sign documents right now ?</p>
                   )}
                   <div
@@ -1476,44 +1488,31 @@ function PlaceHolderSign() {
                       marginBottom: "15px"
                     }}
                   ></div>
-                  {currentId ? (
-                    <>
-                      <button
-                        onClick={() => {
-                          handleRecipientSign();
-                        }}
-                        style={{
-                          background: themeColor,
-                          color: "white"
-                        }}
-                        type="button"
-                        className="finishBtn"
-                      >
-                        Yes
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsSend(false);
-                          setSignerPos([]);
-                        }}
-                        type="button"
-                        className="finishBtn cancelBtn"
-                      >
-                        No
-                      </button>
-                    </>
-                  ) : (
+                  {isCurrUser && (
                     <button
                       onClick={() => {
-                        setIsSend(false);
-                        setSignerPos([]);
+                        handleRecipientSign();
+                      }}
+                      style={{
+                        background: themeColor,
+                        color: "white"
                       }}
                       type="button"
-                      className="finishBtn cancelBtn"
+                      className="finishBtn"
                     >
-                      Close
+                      Yes
                     </button>
                   )}
+                  <button
+                    onClick={() => {
+                      setIsSend(false);
+                      setSignerPos([]);
+                    }}
+                    type="button"
+                    className="finishBtn cancelBtn"
+                  >
+                    {isCurrUser ? "No" : "Close"}
+                  </button>
                 </div>
               </ModalUi>
               <ModalUi
