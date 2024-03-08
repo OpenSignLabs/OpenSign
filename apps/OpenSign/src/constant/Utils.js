@@ -975,7 +975,6 @@ export const multiSignEmbed = async (
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const pageNo = item.pageNumber;
     const imgUrlList = updateItem;
-    console.log("imgUrllist", imgUrlList);
     const pages = pdfDoc.getPages();
     const form = pdfDoc.getForm();
     const page = pages[pageNo - 1];
