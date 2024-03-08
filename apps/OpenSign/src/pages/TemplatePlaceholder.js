@@ -725,7 +725,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourFirst"]',
       content: () => (
         <TourContentWithBtn
-          message={`Select a role from this list to add a place-holder where he is supposed to sign.The placeholder will appear in the same colour as the recipient name once you drop it on the document.`}
+          message={`Once roles are added, select a role from list to add a place-holder where he is supposed to sign. The placeholder will appear in the same colour as the role name once you drop it on the document.`}
           isChecked={handleDontShow}
         />
       ),
@@ -737,7 +737,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag the signature or stamp placeholder onto the PDF to choose your desired signing location.`}
+          message={`Drag a widget placeholder onto the PDF to choose your desired signing location.`}
           isChecked={handleDontShow}
         />
       ),
@@ -759,7 +759,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourFour"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking "Save" button will save the template and will ask you for creating new document.`}
+          message={`Clicking "Save" button will save the template and will ask you if you want to create a new document using this template.`}
           isChecked={handleDontShow}
         />
       ),
