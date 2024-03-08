@@ -28,7 +28,6 @@ const ManageSign = () => {
     fetchUserSign();
     // eslint-disable-next-line
   }, []);
-  // cWT92Z2ycy
   const fetchUserSign = async () => {
     const User = Parse.User.current();
     if (User) {
@@ -122,7 +121,6 @@ const ManageSign = () => {
           file = base64StringtoFile(image, `${replaceSpace}__sign.png`);
         }
       }
-      // console.log("isUrl ", isUrl);
       let imgUrl;
       if (!isUrl) {
         imgUrl = await uploadFile(file);
@@ -379,7 +377,6 @@ const ManageSign = () => {
                         style={{
                           position: "relative",
                           border: "2px solid #888"
-                          // marginBottom: 6
                         }}
                         className="signatureCanvas"
                       >
@@ -414,7 +411,6 @@ const ManageSign = () => {
                         display: "flex",
                         flexDirection: "row",
                         justifyContent: "space-between"
-                        // width: 460,
                       }}
                       className="penContainerDefault"
                     >
@@ -493,7 +489,6 @@ const ManageSign = () => {
                     style={{
                       position: "relative",
                       border: "2px solid #888"
-                      // marginBottom: 6
                     }}
                     className="intialSignature"
                   >
