@@ -237,10 +237,12 @@ function Placeholder(props) {
                   }}
                 ></i>
               ) : (
-                props.pos.type !== "date" &&
-                props.pos.type !== "label" &&
-                props.pos.type !== "signature" &&
-                !props.isSignYourself && (
+                ((!props?.pos?.type && props.pos.isStamp) ||
+                  (props?.pos?.type &&
+                    props?.pos?.type !== "date" &&
+                    props?.pos?.type !== "label" &&
+                    props?.pos?.type !== "signature" &&
+                    !props.isSignYourself)) && (
                   <i
                     onClick={(e) => {
                       e.stopPropagation();
