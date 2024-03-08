@@ -74,7 +74,7 @@ function Placeholder(props) {
       const newDate = moment(milliseconds).format(dateFormat);
       const dateObj = {
         date: newDate,
-        format: props.pos?.options?.validation?.format
+        format: dateFormat
       };
       setSelectDate(dateObj);
     }
