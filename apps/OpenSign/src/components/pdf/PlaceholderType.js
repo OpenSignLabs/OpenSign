@@ -755,6 +755,7 @@ function PlaceholderType(props) {
     case "label":
       return (
         <textarea
+          placeholder="Enter label"
           rows={1}
           onChange={(e) => {
             onChangeInput(
