@@ -54,13 +54,29 @@ function Placeholder(props) {
 
   useEffect(() => {
     //set default current date and default format MM/dd/yyyy
-    if (props.isPlaceholder || props.isSignYourself) {
+    if (props.isSignYourself) {
       const date = new Date();
       const milliseconds = date.getTime();
       const newDate = moment(milliseconds).format("MM/DD/YYYY");
       const dateObj = {
         date: newDate,
         format: "MM/dd/YYYY"
+      };
+      setSelectDate(dateObj);
+    } else {
+      const defaultRes = props?.pos?.options?.response;
+      const defaultFormat = props.pos?.options?.validation?.format;
+      const updateDate = defaultRes
+        ? new Date(props?.pos?.options?.response)
+        : new Date();
+      const dateFormat = defaultFormat ? defaultFormat : "MM/DD/YYYY";
+      const milliseconds = updateDate.getTime();
+      const newDate = moment(milliseconds).format(dateFormat);
+      const dateObj = {
+        date: newDate,
+        format: props.pos?.options?.validation?.format
+          ? props.pos?.options?.validation?.format
+          : "MM/dd/YYYY"
       };
       setSelectDate(dateObj);
     }

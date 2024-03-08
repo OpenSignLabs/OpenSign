@@ -1517,3 +1517,23 @@ export const addDefaultSignatureImg = (xyPostion, defaultSignImg) => {
   }
   return xyDefaultPos;
 };
+
+//function for create list of year for date widget
+export const range = (start, end, step) => {
+  const range = [];
+  for (let i = start; i <= end; i += step) {
+    range.push(i);
+  }
+  return range;
+};
+//function for get month
+export const getMonth = (date) => {
+  const newMonth = new Date(date).getMonth();
+  return newMonth;
+};
+
+//function for get year
+export const getYear = (date) => {
+  const newYear = new Date(date).getFullYear();
+  return newYear;
+};
