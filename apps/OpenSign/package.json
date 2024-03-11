@@ -7,7 +7,7 @@
     "@react-pdf/renderer": "^3.3.8",
     "@reduxjs/toolkit": "^2.2.1",
     "axios": "^1.6.0",
-    "daisyui": "^3.9.2",
+    "daisyui": "^4.7.3",
     "file-saver": "^2.0.5",
     "html-react-parser": "^4.2.2",
     "jwt-decode": "^4.0.0",
