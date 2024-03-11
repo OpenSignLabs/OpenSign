@@ -13,6 +13,8 @@ function Placeholder(props) {
   const [selectDate, setSelectDate] = useState();
   const [dateFormat, setDateFormat] = useState([]);
   const [saveDateFormat, setSaveDateFormat] = useState("");
+
+  const [startDate, setStartDate] = useState();
   const dateFormatArr = [
     "L",
     "DD-MM-YYYY",
@@ -52,36 +54,41 @@ function Placeholder(props) {
     }
   };
 
+  //useEffect for to set date and date format for all flow (signyour-self, request-sign,placeholder,template)
+  //checking if already have data and set else set new date
   useEffect(() => {
     //set default current date and default format MM/dd/yyyy
-    if (props.isSignYourself) {
-      const date = new Date();
-      const milliseconds = date.getTime();
-      const newDate = moment(milliseconds).format("MM/DD/YYYY");
-      const dateObj = {
-        date: newDate,
-        format: "MM/dd/YYYY"
-      };
-      setSelectDate(dateObj);
-    } else {
-      const defaultRes = props?.pos?.options?.response;
-      const defaultFormat = props.pos?.options?.validation?.format;
-      const updateDate = defaultRes
-        ? new Date(props?.pos?.options?.response)
-        : new Date();
-      const dateFormat = defaultFormat ? defaultFormat : "MM/DD/YYYY";
-      const milliseconds = updateDate.getTime();
-      const newDate = moment(milliseconds).format(dateFormat);
-      const dateObj = {
-        date: newDate,
-        format: props.pos?.options?.validation?.format
-          ? props.pos?.options?.validation?.format
-          : "MM/dd/YYYY"
-      };
-      setSelectDate(dateObj);
-    }
+    // if (props.isSignYourself) {
+    //   const date = new Date();
+    //   const milliseconds = date.getTime();
+    //   const newDate = moment(milliseconds).format("MM/DD/YYYY");
+    //   const dateObj = {
+    //     date: newDate,
+    //     format: "MM/dd/YYYY"
+    //   };
+    //   setSelectDate(dateObj);
+    // } else {
+    const defaultRes = props?.pos?.options?.response;
+
+    const defaultFormat = props.pos?.options?.validation?.format;
+    const updateDate = defaultRes
+      ? new Date(props?.pos?.options?.response)
+      : new Date();
+    const dateFormat = defaultFormat ? defaultFormat : "MM/DD/YYYY";
+    const milliseconds = updateDate.getTime();
+    const newDate = moment(milliseconds).format(dateFormat);
+    const dateObj = {
+      date: newDate,
+      format: props.pos?.options?.validation?.format
+        ? props.pos?.options?.validation?.format
+        : "MM/dd/YYYY"
+    };
+    setSelectDate(dateObj);
+    setStartDate(updateDate);
+
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.index]);
 
   //function for add selected date and format in selectFormat
   const changeDateFormat = () => {
@@ -206,13 +213,27 @@ function Placeholder(props) {
       props?.handleNameModal(true);
     }
 
-    if (props.isPlaceholder) {
+    if (props.isPlaceholder && props.type !== "label") {
       props.setUniqueId(props.data.Id);
     }
     props.setSignKey(props.pos.key);
     props.setWidgetType(props.pos.type);
     props.setCurrWidgetsDetails(props.pos);
   };
+  const handleCopyPlaceholder = (e) => {
+    if (props.data && props?.pos?.type !== "label") {
+      props.setSignerObjId(props?.data?.signerObjId);
+      props.setUniqueId(props?.data?.Id);
+    } else if (props.data && props.pos.type === "label") {
+      props.setTempSignerId(props.uniqueId);
+      props.setSignerObjId(props?.data?.signerObjId);
+      props.setUniqueId(props?.data?.Id);
+    }
+    e.stopPropagation();
+    props.setIsPageCopy(true);
+    props.setSignKey(props.pos.key);
+  };
+
   const PlaceholderIcon = () => {
     return (
       props.isShowBorder && (
@@ -365,22 +386,10 @@ function Placeholder(props) {
           <i
             className="fa-regular fa-copy signCopy"
             onClick={(e) => {
-              if (props.data) {
-                props.setSignerObjId(props.data.signerObjId);
-                props.setUniqueId(props.data.Id);
-              }
-              e.stopPropagation();
-              props.setIsPageCopy(true);
-              props.setSignKey(props.pos.key);
+              handleCopyPlaceholder(e);
             }}
             onTouchEnd={(e) => {
-              if (props.data) {
-                props.setSignerObjId(props.data.signerObjId);
-                props.setUniqueId(props.data.Id);
-              }
-              e.stopPropagation();
-              props.setIsPageCopy(true);
-              props.setSignKey(props.pos.key);
+              handleCopyPlaceholder(e);
             }}
             style={{
               color: "#188ae2",
@@ -618,6 +627,8 @@ function Placeholder(props) {
             setSaveDateFormat={setSaveDateFormat}
             saveDateFormat={saveDateFormat}
             setValidateAlert={props.setValidateAlert}
+            setStartDate={setStartDate}
+            startDate={startDate}
           />
         </div>
       ) : (
@@ -643,6 +654,8 @@ function Placeholder(props) {
             setSaveDateFormat={setSaveDateFormat}
             saveDateFormat={saveDateFormat}
             setValidateAlert={props.setValidateAlert}
+            setStartDate={setStartDate}
+            startDate={startDate}
           />
         </>
       )}

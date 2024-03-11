@@ -76,6 +76,7 @@ function PlaceHolderSign() {
   const [isResize, setIsResize] = useState(false);
   const [zIndex, setZIndex] = useState(1);
   const [signKey, setSignKey] = useState();
+  const [tempSignerId, setTempSignerId] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -380,7 +381,6 @@ function PlaceHolderSign() {
           pos: dropData
         };
       }
-
       setSelectWidgetId(key);
       if (signer) {
         let filterSignerPos;
@@ -391,7 +391,6 @@ function PlaceHolderSign() {
         }
 
         const { blockColor, Role } = signer;
-
         //adding placholder in existing signer pos array (placaholder)
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -442,7 +441,6 @@ function PlaceHolderSign() {
           }
         } else {
           //adding new placeholder for selected signer in pos array (placeholder)
-          // const signerData = signerPos;
           let placeHolderPos;
           if (dragTypeValue === "label") {
             placeHolderPos = {
@@ -1553,8 +1551,11 @@ function PlaceHolderSign() {
                 allPages={allPages}
                 pageNumber={pageNumber}
                 signKey={signKey}
-                // signerObjId={signerObjId}
                 Id={uniqueId}
+                widgetType={widgetType}
+                setUniqueId={setUniqueId}
+                tempSignerId={tempSignerId}
+                setTempSignerId={setTempSignerId}
               />
               <DropdownWidgetOption
                 type="radio"
@@ -1639,6 +1640,8 @@ function PlaceHolderSign() {
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
                     handleNameModal={setIsNameModal}
+                    setTempSignerId={setTempSignerId}
+                    uniqueId={uniqueId}
                   />
                 )}
               </div>
