@@ -42,7 +42,7 @@
     "parse-server-fs-adapter": "1.0.1",
     "parse-server-s3-adapter": "^1.2.0",
     "pdf-lib": "^1.17.1",
-    "pdfkit": "^0.13.0",
+    "pdfkit": "^0.14.0",
     "posthog-node": "^3.6.2",
     "razorpay": "^2.8.6",
     "request": "^2.88.2"
