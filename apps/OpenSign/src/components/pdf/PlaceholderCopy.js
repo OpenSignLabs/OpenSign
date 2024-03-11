@@ -180,7 +180,13 @@ function PlaceholderCopy(props) {
       copyPlaceholder("first");
     }
   };
-
+  const handleUniqueId = () => {
+    if (props.widgetType === "label") {
+      props.setUniqueId(props?.tempSignerId);
+      props.setTempSignerId("");
+    }
+    props.setIsPageCopy(false);
+  };
   return (
     <ModalUi
       isOpen={props.isPageCopy}
@@ -220,7 +226,7 @@ function PlaceholderCopy(props) {
         <button
           onClick={() => {
             handleApplyCopy();
-            props.setIsPageCopy(false);
+            handleUniqueId();
           }}
           style={{ background: themeColor }}
           type="button"
@@ -232,7 +238,9 @@ function PlaceholderCopy(props) {
         <button
           type="button"
           className="finishBtn cancelBtn"
-          onClick={() => props.setIsPageCopy(false)}
+          onClick={() => {
+            handleUniqueId();
+          }}
         >
           Cancel
         </button>

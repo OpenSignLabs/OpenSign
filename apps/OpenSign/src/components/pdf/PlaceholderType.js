@@ -7,10 +7,8 @@ import RegexParser from "regex-parser";
 
 function PlaceholderType(props) {
   const type = props?.pos?.type;
-  const [selectOption, setSelectOption] = useState(
-    props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
-  );
-  const [startDate, setStartDate] = useState(new Date());
+  const [selectOption, setSelectOption] = useState("");
+
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState();
@@ -89,10 +87,7 @@ function PlaceholderType(props) {
   }
 
   useEffect(() => {
-    if (props.isNeedSign && type === "date") {
-      const updateDate = new Date();
-      setStartDate(updateDate);
-    } else if (type && type === "checkbox" && props.isNeedSign) {
+    if (type && type === "checkbox" && props.isNeedSign) {
       const isDefaultValue = props.pos.options?.defaultValue;
       if (isDefaultValue) {
         setSelectedCheckbox(isDefaultValue);
@@ -103,8 +98,20 @@ function PlaceholderType(props) {
       checkRegularExpress(props.pos?.options?.validation?.type);
     }
     setTextValue(
-      props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
+      props.pos?.options?.response
+        ? props.pos?.options?.response
+        : props.pos?.options?.defaultValue
+          ? props.pos?.options?.defaultValue
+          : ""
     );
+    setSelectOption(
+      props.pos?.options?.response
+        ? props.pos?.options?.response
+        : props.pos?.options?.defaultValue
+          ? props.pos?.options?.defaultValue
+          : ""
+    );
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -135,7 +142,7 @@ function PlaceholderType(props) {
           }
         }
         // const updateDate = new Date(props.saveDateFormat);
-        setStartDate(updateDate);
+        props.setStartDate(updateDate);
         const dateObj = {
           date: props.saveDateFormat,
           format: props.selectDate
@@ -646,17 +653,23 @@ function PlaceholderType(props) {
             className="inputPlaceholder"
             style={{ outlineColor: "#007bff" }}
             selected={
-              startDate
-                ? startDate
+              props?.startDate
+                ? props?.startDate
                 : props.pos.options?.response &&
                   new Date(props.pos.options.response)
             }
             onChange={(date) => {
-              setStartDate(date);
+              props.setStartDate(date);
             }}
             popperPlacement="top-end"
             customInput={<ExampleCustomInput />}
             dateFormat={
+              // props.pos?.options?.validation?.format
+              //   ? props.pos?.options?.validation?.format
+              //   : props.selectDate
+              //   ? props.selectDate?.format
+              //   : "MM/dd/YYYY"
+
               props.selectDate
                 ? props.selectDate?.format
                 : props.pos?.options?.validation?.format
@@ -757,7 +770,9 @@ function PlaceholderType(props) {
         <textarea
           placeholder="Enter label"
           rows={1}
+          value={textValue}
           onChange={(e) => {
+            setTextValue(e.target.value);
             onChangeInput(
               e.target.value,
               props.pos.key,

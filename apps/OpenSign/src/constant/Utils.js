@@ -692,13 +692,27 @@ export const onChangeInput = (
 
     const updatePosition = getXYdata.map((positionData) => {
       if (positionData.key === signKey) {
-        return {
-          ...positionData,
-          options: {
-            ...positionData.options,
-            response: value
-          }
-        };
+        if (dateFormat) {
+          return {
+            ...positionData,
+            options: {
+              ...positionData.options,
+              response: value,
+              validation: {
+                type: "date-format",
+                format: dateFormat // This indicates the required date format explicitly.
+              }
+            }
+          };
+        } else {
+          return {
+            ...positionData,
+            options: {
+              ...positionData.options,
+              response: value
+            }
+          };
+        }
       }
       return positionData;
     });
@@ -970,7 +984,6 @@ export const multiSignEmbed = async (
     } else {
       updateItem = item.pos;
     }
-
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const pageNo = item.pageNumber;
