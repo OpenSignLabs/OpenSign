@@ -178,36 +178,6 @@ function DropdownWidgetOption(props) {
               className="drodown-input"
             />
 
-            {props.type === "checkbox" && !props.isSignYourself && (
-              <>
-                <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Minimun check
-                </label>
-                <input
-                  required
-                  defaultValue={0}
-                  value={minCount}
-                  onChange={(e) => {
-                    const count = handleSetMinMax(e);
-                    setMinCount(count);
-                  }}
-                  className="drodown-input"
-                />
-                <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Maximum check
-                </label>
-                <input
-                  required
-                  defaultValue={0}
-                  value={maxCount}
-                  onChange={(e) => {
-                    const count = handleSetMinMax(e);
-                    setMaxCount(count);
-                  }}
-                  className="drodown-input"
-                />
-              </>
-            )}
             <label
               style={{ fontSize: "13px", fontWeight: "600", marginTop: "5px" }}
             >
@@ -274,7 +244,6 @@ function DropdownWidgetOption(props) {
                   ></i>
                 </div>
               ))}
-
               <i
                 onClick={handleAddInput}
                 style={{
@@ -285,6 +254,36 @@ function DropdownWidgetOption(props) {
                 }}
                 className="fa-solid fa-square-plus"
               ></i>
+              {props.type === "checkbox" && !props.isSignYourself && (
+                <>
+                  <label style={{ fontSize: "13px", fontWeight: "600" }}>
+                    Minimun check
+                  </label>
+                  <input
+                    required
+                    defaultValue={0}
+                    value={minCount}
+                    onChange={(e) => {
+                      const count = handleSetMinMax(e);
+                      setMinCount(count);
+                    }}
+                    className="drodown-input"
+                  />
+                  <label style={{ fontSize: "13px", fontWeight: "600" }}>
+                    Maximum check
+                  </label>
+                  <input
+                    required
+                    defaultValue={0}
+                    value={maxCount}
+                    onChange={(e) => {
+                      const count = handleSetMinMax(e);
+                      setMaxCount(count);
+                    }}
+                    className="drodown-input"
+                  />
+                </>
+              )}
             </div>
             {["dropdown", "radio"].includes(props.type) && (
               <>

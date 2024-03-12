@@ -7,14 +7,78 @@ import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
 import "../../styles/opensigndrive.css";
 
+const selectFormat = (data) => {
+  switch (data) {
+    case "L":
+      return "MM/dd/yyyy";
+    case "DD-MM-YYYY":
+      return "dd-MM-yyyy";
+    case "DD/MM/YYYY":
+      return "dd/MM/yyyy";
+    case "LL":
+      return "MMMM dd, yyyy";
+    case "DD MMM, YYYY":
+      return "dd MMM, yyyy";
+    case "YYYY-MM-DD":
+      return "yyyy-MM-dd";
+    case "MM-DD-YYYY":
+      return "MM-dd-yyyy";
+    case "MM.DD.YYYY":
+      return "MM.dd.yyyy";
+    case "MMM DD, YYYY":
+      return "MMM dd, yyyy";
+    case "DD MMMM, YYYY":
+      return "dd MMMM, yyyy";
+    default:
+      return "MM/dd/yyyy";
+  }
+};
+
+const changeDateToMomentFormat = (format) => {
+  switch (format) {
+    case "MM/dd/yyyy":
+      return "L";
+    case "dd-MM-yyyy":
+      return "DD-MM-YYYY";
+    case "dd/MM/yyyy":
+      return "DD/MM/YYYY";
+    case "MMMM dd, yyyy":
+      return "LL";
+    case "dd MMM, yyyy":
+      return "DD MMM, YYYY";
+    case "yyyy-MM-dd":
+      return "YYYY-MM-DD";
+    case "MM-dd-yyyy":
+      return "MM-DD-YYYY";
+    case "MM.dd.yyyy":
+      return "MM.DD.YYYY";
+    case "MMM dd, yyyy":
+      return "MMM DD, YYYY";
+    case "dd MMMM, yyyy":
+      return "DD MMMM, YYYY";
+    default:
+      return "L";
+  }
+};
+
+const getDefaultdate = (selectedDate) =>
+  selectedDate ? new Date(selectedDate) : new Date();
+const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
+
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
-  const [selectDate, setSelectDate] = useState();
+  const [selectDate, setSelectDate] = useState({
+    date: moment(
+      getDefaultdate(props?.pos?.options?.response).getTime()
+    ).format(changeDateToMomentFormat(props.pos?.options?.validation?.format)),
+    format: getDefaultFormat(props.pos?.options?.validation?.format)
+  });
   const [dateFormat, setDateFormat] = useState([]);
   const [saveDateFormat, setSaveDateFormat] = useState("");
-
-  const [startDate, setStartDate] = useState();
+  const [startDate, setStartDate] = useState(
+    getDefaultdate(props?.pos?.options?.response)
+  );
   const dateFormatArr = [
     "L",
     "DD-MM-YYYY",
@@ -27,71 +91,41 @@ function Placeholder(props) {
     "DD MMMM, YYYY"
   ];
 
-  const selectFormat = (data) => {
-    switch (data) {
-      case "L":
-        return "MM/dd/yyyy";
-      case "DD-MM-YYYY":
-        return "dd-MM-yyyy";
-      case "DD/MM/YYYY":
-        return "dd/MM/yyyy";
-      case "LL":
-        return "MMMM dd, yyyy";
-      case "DD MMM, YYYY":
-        return "dd MMM, YYYY";
-      case "YYYY-MM-DD":
-        return "YYYY-MM-dd";
-      case "MM-DD-YYYY":
-        return "MM-dd-YYYY";
-      case "MM.DD.YYYY":
-        return "MM.dd.YYYY";
-      case "MMM DD, YYYY":
-        return "MMM dd, YYYY";
-      case "DD MMMM, YYYY":
-        return "dd MMMM, YYYY";
-      default:
-        return "dd/MM/yyyy";
-    }
-  };
+  // console.log('props.pos',props.pos?.options?.validation?.format)
 
   //useEffect for to set date and date format for all flow (signyour-self, request-sign,placeholder,template)
   //checking if already have data and set else set new date
-  useEffect(() => {
-    //set default current date and default format MM/dd/yyyy
-    // if (props.isSignYourself) {
-    //   const date = new Date();
-    //   const milliseconds = date.getTime();
-    //   const newDate = moment(milliseconds).format("MM/DD/YYYY");
-    //   const dateObj = {
-    //     date: newDate,
-    //     format: "MM/dd/YYYY"
-    //   };
-    //   setSelectDate(dateObj);
-    // } else {
-    const defaultRes = props?.pos?.options?.response;
+  // useEffect(() => {
+  //   console.log('go here')
+  //   //set default current date and default format MM/dd/yyyy
+  //   const defaultFormat = props.pos?.options?.validation?.format;
+  //   const updateDate = props?.pos?.options?.response
+  //     ? new Date(props?.pos?.options?.response)
+  //     : new Date();
+  //   //DD-mm-YYYY
+  //   const dateFormat = defaultFormat && defaultFormat;
+  //   // const isMomentType = dateFormat && dateFormat === "MM/dd/YYYY";
+  //   // const selectMomentFormat = isMomentType ?  "MM/DD/YYYY" : dateFormat;
+  //   const selectMomentFormat = changeDateToMomentFormat(dateFormat);
 
-    const defaultFormat = props.pos?.options?.validation?.format;
-    const updateDate = defaultRes
-      ? new Date(props?.pos?.options?.response)
-      : new Date();
-    const dateFormat = defaultFormat ? defaultFormat : "MM/DD/YYYY";
-    const milliseconds = updateDate.getTime();
-    const newDate = moment(milliseconds).format(dateFormat);
-    const dateObj = {
-      date: newDate,
-      format: props.pos?.options?.validation?.format
-        ? props.pos?.options?.validation?.format
-        : "MM/dd/YYYY"
-    };
-    setSelectDate(dateObj);
-    setStartDate(updateDate);
+  //   // const isFormatType = dateFormat && dateFormat === "MM/dd/YYYY";
+  //   const getFormat = dateFormat || "MM/dd/yyyy";
+  //   const milliseconds = updateDate.getTime();
+  //   const newDate = moment(milliseconds).format(selectMomentFormat);
+  //   // console.log('new date',newDate)
+  //   const dateObj = {
+  //     date: newDate,
+  //     format: getFormat
+  //   };
+  //   console.log("dateobj selectdate useEffect", dateObj);
+  //   setSelectDate(dateObj);
+  //   setStartDate(updateDate);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.index]);
-
-  //function for add selected date and format in selectFormat
+  //function change format array list with selected date and format
   const changeDateFormat = () => {
+    // console.log("selected date", selectDate);
     const updateDate = [];
     dateFormatArr.map((data) => {
       let date;
@@ -102,17 +136,24 @@ function Placeholder(props) {
         date = new Date(selectDate?.date);
       }
       const milliseconds = date.getTime();
+      // console.log('data',data)
       const newDate = moment(milliseconds).format(data);
+      // console.log('new date',newDate)
       const dateObj = {
         date: newDate,
         format: selectFormat(data)
       };
+      // console.log('dateobj',dateObj)
       updateDate.push(dateObj);
     });
+    // console.log('updated format',updateDate)
     setDateFormat(updateDate);
   };
+
+  // console.log("selected date", selectDate);
   useEffect(() => {
     if (props.isPlaceholder || props.isSignYourself) {
+      // console.log("selected date useEffect", selectDate);
       selectDate && changeDateFormat();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
