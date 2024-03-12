@@ -162,6 +162,26 @@ export const widgets = [
     iconSize: "15px"
   },
   {
+    type: "name",
+    icon: "fa-solid fa-user",
+    iconSize: "21px"
+  },
+  {
+    type: "job title",
+    icon: "fa-solid fa-address-card",
+    iconSize: "17px"
+  },
+  {
+    type: "company",
+    icon: "fa-solid fa-building",
+    iconSize: "25px"
+  },
+  {
+    type: "date",
+    icon: "fa-solid fa-calendar-days",
+    iconSize: "20px"
+  },
+  {
     type: "label",
     icon: "fa-solid fa-text-width",
     iconSize: "20px"
@@ -192,39 +212,18 @@ export const widgets = [
     iconSize: "20px"
   },
   {
-    type: "date",
-    icon: "fa-solid fa-calendar-days",
-    iconSize: "20px"
-  },
-  {
-    type: "name",
-    icon: "fa-solid fa-user",
-    iconSize: "21px"
-  },
-  {
     type: "email",
     icon: "fa-solid fa-envelope",
     iconSize: "20px"
-  },
-  {
-    type: "company",
-    icon: "fa-solid fa-building",
-    iconSize: "25px"
-  },
-  {
-    type: "job title",
-    icon: "fa-solid fa-address-card",
-    iconSize: "17px"
   }
 ];
 
-const getDate = () => {
+export const getDate = () => {
   const date = new Date();
   const milliseconds = date.getTime();
   const newDate = moment(milliseconds).format("MM/DD/YYYY");
   return newDate;
 };
-
 export const addWidgetOptions = (type) => {
   const defaultOpt = {
     name: "",
