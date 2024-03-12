@@ -8,7 +8,6 @@ import RegexParser from "regex-parser";
 function PlaceholderType(props) {
   const type = props?.pos?.type;
   const [selectOption, setSelectOption] = useState("");
-
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState();
@@ -129,11 +128,13 @@ function PlaceholderType(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.pos?.options?.defaultValue]);
 
+  //useEffect to save date and format on local array
   useEffect(() => {
     if (type && type === "date") {
-      if (props.selectDate) {
+      if (props?.selectDate) {
         let updateDate;
-        if (props.selectDate.format === "dd-MM-yyyy") {
+        if (props?.selectDate.format === "dd-MM-yyyy") {
+          // console.log('saveDateformat',props.saveDateFormat)
           const [day, month, year] = props.saveDateFormat.split("-");
           updateDate = new Date(`${year}-${month}-${day}`);
         } else {
@@ -149,8 +150,9 @@ function PlaceholderType(props) {
             ? props.selectDate?.format
             : props.pos?.options?.validation?.format
               ? props.pos?.options?.validation?.format
-              : "MM/dd/YYYY"
+              : "MM/dd/yyyy"
         };
+        console.log("savedateformat selectdate", dateObj);
         props.setSelectDate(dateObj);
         onChangeInput(
           props.saveDateFormat,
@@ -164,7 +166,7 @@ function PlaceholderType(props) {
             ? props.selectDate.format
             : props.pos?.options?.validation?.format
               ? props.pos?.options?.validation?.format
-              : "MM/dd/YYYY"
+              : "MM/dd/yyyy"
         );
       }
     }
@@ -674,7 +676,7 @@ function PlaceholderType(props) {
                 ? props.selectDate?.format
                 : props.pos?.options?.validation?.format
                   ? props.pos?.options?.validation?.format
-                  : "MM/dd/YYYY"
+                  : "MM/dd/yyyy"
             }
           />
         </div>
