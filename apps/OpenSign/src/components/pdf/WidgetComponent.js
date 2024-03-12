@@ -204,17 +204,17 @@ function WidgetComponent({
       dragSignature,
       dragStamp,
       initials,
+      name,
+      jobTitle,
+      company,
+      date,
       label,
       text,
       checkbox,
       dropdown,
       radio,
       image,
-      date,
-      name,
-      email,
-      company,
-      jobTitle
+      email
     ];
     const getWidgetArray = widgets;
     const newUpdateSigner = getWidgetArray.map((obj, ind) => {

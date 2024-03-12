@@ -25,7 +25,8 @@ import {
   onSaveSign,
   contractUsers,
   contactBook,
-  randomId
+  randomId,
+  getDate
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -308,13 +309,6 @@ function SignYourSelf() {
       setIsLoading(loadObj);
     }
   };
-
-  const getDate = () => {
-    const date = new Date();
-    const milliseconds = date.getTime();
-    const newDate = moment(milliseconds).format("MM/DD/YYYY");
-    return newDate;
-  };
   const getWidgetValue = (type) => {
     switch (type) {
       case "name":
@@ -333,6 +327,7 @@ function SignYourSelf() {
         return "";
     }
   };
+
   const addWidgetOptions = (type) => {
     switch (type) {
       case "signature":
@@ -596,7 +591,6 @@ function SignYourSelf() {
       await signPdfFun(pdfBytes, documentId);
     }
   }
-
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
     let singleSign = {

@@ -61,23 +61,53 @@ const changeDateToMomentFormat = (format) => {
   }
 };
 
-const getDefaultdate = (selectedDate) =>
-  selectedDate ? new Date(selectedDate) : new Date();
+// const getDefaultdate = (selectedDate) => {
+//   return selectedDate ? new Date(selectedDate) : new Date();
+// };
+const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
+  let date;
+  if (format && format === "dd-MM-yyyy") {
+    const newdate = selectedDate
+      ? selectedDate
+      : moment(new Date()).format(changeDateToMomentFormat(format));
+    const [day, month, year] = newdate.split("-");
+    date = new Date(`${year}-${month}-${day}`);
+  } else {
+    date = new Date(selectedDate);
+  }
+  const value = date;
+  return value;
+};
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
 
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
+  // const [selectDate, setSelectDate] = useState({
+  //   date: moment(
+  //     getDefaultdate(props?.pos?.options?.response).getTime()
+  //   ).format(changeDateToMomentFormat(props.pos?.options?.validation?.format)),
+  //   format: getDefaultFormat(props.pos?.options?.validation?.format)
+  // });
   const [selectDate, setSelectDate] = useState({
     date: moment(
-      getDefaultdate(props?.pos?.options?.response).getTime()
+      getDefaultdate(
+        props?.pos?.options?.response,
+        props.pos?.options?.validation?.format
+      ).getTime()
     ).format(changeDateToMomentFormat(props.pos?.options?.validation?.format)),
     format: getDefaultFormat(props.pos?.options?.validation?.format)
   });
   const [dateFormat, setDateFormat] = useState([]);
   const [saveDateFormat, setSaveDateFormat] = useState("");
+  // const [startDate, setStartDate] = useState(
+  //   getDefaultdate(props?.pos?.options?.response)
+  // );
   const [startDate, setStartDate] = useState(
-    getDefaultdate(props?.pos?.options?.response)
+    getDefaultdate(
+      props?.pos?.options?.response,
+      props.pos?.options?.validation?.format
+    )
   );
   const dateFormatArr = [
     "L",
@@ -90,8 +120,6 @@ function Placeholder(props) {
     "DD MMM, YYYY",
     "DD MMMM, YYYY"
   ];
-
-  // console.log('props.pos',props.pos?.options?.validation?.format)
 
   //useEffect for to set date and date format for all flow (signyour-self, request-sign,placeholder,template)
   //checking if already have data and set else set new date
@@ -125,28 +153,23 @@ function Placeholder(props) {
 
   //function change format array list with selected date and format
   const changeDateFormat = () => {
-    // console.log("selected date", selectDate);
     const updateDate = [];
     dateFormatArr.map((data) => {
       let date;
-      if (selectDate.format === "dd-MM-yyyy") {
+      if (selectDate && selectDate.format === "dd-MM-yyyy") {
         const [day, month, year] = selectDate.date.split("-");
         date = new Date(`${year}-${month}-${day}`);
       } else {
         date = new Date(selectDate?.date);
       }
       const milliseconds = date.getTime();
-      // console.log('data',data)
       const newDate = moment(milliseconds).format(data);
-      // console.log('new date',newDate)
       const dateObj = {
         date: newDate,
         format: selectFormat(data)
       };
-      // console.log('dateobj',dateObj)
       updateDate.push(dateObj);
     });
-    // console.log('updated format',updateDate)
     setDateFormat(updateDate);
   };
 

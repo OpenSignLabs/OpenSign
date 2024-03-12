@@ -133,27 +133,28 @@ function PlaceholderType(props) {
     if (type && type === "date") {
       if (props?.selectDate) {
         let updateDate;
-        if (props?.selectDate.format === "dd-MM-yyyy") {
-          // console.log('saveDateformat',props.saveDateFormat)
-          const [day, month, year] = props.saveDateFormat.split("-");
-          updateDate = new Date(`${year}-${month}-${day}`);
-        } else {
-          if (props?.saveDateFormat) {
-            updateDate = new Date(props.saveDateFormat);
-          }
-        }
+        // if (props?.selectDate.format === "dd-MM-yyyy") {
+        //   // console.log('saveDateformat',props.saveDateFormat)
+        //   const [day, month, year] = props.saveDateFormat.split("-");
+        //   updateDate = new Date(`${year}-${month}-${day}`);
+        //   console.log('update',updateDate)
+        // } else {
+        //   if (props?.saveDateFormat) {
+        //     updateDate = new Date(props.saveDateFormat);
+        //   }
+        // }
         // const updateDate = new Date(props.saveDateFormat);
-        props.setStartDate(updateDate);
-        const dateObj = {
-          date: props.saveDateFormat,
-          format: props.selectDate
-            ? props.selectDate?.format
-            : props.pos?.options?.validation?.format
-              ? props.pos?.options?.validation?.format
-              : "MM/dd/yyyy"
-        };
-        console.log("savedateformat selectdate", dateObj);
-        props.setSelectDate(dateObj);
+        // props.setStartDate(updateDate);
+        // const dateObj = {
+        //   date: props.saveDateFormat,
+        //   format: props.selectDate
+        //     ? props.selectDate?.format
+        //     : props.pos?.options?.validation?.format
+        //       ? props.pos?.options?.validation?.format
+        //       : "MM/dd/yyyy"
+        // };
+
+        // props.setSelectDate(dateObj);
         onChangeInput(
           props.saveDateFormat,
           props.pos.key,
