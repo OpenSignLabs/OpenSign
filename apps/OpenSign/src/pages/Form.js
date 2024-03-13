@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { formJson } from "../json/FormJson";
 import AddUser from "../components/AddUser";
@@ -11,6 +11,7 @@ import SignersInput from "../components/shared/fields/SignersInput";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 
+// `Form` render all type of Form on this basis of their provided in path
 function Form() {
   const { id } = useParams();
 
@@ -40,13 +41,16 @@ const Forms = (props) => {
   const [fileupload, setFileUpload] = useState([]);
   const [fileload, setfileload] = useState(false);
   const [percentage, setpercentage] = useState(0);
+  const [isReset, setIsReset] = useState(false);
   const [isAlert, setIsAlert] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const [isErr, setIsErr] = useState("");
   const handleStrInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  useEffect(() => {
+    handleReset();
+  }, [props.title]);
   const handleFileInput = (e) => {
     setpercentage(0);
     try {
@@ -222,15 +226,19 @@ const Forms = (props) => {
   };
 
   const handleReset = () => {
+    setIsReset(true);
     setSigners([]);
     setFolder({ ObjectId: "", Name: "" });
     setFormData({
       Name: "",
       Description: "",
-      Note: ""
+      Note: "Please review and sign this document",
+      TimeToCompleteDays: 15,
+      SendinOrder: "false"
     });
     setFileUpload([]);
     setpercentage(0);
+    setTimeout(() => setIsReset(false), 50);
   };
   return (
     <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
@@ -334,7 +342,9 @@ const Forms = (props) => {
               onChange={(e) => handleStrInput(e)}
             />
           </div>
-          {props.signers && <SignersInput onChange={handleSigners} required />}
+          {props.signers && (
+            <SignersInput onChange={handleSigners} isReset={isReset} required />
+          )}
           <div className="text-xs mt-2">
             <label className="block">
               Note<span className="text-red-500 text-[13px]">*</span>
@@ -347,7 +357,11 @@ const Forms = (props) => {
               required
             />
           </div>
-          <SelectFolder onSuccess={handleFolder} folderCls={props.Cls} />
+          <SelectFolder
+            onSuccess={handleFolder}
+            folderCls={props.Cls}
+            isReset={isReset}
+          />
 
           {props.title === "Request Signatures" && (
             <div className="text-xs mt-2">
@@ -402,7 +416,7 @@ const Forms = (props) => {
               Submit
             </button>
             <div
-              className="bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
+              className="cursor-pointer bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
               onClick={() => handleReset()}
             >
               Reset
