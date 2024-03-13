@@ -90,20 +90,29 @@ function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
   const [selectDate, setSelectDate] = useState({
-    date: moment(
-      getDefaultdate(
-        props?.pos?.options?.response,
-        props.pos?.options?.validation?.format
-      ).getTime()
-    ).format(changeDateToMomentFormat(props.pos?.options?.validation?.format)),
-    format: getDefaultFormat(props.pos?.options?.validation?.format)
+    date:
+      props.pos.type === "date"
+        ? moment(
+            getDefaultdate(
+              props?.pos?.options?.response,
+              props.pos?.options?.validation?.format
+            ).getTime()
+          ).format(
+            changeDateToMomentFormat(props.pos?.options?.validation?.format)
+          )
+        : "",
+    format:
+      props.pos.type === "date"
+        ? getDefaultFormat(props.pos?.options?.validation?.format)
+        : ""
   });
   const [dateFormat, setDateFormat] = useState([]);
   const [startDate, setStartDate] = useState(
-    getDefaultdate(
-      props?.pos?.options?.response,
-      props.pos?.options?.validation?.format
-    )
+    props.pos.type === "date" &&
+      getDefaultdate(
+        props?.pos?.options?.response,
+        props.pos?.options?.validation?.format
+      )
   );
   const dateFormatArr = [
     "L",
@@ -117,6 +126,7 @@ function Placeholder(props) {
     "DD MMMM, YYYY"
   ];
 
+  useEffect(() => {}, []);
   //function change format array list with selected date and format
   const changeDateFormat = () => {
     const updateDate = [];
