@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
-import { randomId } from "../../constant/Utils";
+import { randomId, textWidget } from "../../constant/Utils";
 
 function PlaceholderCopy(props) {
   const copyType = ["All pages", "All pages but last", "All pages but first"];
@@ -181,7 +181,7 @@ function PlaceholderCopy(props) {
     }
   };
   const handleUniqueId = () => {
-    if (props.widgetType === "label") {
+    if (props.widgetType === textWidget) {
       props.setUniqueId(props?.tempSignerId);
       props.setTempSignerId("");
     }

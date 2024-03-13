@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import "../../styles/AddUser.css";
 import RegexParser from "regex-parser";
+import { textInputWidget } from "../../constant/Utils";
 
 const WidgetNameModal = (props) => {
   const [formdata, setFormdata] = useState({
@@ -69,7 +70,7 @@ const WidgetNameModal = (props) => {
         return "/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/";
       case "number":
         return "/^\\d+$/";
-      case "text":
+      case textInputWidget:
         return "/^[a-zA-Zs]+$/";
       default:
         return type;
@@ -111,8 +112,8 @@ const WidgetNameModal = (props) => {
             required
           />
         </div>
-        {(props.defaultdata?.type === "text" ||
-          props.widgetName === "text") && (
+        {(props.defaultdata?.type === textInputWidget ||
+          props.widgetName === textInputWidget) && (
           <>
             <div className="form-section">
               <label htmlFor="textvalidate" style={{ fontSize: 13 }}>
@@ -243,8 +244,8 @@ const WidgetNameModal = (props) => {
             })}
           </div>
         </div>
-        {(props.defaultdata?.type === "text" ||
-          props?.widgetName === "text") && (
+        {(props.defaultdata?.type === textInputWidget ||
+          props?.widgetName === textInputWidget) && (
           <div className="form-section">
             <label htmlFor="hint" style={{ fontSize: 13 }}>
               Hint

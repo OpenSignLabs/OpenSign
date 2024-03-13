@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import BorderResize from "./BorderResize";
 import PlaceholderBorder from "./PlaceholderBorder";
 import { Rnd } from "react-rnd";
-import { defaultWidthHeight, isMobile } from "../../constant/Utils";
+import {
+  defaultWidthHeight,
+  isMobile,
+  textInputWidget,
+  textWidget
+} from "../../constant/Utils";
 import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
 import "../../styles/opensigndrive.css";
@@ -202,7 +207,7 @@ function Placeholder(props) {
     }
 
     const widgetTypeExist = [
-      "text",
+      textInputWidget,
       "checkbox",
       "name",
       "company",
@@ -238,7 +243,7 @@ function Placeholder(props) {
     } else if (
       props.isPlaceholder &&
       !props.isDragging &&
-      props.pos.type !== "label"
+      props.pos.type !== textWidget
     ) {
       if (props.pos.key === props.selectWidgetId) {
         props.handleLinkUser(props.data.Id);
@@ -277,7 +282,7 @@ function Placeholder(props) {
       props?.handleNameModal(true);
     }
 
-    if (props.isPlaceholder && props.type !== "label") {
+    if (props.isPlaceholder && props.type !== textWidget) {
       props.setUniqueId(props.data.Id);
     }
     props.setSignKey(props.pos.key);
@@ -285,10 +290,10 @@ function Placeholder(props) {
     props.setCurrWidgetsDetails(props.pos);
   };
   const handleCopyPlaceholder = (e) => {
-    if (props.data && props?.pos?.type !== "label") {
+    if (props.data && props?.pos?.type !== textWidget) {
       props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
-    } else if (props.data && props.pos.type === "label") {
+    } else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
       props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
@@ -324,7 +329,9 @@ function Placeholder(props) {
               ) : (
                 ((!props?.pos?.type && props.pos.isStamp) ||
                   (props?.pos?.type &&
-                    !["date", "label", "signature"].includes(props.pos.type) &&
+                    !["date", textWidget, "signature"].includes(
+                      props.pos.type
+                    ) &&
                     !props.isSignYourself)) && (
                   <i
                     onClick={(e) => {
@@ -349,7 +356,7 @@ function Placeholder(props) {
                 )
               )}
 
-              {props.pos.type !== "label" && !props.isSignYourself && (
+              {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
                   data-tut="reactourLinkUser"
                   className="fa-regular fa-user signUserIcon"
@@ -511,7 +518,7 @@ function Placeholder(props) {
       //ref={nodeRef}
       key={props.pos.key}
       lockAspectRatio={
-        props.pos.type !== "label" &&
+        props.pos.type !== textWidget &&
         (props.pos.Width
           ? props.pos.Width / props.pos.Height
           : defaultWidthHeight(props.pos.type).width /

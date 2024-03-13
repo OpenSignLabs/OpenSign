@@ -1,5 +1,12 @@
 import React, { useEffect, useState, forwardRef, useRef } from "react";
-import { getMonth, getYear, onChangeInput, range } from "../../constant/Utils";
+import {
+  getMonth,
+  getYear,
+  onChangeInput,
+  range,
+  textInputWidget,
+  textWidget
+} from "../../constant/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
@@ -77,7 +84,7 @@ function PlaceholderType(props) {
       case "number":
         setValidatePlaceholder("12345");
         break;
-      case "text":
+      case textInputWidget:
         setValidatePlaceholder("enter text");
         break;
       default:
@@ -132,7 +139,7 @@ function PlaceholderType(props) {
   useEffect(() => {
     if (type && type === "date") {
       if (props?.selectDate) {
-        let updateDate;
+        // let updateDate;
         // if (props?.selectDate.format === "dd-MM-yyyy") {
         //   // console.log('saveDateformat',props.saveDateFormat)
         //   const [day, month, year] = props.saveDateFormat.split("-");
@@ -410,7 +417,7 @@ function PlaceholderType(props) {
           })}
         </div>
       );
-    case "text":
+    case textInputWidget:
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <input
@@ -770,7 +777,7 @@ function PlaceholderType(props) {
           })}
         </div>
       );
-    case "label":
+    case textWidget:
       return (
         <textarea
           placeholder="Enter label"

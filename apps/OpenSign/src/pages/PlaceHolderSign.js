@@ -24,7 +24,9 @@ import {
   randomId,
   defaultWidthHeight,
   multiSignEmbed,
-  addWidgetOptions
+  addWidgetOptions,
+  textInputWidget,
+  textWidget
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -384,7 +386,7 @@ function PlaceHolderSign() {
       setSelectWidgetId(key);
       if (signer) {
         let filterSignerPos;
-        if (dragTypeValue === "label") {
+        if (dragTypeValue === textWidget) {
           filterSignerPos = signerPos.filter((data) => data.Role === "prefill");
         } else {
           filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
@@ -411,7 +413,7 @@ function PlaceHolderSign() {
             };
             updatePlace.push(xyPos);
             let updatesignerPos;
-            if (dragTypeValue === "label") {
+            if (dragTypeValue === textWidget) {
               updatesignerPos = signerPos.map((x) =>
                 x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
               );
@@ -424,7 +426,7 @@ function PlaceHolderSign() {
             setSignerPos(updatesignerPos);
           } else {
             let updatesignerPos;
-            if (dragTypeValue === "label") {
+            if (dragTypeValue === textWidget) {
               updatesignerPos = signerPos.map((x) =>
                 x.Role === "prefill"
                   ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
@@ -442,7 +444,7 @@ function PlaceHolderSign() {
         } else {
           //adding new placeholder for selected signer in pos array (placeholder)
           let placeHolderPos;
-          if (dragTypeValue === "label") {
+          if (dragTypeValue === textWidget) {
             placeHolderPos = {
               signerPtr: {},
               signerObjId: "",
@@ -484,7 +486,10 @@ function PlaceHolderSign() {
           setIsCheckbox(true);
         } else if (dragTypeValue === "radio") {
           setIsRadio(true);
-        } else if (dragTypeValue !== "label" && dragTypeValue !== "signature") {
+        } else if (
+          dragTypeValue !== textWidget &&
+          dragTypeValue !== "signature"
+        ) {
           setIsNameModal(true);
         }
         setWidgetType(dragTypeValue);
@@ -734,7 +739,7 @@ function PlaceHolderSign() {
 
     if (getPrefill && isLabel) {
       const alert = {
-        mssg: "label",
+        mssg: textWidget,
         alert: true
       };
       setIsSendAlert(alert);
@@ -1184,7 +1189,7 @@ function PlaceHolderSign() {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
-            if (position.type === "text") {
+            if (position.type === textInputWidget) {
               return {
                 ...position,
                 options: {
@@ -1404,13 +1409,13 @@ function PlaceHolderSign() {
 
               <ModalUi
                 headerColor={
-                  isSendAlert.mssg === "sure" || isSendAlert.mssg === "label"
+                  isSendAlert.mssg === "sure" || isSendAlert.mssg === textWidget
                     ? "#dc3545"
                     : isSendAlert.mssg === "confirm" && themeColor
                 }
                 isOpen={isSendAlert.alert}
                 title={
-                  isSendAlert.mssg === "sure" || isSendAlert.mssg === "label"
+                  isSendAlert.mssg === "sure" || isSendAlert.mssg === textWidget
                     ? "Fields required"
                     : isSendAlert.mssg === "confirm" && "Send Mail"
                 }
@@ -1419,7 +1424,7 @@ function PlaceHolderSign() {
                 <div style={{ height: "100%", padding: 20 }}>
                   {isSendAlert.mssg === "sure" ? (
                     <p>Please add field for all recipients.</p>
-                  ) : isSendAlert.mssg === "label" ? (
+                  ) : isSendAlert.mssg === textWidget ? (
                     <p>Please confirm that you have filled label widget.</p>
                   ) : (
                     isSendAlert.mssg === "confirm" && (
