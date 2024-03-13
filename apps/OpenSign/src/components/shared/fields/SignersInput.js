@@ -19,7 +19,7 @@ const SignersInput = (props) => {
   Modal.setAppElement("body");
   const [state, setState] = useState(undefined);
   // const [editFormData, setEditFormData] = useState([]);
-  const [selected, setSelected] = React.useState([]);
+  const [selected, setSelected] = useState([]);
   const [isModal, setIsModel] = useState(false);
   const onChange = (selectedOptions) => setSelected(selectedOptions);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -63,6 +63,11 @@ const SignersInput = (props) => {
   useEffect(() => {
     GetSelectListData();
   }, []);
+  useEffect(() => {
+    if (props.isReset && props.isReset === true) {
+      setSelected([]);
+    }
+  }, [props.isReset]);
 
   useEffect(() => {
     if (selected && selected.length) {
