@@ -38,6 +38,7 @@
     "react-scrollbars-custom": "^4.1.1",
     "react-select": "^5.8.0",
     "react-signature-canvas": "^1.0.6",
+    "react-tooltip": "^5.26.3",
     "reactour": "^1.19.2",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",

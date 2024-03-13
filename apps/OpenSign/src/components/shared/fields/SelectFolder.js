@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import CreateFolder from "./CreateFolder";
 import ModalUi from "../../../primitives/ModalUi";
+import Tooltip from "../../../primitives/Tooltip";
 
 const SelectFolder = ({ required, onSuccess, folderCls }) => {
   const [isOpen, SetIsOpen] = useState(false);
@@ -145,7 +146,7 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
           {required && <span className="text-red-500 text-[13px]">*</span>}
         </label>
       </div>
-      <div className="rounded px-[20px] py-[20px] bg-white border border-gray-200 shadow flex max-w-sm gap-8 items-center">
+      <div className="relative rounded px-[20px] py-[20px] bg-white border border-gray-200 shadow flex max-w-sm gap-8 items-center">
         <div>
           <i
             className="far fa-folder-open text-[40px] text-[#33bbff]"
@@ -169,6 +170,13 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
           <p className="text-[10px] text-gray-400">
             {selectFolder && selectFolder.Name ? `(${folderPath})` : ""}
           </p>
+        </div>
+        <div className="absolute top-1 right-1 cursor-pointer">
+          <Tooltip
+            message={
+              "If you do not select a folder, your signed document will be saved in the Main OpenSign drive folder."
+            }
+          />
         </div>
       </div>
       <ModalUi
@@ -201,23 +209,25 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
             <hr />
           </div>
           <div className="mt-2 mb-3">
-            {!isAdd &&
-              folderList.length > 0 &&
-              folderList.map((folder) => (
-                <div
-                  key={folder.Name}
-                  className="border-[1px] border-[#8a8a8a] px-2 py-2 mb-2 cursor-pointer"
-                  onClick={() => handleSelect(folder)}
-                >
-                  <div className="flex items-center gap-2">
-                    <i
-                      className="fa fa-folder text-[#33bbff] text-[1.4rem]"
-                      aria-hidden="true"
-                    ></i>
-                    <span className="font-semibold">{folder.Name}</span>
+            <div className="max-h-[210px] overflow-auto">
+              {!isAdd &&
+                folderList.length > 0 &&
+                folderList.map((folder) => (
+                  <div
+                    key={folder.Name}
+                    className="border-[1px] border-[#8a8a8a] px-2 py-2 mb-2 cursor-pointer "
+                    onClick={() => handleSelect(folder)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <i
+                        className="fa fa-folder text-[#33bbff] text-[1.4rem]"
+                        aria-hidden="true"
+                      ></i>
+                      <span className="font-semibold">{folder.Name}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+            </div>
             {isAdd && (
               <CreateFolder
                 parentFolderId={clickFolder && clickFolder.ObjectId}
