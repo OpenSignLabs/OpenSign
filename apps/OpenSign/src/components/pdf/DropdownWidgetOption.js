@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
+import { radioButtonWidget } from "../../constant/Utils";
 function DropdownWidgetOption(props) {
   const [dropdownOptionList, setDropdownOptionList] = useState([
     "option-1",
@@ -143,7 +144,7 @@ function DropdownWidgetOption(props) {
       //   styleClass={"dropdownModal"}
       isOpen={props.showDropdown}
       title={props.title}
-      closeOff={true}
+      showClose={false}
     >
       <div style={{ height: "100%", padding: 20 }}>
         <form
@@ -153,7 +154,7 @@ function DropdownWidgetOption(props) {
           }}
         >
           <div className="dropdownContainer">
-            {["checkbox", "radio"].includes(props.type) &&
+            {["checkbox", radioButtonWidget].includes(props.type) &&
               !props.isSignYourself && (
                 <div>
                   <input
@@ -285,7 +286,7 @@ function DropdownWidgetOption(props) {
                 </>
               )}
             </div>
-            {["dropdown", "radio"].includes(props.type) && (
+            {["dropdown", radioButtonWidget].includes(props.type) && (
               <>
                 <label
                   style={{
@@ -320,7 +321,7 @@ function DropdownWidgetOption(props) {
                 </select>
               </>
             )}
-            {props.type !== "checkbox" && props.type !== "radio" && (
+            {props.type !== "checkbox" && props.type !== radioButtonWidget && (
               <>
                 <div
                   style={{

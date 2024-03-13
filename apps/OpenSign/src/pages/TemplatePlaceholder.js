@@ -23,7 +23,8 @@ import {
   defaultWidthHeight,
   addWidgetOptions,
   textInputWidget,
-  textWidget
+  textWidget,
+  radioButtonWidget
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -444,7 +445,7 @@ const TemplatePlaceholder = () => {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
-        } else if (dragTypeValue === "radio") {
+        } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
         } else if (
           dragTypeValue !== textWidget &&
@@ -991,7 +992,7 @@ const TemplatePlaceholder = () => {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
-            if (widgetType === "radio") {
+            if (widgetType === radioButtonWidget) {
               if (addOption) {
                 return {
                   ...position,
@@ -1310,7 +1311,7 @@ const TemplatePlaceholder = () => {
                 </div>
               </ModalUi>
               <DropdownWidgetOption
-                type="radio"
+                type={radioButtonWidget}
                 title="Radio group"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}

@@ -6,6 +6,7 @@ import {
   defaultWidthHeight,
   isMobile,
   onChangeInput,
+  radioButtonWidget,
   textInputWidget,
   textWidget
 } from "../../constant/Utils";
@@ -232,7 +233,7 @@ function Placeholder(props) {
 
   //function to set state value of onclick on widget's setting icon
   const handleWidgetsOnclick = () => {
-    if (props.pos.type === "radio") {
+    if (props.pos.type === radioButtonWidget) {
       props.setIsRadio(true);
     } else if (props.pos.type === "dropdown") {
       props?.setShowDropdown(true);
@@ -335,10 +336,14 @@ function Placeholder(props) {
                     className="fa-solid fa-gear settingIcon"
                     style={{
                       color: "#188ae2",
-                      right: ["checkbox", "radio"].includes(props.pos.type)
+                      right: ["checkbox", radioButtonWidget].includes(
+                        props.pos.type
+                      )
                         ? "24px"
                         : "47px",
-                      top: ["checkbox", "radio"].includes(props.pos.type)
+                      top: ["checkbox", radioButtonWidget].includes(
+                        props.pos.type
+                      )
                         ? "-28px"
                         : "-19px"
                     }}
@@ -364,12 +369,12 @@ function Placeholder(props) {
                     color: "#188ae2",
                     right:
                       props.pos.type === "checkbox" ||
-                      props.pos.type === "radio"
+                      props.pos.type === radioButtonWidget
                         ? "8px"
                         : "32px",
                     top:
                       props.pos.type === "checkbox" ||
-                      props.pos.type === "radio"
+                      props.pos.type === radioButtonWidget
                         ? "-28px"
                         : "-18px"
                   }}
@@ -457,11 +462,13 @@ function Placeholder(props) {
             style={{
               color: "#188ae2",
               right:
-                props.pos.type === "checkbox" || props.pos.type === "radio"
+                props.pos.type === "checkbox" ||
+                props.pos.type === radioButtonWidget
                   ? "-9px"
                   : "12px",
               top:
-                props.pos.type === "checkbox" || props.pos.type === "radio"
+                props.pos.type === "checkbox" ||
+                props.pos.type === radioButtonWidget
                   ? "-28px"
                   : "-18px"
             }}
@@ -490,11 +497,13 @@ function Placeholder(props) {
             style={{
               color: "#188ae2",
               right:
-                props.pos.type === "checkbox" || props.pos.type === "radio"
+                props.pos.type === "checkbox" ||
+                props.pos.type === radioButtonWidget
                   ? "-27px"
                   : "-8px",
               top:
-                props.pos.type === "checkbox" || props.pos.type === "radio"
+                props.pos.type === "checkbox" ||
+                props.pos.type === radioButtonWidget
                   ? "-28px"
                   : "-18px"
             }}
@@ -526,10 +535,10 @@ function Placeholder(props) {
           props.data && props.isNeedSign
             ? props.data?.signerObjId === props.signerObjId &&
               props.pos.type !== "checkbox" &&
-              props.pos.type !== "radio"
+              props.pos.type !== radioButtonWidget
               ? true
               : false
-            : props.pos.type !== "radio" &&
+            : props.pos.type !== radioButtonWidget &&
               props.pos.type !== "checkbox" &&
               props.pos.key === props.selectWidgetId &&
               true,
@@ -614,31 +623,33 @@ function Placeholder(props) {
       }}
     >
       {props.isShowBorder &&
-      props.pos.type !== "radio" &&
+      props.pos.type !== radioButtonWidget &&
       props.pos.type !== "checkbox" &&
       props.pos.key === props.selectWidgetId ? (
         <BorderResize
           right={
-            props.pos.type === "checkbox" || props.pos.type === "radio"
+            props.pos.type === "checkbox" ||
+            props.pos.type === radioButtonWidget
               ? -21
               : -12
           }
           top={
-            props.pos.type === "checkbox" || props.pos.type === "radio"
+            props.pos.type === "checkbox" ||
+            props.pos.type === radioButtonWidget
               ? -21
               : -11
           }
         />
       ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
         props.data?.signerObjId === props.signerObjId &&
-        props.pos.type !== "radio" &&
+        props.pos.type !== radioButtonWidget &&
         props.pos.type !== "checkbox" ? (
           <BorderResize />
         ) : (
           <></>
         )
       ) : (
-        props.pos.type !== "radio" &&
+        props.pos.type !== radioButtonWidget &&
         props.pos.type !== "checkbox" &&
         props.pos.key === props.selectWidgetId && <BorderResize />
       )}

@@ -7,6 +7,7 @@ import { rgb } from "pdf-lib";
 export const isMobile = window.innerWidth < 767;
 export const textInputWidget = "text input";
 export const textWidget = "text";
+export const radioButtonWidget = "radio button";
 export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
@@ -204,7 +205,7 @@ export const widgets = [
     iconSize: "19px"
   },
   {
-    type: "radio",
+    type: radioButtonWidget,
     icon: "fa-regular fa-circle-dot",
     iconSize: "20px"
   },
@@ -260,7 +261,7 @@ export const addWidgetOptions = (type) => {
       return { ...defaultOpt, validation: { type: "email", pattern: "" } };
     case "dropdown":
       return defaultOpt;
-    case "radio":
+    case radioButtonWidget:
       return { ...defaultOpt, values: [] };
     case textWidget:
       return defaultOpt;
@@ -346,7 +347,7 @@ export const defaultWidthHeight = (type) => {
       return { width: 70, height: 70 };
     case "email":
       return { width: 150, height: 20 };
-    case "radio":
+    case radioButtonWidget:
       return { width: 15, height: 30 };
     case textWidget:
       return { width: 150, height: 17 };
@@ -1078,7 +1079,7 @@ export const multiSignEmbed = async (
           ? labelDefaultHeight
           : scaleHeight;
         const widgetHeight =
-          position.type === "radio"
+          position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
               ? 10
@@ -1272,7 +1273,7 @@ export const multiSignEmbed = async (
           height: scaleHeight
         });
         dropdown.enableReadOnly();
-      } else if (position.type === "radio") {
+      } else if (position.type === radioButtonWidget) {
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
         let addYPosition = 18;

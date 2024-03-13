@@ -3,7 +3,12 @@ import ModalUi from "../../primitives/ModalUi";
 import RecipientList from "./RecipientList";
 import { useDrag } from "react-dnd";
 import WidgetList from "./WidgetList";
-import { textInputWidget, textWidget, widgets } from "../../constant/Utils";
+import {
+  radioButtonWidget,
+  textInputWidget,
+  textWidget,
+  widgets
+} from "../../constant/Utils";
 import { themeColor } from "../../constant/const";
 function WidgetComponent({
   dragSignature,
@@ -152,16 +157,16 @@ function WidgetComponent({
       isDragEmail: !!monitor.isDragging()
     })
   });
-  const [, radio] = useDrag({
+  const [, radioButton] = useDrag({
     type: "BOX",
 
     item: {
       type: "BOX",
       id: 15,
-      text: "radio"
+      text: radioButtonWidget
     },
     collect: (monitor) => ({
-      isDragRadio: !!monitor.isDragging()
+      isDragRadiotton: !!monitor.isDragging()
     })
   });
   const [, text] = useDrag({
@@ -211,7 +216,7 @@ function WidgetComponent({
       textInput,
       checkbox,
       dropdown,
-      radio,
+      radioButton,
       image,
       email
     ];
@@ -227,7 +232,7 @@ function WidgetComponent({
   const filterWidgets = widget.filter(
     (data) =>
       data.type !== "dropdown" &&
-      data.type !== "radio" &&
+      data.type !== radioButtonWidget &&
       data.type !== textWidget
   );
   const textWidgetData = widget.filter((data) => data.type !== textWidget);

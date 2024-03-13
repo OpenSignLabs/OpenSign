@@ -3,6 +3,7 @@ import {
   getMonth,
   getYear,
   onChangeInput,
+  radioButtonWidget,
   range,
   textInputWidget,
   textWidget
@@ -700,7 +701,7 @@ function PlaceholderType(props) {
           <span>{type}</span>
         </div>
       );
-    case "radio":
+    case radioButtonWidget:
       return (
         <div>
           {props.pos.options?.values.map((data, ind) => {
