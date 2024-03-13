@@ -97,7 +97,7 @@ const HomeLayout = () => {
         ...resArr,
         {
           selector: '[data-tut="reactourLast"]',
-          content: `You are good to go`,
+          content: `You are ready to start using OpenSign! If you need support feel free to contact us.`,
           position: "top"
           // style: { backgroundColor: "#abd4d2" },
         }
