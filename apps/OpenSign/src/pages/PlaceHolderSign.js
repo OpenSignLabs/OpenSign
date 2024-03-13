@@ -26,7 +26,8 @@ import {
   multiSignEmbed,
   addWidgetOptions,
   textInputWidget,
-  textWidget
+  textWidget,
+  radioButtonWidget
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -484,7 +485,7 @@ function PlaceHolderSign() {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
-        } else if (dragTypeValue === "radio") {
+        } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
         } else if (
           dragTypeValue !== textWidget &&
@@ -1070,7 +1071,7 @@ function PlaceHolderSign() {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
-            if (widgetType === "radio") {
+            if (widgetType === radioButtonWidget) {
               if (addOption) {
                 return {
                   ...position,
@@ -1563,7 +1564,7 @@ function PlaceHolderSign() {
                 setTempSignerId={setTempSignerId}
               />
               <DropdownWidgetOption
-                type="radio"
+                type={radioButtonWidget}
                 title="Radio group"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
