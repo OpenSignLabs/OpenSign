@@ -5,6 +5,7 @@ import { Rnd } from "react-rnd";
 import {
   defaultWidthHeight,
   isMobile,
+  onChangeInput,
   textInputWidget,
   textWidget
 } from "../../constant/Utils";
@@ -66,9 +67,7 @@ const changeDateToMomentFormat = (format) => {
   }
 };
 
-// const getDefaultdate = (selectedDate) => {
-//   return selectedDate ? new Date(selectedDate) : new Date();
-// };
+//function to get default date
 const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
   let date;
   if (format && format === "dd-MM-yyyy") {
@@ -83,17 +82,12 @@ const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
   const value = date;
   return value;
 };
+//function to get default format
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
 
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
-  // const [selectDate, setSelectDate] = useState({
-  //   date: moment(
-  //     getDefaultdate(props?.pos?.options?.response).getTime()
-  //   ).format(changeDateToMomentFormat(props.pos?.options?.validation?.format)),
-  //   format: getDefaultFormat(props.pos?.options?.validation?.format)
-  // });
   const [selectDate, setSelectDate] = useState({
     date: moment(
       getDefaultdate(
@@ -104,10 +98,6 @@ function Placeholder(props) {
     format: getDefaultFormat(props.pos?.options?.validation?.format)
   });
   const [dateFormat, setDateFormat] = useState([]);
-  const [saveDateFormat, setSaveDateFormat] = useState("");
-  // const [startDate, setStartDate] = useState(
-  //   getDefaultdate(props?.pos?.options?.response)
-  // );
   const [startDate, setStartDate] = useState(
     getDefaultdate(
       props?.pos?.options?.response,
@@ -125,36 +115,6 @@ function Placeholder(props) {
     "DD MMM, YYYY",
     "DD MMMM, YYYY"
   ];
-
-  //useEffect for to set date and date format for all flow (signyour-self, request-sign,placeholder,template)
-  //checking if already have data and set else set new date
-  // useEffect(() => {
-  //   console.log('go here')
-  //   //set default current date and default format MM/dd/yyyy
-  //   const defaultFormat = props.pos?.options?.validation?.format;
-  //   const updateDate = props?.pos?.options?.response
-  //     ? new Date(props?.pos?.options?.response)
-  //     : new Date();
-  //   //DD-mm-YYYY
-  //   const dateFormat = defaultFormat && defaultFormat;
-  //   // const isMomentType = dateFormat && dateFormat === "MM/dd/YYYY";
-  //   // const selectMomentFormat = isMomentType ?  "MM/DD/YYYY" : dateFormat;
-  //   const selectMomentFormat = changeDateToMomentFormat(dateFormat);
-
-  //   // const isFormatType = dateFormat && dateFormat === "MM/dd/YYYY";
-  //   const getFormat = dateFormat || "MM/dd/yyyy";
-  //   const milliseconds = updateDate.getTime();
-  //   const newDate = moment(milliseconds).format(selectMomentFormat);
-  //   // console.log('new date',newDate)
-  //   const dateObj = {
-  //     date: newDate,
-  //     format: getFormat
-  //   };
-  //   console.log("dateobj selectdate useEffect", dateObj);
-  //   setSelectDate(dateObj);
-  //   setStartDate(updateDate);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   //function change format array list with selected date and format
   const changeDateFormat = () => {
@@ -178,15 +138,14 @@ function Placeholder(props) {
     setDateFormat(updateDate);
   };
 
-  // console.log("selected date", selectDate);
   useEffect(() => {
     if (props.isPlaceholder || props.isSignYourself) {
-      // console.log("selected date useEffect", selectDate);
       selectDate && changeDateFormat();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectDate]);
-  //handle to close drop down menu onclick screen
+
+  //it detect outside click of date dropdown menu
   useEffect(() => {
     const closeMenuOnOutsideClick = (e) => {
       if (isShowDateFormat && !e.target.closest("#menu-container")) {
@@ -271,6 +230,7 @@ function Placeholder(props) {
     }
   };
 
+  //function to set state value of onclick on widget's setting icon
   const handleWidgetsOnclick = () => {
     if (props.pos.type === "radio") {
       props.setIsRadio(true);
@@ -289,6 +249,7 @@ function Placeholder(props) {
     props.setWidgetType(props.pos.type);
     props.setCurrWidgetsDetails(props.pos);
   };
+  //function ro set state value of onclick on widget's copy icon
   const handleCopyPlaceholder = (e) => {
     if (props.data && props?.pos?.type !== textWidget) {
       props.setSignerObjId(props?.data?.signerObjId);
@@ -303,6 +264,35 @@ function Placeholder(props) {
     props.setSignKey(props.pos.key);
   };
 
+  //function to save date and format on local array onchange date and onclick format
+  const handleSaveDate = (data, isDateChange) => {
+    let updateDate = data.date;
+    //check if date change by user
+    if (isDateChange) {
+      //`changeDateToMomentFormat` is used to convert date as per required to moment package
+      updateDate = moment(data.date).format(
+        changeDateToMomentFormat(data.format)
+      );
+    }
+    //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
+    //`getDefaultdate` is used to convert update date in new Date() format
+    const date = moment(
+      getDefaultdate(updateDate, data?.format).getTime()
+    ).format(changeDateToMomentFormat(data?.format));
+
+    //`onChangeInput` is used to save data related to date in a placeholder field
+    onChangeInput(
+      date,
+      props.pos.key,
+      props.xyPostion,
+      props.index,
+      props.setXyPostion,
+      props.data && props.data.Id,
+      false,
+      data?.format
+    );
+    setSelectDate({ date: date, format: data?.format });
+  };
   const PlaceholderIcon = () => {
     return (
       props.isShowBorder && (
@@ -439,10 +429,12 @@ function Placeholder(props) {
                         e.stopPropagation();
                         setIsShowDateFormat(!isShowDateFormat);
                         setSelectDate(data);
+                        handleSaveDate(data);
                       }}
                       onClick={() => {
                         setIsShowDateFormat(!isShowDateFormat);
                         setSelectDate(data);
+                        handleSaveDate(data);
                       }}
                       className="dropdown-item itemColor"
                       style={{ fontSize: "12px" }}
@@ -695,11 +687,10 @@ function Placeholder(props) {
             isNeedSign={props.isNeedSign}
             setSelectDate={setSelectDate}
             selectDate={selectDate}
-            setSaveDateFormat={setSaveDateFormat}
-            saveDateFormat={saveDateFormat}
             setValidateAlert={props.setValidateAlert}
             setStartDate={setStartDate}
             startDate={startDate}
+            handleSaveDate={handleSaveDate}
           />
         </div>
       ) : (
@@ -722,11 +713,10 @@ function Placeholder(props) {
             isNeedSign={props.isNeedSign}
             setSelectDate={setSelectDate}
             selectDate={selectDate}
-            setSaveDateFormat={setSaveDateFormat}
-            saveDateFormat={saveDateFormat}
             setValidateAlert={props.setValidateAlert}
             setStartDate={setStartDate}
             startDate={startDate}
+            handleSaveDate={handleSaveDate}
           />
         </>
       )}
