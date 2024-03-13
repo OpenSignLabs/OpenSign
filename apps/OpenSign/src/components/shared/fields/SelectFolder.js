@@ -4,7 +4,7 @@ import CreateFolder from "./CreateFolder";
 import ModalUi from "../../../primitives/ModalUi";
 import Tooltip from "../../../primitives/Tooltip";
 
-const SelectFolder = ({ required, onSuccess, folderCls }) => {
+const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
   const [isOpen, SetIsOpen] = useState(false);
   const [clickFolder, setClickFolder] = useState("");
   const [selectFolder, setSelectedFolder] = useState({});
@@ -23,6 +23,21 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
     }
     // eslint-disable-next-line
   }, [isOpen]);
+  // below useEffect is used to reset folder selection if user pass isReset = true from parent component
+  useEffect(() => {
+    if (isReset == true) {
+      handleReset();
+    }
+  }, [isReset]);
+  const handleReset = () => {
+    setFolderPath({});
+    setSelectedFolder("");
+    setClickFolder("");
+    setIsAdd(false);
+    setFolderList([]);
+    setTabList([]);
+  };
+  // `fetchFolder` is used to fetch of folder list created by user on basis of folderPtr or without folderPtr
   const fetchFolder = async (folderPtr) => {
     setIsLoader(true);
     try {
@@ -48,6 +63,8 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
       setIsLoader(false);
     }
   };
+
+  // `handleSelect` is used to save pointer of folder selected by user and it's path in state
   const handleSelect = (item) => {
     setFolderList([]);
     setClickFolder({ ObjectId: item.objectId, Name: item.Name });
@@ -74,6 +91,7 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
     }
   };
 
+  // `handleSubmit` is used to pass folderPtr to parent component
   const handleSubmit = () => {
     let url = "Root";
     tabList.forEach((t) => {
@@ -86,6 +104,8 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
     }
     SetIsOpen(false);
   };
+
+  // `handleCancel` is used to clear list of folder, close popup and folderUrl
   const handleCancel = () => {
     SetIsOpen(false);
     setClickFolder({});
@@ -93,6 +113,7 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
     setTabList([]);
   };
 
+  // `handleCancel` is call when user click on folder name from path/tab in popup
   const removeTabListItem = async (e, i) => {
     e.preventDefault();
     // setEditable(false);
@@ -122,9 +143,11 @@ const SelectFolder = ({ required, onSuccess, folderCls }) => {
       fetchFolder(folderPtr);
     }
   };
+  // `handleCreate` is used to open folder creation form in popup
   const handleCreate = () => {
     setIsAdd(!isAdd);
   };
+  // `handleAddFolder` is call when user folder created successfully and it fetch folder list on the basis of folderPtr or without folderPtr
   const handleAddFolder = () => {
     setFolderList([]);
     if (clickFolder && clickFolder.ObjectId) {
