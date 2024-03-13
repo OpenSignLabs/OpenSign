@@ -41,7 +41,7 @@ const Forms = (props) => {
   const [fileupload, setFileUpload] = useState([]);
   const [fileload, setfileload] = useState(false);
   const [percentage, setpercentage] = useState(0);
-  const [isFolderReset, setIsFolderReset] = useState(false);
+  const [isReset, setIsReset] = useState(false);
   const [isAlert, setIsAlert] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const [isErr, setIsErr] = useState("");
@@ -226,7 +226,7 @@ const Forms = (props) => {
   };
 
   const handleReset = () => {
-    setIsFolderReset(true);
+    setIsReset(true);
     setSigners([]);
     setFolder({ ObjectId: "", Name: "" });
     setFormData({
@@ -238,7 +238,7 @@ const Forms = (props) => {
     });
     setFileUpload([]);
     setpercentage(0);
-    setTimeout(() => setIsFolderReset(false), 50);
+    setTimeout(() => setIsReset(false), 50);
   };
   return (
     <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
@@ -342,7 +342,9 @@ const Forms = (props) => {
               onChange={(e) => handleStrInput(e)}
             />
           </div>
-          {props.signers && <SignersInput onChange={handleSigners} required />}
+          {props.signers && (
+            <SignersInput onChange={handleSigners} isReset={isReset} required />
+          )}
           <div className="text-xs mt-2">
             <label className="block">
               Note<span className="text-red-500 text-[13px]">*</span>
@@ -358,7 +360,7 @@ const Forms = (props) => {
           <SelectFolder
             onSuccess={handleFolder}
             folderCls={props.Cls}
-            isReset={isFolderReset}
+            isReset={isReset}
           />
 
           {props.title === "Request Signatures" && (
