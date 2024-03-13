@@ -649,7 +649,9 @@ function PlaceholderType(props) {
               </div>
             )}
             disabled={
-              props.isNeedSign && props.data?.signerObjId !== props.signerObjId
+              props.isPlaceholder ||
+              (props.isNeedSign &&
+                props.data?.signerObjId !== props.signerObjId)
             }
             onBlur={handleInputBlur}
             closeOnScroll={true}
