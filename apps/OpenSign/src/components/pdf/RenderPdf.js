@@ -270,6 +270,8 @@ function RenderPdf({
                         setIsInitial={setIsInitial}
                         setValidateAlert={setValidateAlert}
                         unSignedWidgetId={unSignedWidgetId}
+                        setSelectWidgetId={setSelectWidgetId}
+                        selectWidgetId={selectWidgetId}
                       />
                     </React.Fragment>
                   )

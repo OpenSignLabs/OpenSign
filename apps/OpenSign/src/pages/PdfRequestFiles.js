@@ -49,6 +49,7 @@ function PdfRequestFiles() {
   const [imgWH, setImgWH] = useState({});
   const imageRef = useRef(null);
   const [handleError, setHandleError] = useState();
+  const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -646,6 +647,7 @@ function PdfRequestFiles() {
       });
     }
   }
+  console.log("signer", signerPos);
   //function for update TourStatus
   const closeTour = async () => {
     setWidgetsTour(false);
@@ -1176,6 +1178,8 @@ function PdfRequestFiles() {
                   setIsInitial={setIsInitial}
                   setValidateAlert={setValidateAlert}
                   unSignedWidgetId={unSignedWidgetId}
+                  setSelectWidgetId={setSelectWidgetId}
+                  selectWidgetId={selectWidgetId}
                 />
               )}
             </div>

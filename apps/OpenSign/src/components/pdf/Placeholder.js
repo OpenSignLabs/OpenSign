@@ -573,7 +573,9 @@ function Placeholder(props) {
             : "all-scroll",
         zIndex:
           props.pos.type === "date"
-            ? "99"
+            ? props.pos.key === props.selectWidgetId
+              ? 99 + 1
+              : 99
             : props?.pos?.zIndex
               ? props.pos.zIndex
               : "5",

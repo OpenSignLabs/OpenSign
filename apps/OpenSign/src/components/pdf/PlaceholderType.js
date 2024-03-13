@@ -133,7 +133,7 @@ function PlaceholderType(props) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.pos?.options?.defaultValue]);
+  }, [props.pos]);
 
   const dateValue = (value) => {
     return <span>{value}</span>;
