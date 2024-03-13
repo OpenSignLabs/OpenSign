@@ -11,6 +11,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   const [name, setName] = useState("");
   const [folderList, setFolderList] = useState([]);
   const [isAlert, setIsAlert] = useState(false);
+  const [isLoader, setIsLoader] = useState(false);
   const [selectedParent, setSelectedParent] = useState();
   const [alert, setAlert] = useState({ type: "info", message: "" });
   useEffect(() => {
@@ -42,6 +43,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   };
   const handleCreateFolder = async (event) => {
     event.preventDefault();
+    handleLoader(true);
     if (name) {
       const currentUser = Parse.User.current();
       const exsitQuery = new Parse.Query(folderCls);
@@ -52,7 +54,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       }
       const templExist = await exsitQuery.first();
       if (templExist) {
-        setAlert({ type: "dange", message: "Folder already exist!" });
+        setAlert({ type: "danger", message: "Folder already exist!" });
         setIsAlert(true);
         setTimeout(() => {
           setIsAlert(false);
@@ -74,6 +76,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         template.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
         const res = await template.save();
         if (res) {
+          handleLoader(false);
           setAlert({
             type: "success",
             message: "Folder created successfully!"
@@ -88,6 +91,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         }
       }
     } else {
+      handleLoader(false);
       setAlert({ type: "info", message: "Please fill folder name" });
       setIsAlert(true);
       setTimeout(() => {
@@ -98,10 +102,21 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   const handleOptions = (e) => {
     setSelectedParent(e.target.value);
   };
+  const handleLoader = (status) => {
+    setIsLoader(status);
+  };
   return (
     <div>
       {isAlert && <Alert type={alert.type}>{alert.message}</Alert>}
-      <div id="createFolder">
+      <div id="createFolder" className="relative">
+        {isLoader && (
+          <div className="absolute h-full w-full flex justify-center items-center ">
+            <div
+              style={{ fontSize: "45px", color: "#3dd3e0" }}
+              className="loader-37"
+            ></div>
+          </div>
+        )}
         <h1 className="text-base font-semibold">Create Folder</h1>
         <div className="text-xs mt-2">
           <label className="block">
@@ -133,6 +148,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         <div>
           <button
             onClick={handleCreateFolder}
+            disabled={isLoader}
             className="flex items-center rounded p-2 bg-[#32a3ac] text-white mt-3"
           >
             <i className="fa-solid fa-plus mr-1"></i>
