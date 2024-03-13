@@ -3,7 +3,6 @@ import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import { themeColor } from "../constant/const";
 import axios from "axios";
-import moment from "moment";
 import Loader from "../primitives/LoaderWithMsg";
 import loader from "../assets/images/loader2.gif";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
@@ -26,7 +25,8 @@ import {
   contractUsers,
   contactBook,
   randomId,
-  getDate
+  getDate,
+  textInputWidget
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -343,7 +343,7 @@ function SignYourSelf() {
           name: "checkbox"
         };
 
-      case "text":
+      case textInputWidget:
         return {
           name: "text"
         };

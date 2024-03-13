@@ -3,7 +3,7 @@ import ModalUi from "../../primitives/ModalUi";
 import RecipientList from "./RecipientList";
 import { useDrag } from "react-dnd";
 import WidgetList from "./WidgetList";
-import { widgets } from "../../constant/Utils";
+import { textInputWidget, textWidget, widgets } from "../../constant/Utils";
 import { themeColor } from "../../constant/const";
 function WidgetComponent({
   dragSignature,
@@ -58,16 +58,15 @@ function WidgetComponent({
       isDragCheck: !!monitor.isDragging()
     })
   });
-  const [, text] = useDrag({
+  const [, textInput] = useDrag({
     type: "BOX",
     item: {
       type: "BOX",
       id: 7,
-      text: "text"
+      text: textInputWidget
     },
-
     collect: (monitor) => ({
-      isDragText: !!monitor.isDragging()
+      isDragTextInput: !!monitor.isDragging()
     })
   });
   const [, initials] = useDrag({
@@ -165,16 +164,16 @@ function WidgetComponent({
       isDragRadio: !!monitor.isDragging()
     })
   });
-  const [, label] = useDrag({
+  const [, text] = useDrag({
     type: "BOX",
 
     item: {
       type: "BOX",
       id: 16,
-      text: "label"
+      text: textWidget
     },
     collect: (monitor) => ({
-      isDragLabel: !!monitor.isDragging()
+      isDragText: !!monitor.isDragging()
     })
   });
   const isMobile = window.innerWidth < 767;
@@ -208,8 +207,8 @@ function WidgetComponent({
       jobTitle,
       company,
       date,
-      label,
       text,
+      textInput,
       checkbox,
       dropdown,
       radio,
@@ -227,13 +226,15 @@ function WidgetComponent({
 
   const filterWidgets = widget.filter(
     (data) =>
-      data.type !== "dropdown" && data.type !== "radio" && data.type !== "label"
+      data.type !== "dropdown" &&
+      data.type !== "radio" &&
+      data.type !== textWidget
   );
-  const labelWidget = widget.filter((data) => data.type !== "label");
+  const textWidgetData = widget.filter((data) => data.type !== textWidget);
   const updateWidgets = isSignYourself
     ? filterWidgets
     : isTemplateFlow
-      ? labelWidget
+      ? textWidgetData
       : widget;
 
   return (
