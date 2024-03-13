@@ -381,7 +381,8 @@ function SignYourSelf() {
       case "date":
         return {
           name: "date",
-          defaultValue: getDate()
+          response: getDate(),
+          validation: { format: "MM/dd/yyyy", type: "date-format" }
         };
       case "image":
         return {

@@ -117,7 +117,6 @@ function PlaceholderType(props) {
           ? props.pos?.options?.defaultValue
           : ""
     );
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -135,54 +134,7 @@ function PlaceholderType(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.pos?.options?.defaultValue]);
 
-  //useEffect to save date and format on local array
-  useEffect(() => {
-    if (type && type === "date") {
-      if (props?.selectDate) {
-        // let updateDate;
-        // if (props?.selectDate.format === "dd-MM-yyyy") {
-        //   // console.log('saveDateformat',props.saveDateFormat)
-        //   const [day, month, year] = props.saveDateFormat.split("-");
-        //   updateDate = new Date(`${year}-${month}-${day}`);
-        //   console.log('update',updateDate)
-        // } else {
-        //   if (props?.saveDateFormat) {
-        //     updateDate = new Date(props.saveDateFormat);
-        //   }
-        // }
-        // const updateDate = new Date(props.saveDateFormat);
-        // props.setStartDate(updateDate);
-        // const dateObj = {
-        //   date: props.saveDateFormat,
-        //   format: props.selectDate
-        //     ? props.selectDate?.format
-        //     : props.pos?.options?.validation?.format
-        //       ? props.pos?.options?.validation?.format
-        //       : "MM/dd/yyyy"
-        // };
-
-        // props.setSelectDate(dateObj);
-        onChangeInput(
-          props.saveDateFormat,
-          props.pos.key,
-          props.xyPostion,
-          props.index,
-          props.setXyPostion,
-          props.data && props.data.Id,
-          false,
-          props.selectDate?.format
-            ? props.selectDate.format
-            : props.pos?.options?.validation?.format
-              ? props.pos?.options?.validation?.format
-              : "MM/dd/yyyy"
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.saveDateFormat]);
-
   const dateValue = (value) => {
-    props.setSaveDateFormat(value);
     return <span>{value}</span>;
   };
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
@@ -325,6 +277,16 @@ function PlaceholderType(props) {
     );
   };
 
+  //function to set onchange date
+  const handleOnDateChange = (date) => {
+    props.setStartDate(date);
+    const isDateChange = true;
+    const dateObj = {
+      date: date,
+      format: props.selectDate.format
+    };
+    props.handleSaveDate(dateObj, isDateChange);
+  };
   switch (type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -670,18 +632,10 @@ function PlaceholderType(props) {
                 : props.pos.options?.response &&
                   new Date(props.pos.options.response)
             }
-            onChange={(date) => {
-              props.setStartDate(date);
-            }}
+            onChange={(date) => handleOnDateChange(date)}
             popperPlacement="top-end"
             customInput={<ExampleCustomInput />}
             dateFormat={
-              // props.pos?.options?.validation?.format
-              //   ? props.pos?.options?.validation?.format
-              //   : props.selectDate
-              //   ? props.selectDate?.format
-              //   : "MM/dd/YYYY"
-
               props.selectDate
                 ? props.selectDate?.format
                 : props.pos?.options?.validation?.format

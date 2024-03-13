@@ -249,7 +249,11 @@ export const addWidgetOptions = (type) => {
     case "job title":
       return { ...defaultOpt, validation: { type: "text", pattern: "" } };
     case "date":
-      return { ...defaultOpt, response: getDate() };
+      return {
+        ...defaultOpt,
+        response: getDate(),
+        validation: { format: "MM/dd/yyyy", type: "date-format" }
+      };
     case "image":
       return defaultOpt;
     case "email":
