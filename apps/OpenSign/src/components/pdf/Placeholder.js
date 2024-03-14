@@ -168,8 +168,8 @@ function Placeholder(props) {
     };
   }, [isShowDateFormat]);
 
-  //onclick placeholder function to open signature pad
-  const handlePlaceholderClick = () => {
+  //`handleWidgetIdandPopup` is used to set current widget id and open relative popup
+  const handleWidgetIdandPopup = () => {
     if (props.setSelectWidgetId) {
       props.setSelectWidgetId(props.pos.key);
     }
@@ -238,9 +238,18 @@ function Placeholder(props) {
       }
     }
   };
-
-  //function to set state value of onclick on widget's setting icon
-  const handleWidgetsOnclick = () => {
+  const handleOnClickPlaceholder = () => {
+    if (!props.isNeedSign) {
+      props.setWidgetType(props.pos.type);
+    }
+    if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
+      handleWidgetIdandPopup();
+    } else if (props.isPlaceholder || props.isSignYourself) {
+      handleWidgetIdandPopup();
+    }
+  };
+  //`handleOnClickSettingIcon` is used set current widget details and open setting of it
+  const handleOnClickSettingIcon = () => {
     if (props.pos.type === radioButtonWidget) {
       props.setIsRadio(true);
     } else if (props.pos.type === "dropdown") {
@@ -312,11 +321,11 @@ function Placeholder(props) {
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleWidgetsOnclick();
+                    handleOnClickSettingIcon();
                   }}
                   onTouchEnd={(e) => {
                     e.stopPropagation();
-                    handleWidgetsOnclick();
+                    handleOnClickSettingIcon();
                   }}
                   className="fa-solid fa-gear settingIcon"
                   style={{
@@ -335,11 +344,11 @@ function Placeholder(props) {
                   <i
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleWidgetsOnclick();
+                      handleOnClickSettingIcon();
                     }}
                     onTouchEnd={(e) => {
                       e.stopPropagation();
-                      handleWidgetsOnclick();
+                      handleOnClickSettingIcon();
                     }}
                     className="fa-solid fa-gear settingIcon"
                     style={{
@@ -622,14 +631,7 @@ function Placeholder(props) {
             false
           );
       }}
-      onClick={() => {
-        !props.isNeedSign && props.setWidgetType(props.pos.type);
-        props.isNeedSign && props.data?.signerObjId === props.signerObjId
-          ? handlePlaceholderClick()
-          : props.isPlaceholder
-            ? handlePlaceholderClick()
-            : props.isSignYourself && handlePlaceholderClick();
-      }}
+      onClick={() => handleOnClickPlaceholder()}
     >
       {props.isShowBorder &&
       props.pos.type !== radioButtonWidget &&
@@ -679,14 +681,7 @@ function Placeholder(props) {
             // height: props.posHeight(props.pos, props.isSignYourself),
             zIndex: "10"
           }}
-          onTouchEnd={() => {
-            !props.isNeedSign && props.setWidgetType(props.pos.type);
-            props.isNeedSign && props.data?.signerObjId === props.signerObjId
-              ? handlePlaceholderClick()
-              : props.isPlaceholder
-                ? handlePlaceholderClick()
-                : props.isSignYourself && handlePlaceholderClick();
-          }}
+          onTouchEnd={() => handleOnClickPlaceholder()}
         >
           {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
 
