@@ -2,6 +2,7 @@ import React from "react";
 import { themeColor } from "../../constant/const";
 import {
   defaultWidthHeight,
+  isMobile,
   radioButtonWidget,
   resizeBorderExtraWidth
 } from "../../constant/Utils";
@@ -30,7 +31,7 @@ function PlaceholderBorder(props) {
   };
   return (
     <div
-      onMouseEnter={props?.setDraggingEnabled(true)}
+      onMouseEnter={!isMobile && props?.setDraggingEnabled(true)}
       className="borderResize"
       style={{
         borderColor: themeColor,
