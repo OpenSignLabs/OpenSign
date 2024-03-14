@@ -24,7 +24,10 @@ import {
   randomId,
   defaultWidthHeight,
   multiSignEmbed,
-  addWidgetOptions
+  addWidgetOptions,
+  textInputWidget,
+  textWidget,
+  radioButtonWidget
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -76,6 +79,7 @@ function PlaceHolderSign() {
   const [isResize, setIsResize] = useState(false);
   const [zIndex, setZIndex] = useState(1);
   const [signKey, setSignKey] = useState();
+  const [tempSignerId, setTempSignerId] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -380,18 +384,16 @@ function PlaceHolderSign() {
           pos: dropData
         };
       }
-
       setSelectWidgetId(key);
       if (signer) {
         let filterSignerPos;
-        if (dragTypeValue === "label") {
+        if (dragTypeValue === textWidget) {
           filterSignerPos = signerPos.filter((data) => data.Role === "prefill");
         } else {
           filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
         }
 
         const { blockColor, Role } = signer;
-
         //adding placholder in existing signer pos array (placaholder)
         if (filterSignerPos.length > 0) {
           const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -412,7 +414,7 @@ function PlaceHolderSign() {
             };
             updatePlace.push(xyPos);
             let updatesignerPos;
-            if (dragTypeValue === "label") {
+            if (dragTypeValue === textWidget) {
               updatesignerPos = signerPos.map((x) =>
                 x.Role === "prefill" ? { ...x, placeHolder: updatePlace } : x
               );
@@ -425,7 +427,7 @@ function PlaceHolderSign() {
             setSignerPos(updatesignerPos);
           } else {
             let updatesignerPos;
-            if (dragTypeValue === "label") {
+            if (dragTypeValue === textWidget) {
               updatesignerPos = signerPos.map((x) =>
                 x.Role === "prefill"
                   ? { ...x, placeHolder: [...x.placeHolder, placeHolder] }
@@ -442,9 +444,8 @@ function PlaceHolderSign() {
           }
         } else {
           //adding new placeholder for selected signer in pos array (placeholder)
-          // const signerData = signerPos;
           let placeHolderPos;
-          if (dragTypeValue === "label") {
+          if (dragTypeValue === textWidget) {
             placeHolderPos = {
               signerPtr: {},
               signerObjId: "",
@@ -484,9 +485,12 @@ function PlaceHolderSign() {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
-        } else if (dragTypeValue === "radio") {
+        } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
-        } else if (dragTypeValue !== "label" && dragTypeValue !== "signature") {
+        } else if (
+          dragTypeValue !== textWidget &&
+          dragTypeValue !== "signature"
+        ) {
           setIsNameModal(true);
         }
         setWidgetType(dragTypeValue);
@@ -736,7 +740,7 @@ function PlaceHolderSign() {
 
     if (getPrefill && isLabel) {
       const alert = {
-        mssg: "label",
+        mssg: textWidget,
         alert: true
       };
       setIsSendAlert(alert);
@@ -1067,7 +1071,7 @@ function PlaceHolderSign() {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
-            if (widgetType === "radio") {
+            if (widgetType === radioButtonWidget) {
               if (addOption) {
                 return {
                   ...position,
@@ -1186,7 +1190,7 @@ function PlaceHolderSign() {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
-            if (position.type === "text") {
+            if (position.type === textInputWidget) {
               return {
                 ...position,
                 options: {
@@ -1406,13 +1410,13 @@ function PlaceHolderSign() {
 
               <ModalUi
                 headerColor={
-                  isSendAlert.mssg === "sure" || isSendAlert.mssg === "label"
+                  isSendAlert.mssg === "sure" || isSendAlert.mssg === textWidget
                     ? "#dc3545"
                     : isSendAlert.mssg === "confirm" && themeColor
                 }
                 isOpen={isSendAlert.alert}
                 title={
-                  isSendAlert.mssg === "sure" || isSendAlert.mssg === "label"
+                  isSendAlert.mssg === "sure" || isSendAlert.mssg === textWidget
                     ? "Fields required"
                     : isSendAlert.mssg === "confirm" && "Send Mail"
                 }
@@ -1421,7 +1425,7 @@ function PlaceHolderSign() {
                 <div style={{ height: "100%", padding: 20 }}>
                   {isSendAlert.mssg === "sure" ? (
                     <p>Please add field for all recipients.</p>
-                  ) : isSendAlert.mssg === "label" ? (
+                  ) : isSendAlert.mssg === textWidget ? (
                     <p>Please confirm that you have filled label widget.</p>
                   ) : (
                     isSendAlert.mssg === "confirm" && (
@@ -1553,11 +1557,14 @@ function PlaceHolderSign() {
                 allPages={allPages}
                 pageNumber={pageNumber}
                 signKey={signKey}
-                // signerObjId={signerObjId}
                 Id={uniqueId}
+                widgetType={widgetType}
+                setUniqueId={setUniqueId}
+                tempSignerId={tempSignerId}
+                setTempSignerId={setTempSignerId}
               />
               <DropdownWidgetOption
-                type="radio"
+                type={radioButtonWidget}
                 title="Radio group"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
@@ -1639,6 +1646,8 @@ function PlaceHolderSign() {
                     setSelectWidgetId={setSelectWidgetId}
                     selectWidgetId={selectWidgetId}
                     handleNameModal={setIsNameModal}
+                    setTempSignerId={setTempSignerId}
+                    uniqueId={uniqueId}
                   />
                 )}
               </div>

@@ -3,7 +3,6 @@ import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import { themeColor } from "../constant/const";
 import axios from "axios";
-import moment from "moment";
 import Loader from "../primitives/LoaderWithMsg";
 import loader from "../assets/images/loader2.gif";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
@@ -25,7 +24,9 @@ import {
   onSaveSign,
   contractUsers,
   contactBook,
-  randomId
+  randomId,
+  getDate,
+  textInputWidget
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -308,13 +309,6 @@ function SignYourSelf() {
       setIsLoading(loadObj);
     }
   };
-
-  const getDate = () => {
-    const date = new Date();
-    const milliseconds = date.getTime();
-    const newDate = moment(milliseconds).format("MM/DD/YYYY");
-    return newDate;
-  };
   const getWidgetValue = (type) => {
     switch (type) {
       case "name":
@@ -333,6 +327,7 @@ function SignYourSelf() {
         return "";
     }
   };
+
   const addWidgetOptions = (type) => {
     switch (type) {
       case "signature":
@@ -348,7 +343,7 @@ function SignYourSelf() {
           name: "checkbox"
         };
 
-      case "text":
+      case textInputWidget:
         return {
           name: "text"
         };
@@ -386,7 +381,8 @@ function SignYourSelf() {
       case "date":
         return {
           name: "date",
-          defaultValue: getDate()
+          response: getDate(),
+          validation: { format: "MM/dd/yyyy", type: "date-format" }
         };
       case "image":
         return {
@@ -596,7 +592,6 @@ function SignYourSelf() {
       await signPdfFun(pdfBytes, documentId);
     }
   }
-
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
     let singleSign = {

@@ -5,6 +5,9 @@ import React from "react";
 import { rgb } from "pdf-lib";
 
 export const isMobile = window.innerWidth < 767;
+export const textInputWidget = "text input";
+export const textWidget = "text";
+export const radioButtonWidget = "radio button";
 export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
@@ -162,12 +165,32 @@ export const widgets = [
     iconSize: "15px"
   },
   {
-    type: "label",
+    type: "name",
+    icon: "fa-solid fa-user",
+    iconSize: "21px"
+  },
+  {
+    type: "job title",
+    icon: "fa-solid fa-address-card",
+    iconSize: "17px"
+  },
+  {
+    type: "company",
+    icon: "fa-solid fa-building",
+    iconSize: "25px"
+  },
+  {
+    type: "date",
+    icon: "fa-solid fa-calendar-days",
+    iconSize: "20px"
+  },
+  {
+    type: textWidget,
     icon: "fa-solid fa-text-width",
     iconSize: "20px"
   },
   {
-    type: "text",
+    type: textInputWidget,
     icon: "fa-solid fa-font",
     iconSize: "21px"
   },
@@ -182,7 +205,7 @@ export const widgets = [
     iconSize: "19px"
   },
   {
-    type: "radio",
+    type: radioButtonWidget,
     icon: "fa-regular fa-circle-dot",
     iconSize: "20px"
   },
@@ -192,39 +215,18 @@ export const widgets = [
     iconSize: "20px"
   },
   {
-    type: "date",
-    icon: "fa-solid fa-calendar-days",
-    iconSize: "20px"
-  },
-  {
-    type: "name",
-    icon: "fa-solid fa-user",
-    iconSize: "21px"
-  },
-  {
     type: "email",
     icon: "fa-solid fa-envelope",
     iconSize: "20px"
-  },
-  {
-    type: "company",
-    icon: "fa-solid fa-building",
-    iconSize: "25px"
-  },
-  {
-    type: "job title",
-    icon: "fa-solid fa-address-card",
-    iconSize: "17px"
   }
 ];
 
-const getDate = () => {
+export const getDate = () => {
   const date = new Date();
   const milliseconds = date.getTime();
   const newDate = moment(milliseconds).format("MM/DD/YYYY");
   return newDate;
 };
-
 export const addWidgetOptions = (type) => {
   const defaultOpt = {
     name: "",
@@ -237,7 +239,7 @@ export const addWidgetOptions = (type) => {
       return defaultOpt;
     case "checkbox":
       return defaultOpt;
-    case "text":
+    case textInputWidget:
       return { ...defaultOpt, validation: { type: "text", pattern: "" } };
     case "initials":
       return defaultOpt;
@@ -248,16 +250,20 @@ export const addWidgetOptions = (type) => {
     case "job title":
       return { ...defaultOpt, validation: { type: "text", pattern: "" } };
     case "date":
-      return { ...defaultOpt, response: getDate() };
+      return {
+        ...defaultOpt,
+        response: getDate(),
+        validation: { format: "MM/dd/yyyy", type: "date-format" }
+      };
     case "image":
       return defaultOpt;
     case "email":
       return { ...defaultOpt, validation: { type: "email", pattern: "" } };
     case "dropdown":
       return defaultOpt;
-    case "radio":
+    case radioButtonWidget:
       return { ...defaultOpt, values: [] };
-    case "label":
+    case textWidget:
       return defaultOpt;
     default:
       return {};
@@ -323,7 +329,7 @@ export const defaultWidthHeight = (type) => {
       return { width: 150, height: 60 };
     case "checkbox":
       return { width: 15, height: 15 };
-    case "text":
+    case textInputWidget:
       return { width: 150, height: 25 };
     case "dropdown":
       return { width: 120, height: 22 };
@@ -341,9 +347,9 @@ export const defaultWidthHeight = (type) => {
       return { width: 70, height: 70 };
     case "email":
       return { width: 150, height: 20 };
-    case "radio":
+    case radioButtonWidget:
       return { width: 15, height: 30 };
-    case "label":
+    case textWidget:
       return { width: 150, height: 17 };
     default:
       return { width: 150, height: 60 };
@@ -692,13 +698,27 @@ export const onChangeInput = (
 
     const updatePosition = getXYdata.map((positionData) => {
       if (positionData.key === signKey) {
-        return {
-          ...positionData,
-          options: {
-            ...positionData.options,
-            response: value
-          }
-        };
+        if (dateFormat) {
+          return {
+            ...positionData,
+            options: {
+              ...positionData.options,
+              response: value,
+              validation: {
+                type: "date-format",
+                format: dateFormat // This indicates the required date format explicitly.
+              }
+            }
+          };
+        } else {
+          return {
+            ...positionData,
+            options: {
+              ...positionData.options,
+              response: value
+            }
+          };
+        }
       }
       return positionData;
     });
@@ -970,7 +990,6 @@ export const multiSignEmbed = async (
     } else {
       updateItem = item.pos;
     }
-
     const newWidth = containerWH.width;
     const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
     const pageNo = item.pageNumber;
@@ -1060,7 +1079,7 @@ export const multiSignEmbed = async (
           ? labelDefaultHeight
           : scaleHeight;
         const widgetHeight =
-          position.type === "radio"
+          position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
               ? 10
@@ -1125,7 +1144,7 @@ export const multiSignEmbed = async (
         }
       };
       const widgetTypeExist = [
-        "text",
+        textInputWidget,
         "name",
         "company",
         "job title",
@@ -1171,7 +1190,7 @@ export const multiSignEmbed = async (
             checkbox.enableReadOnly();
           });
         }
-      } else if (position.type === "label") {
+      } else if (position.type === textWidget) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
         let textContent;
@@ -1254,7 +1273,7 @@ export const multiSignEmbed = async (
           height: scaleHeight
         });
         dropdown.enableReadOnly();
-      } else if (position.type === "radio") {
+      } else if (position.type === radioButtonWidget) {
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
         let addYPosition = 18;

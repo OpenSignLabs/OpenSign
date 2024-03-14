@@ -2,11 +2,12 @@ import React from "react";
 import { themeColor } from "../../constant/const";
 import {
   defaultWidthHeight,
+  radioButtonWidget,
   resizeBorderExtraWidth
 } from "../../constant/Utils";
 function PlaceholderBorder(props) {
   const getResizeBorderExtraWidth =
-    props.pos.type === "checkbox" || props.pos.type === "radio"
+    props.pos.type === "checkbox" || props.pos.type === radioButtonWidget
       ? 38
       : resizeBorderExtraWidth();
   const defaultWidth = defaultWidthHeight(props.pos.type).width;

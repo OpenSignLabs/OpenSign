@@ -56,7 +56,9 @@ function RenderPdf({
   selectWidgetId,
   unSignedWidgetId,
   setIsCheckbox,
-  handleNameModal
+  handleNameModal,
+  setTempSignerId,
+  uniqueId
 }) {
   const isMobile = window.innerWidth < 767;
   const newWidth = containerWH.width;
@@ -268,6 +270,8 @@ function RenderPdf({
                         setIsInitial={setIsInitial}
                         setValidateAlert={setValidateAlert}
                         unSignedWidgetId={unSignedWidgetId}
+                        setSelectWidgetId={setSelectWidgetId}
+                        selectWidgetId={selectWidgetId}
                       />
                     </React.Fragment>
                   )
@@ -393,6 +397,8 @@ function RenderPdf({
                                         setSelectWidgetId={setSelectWidgetId}
                                         selectWidgetId={selectWidgetId}
                                         handleNameModal={handleNameModal}
+                                        setTempSignerId={setTempSignerId}
+                                        uniqueId={uniqueId}
                                       />
                                     </React.Fragment>
                                   );
@@ -574,6 +580,8 @@ function RenderPdf({
                                           setSelectWidgetId={setSelectWidgetId}
                                           selectWidgetId={selectWidgetId}
                                           handleNameModal={handleNameModal}
+                                          setTempSignerId={setTempSignerId}
+                                          uniqueId={uniqueId}
                                         />
                                       </React.Fragment>
                                     );

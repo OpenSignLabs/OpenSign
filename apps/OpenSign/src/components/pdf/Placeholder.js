@@ -2,17 +2,118 @@ import React, { useState, useEffect } from "react";
 import BorderResize from "./BorderResize";
 import PlaceholderBorder from "./PlaceholderBorder";
 import { Rnd } from "react-rnd";
-import { defaultWidthHeight, isMobile } from "../../constant/Utils";
+import {
+  defaultWidthHeight,
+  isMobile,
+  onChangeInput,
+  radioButtonWidget,
+  textInputWidget,
+  textWidget
+} from "../../constant/Utils";
 import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
 import "../../styles/opensigndrive.css";
 
+const selectFormat = (data) => {
+  switch (data) {
+    case "L":
+      return "MM/dd/yyyy";
+    case "DD-MM-YYYY":
+      return "dd-MM-yyyy";
+    case "DD/MM/YYYY":
+      return "dd/MM/yyyy";
+    case "LL":
+      return "MMMM dd, yyyy";
+    case "DD MMM, YYYY":
+      return "dd MMM, yyyy";
+    case "YYYY-MM-DD":
+      return "yyyy-MM-dd";
+    case "MM-DD-YYYY":
+      return "MM-dd-yyyy";
+    case "MM.DD.YYYY":
+      return "MM.dd.yyyy";
+    case "MMM DD, YYYY":
+      return "MMM dd, yyyy";
+    case "DD MMMM, YYYY":
+      return "dd MMMM, yyyy";
+    default:
+      return "MM/dd/yyyy";
+  }
+};
+
+const changeDateToMomentFormat = (format) => {
+  switch (format) {
+    case "MM/dd/yyyy":
+      return "L";
+    case "dd-MM-yyyy":
+      return "DD-MM-YYYY";
+    case "dd/MM/yyyy":
+      return "DD/MM/YYYY";
+    case "MMMM dd, yyyy":
+      return "LL";
+    case "dd MMM, yyyy":
+      return "DD MMM, YYYY";
+    case "yyyy-MM-dd":
+      return "YYYY-MM-DD";
+    case "MM-dd-yyyy":
+      return "MM-DD-YYYY";
+    case "MM.dd.yyyy":
+      return "MM.DD.YYYY";
+    case "MMM dd, yyyy":
+      return "MMM DD, YYYY";
+    case "dd MMMM, yyyy":
+      return "DD MMMM, YYYY";
+    default:
+      return "L";
+  }
+};
+
+//function to get default date
+const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
+  let date;
+  if (format && format === "dd-MM-yyyy") {
+    const newdate = selectedDate
+      ? selectedDate
+      : moment(new Date()).format(changeDateToMomentFormat(format));
+    const [day, month, year] = newdate.split("-");
+    date = new Date(`${year}-${month}-${day}`);
+  } else {
+    date = new Date(selectedDate);
+  }
+  const value = date;
+  return value;
+};
+//function to get default format
+const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
+
 function Placeholder(props) {
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
-  const [selectDate, setSelectDate] = useState();
+  const [selectDate, setSelectDate] = useState({
+    date:
+      props.pos.type === "date"
+        ? moment(
+            getDefaultdate(
+              props?.pos?.options?.response,
+              props.pos?.options?.validation?.format
+            ).getTime()
+          ).format(
+            changeDateToMomentFormat(props.pos?.options?.validation?.format)
+          )
+        : "",
+    format:
+      props.pos.type === "date"
+        ? getDefaultFormat(props.pos?.options?.validation?.format)
+        : ""
+  });
   const [dateFormat, setDateFormat] = useState([]);
-  const [saveDateFormat, setSaveDateFormat] = useState("");
+  const [startDate, setStartDate] = useState(
+    props.pos.type === "date" &&
+      getDefaultdate(
+        props?.pos?.options?.response,
+        props.pos?.options?.validation?.format
+      )
+  );
   const dateFormatArr = [
     "L",
     "DD-MM-YYYY",
@@ -25,70 +126,13 @@ function Placeholder(props) {
     "DD MMMM, YYYY"
   ];
 
-  const selectFormat = (data) => {
-    switch (data) {
-      case "L":
-        return "MM/dd/yyyy";
-      case "DD-MM-YYYY":
-        return "dd-MM-yyyy";
-      case "DD/MM/YYYY":
-        return "dd/MM/yyyy";
-      case "LL":
-        return "MMMM dd, yyyy";
-      case "DD MMM, YYYY":
-        return "dd MMM, YYYY";
-      case "YYYY-MM-DD":
-        return "YYYY-MM-dd";
-      case "MM-DD-YYYY":
-        return "MM-dd-YYYY";
-      case "MM.DD.YYYY":
-        return "MM.dd.YYYY";
-      case "MMM DD, YYYY":
-        return "MMM dd, YYYY";
-      case "DD MMMM, YYYY":
-        return "dd MMMM, YYYY";
-      default:
-        return "dd/MM/yyyy";
-    }
-  };
-
-  useEffect(() => {
-    //set default current date and default format MM/dd/yyyy
-    if (props.isSignYourself) {
-      const date = new Date();
-      const milliseconds = date.getTime();
-      const newDate = moment(milliseconds).format("MM/DD/YYYY");
-      const dateObj = {
-        date: newDate,
-        format: "MM/dd/YYYY"
-      };
-      setSelectDate(dateObj);
-    } else {
-      const defaultRes = props?.pos?.options?.response;
-      const defaultFormat = props.pos?.options?.validation?.format;
-      const updateDate = defaultRes
-        ? new Date(props?.pos?.options?.response)
-        : new Date();
-      const dateFormat = defaultFormat ? defaultFormat : "MM/DD/YYYY";
-      const milliseconds = updateDate.getTime();
-      const newDate = moment(milliseconds).format(dateFormat);
-      const dateObj = {
-        date: newDate,
-        format: props.pos?.options?.validation?.format
-          ? props.pos?.options?.validation?.format
-          : "MM/dd/YYYY"
-      };
-      setSelectDate(dateObj);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  //function for add selected date and format in selectFormat
+  useEffect(() => {}, []);
+  //function change format array list with selected date and format
   const changeDateFormat = () => {
     const updateDate = [];
     dateFormatArr.map((data) => {
       let date;
-      if (selectDate.format === "dd-MM-yyyy") {
+      if (selectDate && selectDate.format === "dd-MM-yyyy") {
         const [day, month, year] = selectDate.date.split("-");
         date = new Date(`${year}-${month}-${day}`);
       } else {
@@ -104,13 +148,15 @@ function Placeholder(props) {
     });
     setDateFormat(updateDate);
   };
+
   useEffect(() => {
     if (props.isPlaceholder || props.isSignYourself) {
       selectDate && changeDateFormat();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectDate]);
-  //handle to close drop down menu onclick screen
+
+  //it detect outside click of date dropdown menu
   useEffect(() => {
     const closeMenuOnOutsideClick = (e) => {
       if (isShowDateFormat && !e.target.closest("#menu-container")) {
@@ -131,7 +177,7 @@ function Placeholder(props) {
     }
 
     const widgetTypeExist = [
-      "text",
+      textInputWidget,
       "checkbox",
       "name",
       "company",
@@ -167,7 +213,7 @@ function Placeholder(props) {
     } else if (
       props.isPlaceholder &&
       !props.isDragging &&
-      props.pos.type !== "label"
+      props.pos.type !== textWidget
     ) {
       if (props.pos.key === props.selectWidgetId) {
         props.handleLinkUser(props.data.Id);
@@ -195,8 +241,9 @@ function Placeholder(props) {
     }
   };
 
+  //function to set state value of onclick on widget's setting icon
   const handleWidgetsOnclick = () => {
-    if (props.pos.type === "radio") {
+    if (props.pos.type === radioButtonWidget) {
       props.setIsRadio(true);
     } else if (props.pos.type === "dropdown") {
       props?.setShowDropdown(true);
@@ -206,12 +253,56 @@ function Placeholder(props) {
       props?.handleNameModal(true);
     }
 
-    if (props.isPlaceholder) {
+    if (props.isPlaceholder && props.type !== textWidget) {
       props.setUniqueId(props.data.Id);
     }
     props.setSignKey(props.pos.key);
     props.setWidgetType(props.pos.type);
     props.setCurrWidgetsDetails(props.pos);
+  };
+  //function ro set state value of onclick on widget's copy icon
+  const handleCopyPlaceholder = (e) => {
+    if (props.data && props?.pos?.type !== textWidget) {
+      props.setSignerObjId(props?.data?.signerObjId);
+      props.setUniqueId(props?.data?.Id);
+    } else if (props.data && props.pos.type === textWidget) {
+      props.setTempSignerId(props.uniqueId);
+      props.setSignerObjId(props?.data?.signerObjId);
+      props.setUniqueId(props?.data?.Id);
+    }
+    e.stopPropagation();
+    props.setIsPageCopy(true);
+    props.setSignKey(props.pos.key);
+  };
+
+  //function to save date and format on local array onchange date and onclick format
+  const handleSaveDate = (data, isDateChange) => {
+    let updateDate = data.date;
+    //check if date change by user
+    if (isDateChange) {
+      //`changeDateToMomentFormat` is used to convert date as per required to moment package
+      updateDate = moment(data.date).format(
+        changeDateToMomentFormat(data.format)
+      );
+    }
+    //using moment package is used to change date as per the format provided in selectDate obj e.g. - MM/dd/yyyy -> 03/12/2024
+    //`getDefaultdate` is used to convert update date in new Date() format
+    const date = moment(
+      getDefaultdate(updateDate, data?.format).getTime()
+    ).format(changeDateToMomentFormat(data?.format));
+
+    //`onChangeInput` is used to save data related to date in a placeholder field
+    onChangeInput(
+      date,
+      props.pos.key,
+      props.xyPostion,
+      props.index,
+      props.setXyPostion,
+      props.data && props.data.Id,
+      false,
+      data?.format
+    );
+    setSelectDate({ date: date, format: data?.format });
   };
   const PlaceholderIcon = () => {
     return (
@@ -237,10 +328,12 @@ function Placeholder(props) {
                   }}
                 ></i>
               ) : (
-                props.pos.type !== "date" &&
-                props.pos.type !== "label" &&
-                props.pos.type !== "signature" &&
-                !props.isSignYourself && (
+                ((!props?.pos?.type && props.pos.isStamp) ||
+                  (props?.pos?.type &&
+                    !["date", textWidget, "signature"].includes(
+                      props.pos.type
+                    ) &&
+                    !props.isSignYourself)) && (
                   <i
                     onClick={(e) => {
                       e.stopPropagation();
@@ -253,10 +346,14 @@ function Placeholder(props) {
                     className="fa-solid fa-gear settingIcon"
                     style={{
                       color: "#188ae2",
-                      right: ["checkbox", "radio"].includes(props.pos.type)
+                      right: ["checkbox", radioButtonWidget].includes(
+                        props.pos.type
+                      )
                         ? "24px"
                         : "47px",
-                      top: ["checkbox", "radio"].includes(props.pos.type)
+                      top: ["checkbox", radioButtonWidget].includes(
+                        props.pos.type
+                      )
                         ? "-28px"
                         : "-19px"
                     }}
@@ -264,7 +361,7 @@ function Placeholder(props) {
                 )
               )}
 
-              {props.pos.type !== "label" && !props.isSignYourself && (
+              {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
                   data-tut="reactourLinkUser"
                   className="fa-regular fa-user signUserIcon"
@@ -282,12 +379,12 @@ function Placeholder(props) {
                     color: "#188ae2",
                     right:
                       props.pos.type === "checkbox" ||
-                      props.pos.type === "radio"
+                      props.pos.type === radioButtonWidget
                         ? "8px"
                         : "32px",
                     top:
                       props.pos.type === "checkbox" ||
-                      props.pos.type === "radio"
+                      props.pos.type === radioButtonWidget
                         ? "-28px"
                         : "-18px"
                   }}
@@ -347,10 +444,12 @@ function Placeholder(props) {
                         e.stopPropagation();
                         setIsShowDateFormat(!isShowDateFormat);
                         setSelectDate(data);
+                        handleSaveDate(data);
                       }}
                       onClick={() => {
                         setIsShowDateFormat(!isShowDateFormat);
                         setSelectDate(data);
+                        handleSaveDate(data);
                       }}
                       className="dropdown-item itemColor"
                       style={{ fontSize: "12px" }}
@@ -365,31 +464,21 @@ function Placeholder(props) {
           <i
             className="fa-regular fa-copy signCopy"
             onClick={(e) => {
-              if (props.data) {
-                props.setSignerObjId(props.data.signerObjId);
-                props.setUniqueId(props.data.Id);
-              }
-              e.stopPropagation();
-              props.setIsPageCopy(true);
-              props.setSignKey(props.pos.key);
+              handleCopyPlaceholder(e);
             }}
             onTouchEnd={(e) => {
-              if (props.data) {
-                props.setSignerObjId(props.data.signerObjId);
-                props.setUniqueId(props.data.Id);
-              }
-              e.stopPropagation();
-              props.setIsPageCopy(true);
-              props.setSignKey(props.pos.key);
+              handleCopyPlaceholder(e);
             }}
             style={{
               color: "#188ae2",
               right:
-                props.pos.type === "checkbox" || props.pos.type === "radio"
+                props.pos.type === "checkbox" ||
+                props.pos.type === radioButtonWidget
                   ? "-9px"
                   : "12px",
               top:
-                props.pos.type === "checkbox" || props.pos.type === "radio"
+                props.pos.type === "checkbox" ||
+                props.pos.type === radioButtonWidget
                   ? "-28px"
                   : "-18px"
             }}
@@ -418,11 +507,13 @@ function Placeholder(props) {
             style={{
               color: "#188ae2",
               right:
-                props.pos.type === "checkbox" || props.pos.type === "radio"
+                props.pos.type === "checkbox" ||
+                props.pos.type === radioButtonWidget
                   ? "-27px"
                   : "-8px",
               top:
-                props.pos.type === "checkbox" || props.pos.type === "radio"
+                props.pos.type === "checkbox" ||
+                props.pos.type === radioButtonWidget
                   ? "-28px"
                   : "-18px"
             }}
@@ -438,7 +529,7 @@ function Placeholder(props) {
       //ref={nodeRef}
       key={props.pos.key}
       lockAspectRatio={
-        props.pos.type !== "label" &&
+        props.pos.type !== textWidget &&
         (props.pos.Width
           ? props.pos.Width / props.pos.Height
           : defaultWidthHeight(props.pos.type).width /
@@ -454,10 +545,10 @@ function Placeholder(props) {
           props.data && props.isNeedSign
             ? props.data?.signerObjId === props.signerObjId &&
               props.pos.type !== "checkbox" &&
-              props.pos.type !== "radio"
+              props.pos.type !== radioButtonWidget
               ? true
               : false
-            : props.pos.type !== "radio" &&
+            : props.pos.type !== radioButtonWidget &&
               props.pos.type !== "checkbox" &&
               props.pos.key === props.selectWidgetId &&
               true,
@@ -482,7 +573,9 @@ function Placeholder(props) {
             : "all-scroll",
         zIndex:
           props.pos.type === "date"
-            ? "99"
+            ? props.pos.key === props.selectWidgetId
+              ? 99 + 1
+              : 99
             : props?.pos?.zIndex
               ? props.pos.zIndex
               : "5",
@@ -542,31 +635,33 @@ function Placeholder(props) {
       }}
     >
       {props.isShowBorder &&
-      props.pos.type !== "radio" &&
+      props.pos.type !== radioButtonWidget &&
       props.pos.type !== "checkbox" &&
       props.pos.key === props.selectWidgetId ? (
         <BorderResize
           right={
-            props.pos.type === "checkbox" || props.pos.type === "radio"
+            props.pos.type === "checkbox" ||
+            props.pos.type === radioButtonWidget
               ? -21
               : -12
           }
           top={
-            props.pos.type === "checkbox" || props.pos.type === "radio"
+            props.pos.type === "checkbox" ||
+            props.pos.type === radioButtonWidget
               ? -21
               : -11
           }
         />
       ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
         props.data?.signerObjId === props.signerObjId &&
-        props.pos.type !== "radio" &&
+        props.pos.type !== radioButtonWidget &&
         props.pos.type !== "checkbox" ? (
           <BorderResize />
         ) : (
           <></>
         )
       ) : (
-        props.pos.type !== "radio" &&
+        props.pos.type !== radioButtonWidget &&
         props.pos.type !== "checkbox" &&
         props.pos.key === props.selectWidgetId && <BorderResize />
       )}
@@ -615,9 +710,10 @@ function Placeholder(props) {
             isNeedSign={props.isNeedSign}
             setSelectDate={setSelectDate}
             selectDate={selectDate}
-            setSaveDateFormat={setSaveDateFormat}
-            saveDateFormat={saveDateFormat}
             setValidateAlert={props.setValidateAlert}
+            setStartDate={setStartDate}
+            startDate={startDate}
+            handleSaveDate={handleSaveDate}
           />
         </div>
       ) : (
@@ -640,9 +736,10 @@ function Placeholder(props) {
             isNeedSign={props.isNeedSign}
             setSelectDate={setSelectDate}
             selectDate={selectDate}
-            setSaveDateFormat={setSaveDateFormat}
-            saveDateFormat={saveDateFormat}
             setValidateAlert={props.setValidateAlert}
+            setStartDate={setStartDate}
+            startDate={startDate}
+            handleSaveDate={handleSaveDate}
           />
         </>
       )}
