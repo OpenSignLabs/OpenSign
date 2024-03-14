@@ -6,16 +6,13 @@ import {
   resizeBorderExtraWidth
 } from "../../constant/Utils";
 function PlaceholderBorder(props) {
-  const getResizeBorderExtraWidth =
-    props.pos.type === "checkbox" || props.pos.type === radioButtonWidget
-      ? 38
-      : resizeBorderExtraWidth();
+  const getResizeBorderExtraWidth = resizeBorderExtraWidth();
   const defaultWidth = defaultWidthHeight(props.pos.type).width;
   const defaultHeight = defaultWidthHeight(props.pos.type).height;
 
   const handleMinWidth = () => {
     if (props.pos.type === "checkbox" || props.pos.type === radioButtonWidget) {
-      return "120%";
+      return props.getCheckboxRenderWidth.width + getResizeBorderExtraWidth;
     } else {
       return props.pos.Width
         ? props.pos.Width + getResizeBorderExtraWidth
@@ -24,7 +21,7 @@ function PlaceholderBorder(props) {
   };
   const handleMinHeight = () => {
     if (props.pos.type === "checkbox" || props.pos.type === radioButtonWidget) {
-      return "120%";
+      return props.getCheckboxRenderWidth.height + getResizeBorderExtraWidth;
     } else {
       return props.pos.Height
         ? props.pos.Height + getResizeBorderExtraWidth
