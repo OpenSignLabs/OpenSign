@@ -647,7 +647,6 @@ function PdfRequestFiles() {
       });
     }
   }
-  console.log("signer", signerPos);
   //function for update TourStatus
   const closeTour = async () => {
     setWidgetsTour(false);

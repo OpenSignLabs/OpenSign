@@ -339,6 +339,8 @@
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
+  min-width:max-content;
+  min-height: max-content;
 }
 
 .finishBtn {

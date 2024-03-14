@@ -1055,7 +1055,8 @@ function PlaceHolderSign() {
     addOption,
     deleteOption,
     status,
-    defaultValue
+    defaultValue,
+    isHideLabel
   ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1093,7 +1094,8 @@ function PlaceHolderSign() {
                     ...position.options,
                     name: dropdownName,
                     values: dropdownOptions,
-                    isReadOnly: isReadOnly,
+                    isReadOnly: isReadOnly || false,
+                    isHideLabel: isHideLabel || false,
                     defaultValue: defaultValue
                   }
                 };
@@ -1125,7 +1127,8 @@ function PlaceHolderSign() {
                       maxRequiredCount: maxCount
                     },
                     defaultValue: defaultValue,
-                    isReadOnly: isReadOnly
+                    isReadOnly: isReadOnly || false,
+                    isHideLabel: isHideLabel || false
                   }
                 };
               }
