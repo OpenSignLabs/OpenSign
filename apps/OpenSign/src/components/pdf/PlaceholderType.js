@@ -334,7 +334,6 @@ function PlaceholderType(props) {
             return (
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  id={data}
                   style={{
                     width: props.pos.Width,
                     display: "flex",
@@ -374,12 +373,7 @@ function PlaceholderType(props) {
                   }}
                 />
                 {!props.pos.options?.isHideLabel && (
-                  <label
-                    htmlFor={!props.isPlaceholder && data}
-                    className="text-xs mb-0 text-center"
-                  >
-                    {data}
-                  </label>
+                  <label className="text-xs mb-0 text-center">{data}</label>
                 )}
               </div>
             );
@@ -714,7 +708,6 @@ function PlaceholderType(props) {
             return (
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  id={data}
                   style={{
                     width: props.pos.Width,
                     display: "flex",
@@ -735,12 +728,7 @@ function PlaceholderType(props) {
                   }}
                 />
                 {!props.pos.options?.isHideLabel && (
-                  <label
-                    htmlFor={!props.isPlaceholder && data}
-                    className="text-xs mb-0"
-                  >
-                    {data}
-                  </label>
+                  <label className="text-xs mb-0">{data}</label>
                 )}
               </div>
             );
