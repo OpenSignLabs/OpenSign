@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
-import { randomId } from "../../constant/Utils";
+import { randomId, textWidget } from "../../constant/Utils";
 
 function PlaceholderCopy(props) {
   const copyType = ["All pages", "All pages but last", "All pages but first"];
@@ -180,7 +180,13 @@ function PlaceholderCopy(props) {
       copyPlaceholder("first");
     }
   };
-
+  const handleUniqueId = () => {
+    if (props.widgetType === textWidget) {
+      props.setUniqueId(props?.tempSignerId);
+      props.setTempSignerId("");
+    }
+    props.setIsPageCopy(false);
+  };
   return (
     <ModalUi
       isOpen={props.isPageCopy}
@@ -220,7 +226,7 @@ function PlaceholderCopy(props) {
         <button
           onClick={() => {
             handleApplyCopy();
-            props.setIsPageCopy(false);
+            handleUniqueId();
           }}
           style={{ background: themeColor }}
           type="button"
@@ -232,7 +238,9 @@ function PlaceholderCopy(props) {
         <button
           type="button"
           className="finishBtn cancelBtn"
-          onClick={() => props.setIsPageCopy(false)}
+          onClick={() => {
+            handleUniqueId();
+          }}
         >
           Cancel
         </button>

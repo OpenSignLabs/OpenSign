@@ -1,5 +1,13 @@
 import React, { useEffect, useState, forwardRef, useRef } from "react";
-import { getMonth, getYear, onChangeInput, range } from "../../constant/Utils";
+import {
+  getMonth,
+  getYear,
+  onChangeInput,
+  radioButtonWidget,
+  range,
+  textInputWidget,
+  textWidget
+} from "../../constant/Utils";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
@@ -7,10 +15,7 @@ import RegexParser from "regex-parser";
 
 function PlaceholderType(props) {
   const type = props?.pos?.type;
-  const [selectOption, setSelectOption] = useState(
-    props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
-  );
-  const [startDate, setStartDate] = useState(new Date());
+  const [selectOption, setSelectOption] = useState("");
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
   const [textValue, setTextValue] = useState();
@@ -80,7 +85,7 @@ function PlaceholderType(props) {
       case "number":
         setValidatePlaceholder("12345");
         break;
-      case "text":
+      case textInputWidget:
         setValidatePlaceholder("enter text");
         break;
       default:
@@ -89,10 +94,7 @@ function PlaceholderType(props) {
   }
 
   useEffect(() => {
-    if (props.isNeedSign && type === "date") {
-      const updateDate = new Date();
-      setStartDate(updateDate);
-    } else if (type && type === "checkbox" && props.isNeedSign) {
+    if (type && type === "checkbox" && props.isNeedSign) {
       const isDefaultValue = props.pos.options?.defaultValue;
       if (isDefaultValue) {
         setSelectedCheckbox(isDefaultValue);
@@ -103,7 +105,18 @@ function PlaceholderType(props) {
       checkRegularExpress(props.pos?.options?.validation?.type);
     }
     setTextValue(
-      props.pos?.options?.defaultValue ? props.pos?.options?.defaultValue : ""
+      props.pos?.options?.response
+        ? props.pos?.options?.response
+        : props.pos?.options?.defaultValue
+          ? props.pos?.options?.defaultValue
+          : ""
+    );
+    setSelectOption(
+      props.pos?.options?.response
+        ? props.pos?.options?.response
+        : props.pos?.options?.defaultValue
+          ? props.pos?.options?.defaultValue
+          : ""
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -120,52 +133,9 @@ function PlaceholderType(props) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.pos?.options?.defaultValue]);
-
-  useEffect(() => {
-    if (type && type === "date") {
-      if (props.selectDate) {
-        let updateDate;
-        if (props.selectDate.format === "dd-MM-yyyy") {
-          const [day, month, year] = props.saveDateFormat.split("-");
-          updateDate = new Date(`${year}-${month}-${day}`);
-        } else {
-          if (props?.saveDateFormat) {
-            updateDate = new Date(props.saveDateFormat);
-          }
-        }
-        // const updateDate = new Date(props.saveDateFormat);
-        setStartDate(updateDate);
-        const dateObj = {
-          date: props.saveDateFormat,
-          format: props.selectDate
-            ? props.selectDate?.format
-            : props.pos?.options?.validation?.format
-              ? props.pos?.options?.validation?.format
-              : "MM/dd/YYYY"
-        };
-        props.setSelectDate(dateObj);
-        onChangeInput(
-          props.saveDateFormat,
-          props.pos.key,
-          props.xyPostion,
-          props.index,
-          props.setXyPostion,
-          props.data && props.data.Id,
-          false,
-          props.selectDate?.format
-            ? props.selectDate.format
-            : props.pos?.options?.validation?.format
-              ? props.pos?.options?.validation?.format
-              : "MM/dd/YYYY"
-        );
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.saveDateFormat]);
+  }, [props.pos]);
 
   const dateValue = (value) => {
-    props.setSaveDateFormat(value);
     return <span>{value}</span>;
   };
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
@@ -308,6 +278,16 @@ function PlaceholderType(props) {
     );
   };
 
+  //function to set onchange date
+  const handleOnDateChange = (date) => {
+    props.setStartDate(date);
+    const isDateChange = true;
+    const dateObj = {
+      date: date,
+      format: props.selectDate.format
+    };
+    props.handleSaveDate(dateObj, isDateChange);
+  };
   switch (type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -400,7 +380,7 @@ function PlaceholderType(props) {
           })}
         </div>
       );
-    case "text":
+    case textInputWidget:
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <input
@@ -639,21 +619,21 @@ function PlaceholderType(props) {
               </div>
             )}
             disabled={
-              props.isNeedSign && props.data?.signerObjId !== props.signerObjId
+              props.isPlaceholder ||
+              (props.isNeedSign &&
+                props.data?.signerObjId !== props.signerObjId)
             }
             onBlur={handleInputBlur}
             closeOnScroll={true}
             className="inputPlaceholder"
             style={{ outlineColor: "#007bff" }}
             selected={
-              startDate
-                ? startDate
+              props?.startDate
+                ? props?.startDate
                 : props.pos.options?.response &&
                   new Date(props.pos.options.response)
             }
-            onChange={(date) => {
-              setStartDate(date);
-            }}
+            onChange={(date) => handleOnDateChange(date)}
             popperPlacement="top-end"
             customInput={<ExampleCustomInput />}
             dateFormat={
@@ -661,7 +641,7 @@ function PlaceholderType(props) {
                 ? props.selectDate?.format
                 : props.pos?.options?.validation?.format
                   ? props.pos?.options?.validation?.format
-                  : "MM/dd/YYYY"
+                  : "MM/dd/yyyy"
             }
           />
         </div>
@@ -721,7 +701,7 @@ function PlaceholderType(props) {
           <span>{type}</span>
         </div>
       );
-    case "radio":
+    case radioButtonWidget:
       return (
         <div>
           {props.pos.options?.values.map((data, ind) => {
@@ -752,12 +732,14 @@ function PlaceholderType(props) {
           })}
         </div>
       );
-    case "label":
+    case textWidget:
       return (
         <textarea
           placeholder="Enter label"
           rows={1}
+          value={textValue}
           onChange={(e) => {
+            setTextValue(e.target.value);
             onChangeInput(
               e.target.value,
               props.pos.key,
