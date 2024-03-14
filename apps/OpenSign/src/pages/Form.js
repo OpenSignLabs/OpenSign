@@ -413,7 +413,7 @@ const Forms = (props) => {
               type="submit"
               disabled={isSubmit}
             >
-              Submit
+              Next
             </button>
             <div
               className="cursor-pointer bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"

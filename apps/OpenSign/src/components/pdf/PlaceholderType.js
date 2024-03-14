@@ -135,9 +135,6 @@ function PlaceholderType(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.pos]);
 
-  const dateValue = (value) => {
-    return <span>{value}</span>;
-  };
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       className="inputPlaceholder"
@@ -145,7 +142,7 @@ function PlaceholderType(props) {
       onClick={onClick}
       ref={ref}
     >
-      {dateValue(value)}
+      {value}
       <i className="fa-regular fa-calendar" style={{ marginLeft: "5px" }}></i>
     </div>
   ));
@@ -277,7 +274,6 @@ function PlaceholderType(props) {
       isRadio
     );
   };
-
   //function to set onchange date
   const handleOnDateChange = (date) => {
     props.setStartDate(date);
@@ -336,46 +332,54 @@ function PlaceholderType(props) {
         <div style={{ zIndex: props.isSignYourself && "99" }}>
           {props.pos.options?.values?.map((data, ind) => {
             return (
-              <input
-                key={ind}
-                style={{
-                  width: props.pos.Width,
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "6px",
-                  marginTop: "5px"
-                }}
-                onBlur={handleInputBlur}
-                disabled={
-                  props.isNeedSign &&
-                  (props.pos.options?.isReadOnly ||
-                    props.data?.signerObjId !== props.signerObjId)
-                }
-                type="checkbox"
-                checked={selectCheckbox(ind)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    if (!props.isPlaceholder) {
-                      const maxRequired =
-                        props.pos.options?.validation?.maxRequiredCount;
-                      const maxCountInt = maxRequired && parseInt(maxRequired);
+              <div key={ind} className="flex items-center gap-1 min-w-max">
+                <input
+                  id={data}
+                  style={{
+                    width: props.pos.Width,
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "6px",
+                    marginTop: "5px"
+                  }}
+                  onBlur={handleInputBlur}
+                  disabled={
+                    props.isNeedSign &&
+                    (props.pos.options?.isReadOnly ||
+                      props.data?.signerObjId !== props.signerObjId)
+                  }
+                  type="checkbox"
+                  checked={selectCheckbox(ind)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      if (!props.isPlaceholder) {
+                        const maxRequired =
+                          props.pos.options?.validation?.maxRequiredCount;
+                        const maxCountInt =
+                          maxRequired && parseInt(maxRequired);
 
-                      if (maxCountInt > 0) {
-                        if (
-                          selectedCheckbox &&
-                          selectedCheckbox?.length <= maxCountInt - 1
-                        ) {
+                        if (maxCountInt > 0) {
+                          if (
+                            selectedCheckbox &&
+                            selectedCheckbox?.length <= maxCountInt - 1
+                          ) {
+                            handleCheckboxValue(e.target.checked, ind);
+                          }
+                        } else {
                           handleCheckboxValue(e.target.checked, ind);
                         }
-                      } else {
-                        handleCheckboxValue(e.target.checked, ind);
                       }
+                    } else {
+                      handleCheckboxValue(e.target.checked, ind);
                     }
-                  } else {
-                    handleCheckboxValue(e.target.checked, ind);
-                  }
-                }}
-              />
+                  }}
+                />
+                {!props.pos.options?.isHideLabel && (
+                  <label htmlFor={data} className="text-xs">
+                    {data}
+                  </label>
+                )}
+              </div>
             );
           })}
         </div>
@@ -706,28 +710,38 @@ function PlaceholderType(props) {
         <div>
           {props.pos.options?.values.map((data, ind) => {
             return (
-              <input
+              <div
                 key={ind}
-                style={{
-                  width: props.pos.Width,
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "6px",
-                  marginTop: "5px"
-                }}
-                type="radio"
-                disabled={
-                  props.isNeedSign &&
-                  (props.pos.options?.isReadOnly ||
-                    props.data?.signerObjId !== props.signerObjId)
-                }
-                checked={handleRadioCheck(data)}
-                onChange={(e) => {
-                  if (!props.isPlaceholder) {
-                    handleCheckRadio(e.target.checked, data);
+                className="flex flex-row items-center gap-1 min-w-max"
+              >
+                <input
+                  id={data}
+                  style={{
+                    width: props.pos.Width,
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "6px",
+                    marginTop: "5px"
+                  }}
+                  type="radio"
+                  disabled={
+                    props.isNeedSign &&
+                    (props.pos.options?.isReadOnly ||
+                      props.data?.signerObjId !== props.signerObjId)
                   }
-                }}
-              />
+                  checked={handleRadioCheck(data)}
+                  onChange={(e) => {
+                    if (!props.isPlaceholder) {
+                      handleCheckRadio(e.target.checked, data);
+                    }
+                  }}
+                />
+                {!props.pos.options?.isHideLabel && (
+                  <label htmlFor={data} className="text-xs">
+                    {data}
+                  </label>
+                )}
+              </div>
             );
           })}
         </div>

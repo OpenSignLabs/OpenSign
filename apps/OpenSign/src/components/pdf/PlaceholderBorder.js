@@ -13,6 +13,24 @@ function PlaceholderBorder(props) {
   const defaultWidth = defaultWidthHeight(props.pos.type).width;
   const defaultHeight = defaultWidthHeight(props.pos.type).height;
 
+  const handleMinWidth = () => {
+    if (props.pos.type === "checkbox" || props.pos.type === radioButtonWidget) {
+      return "120%";
+    } else {
+      return props.pos.Width
+        ? props.pos.Width + getResizeBorderExtraWidth
+        : defaultWidth + getResizeBorderExtraWidth;
+    }
+  };
+  const handleMinHeight = () => {
+    if (props.pos.type === "checkbox" || props.pos.type === radioButtonWidget) {
+      return "120%";
+    } else {
+      return props.pos.Height
+        ? props.pos.Height + getResizeBorderExtraWidth
+        : defaultHeight + getResizeBorderExtraWidth;
+    }
+  };
   return (
     <div
       onMouseEnter={props?.setDraggingEnabled(true)}
@@ -20,13 +38,8 @@ function PlaceholderBorder(props) {
       style={{
         borderColor: themeColor,
         borderStyle: "dashed",
-
-        width: props.pos.Width
-          ? props.pos.Width + getResizeBorderExtraWidth
-          : defaultWidth + getResizeBorderExtraWidth,
-        height: props.pos.Height
-          ? props.pos.Height + getResizeBorderExtraWidth
-          : defaultHeight + getResizeBorderExtraWidth,
+        minWidth: handleMinWidth(),
+        minHeight: handleMinHeight(),
         borderWidth: "0.2px",
         overflow: "hidden"
       }}

@@ -125,8 +125,6 @@ function Placeholder(props) {
     "DD MMM, YYYY",
     "DD MMMM, YYYY"
   ];
-
-  useEffect(() => {}, []);
   //function change format array list with selected date and format
   const changeDateFormat = () => {
     const updateDate = [];
@@ -463,12 +461,8 @@ function Placeholder(props) {
           )}
           <i
             className="fa-regular fa-copy signCopy"
-            onClick={(e) => {
-              handleCopyPlaceholder(e);
-            }}
-            onTouchEnd={(e) => {
-              handleCopyPlaceholder(e);
-            }}
+            onClick={(e) => handleCopyPlaceholder(e)}
+            onTouchEnd={(e) => handleCopyPlaceholder(e)}
             style={{
               color: "#188ae2",
               right:
@@ -526,7 +520,6 @@ function Placeholder(props) {
   return (
     <Rnd
       data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
-      //ref={nodeRef}
       key={props.pos.key}
       lockAspectRatio={
         props.pos.type !== textWidget &&
@@ -558,8 +551,8 @@ function Placeholder(props) {
       bounds="parent"
       className="signYourselfBlock"
       style={{
-        border: props.pos.type !== "checkbox" && "1px solid #007bff",
-        borderRadius: props.pos.type !== "checkbox" && "2px",
+        border: "1px solid #007bff",
+        borderRadius: "2px",
         textAlign:
           props.pos.type !== "name" &&
           props.pos.type !== "company" &&
@@ -579,17 +572,21 @@ function Placeholder(props) {
             : props?.pos?.zIndex
               ? props.pos.zIndex
               : "5",
-        background: props.data
-          ? props.data.blockColor
-          : props.pos.type !== "checkbox" && "rgb(203 233 237)"
+        background: props.data ? props.data.blockColor : "rgb(203 233 237)"
       }}
       onDrag={() => {
         setDraggingEnabled(true);
         props.handleTabDrag && props.handleTabDrag(props.pos.key);
       }}
       size={{
-        width: props.posWidth(props.pos, props.isSignYourself),
-        height: props.posHeight(props.pos, props.isSignYourself)
+        width:
+          props.pos.type === radioButtonWidget || props.pos.type === "checkbox"
+            ? "auto"
+            : props.posWidth(props.pos, props.isSignYourself),
+        height:
+          props.pos.type === radioButtonWidget || props.pos.type === "checkbox"
+            ? "auto"
+            : props.posHeight(props.pos, props.isSignYourself)
       }}
       onResizeStart={() => {
         setDraggingEnabled(true);

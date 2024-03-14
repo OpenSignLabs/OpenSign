@@ -238,7 +238,7 @@ export const addWidgetOptions = (type) => {
     case "stamp":
       return defaultOpt;
     case "checkbox":
-      return defaultOpt;
+      return { defaultOpt, options: { isReadOnly: false, isHideLabel: false } };
     case textInputWidget:
       return { ...defaultOpt, validation: { type: "text", pattern: "" } };
     case "initials":
@@ -262,7 +262,12 @@ export const addWidgetOptions = (type) => {
     case "dropdown":
       return defaultOpt;
     case radioButtonWidget:
-      return { ...defaultOpt, values: [] };
+      return {
+        ...defaultOpt,
+        values: [],
+        isReadOnly: false,
+        isHideLabel: false
+      };
     case textWidget:
       return defaultOpt;
     default:
@@ -1176,6 +1181,14 @@ export const multiSignEmbed = async (
               yPosition = yPos(position, ind);
               addYPosition = height + 8;
             }
+            if (!position?.options?.isHideLabel) {
+              // below line of code is used to embed label with radio button in pdf
+              page.drawText(item, {
+                x: xPos(position) + 15,
+                y: yPosition + 2,
+                size: height
+              });
+            }
             checkbox.addToPage(page, {
               x: xPos(position),
               y: yPosition,
@@ -1270,7 +1283,8 @@ export const multiSignEmbed = async (
           x: xPos(position),
           y: yPos(position),
           width: scaleWidth,
-          height: scaleHeight
+          height: scaleHeight,
+          borderWidth: 0
         });
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
@@ -1287,6 +1301,14 @@ export const multiSignEmbed = async (
             yPosition = yPos(position);
           }
 
+          if (!position?.options?.isHideLabel) {
+            // below line of code is used to embed label with radio button in pdf
+            page.drawText(data, {
+              x: xPos(position) + 15,
+              y: yPosition + 2,
+              size: 11
+            });
+          }
           radioGroup.addOptionToPage(data, page, {
             x: xPos(position),
             y: yPosition,
