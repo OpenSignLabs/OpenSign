@@ -21,7 +21,10 @@ import {
   addZIndex,
   createDocument,
   defaultWidthHeight,
-  addWidgetOptions
+  addWidgetOptions,
+  textInputWidget,
+  textWidget,
+  radioButtonWidget
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -442,9 +445,12 @@ const TemplatePlaceholder = () => {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
-        } else if (dragTypeValue === "radio") {
+        } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
-        } else if (dragTypeValue !== "label" && dragTypeValue !== "signature") {
+        } else if (
+          dragTypeValue !== textWidget &&
+          dragTypeValue !== "signature"
+        ) {
           setIsNameModal(true);
         }
         setCurrWidgetsDetails({});
@@ -970,7 +976,8 @@ const TemplatePlaceholder = () => {
     addOption,
     deleteOption,
     status,
-    defaultValue
+    defaultValue,
+    isHideLabel
   ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -986,11 +993,10 @@ const TemplatePlaceholder = () => {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
-            if (widgetType === "radio") {
+            if (widgetType === radioButtonWidget) {
               if (addOption) {
                 return {
                   ...position,
-
                   Height: position.Height
                     ? position.Height + 15
                     : defaultWidthHeight(widgetType).height + 15
@@ -1010,7 +1016,9 @@ const TemplatePlaceholder = () => {
                     name: dropdownName,
                     values: dropdownOptions,
                     status: status,
-                    defaultValue: defaultValue
+                    defaultValue: defaultValue,
+                    isReadOnly: isReadOnly || false,
+                    isHideLabel: isHideLabel || false
                   }
                 };
               }
@@ -1040,8 +1048,9 @@ const TemplatePlaceholder = () => {
                       minRequiredCount: minCount,
                       maxRequiredCount: maxCount
                     },
-                    isReadOnly: isReadOnly,
-                    defaultValue: defaultValue
+                    isReadOnly: isReadOnly || false,
+                    defaultValue: defaultValue,
+                    isHideLabel: isHideLabel || false
                   }
                 };
               }
@@ -1106,7 +1115,7 @@ const TemplatePlaceholder = () => {
         const getPosData = getXYdata;
         const addSignPos = getPosData.map((position) => {
           if (position.key === signKey) {
-            if (position.type === "text") {
+            if (position.type === textInputWidget) {
               return {
                 ...position,
                 options: {
@@ -1305,7 +1314,7 @@ const TemplatePlaceholder = () => {
                 </div>
               </ModalUi>
               <DropdownWidgetOption
-                type="radio"
+                type={radioButtonWidget}
                 title="Radio group"
                 showDropdown={isRadio}
                 setShowDropdown={setIsRadio}
