@@ -332,15 +332,14 @@ function PlaceholderType(props) {
         <div style={{ zIndex: props.isSignYourself && "99" }}>
           {props.pos.options?.values?.map((data, ind) => {
             return (
-              <div key={ind} className="flex items-center gap-1 min-w-max">
+              <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
                   id={data}
                   style={{
                     width: props.pos.Width,
                     display: "flex",
                     justifyContent: "center",
-                    marginBottom: "6px",
-                    marginTop: "5px"
+                    marginTop: ind === 0 ? 0 : "5px"
                   }}
                   onBlur={handleInputBlur}
                   disabled={
@@ -375,7 +374,10 @@ function PlaceholderType(props) {
                   }}
                 />
                 {!props.pos.options?.isHideLabel && (
-                  <label htmlFor={data} className="text-xs">
+                  <label
+                    htmlFor={!props.isPlaceholder && data}
+                    className="text-xs mb-0 text-center"
+                  >
                     {data}
                   </label>
                 )}
@@ -710,18 +712,14 @@ function PlaceholderType(props) {
         <div>
           {props.pos.options?.values.map((data, ind) => {
             return (
-              <div
-                key={ind}
-                className="flex flex-row items-center gap-1 min-w-max"
-              >
+              <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
                   id={data}
                   style={{
                     width: props.pos.Width,
                     display: "flex",
                     justifyContent: "center",
-                    marginBottom: "6px",
-                    marginTop: "5px"
+                    marginTop: ind === 0 ? 0 : "5px"
                   }}
                   type="radio"
                   disabled={
@@ -737,7 +735,10 @@ function PlaceholderType(props) {
                   }}
                 />
                 {!props.pos.options?.isHideLabel && (
-                  <label htmlFor={data} className="text-xs">
+                  <label
+                    htmlFor={!props.isPlaceholder && data}
+                    className="text-xs mb-0"
+                  >
                     {data}
                   </label>
                 )}

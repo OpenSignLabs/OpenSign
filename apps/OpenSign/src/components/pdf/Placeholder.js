@@ -114,6 +114,10 @@ function Placeholder(props) {
         props.pos?.options?.validation?.format
       )
   );
+  const [getCheckboxRenderWidth, setGetCheckboxRenderWidth] = useState({
+    width: null,
+    height: null
+  });
   const dateFormatArr = [
     "L",
     "DD-MM-YYYY",
@@ -125,6 +129,21 @@ function Placeholder(props) {
     "DD MMM, YYYY",
     "DD MMMM, YYYY"
   ];
+
+  useEffect(() => {
+    const updateWidth = () => {
+      const rndElement = document.getElementById(props.pos.key);
+      if (rndElement) {
+        const { width, height } = rndElement.getBoundingClientRect();
+        setGetCheckboxRenderWidth({ width: width, height: height });
+      }
+    };
+
+    // Delay to ensure rendering is complete
+    const timer = setTimeout(updateWidth, 0);
+
+    return () => clearTimeout(timer);
+  }, [props.pos]);
   //function change format array list with selected date and format
   const changeDateFormat = () => {
     const updateDate = [];
@@ -168,8 +187,8 @@ function Placeholder(props) {
     };
   }, [isShowDateFormat]);
 
-  //onclick placeholder function to open signature pad
-  const handlePlaceholderClick = () => {
+  //`handleWidgetIdandPopup` is used to set current widget id and open relative popup
+  const handleWidgetIdandPopup = () => {
     if (props.setSelectWidgetId) {
       props.setSelectWidgetId(props.pos.key);
     }
@@ -238,9 +257,18 @@ function Placeholder(props) {
       }
     }
   };
-
-  //function to set state value of onclick on widget's setting icon
-  const handleWidgetsOnclick = () => {
+  const handleOnClickPlaceholder = () => {
+    if (!props.isNeedSign) {
+      props.setWidgetType(props.pos.type);
+    }
+    if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
+      handleWidgetIdandPopup();
+    } else if (props.isPlaceholder || props.isSignYourself) {
+      handleWidgetIdandPopup();
+    }
+  };
+  //`handleOnClickSettingIcon` is used set current widget details and open setting of it
+  const handleOnClickSettingIcon = () => {
     if (props.pos.type === radioButtonWidget) {
       props.setIsRadio(true);
     } else if (props.pos.type === "dropdown") {
@@ -312,17 +340,17 @@ function Placeholder(props) {
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleWidgetsOnclick();
+                    handleOnClickSettingIcon();
                   }}
                   onTouchEnd={(e) => {
                     e.stopPropagation();
-                    handleWidgetsOnclick();
+                    handleOnClickSettingIcon();
                   }}
                   className="fa-solid fa-gear settingIcon"
                   style={{
                     color: "#188ae2",
-                    right: "9px",
-                    top: "-28px"
+                    right: "29px",
+                    top: "-19px"
                   }}
                 ></i>
               ) : (
@@ -335,26 +363,14 @@ function Placeholder(props) {
                   <i
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleWidgetsOnclick();
+                      handleOnClickSettingIcon();
                     }}
                     onTouchEnd={(e) => {
                       e.stopPropagation();
-                      handleWidgetsOnclick();
+                      handleOnClickSettingIcon();
                     }}
                     className="fa-solid fa-gear settingIcon"
-                    style={{
-                      color: "#188ae2",
-                      right: ["checkbox", radioButtonWidget].includes(
-                        props.pos.type
-                      )
-                        ? "24px"
-                        : "47px",
-                      top: ["checkbox", radioButtonWidget].includes(
-                        props.pos.type
-                      )
-                        ? "-28px"
-                        : "-19px"
-                    }}
+                    style={{ color: "#188ae2", right: "47px", top: "-19px" }}
                   ></i>
                 )
               )}
@@ -373,19 +389,7 @@ function Placeholder(props) {
                     props.handleLinkUser(props.data.Id);
                     props.setUniqueId(props.data.Id);
                   }}
-                  style={{
-                    color: "#188ae2",
-                    right:
-                      props.pos.type === "checkbox" ||
-                      props.pos.type === radioButtonWidget
-                        ? "8px"
-                        : "32px",
-                    top:
-                      props.pos.type === "checkbox" ||
-                      props.pos.type === radioButtonWidget
-                        ? "-28px"
-                        : "-18px"
-                  }}
+                  style={{ color: "#188ae2", right: "32px", top: "-18px" }}
                 ></i>
               )}
             </>
@@ -463,19 +467,7 @@ function Placeholder(props) {
             className="fa-regular fa-copy signCopy"
             onClick={(e) => handleCopyPlaceholder(e)}
             onTouchEnd={(e) => handleCopyPlaceholder(e)}
-            style={{
-              color: "#188ae2",
-              right:
-                props.pos.type === "checkbox" ||
-                props.pos.type === radioButtonWidget
-                  ? "-9px"
-                  : "12px",
-              top:
-                props.pos.type === "checkbox" ||
-                props.pos.type === radioButtonWidget
-                  ? "-28px"
-                  : "-18px"
-            }}
+            style={{ color: "#188ae2", right: "12px", top: "-18px" }}
           ></i>
           <i
             className="fa-regular fa-circle-xmark signCloseBtn"
@@ -498,19 +490,7 @@ function Placeholder(props) {
                 props.setIsStamp(false);
               }
             }}
-            style={{
-              color: "#188ae2",
-              right:
-                props.pos.type === "checkbox" ||
-                props.pos.type === radioButtonWidget
-                  ? "-27px"
-                  : "-8px",
-              top:
-                props.pos.type === "checkbox" ||
-                props.pos.type === radioButtonWidget
-                  ? "-28px"
-                  : "-18px"
-            }}
+            style={{ color: "#188ae2", right: "-8px", top: "-18px" }}
           ></i>
         </>
       )
@@ -519,6 +499,7 @@ function Placeholder(props) {
 
   return (
     <Rnd
+      id={props.pos.key}
       data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
       key={props.pos.key}
       lockAspectRatio={
@@ -622,33 +603,13 @@ function Placeholder(props) {
             false
           );
       }}
-      onClick={() => {
-        !props.isNeedSign && props.setWidgetType(props.pos.type);
-        props.isNeedSign && props.data?.signerObjId === props.signerObjId
-          ? handlePlaceholderClick()
-          : props.isPlaceholder
-            ? handlePlaceholderClick()
-            : props.isSignYourself && handlePlaceholderClick();
-      }}
+      onClick={() => handleOnClickPlaceholder()}
     >
       {props.isShowBorder &&
       props.pos.type !== radioButtonWidget &&
       props.pos.type !== "checkbox" &&
       props.pos.key === props.selectWidgetId ? (
-        <BorderResize
-          right={
-            props.pos.type === "checkbox" ||
-            props.pos.type === radioButtonWidget
-              ? -21
-              : -12
-          }
-          top={
-            props.pos.type === "checkbox" ||
-            props.pos.type === radioButtonWidget
-              ? -21
-              : -11
-          }
-        />
+        <BorderResize right={-12} top={-11} />
       ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
         props.data?.signerObjId === props.signerObjId &&
         props.pos.type !== radioButtonWidget &&
@@ -668,6 +629,7 @@ function Placeholder(props) {
           setDraggingEnabled={setDraggingEnabled}
           pos={props.pos}
           isPlaceholder={props.isPlaceholder}
+          getCheckboxRenderWidth={getCheckboxRenderWidth}
         />
       )}
       {isMobile ? (
@@ -675,18 +637,11 @@ function Placeholder(props) {
           style={{
             left: props.xPos(props.pos, props.isSignYourself),
             top: props.yPos(props.pos, props.isSignYourself),
-            width: props.posWidth(props.pos, props.isSignYourself),
+            width: "auto", //props.posWidth(props.pos, props.isSignYourself),
             // height: props.posHeight(props.pos, props.isSignYourself),
             zIndex: "10"
           }}
-          onTouchEnd={() => {
-            !props.isNeedSign && props.setWidgetType(props.pos.type);
-            props.isNeedSign && props.data?.signerObjId === props.signerObjId
-              ? handlePlaceholderClick()
-              : props.isPlaceholder
-                ? handlePlaceholderClick()
-                : props.isSignYourself && handlePlaceholderClick();
-          }}
+          onTouchEnd={() => handleOnClickPlaceholder()}
         >
           {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
 
