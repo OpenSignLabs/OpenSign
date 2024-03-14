@@ -144,6 +144,21 @@ function Placeholder(props) {
 
     return () => clearTimeout(timer);
   }, [props.pos]);
+
+  useEffect(() => {
+    const closeMenuOnOutsideClick = (e) => {
+      if (!isDraggingEnabled && !e.target.closest("#changeIsDragging")) {
+        setDraggingEnabled(true);
+      }
+    };
+
+    document.addEventListener("click", closeMenuOnOutsideClick);
+
+    return () => {
+      // Cleanup the event listener when the component unmounts
+      document.removeEventListener("click", closeMenuOnOutsideClick);
+    };
+  }, [isDraggingEnabled]);
   //function change format array list with selected date and format
   const changeDateFormat = () => {
     const updateDate = [];
