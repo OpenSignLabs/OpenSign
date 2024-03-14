@@ -976,7 +976,8 @@ const TemplatePlaceholder = () => {
     addOption,
     deleteOption,
     status,
-    defaultValue
+    defaultValue,
+    isHideLabel
   ) => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -996,7 +997,6 @@ const TemplatePlaceholder = () => {
               if (addOption) {
                 return {
                   ...position,
-
                   Height: position.Height
                     ? position.Height + 15
                     : defaultWidthHeight(widgetType).height + 15
@@ -1016,7 +1016,9 @@ const TemplatePlaceholder = () => {
                     name: dropdownName,
                     values: dropdownOptions,
                     status: status,
-                    defaultValue: defaultValue
+                    defaultValue: defaultValue,
+                    isReadOnly: isReadOnly || false,
+                    isHideLabel: isHideLabel || false
                   }
                 };
               }
@@ -1046,8 +1048,9 @@ const TemplatePlaceholder = () => {
                       minRequiredCount: minCount,
                       maxRequiredCount: maxCount
                     },
-                    isReadOnly: isReadOnly,
-                    defaultValue: defaultValue
+                    isReadOnly: isReadOnly || false,
+                    defaultValue: defaultValue,
+                    isHideLabel: isHideLabel || false
                   }
                 };
               }

@@ -870,7 +870,10 @@ function SignYourSelf() {
     maxCount,
     isReadOnly,
     addOption,
-    deleteOption
+    deleteOption,
+    status,
+    defaultValue,
+    isHideLabel
   ) => {
     const getPageNumer = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
@@ -902,7 +905,8 @@ function SignYourSelf() {
                 ...position.options,
                 name: dropdownName,
                 values: dropdownOptions,
-                isReadOnly: isReadOnly
+                isReadOnly: isReadOnly,
+                isHideLabel: isHideLabel || false
               }
             };
           }
