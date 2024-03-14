@@ -238,7 +238,10 @@ export const addWidgetOptions = (type) => {
     case "stamp":
       return defaultOpt;
     case "checkbox":
-      return { defaultOpt, options: { isReadOnly: false, isHideLabel: false } };
+      return {
+        ...defaultOpt,
+        options: { isReadOnly: false, isHideLabel: false }
+      };
     case textInputWidget:
       return { ...defaultOpt, validation: { type: "text", pattern: "" } };
     case "initials":
