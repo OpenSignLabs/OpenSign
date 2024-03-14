@@ -19,7 +19,8 @@ import {
   onImageSelect,
   onSaveSign,
   onSaveImage,
-  addDefaultSignatureImg
+  addDefaultSignatureImg,
+  radioButtonWidget
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -48,6 +49,7 @@ function PdfRequestFiles() {
   const [imgWH, setImgWH] = useState({});
   const imageRef = useRef(null);
   const [handleError, setHandleError] = useState();
+  const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -385,7 +387,8 @@ function PdfRequestFiles() {
           for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
             checkboxExist =
               checkUser[0].placeHolder[i].pos[j].type === "checkbox";
-            radioExist = checkUser[0].placeHolder[i].pos[j].type === "radio";
+            radioExist =
+              checkUser[0].placeHolder[i].pos[j].type === radioButtonWidget;
             if (checkboxExist) {
               requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
                 (position) =>
@@ -434,7 +437,8 @@ function PdfRequestFiles() {
             } else if (radioExist) {
               requiredRadio = checkUser[0].placeHolder[i].pos.filter(
                 (position) =>
-                  !position.options?.isReadOnly && position.type === "radio"
+                  !position.options?.isReadOnly &&
+                  position.type === radioButtonWidget
               );
               if (requiredRadio && requiredRadio?.length > 0) {
                 let checkSigned;
@@ -457,7 +461,7 @@ function PdfRequestFiles() {
               const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
                 (position) =>
                   position.options?.status === "required" &&
-                  position.type !== "radio" &&
+                  position.type !== radioButtonWidget &&
                   position.type !== "checkbox"
               );
               if (requiredWidgets && requiredWidgets?.length > 0) {
@@ -1173,6 +1177,8 @@ function PdfRequestFiles() {
                   setIsInitial={setIsInitial}
                   setValidateAlert={setValidateAlert}
                   unSignedWidgetId={unSignedWidgetId}
+                  setSelectWidgetId={setSelectWidgetId}
+                  selectWidgetId={selectWidgetId}
                 />
               )}
             </div>

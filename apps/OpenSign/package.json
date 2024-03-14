@@ -38,6 +38,7 @@
     "react-scrollbars-custom": "^4.1.1",
     "react-select": "^5.8.0",
     "react-signature-canvas": "^1.0.6",
+    "react-tooltip": "^5.26.3",
     "reactour": "^1.19.2",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
@@ -48,7 +49,7 @@
   },
   "scripts": {
     "start": "serve -s build",
-    "start-dev" :"react-scripts start",
+    "start-dev": "react-scripts start",
     "version": "curl -s https://api.github.com/repos/opensignlabs/opensign/releases/latest | grep '\"tag_name\":' | awk -F '\"' '{print $4}' > ./public/version.txt",
     "version-win": "powershell -Command \"Invoke-RestMethod -Uri 'https://api.github.com/repos/opensignlabs/opensign/releases/latest' | Select-Object -ExpandProperty tag_name | Out-File -FilePath ./public/version.txt\"",
     "build": "npm run version && react-scripts build",

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
+import { radioButtonWidget } from "../../constant/Utils";
 function DropdownWidgetOption(props) {
   const [dropdownOptionList, setDropdownOptionList] = useState([
     "option-1",
@@ -10,6 +11,7 @@ function DropdownWidgetOption(props) {
   const [maxCount, setMaxCount] = useState(0);
   const [dropdownName, setDropdownName] = useState(props.type);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isHideLabel, setIsHideLabel] = useState(false);
   const [status, setStatus] = useState("required");
   const [defaultValue, setDefaultValue] = useState("");
   const statusArr = ["required", "optional"];
@@ -19,6 +21,7 @@ function DropdownWidgetOption(props) {
     setDropdownOptionList(["option-1", "option-2"]);
     setDropdownName(props.type);
     setIsReadOnly(false);
+    setIsHideLabel(false);
     setMinCount(0);
     setMaxCount(0);
     setDefaultCheckbox([]);
@@ -39,6 +42,7 @@ function DropdownWidgetOption(props) {
         props.currWidgetsDetails?.options?.validation?.maxRequiredCount
       );
       setIsReadOnly(props.currWidgetsDetails?.options?.isReadOnly);
+      setIsHideLabel(props.currWidgetsDetails?.options?.isHideLabel);
       setStatus(props.currWidgetsDetails?.options?.status || "required");
       setDefaultValue(props.currWidgetsDetails?.options?.defaultValue || "");
       setDefaultCheckbox(props.currWidgetsDetails?.options?.defaultValue || []);
@@ -106,13 +110,15 @@ function DropdownWidgetOption(props) {
       null,
       null,
       status,
-      defaultData
+      defaultData,
+      isHideLabel
     );
     //  props.setShowDropdown(false);
     setDropdownOptionList(["option-1", "option-2"]);
     setDropdownName(props.type);
     //  props.setCurrWidgetsDetails({});
     setIsReadOnly(false);
+    setIsHideLabel(false);
     setMinCount(0);
     setMaxCount(0);
     setDefaultCheckbox([]);
@@ -143,7 +149,7 @@ function DropdownWidgetOption(props) {
       //   styleClass={"dropdownModal"}
       isOpen={props.showDropdown}
       title={props.title}
-      closeOff={true}
+      showClose={false}
     >
       <div style={{ height: "100%", padding: 20 }}>
         <form
@@ -153,20 +159,6 @@ function DropdownWidgetOption(props) {
           }}
         >
           <div className="dropdownContainer">
-            {["checkbox", "radio"].includes(props.type) &&
-              !props.isSignYourself && (
-                <div>
-                  <input
-                    type="checkbox"
-                    checked={isReadOnly}
-                    onChange={(e) => {
-                      setIsReadOnly(e.target.checked);
-                    }}
-                  />
-
-                  <label style={{ marginLeft: "10px" }}>Is read only</label>
-                </div>
-              )}
             <label style={{ fontSize: "13px", fontWeight: "600" }}>
               Name<span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
@@ -178,36 +170,6 @@ function DropdownWidgetOption(props) {
               className="drodown-input"
             />
 
-            {props.type === "checkbox" && !props.isSignYourself && (
-              <>
-                <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Minimun check
-                </label>
-                <input
-                  required
-                  defaultValue={0}
-                  value={minCount}
-                  onChange={(e) => {
-                    const count = handleSetMinMax(e);
-                    setMinCount(count);
-                  }}
-                  className="drodown-input"
-                />
-                <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Maximum check
-                </label>
-                <input
-                  required
-                  defaultValue={0}
-                  value={maxCount}
-                  onChange={(e) => {
-                    const count = handleSetMinMax(e);
-                    setMaxCount(count);
-                  }}
-                  className="drodown-input"
-                />
-              </>
-            )}
             <label
               style={{ fontSize: "13px", fontWeight: "600", marginTop: "5px" }}
             >
@@ -274,7 +236,6 @@ function DropdownWidgetOption(props) {
                   ></i>
                 </div>
               ))}
-
               <i
                 onClick={handleAddInput}
                 style={{
@@ -285,8 +246,38 @@ function DropdownWidgetOption(props) {
                 }}
                 className="fa-solid fa-square-plus"
               ></i>
+              {props.type === "checkbox" && !props.isSignYourself && (
+                <>
+                  <label style={{ fontSize: "13px", fontWeight: "600" }}>
+                    Minimun check
+                  </label>
+                  <input
+                    required
+                    defaultValue={0}
+                    value={minCount}
+                    onChange={(e) => {
+                      const count = handleSetMinMax(e);
+                      setMinCount(count);
+                    }}
+                    className="drodown-input"
+                  />
+                  <label style={{ fontSize: "13px", fontWeight: "600" }}>
+                    Maximum check
+                  </label>
+                  <input
+                    required
+                    defaultValue={0}
+                    value={maxCount}
+                    onChange={(e) => {
+                      const count = handleSetMinMax(e);
+                      setMaxCount(count);
+                    }}
+                    className="drodown-input"
+                  />
+                </>
+              )}
             </div>
-            {["dropdown", "radio"].includes(props.type) && (
+            {["dropdown", radioButtonWidget].includes(props.type) && (
               <>
                 <label
                   style={{
@@ -321,7 +312,7 @@ function DropdownWidgetOption(props) {
                 </select>
               </>
             )}
-            {props.type !== "checkbox" && props.type !== "radio" && (
+            {props.type !== "checkbox" && props.type !== radioButtonWidget && (
               <>
                 <div
                   style={{
@@ -358,8 +349,40 @@ function DropdownWidgetOption(props) {
                 </div>
               </>
             )}
-          </div>
+            {["checkbox", radioButtonWidget].includes(props.type) && (
+              <div className="flex flex-row gap-5 mt-2 items-center text-center">
+                {!props.isSignYourself && (
+                  <div>
+                    <input
+                      id="isreadonly"
+                      type="checkbox"
+                      checked={isReadOnly}
+                      onChange={(e) => {
+                        setIsReadOnly(e.target.checked);
+                      }}
+                    />
+                    <label className="ml-1" htmlFor="isreadonly">
+                      Is read only
+                    </label>
+                  </div>
+                )}
+                <div>
+                  <input
+                    id="ishidelabel"
+                    type="checkbox"
+                    checked={isHideLabel}
+                    onChange={(e) => {
+                      setIsHideLabel(e.target.checked);
+                    }}
+                  />
 
+                  <label className="ml-1" htmlFor="ishidelabel">
+                    Hide label
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
           <div
             style={{
               height: "1px",

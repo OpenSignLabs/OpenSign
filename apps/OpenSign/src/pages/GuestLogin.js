@@ -4,6 +4,7 @@ import "../styles/loginPage.css";
 import loader from "../assets/images/loader2.gif";
 import axios from "axios";
 import { themeColor } from "../constant/const";
+import { contractUsers } from "../constant/Utils";
 
 function GuestLogin() {
   const { id, userMail, contactBookId, serverUrl } = useParams();
@@ -103,11 +104,19 @@ function GuestLogin() {
         } else {
           let _user = user.data.result;
           const parseId = localStorage.getItem("parseAppId");
+          const contractUserDetails = await contractUsers(_user.email);
           localStorage.setItem("UserInformation", JSON.stringify(_user));
           localStorage.setItem(
             `Parse/${parseId}/currentUser`,
             JSON.stringify(_user)
           );
+          if (contractUserDetails) {
+            localStorage.setItem(
+              "Extand_Class",
+              JSON.stringify(contractUserDetails)
+            );
+          }
+
           localStorage.setItem("username", _user.name);
           localStorage.setItem("accesstoken", _user.sessionToken);
           //save isGuestSigner true in local to handle login flow header in mobile view
