@@ -94,6 +94,12 @@ const HomeLayout = () => {
           position: "top"
           // style: { backgroundColor: "#abd4d2" },
         },
+        {
+          selector: '[data-tut="tourbutton"]',
+          content: `To upload documents for self-signing or to request others’ signatures, simply select the respective buttons.`,
+          position: "top"
+          // style: { backgroundColor: "#abd4d2" },
+        },
         ...resArr,
         {
           selector: '[data-tut="reactourLast"]',
