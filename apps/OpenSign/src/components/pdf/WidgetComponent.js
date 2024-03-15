@@ -239,8 +239,8 @@ function WidgetComponent({
   const updateWidgets = isSignYourself
     ? filterWidgets
     : isTemplateFlow
-      ? textWidgetData
-      : widget;
+    ? textWidgetData
+    : widget;
 
   return (
     <>
@@ -264,11 +264,7 @@ function WidgetComponent({
                   alignItems: "center",
                   justifyContent: "center"
                 }}
-                onClick={() => {
-                  // if (signersdata?.length) {
-                  handleModal();
-                  // }
-                }}
+                onClick={() => handleModal()}
               >
                 <span
                   style={{
@@ -346,7 +342,7 @@ function WidgetComponent({
                   display: "flex",
                   overflowX: "scroll",
                   whiteSpace: "nowrap",
-                  padding: "10px"
+                  padding: "10px 5px 10px 1px"
                 }}
               >
                 <WidgetList

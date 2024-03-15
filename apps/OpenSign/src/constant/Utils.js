@@ -288,26 +288,14 @@ export const getWidgetType = (item, marginLeft) => {
           marginLeft: marginLeft && `${marginLeft}px`
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginLeft: "5px"
-          }}
-        >
-          <i
-            className="fa-sharp fa-solid fa-grip-vertical"
-            style={{ color: "#908d8d", fontSize: "13px" }}
-          ></i>
-          <span
-            style={{
-              fontWeight: "400",
-              fontSize: "15px",
-              // padding: "3px 20px 0px 20px",
-              color: "black",
-              marginLeft: "5px"
-            }}
-          >
+        <div className="flex items-center mr-1">
+          {!isMobile && (
+            <i
+              className="fa-sharp fa-solid fa-grip-vertical"
+              style={{ color: "#908d8d", fontSize: "13px", marginLeft: 4 }}
+            ></i>
+          )}
+          <span className=" font-[400] text-[15px] text-black ml-[5px]">
             {item.type}
           </span>
         </div>
@@ -1090,8 +1078,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-              ? 10
-              : newUpdateHeight;
+            ? 10
+            : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
