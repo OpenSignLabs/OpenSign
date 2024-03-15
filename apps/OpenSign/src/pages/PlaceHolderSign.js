@@ -487,12 +487,7 @@ function PlaceHolderSign() {
           setIsCheckbox(true);
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
-        } else if (
-          dragTypeValue !== textWidget &&
-          dragTypeValue !== "signature"
-        ) {
-          setIsNameModal(true);
-        }
+        } 
         setWidgetType(dragTypeValue);
         setSignKey(key);
         setCurrWidgetsDetails({});
