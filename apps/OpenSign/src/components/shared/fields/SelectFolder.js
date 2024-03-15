@@ -93,7 +93,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
 
   // `handleSubmit` is used to pass folderPtr to parent component
   const handleSubmit = () => {
-    let url = "Root";
+    let url = "OpenSign™ Drive";
     tabList.forEach((t) => {
       url = url + " / " + t.Name;
     });
@@ -180,7 +180,9 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
         <div className="font-semibold ">
           <div className="flex items-center gap-2">
             <p>
-              {selectFolder && selectFolder.Name ? selectFolder.Name : "Root"}
+              {selectFolder && selectFolder.Name
+                ? selectFolder.Name
+                : "OpenSign™ Drive"}
             </p>
             <div className="text-black text-sm" onClick={() => SetIsOpen(true)}>
               <i
@@ -207,14 +209,14 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
         isOpen={isOpen}
         handleClose={handleCancel}
       >
-        <div className="w-full min-w-[300px] md:min-w-[500px] px-3">
+        <div className="w-full min-w-[300px] md:min-w-[500px] max-w-[500px] px-3">
           <div className="py-2 text-[#ac4848] text-[14px] font-[500]">
             <span
               className="cursor-pointer"
-              title="Root"
+              title="OpenSign™ Drive"
               onClick={(e) => removeTabListItem(e)}
             >
-              Root /{" "}
+              OpenSign™ Drive /{" "}
             </span>
             {tabList &&
               tabList.map((tab, i) => (
