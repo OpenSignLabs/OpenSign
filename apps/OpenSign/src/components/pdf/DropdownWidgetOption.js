@@ -377,7 +377,7 @@ function DropdownWidgetOption(props) {
                   />
 
                   <label className="ml-1" htmlFor="ishidelabel">
-                    Hide label
+                    Hide labels
                   </label>
                 </div>
               </div>
