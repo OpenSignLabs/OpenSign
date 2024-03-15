@@ -4,7 +4,7 @@ import { getWidgetType } from "../../constant/Utils";
 function WidgetList(props) {
   return props.updateWidgets.map((item, ind) => {
     return (
-      <div key={ind} style={{ marginBottom: "10px" }}>
+      <div key={ind} style={{ marginBottom: "5px" }}>
         <div
           className="widgets"
           onClick={() => {

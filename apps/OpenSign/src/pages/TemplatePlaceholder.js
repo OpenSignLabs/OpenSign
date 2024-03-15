@@ -23,7 +23,6 @@ import {
   defaultWidthHeight,
   addWidgetOptions,
   textInputWidget,
-  textWidget,
   radioButtonWidget
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -447,12 +446,7 @@ const TemplatePlaceholder = () => {
           setIsCheckbox(true);
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
-        } else if (
-          dragTypeValue !== textWidget &&
-          dragTypeValue !== "signature"
-        ) {
-          setIsNameModal(true);
-        }
+        } 
         setCurrWidgetsDetails({});
         setWidgetType(dragTypeValue);
         setSignKey(key);
