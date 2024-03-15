@@ -163,7 +163,6 @@
 
 .signatureBtn {
   border: 1.5px solid #47a3ad;
-
   border-radius: 3px;
   display: flex;
   padding: 0px;
@@ -1191,6 +1190,9 @@ option {
     max-height: 80%;
     min-width: 90%;
     overflow-y: auto;
+  }
+  .signatureBtn {
+    width: max-content;
   }
 
   .dropdownModal {
