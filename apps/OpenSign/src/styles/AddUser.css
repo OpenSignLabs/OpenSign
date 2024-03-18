@@ -60,6 +60,7 @@
   color: #ffffff;
   outline: none;
 }
+
 /* For classes: bg-[#188ae2] text-sm text-white px-4 py-2 rounded ml-2 shadow focus:outline-none */
 .resetbutton {
   background-color: #188ae2;
@@ -74,4 +75,30 @@
   color: #ffffff;
   outline: none;
   margin-left: 8px;
+}
+
+.validationlist {
+  position: absolute;
+  left: 0;
+  z-index: 1;
+  appearance: none;
+  -moz-appearance: "none";
+  -webkit-appearance: "none";
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAnUlEQVR4nO2QMQrCQBBFX51NbWMp2uox7Gw8h22uYEguIZNKyB0lMIElTNzdGBvdB8PC8Gces5DJ/Cxn4Aa4QM5pbsgncQF6rQYoZ3IFcPey11jByRsaqzYuctqfZo8xki3QBURuRtDpfBQ74GEsaYHN5It8wYFEhgExlj2NniwRhC7qP70gRSRrCN6JZE2BJZJvCEb2QKVvJvMvvAD2WzaK/35kGAAAAABJRU5ErkJggg==");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem top 50%;
+  background-size: 1rem auto;
+}
+
+
+@media (max-width: 375px) {
+  .validationlist {
+    background-position: right 0.5rem top 50%;
+  }
+}
+
+@media (min-width:375px) and (max-width: 767px) {
+  .validationlist {
+    background-position: right 1rem top 50%;
+  }
 }

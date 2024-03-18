@@ -317,9 +317,6 @@ function PlaceHolderSign() {
 
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
-    if (item && item.text) {
-      setWidgetName(item.text);
-    }
     getSignerPos(item, monitor);
   };
 
@@ -336,7 +333,6 @@ function PlaceHolderSign() {
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
-
       if (item === "onclick") {
         const dropObj = {
           //onclick put placeholder center on pdf
@@ -487,10 +483,11 @@ function PlaceHolderSign() {
           setIsCheckbox(true);
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
-        } 
+        }
         setWidgetType(dragTypeValue);
         setSignKey(key);
         setCurrWidgetsDetails({});
+        setWidgetName(dragTypeValue);
       }
     }
   };
@@ -1755,7 +1752,6 @@ function PlaceHolderSign() {
             </button>
           </div>
         </ModalUi>
-
         <LinkUserModal
           handleAddUser={handleAddUser}
           isAddUser={isAddUser}
