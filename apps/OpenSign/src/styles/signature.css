@@ -837,10 +837,18 @@ option {
   justify-content: flex-start;
 }
 
-.labelTextArea {
-  font-size: 12px;
+.labelWidthDesktop {
   min-width: 100%;
   min-height: 100%;
+}
+
+.labelWidthMobile {
+  width: 100%;
+  height: 100%;
+}
+
+.labelTextArea {
+  font-size: 12px;
   border: 1px solid #007bff;
   outline: none;
   z-index: 999;
@@ -944,7 +952,7 @@ option {
   to prevent sudden quick movement (as the
   navigation bar gets a new position at the top of the
   page (position:fixed and top:0) */
-  .stickyHead + .content {
+  .stickyHead+.content {
     padding-top: 60px;
   }
 
@@ -1173,6 +1181,7 @@ option {
   font-size: 12px;
   margin-left: 5px;
 }
+
 .defaultOptions:focus {
   outline: none;
 }
@@ -1191,6 +1200,7 @@ option {
     min-width: 90%;
     overflow-y: auto;
   }
+
   .signatureBtn {
     width: max-content;
   }

@@ -2,6 +2,7 @@ import React, { useEffect, useState, forwardRef, useRef } from "react";
 import {
   getMonth,
   getYear,
+  isMobile,
   onChangeInput,
   radioButtonWidget,
   range,
@@ -741,6 +742,7 @@ function PlaceholderType(props) {
           placeholder="Enter label"
           rows={1}
           value={textValue}
+          onBlur={handleInputBlur}
           onChange={(e) => {
             setTextValue(e.target.value);
             onChangeInput(
@@ -753,7 +755,11 @@ function PlaceholderType(props) {
               false
             );
           }}
-          className="labelTextArea"
+          className={
+            isMobile
+              ? "labelTextArea labelWidthMobile"
+              : "labelTextArea labelWidthDesktop"
+          }
           style={{ whiteSpace: "pre-wrap" }}
           cols="50"
         />

@@ -31,7 +31,7 @@ function PlaceholderBorder(props) {
   };
   return (
     <div
-      onMouseEnter={!isMobile && props?.setDraggingEnabled(true)}
+      onMouseEnter={() => !isMobile && props?.setDraggingEnabled(true)}
       className="borderResize"
       style={{
         borderColor: themeColor,
