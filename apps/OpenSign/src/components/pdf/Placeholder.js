@@ -595,8 +595,7 @@ function Placeholder(props) {
       disableDragging={
         props.isNeedSign
           ? true
-          : props.isPlaceholder &&
-              !["date", textWidget].includes(props.pos.type)
+          : props.isPlaceholder && ![textWidget].includes(props.pos.type)
             ? false
             : !isDraggingEnabled
       }
