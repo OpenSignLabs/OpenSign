@@ -215,7 +215,8 @@ function Placeholder(props) {
       "company",
       "job title",
       "date",
-      "email"
+      "email",
+      textWidget
     ].includes(props.pos.type);
 
     if (widgetTypeExist) {
@@ -594,7 +595,8 @@ function Placeholder(props) {
       disableDragging={
         props.isNeedSign
           ? true
-          : props.isPlaceholder && props.pos.type !== "date"
+          : props.isPlaceholder &&
+              !["date", textWidget].includes(props.pos.type)
             ? false
             : !isDraggingEnabled
       }
@@ -652,8 +654,18 @@ function Placeholder(props) {
           style={{
             left: props.xPos(props.pos, props.isSignYourself),
             top: props.yPos(props.pos, props.isSignYourself),
-            width: "auto", //props.posWidth(props.pos, props.isSignYourself),
+            width:
+              props.pos.type === radioButtonWidget ||
+              props.pos.type === "checkbox"
+                ? "auto"
+                : props.posWidth(props.pos, props.isSignYourself),
+            //  "auto", //props.posWidth(props.pos, props.isSignYourself),
             // height: props.posHeight(props.pos, props.isSignYourself),
+            height:
+              props.pos.type === radioButtonWidget ||
+              props.pos.type === "checkbox"
+                ? "auto"
+                : props.posHeight(props.pos, props.isSignYourself),
             zIndex: "10"
           }}
           onTouchEnd={() => handleOnClickPlaceholder()}
