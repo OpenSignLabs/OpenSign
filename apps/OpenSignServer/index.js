@@ -95,6 +95,7 @@ export const config = {
   },
   appId: process.env.APP_ID || 'myAppId',
   maxLimit: 500,
+  maxUploadSize: '30mb',
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::/0'], // '::1'
   serverURL: process.env.SERVER_URL || 'http://localhost:8080/app', // Don't forget to change to https if needed
