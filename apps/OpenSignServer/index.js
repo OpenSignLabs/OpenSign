@@ -69,8 +69,8 @@ if (process.env.SMTP_ENABLE) {
     await transporterMail.verify();
     isMailAdapter = true;
   } catch (err) {
-    console.dir('Please provide valid SMTP credentials');
     isMailAdapter = false;
+    console.log('Please provide valid SMTP credentials');
   }
 } else if (process.env.MAILGUN_API_KEY) {
   try {
@@ -83,7 +83,7 @@ if (process.env.SMTP_ENABLE) {
     isMailAdapter = true;
   } catch (error) {
     isMailAdapter = false;
-    console.dir('Please provide valid Mailgun credentials');
+    console.log('Please provide valid Mailgun credentials');
   }
 }
 
