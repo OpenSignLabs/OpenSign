@@ -361,7 +361,6 @@ function PlaceHolderSign() {
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
-      console.log("option", dragTypeValue);
       if (item === "onclick") {
         const dropObj = {
           //onclick put placeholder center on pdf
