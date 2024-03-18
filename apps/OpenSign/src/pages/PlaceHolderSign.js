@@ -215,7 +215,8 @@ function PlaceHolderSign() {
         } else if (declined) {
           setIsAlreadyPlace({
             status: true,
-            message: "This document has been declined by one or more person(s)."
+            message:
+              "This document has been declined by one or more recipient(s)."
           });
         } else if (currDate > expireUpdateDate) {
           setIsAlreadyPlace({
@@ -225,7 +226,7 @@ function PlaceHolderSign() {
         } else {
           setIsAlreadyPlace({
             status: true,
-            message: "The document has already been dispatched to be signed."
+            message: "The document has already been dispatched for signing."
           });
         }
       }
