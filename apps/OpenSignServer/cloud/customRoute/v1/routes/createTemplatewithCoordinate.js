@@ -129,7 +129,7 @@ export default async function createTemplatewithCoordinate(request, response) {
             for (const widget of signer.widgets) {
               const pageNumber = widget.page;
               const page = placeHolder.find(page => page.pageNumber === pageNumber);
-              const signOpt = { name: 'signature', status: required };
+              const signOpt = { name: 'signature', status: 'required' };
               const widgetData = {
                 isStamp: widget.type === 'stamp',
                 key: randomId(),
