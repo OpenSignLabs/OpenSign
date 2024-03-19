@@ -102,6 +102,10 @@ function PlaceHolderSign() {
   const [widgetName, setWidgetName] = useState(false);
   const [mailStatus, setMailStatus] = useState("");
   const [isCurrUser, setIsCurrUser] = useState(false);
+  const [isAlreadyPlace, setIsAlreadyPlace] = useState({
+    status: false,
+    message: ""
+  });
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -193,15 +197,49 @@ function PlaceHolderSign() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
-      // const alreadyPlaceholder =
-      //   documentData[0].Placeholders && documentData[0].Placeholders;
-      // if (alreadyPlaceholder && alreadyPlaceholder.length > 0) {
-      //   setIsAlreadyPlace(true);
-      // }
-      // setSignersData(documentData[0]);
-      // setIsSelectId(0);
-      // setSignerObjId(documentData[0].Signers[0].objectId);
-      // setContractName(documentData[0].Signers[0].className);
+      const alreadyPlaceholder = documentData[0]?.SignedUrl;
+      // Check if document is sent for signing
+      if (alreadyPlaceholder) {
+        // Check if the document is completed
+        const isCompleted =
+          documentData[0].IsCompleted && documentData[0]?.IsCompleted;
+        // Get the expiration date of the document
+        const expireDate = documentData[0].ExpiryDate.iso;
+        // Check if the document has been declined
+        const declined =
+          documentData[0].IsDeclined && documentData[0]?.IsDeclined;
+        // Get the expiration update date in milliseconds
+        const expireUpdateDate = new Date(expireDate).getTime();
+        // Get the current date in milliseconds
+        const currDate = new Date().getTime();
+        if (isCompleted) {
+          // If document is completed
+          setIsAlreadyPlace({
+            status: true,
+            message: "This document has been signed by all Signers."
+          });
+        } else if (declined) {
+          // If document has been declined
+          setIsAlreadyPlace({
+            status: true,
+            message:
+              "This document has been declined by one or more recipient(s)."
+          });
+        } else if (currDate > expireUpdateDate) {
+          // If document has expired
+          setIsAlreadyPlace({
+            status: true,
+            message: "This Document is no longer available."
+          });
+        } else {
+          // If document is dispatched for signing
+          setIsAlreadyPlace({
+            status: true,
+            message: "The document has already been dispatched for signing."
+          });
+        }
+      }
+
       setPdfDetails(documentData);
 
       if (documentData[0].Signers && documentData[0].Signers.length > 0) {
@@ -1749,6 +1787,33 @@ function PlaceHolderSign() {
               className="finishBtn cancelBtn"
             >
               Close
+            </button>
+          </div>
+        </ModalUi>
+        <ModalUi
+          headerColor={"#dc3545"}
+          isOpen={isAlreadyPlace.status}
+          title={"Document Alert"}
+          showClose={false}
+        >
+          <div style={{ height: "100%", padding: 20 }}>
+            <p>{isAlreadyPlace.message}</p>
+
+            <div
+              style={{
+                height: "1px",
+                backgroundColor: "#9f9f9f",
+                width: "100%",
+                marginTop: "15px",
+                marginBottom: "15px"
+              }}
+            ></div>
+            <button
+              onClick={() => handleRecipientSign()}
+              type="button"
+              className="finishBtn cancelBtn"
+            >
+              View
             </button>
           </div>
         </ModalUi>
