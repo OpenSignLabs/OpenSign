@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { fetchAppInfo, forgetPassword } from "../redux/actions";
 import Title from "../components/Title";
 import { NavLink } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import Parse from "parse";
 import Alert from "../primitives/Alert";
-function ForgotPassword(props) {
+import { appInfo } from "../constant/appinfo";
+import { useDispatch } from "react-redux";
+import { fetchAppInfo } from "../redux/reducers/infoReducer";
+
+function ForgotPassword() {
+  const dispatch = useDispatch();
   const [state, setState] = useState({
     email: "",
     password: "",
@@ -27,14 +30,11 @@ function ForgotPassword(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    localStorage.setItem("appLogo", props.appInfo.applogo);
-    localStorage.setItem("appName", props.appInfo.appname);
-    localStorage.setItem("defaultmenuid", props.appInfo.defaultmenuid);
-    localStorage.setItem("PageLanding", props.appInfo.LandingPageId);
-    localStorage.setItem(
-      "userSettings",
-      JSON.stringify(props.appInfo.settings)
-    );
+    localStorage.setItem("appLogo", appInfo.applogo);
+    localStorage.setItem("appName", appInfo.appname);
+    // localStorage.setItem("defaultmenuid", props.appInfo.defaultmenuid);
+    // localStorage.setItem("PageLanding", props.appInfo.LandingPageId);
+    localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
     if (state.email) {
       const username = state.email;
       try {
@@ -50,14 +50,14 @@ function ForgotPassword(props) {
   };
 
   useEffect(() => {
-    props.fetchAppInfo();
+    dispatch(fetchAppInfo());
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
     // eslint-disable-next-line
   }, []);
 
-  let image = props.appInfo.applogo;
+  let image = appInfo.applogo;
   return (
     <div className="bg-white">
       <Title title="Forgot password page" />
@@ -129,10 +129,4 @@ function ForgotPassword(props) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return { appInfo: state.appInfo, forgotPassword: state.forgotPassword };
-};
-
-export default connect(mapStateToProps, { fetchAppInfo, forgetPassword })(
-  ForgotPassword
-);
+export default ForgotPassword;

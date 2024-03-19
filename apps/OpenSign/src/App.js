@@ -15,6 +15,7 @@ import SignYourSelf from "./pages/SignyourselfPdf";
 import DraftDocument from "./components/pdf/DraftDocument";
 import PlaceHolderSign from "./pages/PlaceHolderSign";
 import PdfRequestFiles from "./pages/PdfRequestFiles";
+import Opensigndrive from "./pages/Opensigndrive";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
@@ -25,7 +26,6 @@ const UserProfile = lazy(() => import("./pages/UserProfile"));
 const Signup = lazy(() => import("./pages/Signup"));
 const GenerateToken = lazy(() => import("./pages/GenerateToken"));
 const Webhook = lazy(() => import("./pages/Webhook"));
-const Opensigndrive = lazy(() => import("./pages/Opensigndrive"));
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const Loader = () => {

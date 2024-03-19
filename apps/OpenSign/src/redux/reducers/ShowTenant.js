@@ -1,9 +1,14 @@
-const ShowTenant = (state = "", action) => {
-  switch (action.type) {
-    case "SHOW_TENANT":
+import { createSlice } from "@reduxjs/toolkit";
+
+const showTenantSlice = createSlice({
+  name: "showTenant",
+  initialState: "",
+  reducers: {
+    showTenant: (state, action) => {
       return action.payload;
-    default:
-      return state;
-  }
-};
-export default ShowTenant;
+    },
+  },
+});
+
+export const { showTenant } = showTenantSlice.actions;
+export default showTenantSlice.reducer;
