@@ -14,6 +14,7 @@ export default async function draftDocument(request, response) {
   const SendinOrder = request.body.sendInOrder || false;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
+  const baseUrl = new URL(process.env.SERVER_URL);
 
   try {
     const reqToken = request.headers['x-api-token'];
@@ -135,7 +136,7 @@ export default async function draftDocument(request, response) {
         }
         return response.json({
           objectId: res.id,
-          url: protocol + '/load/signmicroapp/placeholdersign/' + res.id,
+          url: `${baseUrl.origin}/placeholdersign/${res.id}`,
         });
       } else {
         if (request.posthog) {
