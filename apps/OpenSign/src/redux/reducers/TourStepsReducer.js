@@ -1,11 +1,17 @@
-const tourStepReducer = (state = "", action) => {
-  switch (action.type) {
-    case "SAVE_TOURSTEPS":
+import { createSlice } from "@reduxjs/toolkit";
+
+const tourStepSlice = createSlice({
+  name: "tourStep",
+  initialState: [],
+  reducers: {
+    saveTourSteps: (state, action) => {
       return action.payload;
-    case "REMOVE_TOURSTEPS":
+    },
+    removeTourSteps: () => {
       return [];
-    default:
-      return state;
+    }
   }
-};
-export default tourStepReducer;
+});
+
+export const { saveTourSteps, removeTourSteps } = tourStepSlice.actions;
+export default tourStepSlice.reducer;

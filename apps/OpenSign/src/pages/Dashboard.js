@@ -4,10 +4,11 @@ import "../styles/loader.css";
 import GetDashboard from "../components/dashboard/GetDashboard";
 import { useNavigate, useParams } from "react-router-dom";
 import Title from "../components/Title";
-import { save_tourSteps } from "../redux/actions";
-import { connect } from "react-redux";
-const Dashboard = (props) => {
+import { useDispatch } from "react-redux";
+import { saveTourSteps } from "../redux/reducers/TourStepsReducer";
+const Dashboard = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { id } = useParams();
   const [dashboard, setdashboard] = useState([]);
   const [classnameArray, setclassnameArray] = useState([]);
@@ -88,7 +89,7 @@ const Dashboard = (props) => {
             // style: { backgroundColor: "#abd4d2" },
           };
         });
-      props.save_tourSteps(arr);
+      dispatch(saveTourSteps(arr));
       // console.log("arr ", arr);
       setclassnameArray(classArray);
       if (localStorage.getItem("DashboardDefaultFilter")) {
@@ -133,6 +134,4 @@ const Dashboard = (props) => {
   );
 };
 
-export default connect(null, {
-  save_tourSteps
-})(Dashboard);
+export default Dashboard;

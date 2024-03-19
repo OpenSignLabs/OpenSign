@@ -13,7 +13,7 @@ const Submenu = ({ item, closeSidebar }) => {
     <li role="none">
       <button
         onClick={toggleSubmenu}
-        className="w-full flex items-center text-left text-[#444] p-3 lg:p-4 hover:bg-[#eef1f5] focus:ring-2 focus:ring-blue-600"
+        className="w-full flex items-center text-left text-[#444] p-3 lg:p-4 hover:bg-[#eef1f5] focus:outline-none focus:text-[#0056b3] focus:bg-[#eef1f5]"
         aria-expanded={submenuOpen}
         aria-haspopup="true"
         aria-controls={`submenu-${title}`}
@@ -39,7 +39,7 @@ const Submenu = ({ item, closeSidebar }) => {
                     ? `/${childItem.pageType}/${childItem.objectId}`
                     : `/${childItem.objectId}`
                 }
-                className="block pl-6 md:pl-8 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white cursor-pointer"
+                className="block pl-6 md:pl-8 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white focus:text-[#0056b3] focus:bg-[#eef1f5] cursor-pointer"
                 onClick={closeSidebar}
                 role="menuitem"
                 tabIndex={submenuOpen ? 0 : -1}

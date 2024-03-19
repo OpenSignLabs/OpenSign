@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react";
 import "../styles/pgsignup.css";
 import Parse from "parse";
 import axios from "axios";
-import { fetchAppInfo, showTenantName } from "../redux/actions/index";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import Title from "../components/Title";
 import { useNavigate, useLocation } from "react-router-dom";
+import { appInfo } from "../constant/appinfo";
+import { showTenant } from "../redux/reducers/ShowTenant";
+import { fetchAppInfo } from "../redux/reducers/infoReducer";
 
-const PgSignUp = (props) => {
+const PgSignUp = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [formData, setFormData] = useState({
@@ -24,8 +27,7 @@ const PgSignUp = (props) => {
 
   // below useEffect is used to fetch App data and save to redux state
   useEffect(() => {
-    // Parse.User.logOut()
-    props.fetchAppInfo();
+    dispatch(fetchAppInfo());
     handleSignedUpUser();
     // eslint-disable-next-line
   }, []);
@@ -243,8 +245,8 @@ const PgSignUp = (props) => {
       // Check extended class user role and tenentId
       try {
         let userRoles = [];
-        if (props.appInfo.settings) {
-          let userSettings = props.appInfo.settings;
+        if (appInfo.settings) {
+          let userSettings = appInfo.settings;
 
           //Get Current user roles
           let url = `${baseUrl}functions/UserGroups`;
@@ -319,8 +321,8 @@ const PgSignUp = (props) => {
                                 }
                               });
                               if (tenentInfo.length) {
-                                props.showTenantName(
-                                  tenentInfo[0].tenentName || ""
+                                dispatch(
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -358,8 +360,8 @@ const PgSignUp = (props) => {
                                 }
                               });
                               if (tenentInfo.length) {
-                                props.showTenantName(
-                                  tenentInfo[0].tenentName || ""
+                                dispatch(
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -537,15 +539,4 @@ const PgSignUp = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  if (Object.keys(state.appInfo).length !== 0) {
-    return { appInfo: state.appInfo, isloginVisible: true };
-  } else {
-    return { appInfo: state.appInfo, isloginVisible: false };
-  }
-};
-
-export default connect(mapStateToProps, {
-  fetchAppInfo,
-  showTenantName
-})(PgSignUp);
+export default PgSignUp;
