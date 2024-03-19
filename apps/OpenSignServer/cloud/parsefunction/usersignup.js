@@ -63,13 +63,12 @@ export default async function (request) {
         sessionToken: user.sessionToken, //localStorage.getItem("accesstoken"),
       };
       let body = {
-        appName: extClass, //props.appInfo.appname,
-        roleName: userDetails.role, //props.appInfo.defaultRole,
+        appName: extClass,
+        roleName: userDetails.role,
         userId: user.id,
       };
       let role = await axios.post(roleurl, body, { headers: headers });
       // console.log("role ", role);
-      // props.appInfo.defaultRole
       const partnerCls = Parse.Object.extend("partners_Tenant");
       const partnerQuery = new partnerCls();
       partnerQuery.set("UserId", {
@@ -111,7 +110,7 @@ export default async function (request) {
         className: "_User",
         objectId: user.id,
       });
-      newObj.set("UserRole", userDetails.role); // props.appInfo.defaultRole
+      newObj.set("UserRole", userDetails.role);
       newObj.set("Email", userDetails.email);
       newObj.set("Name", userDetails.name);
       newObj.set("Phone", userDetails.phone);

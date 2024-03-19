@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import "../styles/loader.css";
-import { connect } from "react-redux";
-import { fetchAppInfo, showTenantName } from "../redux/actions";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 import Title from "../components/Title";
 import GoogleSignInBtn from "../components/LoginGoogle";
@@ -13,10 +12,13 @@ import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
 import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 import Alert from "../primitives/Alert";
-
-function Login(props) {
+import { appInfo } from "../constant/appinfo";
+import { fetchAppInfo } from "../redux/reducers/infoReducer";
+import { showTenant } from "../redux/reducers/ShowTenant";
+function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const { width } = useWindowSize();
   const [state, setState] = useState({
     email: "",
@@ -37,14 +39,14 @@ function Login(props) {
     Destination: ""
   });
   const [isModal, setIsModal] = useState(false);
-  const image = props?.appInfo?.applogo || undefined;
+  const image = appInfo?.applogo || undefined;
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
       setState({ ...state, loading: true });
       GetLoginData();
     }
-    props.fetchAppInfo();
+    dispatch(fetchAppInfo());
     // eslint-disable-next-line
   }, []);
   const handleChange = (event) => {
@@ -61,8 +63,8 @@ function Login(props) {
         setState({ ...state, loading: true });
         let baseUrl = localStorage.getItem("baseUrl");
         let parseAppId = localStorage.getItem("parseAppId");
-        localStorage.setItem("appLogo", props.appInfo.applogo);
-        localStorage.setItem("appName", props.appInfo.appname);
+        localStorage.setItem("appLogo", appInfo.applogo);
+        localStorage.setItem("appName", appInfo.appname);
         // Pass the username and password to logIn function
         await Parse.User.logIn(email, password)
           .then(async (user) => {
@@ -81,8 +83,8 @@ function Login(props) {
               // Check extended class user role and tenentId
               try {
                 let userRoles = [];
-                if (props.appInfo.settings) {
-                  let userSettings = props.appInfo.settings;
+                if (appInfo.settings) {
+                  let userSettings = appInfo.settings;
 
                   //Get Current user roles
                   let url = `${baseUrl}functions/UserGroups`;
@@ -172,8 +174,10 @@ function Login(props) {
                                         }
                                       });
                                       if (tenentInfo.length) {
-                                        props.showTenantName(
-                                          tenentInfo[0].tenentName || ""
+                                        dispatch(
+                                          showTenant(
+                                            tenentInfo[0].tenentName || ""
+                                          )
                                         );
                                         localStorage.setItem(
                                           "TenantName",
@@ -212,8 +216,10 @@ function Login(props) {
                                         }
                                       });
                                       if (tenentInfo.length) {
-                                        props.showTenantName(
-                                          tenentInfo[0].tenentName || ""
+                                        dispatch(
+                                          showTenant(
+                                            tenentInfo[0].tenentName || ""
+                                          )
                                         );
                                         localStorage.setItem(
                                           "TenantName",
@@ -412,8 +418,8 @@ function Login(props) {
       // Check extended class user role and tenentId
       try {
         let userRoles = [];
-        if (props.appInfo.settings) {
-          let userSettings = props.appInfo.settings;
+        if (appInfo.settings) {
+          let userSettings = appInfo.settings;
 
           //Get Current user roles
           let url = `${baseUrl}functions/UserGroups`;
@@ -503,8 +509,8 @@ function Login(props) {
                                 }
                               });
                               if (tenentInfo.length) {
-                                props.showTenantName(
-                                  tenentInfo[0].tenentName || ""
+                                dispatch(
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -543,8 +549,8 @@ function Login(props) {
                                 }
                               });
                               if (tenentInfo.length) {
-                                props.showTenantName(
-                                  tenentInfo[0].tenentName || ""
+                                dispatch(
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -943,7 +949,7 @@ function Login(props) {
           </div>
         </div>
       )}
-      {props.isloginVisible && props.isloginVisible ? (
+      {appInfo && appInfo.appId ? (
         <>
           <div aria-labelledby="loginHeading" role="region">
             <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-4 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
@@ -1051,7 +1057,7 @@ function Login(props) {
                       </div>
                     </form>
                     <br />
-                    {(props.appInfo.fbAppId || props.appInfo.googleClietId) && (
+                    {(appInfo.fbAppId || appInfo.googleClietId) && (
                       <div
                         style={{
                           display: "flex",
@@ -1082,9 +1088,9 @@ function Login(props) {
                         justifyContent: "center"
                       }}
                     >
-                      {/* {props.appInfo.fbAppId && props.appInfo.fbAppId !== "" ? (
+                      {/* {appInfo.fbAppId && appInfo.fbAppId !== "" ? (
                       <LoginFacebook
-                        FBCred={props.appInfo.fbAppId}
+                        FBCred={appInfo.fbAppId}
                         thirdpartyLoginfn={thirdpartyLoginfn}
                         thirdpartyLoader={state.thirdpartyLoader}
                         setThirdpartyLoader={setThirdpartyLoader}
@@ -1100,10 +1106,9 @@ function Login(props) {
                         justifyContent: "center"
                       }}
                     >
-                      {props.appInfo.googleClietId &&
-                      props.appInfo.googleClietId !== "" ? (
+                      {appInfo.googleClietId && appInfo.googleClietId !== "" ? (
                         <GoogleSignInBtn
-                          GoogleCred={props.appInfo.googleClietId}
+                          GoogleCred={appInfo.googleClietId}
                           thirdpartyLoginfn={thirdpartyLoginfn}
                           thirdpartyLoader={state.thirdpartyLoader}
                           setThirdpartyLoader={setThirdpartyLoader}
@@ -1213,16 +1218,4 @@ function Login(props) {
     </div>
   );
 }
-
-const mapStateToProps = (state) => {
-  if (Object.keys(state.appInfo).length !== 0) {
-    return { appInfo: state.appInfo, isloginVisible: true };
-  } else {
-    return { appInfo: state.appInfo, isloginVisible: false };
-  }
-};
-
-export default connect(mapStateToProps, {
-  fetchAppInfo,
-  showTenantName
-})(Login);
+export default Login;
