@@ -1,14 +1,35 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
 import loader from "../assets/images/loader2.gif";
-import DriveBody from "../components/opensigndrive/DriveBody";
 import { themeColor, iconColor } from "../constant/const";
 import { getDrive } from "../constant/Utils";
 import { useNavigate } from "react-router-dom";
 import Title from "../components/Title";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
-
+const DriveBody = React.lazy(() =>
+  import("../components/opensigndrive/DriveBody")
+);
+const Loader = () => {
+  return (
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <div
+        style={{
+          fontSize: "45px",
+          color: "#3dd3e0"
+        }}
+        className="loader-37"
+      ></div>
+    </div>
+  );
+};
 function Opensigndrive() {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
@@ -734,18 +755,20 @@ function Opensigndrive() {
                 <span style={{ fontWeight: "bold" }}>No Data Found!</span>
               </div>
             ) : (
-              <DriveBody
-                pdfData={pdfData}
-                setFolderName={setFolderName}
-                setIsLoading={setIsLoading}
-                setDocId={setDocId}
-                getPdfFolderDocumentList={getPdfFolderDocumentList}
-                getPdfDocumentList={getPdfDocumentList}
-                isDocId={docId}
-                setPdfData={setPdfData}
-                isList={isList}
-                setIsAlert={setIsAlert}
-              />
+              <React.Suspense fallback={<Loader />}>
+                <DriveBody
+                  pdfData={pdfData}
+                  setFolderName={setFolderName}
+                  setIsLoading={setIsLoading}
+                  setDocId={setDocId}
+                  getPdfFolderDocumentList={getPdfFolderDocumentList}
+                  getPdfDocumentList={getPdfDocumentList}
+                  isDocId={docId}
+                  setPdfData={setPdfData}
+                  isList={isList}
+                  setIsAlert={setIsAlert}
+                />
+              </React.Suspense>
             )}
           </>
         )}
