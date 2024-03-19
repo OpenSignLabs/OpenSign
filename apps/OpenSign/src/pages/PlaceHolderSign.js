@@ -198,32 +198,41 @@ function PlaceHolderSign() {
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
       const alreadyPlaceholder = documentData[0]?.SignedUrl;
-
+      // Check if document is sent for signing
       if (alreadyPlaceholder) {
+        // Check if the document is completed
         const isCompleted =
           documentData[0].IsCompleted && documentData[0]?.IsCompleted;
+        // Get the expiration date of the document
         const expireDate = documentData[0].ExpiryDate.iso;
+        // Check if the document has been declined
         const declined =
           documentData[0].IsDeclined && documentData[0]?.IsDeclined;
+        // Get the expiration update date in milliseconds
         const expireUpdateDate = new Date(expireDate).getTime();
+        // Get the current date in milliseconds
         const currDate = new Date().getTime();
         if (isCompleted) {
+          // If document is completed
           setIsAlreadyPlace({
             status: true,
             message: "This document has been signed by all Signers."
           });
         } else if (declined) {
+          // If document has been declined
           setIsAlreadyPlace({
             status: true,
             message:
               "This document has been declined by one or more recipient(s)."
           });
         } else if (currDate > expireUpdateDate) {
+          // If document has expired
           setIsAlreadyPlace({
             status: true,
             message: "This Document is no longer available."
           });
         } else {
+          // If document is dispatched for signing
           setIsAlreadyPlace({
             status: true,
             message: "The document has already been dispatched for signing."
@@ -1786,9 +1795,6 @@ function PlaceHolderSign() {
           isOpen={isAlreadyPlace.status}
           title={"Document Alert"}
           showClose={false}
-          // handleClose={() => {
-          //   setIsAlreadyPlace({status:false});
-          // }}
         >
           <div style={{ height: "100%", padding: 20 }}>
             <p>{isAlreadyPlace.message}</p>
