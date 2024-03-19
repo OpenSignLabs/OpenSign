@@ -98,7 +98,7 @@ export const config = {
   maxUploadSize: '30mb',
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::/0'], // '::1'
-  serverURL: process.env.SERVER_URL || 'http://localhost:8080/app', // Don't forget to change to https if needed
+  serverURL: 'http://localhost:8080/app', // Don't forget to change to https if needed
   verifyUserEmails: isMailAdapter === true ? true : false,
   publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
   // Your apps name. This will appear in the subject and body of the emails that are sent.
