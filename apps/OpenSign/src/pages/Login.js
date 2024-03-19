@@ -736,94 +736,90 @@ function Login() {
               } else {
                 _currentRole = userRoles[0];
               }
-              let SettingsUser = JSON.parse(userSettings);
-              SettingsUser.forEach(async (element) => {
-                if (element.role === _currentRole) {
-                  let _role = _currentRole.replace(
-                    `${localStorage.getItem("_appName")}_`,
-                    ""
-                  );
-                  localStorage.setItem("_user_role", _role);
-
-                  // Get TenentID from Extendend Class
-                  localStorage.setItem(
-                    "extended_class",
-                    element.extended_class
-                  );
-
-                  const currentUser = Parse.User.current();
-                  await Parse.Cloud.run("getUserDetails", {
-                    email: currentUser.get("email")
-                  }).then(
-                    (result) => {
-                      let tenentInfo = [];
-                      const results = [result];
-                      if (results) {
-                        let extendedInfo_stringify = JSON.stringify(results);
-                        let extendedInfo = JSON.parse(extendedInfo_stringify);
-                        if (extendedInfo.length > 1) {
-                          extendedInfo.forEach((x) => {
-                            if (x.TenantId) {
-                              let obj = {
-                                tenentId: x.TenantId.objectId,
-                                tenentName: x.TenantId.TenantName || ""
-                              };
-                              tenentInfo.push(obj);
-                            }
-                          });
-
-                          localStorage.setItem("showpopup", true);
-                          localStorage.setItem("PageLanding", element.pageId);
-                          localStorage.setItem("defaultmenuid", element.menuId);
-                          localStorage.setItem("pageType", element.pageType);
-                          navigate("/");
+              if (_currentRole && _currentRole !== "contracts_Guest") {
+                let SettingsUser = JSON.parse(userSettings);
+                SettingsUser.forEach(async (item) => {
+                  if (item.role === _currentRole) {
+                    let _role = _currentRole.replace(`${appInfo.appname}_`, "");
+                    localStorage.setItem("_user_role", _role);
+                    // Get TenentID from Extendend Class
+                    localStorage.setItem("extended_class", item.extended_class);
+                    const currentUser = Parse.User.current();
+                    await Parse.Cloud.run("getUserDetails", {
+                      email: currentUser.get("email")
+                    }).then(
+                      (result) => {
+                        let tenentInfo = [];
+                        const results = [result];
+                        if (results) {
+                          let extendedInfo_stringify = JSON.stringify(results);
+                          let extendedInfo = JSON.parse(extendedInfo_stringify);
+                          if (extendedInfo.length > 1) {
+                            extendedInfo.forEach((x) => {
+                              if (x.TenantId) {
+                                let obj = {
+                                  tenentId: x.TenantId.objectId,
+                                  tenentName: x.TenantId.TenantName || ""
+                                };
+                                tenentInfo.push(obj);
+                              }
+                            });
+                            localStorage.setItem("showpopup", true);
+                            localStorage.setItem("PageLanding", item.pageId);
+                            localStorage.setItem("defaultmenuid", item.menuId);
+                            localStorage.setItem("pageType", item.pageType);
+                            navigate("/");
+                          } else {
+                            extendedInfo.forEach((x) => {
+                              if (x.TenantId) {
+                                let obj = {
+                                  tenentId: x.TenantId.objectId,
+                                  tenentName: x.TenantId.TenantName || ""
+                                };
+                                localStorage.setItem(
+                                  "TenetId",
+                                  x.TenantId.objectId
+                                );
+                                tenentInfo.push(obj);
+                              }
+                            });
+                            localStorage.setItem("PageLanding", item.pageId);
+                            localStorage.setItem("defaultmenuid", item.menuId);
+                            localStorage.setItem("pageType", item.pageType);
+                            navigate(`/${item.pageType}/${item.pageId}`);
+                          }
                         } else {
-                          extendedInfo.forEach((x) => {
-                            if (x.TenantId) {
-                              let obj = {
-                                tenentId: x.TenantId.objectId,
-                                tenentName: x.TenantId.TenantName || ""
-                              };
-                              localStorage.setItem(
-                                "TenetId",
-                                x.TenantId.objectId
-                              );
-                              tenentInfo.push(obj);
-                            }
-                          });
-                          localStorage.setItem("PageLanding", element.pageId);
-                          localStorage.setItem("defaultmenuid", element.menuId);
-                          localStorage.setItem("pageType", element.pageType);
-                          navigate(`/${element.pageType}/${element.pageId}`);
+                          localStorage.setItem("PageLanding", item.pageId);
+                          localStorage.setItem("defaultmenuid", item.menuId);
+                          localStorage.setItem("pageType", item.pageType);
+                          navigate(`/${item.pageType}/${item.pageId}`);
                         }
-                      } else {
-                        localStorage.setItem("PageLanding", element.pageId);
-                        localStorage.setItem("defaultmenuid", element.menuId);
-                        localStorage.setItem("pageType", element.pageType);
-                        navigate(`/${element.pageType}/${element.pageId}`);
-                      }
-                    },
-                    (error) => {
-                      setState({
-                        ...state,
-                        loading: false,
-                        alertType: "danger",
-                        alertMsg: "You don`t have access to this application!"
-                      });
-                      setTimeout(function () {
+                      },
+                      (error) => {
                         setState({
                           ...state,
                           loading: false,
                           alertType: "danger",
-                          alertMsg: ""
+                          alertMsg: "You don`t have access to this application!"
                         });
-                      }, 2000);
-                      localStorage.setItem("accesstoken", null);
-                      console.error("Error while fetching Follow", error);
-                    }
-                  );
-                }
-              });
+                        setTimeout(function () {
+                          setState({
+                            ...state,
+                            loading: false,
+                            alertType: "danger",
+                            alertMsg: ""
+                          });
+                        }, 2000);
+                        localStorage.setItem("accesstoken", null);
+                        console.error("Error while fetching Follow", error);
+                      }
+                    );
+                  }
+                });
+              } else {
+                setState({ ...state, loading: false });
+                handleCloseModal();
+              }
             } else {
               console.log("User Role Not Found.");
             }
