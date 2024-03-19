@@ -28,6 +28,7 @@ function Form() {
 }
 
 const Forms = (props) => {
+  const maxFileSize = 20;
   const navigate = useNavigate();
   const [signers, setSigners] = useState([]);
   const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
@@ -56,17 +57,17 @@ const Forms = (props) => {
     try {
       let files = e.target.files;
       if (typeof files[0] !== "undefined") {
-        const mb = Math.round(files[0].bytes / Math.pow(1024, 2));
-        if (mb > 10) {
+        const mb = Math.round(files[0].size / Math.pow(1024, 2));
+        if (mb > maxFileSize) {
           alert(
-            `The selected file size is too large. Please select a file less than ${Math.round(
-              10
-            )} MB`
+            `The selected file size is too large. Please select a file less than ${maxFileSize} MB`
           );
+          setFileUpload([]);
+          e.target.value = "";
           return;
+        } else {
+          handleFileUpload(files[0]);
         }
-
-        handleFileUpload(files[0]);
       } else {
         alert("Please select file.");
         return false;
@@ -114,10 +115,10 @@ const Forms = (props) => {
     const url = file.link;
     const mb = Math.round(file.bytes / Math.pow(1024, 2));
 
-    if (mb > 10) {
+    if (mb > maxFileSize) {
       setTimeout(() => {
         alert(
-          `The selected file size is too large. Please select a file less than 10 MB`
+          `The selected file size is too large. Please select a file less than ${maxFileSize} MB`
         );
       }, 500);
       return;
