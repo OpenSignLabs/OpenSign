@@ -165,29 +165,26 @@ export default async function createDocumentwithCoordinate(request, response) {
             'Signers',
             contact?.map(x => x.contactPtr)
           );
-          let updatePlaceholders = contact.map((signer, index) => {
+          let updatePlaceholders = contact.map(signer => {
             const placeHolder = [];
 
             for (const widget of signer.widgets) {
               const pageNumber = widget.page;
               const page = placeHolder.find(page => page.pageNumber === pageNumber);
-
+              const signOpt = { name: 'signature', status: 'required' };
               const widgetData = {
-                xPosition: widget.x,
-                yPosition: widget.y,
                 isStamp: widget.type === 'stamp',
                 key: randomId(),
                 isDrag: false,
-                firstXPos: widget.x,
-                firstYPos: widget.y,
-                yBottom: 0,
                 scale: 1,
                 isMobile: false,
                 zIndex: 1,
                 type: widget.type,
-                widgetValue: '',
+                options: widget.type === 'signature' ? signOpt : widget.options,
                 Width: widget.w,
                 Height: widget.h,
+                xPosition: widget.x,
+                yPosition: widget.y,
               };
 
               if (page) {

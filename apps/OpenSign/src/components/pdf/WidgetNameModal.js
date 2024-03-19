@@ -129,18 +129,7 @@ const WidgetNameModal = (props) => {
               >
                 <div style={{ width: "100%", position: "relative" }}>
                   <input
-                    style={{
-                      padding: "0.5rem 0.75rem",
-                      width: "92%",
-                      borderWidth: "1px",
-                      borderColor: "#d1d5db",
-                      borderTopLeftRadius: "0.375rem",
-                      borderBottomLeftRadius: "0.375rem",
-                      outline: "none",
-                      fontSize: "0.75rem",
-                      position: "relative",
-                      zIndex: 2
-                    }}
+                    className="relative z-20 w-[87%] md:w-[92%] p-2.5 border-[1px] border-[#d1d5db] rounded-l-md outline-none text-xs"
                     name="textvalidate"
                     placeholder="Enter custom expression"
                     value={formdata.textvalidate}
@@ -148,8 +137,7 @@ const WidgetNameModal = (props) => {
                     // onBlur={() => handleBlurRegex()}
                   />
                   <select
-                    style={{ position: "absolute", left: 0, zIndex: 1 }}
-                    className="addUserInput"
+                    className="validationlist addUserInput"
                     name="textvalidate"
                     value={formdata.textvalidate}
                     onChange={(e) => handleChange(e)}
