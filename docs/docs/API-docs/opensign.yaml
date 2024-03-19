@@ -291,7 +291,7 @@ paths:
       description: |
         The Create Document API allows users to generate new documents by providing data with base64 encoded file.
 
-        Upload you pdf in our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
+        Upload you pdf in our [**Debug UI**](https://app.opensignlabs.com/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF
       operationId: createdocument
       requestBody:
         content:
@@ -326,7 +326,7 @@ paths:
       - Documents
       summary: Create Document from Template
       description: |
-        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug UI**](https://staging-ap.opensignlabs.com/loadmf/signmicroapp/debugpdf) or using the Create Template API.
+        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug UI**](https://staging-ap.opensignlabs.com/debugpdf) or using the Create Template API.
       operationId: createdocumentwithtemplateid
       parameters:
       - name: template_id
@@ -586,7 +586,7 @@ paths:
       tags:
       - Templates
       summary: Create Template
-      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template. \n\nUpload you pdf in our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF.\n"
+      description: "The Template Creation API allows users to create customizable templates, which serve as blueprints for generating documents with predefined structures. Upon successful template creation, the API returns a unique **template_id** that can be used to generate documents based on the specified template. \n\nUpload you pdf in our [**Debug UI**](https://app.opensignlabs.com/debugpdf) here you can draw widgets and copy co-oridnate, page number of them. also you can copy base64 of PDF.\n"
       operationId: createtemplate
       requestBody:
         content:
@@ -1473,27 +1473,27 @@ components:
           example: signature
         page:
           type: number
-          description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 1
         x:
           type: number
-          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 244
         "y":
           type: number
-          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 71
         w:
           type: number
-          description: "Width of widget. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "Width of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 38
         h:
           type: number
-          description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 46
     createdocument_body_signers:
@@ -1529,27 +1529,27 @@ components:
           example: signature
         page:
           type: number
-          description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "The page number on which the widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 1
         x:
           type: number
-          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "x co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 244
         "y":
           type: number
-          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "y co-ordinate (left upper corner) from which widget should appear. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 71
         w:
           type: number
-          description: "Width of widget. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "Width of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 38
         h:
           type: number
-          description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/loadmf/signmicroapp/debugpdf) to calculate the value."
+          description: "Height of widget. use our [**Debug UI**](https://app.opensignlabs.com/debugpdf) to calculate the value."
           format: number
           example: 46
     createtemplate_body_signers:
