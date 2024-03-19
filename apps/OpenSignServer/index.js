@@ -54,26 +54,39 @@ if (process.env.USE_LOCAL !== 'TRUE') {
 let transporterMail;
 let mailgunClient;
 let mailgunDomain;
-
+let isMailAdapter = false;
 if (process.env.SMTP_ENABLE) {
-  transporterMail = createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT || 465,
-    secure: process.env.SMTP_SECURE || true,
-    auth: {
-      user: process.env.SMTP_USER_EMAIL,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  try {
+    transporterMail = createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT || 465,
+      secure: process.env.SMTP_SECURE || true,
+      auth: {
+        user: process.env.SMTP_USER_EMAIL,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+    await transporterMail.verify();
+    isMailAdapter = true;
+  } catch (err) {
+    isMailAdapter = false;
+    console.log('Please provide valid SMTP credentials');
+  }
 } else if (process.env.MAILGUN_API_KEY) {
-  const mailgun = new Mailgun(formData);
-  mailgunClient = mailgun.client({
-    username: 'api',
-    key: process.env.MAILGUN_API_KEY,
-  });
-
-  mailgunDomain = process.env.MAILGUN_DOMAIN;
+  try {
+    const mailgun = new Mailgun(formData);
+    mailgunClient = mailgun.client({
+      username: 'api',
+      key: process.env.MAILGUN_API_KEY,
+    });
+    mailgunDomain = process.env.MAILGUN_DOMAIN;
+    isMailAdapter = true;
+  } catch (error) {
+    isMailAdapter = false;
+    console.log('Please provide valid Mailgun credentials');
+  }
 }
+
 export const config = {
   databaseURI:
     process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
@@ -82,17 +95,18 @@ export const config = {
   },
   appId: process.env.APP_ID || 'myAppId',
   maxLimit: 500,
+  maxUploadSize: '30mb',
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::/0'], // '::1'
-  serverURL: process.env.SERVER_URL || 'http://localhost:8080/app', // Don't forget to change to https if needed
-  verifyUserEmails: process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY ? true : false,
+  serverURL: 'http://localhost:8080/app', // Don't forget to change to https if needed
+  verifyUserEmails: isMailAdapter === true ? true : false,
   publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Open Sign',
   allowClientClassCreation: false,
   allowExpiredAuthDataToken: false,
   encodeParseObjectInCloudFunction: true,
-  ...(process.env.SMTP_ENABLE || process.env.MAILGUN_API_KEY
+  ...(isMailAdapter === true
     ? {
         emailAdapter: {
           module: 'parse-server-api-mail-adapter',

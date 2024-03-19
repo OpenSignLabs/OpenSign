@@ -4,7 +4,8 @@ import {
   defaultWidthHeight,
   isMobile,
   radioButtonWidget,
-  resizeBorderExtraWidth
+  resizeBorderExtraWidth,
+  textWidget
 } from "../../constant/Utils";
 function PlaceholderBorder(props) {
   const getResizeBorderExtraWidth = resizeBorderExtraWidth();
@@ -31,7 +32,10 @@ function PlaceholderBorder(props) {
   };
   return (
     <div
-      onMouseEnter={!isMobile && props?.setDraggingEnabled(true)}
+      onMouseEnter={() => !isMobile && props?.setDraggingEnabled(true)}
+      onTouchEnd={() =>
+        props.pos.type === textWidget && props?.setDraggingEnabled(true)
+      }
       className="borderResize"
       style={{
         borderColor: themeColor,
