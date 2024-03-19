@@ -44,7 +44,7 @@
     "redux-thunk": "^3.1.0",
     "regex-parser": "^2.3.0",
     "serve": "^14.2.1",
-    "styled-components": "^4.4.1",
+    "styled-components": "^6.1.8",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
