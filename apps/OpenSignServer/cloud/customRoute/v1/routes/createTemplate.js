@@ -123,7 +123,7 @@ export default async function createTemplate(request, response) {
       }
       return response.json({
         objectId: res.id,
-        url: baseUrl.origin + '/load/signmicroapp/template/' + res.id,
+        url: baseUrl.origin + '/template/' + res.id,
       });
     } else {
       return response.status(405).json({ error: 'Invalid API Token!' });
