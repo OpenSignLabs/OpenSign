@@ -77,16 +77,14 @@ function Opensigndrive() {
     let driveDetails;
     try {
       driveDetails = await getDrive(docId, skip, limit);
-      if (driveDetails) {
-        if (driveDetails.length > 0) {
-          setSkip((prevSkip) => prevSkip + limit);
-          sortApps(null, null, driveDetails, true);
-        }
-        if (!docId) {
-          setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
-        }
-      } else if (driveDetails === "Error: Something went wrong!") {
+      if (driveDetails && driveDetails === "Error: Something went wrong!") {
         setHandleError("Error: Something went wrong!");
+      } else if (driveDetails && driveDetails.length > 0) {
+        setSkip((prevSkip) => prevSkip + limit);
+        sortApps(null, null, driveDetails, true);
+      }
+      if (!docId) {
+        setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
       }
     } catch (e) {
       setIsAlert({
@@ -146,7 +144,6 @@ function Opensigndrive() {
         return x;
       }
     });
-
     setFolderName(updateFolderName);
     const getLastId = updateFolderName[updateFolderName.length - 1];
     setDocId(getLastId.objectId);
