@@ -748,7 +748,7 @@ function Opensigndrive() {
                 <span style={{ fontWeight: "bold" }}>No Data Found!</span>
               </div>
             ) : (
-              <>
+              <React.Suspense fallback={<Loader />}>
                 <DriveBody
                   pdfData={pdfData}
                   setFolderName={setFolderName}
@@ -764,7 +764,7 @@ function Opensigndrive() {
                 {loading && (
                   <div style={{ textAlign: "center" }}>Loading...</div>
                 )}
-              </>
+              </React.Suspense>
             )}
           </>
         )}
