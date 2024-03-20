@@ -54,7 +54,6 @@ function Opensigndrive() {
   const [skip, setSkip] = useState(0);
   const limit = 100;
   const [loading, setLoading] = useState(false);
-  const [loadMore, setLoadMore] = useState(true);
   const currentUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -65,11 +64,7 @@ function Opensigndrive() {
   const jsonCurrentUser = JSON.parse(currentUser);
 
   useEffect(() => {
-    if (docId) {
-      getPdfFolderDocumentList();
-    } else {
-      getPdfDocumentList();
-    }
+    getPdfDocumentList();
     // eslint-disable-next-line
   }, [docId]);
 
@@ -77,42 +72,21 @@ function Opensigndrive() {
   const getPdfDocumentList = async (disbaleLoading) => {
     setLoading(true);
     if (!disbaleLoading) {
-      const load = {
-        isLoad: true,
-        message: "This might take some time"
-      };
-
-      setIsLoading(load);
+      setIsLoading({ isLoad: true, message: "This might take some time" });
     }
     let driveDetails;
     try {
-      driveDetails = await getDrive(null, skip, limit);
+      driveDetails = await getDrive(docId, skip, limit);
       if (driveDetails) {
         if (driveDetails.length > 0) {
           setSkip((prevSkip) => prevSkip + limit);
-          // If the fetched data length is less than the limit, it means there's no more data to fetch
-          if (driveDetails.length < limit) {
-            setLoadMore(false);
-          }
           sortApps(null, null, driveDetails, true);
         }
-        const data = [
-          {
-            name: "OpenSign™ Drive",
-            objectId: ""
-          }
-        ];
-        setFolderName(data);
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
+        if (!docId) {
+          setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
+        }
       } else if (driveDetails === "Error: Something went wrong!") {
-        const loadObj = {
-          isLoad: false
-        };
         setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
       }
     } catch (e) {
       setIsAlert({
@@ -121,52 +95,12 @@ function Opensigndrive() {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  //function for get parent folder document list
-  const getPdfFolderDocumentList = async (disableLoading) => {
-    setLoading(true);
-    if (!disableLoading) {
-      const load = {
-        isLoad: true,
-        message: "This might take some time"
-      };
-      setIsLoading(load);
-    }
-
-    let driveDetails;
-    try {
-      driveDetails = await getDrive(docId, skip, limit);
-      if (driveDetails) {
-        if (driveDetails.length > 0) {
-          setSkip((prevSkip) => prevSkip + limit);
-          // If the fetched data length is less than the limit, it means there's no more data to fetch
-          if (driveDetails.length < limit) {
-            setLoadMore(false);
-          }
-          sortApps(null, null, driveDetails, true);
-        }
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
-      } else if (driveDetails === "Error: Something went wrong!") {
-        const loadObj = {
-          isLoad: false
-        };
-        setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
-      }
-    } catch (e) {
-      setIsAlert({
-        isShow: true,
-        alertMessage: "something went wrong!"
+      setIsLoading({
+        isLoad: false
       });
-    } finally {
-      setLoading(false);
     }
   };
+
   //function to fetch drive details list on scroll bottom
   const handleScroll = () => {
     //get document of render openSign-drive component using id
@@ -180,14 +114,11 @@ function Opensigndrive() {
       documentList.scrollTop + documentList.clientHeight >=
         documentList.scrollHeight
     ) {
-      if (!loading && loadMore) {
-        //disableLoading
-        let disableLoading = true;
-        if (docId) {
-          getPdfFolderDocumentList(disableLoading);
-        } else {
-          getPdfDocumentList(disableLoading);
-        }
+      //disableLoading is used disable initial loader
+      let disableLoading = true;
+      // If the fetched data length is less than the limit, it means there's no more data to fetch
+      if (!loading && pdfData.length % 100 === 0) {
+        getPdfDocumentList(disableLoading);
       }
     }
   };
@@ -200,9 +131,8 @@ function Opensigndrive() {
         documentList.removeEventListener("scroll", handleScroll);
       };
     }
-
     // eslint-disable-next-line
-  }, [loading, loadMore]); // Add/remove scroll event listener when loading or hasMore changes
+  }, [loading]); // Add/remove scroll event listener when loading or hasMore changes
   //function for get all pdf document list
   const getParentFolder = async () => {
     setIsFolder(true);
@@ -211,7 +141,6 @@ function Opensigndrive() {
   const handleRoute = (index) => {
     setPdfData([]);
     setSkip(0);
-    setLoadMore(true);
     const updateFolderName = folderName.filter((x, i) => {
       if (i <= index) {
         return x;
@@ -825,14 +754,12 @@ function Opensigndrive() {
                   setFolderName={setFolderName}
                   setIsLoading={setIsLoading}
                   setDocId={setDocId}
-                  getPdfFolderDocumentList={getPdfFolderDocumentList}
                   getPdfDocumentList={getPdfDocumentList}
                   isDocId={docId}
                   setPdfData={setPdfData}
                   isList={isList}
                   setIsAlert={setIsAlert}
                   setSkip={setSkip}
-                  setLoadMore={setLoadMore}
                 />
                 {loading && (
                   <div style={{ textAlign: "center" }}>Loading...</div>

@@ -43,16 +43,13 @@ function DriveBody(props) {
       objectId: data.objectId
     };
     props.setFolderName((prev) => [...prev, folderData]);
-    const loadObj = {
+    props.setIsLoading({
       isLoad: true,
       message: "This might take some time"
-    };
-
-    props.setIsLoading(loadObj);
+    });
     props.setDocId(data.objectId);
     props.setPdfData([]);
     props.setSkip(0);
-    props.setLoadMore(true);
   };
   //function for change doc name and update doc name in  _document class
   const handledRenameDoc = async (data) => {
