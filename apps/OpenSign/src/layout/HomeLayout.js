@@ -224,7 +224,10 @@ const HomeLayout = () => {
               <div className="flex md:flex-row flex-col z-50">
                 <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
 
-                <div className="relative h-screen flex flex-col justify-between w-full overflow-y-auto">
+                <div
+                  id="renderList"
+                  className="relative h-screen flex flex-col justify-between w-full overflow-y-auto"
+                >
                   <div className="bg-[#eef1f5] p-3">{<Outlet />}</div>
                   <div className="z-30">
                     <Footer />

@@ -12,15 +12,7 @@ import SelectFolder from "../shared/fields/SelectFolder"; //check this one
 import ModalUi from "../../primitives/ModalUi";
 import { themeColor } from "../../constant/const";
 
-function DriveBody({
-  pdfData,
-  setFolderName,
-  setDocId,
-  setIsLoading,
-  setPdfData,
-  isList,
-  setIsAlert
-}) {
+function DriveBody(props) {
   const [rename, setRename] = useState("");
   const [renameValue, setRenameValue] = useState("");
   const inputRef = useRef(null);
@@ -50,28 +42,25 @@ function DriveBody({
       name: data.Name,
       objectId: data.objectId
     };
-    setFolderName((prev) => [...prev, folderData]);
-    const loadObj = {
+    props.setFolderName((prev) => [...prev, folderData]);
+    props.setIsLoading({
       isLoad: true,
       message: "This might take some time"
-    };
-
-    setIsLoading(loadObj);
-    setDocId(data.objectId);
+    });
+    props.setDocId(data.objectId);
+    props.setPdfData([]);
+    props.setSkip(0);
   };
   //function for change doc name and update doc name in  _document class
   const handledRenameDoc = async (data) => {
     setRename("");
     const trimmedValue = renameValue.trim();
-
     if (trimmedValue.length > 0) {
       const updateName = {
         Name: renameValue
       };
       const docId = data.objectId;
-
-      const docData = pdfData;
-
+      const docData = props.pdfData;
       const updatedData = docData.map((item) => {
         if (item.objectId === docId) {
           // If the item's ID matches the target ID, update the name
@@ -80,8 +69,7 @@ function DriveBody({
         // If the item's ID doesn't match, keep it unchanged
         return item;
       });
-
-      setPdfData(updatedData);
+      props.setPdfData(updatedData);
       await axios
         .put(
           `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
@@ -102,7 +90,7 @@ function DriveBody({
         })
         .catch((err) => {
           console.log("Err ", err);
-          setIsAlert({
+          props.setIsAlert({
             isShow: true,
             alertMessage: "something went wrong"
           });
@@ -199,13 +187,13 @@ function DriveBody({
       .then((result) => {
         const res = result.data;
         if (res) {
-          const updatedData = pdfData.filter((x) => x.objectId !== docId);
-          setPdfData(updatedData);
+          const updatedData = props.pdfData.filter((x) => x.objectId !== docId);
+          props.setPdfData(updatedData);
         }
       })
       .catch((err) => {
         console.log("Err ", err);
-        setIsAlert({
+        props.setIsAlert({
           isShow: true,
           alertMessage: "something went wrong"
         });
@@ -262,10 +250,10 @@ function DriveBody({
           // console.log("Listdata ", Listdata);
           const res = Listdata.data;
           if (res) {
-            const updatedData = pdfData.filter(
+            const updatedData = props.pdfData.filter(
               (x) => x.objectId !== updateDocId
             );
-            setPdfData(updatedData);
+            props.setPdfData(updatedData);
           }
         })
         .catch((err) => {
@@ -584,7 +572,7 @@ function DriveBody({
   //component to handle type of document and render according to type
   return (
     <>
-      {isList ? (
+      {props.isList ? (
         <div className="container" style={{ overflowX: "auto" }}>
           <Table striped bordered hover>
             <thead>
@@ -597,7 +585,7 @@ function DriveBody({
               </tr>
             </thead>
             <tbody>
-              {pdfData.map((data, ind) => {
+              {props.pdfData.map((data, ind) => {
                 return (
                   <React.Fragment key={ind}>
                     {handleFolderData(data, ind, "table")}
@@ -609,7 +597,7 @@ function DriveBody({
         </div>
       ) : (
         <div className="pdfContainer">
-          {pdfData.map((data, ind) => {
+          {props.pdfData.map((data, ind) => {
             return (
               <div className="box" key={ind}>
                 {handleFolderData(data, ind, "list")}
@@ -624,7 +612,7 @@ function DriveBody({
           isOpenModal={isOpenMoveModal}
           folderCls={"contracts_Document"}
           setIsOpenMoveModal={setIsOpenMoveModal}
-          setPdfData={setPdfData}
+          setPdfData={props.setPdfData}
         />
       )}
       <ModalUi
