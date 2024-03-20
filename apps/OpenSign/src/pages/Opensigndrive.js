@@ -74,14 +74,13 @@ function Opensigndrive() {
     if (!disbaleLoading) {
       setIsLoading({ isLoad: true, message: "This might take some time" });
     }
-    let driveDetails;
     try {
-      driveDetails = await getDrive(docId, skip, limit);
+      const driveDetails = await getDrive(docId, skip, limit);
       if (driveDetails && driveDetails === "Error: Something went wrong!") {
         setHandleError("Error: Something went wrong!");
       } else if (driveDetails && driveDetails.length > 0) {
         setSkip((prevSkip) => prevSkip + limit);
-        sortApps(null, null, driveDetails, true);
+        sortApps("Date", "Decending", driveDetails, true);
       }
       if (!docId) {
         setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
@@ -113,7 +112,7 @@ function Opensigndrive() {
         documentList.scrollHeight
     ) {
       //disableLoading is used disable initial loader
-      let disableLoading = true;
+      const disableLoading = true;
       // If the fetched data length is less than the limit, it means there's no more data to fetch
       if (!loading && pdfData.length % 100 === 0) {
         getPdfDocumentList(disableLoading);
@@ -130,11 +129,8 @@ function Opensigndrive() {
       };
     }
     // eslint-disable-next-line
-  }, [loading]); // Add/remove scroll event listener when loading or hasMore changes
-  //function for get all pdf document list
-  const getParentFolder = async () => {
-    setIsFolder(true);
-  };
+  }, [loading]); // Add/remove scroll event listener when loading changes
+
   //function for handle folder name path
   const handleRoute = (index) => {
     setPdfData([]);
@@ -233,17 +229,15 @@ function Opensigndrive() {
   const sortApps = (type, order, driveDetails, isInitial) => {
     const selectedSortType = type ? type : selectedSort ? selectedSort : "Date";
     const sortOrder = order ? order : sortingOrder ? sortingOrder : "Decending";
-
-    let sortingData = driveDetails;
     if (selectedSortType === "Name") {
-      sortingApp(sortingData, "Name", sortOrder);
+      sortingApp(driveDetails, "Name", sortOrder);
     } else if (selectedSortType === "Date") {
-      sortingApp(sortingData, "Date", sortOrder);
+      sortingApp(driveDetails, "Date", sortOrder);
     }
     if (isInitial) {
-      setPdfData([...pdfData, ...sortingData]);
+      setPdfData([...pdfData, ...driveDetails]);
     } else {
-      setPdfData(sortingData);
+      setPdfData(driveDetails);
     }
   };
 
@@ -553,7 +547,7 @@ function Opensigndrive() {
                     >
                       <span
                         className="dropdown-item itemColor"
-                        onClick={() => getParentFolder()}
+                        onClick={() => setIsFolder(true)}
                       >
                         <i
                           style={{ marginRight: "5px" }}
