@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { useState, useEffect, lazy } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { pdfjs } from "react-pdf";
 import Login from "./pages/Login";
