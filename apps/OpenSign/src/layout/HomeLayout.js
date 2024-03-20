@@ -18,6 +18,12 @@ const HomeLayout = () => {
   const arr = useSelector((state) => state.TourSteps);
   const [isUserValid, setIsUserValid] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
+  // reactour state
+  const [isCloseBtn, setIsCloseBtn] = useState(true);
+  const [isTour, setIsTour] = useState(false);
+  const [tourStatusArr, setTourStatusArr] = useState([]);
+  const [tourConfigs, setTourConfigs] = useState([]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -27,7 +33,7 @@ const HomeLayout = () => {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
-          setIsUserValid(true);
+          checkIsSubscribed();
           setIsLoader(false);
         } else {
           setIsUserValid(false);
@@ -37,14 +43,54 @@ const HomeLayout = () => {
         setIsUserValid(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // reactour state
-  const [isCloseBtn, setIsCloseBtn] = useState(true);
-  const [isTour, setIsTour] = useState(false);
-  const [tourStatusArr, setTourStatusArr] = useState([]);
-  const [tourConfigs, setTourConfigs] = useState([]);
-
+  async function checkIsSubscribed() {
+    const currentUser = Parse.User.current();
+    // const userSettings = appInfo.settings;
+    // const setting = userSettings.find((x) => x.role === _currentRole);
+    // const redirectUrl =
+    //   location?.state?.from || `/${setting.pageType}/${setting.pageId}`;
+    const user = await Parse.Cloud.run("getUserDetails", {
+      email: currentUser.get("email")
+    });
+    const _user = user.toJSON();
+    if (_user.TenantId) {
+      localStorage.setItem("TenetId", _user.TenantId.objectId);
+    }
+    // localStorage.setItem("PageLanding", setting.pageId);
+    // localStorage.setItem("defaultmenuid", setting.menuId);
+    // localStorage.setItem("pageType", setting.pageType);
+    if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+      // const LocalUserDetails = {
+      //   name: _user.Name,
+      //   email: _user.Email,
+      //   phone: _user.Phone,
+      //   company: _user.Company
+      // };
+      // localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
+      const billingDate = _user.Next_billing_date && _user.Next_billing_date;
+      if (billingDate) {
+        if (billingDate > new Date()) {
+          // localStorage.removeItem("userDetails");
+          // Redirect to the appropriate URL after successful login
+          // navigate(redirectUrl);
+          setIsUserValid(true);
+          return true;
+        } else {
+          navigate(`/subscription`);
+        }
+      } else {
+        navigate(`/subscription`);
+      }
+    } else {
+      setIsUserValid(true);
+      return true;
+      // Redirect to the appropriate URL after successful login
+      // navigate(redirectUrl);
+    }
+  }
   const showSidebar = () => {
     setIsOpen((value) => !value);
   };

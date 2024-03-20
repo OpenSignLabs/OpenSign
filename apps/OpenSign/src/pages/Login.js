@@ -745,6 +745,13 @@ function Login() {
                     // Get TenentID from Extendend Class
                     localStorage.setItem("extended_class", item.extended_class);
                     const currentUser = Parse.User.current();
+                    const userSettings = appInfo.settings;
+                    const setting = userSettings.find(
+                      (x) => x.role === _currentRole
+                    );
+                    const redirectUrl =
+                      location?.state?.from ||
+                      `/${setting.pageType}/${setting.pageId}`;
                     await Parse.Cloud.run("getUserDetails", {
                       email: currentUser.get("email")
                     }).then(
@@ -783,16 +790,66 @@ function Login() {
                                 tenentInfo.push(obj);
                               }
                             });
-                            localStorage.setItem("PageLanding", item.pageId);
-                            localStorage.setItem("defaultmenuid", item.menuId);
-                            localStorage.setItem("pageType", item.pageType);
-                            navigate(`/${item.pageType}/${item.pageId}`);
+                            localStorage.setItem("PageLanding", setting.pageId);
+                            localStorage.setItem(
+                              "defaultmenuid",
+                              setting.menuId
+                            );
+                            localStorage.setItem("pageType", setting.pageType);
+                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                              const LocalUserDetails = {
+                                name: results[0].get("Name"),
+                                email: results[0].get("Email"),
+                                phone: results[0].get("Phone"),
+                                company: results[0].get("Company")
+                              };
+                              localStorage.setItem(
+                                "userDetails",
+                                JSON.stringify(LocalUserDetails)
+                              );
+                              const billingDate =
+                                results[0].get("Next_billing_date") &&
+                                results[0].get("Next_billing_date");
+                              if (billingDate) {
+                                if (billingDate > new Date()) {
+                                  localStorage.removeItem("userDetails");
+                                  // Redirect to the appropriate URL after successful login
+                                  navigate(redirectUrl);
+                                } else {
+                                  navigate(`/subscription`);
+                                }
+                              } else {
+                                navigate(`/subscription`);
+                              }
+                            } else {
+                              // Redirect to the appropriate URL after successful login
+                              navigate(redirectUrl);
+                            }
                           }
                         } else {
-                          localStorage.setItem("PageLanding", item.pageId);
-                          localStorage.setItem("defaultmenuid", item.menuId);
-                          localStorage.setItem("pageType", item.pageType);
-                          navigate(`/${item.pageType}/${item.pageId}`);
+                          localStorage.setItem("PageLanding", setting.pageId);
+                          localStorage.setItem("defaultmenuid", setting.menuId);
+                          localStorage.setItem("pageType", setting.pageType);
+                          setState({ ...state, loading: false });
+                          if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                            const LocalUserDetails = {
+                              name: results[0].get("Name"),
+                              email: results[0].get("Email"),
+                              phone: results[0].get("Phone")
+                              // company: results.get("Company"),
+                            };
+                            localStorage.setItem(
+                              "userDetails",
+                              JSON.stringify(LocalUserDetails)
+                            );
+                            const billingDate = "";
+                            if (billingDate) {
+                              navigate(`/subscription`);
+                            }
+                          } else {
+                            // Redirect to the appropriate URL after successful login
+                            navigate(redirectUrl);
+                          }
                         }
                       },
                       (error) => {
