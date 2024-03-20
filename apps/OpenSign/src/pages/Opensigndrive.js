@@ -191,7 +191,7 @@ function Opensigndrive() {
       }
     }
   };
-  //useEffect
+  //useEffect is used to call handleScroll function on scrolling event
   useEffect(() => {
     const documentList = document.getElementById("renderList");
     if (documentList) {
