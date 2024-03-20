@@ -22,10 +22,12 @@ export const toDataUrl = (file) => {
   });
 };
 
-//function for getting document details for getDrive
-export const getDrive = async (documentId) => {
+//function for getting document details for getDrive cloud function
+export const getDrive = async (documentId, skip = 0, limit = 100) => {
   const data = {
-    docId: documentId && documentId
+    docId: documentId && documentId,
+    limit: limit,
+    skip: skip
   };
   const driveDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDrive`, data, {
@@ -1078,8 +1080,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-            ? 10
-            : newUpdateHeight;
+              ? 10
+              : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
