@@ -302,18 +302,7 @@ function DriveBody(props) {
         status = "Completed";
       } else if (isDecline) {
         status = "Declined";
-      } else if (!signerExist || signerExist?.length === 0) {
-        status = "Draft";
-      } else if (
-        signerExist?.length > 0 &&
-        (!isPlaceholder || isPlaceholder?.length === 0)
-      ) {
-        status = "Draft";
-      } else if (
-        signerExist?.length > 0 &&
-        isPlaceholder?.length > 0 &&
-        !signedUrl
-      ) {
+      } else if (!signedUrl) {
         status = "Draft";
       } else if (isExpire) {
         status = "Expired";

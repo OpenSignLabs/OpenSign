@@ -11,11 +11,7 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          $or: [
-            { Signers: { $eq: [] } },
-            { Signers: null },
-            { Signers: { $exists: true }, Placeholders: null },
-          ],
+          SignedUrl: { $exists: false },
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
@@ -33,6 +29,7 @@ export default function reportJson(id, userId) {
           'Signers.Phone',
         ],
       };
+
     // Need your sign report
     case '4Hhwbp482K':
       return {
@@ -273,11 +270,7 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
-          $or: [
-            { Signers: { $eq: [] } },
-            { Signers: null },
-            { Signers: { $exists: true }, Placeholders: null },
-          ],
+          SignedUrl: { $exists: false },
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
