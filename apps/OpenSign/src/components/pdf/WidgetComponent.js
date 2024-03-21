@@ -233,14 +233,14 @@ function WidgetComponent({
     (data) =>
       data.type !== "dropdown" &&
       data.type !== radioButtonWidget &&
-      data.type !== textWidget
+      data.type !== textInputWidget
   );
   const textWidgetData = widget.filter((data) => data.type !== textWidget);
   const updateWidgets = isSignYourself
     ? filterWidgets
     : isTemplateFlow
-    ? textWidgetData
-    : widget;
+      ? textWidgetData
+      : widget;
 
   return (
     <>
