@@ -205,13 +205,12 @@ const RecipientList = (props) => {
                 </div>
               </div>
               {isMobile && props.sendInOrder && (
-                <div>
-                  <img
-                    alt="loader img"
-                    src={dragIcon}
-                    style={{ width: 20, height: 20 }}
-                  />
-                </div>
+                <img
+                  alt="loader img"
+                  src={dragIcon}
+                  style={{ width: 20, height: 20 }}
+                  onContextMenu={(e) => e.preventDefault()}
+                />
               )}
               {props.handleDeleteUser && (
                 <div
