@@ -165,6 +165,8 @@ const Forms = (props) => {
           "TimeToCompleteDays",
           parseInt(formData?.TimeToCompleteDays)
         );
+      }
+      if (props.title !== "Sign Yourself") {
         const isChecked = formData.SendinOrder === "true" ? true : false;
         object.set("SendinOrder", isChecked);
       }

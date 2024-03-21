@@ -1372,7 +1372,6 @@ function PlaceHolderSign() {
   const closePopup = () => {
     setIsAddUser({});
   };
-
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1735,6 +1734,8 @@ function PlaceHolderSign() {
                       setContractName={setContractName}
                       setUniqueId={setUniqueId}
                       setRoleName={setRoleName}
+                      sendInOrder={pdfDetails[0].SendinOrder}
+                      setSignersData={setSignersData}
                       // handleAddSigner={handleAddSigner}
                     />
                     <div data-tut="reactourSecond">

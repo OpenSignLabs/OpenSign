@@ -443,7 +443,7 @@ function PlaceholderType(props) {
         >
           {/* Default/Title option */}
           <option value="" disabled hidden>
-            {props.pos.options.name}
+            {props?.pos?.options?.name}
           </option>
 
           {props.pos?.options?.values.map((data, ind) => {
