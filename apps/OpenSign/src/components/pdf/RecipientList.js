@@ -1,36 +1,14 @@
 import React, { useRef, useState } from "react";
-import { darkenColor, getFirstLetter } from "../../constant/Utils";
+import {
+  color,
+  darkenColor,
+  getFirstLetter,
+  isMobile,
+  nameColor
+} from "../../constant/Utils";
+import dragIcon from "../../assets/images/dragIcon.png";
 
 const RecipientList = (props) => {
-  const color = [
-    "#93a3db",
-    "#e6c3db",
-    "#c0e3bc",
-    "#bce3db",
-    "#b8ccdb",
-    "#ceb8db",
-    "#ffccff",
-    "#99ffcc",
-    "#cc99ff",
-    "#ffcc99",
-    "#66ccff",
-    "#ffffcc"
-  ];
-
-  const nameColor = [
-    "#304fbf",
-    "#7d5270",
-    "#5f825b",
-    "#578077",
-    "#576e80",
-    "#6d527d",
-    "#cc00cc",
-    "#006666",
-    "#cc00ff",
-    "#ff9900",
-    "#336699",
-    "#cc9900"
-  ];
   const [isHover, setIsHover] = useState();
   const [isEdit, setIsEdit] = useState(false);
   //function for onhover signer name change background color
@@ -43,8 +21,7 @@ const RecipientList = (props) => {
       display: "flex",
       flexDirection: "row",
       borderBottom: "1px solid #e3e1e1",
-      alignItems: "center",
-      cursor: props.sendInOrder && "move"
+      alignItems: "center"
     };
     return style;
   };
@@ -56,8 +33,7 @@ const RecipientList = (props) => {
       display: "flex",
       flexDirection: "row",
       borderBottom: "1px solid #e3e1e1",
-      alignItems: "center",
-      cursor: props.sendInOrder && "move"
+      alignItems: "center"
     };
     return style;
   };
@@ -100,6 +76,7 @@ const RecipientList = (props) => {
     props.setContractName(remainingItems[index]?.className || "");
     props.setUniqueId(remainingItems[index]?.Id);
     props.setRoleName(remainingItems[index]?.Role);
+    props.setBlockColor(remainingItems[index]?.blockColor);
   };
   return (
     <>
@@ -117,6 +94,7 @@ const RecipientList = (props) => {
               data-tut="reactourFirst"
               onMouseEnter={() => setIsHover(ind)}
               onMouseLeave={() => setIsHover(null)}
+              className={props.sendInOrder && "dragCursor"}
               style={
                 isHover === ind || props.isSelectListId === ind
                   ? onHoverStyle(ind, obj?.blockColor)
@@ -128,6 +106,7 @@ const RecipientList = (props) => {
                 props.setContractName(obj?.className || "");
                 props.setUniqueId(obj.Id);
                 props.setRoleName(obj.Role);
+                props.setBlockColor(obj?.blockColor);
                 if (props.handleModal) {
                   props.handleModal();
                 }
@@ -142,7 +121,6 @@ const RecipientList = (props) => {
                 }}
               >
                 <div
-                  className="signerStyle"
                   style={{
                     background: obj?.blockColor
                       ? darkenColor(obj?.blockColor, 0.4)
@@ -153,18 +131,17 @@ const RecipientList = (props) => {
                     borderRadius: 30 / 2,
                     justifyContent: "center",
                     alignItems: "center",
-                    marginRight: "12px",
-                    cursor: props.sendInOrder && "move"
+                    marginRight: "12px"
                   }}
                 >
                   <span
+                    className={props.sendInOrder && "dragCursor"}
                     style={{
                       fontSize: "12px",
                       textAlign: "center",
                       fontWeight: "bold",
                       color: "white",
-                      textTransform: "uppercase",
-                      cursor: props.sendInOrder && "move"
+                      textTransform: "uppercase"
                     }}
                   >
                     {isWidgetExist(obj.Id) ? (
@@ -182,21 +159,16 @@ const RecipientList = (props) => {
                   style={{
                     display: "flex",
                     flexDirection: obj.Name ? "column" : "row",
-                    alignItems: "center",
-                    cursor: props.sendInOrder && "move"
+                    alignItems: "center"
                   }}
                 >
                   {obj.Name ? (
-                    <span
-                      className="userName"
-                      style={{ cursor: props.sendInOrder ? "move" : "default" }}
-                    >
-                      {obj.Name}
-                    </span>
+                    <span className={"userName"}>{obj.Name}</span>
                   ) : (
                     <>
                       <span
                         className="userName"
+                        style={{ cursor: "pointer" }}
                         onClick={() => {
                           setIsEdit({ [obj.Id]: true });
                           props.setRoleName(obj.Role);
@@ -207,7 +179,8 @@ const RecipientList = (props) => {
                             ref={inputRef}
                             style={{
                               backgroundColor: "transparent",
-                              width: "inherit"
+                              width: "inherit",
+                              padding: "3px"
                             }}
                             value={obj.Role}
                             onChange={(e) => props.handleRoleChange(e, obj.Id)}
@@ -228,32 +201,28 @@ const RecipientList = (props) => {
                       </span>
                     </>
                   )}
-                  {obj.Name && (
-                    <span
-                      className="useEmail"
-                      style={{ cursor: props.sendInOrder ? "move" : "default" }}
-                    >
-                      {obj.Role}
-                    </span>
-                  )}
+                  {obj.Name && <span className={"useEmail"}>{obj.Role}</span>}
                 </div>
               </div>
-              {props.handleDeleteUser ? (
+              {isMobile && props.sendInOrder && (
+                <div>
+                  <img
+                    alt="loader img"
+                    src={dragIcon}
+                    style={{ width: 20, height: 20 }}
+                  />
+                </div>
+              )}
+              {props.handleDeleteUser && (
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
                     props.handleDeleteUser(obj.Id);
                   }}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", marginLeft: "5px" }}
                 >
                   <i className="fa-regular fa-trash-can"></i>
                 </div>
-              ) : (
-                props.sendInOrder && (
-                  <div style={{ cursor: "pointer" }}>
-                    <i className="fa-solid fa-ellipsis-vertical"></i>
-                  </div>
-                )
               )}
               <hr />
             </div>

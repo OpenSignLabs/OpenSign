@@ -167,7 +167,7 @@ const Forms = (props) => {
         );
       }
       if (props.title !== "Sign Yourself") {
-        const isChecked = formData.SendinOrder === "true" ? true : false;
+        const isChecked = formData.SendinOrder === "false" ? false : true;
         object.set("SendinOrder", isChecked);
       }
       object.set("URL", fileupload);
@@ -237,7 +237,7 @@ const Forms = (props) => {
       Description: "",
       Note: "Please review and sign this document",
       TimeToCompleteDays: 15,
-      SendinOrder: "false"
+      SendinOrder: "true"
     });
     setFileUpload([]);
     setpercentage(0);

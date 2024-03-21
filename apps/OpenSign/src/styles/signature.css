@@ -14,6 +14,9 @@
   justify-content: center;
   border-width: 0.2px;
 }
+.dragCursor{
+      cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAX0lEQVR4nO3WMQrAIAxG4dzaUUfPVQ/2OtWhtFJoTJb/G10eSCAxk4+ABnRLiF56RjQmznM0Ji5ugIG/kRU+/L5G/kLDJbug4ZIMQFlsoJoRr1ujL/GY6O3ibPNBbO0E9P+irqa88kEAAAAASUVORK5CYII="),auto; 
+}
 
 .dropdownContainer {
   display: flex;
@@ -301,7 +304,7 @@
   z-index: 2;
   background: white;
 }
-
+ 
 .signCopy {
   position: absolute;
 
