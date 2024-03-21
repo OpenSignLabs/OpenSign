@@ -43,7 +43,8 @@ const RecipientList = (props) => {
       display: "flex",
       flexDirection: "row",
       borderBottom: "1px solid #e3e1e1",
-      alignItems: "center"
+      alignItems: "center",
+      cursor: props.sendInOrder && "move"
     };
     return style;
   };
@@ -55,7 +56,8 @@ const RecipientList = (props) => {
       display: "flex",
       flexDirection: "row",
       borderBottom: "1px solid #e3e1e1",
-      alignItems: "center"
+      alignItems: "center",
+      cursor: props.sendInOrder && "move"
     };
     return style;
   };
@@ -63,19 +65,61 @@ const RecipientList = (props) => {
     return props.signerPos.some((x) => x.Id === Id);
   };
 
+  //handle drag start
+  const handleDragStart = (e, id) => {
+    // `e.dataTransfer.getData('text/plain')`is used to set the data to be transferred during a drag operation.
+    // The first argument specifies the type of data being set, and the second argument is the actual data you want to transfer.
+    e.dataTransfer.setData("text/plain", id);
+  };
+
+  //handleDragOver prevents the default behavior of the dragover event, which is necessary for the drop event to be triggered.
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  //handle draggable element drop
+  const handleDrop = (e, index) => {
+    e.preventDefault();
+    //`e.dataTransfer.getData('text/plain')` is used to get data thet you have save.
+    const draggedItemId = e.dataTransfer.getData("text/plain");
+    //convert string to number
+    const intDragId = parseInt(draggedItemId);
+    const draggedItem = props.signersdata.filter(
+      (item) => item.Id === intDragId
+    );
+    const remainingItems = props.signersdata.filter(
+      (item) => item.Id !== intDragId
+    );
+    //splice method is used to replace or add new value in array at specific index
+    remainingItems.splice(index, 0, ...draggedItem);
+    props.setSignersData(remainingItems);
+
+    //set current draggable recipient details after replace recipient list
+    props.setSignerObjId(remainingItems[index]?.objectId || "");
+    props.setIsSelectId(index);
+    props.setContractName(remainingItems[index]?.className || "");
+    props.setUniqueId(remainingItems[index]?.Id);
+    props.setRoleName(remainingItems[index]?.Role);
+  };
   return (
     <>
       {props.signersdata.length > 0 &&
         props.signersdata.map((obj, ind) => {
           return (
             <div
+              key={ind}
+              draggable={props.sendInOrder ? true : false}
+              onDragStart={(e) =>
+                props.sendInOrder && handleDragStart(e, obj.Id)
+              }
+              onDragOver={(e) => props.sendInOrder && handleDragOver(e)}
+              onDrop={(e) => props.sendInOrder && handleDrop(e, ind, obj.Id)}
               data-tut="reactourFirst"
               onMouseEnter={() => setIsHover(ind)}
               onMouseLeave={() => setIsHover(null)}
-              key={ind}
               style={
                 isHover === ind || props.isSelectListId === ind
-                  ? onHoverStyle(ind, obj.blockColor)
+                  ? onHoverStyle(ind, obj?.blockColor)
                   : nonHoverStyle(ind)
               }
               onClick={() => {
@@ -100,8 +144,8 @@ const RecipientList = (props) => {
                 <div
                   className="signerStyle"
                   style={{
-                    background: obj.blockColor
-                      ? darkenColor(obj.blockColor, 0.4)
+                    background: obj?.blockColor
+                      ? darkenColor(obj?.blockColor, 0.4)
                       : nameColor[ind % nameColor.length],
                     width: 30,
                     height: 30,
@@ -109,7 +153,8 @@ const RecipientList = (props) => {
                     borderRadius: 30 / 2,
                     justifyContent: "center",
                     alignItems: "center",
-                    marginRight: "12px"
+                    marginRight: "12px",
+                    cursor: props.sendInOrder && "move"
                   }}
                 >
                   <span
@@ -118,7 +163,8 @@ const RecipientList = (props) => {
                       textAlign: "center",
                       fontWeight: "bold",
                       color: "white",
-                      textTransform: "uppercase"
+                      textTransform: "uppercase",
+                      cursor: props.sendInOrder && "move"
                     }}
                   >
                     {isWidgetExist(obj.Id) ? (
@@ -136,11 +182,15 @@ const RecipientList = (props) => {
                   style={{
                     display: "flex",
                     flexDirection: obj.Name ? "column" : "row",
-                    alignItems: "center"
+                    alignItems: "center",
+                    cursor: props.sendInOrder && "move"
                   }}
                 >
                   {obj.Name ? (
-                    <span className="userName" style={{ cursor: "default" }}>
+                    <span
+                      className="userName"
+                      style={{ cursor: props.sendInOrder ? "move" : "default" }}
+                    >
                       {obj.Name}
                     </span>
                   ) : (
@@ -179,13 +229,16 @@ const RecipientList = (props) => {
                     </>
                   )}
                   {obj.Name && (
-                    <span className="useEmail" style={{ cursor: "default" }}>
+                    <span
+                      className="useEmail"
+                      style={{ cursor: props.sendInOrder ? "move" : "default" }}
+                    >
                       {obj.Role}
                     </span>
                   )}
                 </div>
               </div>
-              {props.handleDeleteUser && (
+              {props.handleDeleteUser ? (
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
@@ -195,6 +248,12 @@ const RecipientList = (props) => {
                 >
                   <i className="fa-regular fa-trash-can"></i>
                 </div>
+              ) : (
+                props.sendInOrder && (
+                  <div style={{ cursor: "pointer" }}>
+                    <i className="fa-solid fa-ellipsis-vertical"></i>
+                  </div>
+                )
               )}
               <hr />
             </div>

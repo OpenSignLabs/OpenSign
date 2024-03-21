@@ -446,7 +446,7 @@ const TemplatePlaceholder = () => {
           setIsCheckbox(true);
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
-        } 
+        }
         setCurrWidgetsDetails({});
         setWidgetType(dragTypeValue);
         setSignKey(key);
@@ -1466,6 +1466,8 @@ const TemplatePlaceholder = () => {
                       handleRoleChange={handleRoleChange}
                       handleOnBlur={handleOnBlur}
                       title={"Roles"}
+                      sendInOrder={pdfDetails[0]?.SendinOrder}
+                      setSignersData={setSignersData}
                     />
                     <div data-tut="reactourSecond">
                       <WidgetComponent
