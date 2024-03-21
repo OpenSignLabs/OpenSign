@@ -77,6 +77,7 @@ const TemplatePlaceholder = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [widgetType, setWidgetType] = useState("");
   const [isRadio, setIsRadio] = useState(false);
+  const [blockColor, setBlockColor] = useState("");
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isNameModal, setIsNameModal] = useState(false);
   const [pdfLoadFail, setPdfLoadFail] = useState({
@@ -223,6 +224,7 @@ const TemplatePlaceholder = () => {
             });
             setSignersData(updatedSigners);
             setUniqueId(updatedSigners[0].Id);
+            setBlockColor(updatedSigners[0].blockColor);
           } else {
             const updatedSigners = documentData[0].Signers.map((x, index) => ({
               ...x,
@@ -231,6 +233,7 @@ const TemplatePlaceholder = () => {
             }));
             setSignersData(updatedSigners);
             setUniqueId(updatedSigners[0].Id);
+            setBlockColor(updatedSigners[0].blockColor);
           }
         } else {
           setRoleName("User 1");
@@ -249,6 +252,7 @@ const TemplatePlaceholder = () => {
             setUniqueId(updatedSigners[0].Id);
             setSignersData(updatedSigners);
             setIsSelectId(0);
+            setBlockColor(updatedSigners[0].blockColor);
           }
         }
       } else if (
@@ -854,6 +858,7 @@ const TemplatePlaceholder = () => {
     setIsModalRole(false);
     setRoleName("");
     setUniqueId(Id);
+    setBlockColor(color[index]);
     setIsSelectId(index);
     setIsMailSend(false);
   };
@@ -870,9 +875,11 @@ const TemplatePlaceholder = () => {
     if (index === signersdata.length - 1) {
       setUniqueId(updateSigner[updateSigner.length - 1]?.Id || "");
       setIsSelectId(index - 1 || 0);
+      setBlockColor(color[index - 1 || 0]);
     } else {
       setUniqueId(updateSigner[index]?.Id || "");
       setIsSelectId(index);
+      setBlockColor(color[index]);
     }
 
     setSignerPos(updatePlaceholderUser);
@@ -1443,6 +1450,10 @@ const TemplatePlaceholder = () => {
                   title={"Roles"}
                   initial={true}
                   isTemplateFlow={true}
+                  sendInOrder={pdfDetails[0].SendinOrder}
+                  setSignersData={setSignersData}
+                  blockColor={blockColor}
+                  setBlockColor={setBlockColor}
                 />
               </div>
             ) : (
@@ -1468,6 +1479,8 @@ const TemplatePlaceholder = () => {
                       title={"Roles"}
                       sendInOrder={pdfDetails[0]?.SendinOrder}
                       setSignersData={setSignersData}
+                      blockColor={blockColor}
+                      setBlockColor={setBlockColor}
                     />
                     <div data-tut="reactourSecond">
                       <WidgetComponent
