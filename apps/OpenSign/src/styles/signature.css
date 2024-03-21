@@ -14,8 +14,9 @@
   justify-content: center;
   border-width: 0.2px;
 }
-.dragCursor{
-      cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEVHcEzU1NShoaHZ2dkAAAC8vLylpaV9fX3u7u5ZWVnw8PCAgIBra2uurq63t7e2trZ1dXXR0dF5eXnT09Ovr6/S0tIArGXu7u7KmXzuAAAAFnRSTlMAx5HDBaKOPPMV8UslfJCPZ9Ri1XzVO1WbSQAAAGZJREFUGNN9j90OgCAIha08paGlVvP93zTU2nBtfRcw/g6gVENr1WH3zXYxcobMuAhE91YXJhGl4rlLw6yMaRasTaOAuMNPglNzYhD4MjILqIoKimhdG4jCs7YddgGH+zv985x4/wZrBwSQ37Wh/wAAAABJRU5ErkJggg=="),auto; 
+
+.dragCursor {
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAASElEQVR4nGNgwAMkJSUbpKSkOvCpIaT5PxSTbogUQjMYMwxeIIXmVFIxA8UGDDyQGg0DnIDi6JKUlCxHMqCeZAOghjSAMD5FAKfeaURdUFxCAAAAAElFTkSuQmCC"), auto;
 }
 
 .dropdownContainer {
@@ -304,7 +305,7 @@
   z-index: 2;
   background: white;
 }
- 
+
 .signCopy {
   position: absolute;
 
