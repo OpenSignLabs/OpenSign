@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
   color,
   darkenColor,
@@ -6,9 +7,9 @@ import {
   isMobile,
   nameColor
 } from "../../constant/Utils";
-import dragIcon from "../../assets/images/dragIcon.png";
 
 const RecipientList = (props) => {
+  const [animationParent] = useAutoAnimate();
   const [isHover, setIsHover] = useState();
   const [isEdit, setIsEdit] = useState(false);
   //function for onhover signer name change background color
@@ -53,24 +54,39 @@ const RecipientList = (props) => {
     e.preventDefault();
   };
 
-  //handle draggable element drop
-  const handleDrop = (e, index) => {
+  //handle draggable element drop and also used in mobile view on up and down key to chnage sequence of recipient's list
+  const handleChangeSequence = (e, ind, isUp, isDown) => {
     e.preventDefault();
-    //`e.dataTransfer.getData('text/plain')` is used to get data thet you have save.
-    const draggedItemId = e.dataTransfer.getData("text/plain");
+    let draggedItemId;
+    let index = ind;
+
+    //if isUp true then set item's id and index in mobile view
+    if (isUp) {
+      draggedItemId = index;
+      index = index - 1;
+    }
+    //if isDown true then set item's id and index in mobile view
+    else if (isDown) {
+      draggedItemId = index;
+      index = index + 1;
+    } //else set id on drag element in desktop viiew
+    else {
+      //`e.dataTransfer.getData('text/plain')` is used to get data that you have saved.
+      draggedItemId = e.dataTransfer.getData("text/plain");
+    }
+
     //convert string to number
     const intDragId = parseInt(draggedItemId);
-    const draggedItem = props.signersdata.filter(
-      (item) => item.Id === intDragId
-    );
+    //get that item to change position
+    const draggedItem = props.signersdata.filter((_, ind) => ind === intDragId);
     const remainingItems = props.signersdata.filter(
-      (item) => item.Id !== intDragId
+      (_, ind) => ind !== intDragId
     );
     //splice method is used to replace or add new value in array at specific index
     remainingItems.splice(index, 0, ...draggedItem);
-    props.setSignersData(remainingItems);
 
-    //set current draggable recipient details after replace recipient list
+    //set current draggable recipient details,objectId,index,contract_className ... after replace recipient list
+    props.setSignersData(remainingItems);
     props.setSignerObjId(remainingItems[index]?.objectId || "");
     props.setIsSelectId(index);
     props.setContractName(remainingItems[index]?.className || "");
@@ -78,40 +94,36 @@ const RecipientList = (props) => {
     props.setRoleName(remainingItems[index]?.Role);
     props.setBlockColor(remainingItems[index]?.blockColor);
   };
+
   return (
     <>
       {props.signersdata.length > 0 &&
         props.signersdata.map((obj, ind) => {
           return (
             <div
+              ref={animationParent}
               key={ind}
-              draggable={props.sendInOrder ? true : false}
+              draggable={props.sendInOrder && !isMobile ? true : false}
               onDragStart={(e) =>
-                props.sendInOrder && handleDragStart(e, obj.Id)
+                props.sendInOrder && !isMobile && handleDragStart(e, ind)
               }
-              onDragOver={(e) => props.sendInOrder && handleDragOver(e)}
-              onDrop={(e) => props.sendInOrder && handleDrop(e, ind, obj.Id)}
+              onDragOver={(e) =>
+                props.sendInOrder && !isMobile && handleDragOver(e)
+              }
+              onDrop={(e) =>
+                props.sendInOrder && !isMobile && handleChangeSequence(e, ind)
+              }
               data-tut="reactourFirst"
               onMouseEnter={() => setIsHover(ind)}
               onMouseLeave={() => setIsHover(null)}
               className={props.sendInOrder && "dragCursor"}
               style={
-                isHover === ind || props.isSelectListId === ind
+                (!isMobile && isHover === ind) || props.isSelectListId === ind
                   ? onHoverStyle(ind, obj?.blockColor)
                   : nonHoverStyle(ind)
               }
-              onClick={() => {
-                props.setSignerObjId(obj?.objectId || "");
-                props.setIsSelectId(ind);
-                props.setContractName(obj?.className || "");
-                props.setUniqueId(obj.Id);
-                props.setRoleName(obj.Role);
-                props.setBlockColor(obj?.blockColor);
-                if (props.handleModal) {
-                  props.handleModal();
-                }
-              }}
-              onTouchEnd={(e) => {
+              onClick={(e) => {
+                e.preventDefault();
                 props.setSignerObjId(obj?.objectId || "");
                 props.setIsSelectId(ind);
                 props.setContractName(obj?.className || "");
@@ -207,7 +219,7 @@ const RecipientList = (props) => {
                             }}
                           />
                         ) : (
-                          obj.Role
+                          <span style={{ padding: "3px" }}>{obj.Role}</span>
                         )}
                       </span>
                     </>
@@ -216,15 +228,39 @@ const RecipientList = (props) => {
                 </div>
               </div>
               {isMobile && props.sendInOrder && (
-                <img
-                  alt="loader img"
-                  src={dragIcon}
-                  className="widgets"
-                  style={{ width: 20, height: 20 }}
-                  onContextMenu={(e) => e.preventDefault()}
-                  draggable="false"
-                  onTouchStart={(e) => e.preventDefault()}
-                />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center"
+                  }}
+                >
+                  <div
+                    onClick={(e) => {
+                      if (ind !== 0) {
+                        e.stopPropagation();
+                        handleChangeSequence(e, ind, "up");
+                      }
+                    }}
+                    style={{ color: ind === 0 ? "gray" : "black" }}
+                  >
+                    ▲
+                  </div>
+                  <div
+                    onClick={(e) => {
+                      if (ind !== props.signersdata.length - 1) {
+                        e.stopPropagation();
+                        handleChangeSequence(e, ind, null, "down");
+                      }
+                    }}
+                    style={{
+                      color:
+                        ind === props.signersdata.length - 1 ? "gray" : "black"
+                    }}
+                  >
+                    ▼
+                  </div>
+                </div>
               )}
               {props.handleDeleteUser && (
                 <div
