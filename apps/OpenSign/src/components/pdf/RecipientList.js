@@ -44,7 +44,7 @@ const RecipientList = (props) => {
 
   //handle drag start
   const handleDragStart = (e, id) => {
-    // `e.dataTransfer.getData('text/plain')`is used to set the data to be transferred during a drag operation.
+    // `e.dataTransfer.setData('text/plain')`is used to set the data to be transferred during a drag operation.
     // The first argument specifies the type of data being set, and the second argument is the actual data you want to transfer.
     e.dataTransfer.setData("text/plain", id);
   };
