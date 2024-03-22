@@ -76,7 +76,6 @@ function SignPad({
   };
   //function for set signature url
   const handleSignatureChange = () => {
-    // canvasRef.current.backgroundColor = 'rgb(165, 26, 26)'
     setSignature(canvasRef.current.toDataURL());
     setIsSignImg(canvasRef.current.toDataURL());
   };
@@ -114,7 +113,6 @@ function SignPad({
                   setIsSignImg("");
                   onSaveSign(false, textWidth, textHeight);
                 } else {
-                  setIsSignImg("");
                   onSaveSign();
                 }
               }
@@ -154,6 +152,18 @@ function SignPad({
   };
 
   useEffect(() => {
+    if (canvasRef.current && isSignImg) {
+      canvasRef.current.fromDataURL(isSignImg);
+    }
+    const trimmedName = currentUserName.trim();
+    const firstCharacter = trimmedName.charAt(0);
+    const userName = isInitial ? firstCharacter : currentUserName;
+    setSignValue(userName);
+    setFontSelect("Fasthand");
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignPad]);
+  useEffect(() => {
     const loadFont = async () => {
       try {
         await document.fonts.load(`20px ${fontSelect}`);
@@ -186,7 +196,7 @@ function SignPad({
   }, [isTab]);
 
   //function for convert input text value in image
-  const convertToImg = async (fontStyle, text) => {
+  const convertToImg = async (fontStyle, text, color) => {
     //get text content to convert in image
     const textContent = text;
     const fontfamily = fontStyle
@@ -199,6 +209,7 @@ function SignPad({
     const span = document.createElement("span");
     span.textContent = textContent;
     span.style.font = `20px ${fontfamily}`; // here put your text size and font family
+    span.style.color = color ? color : penColor;
     span.style.display = "hidden";
     document.body.appendChild(span); // Replace 'container' with the ID of the container element
 
@@ -216,13 +227,9 @@ function SignPad({
     canvasElement.width = width * pixelRatio;
     canvasElement.height = height * pixelRatio;
 
-    // Render the content of the span onto the canvas
-    // ctx.fillStyle = "white"; // Set the background color of the canvas
-    // ctx.fillRect(0, 0, width*pixelRatio, height*pixelRatio);
-
     // You can customize text styles if needed
     ctx.font = font;
-    ctx.fillStyle = "black"; // Set the text color
+    ctx.fillStyle = color ? color : penColor; // Set the text color
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.scale(pixelRatio, pixelRatio);
@@ -235,6 +242,44 @@ function SignPad({
     setSignature(dataUrl);
   };
 
+  const PenColorComponent = (props) => {
+    return (
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        {allColor.map((data, key) => {
+          return (
+            <i
+              style={{
+                margin: "5px",
+                color: data,
+                borderBottom:
+                  key === 0 && penColor === "blue"
+                    ? "2px solid blue"
+                    : key === 1 && penColor === "red"
+                      ? "2px solid red"
+                      : key === 2 && penColor === "black"
+                        ? "2px solid black"
+                        : "2px solid white"
+              }}
+              onClick={() => {
+                props?.convertToImg(fontSelect, signValue, data);
+                if (key === 0) {
+                  setPenColor("blue");
+                } else if (key === 1) {
+                  setPenColor("red");
+                } else if (key === 2) {
+                  setPenColor("black");
+                }
+              }}
+              key={key}
+              className="fa solid fa-pen-nib"
+              width={20}
+              height={20}
+            ></i>
+          );
+        })}
+      </div>
+    );
+  };
   return (
     <div>
       {isSignPad && (
@@ -457,6 +502,7 @@ function SignPad({
                           background: "rgb(255, 255, 255)",
                           objectFit: "contain"
                         }}
+                        draggable="false"
                         src={isInitial ? myInitial : defaultSign}
                       />
                     </div>
@@ -517,6 +563,7 @@ function SignPad({
                           alt="print img"
                           ref={imageRef}
                           src={image.src}
+                          draggable="false"
                           style={{
                             objectFit: "contain",
                             height: "100%",
@@ -547,7 +594,7 @@ function SignPad({
 
                     <input
                       maxLength={isInitial ? 3 : 30}
-                      style={{ fontFamily: fontSelect }}
+                      style={{ fontFamily: fontSelect, color: penColor }}
                       type="text"
                       className="signatureInput"
                       placeholder="Your signature"
@@ -578,7 +625,8 @@ function SignPad({
                           <div
                             style={{
                               padding: "5px 10px 5px 10px",
-                              fontSize: "20px"
+                              fontSize: "20px",
+                              color: penColor
                             }}
                           >
                             {signValue ? signValue : "Your signature"}
@@ -588,7 +636,15 @@ function SignPad({
                     })}
                   </div>
 
-                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: "10px"
+                    }}
+                  >
+                    <PenColorComponent convertToImg={convertToImg} />
                     <SaveBtn />
                   </div>
                 </div>
@@ -622,39 +678,7 @@ function SignPad({
                       marginTop: "10px"
                     }}
                   >
-                    <div style={{ display: "flex", flexDirection: "row" }}>
-                      {allColor.map((data, key) => {
-                        return (
-                          <i
-                            style={{
-                              margin: "5px",
-                              color: data,
-                              borderBottom:
-                                key === 0 && penColor === "blue"
-                                  ? "2px solid blue"
-                                  : key === 1 && penColor === "red"
-                                    ? "2px solid red"
-                                    : key === 2 && penColor === "black"
-                                      ? "2px solid black"
-                                      : "2px solid white"
-                            }}
-                            onClick={() => {
-                              if (key === 0) {
-                                setPenColor("blue");
-                              } else if (key === 1) {
-                                setPenColor("red");
-                              } else if (key === 2) {
-                                setPenColor("black");
-                              }
-                            }}
-                            key={key}
-                            className="fa solid fa-pen-nib"
-                            width={20}
-                            height={20}
-                          ></i>
-                        );
-                      })}
-                    </div>
+                    <PenColorComponent />
                     <SaveBtn />
                   </div>
                 </>

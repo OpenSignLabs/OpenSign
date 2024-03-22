@@ -1026,7 +1026,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag the signature or stamp placeholder onto the PDF to choose your desired signing location.`}
+          message={`Drag or click on a field to add it to the document.`}
           isChecked={handleDontShow}
         />
       ),
