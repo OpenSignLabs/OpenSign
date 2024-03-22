@@ -223,7 +223,7 @@ const RecipientList = (props) => {
                   style={{ width: 20, height: 20 }}
                   onContextMenu={(e) => e.preventDefault()}
                   draggable="false"
-                  onTouchEnd={(e) => e.preventDefault()}
+                  onTouchStart={(e) => e.preventDefault()}
                 />
               )}
               {props.handleDeleteUser && (
