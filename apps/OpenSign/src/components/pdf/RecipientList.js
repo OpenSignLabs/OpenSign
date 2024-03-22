@@ -232,7 +232,8 @@ const RecipientList = (props) => {
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    alignItems: "center"
+                    alignItems: "center",
+                    gap: 5
                   }}
                 >
                   <div
