@@ -280,14 +280,13 @@ function DriveBody(props) {
 
   //component to handle type of document and render according to type
   const handleFolderData = (data, ind, listType) => {
-    let createddate, status, isDecline, signerExist, isComplete, isPlaceholder;
+    let createddate, status, isDecline, signerExist, isComplete;
     if (data.Type !== "Folder") {
       const expireDate = data.ExpiryDate && data.ExpiryDate.iso;
       const createdDate = data.createdAt && data.createdAt;
       createddate = new Date(createdDate).toLocaleDateString();
       isComplete = data.IsCompleted && data.IsCompleted ? true : false;
       isDecline = data.IsDeclined && data.IsDeclined;
-      isPlaceholder = data.Placeholders && data.Placeholders;
       signerExist = data.Signers && data.Signers;
       const signedUrl = data.SignedUrl;
 

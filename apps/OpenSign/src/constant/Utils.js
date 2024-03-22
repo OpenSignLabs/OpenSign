@@ -12,6 +12,35 @@ export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
+export const color = [
+  "#93a3db",
+  "#e6c3db",
+  "#c0e3bc",
+  "#bce3db",
+  "#b8ccdb",
+  "#ceb8db",
+  "#ffccff",
+  "#99ffcc",
+  "#cc99ff",
+  "#ffcc99",
+  "#66ccff",
+  "#ffffcc"
+];
+
+export const nameColor = [
+  "#304fbf",
+  "#7d5270",
+  "#5f825b",
+  "#578077",
+  "#576e80",
+  "#6d527d",
+  "#cc00cc",
+  "#006666",
+  "#cc00ff",
+  "#ff9900",
+  "#336699",
+  "#cc9900"
+];
 export const toDataUrl = (file) => {
   return new Promise((resolve) => {
     const reader = new FileReader();
