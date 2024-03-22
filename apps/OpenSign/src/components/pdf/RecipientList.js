@@ -111,6 +111,17 @@ const RecipientList = (props) => {
                   props.handleModal();
                 }
               }}
+              onTouchEnd={(e) => {
+                props.setSignerObjId(obj?.objectId || "");
+                props.setIsSelectId(ind);
+                props.setContractName(obj?.className || "");
+                props.setUniqueId(obj.Id);
+                props.setRoleName(obj.Role);
+                props.setBlockColor(obj?.blockColor);
+                if (props.handleModal) {
+                  props.handleModal();
+                }
+              }}
             >
               <div
                 style={{
@@ -208,8 +219,11 @@ const RecipientList = (props) => {
                 <img
                   alt="loader img"
                   src={dragIcon}
+                  className="widgets"
                   style={{ width: 20, height: 20 }}
                   onContextMenu={(e) => e.preventDefault()}
+                  draggable="false"
+                  onTouchEnd={(e) => e.preventDefault()}
                 />
               )}
               {props.handleDeleteUser && (
