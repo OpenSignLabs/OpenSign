@@ -5,7 +5,7 @@
 <meta name="generator" content="Docusaurus v3.0.1">
 <title data-rh="true">Localhost Setup with Docker | OpenSign™</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://docs.opensignlabs.com/img/docusaurus-social-card.png"><meta data-rh="true" name="twitter:image" content="https://docs.opensignlabs.com/img/docusaurus-social-card.png"><meta data-rh="true" property="og:url" content="https://docs.opensignlabs.com/docs/self-host/docker/run-locally"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Localhost Setup with Docker | OpenSign™"><meta data-rh="true" name="description" content="Steps to run OpenSign™ with docker in macos/linux:"><meta data-rh="true" property="og:description" content="Steps to run OpenSign™ with docker in macos/linux:"><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://docs.opensignlabs.com/docs/self-host/docker/run-locally"><link data-rh="true" rel="alternate" href="https://docs.opensignlabs.com/docs/self-host/docker/run-locally" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.opensignlabs.com/docs/self-host/docker/run-locally" hreflang="x-default"><link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="OpenSign™ RSS Feed">
 <link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="OpenSign™ Atom Feed"><link rel="stylesheet" href="/assets/css/styles.ae9c04aa.css">
-<script src="/assets/js/runtime~main.df36e4d5.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.331a51cf.js" defer="defer"></script>
 <script src="/assets/js/main.636249a8.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -39,24 +39,30 @@
 <li>Install Docker Desktop on Windows and launch Docker Desktop.</li>
 <li>Enable WSL in Docker Desktop by navigating to Settings &gt; Resources &gt; WSL Integration. Check the box and click on &quot;Apply &amp; Restart.&quot; Minimize Docker Desktop.</li>
 </ol>
-<p><img loading="lazy" src="https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20201448.png" alt="docker" class="img_ev3q"></p>
-<ol start="4">
+<p><img loading="lazy" src="https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20201448.png" alt="docker" class="img_ev3q">
+4. Now stop your local MongoDB instance by opening the Command Prompt as an administrator, and then execute the following command:</p>
+<div class="codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">net stop mongodb</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+<ol start="5">
 <li>Navigate to your desired location in Windows. Open PowerShell in that folder by holding Shift and right-clicking the mouse, then select &quot;Open PowerShell window here.&quot;</li>
 <li>In the PowerShell window, type the following command:</li>
 </ol>
 <div class="codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">git clone https://github.com/OpenSignLabs/OpenSign.git</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
 <p>and Hit Enter to clone the OpenSign project locally.</p>
-<ol start="6">
+<ol start="7">
 <li>Open the OpenSign folder with Visual Studio Code. Go to <code>apps &gt; mongo &gt; mongo-init.sh</code>. Change the file type from CRLF to LF, save the file, and close Visual Studio Code.</li>
 </ol>
 <p><img loading="lazy" src="https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20175944.png" alt="docker" class="img_ev3q"></p>
-<ol start="7">
-<li>Open the Ubuntu/WSL terminal and use the command to navigate to the folder where you cloned the OpenSign project, e.g., cd mnt/c/testing/docker/OpenSign.</li>
-<li>Execute the following command to build the container image:</li>
+<ol start="8">
+<li>
+<p>Open the Ubuntu/WSL terminal and use the command to navigate to the folder where you cloned the OpenSign project, e.g., cd mnt/c/testing/docker/OpenSign.</p>
+</li>
+<li>
+<p>Execute the following command to build the container image:</p>
+</li>
 </ol>
 <div class="codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">make build</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
 <p>This will initiate the process of creating the container image. It may take some time to complete.</p>
-<ol start="9">
+<ol start="10">
 <li>Refer below video for more specific details.</li>
 <li>For subsequent runs, open Docker and start the OpenSign container by clicking on the play button in the actions panel.</li>
 </ol>
