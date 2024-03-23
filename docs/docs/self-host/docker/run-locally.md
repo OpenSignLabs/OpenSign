@@ -73,7 +73,6 @@ Environment Varaibles:
 
 | Environment Varibale  | Value | Description |
 | ------------- | ------------- | ------------- |
-| CI  | false  | Set CI to false while running the app locally |
 | PUBLIC_URL  | http://localhost:3000  | Set it to the URL form where the app home page will be accessed |
 | GENERATE_SOURCEMAP  | false | Set it to true if you want to generate the Sourcemap for debugging |
 | REACT_APP_SERVERURL  | http://localhost:8080/app  | Set it to the URL from where APIs will be accessible, for local development it should be localhost:8080/app (use your local port number instead) |
