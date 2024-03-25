@@ -3,6 +3,7 @@ import ModalUi from "../../primitives/ModalUi";
 import "../../styles/AddUser.css";
 import RegexParser from "regex-parser";
 import { textInputWidget } from "../../constant/Utils";
+import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 
 const WidgetNameModal = (props) => {
   const [formdata, setFormdata] = useState({
@@ -98,7 +99,23 @@ const WidgetNameModal = (props) => {
       handleClose={props.handleClose && props.handleClose}
       title={"Widget info"}
     >
-      <form onSubmit={handleSubmit} style={{ padding: 20 }}>
+      {(props.defaultdata?.type === textInputWidget ||
+        props.widgetName === textInputWidget) && (
+        <PremiumAlertHeader
+          message={
+            "Field validations are free in beta, this feature will incur a fee later."
+          }
+        />
+      )}
+      <form
+        onSubmit={handleSubmit}
+        className={`${
+          props.defaultdata?.type === textInputWidget ||
+          props.widgetName === textInputWidget
+            ? "pt-0"
+            : ""
+        } p-[20px]`}
+      >
         <div className="form-section">
           <label htmlFor="name" style={{ fontSize: 13 }}>
             Name
