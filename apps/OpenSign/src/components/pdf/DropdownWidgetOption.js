@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
+import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 function DropdownWidgetOption(props) {
   const [dropdownOptionList, setDropdownOptionList] = useState([
     "option-1",
@@ -151,7 +152,18 @@ function DropdownWidgetOption(props) {
       title={props.title}
       showClose={false}
     >
-      <div style={{ height: "100%", padding: 20 }}>
+      {props.type === "checkbox" && !props.isSignYourself && (
+        <PremiumAlertHeader
+          message={
+            "Field validations are free in beta, this feature will incur a fee later."
+          }
+        />
+      )}
+      <div
+        className={`${
+          props.type === "checkbox" && !props.isSignYourself ? "pt-0" : ""
+        } h-full p-[20px]`}
+      >
         <form
           onSubmit={(e) => {
             e.preventDefault();

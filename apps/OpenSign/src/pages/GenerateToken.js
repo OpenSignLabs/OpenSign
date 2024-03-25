@@ -5,6 +5,7 @@ import Alert from "../primitives/Alert";
 import ModalUi from "../primitives/ModalUi";
 import { rejectBtn, submitBtn } from "../constant/const";
 import { openInNewTab } from "../constant/Utils";
+import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 
 function GenerateToken() {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -115,6 +116,7 @@ function GenerateToken() {
         </div>
       ) : (
         <div className="bg-white flex flex-col justify-center shadow rounded">
+          <PremiumAlertHeader />
           <h1 className="ml-4 mt-3 mb-2 font-semibold">API Token</h1>
           <ul className="w-full flex flex-col p-2 text-sm">
             <li

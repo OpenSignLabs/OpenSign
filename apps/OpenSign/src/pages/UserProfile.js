@@ -6,6 +6,7 @@ import dp from "../assets/images/dp.png";
 import Title from "../components/Title";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
+import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -258,21 +259,24 @@ function UserProfile() {
                     : "Not verified"}
                 </span>
               </li>
-              <li className="flex justify-between items-center border-y-[1px] border-gray-300 py-2 break-all">
-                <span className="font-semibold">Disable DocumentId :</span>{" "}
-                <span>
-                  <label className="relative inline-flex items-center cursor-pointer mb-0">
-                    <input
-                      disabled={editmode ? false : true}
-                      checked={isDisableDocId}
-                      onChange={handleDisableDocId}
-                      type="checkbox"
-                      value=""
-                      className="sr-only peer"
-                    />
-                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                  </label>
-                </span>
+              <li className="border-y-[1px] border-gray-300 break-all">
+                <PremiumAlertHeader message={"Disable documentId is free in beta, this feature will incur a fee later."} />
+                <div className="flex justify-between items-center py-2">
+                  <span className="font-semibold">Disable DocumentId :</span>{" "}
+                  <span>
+                    <label className="relative inline-flex items-center cursor-pointer mb-0">
+                      <input
+                        disabled={editmode ? false : true}
+                        checked={isDisableDocId}
+                        onChange={handleDisableDocId}
+                        type="checkbox"
+                        value=""
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    </label>
+                  </span>
+                </div>
               </li>
             </ul>
             <div className="flex justify-center pt-2 pb-3 md:pt-3 md:pb-4">
