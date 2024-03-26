@@ -1255,13 +1255,14 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        let addYPosition, isCheck;
+        let addYPosition = 0,
+          isCheck;
 
         if (position?.options?.values.length > 0) {
           position?.options?.values.forEach((item, ind) => {
             const checkboxRandomId = "checkbox" + randomId();
             let yPosition;
-            const height = 10;
+            const height = 13;
             if (
               position?.options?.response &&
               position?.options?.response?.length > 0
@@ -1282,14 +1283,14 @@ export const multiSignEmbed = async (
             if (!position?.options?.isHideLabel) {
               // below line of code is used to embed label with radio button in pdf
               page.drawText(item, {
-                x: xPos(position) + 15,
+                x: xPos(position) + 17,
                 y: yPosition + 2,
                 size: height
               });
             }
             checkbox.addToPage(page, {
               x: xPos(position),
-              y: yPosition,
+              y: yPosition - 2,
               width: height,
               height: height
             });
@@ -1701,4 +1702,67 @@ export const getMonth = (date) => {
 export const getYear = (date) => {
   const newYear = new Date(date).getFullYear();
   return newYear;
+};
+
+//function to create/copy widget next to already dropped widget
+export const handleCopyNextToWidget = (
+  position,
+  widgetType,
+  xyPostion,
+  index,
+  setXyPostion,
+  userId
+) => {
+  const isSigners = xyPostion.some((data) => data.signerPtr);
+  let filterSignerPos;
+  //get position of previous widget and create new widget next to that widget on same data except
+  // xPosition and key
+  let newpos = position;
+  const calculateXPosition =
+    parseInt(position.xPosition) +
+    defaultWidthHeight(widgetType).width +
+    resizeBorderExtraWidth();
+  const newId = randomId();
+  newpos = { ...newpos, xPosition: calculateXPosition, key: newId };
+  //if condition to create widget in request-sign flow
+  if (isSigners) {
+    if (userId) {
+      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+    }
+    const getPlaceHolder = filterSignerPos[0]?.placeHolder;
+    const getPageNumer = getPlaceHolder.filter(
+      (data) => data.pageNumber === index
+    );
+    const getXYdata = getPageNumer[0].pos;
+    getXYdata.push(newpos);
+    if (getPageNumer.length > 0) {
+      const newUpdateSignPos = getPlaceHolder.map((obj) => {
+        if (obj.pageNumber === index) {
+          return { ...obj, pos: getXYdata };
+        }
+        return obj;
+      });
+
+      const newUpdateSigner = xyPostion.map((obj) => {
+        if (obj.Id === userId) {
+          return { ...obj, placeHolder: newUpdateSignPos };
+        }
+        return obj;
+      });
+
+      setXyPostion(newUpdateSigner);
+    }
+  } else {
+    // else condition to create widget in sign-yourself flow
+    let getXYdata = xyPostion[index].pos;
+    getXYdata.push(newpos);
+    const updatePlaceholder = xyPostion.map((obj, ind) => {
+      if (ind === index) {
+        return { ...obj, pos: getXYdata };
+      }
+      return obj;
+    });
+
+    setXyPostion(updatePlaceholder);
+  }
 };
