@@ -186,7 +186,7 @@ export default function reportJson(id) {
           }
         ],
         helpMsg:
-          "This is a list of templates that are used to create documents"
+          "This is a list of templates that are available to you for creating documents. You can click the 'use' button to create a new document using a template, modify the document & add signers in the next step."
       };
     default:
       return null;
