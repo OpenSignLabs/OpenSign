@@ -7,6 +7,7 @@ import Title from "../components/Title";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
+import Tooltip from "../primitives/Tooltip";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -251,7 +252,7 @@ function UserProfile() {
                 <span className="font-semibold">Email:</span>{" "}
                 <span>{UserProfile && UserProfile.email}</span>
               </li>
-              <li className="flex justify-between items-center border-y-[1px] border-gray-300 py-2 break-all">
+              <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
                 <span className="font-semibold">Is Email verified:</span>{" "}
                 <span>
                   {UserProfile && UserProfile.emailVerified
@@ -260,23 +261,32 @@ function UserProfile() {
                 </span>
               </li>
               <li className="border-y-[1px] border-gray-300 break-all">
-                <PremiumAlertHeader message={"Disable documentId is free in beta, this feature will incur a fee later."} />
                 <div className="flex justify-between items-center py-2">
-                  <span className="font-semibold">Disable DocumentId :</span>{" "}
-                  <span>
-                    <label className="relative inline-flex items-center cursor-pointer mb-0">
-                      <input
-                        disabled={editmode ? false : true}
-                        checked={isDisableDocId}
-                        onChange={handleDisableDocId}
-                        type="checkbox"
-                        value=""
-                        className="sr-only peer"
-                      />
-                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                    </label>
-                  </span>
+                  <span className="font-semibold">
+                    Disable DocumentId :{" "}
+                    <Tooltip url={"https://docs.opensignlabs.com/docs/help/Settings/profile/"} />{" "}
+                  </span>{" "}
+                  <label
+                    className={`${
+                      editmode ? "cursor-pointer" : ""
+                    } relative inline-flex items-center mb-0`}
+                  >
+                    <input
+                      disabled={editmode ? false : true}
+                      checked={isDisableDocId}
+                      onChange={handleDisableDocId}
+                      type="checkbox"
+                      value=""
+                      className="sr-only peer"
+                    />
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
+                  </label>
                 </div>
+                <PremiumAlertHeader
+                  message={
+                    "Disable documentId is free in beta, this feature will incur a fee later."
+                  }
+                />
               </li>
             </ul>
             <div className="flex justify-center pt-2 pb-3 md:pt-3 md:pb-4">

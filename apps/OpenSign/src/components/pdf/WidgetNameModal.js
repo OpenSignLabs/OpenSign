@@ -15,7 +15,7 @@ const WidgetNameModal = (props) => {
   });
   const [isValid, setIsValid] = useState(true);
   const statusArr = ["Required", "Optional"];
-  const inputOpt = ["email", "number"];
+  const inputOpt = ["text", "email", "number"];
 
   useEffect(() => {
     if (props.defaultdata) {
@@ -71,7 +71,7 @@ const WidgetNameModal = (props) => {
         return "/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/";
       case "number":
         return "/^\\d+$/";
-      case textInputWidget:
+      case "text":
         return "/^[a-zA-Zs]+$/";
       default:
         return type;
@@ -187,25 +187,22 @@ const WidgetNameModal = (props) => {
                 name="defaultValue"
                 value={formdata.defaultValue}
                 onChange={(e) => handledefaultChange(e)}
-                onBlur={() =>
-                  isValid === false &&
-                  setFormdata({ ...formdata, defaultValue: "" })
-                }
+                autoComplete="off"
+                onBlur={() => {
+                  if (isValid === false) {
+                    setFormdata({ ...formdata, defaultValue: "" });
+                    setIsValid(true);
+                  }
+                }}
               />
-              {isValid === false ? (
-                <p style={{ color: "Red", fontSize: 8 }}>
+              {isValid === false && (
+                <div className="warning defaultvalueWarning" style={{ fontSize: 12 }}>
+                  <i
+                    className="fas fa-exclamation-circle"
+                    style={{ color: "#fab005", fontSize: 15 }}
+                  ></i>{" "}
                   invalid default value
-                </p>
-              ) : (
-                <p
-                  style={{
-                    color: "transparent",
-                    fontSize: 10,
-                    margin: "3px 8px"
-                  }}
-                >
-                  .
-                </p>
+                </div>
               )}
             </div>
           </>
