@@ -3,6 +3,7 @@ import ModalUi from "../../primitives/ModalUi";
 import "../../styles/AddUser.css";
 import RegexParser from "regex-parser";
 import { textInputWidget } from "../../constant/Utils";
+import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 
 const WidgetNameModal = (props) => {
   const [formdata, setFormdata] = useState({
@@ -14,7 +15,7 @@ const WidgetNameModal = (props) => {
   });
   const [isValid, setIsValid] = useState(true);
   const statusArr = ["Required", "Optional"];
-  const inputOpt = ["email", "number"];
+  const inputOpt = ["text", "email", "number"];
 
   useEffect(() => {
     if (props.defaultdata) {
@@ -70,7 +71,7 @@ const WidgetNameModal = (props) => {
         return "/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/";
       case "number":
         return "/^\\d+$/";
-      case textInputWidget:
+      case "text":
         return "/^[a-zA-Zs]+$/";
       default:
         return type;
@@ -98,7 +99,23 @@ const WidgetNameModal = (props) => {
       handleClose={props.handleClose && props.handleClose}
       title={"Widget info"}
     >
-      <form onSubmit={handleSubmit} style={{ padding: 20 }}>
+      {(props.defaultdata?.type === textInputWidget ||
+        props.widgetName === textInputWidget) && (
+        <PremiumAlertHeader
+          message={
+            "Field validations are free in beta, this feature will incur a fee later."
+          }
+        />
+      )}
+      <form
+        onSubmit={handleSubmit}
+        className={`${
+          props.defaultdata?.type === textInputWidget ||
+          props.widgetName === textInputWidget
+            ? "pt-0"
+            : ""
+        } p-[20px]`}
+      >
         <div className="form-section">
           <label htmlFor="name" style={{ fontSize: 13 }}>
             Name
@@ -170,25 +187,22 @@ const WidgetNameModal = (props) => {
                 name="defaultValue"
                 value={formdata.defaultValue}
                 onChange={(e) => handledefaultChange(e)}
-                onBlur={() =>
-                  isValid === false &&
-                  setFormdata({ ...formdata, defaultValue: "" })
-                }
+                autoComplete="off"
+                onBlur={() => {
+                  if (isValid === false) {
+                    setFormdata({ ...formdata, defaultValue: "" });
+                    setIsValid(true);
+                  }
+                }}
               />
-              {isValid === false ? (
-                <p style={{ color: "Red", fontSize: 8 }}>
+              {isValid === false && (
+                <div className="warning defaultvalueWarning" style={{ fontSize: 12 }}>
+                  <i
+                    className="fas fa-exclamation-circle"
+                    style={{ color: "#fab005", fontSize: 15 }}
+                  ></i>{" "}
                   invalid default value
-                </p>
-              ) : (
-                <p
-                  style={{
-                    color: "transparent",
-                    fontSize: 10,
-                    margin: "3px 8px"
-                  }}
-                >
-                  .
-                </p>
+                </div>
               )}
             </div>
           </>

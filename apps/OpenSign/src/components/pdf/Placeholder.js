@@ -4,6 +4,7 @@ import PlaceholderBorder from "./PlaceholderBorder";
 import { Rnd } from "react-rnd";
 import {
   defaultWidthHeight,
+  handleCopyNextToWidget,
   isMobile,
   onChangeInput,
   radioButtonWidget,
@@ -302,8 +303,14 @@ function Placeholder(props) {
     props.setWidgetType(props.pos.type);
     props.setCurrWidgetsDetails(props.pos);
   };
-  //function ro set state value of onclick on widget's copy icon
+  //function to set required state value onclick on widget's copy icon
   const handleCopyPlaceholder = (e) => {
+    e.stopPropagation();
+    //condition to handle text widget signer obj id and unique id
+    //when user click on copy icon of text widget in that condition text widget does not have any signerObjId
+    //in that case i have to save in tempSignerId as a unique id of previous select signer's unique id
+    //and on save or cancel button of copy all page popup i have set this temp signer Id in unique id
+
     if (props.data && props?.pos?.type !== textWidget) {
       props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
@@ -312,9 +319,24 @@ function Placeholder(props) {
       props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
     }
-    e.stopPropagation();
-    props.setIsPageCopy(true);
-    props.setSignKey(props.pos.key);
+
+    //checking widget's type and open widget copy modal for required widgets
+    if (
+      ["signature", textWidget, "stamp", "initial"].includes(props.pos.type)
+    ) {
+      props.setIsPageCopy(true);
+      props.setSignKey(props.pos.key);
+    } else {
+      //function to create new widget next to just widget
+      handleCopyNextToWidget(
+        props.pos,
+        props.pos.type,
+        props.xyPostion,
+        props.index,
+        props.setXyPostion,
+        props.data && props.data?.Id
+      );
+    }
   };
 
   //function to save date and format on local array onchange date and onclick format

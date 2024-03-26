@@ -35,7 +35,7 @@ const Forms = (props) => {
   const [formData, setFormData] = useState({
     Name: "",
     Description: "",
-    Note: "Please review and sign this document",
+    Note: "",
     TimeToCompleteDays: 15,
     SendinOrder: "false"
   });
@@ -51,6 +51,7 @@ const Forms = (props) => {
   };
   useEffect(() => {
     handleReset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.title]);
   const handleFileInput = (e) => {
     setpercentage(0);
@@ -165,7 +166,9 @@ const Forms = (props) => {
           "TimeToCompleteDays",
           parseInt(formData?.TimeToCompleteDays)
         );
-        const isChecked = formData.SendinOrder === "true" ? true : false;
+      }
+      if (props.title !== "Sign Yourself") {
+        const isChecked = formData.SendinOrder === "false" ? false : true;
         object.set("SendinOrder", isChecked);
       }
       object.set("URL", fileupload);
@@ -233,9 +236,12 @@ const Forms = (props) => {
     setFormData({
       Name: "",
       Description: "",
-      Note: "Please review and sign this document",
+      Note:
+        props.title === "Sign Yourself"
+          ? "Note to myself"
+          : "Please review and sign this document",
       TimeToCompleteDays: 15,
-      SendinOrder: "false"
+      SendinOrder: "true"
     });
     setFileUpload([]);
     setpercentage(0);
@@ -324,7 +330,10 @@ const Forms = (props) => {
           </div>
           <div className="text-xs mt-2">
             <label className="block">
-              Title<span className="text-red-500 text-[13px]">*</span>
+              {props.title === "New Template"
+                ? "Template Title"
+                : "Document Title"}
+              <span className="text-red-500 text-[13px]">*</span>
             </label>
             <input
               name="Name"

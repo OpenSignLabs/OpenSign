@@ -12,6 +12,35 @@ export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
+export const color = [
+  "#93a3db",
+  "#e6c3db",
+  "#c0e3bc",
+  "#bce3db",
+  "#b8ccdb",
+  "#ceb8db",
+  "#ffccff",
+  "#99ffcc",
+  "#cc99ff",
+  "#ffcc99",
+  "#66ccff",
+  "#ffffcc"
+];
+
+export const nameColor = [
+  "#304fbf",
+  "#7d5270",
+  "#5f825b",
+  "#578077",
+  "#576e80",
+  "#6d527d",
+  "#cc00cc",
+  "#006666",
+  "#cc00ff",
+  "#ff9900",
+  "#336699",
+  "#cc9900"
+];
 export const toDataUrl = (file) => {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -22,10 +51,12 @@ export const toDataUrl = (file) => {
   });
 };
 
-//function for getting document details for getDrive
-export const getDrive = async (documentId) => {
+//function for getting document details for getDrive cloud function
+export const getDrive = async (documentId, skip = 0, limit = 100) => {
   const data = {
-    docId: documentId && documentId
+    docId: documentId && documentId,
+    limit: limit,
+    skip: skip
   };
   const driveDeatils = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/getDrive`, data, {
@@ -729,6 +760,82 @@ export const onChangeInput = (
   }
 };
 
+//function to increase height of text area on press enter
+export const onChangeHeightOfTextArea = (
+  height,
+  widgetType,
+  signKey,
+  xyPostion,
+  index,
+  setXyPostion,
+  userId
+) => {
+  const isSigners = xyPostion.some((data) => data.signerPtr);
+  let filterSignerPos;
+  if (isSigners) {
+    if (userId) {
+      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+    }
+    const getPlaceHolder = filterSignerPos[0]?.placeHolder;
+
+    const getPageNumer = getPlaceHolder.filter(
+      (data) => data.pageNumber === index
+    );
+    if (getPageNumer.length > 0) {
+      const getXYdata = getPageNumer[0].pos;
+      const getPosData = getXYdata;
+      const addSignPos = getPosData.map((position) => {
+        if (position.key === signKey) {
+          return {
+            ...position,
+            Height: position.Height
+              ? position.Height + height
+              : defaultWidthHeight(widgetType).height + height
+          };
+        }
+        return position;
+      });
+      const newUpdateSignPos = getPlaceHolder.map((obj) => {
+        if (obj.pageNumber === index) {
+          return { ...obj, pos: addSignPos };
+        }
+        return obj;
+      });
+
+      const newUpdateSigner = xyPostion.map((obj) => {
+        if (obj.Id === userId) {
+          return { ...obj, placeHolder: newUpdateSignPos };
+        }
+        return obj;
+      });
+
+      setXyPostion(newUpdateSigner);
+    }
+  } else {
+    let getXYdata = xyPostion[index].pos;
+
+    const updatePosition = getXYdata.map((position) => {
+      if (position.key === signKey) {
+        return {
+          ...position,
+          Height: position.Height
+            ? position.Height + height
+            : defaultWidthHeight(widgetType).height + height
+        };
+      }
+      return position;
+    });
+
+    const updatePlaceholder = xyPostion.map((obj, ind) => {
+      if (ind === index) {
+        return { ...obj, pos: updatePosition };
+      }
+      return obj;
+    });
+    setXyPostion(updatePlaceholder);
+  }
+};
+
 export const addInitialData = (signerPos, setXyPostion, value, userId) => {
   function widgetDataValue(type) {
     switch (type) {
@@ -1078,8 +1185,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-            ? 10
-            : newUpdateHeight;
+              ? 10
+              : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
@@ -1148,13 +1255,14 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        let addYPosition, isCheck;
+        let addYPosition = 0,
+          isCheck;
 
         if (position?.options?.values.length > 0) {
           position?.options?.values.forEach((item, ind) => {
             const checkboxRandomId = "checkbox" + randomId();
             let yPosition;
-            const height = 10;
+            const height = 13;
             if (
               position?.options?.response &&
               position?.options?.response?.length > 0
@@ -1175,14 +1283,14 @@ export const multiSignEmbed = async (
             if (!position?.options?.isHideLabel) {
               // below line of code is used to embed label with radio button in pdf
               page.drawText(item, {
-                x: xPos(position) + 15,
+                x: xPos(position) + 17,
                 y: yPosition + 2,
                 size: height
               });
             }
             checkbox.addToPage(page, {
               x: xPos(position),
-              y: yPosition,
+              y: yPosition - 3,
               width: height,
               height: height
             });
@@ -1203,19 +1311,21 @@ export const multiSignEmbed = async (
         } else if (position?.options?.defaultValue) {
           textContent = position?.options?.defaultValue;
         }
-
         const fixedWidth = scaleWidth; // Set your fixed width
+        const isNewOnEnterLineExist = textContent.includes("\n");
+
         // Function to break text into lines based on the fixed width
-        const breakTextIntoLines = (textContent, width) => {
+        const NewbreakTextIntoLines = (textContent, width) => {
           const lines = [];
           let currentLine = "";
 
           for (const word of textContent.split(" ")) {
+            //get text line width
             const lineWidth = font.widthOfTextAtSize(
               `${currentLine} ${word}`,
               fontSize
             );
-
+            //check text content line width is less or equal to container width
             if (lineWidth <= width) {
               currentLine += ` ${word}`;
             } else {
@@ -1226,7 +1336,33 @@ export const multiSignEmbed = async (
           lines.push(currentLine.trim());
           return lines;
         };
-        const lines = breakTextIntoLines(textContent, fixedWidth);
+
+        // Function to break text into lines based on when user go next line on press enter button
+        const breakTextIntoLines = (textContent, width) => {
+          const lines = [];
+
+          for (const word of textContent.split("\n")) {
+            const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
+            //checking string length to container width
+            //if string length is less then container width it means user press enter button
+            if (lineWidth <= width) {
+              lines.push(word);
+            }
+            //else adjust text content according to width and send it in new line
+            else {
+              const newLine = NewbreakTextIntoLines(word, width);
+              lines.push(...newLine);
+            }
+          }
+
+          return lines;
+        };
+
+        //check if text content have `\n` string it means user press enter to go next line and handle condition
+        //else auto adjust text content according to container width
+        const lines = isNewOnEnterLineExist
+          ? breakTextIntoLines(textContent, fixedWidth)
+          : NewbreakTextIntoLines(textContent, fixedWidth);
         // Set initial y-coordinate for the first line
         const labelDefaultHeight = defaultWidthHeight(position.type).height;
 
@@ -1327,9 +1463,7 @@ export const multiSignEmbed = async (
       }
     });
   }
-
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-
   return pdfBytes;
 };
 
@@ -1568,4 +1702,67 @@ export const getMonth = (date) => {
 export const getYear = (date) => {
   const newYear = new Date(date).getFullYear();
   return newYear;
+};
+
+//function to create/copy widget next to already dropped widget
+export const handleCopyNextToWidget = (
+  position,
+  widgetType,
+  xyPostion,
+  index,
+  setXyPostion,
+  userId
+) => {
+  const isSigners = xyPostion.some((data) => data.signerPtr);
+  let filterSignerPos;
+  //get position of previous widget and create new widget next to that widget on same data except
+  // xPosition and key
+  let newpos = position;
+  const calculateXPosition =
+    parseInt(position.xPosition) +
+    defaultWidthHeight(widgetType).width +
+    resizeBorderExtraWidth();
+  const newId = randomId();
+  newpos = { ...newpos, xPosition: calculateXPosition, key: newId };
+  //if condition to create widget in request-sign flow
+  if (isSigners) {
+    if (userId) {
+      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+    }
+    const getPlaceHolder = filterSignerPos[0]?.placeHolder;
+    const getPageNumer = getPlaceHolder.filter(
+      (data) => data.pageNumber === index
+    );
+    const getXYdata = getPageNumer[0].pos;
+    getXYdata.push(newpos);
+    if (getPageNumer.length > 0) {
+      const newUpdateSignPos = getPlaceHolder.map((obj) => {
+        if (obj.pageNumber === index) {
+          return { ...obj, pos: getXYdata };
+        }
+        return obj;
+      });
+
+      const newUpdateSigner = xyPostion.map((obj) => {
+        if (obj.Id === userId) {
+          return { ...obj, placeHolder: newUpdateSignPos };
+        }
+        return obj;
+      });
+
+      setXyPostion(newUpdateSigner);
+    }
+  } else {
+    // else condition to create widget in sign-yourself flow
+    let getXYdata = xyPostion[index].pos;
+    getXYdata.push(newpos);
+    const updatePlaceholder = xyPostion.map((obj, ind) => {
+      if (ind === index) {
+        return { ...obj, pos: getXYdata };
+      }
+      return obj;
+    });
+
+    setXyPostion(updatePlaceholder);
+  }
 };

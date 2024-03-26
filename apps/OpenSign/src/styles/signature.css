@@ -15,15 +15,8 @@
   border-width: 0.2px;
 }
 
-.dropdownContainer {
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll;
-  max-height: 250px;
-}
-
-.dropdownContainer::-webkit-scrollbar {
-  display: none;
+.dragCursor {
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAASElEQVR4nGNgwAMkJSUbpKSkOvCpIaT5PxSTbogUQjMYMwxeIIXmVFIxA8UGDDyQGg0DnIDi6JKUlCxHMqCeZAOghjSAMD5FAKfeaURdUFxCAAAAAElFTkSuQmCC"), auto;
 }
 
 .react-datepicker__input-container {
