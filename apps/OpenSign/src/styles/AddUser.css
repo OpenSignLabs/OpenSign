@@ -102,3 +102,61 @@
     background-position: right 1rem top 50%;
   }
 }
+
+.warning {
+  position: absolute;
+  padding: 5px;
+  border: 1px solid black;
+  background: white;
+  width: 250px;
+  border-radius: 5px;
+  animation: inAnimation 1s ease-in-out;
+  z-index: 1;
+}
+
+.defaultvalueWarning {
+  position: absolute;
+  left: 20px;
+}
+
+.defaultvalueWarning::before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  border-style: outset;
+  border-width: 0px 10px 10px 10px;
+  border-color: transparent transparent black transparent;
+  display: inline-block;
+  position: absolute;
+  top: -29%;
+  left: 0;
+  right: 75%;
+  margin: 0 auto;
+}
+
+@keyframes inAnimation {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  25% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  50% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  75% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 1;
+    visibility: visible;
+  }
+}
