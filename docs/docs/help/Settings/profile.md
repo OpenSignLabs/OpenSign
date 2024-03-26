@@ -1,13 +1,13 @@
 ---
 sidebar_position: 2
-title: Profile
+title: Disable DocumentId
 ---
 
-# Manage your OpenSign™ profile
-You can edit your profile details by clicking the 'edit' button.
-
-<img width="459" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/fc03bbb5-890b-4d00-96f7-e3f9b62b6dad"></img>
-
-Turn the 'Disable DocumentId' switch on in order to disable embedding documentId in signed doucments.
+# How to disable adding the OpenSign™ documentId to signed documents
+Whenever a document is signed by all parties, OpenSign™ adds a DocumentId at the top left corner of the digitally signed document.
+Using this id you can verifiy the authenticity of the document at a later date, hence we strongly recommend that you keep this id.
+In case you want to disable adding this to your signed documents, turn the 'Disable DocumentId' switch on.
 
 <img width="436" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/ee4433c7-1af7-4b74-800d-500060c0642d"></img>
+
+Note that this feature will be available only to enterprise plan customers.
