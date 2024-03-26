@@ -760,6 +760,82 @@ export const onChangeInput = (
   }
 };
 
+//function to increase height of text area on press enter
+export const onChangeHeightOfTextArea = (
+  height,
+  widgetType,
+  signKey,
+  xyPostion,
+  index,
+  setXyPostion,
+  userId
+) => {
+  const isSigners = xyPostion.some((data) => data.signerPtr);
+  let filterSignerPos;
+  if (isSigners) {
+    if (userId) {
+      filterSignerPos = xyPostion.filter((data) => data.Id === userId);
+    }
+    const getPlaceHolder = filterSignerPos[0]?.placeHolder;
+
+    const getPageNumer = getPlaceHolder.filter(
+      (data) => data.pageNumber === index
+    );
+    if (getPageNumer.length > 0) {
+      const getXYdata = getPageNumer[0].pos;
+      const getPosData = getXYdata;
+      const addSignPos = getPosData.map((position) => {
+        if (position.key === signKey) {
+          return {
+            ...position,
+            Height: position.Height
+              ? position.Height + height
+              : defaultWidthHeight(widgetType).height + height
+          };
+        }
+        return position;
+      });
+      const newUpdateSignPos = getPlaceHolder.map((obj) => {
+        if (obj.pageNumber === index) {
+          return { ...obj, pos: addSignPos };
+        }
+        return obj;
+      });
+
+      const newUpdateSigner = xyPostion.map((obj) => {
+        if (obj.Id === userId) {
+          return { ...obj, placeHolder: newUpdateSignPos };
+        }
+        return obj;
+      });
+
+      setXyPostion(newUpdateSigner);
+    }
+  } else {
+    let getXYdata = xyPostion[index].pos;
+
+    const updatePosition = getXYdata.map((position) => {
+      if (position.key === signKey) {
+        return {
+          ...position,
+          Height: position.Height
+            ? position.Height + height
+            : defaultWidthHeight(widgetType).height + height
+        };
+      }
+      return position;
+    });
+
+    const updatePlaceholder = xyPostion.map((obj, ind) => {
+      if (ind === index) {
+        return { ...obj, pos: updatePosition };
+      }
+      return obj;
+    });
+    setXyPostion(updatePlaceholder);
+  }
+};
+
 export const addInitialData = (signerPos, setXyPostion, value, userId) => {
   function widgetDataValue(type) {
     switch (type) {
@@ -1234,19 +1310,21 @@ export const multiSignEmbed = async (
         } else if (position?.options?.defaultValue) {
           textContent = position?.options?.defaultValue;
         }
-
         const fixedWidth = scaleWidth; // Set your fixed width
+        const isNewOnEnterLineExist = textContent.includes("\n");
+
         // Function to break text into lines based on the fixed width
-        const breakTextIntoLines = (textContent, width) => {
+        const NewbreakTextIntoLines = (textContent, width) => {
           const lines = [];
           let currentLine = "";
 
           for (const word of textContent.split(" ")) {
+            //get text line width
             const lineWidth = font.widthOfTextAtSize(
               `${currentLine} ${word}`,
               fontSize
             );
-
+            //check text content line width is less or equal to container width
             if (lineWidth <= width) {
               currentLine += ` ${word}`;
             } else {
@@ -1257,7 +1335,33 @@ export const multiSignEmbed = async (
           lines.push(currentLine.trim());
           return lines;
         };
-        const lines = breakTextIntoLines(textContent, fixedWidth);
+
+        // Function to break text into lines based on when user go next line on press enter button
+        const breakTextIntoLines = (textContent, width) => {
+          const lines = [];
+
+          for (const word of textContent.split("\n")) {
+            const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
+            //checking string length to container width
+            //if string length is less then container width it means user press enter button
+            if (lineWidth <= width) {
+              lines.push(word);
+            }
+            //else adjust text content according to width and send it in new line
+            else {
+              const newLine = NewbreakTextIntoLines(word, width);
+              lines.push(...newLine);
+            }
+          }
+
+          return lines;
+        };
+
+        //check if text content have `\n` string it means user press enter to go next line and handle condition
+        //else auto adjust text content according to container width
+        const lines = isNewOnEnterLineExist
+          ? breakTextIntoLines(textContent, fixedWidth)
+          : NewbreakTextIntoLines(textContent, fixedWidth);
         // Set initial y-coordinate for the first line
         const labelDefaultHeight = defaultWidthHeight(position.type).height;
 
@@ -1358,9 +1462,7 @@ export const multiSignEmbed = async (
       }
     });
   }
-
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-
   return pdfBytes;
 };
 
