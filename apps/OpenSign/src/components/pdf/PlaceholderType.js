@@ -353,7 +353,7 @@ function PlaceholderType(props) {
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
                   style={{
-                    width: props.pos.Width,
+                    // width: props.pos.Width,
                     display: "flex",
                     justifyContent: "center",
                     marginTop: ind === 0 ? 0 : "5px"
