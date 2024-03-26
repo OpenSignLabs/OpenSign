@@ -3,6 +3,7 @@ import {
   getMonth,
   getYear,
   isMobile,
+  onChangeHeightOfTextArea,
   onChangeInput,
   radioButtonWidget,
   range,
@@ -284,6 +285,22 @@ function PlaceholderType(props) {
       format: props.selectDate.format
     };
     props.handleSaveDate(dateObj, isDateChange);
+  };
+  //handle height on enter press in text area
+  const handleEnterPress = (e) => {
+    const height = 15;
+    if (e.key === "Enter") {
+      //function to save height of text area
+      onChangeHeightOfTextArea(
+        height,
+        props.pos.type,
+        props.pos.key,
+        props.xyPostion,
+        props.index,
+        props.setXyPostion,
+        props.data && props.data?.Id
+      );
+    }
   };
   switch (type) {
     case "signature":
@@ -741,6 +758,7 @@ function PlaceholderType(props) {
         <textarea
           placeholder="Enter label"
           rows={1}
+          onKeyDown={handleEnterPress}
           value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
