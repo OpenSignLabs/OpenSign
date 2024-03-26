@@ -1290,7 +1290,7 @@ export const multiSignEmbed = async (
             }
             checkbox.addToPage(page, {
               x: xPos(position),
-              y: yPosition - 2,
+              y: yPosition - 3,
               width: height,
               height: height
             });
