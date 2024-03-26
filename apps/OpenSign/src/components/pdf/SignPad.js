@@ -261,7 +261,8 @@ function SignPad({
                         : "2px solid white"
               }}
               onClick={() => {
-                props?.convertToImg(fontSelect, signValue, data);
+                props?.convertToImg &&
+                  props?.convertToImg(fontSelect, signValue, data);
                 if (key === 0) {
                   setPenColor("blue");
                 } else if (key === 1) {
