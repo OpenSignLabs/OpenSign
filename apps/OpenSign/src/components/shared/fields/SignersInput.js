@@ -108,10 +108,10 @@ const SignersInput = (props) => {
       <label className="block">
         Signers
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
-        <span className="ml-1 text-xs z-[999]">
+        <span className="absolute ml-1 text-xs z-50">
           <Tooltip
             id={"signer-tooltip"}
-            message={"This is a list of contacts/signers added by you"}
+            message={"Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."}
           />
         </span>
       </label>

@@ -264,7 +264,7 @@ function UserProfile() {
                 <div className="flex justify-between items-center py-2">
                   <span className="font-semibold">
                     Disable DocumentId :{" "}
-                    <Tooltip url={"https://docs.opensignlabs.com/docs/help/Settings/profile/"} />{" "}
+                    <Tooltip url={"https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"} />{" "}
                   </span>{" "}
                   <label
                     className={`${
