@@ -1319,11 +1319,12 @@ export const multiSignEmbed = async (
           let currentLine = "";
 
           for (const word of textContent.split(" ")) {
+            //get text line width
             const lineWidth = font.widthOfTextAtSize(
               `${currentLine} ${word}`,
               fontSize
             );
-
+            //check text content line width is less or equal to container width
             if (lineWidth <= width) {
               currentLine += ` ${word}`;
             } else {
@@ -1338,13 +1339,9 @@ export const multiSignEmbed = async (
         // Function to break text into lines based on when user go next line on press enter button
         const breakTextIntoLines = (textContent, width) => {
           const lines = [];
-          let currentLine = "";
 
           for (const word of textContent.split("\n")) {
-            const lineWidth = font.widthOfTextAtSize(
-              `${currentLine} ${word}`,
-              fontSize
-            );
+            const lineWidth = font.widthOfTextAtSize(`${word}`, fontSize);
             //checking string length to container width
             //if string length is less then container width it means user press enter button
             if (lineWidth <= width) {
