@@ -162,7 +162,7 @@ export default function reportJson(id) {
           }
         ],
         form: "ContactBook",
-        helpMsg: "This is a list of contacts/signers that have been added by you."
+        helpMsg: "This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
       };
     // template report
     case "6TeaPr321t":
