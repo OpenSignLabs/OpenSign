@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import "../styles/loader.css";
-import { connect } from "react-redux";
-import { fetchAppInfo, showTenantName } from "../redux/actions";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 import Title from "../components/Title";
 import GoogleSignInBtn from "../components/LoginGoogle";
@@ -13,10 +12,13 @@ import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
 import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 import Alert from "../primitives/Alert";
-
-function Login(props) {
+import { appInfo } from "../constant/appinfo";
+import { fetchAppInfo } from "../redux/reducers/infoReducer";
+import { showTenant } from "../redux/reducers/ShowTenant";
+function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const { width } = useWindowSize();
   const [state, setState] = useState({
     email: "",
@@ -37,14 +39,14 @@ function Login(props) {
     Destination: ""
   });
   const [isModal, setIsModal] = useState(false);
-  const image = props?.appInfo?.applogo || undefined;
+  const image = appInfo?.applogo || undefined;
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
       setState({ ...state, loading: true });
       GetLoginData();
     }
-    props.fetchAppInfo();
+    dispatch(fetchAppInfo());
     // eslint-disable-next-line
   }, []);
   const handleChange = (event) => {
@@ -61,8 +63,8 @@ function Login(props) {
         setState({ ...state, loading: true });
         let baseUrl = localStorage.getItem("baseUrl");
         let parseAppId = localStorage.getItem("parseAppId");
-        localStorage.setItem("appLogo", props.appInfo.applogo);
-        localStorage.setItem("appName", props.appInfo.appname);
+        localStorage.setItem("appLogo", appInfo.applogo);
+        localStorage.setItem("appName", appInfo.appname);
         // Pass the username and password to logIn function
         await Parse.User.logIn(email, password)
           .then(async (user) => {
@@ -81,8 +83,8 @@ function Login(props) {
               // Check extended class user role and tenentId
               try {
                 let userRoles = [];
-                if (props.appInfo.settings) {
-                  let userSettings = props.appInfo.settings;
+                if (appInfo.settings) {
+                  let userSettings = appInfo.settings;
 
                   //Get Current user roles
                   let url = `${baseUrl}functions/UserGroups`;
@@ -172,8 +174,10 @@ function Login(props) {
                                         }
                                       });
                                       if (tenentInfo.length) {
-                                        props.showTenantName(
-                                          tenentInfo[0].tenentName || ""
+                                        dispatch(
+                                          showTenant(
+                                            tenentInfo[0].tenentName || ""
+                                          )
                                         );
                                         localStorage.setItem(
                                           "TenantName",
@@ -212,8 +216,10 @@ function Login(props) {
                                         }
                                       });
                                       if (tenentInfo.length) {
-                                        props.showTenantName(
-                                          tenentInfo[0].tenentName || ""
+                                        dispatch(
+                                          showTenant(
+                                            tenentInfo[0].tenentName || ""
+                                          )
                                         );
                                         localStorage.setItem(
                                           "TenantName",
@@ -412,8 +418,8 @@ function Login(props) {
       // Check extended class user role and tenentId
       try {
         let userRoles = [];
-        if (props.appInfo.settings) {
-          let userSettings = props.appInfo.settings;
+        if (appInfo.settings) {
+          let userSettings = appInfo.settings;
 
           //Get Current user roles
           let url = `${baseUrl}functions/UserGroups`;
@@ -503,8 +509,8 @@ function Login(props) {
                                 }
                               });
                               if (tenentInfo.length) {
-                                props.showTenantName(
-                                  tenentInfo[0].tenentName || ""
+                                dispatch(
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -543,8 +549,8 @@ function Login(props) {
                                 }
                               });
                               if (tenentInfo.length) {
-                                props.showTenantName(
-                                  tenentInfo[0].tenentName || ""
+                                dispatch(
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -730,94 +736,90 @@ function Login(props) {
               } else {
                 _currentRole = userRoles[0];
               }
-              let SettingsUser = JSON.parse(userSettings);
-              SettingsUser.forEach(async (element) => {
-                if (element.role === _currentRole) {
-                  let _role = _currentRole.replace(
-                    `${localStorage.getItem("_appName")}_`,
-                    ""
-                  );
-                  localStorage.setItem("_user_role", _role);
-
-                  // Get TenentID from Extendend Class
-                  localStorage.setItem(
-                    "extended_class",
-                    element.extended_class
-                  );
-
-                  const currentUser = Parse.User.current();
-                  await Parse.Cloud.run("getUserDetails", {
-                    email: currentUser.get("email")
-                  }).then(
-                    (result) => {
-                      let tenentInfo = [];
-                      const results = [result];
-                      if (results) {
-                        let extendedInfo_stringify = JSON.stringify(results);
-                        let extendedInfo = JSON.parse(extendedInfo_stringify);
-                        if (extendedInfo.length > 1) {
-                          extendedInfo.forEach((x) => {
-                            if (x.TenantId) {
-                              let obj = {
-                                tenentId: x.TenantId.objectId,
-                                tenentName: x.TenantId.TenantName || ""
-                              };
-                              tenentInfo.push(obj);
-                            }
-                          });
-
-                          localStorage.setItem("showpopup", true);
-                          localStorage.setItem("PageLanding", element.pageId);
-                          localStorage.setItem("defaultmenuid", element.menuId);
-                          localStorage.setItem("pageType", element.pageType);
-                          navigate("/");
+              if (_currentRole && _currentRole !== "contracts_Guest") {
+                let SettingsUser = JSON.parse(userSettings);
+                SettingsUser.forEach(async (item) => {
+                  if (item.role === _currentRole) {
+                    let _role = _currentRole.replace(`${appInfo.appname}_`, "");
+                    localStorage.setItem("_user_role", _role);
+                    // Get TenentID from Extendend Class
+                    localStorage.setItem("extended_class", item.extended_class);
+                    const currentUser = Parse.User.current();
+                    await Parse.Cloud.run("getUserDetails", {
+                      email: currentUser.get("email")
+                    }).then(
+                      (result) => {
+                        let tenentInfo = [];
+                        const results = [result];
+                        if (results) {
+                          let extendedInfo_stringify = JSON.stringify(results);
+                          let extendedInfo = JSON.parse(extendedInfo_stringify);
+                          if (extendedInfo.length > 1) {
+                            extendedInfo.forEach((x) => {
+                              if (x.TenantId) {
+                                let obj = {
+                                  tenentId: x.TenantId.objectId,
+                                  tenentName: x.TenantId.TenantName || ""
+                                };
+                                tenentInfo.push(obj);
+                              }
+                            });
+                            localStorage.setItem("showpopup", true);
+                            localStorage.setItem("PageLanding", item.pageId);
+                            localStorage.setItem("defaultmenuid", item.menuId);
+                            localStorage.setItem("pageType", item.pageType);
+                            navigate("/");
+                          } else {
+                            extendedInfo.forEach((x) => {
+                              if (x.TenantId) {
+                                let obj = {
+                                  tenentId: x.TenantId.objectId,
+                                  tenentName: x.TenantId.TenantName || ""
+                                };
+                                localStorage.setItem(
+                                  "TenetId",
+                                  x.TenantId.objectId
+                                );
+                                tenentInfo.push(obj);
+                              }
+                            });
+                            localStorage.setItem("PageLanding", item.pageId);
+                            localStorage.setItem("defaultmenuid", item.menuId);
+                            localStorage.setItem("pageType", item.pageType);
+                            navigate(`/${item.pageType}/${item.pageId}`);
+                          }
                         } else {
-                          extendedInfo.forEach((x) => {
-                            if (x.TenantId) {
-                              let obj = {
-                                tenentId: x.TenantId.objectId,
-                                tenentName: x.TenantId.TenantName || ""
-                              };
-                              localStorage.setItem(
-                                "TenetId",
-                                x.TenantId.objectId
-                              );
-                              tenentInfo.push(obj);
-                            }
-                          });
-                          localStorage.setItem("PageLanding", element.pageId);
-                          localStorage.setItem("defaultmenuid", element.menuId);
-                          localStorage.setItem("pageType", element.pageType);
-                          navigate(`/${element.pageType}/${element.pageId}`);
+                          localStorage.setItem("PageLanding", item.pageId);
+                          localStorage.setItem("defaultmenuid", item.menuId);
+                          localStorage.setItem("pageType", item.pageType);
+                          navigate(`/${item.pageType}/${item.pageId}`);
                         }
-                      } else {
-                        localStorage.setItem("PageLanding", element.pageId);
-                        localStorage.setItem("defaultmenuid", element.menuId);
-                        localStorage.setItem("pageType", element.pageType);
-                        navigate(`/${element.pageType}/${element.pageId}`);
-                      }
-                    },
-                    (error) => {
-                      setState({
-                        ...state,
-                        loading: false,
-                        alertType: "danger",
-                        alertMsg: "You don`t have access to this application!"
-                      });
-                      setTimeout(function () {
+                      },
+                      (error) => {
                         setState({
                           ...state,
                           loading: false,
                           alertType: "danger",
-                          alertMsg: ""
+                          alertMsg: "You don`t have access to this application!"
                         });
-                      }, 2000);
-                      localStorage.setItem("accesstoken", null);
-                      console.error("Error while fetching Follow", error);
-                    }
-                  );
-                }
-              });
+                        setTimeout(function () {
+                          setState({
+                            ...state,
+                            loading: false,
+                            alertType: "danger",
+                            alertMsg: ""
+                          });
+                        }, 2000);
+                        localStorage.setItem("accesstoken", null);
+                        console.error("Error while fetching Follow", error);
+                      }
+                    );
+                  }
+                });
+              } else {
+                setState({ ...state, loading: false });
+                handleCloseModal();
+              }
             } else {
               console.log("User Role Not Found.");
             }
@@ -943,7 +945,7 @@ function Login(props) {
           </div>
         </div>
       )}
-      {props.isloginVisible && props.isloginVisible ? (
+      {appInfo && appInfo.appId ? (
         <>
           <div aria-labelledby="loginHeading" role="region">
             <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-4 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
@@ -1051,7 +1053,7 @@ function Login(props) {
                       </div>
                     </form>
                     <br />
-                    {(props.appInfo.fbAppId || props.appInfo.googleClietId) && (
+                    {(appInfo.fbAppId || appInfo.googleClietId) && (
                       <div
                         style={{
                           display: "flex",
@@ -1082,9 +1084,9 @@ function Login(props) {
                         justifyContent: "center"
                       }}
                     >
-                      {/* {props.appInfo.fbAppId && props.appInfo.fbAppId !== "" ? (
+                      {/* {appInfo.fbAppId && appInfo.fbAppId !== "" ? (
                       <LoginFacebook
-                        FBCred={props.appInfo.fbAppId}
+                        FBCred={appInfo.fbAppId}
                         thirdpartyLoginfn={thirdpartyLoginfn}
                         thirdpartyLoader={state.thirdpartyLoader}
                         setThirdpartyLoader={setThirdpartyLoader}
@@ -1100,10 +1102,9 @@ function Login(props) {
                         justifyContent: "center"
                       }}
                     >
-                      {props.appInfo.googleClietId &&
-                      props.appInfo.googleClietId !== "" ? (
+                      {appInfo.googleClietId && appInfo.googleClietId !== "" ? (
                         <GoogleSignInBtn
-                          GoogleCred={props.appInfo.googleClietId}
+                          GoogleCred={appInfo.googleClietId}
                           thirdpartyLoginfn={thirdpartyLoginfn}
                           thirdpartyLoader={state.thirdpartyLoader}
                           setThirdpartyLoader={setThirdpartyLoader}
@@ -1213,16 +1214,4 @@ function Login(props) {
     </div>
   );
 }
-
-const mapStateToProps = (state) => {
-  if (Object.keys(state.appInfo).length !== 0) {
-    return { appInfo: state.appInfo, isloginVisible: true };
-  } else {
-    return { appInfo: state.appInfo, isloginVisible: false };
-  }
-};
-
-export default connect(mapStateToProps, {
-  fetchAppInfo,
-  showTenantName
-})(Login);
+export default Login;

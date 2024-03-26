@@ -6,6 +6,7 @@ import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
 import { modalSubmitBtnColor, modalCancelBtnColor } from "../constant/const";
 import Alert from "./Alert";
+import Tooltip from "./Tooltip";
 const ReportTable = ({
   ReportName,
   List,
@@ -15,7 +16,8 @@ const ReportTable = ({
   setIsNextRecord,
   isMoreDocs,
   docPerPage,
-  form
+  form,
+  report_help
 }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -255,7 +257,14 @@ const ReportTable = ({
         </Alert>
       )}
       <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
-        <div className="font-light">{ReportName}</div>
+        <div className="font-light">
+          {ReportName}{" "}
+          {report_help && (
+            <span className="text-xs md:text-[13px] font-normal">
+              <Tooltip message={report_help} />
+            </span>
+          )}
+        </div>
         {ReportName === "Templates" && (
           <i
             onClick={() => navigate("/form/template")}

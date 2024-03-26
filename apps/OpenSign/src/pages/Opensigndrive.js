@@ -1,14 +1,35 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
 import loader from "../assets/images/loader2.gif";
-import DriveBody from "../components/opensigndrive/DriveBody";
 import { themeColor, iconColor } from "../constant/const";
 import { getDrive } from "../constant/Utils";
 import { useNavigate } from "react-router-dom";
 import Title from "../components/Title";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
-
+const DriveBody = React.lazy(
+  () => import("../components/opensigndrive/DriveBody")
+);
+const Loader = () => {
+  return (
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <div
+        style={{
+          fontSize: "45px",
+          color: "#3dd3e0"
+        }}
+        className="loader-37"
+      ></div>
+    </div>
+  );
+};
 function Opensigndrive() {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
@@ -30,6 +51,9 @@ function Opensigndrive() {
   const [folderName, setFolderName] = useState([]);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isNewFol, setIsNewFol] = useState(false);
+  const [skip, setSkip] = useState(0);
+  const limit = 100;
+  const [loading, setLoading] = useState(false);
   const currentUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -40,103 +64,82 @@ function Opensigndrive() {
   const jsonCurrentUser = JSON.parse(currentUser);
 
   useEffect(() => {
-    if (docId) {
-      getPdfFolderDocumentList();
-    } else {
-      getPdfDocumentList();
-    }
+    getPdfDocumentList();
     // eslint-disable-next-line
   }, [docId]);
 
   //function for get all pdf document list
-  const getPdfDocumentList = async () => {
-    const load = {
-      isLoad: true,
-      message: "This might take some time"
-    };
-    let driveDetails;
-    setIsLoading(load);
+  const getPdfDocumentList = async (disbaleLoading) => {
+    setLoading(true);
+    if (!disbaleLoading) {
+      setIsLoading({ isLoad: true, message: "This might take some time" });
+    }
     try {
-      driveDetails = await getDrive();
-      if (driveDetails) {
-        if (driveDetails.length > 0) {
-          setPdfData(driveDetails);
-          sortApps(null, null, driveDetails);
-        }
-        const data = [
-          {
-            name: "OpenSign™ Drive",
-            objectId: ""
-          }
-        ];
-        setFolderName(data);
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
-      } else if (driveDetails === "Error: Something went wrong!") {
-        const loadObj = {
-          isLoad: false
-        };
+      const driveDetails = await getDrive(docId, skip, limit);
+      if (driveDetails && driveDetails === "Error: Something went wrong!") {
         setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
+      } else if (driveDetails && driveDetails.length > 0) {
+        setSkip((prevSkip) => prevSkip + limit);
+        sortApps("Date", "Decending", driveDetails, true);
+      }
+      if (!docId) {
+        setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
       }
     } catch (e) {
       setIsAlert({
         isShow: true,
         alertMessage: "something went wrong"
       });
-    }
-  };
-  //function for get parent folder document list
-  const getPdfFolderDocumentList = async () => {
-    const load = {
-      isLoad: true,
-      message: "This might take some time"
-    };
-    setIsLoading(load);
-    let driveDetails;
-    try {
-      driveDetails = await getDrive(docId);
-
-      if (driveDetails) {
-        if (driveDetails.length > 0) {
-          setPdfData(driveDetails);
-          sortApps(null, null, driveDetails);
-        } else {
-          setPdfData([]);
-        }
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
-      } else if (driveDetails === "Error: Something went wrong!") {
-        const loadObj = {
-          isLoad: false
-        };
-        setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
-      }
-    } catch (e) {
-      setIsAlert({
-        isShow: true,
-        alertMessage: "something went wrong!"
+    } finally {
+      setLoading(false);
+      setIsLoading({
+        isLoad: false
       });
     }
   };
 
-  //function for get all pdf document list
-  const getParentFolder = async () => {
-    setIsFolder(true);
+  //function to fetch drive details list on scroll bottom
+  const handleScroll = () => {
+    //get document of render openSign-drive component using id
+    const documentList = document.getElementById("renderList");
+    //documentList.clientHeight property returns the height of an element's content area, including padding but not including borders, margins, or scrollbars.
+    //documentList.scrollHeight property returns the entire height of an element,including the parts that are not visible due to overflow..
+    // documentList.scrollTop property show height of element, how much the content has been scrolled from the top.
+    // When the sum of scrollTop and clientHeight is equal to scrollHeight, it means that the user has scrolled to the bottom of the div.
+    if (
+      documentList &&
+      documentList.scrollTop + documentList.clientHeight >=
+        documentList.scrollHeight
+    ) {
+      //disableLoading is used disable initial loader
+      const disableLoading = true;
+      // If the fetched data length is less than the limit, it means there's no more data to fetch
+      if (!loading && pdfData.length % 100 === 0) {
+        getPdfDocumentList(disableLoading);
+      }
+    }
   };
+  //useEffect is used to call handleScroll function on scrolling event
+  useEffect(() => {
+    const documentList = document.getElementById("renderList");
+    if (documentList) {
+      documentList.addEventListener("scroll", handleScroll);
+      return () => {
+        documentList.removeEventListener("scroll", handleScroll);
+      };
+    }
+    // eslint-disable-next-line
+  }, [loading]); // Add/remove scroll event listener when loading changes
+
   //function for handle folder name path
   const handleRoute = (index) => {
+    setPdfData([]);
+    setSkip(0);
     const updateFolderName = folderName.filter((x, i) => {
       if (i <= index) {
         return x;
       }
     });
-
     setFolderName(updateFolderName);
     const getLastId = updateFolderName[updateFolderName.length - 1];
     setDocId(getLastId.objectId);
@@ -223,18 +226,19 @@ function Opensigndrive() {
     }
   };
 
-  const sortApps = (type, order, driveDetails) => {
+  const sortApps = (type, order, driveDetails, isInitial) => {
     const selectedSortType = type ? type : selectedSort ? selectedSort : "Date";
     const sortOrder = order ? order : sortingOrder ? sortingOrder : "Decending";
-
-    let sortingData = driveDetails;
     if (selectedSortType === "Name") {
-      sortingApp(sortingData, "Name", sortOrder);
+      sortingApp(driveDetails, "Name", sortOrder);
     } else if (selectedSortType === "Date") {
-      sortingApp(sortingData, "Date", sortOrder);
+      sortingApp(driveDetails, "Date", sortOrder);
     }
-
-    setPdfData(sortingData);
+    if (isInitial) {
+      setPdfData([...pdfData, ...driveDetails]);
+    } else {
+      setPdfData(driveDetails);
+    }
   };
 
   //function for handle auto scroll on folder path
@@ -301,6 +305,7 @@ function Opensigndrive() {
       // Cleanup the event listener when the component unmounts
       document.removeEventListener("click", closeMenuOnOutsideClick);
     };
+    // eslint-disable-next-line
   }, [isShowSort, isNewFol]);
 
   const handleFolderTab = (folderData) => {
@@ -542,7 +547,7 @@ function Opensigndrive() {
                     >
                       <span
                         className="dropdown-item itemColor"
-                        onClick={() => getParentFolder()}
+                        onClick={() => setIsFolder(true)}
                       >
                         <i
                           style={{ marginRight: "5px" }}
@@ -734,18 +739,23 @@ function Opensigndrive() {
                 <span style={{ fontWeight: "bold" }}>No Data Found!</span>
               </div>
             ) : (
-              <DriveBody
-                pdfData={pdfData}
-                setFolderName={setFolderName}
-                setIsLoading={setIsLoading}
-                setDocId={setDocId}
-                getPdfFolderDocumentList={getPdfFolderDocumentList}
-                getPdfDocumentList={getPdfDocumentList}
-                isDocId={docId}
-                setPdfData={setPdfData}
-                isList={isList}
-                setIsAlert={setIsAlert}
-              />
+              <React.Suspense fallback={<Loader />}>
+                <DriveBody
+                  pdfData={pdfData}
+                  setFolderName={setFolderName}
+                  setIsLoading={setIsLoading}
+                  setDocId={setDocId}
+                  getPdfDocumentList={getPdfDocumentList}
+                  isDocId={docId}
+                  setPdfData={setPdfData}
+                  isList={isList}
+                  setIsAlert={setIsAlert}
+                  setSkip={setSkip}
+                />
+                {loading && (
+                  <div style={{ textAlign: "center" }}>Loading...</div>
+                )}
+              </React.Suspense>
             )}
           </>
         )}

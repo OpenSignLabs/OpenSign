@@ -6,16 +6,18 @@ const buttonList = [
   {
     label: "Sign yourself",
     redirectId: "sHAnZphf69",
-    redirectType: "Form"
+    redirectType: "Form",
+    icon: "fas fa-pen-nib"
   },
   {
     label: "Request signature",
     redirectId: "8mZzFxbG1z",
-    redirectType: "Form"
+    redirectType: "Form",
+    icon: "fa-solid fa-paper-plane"
   }
 ];
 const GetDashboard = (props) => {
-  const Button = ({ label, redirectId, redirectType }) => (
+  const Button = ({ label, redirectId, redirectType, icon }) => (
     <div className={"bg-white rounded-md shadow  w-full"}>
       <Suspense
         fallback={
@@ -33,7 +35,7 @@ const GetDashboard = (props) => {
         }
       >
         <DashboardButton
-          Icon={"fa-solid fa-plus"}
+          Icon={icon}
           Label={label}
           Data={{ Redirect_type: redirectType, Redirect_id: redirectId }}
         />
@@ -136,6 +138,7 @@ const GetDashboard = (props) => {
               label={btn.label}
               redirectType={btn.redirectType}
               redirectId={btn.redirectId}
+              icon={btn.icon}
             />
           ))}
         </div>

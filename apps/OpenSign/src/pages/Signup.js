@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
 import Parse from "parse";
 import axios from "axios";
 import Title from "../components/Title";
-import { fetchAppInfo, showTenantName } from "../redux/actions";
 import { useNavigate, NavLink } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import Alert from "../primitives/Alert";
-
-const Signup = (props) => {
+import { appInfo } from "../constant/appinfo";
+import { useDispatch } from "react-redux";
+import { fetchAppInfo } from "../redux/reducers/infoReducer";
+import  { showTenant } from "../redux/reducers/ShowTenant";
+const Signup = () => {
   const { width } = useWindowSize();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +31,7 @@ const Signup = (props) => {
   const [specialCharValid, setSpecialCharValid] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  const image = props.appInfo.applogo;
+  const image = appInfo.applogo;
 
   const clearStorage = async () => {
     if (Parse.User.current()) {
@@ -90,7 +92,7 @@ const Signup = (props) => {
         res
           .then(async (r) => {
             if (r) {
-              let roleData = props.appInfo.settings;
+              let roleData = appInfo.settings;
               if (roleData && roleData.length > 0) {
                 const params = {
                   userDetails: {
@@ -99,7 +101,7 @@ const Signup = (props) => {
                     name: name,
                     email: email,
                     phone: phone,
-                    role: props.appInfo.defaultRole
+                    role: appInfo.defaultRole
                   }
                 };
                 try {
@@ -181,8 +183,8 @@ const Signup = (props) => {
       // Check extended class user role and tenentId
       try {
         let userRoles = [];
-        if (props.appInfo.settings) {
-          let userSettings = props.appInfo.settings;
+        if (appInfo.settings) {
+          let userSettings = appInfo.settings;
 
           //Get Current user roles
           let url = `${baseUrl}functions/UserGroups`;
@@ -256,8 +258,10 @@ const Signup = (props) => {
                                 }
                               });
                               if (tenentInfo.length) {
-                                props.showTenantName(
-                                  tenentInfo[0].tenentName || ""
+                                dispatch(
+                                  showTenant(
+                                    tenentInfo[0].tenentName || ""
+                                  )
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -300,8 +304,8 @@ const Signup = (props) => {
                                 }
                               });
                               if (tenentInfo.length) {
-                                props.showTenantName(
-                                  tenentInfo[0].tenentName || ""
+                                dispatch(
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -433,7 +437,7 @@ const Signup = (props) => {
     }
   };
   useEffect(() => {
-    props.fetchAppInfo();
+    dispatch(fetchAppInfo());
     // eslint-disable-next-line
   }, []);
 
@@ -479,7 +483,7 @@ const Signup = (props) => {
 
       <Title title={"Signup page"} />
 
-      {props.isloginVisible && props.isloginVisible ? (
+      {appInfo && appInfo.applogo ? (
         <div>
           <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
             <div className="w-[250px] h-[66px] inline-block">
@@ -657,15 +661,4 @@ const Signup = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  if (Object.keys(state.appInfo).length !== 0) {
-    return { appInfo: state.appInfo, isloginVisible: true };
-  } else {
-    return { appInfo: state.appInfo, isloginVisible: false };
-  }
-};
-
-export default connect(mapStateToProps, {
-  fetchAppInfo,
-  showTenantName
-})(Signup);
+export default Signup
