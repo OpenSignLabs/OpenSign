@@ -310,11 +310,16 @@ function Placeholder(props) {
     //when user click on copy icon of text widget in that condition text widget does not have any signerObjId
     //in that case i have to save in tempSignerId as a unique id of previous select signer's unique id
     //and on save or cancel button of copy all page popup i have set this temp signer Id in unique id
-    if (props.data && props.pos.type === textWidget) {
+
+    if (props.data && props?.pos?.type !== textWidget) {
+      props.setSignerObjId(props?.data?.signerObjId);
+      props.setUniqueId(props?.data?.Id);
+    } else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
+      props.setSignerObjId(props?.data?.signerObjId);
+      props.setUniqueId(props?.data?.Id);
     }
-    props.setSignerObjId(props?.data?.signerObjId);
-    props.setUniqueId(props?.data?.Id);
+
     //checking widget's type and open widget copy modal for required widgets
     if (
       ["signature", textWidget, "stamp", "initial"].includes(props.pos.type)
