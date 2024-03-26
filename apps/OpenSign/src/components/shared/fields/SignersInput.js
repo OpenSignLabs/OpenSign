@@ -3,6 +3,7 @@ import Select from "react-select";
 import AddSigner from "../../AddSigner";
 import Modal from "react-modal";
 import Parse from "parse";
+import Tooltip from "../../../primitives/Tooltip";
 function arrayMove(array, from, to) {
   array = array.slice();
   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
@@ -107,6 +108,12 @@ const SignersInput = (props) => {
       <label className="block">
         Signers
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
+        <span className="ml-1 text-xs z-[999]">
+          <Tooltip
+            id={"signer-tooltip"}
+            message={"This is a list of contacts/signers added by you"}
+          />
+        </span>
       </label>
       <div style={{ display: "flex", gap: 5 }}>
         <div style={{ flexWrap: "wrap", width: "100%" }}>
