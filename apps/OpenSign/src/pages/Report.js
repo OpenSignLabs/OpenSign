@@ -12,6 +12,7 @@ const Report = () => {
   const [List, setList] = useState([]);
   const [isLoader, setIsLoader] = useState(true);
   const [reportName, setReportName] = useState("");
+  const [reporthelp, setReportHelp] = useState("");
   const [actions, setActions] = useState([]);
   const [heading, setHeading] = useState([]);
   const [isNextRecord, setIsNextRecord] = useState(false);
@@ -53,6 +54,7 @@ const Report = () => {
       setHeading(json.heading);
       setReportName(json.reportName);
       setForm(json.form);
+      setReportHelp(json?.helpMsg)
       const currentUser = Parse.User.current().id;
 
       const headers = {
@@ -156,6 +158,7 @@ const Report = () => {
               isMoreDocs={isMoreDocs}
               docPerPage={docPerPage}
               form={form}
+              report_help={reporthelp}
             />
           ) : (
             <PageNotFound prefix={"Report"} />

@@ -3,6 +3,7 @@ import Select from "react-select";
 import AddSigner from "../../AddSigner";
 import Modal from "react-modal";
 import Parse from "parse";
+import Tooltip from "../../../primitives/Tooltip";
 function arrayMove(array, from, to) {
   array = array.slice();
   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
@@ -107,6 +108,12 @@ const SignersInput = (props) => {
       <label className="block">
         Signers
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
+        <span className="absolute ml-1 text-xs z-50">
+          <Tooltip
+            id={"signer-tooltip"}
+            message={"Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."}
+          />
+        </span>
       </label>
       <div style={{ display: "flex", gap: 5 }}>
         <div style={{ flexWrap: "wrap", width: "100%" }}>

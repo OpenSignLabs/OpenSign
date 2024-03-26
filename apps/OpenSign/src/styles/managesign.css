@@ -18,27 +18,6 @@
   z-index: 1;
 }
 
-.nameWarning {
-  position: absolute;
-  bottom: -70px;
-  left: 10px;
-}
-
-.nameWarning::before {
-  content: "";
-  width: 0px;
-  height: 0px;
-  border-style: outset;
-  border-width: 0px 10px 10px 10px;
-  border-color: transparent transparent black transparent;
-  display: inline-block;
-  position: absolute;
-  top: -29%;
-  left: 0;
-  right: 75%;
-  margin: 0 auto;
-}
-
 .signWarning {
   bottom: 70px;
   left: 50px;
