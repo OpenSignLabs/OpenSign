@@ -8,9 +8,9 @@ import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
-import SelectFolder from "../shared/fields/SelectFolder"; //check this one
 import ModalUi from "../../primitives/ModalUi";
 import { themeColor } from "../../constant/const";
+import FolderModal from "../shared/fields/FolderModal";
 
 function DriveBody(props) {
   const [rename, setRename] = useState("");
@@ -214,8 +214,8 @@ function DriveBody(props) {
         ? true
         : false
       : selecFolderId
-        ? false
-        : true;
+      ? false
+      : true;
     if (!checkExist) {
       if (moveFolderId) {
         updateData = {
@@ -594,8 +594,9 @@ function DriveBody(props) {
           })}
         </div>
       )}
+
       {isOpenMoveModal && (
-        <SelectFolder
+        <FolderModal
           onSuccess={handleMoveFolder}
           isOpenModal={isOpenMoveModal}
           folderCls={"contracts_Document"}
