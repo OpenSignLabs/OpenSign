@@ -3,14 +3,11 @@ sidebar_position: 2
 title: Profile
 ---
 
-# Organize Documents using OpenSign™ Drive
+# Manage your OpenSign™ profile
+You can edit your profile details by clicking the 'edit' button.
 
-Welcome to the [OpenSign™](https://app.opensignlabs.com) Help Center! This section is designed to provide you with all the necessary information to effectively use the OpenSign™ application. Whether you are a new user or an experienced one looking to explore more features, our comprehensive guides and resources are here to assist you.
+<img width="459" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/fc03bbb5-890b-4d00-96f7-e3f9b62b6dad">
 
-## Getting Started
+Turn the 'Disable DocumentId' switch on in order disable embedding documentId in signed couments.
 
-**try OpenSign on cloud** at **[OpenSignLabs](https://app.opensignlabs.com)**.
-
-Or 
-
-Get started by deploying a new instance of **OpenSign** by following these [instructions](https://docs.opensignlabs.com/docs/self-host/intro).
+<img width="436" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/ee4433c7-1af7-4b74-800d-500060c0642d">
