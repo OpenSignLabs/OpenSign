@@ -18,7 +18,8 @@ export default function reportJson(id) {
             btnIcon: "fa fa-plus",
             redirectUrl: "draftDocument"
           }
-        ]
+        ],
+        helpMsg: "This are documents you have started but have not finalized for sending."
       };
     // Need your sign report
     case "4Hhwbp482K":
@@ -33,7 +34,9 @@ export default function reportJson(id) {
             btnIcon: "fa fa-eye",
             redirectUrl: "pdfRequestFiles"
           }
-        ]
+        ],
+        helpMsg:
+          "This is a list of documents that are waiting for your signature"
       };
     // In progess report
     case "1MwEuxLEkF":
@@ -48,7 +51,9 @@ export default function reportJson(id) {
             btnIcon: "fa fa-eye",
             redirectUrl: "pdfRequestFiles"
           }
-        ]
+        ],
+        helpMsg:
+          "This is a list of documents you've sent to other parties for signature."
       };
     // completed documents report
     case "kQUoW4hUXz":
@@ -63,7 +68,8 @@ export default function reportJson(id) {
             btnIcon: "fa fa-eye",
             redirectUrl: "draftDocument"
           }
-        ]
+        ],
+        helpMsg: "This is a list of documents that have been signed by all parties."
       };
     //  declined documents report
     case "UPr2Fm5WY3":
@@ -78,7 +84,8 @@ export default function reportJson(id) {
             btnIcon: "fa fa-eye",
             redirectUrl: "draftDocument"
           }
-        ]
+        ],
+        helpMsg: "This is a list of documents that have been declined by one of the signers."
       };
     //  Expired Documents report
     case "zNqBHXHsYH":
@@ -93,7 +100,8 @@ export default function reportJson(id) {
             btnIcon: "fa fa-eye",
             redirectUrl: "draftDocument"
           }
-        ]
+        ],
+        helpMsg: "This is a list of documents that have reached their expiration date."
       };
     //  Recently sent for signatures report show on dashboard
     case "d9k3UfYHBc":
@@ -153,7 +161,8 @@ export default function reportJson(id) {
             btnIcon: "fa-solid fa-trash"
           }
         ],
-        form: "ContactBook"
+        form: "ContactBook",
+        helpMsg: "This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
       };
     // template report
     case "6TeaPr321t":
@@ -175,7 +184,9 @@ export default function reportJson(id) {
             btnIcon: "fa fa-plus",
             redirectUrl: "template"
           }
-        ]
+        ],
+        helpMsg:
+          "This is a list of templates that are available to you for creating documents. You can click the 'use' button to create a new document using a template, modify the document & add signers in the next step."
       };
     default:
       return null;

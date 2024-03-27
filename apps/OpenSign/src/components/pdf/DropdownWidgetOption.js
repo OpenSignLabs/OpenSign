@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
+import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 function DropdownWidgetOption(props) {
   const [dropdownOptionList, setDropdownOptionList] = useState([
     "option-1",
@@ -144,21 +145,15 @@ function DropdownWidgetOption(props) {
   };
 
   return (
-    //props.showDropdown
-    <ModalUi
-      //   styleClass={"dropdownModal"}
-      isOpen={props.showDropdown}
-      title={props.title}
-      showClose={false}
-    >
-      <div style={{ height: "100%", padding: 20 }}>
+    <ModalUi isOpen={props.showDropdown} title={props.title} showClose={false}>
+      <div className="h-full p-[15px]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSaveOption();
           }}
         >
-          <div className="dropdownContainer">
+          <div>
             <label style={{ fontSize: "13px", fontWeight: "600" }}>
               Name<span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
@@ -383,17 +378,22 @@ function DropdownWidgetOption(props) {
               </div>
             )}
           </div>
+          {props.type === "checkbox" && !props.isSignYourself && (
+            <PremiumAlertHeader
+              message={
+                "Field validations are free in beta, this feature will incur a fee later."
+              }
+            />
+          )}
           <div
-            style={{
-              height: "1px",
-              backgroundColor: "#9f9f9f",
-              width: "100%",
-              marginTop: "15px",
-              marginBottom: "15px"
-            }}
+            className={`${
+              props.type === "checkbox" && !props.isSignYourself
+                ? "mb-[15px]"
+                : "my-[15px]"
+            } w-full h-[1px] bg-[#9f9f9f]`}
           ></div>
+
           <button
-            // onClick={() => handleSaveOption()}
             disabled={dropdownOptionList.length === 0 && true}
             style={{
               background: themeColor,

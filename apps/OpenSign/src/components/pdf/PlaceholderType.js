@@ -3,6 +3,7 @@ import {
   getMonth,
   getYear,
   isMobile,
+  onChangeHeightOfTextArea,
   onChangeInput,
   radioButtonWidget,
   range,
@@ -285,6 +286,22 @@ function PlaceholderType(props) {
     };
     props.handleSaveDate(dateObj, isDateChange);
   };
+  //handle height on enter press in text area
+  const handleEnterPress = (e) => {
+    const height = 15;
+    if (e.key === "Enter") {
+      //function to save height of text area
+      onChangeHeightOfTextArea(
+        height,
+        props.pos.type,
+        props.pos.key,
+        props.xyPostion,
+        props.index,
+        props.setXyPostion,
+        props.data && props.data?.Id
+      );
+    }
+  };
   switch (type) {
     case "signature":
       return props.pos.SignUrl ? (
@@ -336,7 +353,7 @@ function PlaceholderType(props) {
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
                   style={{
-                    width: props.pos.Width,
+                    // width: props.pos.Width,
                     display: "flex",
                     justifyContent: "center",
                     marginTop: ind === 0 ? 0 : "5px"
@@ -443,7 +460,7 @@ function PlaceholderType(props) {
         >
           {/* Default/Title option */}
           <option value="" disabled hidden>
-            {props.pos.options.name}
+            {props?.pos?.options?.name}
           </option>
 
           {props.pos?.options?.values.map((data, ind) => {
@@ -741,6 +758,7 @@ function PlaceholderType(props) {
         <textarea
           placeholder="Enter label"
           rows={1}
+          onKeyDown={handleEnterPress}
           value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {

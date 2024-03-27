@@ -26,7 +26,7 @@ import {
   contactBook,
   randomId,
   getDate,
-  textInputWidget
+  textWidget
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -342,8 +342,7 @@ function SignYourSelf() {
         return {
           name: "checkbox"
         };
-
-      case textInputWidget:
+      case textWidget:
         return {
           name: "text"
         };
@@ -528,7 +527,6 @@ function SignYourSelf() {
           checkSigned = requiredWidgets[i]?.options?.response;
           if (!checkSigned) {
             const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
-
             let checkDefaultSigned = requiredWidgets[i]?.options?.defaultValue;
             if (!checkSignUrl) {
               if (!checkDefaultSigned) {
@@ -587,11 +585,12 @@ function SignYourSelf() {
         flag,
         containerWH
       );
-      // console.log('pdf',pdfBytes)
+      // console.log("pdf", pdfBytes);
       //function for call to embed signature in pdf and get digital signature pdf
       await signPdfFun(pdfBytes, documentId);
     }
   }
+  // console.log("signyourself", xyPostion);
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
     let singleSign = {
