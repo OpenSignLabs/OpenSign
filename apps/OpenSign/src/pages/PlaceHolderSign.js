@@ -1450,7 +1450,7 @@ function PlaceHolderSign() {
                   {isSendAlert.mssg === "sure" ? (
                     <p>Please add field for all recipients.</p>
                   ) : isSendAlert.mssg === textWidget ? (
-                    <p>Please confirm that you have filled label widget.</p>
+                    <p>Please confirm that you have filled the text field.</p>
                   ) : (
                     isSendAlert.mssg === "confirm" && (
                       <p>
@@ -1716,9 +1716,11 @@ function PlaceHolderSign() {
               </div>
             ) : (
               <div>
-                <div className="signerComponent">
+                <div className="signerComponent" aria-disabled>
                   <div
-                    style={{ maxHeight: window.innerHeight - 70 + "px" }}
+                    style={{
+                      maxHeight: window.innerHeight - 70 + "px"
+                    }}
                     className="autoSignScroll"
                   >
                     <SignerListPlace
@@ -1734,11 +1736,12 @@ function PlaceHolderSign() {
                       setSignersData={setSignersData}
                       blockColor={blockColor}
                       setBlockColor={setBlockColor}
+                      isMailSend={isMailSend}
                       // handleAddSigner={handleAddSigner}
                     />
                     <div data-tut="reactourSecond">
                       <WidgetComponent
-                        pdfUrl={isMailSend}
+                        isMailSend={isMailSend}
                         dragSignature={dragSignature}
                         signRef={signRef}
                         handleDivClick={handleDivClick}
