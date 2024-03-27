@@ -10,7 +10,11 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
-import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
+import {
+  isEnableSubscription,
+  modalCancelBtnColor,
+  modalSubmitBtnColor
+} from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
@@ -239,10 +243,7 @@ function Login() {
                                         element.pageType
                                       );
                                       setState({ ...state, loading: false });
-                                      if (
-                                        process.env
-                                          .REACT_APP_ENABLE_SUBSCRIPTION
-                                      ) {
+                                      if (isEnableSubscription) {
                                         const LocalUserDetails = {
                                           name: results[0].get("Name"),
                                           email: results[0].get("Email"),
@@ -292,9 +293,7 @@ function Login() {
                                       element.pageType
                                     );
                                     setState({ ...state, loading: false });
-                                    if (
-                                      process.env.REACT_APP_ENABLE_SUBSCRIPTION
-                                    ) {
+                                    if (isEnableSubscription) {
                                       const LocalUserDetails = {
                                         name: _user.name,
                                         email: email,
@@ -571,7 +570,7 @@ function Login() {
                               );
                               setThirdpartyLoader(false);
                               setState({ ...state, loading: false });
-                              if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                              if (isEnableSubscription) {
                                 if (billingDate) {
                                   if (billingDate > new Date()) {
                                     localStorage.removeItem("userDetails");
@@ -597,7 +596,7 @@ function Login() {
                             localStorage.setItem("pageType", element.pageType);
                             setState({ ...state, loading: false });
                             setThirdpartyLoader(false);
-                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                            if (isEnableSubscription) {
                               if (billingDate) {
                                 if (billingDate > new Date()) {
                                   localStorage.removeItem("userDetails");
@@ -796,7 +795,7 @@ function Login() {
                               setting.menuId
                             );
                             localStorage.setItem("pageType", setting.pageType);
-                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                            if (isEnableSubscription) {
                               const LocalUserDetails = {
                                 name: results[0].get("Name"),
                                 email: results[0].get("Email"),
@@ -831,7 +830,7 @@ function Login() {
                           localStorage.setItem("defaultmenuid", setting.menuId);
                           localStorage.setItem("pageType", setting.pageType);
                           setState({ ...state, loading: false });
-                          if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                          if (isEnableSubscription) {
                             const LocalUserDetails = {
                               name: results[0].get("Name"),
                               email: results[0].get("Email"),

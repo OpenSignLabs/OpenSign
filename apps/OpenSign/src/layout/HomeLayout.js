@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { isEnableSubscription } from "../constant/const";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
@@ -50,12 +51,10 @@ const HomeLayout = () => {
     const user = await Parse.Cloud.run("getUserDetails", {
       email: currentUser.get("email")
     });
-    const _user = user.toJSON();
-    if (_user.TenantId) {
-      localStorage.setItem("TenetId", _user.TenantId.objectId);
-    }
-    if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-      const billingDate = _user.Next_billing_date && _user.Next_billing_date;
+    if (isEnableSubscription) {
+      const billingDate =
+        user?.get("Next_billing_date") && user?.get("Next_billing_date");
+
       if (billingDate) {
         if (billingDate > new Date()) {
           setIsUserValid(true);

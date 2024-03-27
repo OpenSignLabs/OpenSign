@@ -3,7 +3,7 @@ import axios from "axios";
 import Parse from "parse";
 import "../styles/signature.css";
 import { PDFDocument } from "pdf-lib";
-import { themeColor } from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
@@ -108,7 +108,6 @@ function PlaceHolderSign() {
     status: false,
     message: ""
   });
-
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -180,11 +179,30 @@ function PlaceHolderSign() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
+  async function checkIsSubscribed(email) {
+    const user = await Parse.Cloud.run("getUserDetails", {
+      email: email
+    });
+    const billingDate =
+      user?.get("Next_billing_date") && user?.get("Next_billing_date");
+    if (billingDate) {
+      if (billingDate > new Date()) {
+        return true;
+      } else {
+        navigate(`/subscription`);
+      }
+    } else {
+      navigate(`/subscription`);
+    }
+  }
   //function for get document details
   const getDocumentDetails = async () => {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      if (isEnableSubscription) {
+        checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
+      }
       const alreadyPlaceholder = documentData[0]?.SignedUrl;
       // Check if document is sent for signing
       if (alreadyPlaceholder) {

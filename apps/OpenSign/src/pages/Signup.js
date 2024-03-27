@@ -9,7 +9,8 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
-import  { showTenant } from "../redux/reducers/ShowTenant";
+import { showTenant } from "../redux/reducers/ShowTenant";
+import { isEnableSubscription } from "../constant/const";
 const Signup = () => {
   const { width } = useWindowSize();
   const navigate = useNavigate();
@@ -259,9 +260,7 @@ const Signup = () => {
                               });
                               if (tenentInfo.length) {
                                 dispatch(
-                                  showTenant(
-                                    tenentInfo[0].tenentName || ""
-                                  )
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -325,7 +324,7 @@ const Signup = () => {
                                 element.pageType
                               );
                               setState({ loading: false });
-                              if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                              if (isEnableSubscription) {
                                 navigate(`/subscription`, { replace: true });
                               } else {
                                 alert("Registered user successfully");
@@ -343,7 +342,7 @@ const Signup = () => {
                             );
                             localStorage.setItem("pageType", element.pageType);
                             setState({ loading: false });
-                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                            if (isEnableSubscription) {
                               navigate(`/subscription`, { replace: true });
                             } else {
                               navigate(
@@ -661,4 +660,4 @@ const Signup = () => {
   );
 };
 
-export default Signup
+export default Signup;

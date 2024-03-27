@@ -3,7 +3,7 @@ import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/signature.css";
-import { themeColor } from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
@@ -35,6 +35,7 @@ import AddRoleModal from "../components/pdf/AddRoleModal";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
+import Parse from "parse";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -168,7 +169,22 @@ const TemplatePlaceholder = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
-
+  async function checkIsSubscribed(email) {
+    const user = await Parse.Cloud.run("getUserDetails", {
+      email: email
+    });
+    const billingDate =
+      user?.get("Next_billing_date") && user?.get("Next_billing_date");
+    if (billingDate) {
+      if (billingDate > new Date()) {
+        return true;
+      } else {
+        navigate(`/subscription`);
+      }
+    } else {
+      navigate(`/subscription`);
+    }
+  }
   // `fetchTemplate` function in used to get Template from server and setPlaceholder ,setSigner if present
   const fetchTemplate = async () => {
     try {
@@ -190,6 +206,9 @@ const TemplatePlaceholder = () => {
           : [];
 
       if (documentData && documentData.length > 0) {
+        if (isEnableSubscription) {
+          checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
+        }
         setPdfDetails(documentData);
         setIsSigners(true);
         if (documentData[0].Signers && documentData[0].Signers.length > 0) {
