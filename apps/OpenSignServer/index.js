@@ -147,6 +147,14 @@ export const config = {
     google: {
       enabled: true,
     },
+    ldap: {
+      enabled: true,
+      url: 'ldap://ldap.forumsys.com:389',
+      suffix: 'dc=example,dc=com',
+      // dn: 'ou=mathematicians, dc=example, dc=com',
+      groupCn: 'mathematicians',
+      groupFilter: '(&(uniqueMember=uid=,dc=example,dc=com)(objectClass=groupOfUniqueNames))',
+    },
   },
 };
 // Client-keys like the javascript key or the .NET key are not necessary with parse-server

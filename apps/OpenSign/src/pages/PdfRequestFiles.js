@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { themeColor } from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import axios from "axios";
 import loader from "../assets/images/loader2.gif";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SignPad from "../components/pdf/SignPad";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import Tour from "reactour";
@@ -30,9 +30,12 @@ import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
+import Parse from "parse";
 
 function PdfRequestFiles() {
   const { docId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
   const [unsignedSigners, setUnSignedSigners] = useState([]);
@@ -87,6 +90,7 @@ function PdfRequestFiles() {
   const [widgetsTour, setWidgetsTour] = useState(false);
   const [minRequiredCount, setminRequiredCount] = useState();
   const [sendInOrder, setSendInOrder] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -126,12 +130,39 @@ function PdfRequestFiles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
+  async function checkIsSubscribed(email) {
+    const user = await Parse.Cloud.run("getUserDetails", {
+      email: email
+    });
+    const billingDate =
+      user?.get("Next_billing_date") && user?.get("Next_billing_date");
+    if (billingDate) {
+      if (billingDate > new Date()) {
+        return true;
+      } else {
+        if (location.pathname.includes("/load/")) {
+          setIsSubscribed(true);
+        } else {
+          navigate(`/subscription`);
+        }
+      }
+    } else {
+      if (location.pathname.includes("/load/")) {
+        setIsSubscribed(true);
+      } else {
+        navigate(`/subscription`);
+      }
+    }
+  }
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async () => {
     let currUserId;
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      if (isEnableSubscription) {
+        await checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
+      }
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
       const expireDate = documentData[0].ExpiryDate.iso;
@@ -307,7 +338,7 @@ function PdfRequestFiles() {
         `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
           "_appName"
         )}_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
-          jsonSender.objectId
+          jsonSender?.objectId
         }"}}`,
         {
           headers: {
@@ -894,152 +925,80 @@ function PdfRequestFiles() {
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Request Sign"} />
-      {isLoading.isLoad ? (
-        <Loader isLoading={isLoading} />
-      ) : handleError ? (
-        <HandleError handleError={handleError} />
+      {isSubscribed ? (
+        <ModalUi
+          title={"Subscription Expired"}
+          isOpen={isSubscribed}
+          showClose={false}
+        >
+          <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
+            <p className="text-sm md:text-lg font-normal">
+              Owner&apos;s subscription has expired.
+            </p>
+          </div>
+        </ModalUi>
       ) : (
-        <div>
-          {isUiLoading && (
-            <div
-              style={{
-                position: "absolute",
-                height: "100vh",
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-                alignItems: "center",
-                zIndex: "999",
-                backgroundColor: "#e6f2f2",
-                opacity: 0.8
-              }}
-            >
-              <img
-                alt="no img"
-                src={loader}
-                style={{ width: "100px", height: "100px" }}
-              />
-              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
-                This might take some time
-              </span>
-            </div>
-          )}
-
-          <div className="signatureContainer" ref={divRef}>
-            <ModalUi
-              headerColor={"#dc3545"}
-              isOpen={isAlert.isShow}
-              title={"Alert message"}
-              handleClose={() => {
-                setIsAlert({
-                  isShow: false,
-                  alertMessage: ""
-                });
-              }}
-            >
-              <div style={{ height: "100%", padding: 20 }}>
-                <p>{isAlert.alertMessage}</p>
-
+        <>
+          {isLoading.isLoad ? (
+            <Loader isLoading={isLoading} />
+          ) : handleError ? (
+            <HandleError handleError={handleError} />
+          ) : (
+            <div>
+              {isUiLoading && (
                 <div
                   style={{
-                    height: "1px",
-                    backgroundColor: "#9f9f9f",
+                    position: "absolute",
+                    height: "100vh",
                     width: "100%",
-                    marginTop: "15px",
-                    marginBottom: "15px"
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: "999",
+                    backgroundColor: "#e6f2f2",
+                    opacity: 0.8
                   }}
-                ></div>
+                >
+                  <img
+                    alt="no img"
+                    src={loader}
+                    style={{ width: "100px", height: "100px" }}
+                  />
+                  <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                    This might take some time
+                  </span>
+                </div>
+              )}
 
-                <button
-                  onClick={() => {
+              <div className="signatureContainer" ref={divRef}>
+                <ModalUi
+                  headerColor={"#dc3545"}
+                  isOpen={isAlert.isShow}
+                  title={"Alert message"}
+                  handleClose={() => {
                     setIsAlert({
                       isShow: false,
                       alertMessage: ""
                     });
                   }}
-                  type="button"
-                  className="finishBtn cancelBtn"
                 >
-                  Ok
-                </button>
-              </div>
-            </ModalUi>
+                  <div style={{ height: "100%", padding: 20 }}>
+                    <p>{isAlert.alertMessage}</p>
 
-            <Tour
-              showNumber={false}
-              showNavigation={false}
-              showNavigationNumber={false}
-              onRequestClose={closeTour}
-              steps={tourConfig}
-              isOpen={widgetsTour}
-              rounded={5}
-              closeWithMask={false}
-            />
-
-            {/* this modal is used to show decline alert */}
-            <PdfDeclineModal
-              containerWH={containerWH}
-              show={isDecline.isDeclined}
-              headMsg="Document Declined"
-              bodyMssg={
-                isDecline.currnt === "Sure"
-                  ? "Are you sure want to decline this document ?"
-                  : isDecline.currnt === "YouDeclined"
-                    ? "You have declined this document!"
-                    : isDecline.currnt === "another" &&
-                      "You cannot sign this document as it has been declined by one or more recipient(s)."
-              }
-              footerMessage={isDecline.currnt === "Sure"}
-              declineDoc={declineDoc}
-              setIsDecline={setIsDecline}
-            />
-            {/* this modal is used for show expired alert */}
-            <PdfDeclineModal
-              containerWH={containerWH}
-              show={isExpired}
-              headMsg="Document Expired!"
-              bodyMssg="This Document is no longer available."
-            />
-
-            <ModalUi
-              headerColor={defaultSignImg ? themeColor : "#dc3545"}
-              isOpen={defaultSignAlert.isShow}
-              title={"Auto sign"}
-              handleClose={() => {
-                setDefaultSignAlert({
-                  isShow: false,
-                  alertMessage: ""
-                });
-              }}
-            >
-              <div style={{ height: "100%", padding: 20 }}>
-                <p>{defaultSignAlert.alertMessage}</p>
-
-                <div
-                  style={{
-                    height: "1px",
-                    backgroundColor: "#9f9f9f",
-                    width: "100%",
-                    marginTop: "15px",
-                    marginBottom: "15px"
-                  }}
-                ></div>
-                {defaultSignImg ? (
-                  <>
-                    <button
-                      onClick={() => addDefaultSignature()}
+                    <div
                       style={{
-                        background: themeColor
+                        height: "1px",
+                        backgroundColor: "#9f9f9f",
+                        width: "100%",
+                        marginTop: "15px",
+                        marginBottom: "15px"
                       }}
-                      type="button"
-                      className="finishBtn"
-                    >
-                      Yes
-                    </button>
+                    ></div>
+
                     <button
                       onClick={() => {
-                        setDefaultSignAlert({
+                        setIsAlert({
                           isShow: false,
                           alertMessage: ""
                         });
@@ -1047,324 +1006,420 @@ function PdfRequestFiles() {
                       type="button"
                       className="finishBtn cancelBtn"
                     >
-                      Close
+                      Ok
                     </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setIsAlert({
-                        isShow: false,
-                        alertMessage: ""
-                      });
-                    }}
-                    type="button"
-                    className="finishBtn cancelBtn"
-                  >
-                    Ok
-                  </button>
-                )}
-              </div>
-            </ModalUi>
-            {/* this component used to render all pdf pages in left side */}
-            <RenderAllPdfPage
-              signPdfUrl={pdfDetails[0].URL}
-              allPages={allPages}
-              setAllPages={setAllPages}
-              setPageNumber={setPageNumber}
-              pageNumber={pageNumber}
-            />
+                  </div>
+                </ModalUi>
 
-            {/* pdf render view */}
-            <div
-              style={{
-                marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
-                marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
-              }}
-            >
-              {/* this modal is used show this document is already sign */}
-              <ModalUi
-                isOpen={isCompleted.isModal}
-                title={"Sign Documents"}
-                handleClose={() => {
-                  setIsCompleted({ isModal: false, isCertificate: true });
-                }}
-              >
-                <div style={{ height: "100%", padding: 20 }}>
-                  <p>This document has been signed by all Signers.</p>
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
-                  <button
-                    type="button"
-                    className="finishBtn cancelBtn"
-                    onClick={() =>
-                      setIsCompleted({ isModal: false, isCertificate: true })
-                    }
-                  >
-                    Close
-                  </button>
-                </div>
-              </ModalUi>
-
-              {/* this component is used for signature pad modal */}
-              <SignPad
-                isSignPad={isSignPad}
-                isStamp={isStamp}
-                setIsImageSelect={setIsImageSelect}
-                setIsSignPad={setIsSignPad}
-                setImage={setImage}
-                isImageSelect={isImageSelect}
-                imageRef={imageRef}
-                onImageChange={onImageChange}
-                setSignature={setSignature}
-                image={image}
-                onSaveImage={saveImage}
-                onSaveSign={saveSign}
-                defaultSign={defaultSignImg}
-                myInitial={myInitial}
-                isInitial={isInitial}
-                setIsInitial={setIsInitial}
-                setIsStamp={setIsStamp}
-              />
-              {/* pdf header which contain funish back button */}
-              <Header
-                isPdfRequestFiles={true}
-                pageNumber={pageNumber}
-                allPages={allPages}
-                changePage={changePage}
-                pdfDetails={pdfDetails}
-                signerPos={signerPos}
-                isSigned={isSigned}
-                isCompleted={isCompleted}
-                embedWidgetsData={embedWidgetsData}
-                isShowHeader={true}
-                setIsDecline={setIsDecline}
-                decline={true}
-                currentSigner={currentSigner}
-                pdfUrl={pdfUrl}
-                alreadySign={alreadySign}
-              />
-              {containerWH && (
-                <RenderPdf
-                  pageNumber={pageNumber}
-                  pdfOriginalWidth={pdfOriginalWidth}
-                  pdfNewWidth={pdfNewWidth}
-                  setIsSignPad={setIsSignPad}
-                  setIsStamp={setIsStamp}
-                  setSignKey={setSignKey}
-                  pdfDetails={pdfDetails}
-                  signerPos={signerPos}
-                  successEmail={false}
-                  pdfUrl={pdfUrl}
-                  numPages={numPages}
-                  pageDetails={pageDetails}
-                  pdfRequest={true}
-                  signerObjectId={signerObjectId}
-                  signedSigners={signedSigners}
-                  setCurrentSigner={setCurrentSigner}
-                  setPdfLoadFail={setPdfLoadFail}
-                  pdfLoadFail={pdfLoadFail}
-                  setSignerPos={setSignerPos}
-                  containerWH={containerWH}
-                  setIsInitial={setIsInitial}
-                  setValidateAlert={setValidateAlert}
-                  unSignedWidgetId={unSignedWidgetId}
-                  setSelectWidgetId={setSelectWidgetId}
-                  selectWidgetId={selectWidgetId}
+                <Tour
+                  showNumber={false}
+                  showNavigation={false}
+                  showNavigationNumber={false}
+                  onRequestClose={closeTour}
+                  steps={tourConfig}
+                  isOpen={widgetsTour}
+                  rounded={5}
+                  closeWithMask={false}
                 />
-              )}
-            </div>
-            <div>
-              <div className="signerComponent">
-                <div
-                  style={{ maxHeight: window.innerHeight - 70 + "px" }}
-                  className="autoSignScroll"
-                >
-                  {signedSigners.length > 0 && (
-                    <>
-                      <div
-                        style={{ background: themeColor }}
-                        className="signedStyle"
-                      >
-                        Signed by
-                      </div>
-                      <div style={{ marginTop: "2px" }}>
-                        {signedSigners.map((obj, ind) => {
-                          return (
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                padding: "10px 0",
-                                background: checkSignerBackColor(obj)
-                              }}
-                              key={ind}
-                            >
-                              <div
-                                className="signerStyle"
-                                style={{
-                                  background: "#abd1d0",
-                                  width: 30,
-                                  height: 30,
-                                  display: "flex",
-                                  borderRadius: 30 / 2,
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  margin: "0 10px 0 5px"
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    fontSize: "12px",
-                                    textAlign: "center",
-                                    fontWeight: "bold",
-                                    color: "black",
-                                    textTransform: "uppercase"
-                                  }}
-                                >
-                                  {getFirstLetter(obj.Name)}
-                                </span>
-                              </div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column"
-                                }}
-                              >
-                                <span className="userName">{obj.Name}</span>
-                                <span className="useEmail">{obj.Email}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
 
-                  {unsignedSigners.length > 0 && (
-                    <>
+                {/* this modal is used to show decline alert */}
+                <PdfDeclineModal
+                  containerWH={containerWH}
+                  show={isDecline.isDeclined}
+                  headMsg="Document Declined"
+                  bodyMssg={
+                    isDecline.currnt === "Sure"
+                      ? "Are you sure want to decline this document ?"
+                      : isDecline.currnt === "YouDeclined"
+                      ? "You have declined this document!"
+                      : isDecline.currnt === "another" &&
+                        "You cannot sign this document as it has been declined by one or more recipient(s)."
+                  }
+                  footerMessage={isDecline.currnt === "Sure"}
+                  declineDoc={declineDoc}
+                  setIsDecline={setIsDecline}
+                />
+                {/* this modal is used for show expired alert */}
+                <PdfDeclineModal
+                  containerWH={containerWH}
+                  show={isExpired}
+                  headMsg="Document Expired!"
+                  bodyMssg="This Document is no longer available."
+                />
+
+                <ModalUi
+                  headerColor={defaultSignImg ? themeColor : "#dc3545"}
+                  isOpen={defaultSignAlert.isShow}
+                  title={"Auto sign"}
+                  handleClose={() => {
+                    setDefaultSignAlert({
+                      isShow: false,
+                      alertMessage: ""
+                    });
+                  }}
+                >
+                  <div style={{ height: "100%", padding: 20 }}>
+                    <p>{defaultSignAlert.alertMessage}</p>
+
+                    <div
+                      style={{
+                        height: "1px",
+                        backgroundColor: "#9f9f9f",
+                        width: "100%",
+                        marginTop: "15px",
+                        marginBottom: "15px"
+                      }}
+                    ></div>
+                    {defaultSignImg ? (
+                      <>
+                        <button
+                          onClick={() => addDefaultSignature()}
+                          style={{
+                            background: themeColor
+                          }}
+                          type="button"
+                          className="finishBtn"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          onClick={() => {
+                            setDefaultSignAlert({
+                              isShow: false,
+                              alertMessage: ""
+                            });
+                          }}
+                          type="button"
+                          className="finishBtn cancelBtn"
+                        >
+                          Close
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setIsAlert({
+                            isShow: false,
+                            alertMessage: ""
+                          });
+                        }}
+                        type="button"
+                        className="finishBtn cancelBtn"
+                      >
+                        Ok
+                      </button>
+                    )}
+                  </div>
+                </ModalUi>
+                {/* this component used to render all pdf pages in left side */}
+                <RenderAllPdfPage
+                  signPdfUrl={pdfDetails[0].URL}
+                  allPages={allPages}
+                  setAllPages={setAllPages}
+                  setPageNumber={setPageNumber}
+                  pageNumber={pageNumber}
+                />
+
+                {/* pdf render view */}
+                <div
+                  style={{
+                    marginLeft: !isMobile && pdfOriginalWidth > 500 && "20px",
+                    marginRight: !isMobile && pdfOriginalWidth > 500 && "20px"
+                  }}
+                >
+                  {/* this modal is used show this document is already sign */}
+                  <ModalUi
+                    isOpen={isCompleted.isModal}
+                    title={"Sign Documents"}
+                    handleClose={() => {
+                      setIsCompleted({ isModal: false, isCertificate: true });
+                    }}
+                  >
+                    <div style={{ height: "100%", padding: 20 }}>
+                      <p>This document has been signed by all Signers.</p>
+
                       <div
                         style={{
-                          background: themeColor,
-                          color: "white",
-                          padding: "5px",
-                          fontFamily: "sans-serif",
-                          marginTop: signedSigners.length > 0 && "20px"
+                          height: "1px",
+                          backgroundColor: "#9f9f9f",
+                          width: "100%",
+                          marginTop: "15px",
+                          marginBottom: "15px"
                         }}
+                      ></div>
+                      <button
+                        type="button"
+                        className="finishBtn cancelBtn"
+                        onClick={() =>
+                          setIsCompleted({
+                            isModal: false,
+                            isCertificate: true
+                          })
+                        }
                       >
-                        Yet to sign
-                      </div>
-                      <div style={{ marginTop: "5px" }}>
-                        {unsignedSigners.map((obj, ind) => {
-                          return (
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                padding: "10px 0",
-                                background: checkSignerBackColor(obj)
-                              }}
-                              key={ind}
-                            >
-                              <div
-                                className="signerStyle"
-                                style={{
-                                  background: "#abd1d0",
-                                  width: 30,
-                                  height: 30,
-                                  display: "flex",
-                                  borderRadius: 30 / 2,
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  margin: "0 10px 0 5px"
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    fontSize: "12px",
-                                    textAlign: "center",
-                                    fontWeight: "bold",
-                                    color: "black",
-                                    textTransform: "uppercase"
-                                  }}
-                                >
-                                  {getFirstLetter(obj.Name)}
-                                </span>
-                              </div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column"
-                                }}
-                              >
-                                <span className="userName">{obj.Name}</span>
-                                <span className="useEmail">{obj.Email}</span>
-                              </div>
-                              <hr />
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
-                  {defaultSignImg && !alreadySign && (
-                    <DefaultSignature
-                      defaultSignImg={defaultSignImg}
-                      setDefaultSignImg={setDefaultSignImg}
-                      userObjectId={signerObjectId}
-                      setIsLoading={setIsLoading}
-                      xyPostion={signerPos}
-                      setDefaultSignAlert={setDefaultSignAlert}
+                        Close
+                      </button>
+                    </div>
+                  </ModalUi>
+
+                  {/* this component is used for signature pad modal */}
+                  <SignPad
+                    isSignPad={isSignPad}
+                    isStamp={isStamp}
+                    setIsImageSelect={setIsImageSelect}
+                    setIsSignPad={setIsSignPad}
+                    setImage={setImage}
+                    isImageSelect={isImageSelect}
+                    imageRef={imageRef}
+                    onImageChange={onImageChange}
+                    setSignature={setSignature}
+                    image={image}
+                    onSaveImage={saveImage}
+                    onSaveSign={saveSign}
+                    defaultSign={defaultSignImg}
+                    myInitial={myInitial}
+                    isInitial={isInitial}
+                    setIsInitial={setIsInitial}
+                    setIsStamp={setIsStamp}
+                  />
+                  {/* pdf header which contain funish back button */}
+                  <Header
+                    isPdfRequestFiles={true}
+                    pageNumber={pageNumber}
+                    allPages={allPages}
+                    changePage={changePage}
+                    pdfDetails={pdfDetails}
+                    signerPos={signerPos}
+                    isSigned={isSigned}
+                    isCompleted={isCompleted}
+                    embedWidgetsData={embedWidgetsData}
+                    isShowHeader={true}
+                    setIsDecline={setIsDecline}
+                    decline={true}
+                    currentSigner={currentSigner}
+                    pdfUrl={pdfUrl}
+                    alreadySign={alreadySign}
+                  />
+                  {containerWH && (
+                    <RenderPdf
+                      pageNumber={pageNumber}
+                      pdfOriginalWidth={pdfOriginalWidth}
+                      pdfNewWidth={pdfNewWidth}
+                      setIsSignPad={setIsSignPad}
+                      setIsStamp={setIsStamp}
+                      setSignKey={setSignKey}
+                      pdfDetails={pdfDetails}
+                      signerPos={signerPos}
+                      successEmail={false}
+                      pdfUrl={pdfUrl}
+                      numPages={numPages}
+                      pageDetails={pageDetails}
+                      pdfRequest={true}
+                      signerObjectId={signerObjectId}
+                      signedSigners={signedSigners}
+                      setCurrentSigner={setCurrentSigner}
+                      setPdfLoadFail={setPdfLoadFail}
+                      pdfLoadFail={pdfLoadFail}
+                      setSignerPos={setSignerPos}
+                      containerWH={containerWH}
+                      setIsInitial={setIsInitial}
+                      setValidateAlert={setValidateAlert}
+                      unSignedWidgetId={unSignedWidgetId}
+                      setSelectWidgetId={setSelectWidgetId}
+                      selectWidgetId={selectWidgetId}
                     />
                   )}
                 </div>
+                <div>
+                  <div className="signerComponent">
+                    <div
+                      style={{ maxHeight: window.innerHeight - 70 + "px" }}
+                      className="autoSignScroll"
+                    >
+                      {signedSigners.length > 0 && (
+                        <>
+                          <div
+                            style={{ background: themeColor }}
+                            className="signedStyle"
+                          >
+                            Signed by
+                          </div>
+                          <div style={{ marginTop: "2px" }}>
+                            {signedSigners.map((obj, ind) => {
+                              return (
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    padding: "10px 0",
+                                    background: checkSignerBackColor(obj)
+                                  }}
+                                  key={ind}
+                                >
+                                  <div
+                                    className="signerStyle"
+                                    style={{
+                                      background: "#abd1d0",
+                                      width: 30,
+                                      height: 30,
+                                      display: "flex",
+                                      borderRadius: 30 / 2,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      margin: "0 10px 0 5px"
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: "12px",
+                                        textAlign: "center",
+                                        fontWeight: "bold",
+                                        color: "black",
+                                        textTransform: "uppercase"
+                                      }}
+                                    >
+                                      {getFirstLetter(obj.Name)}
+                                    </span>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "column"
+                                    }}
+                                  >
+                                    <span className="userName">{obj.Name}</span>
+                                    <span className="useEmail">
+                                      {obj.Email}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </>
+                      )}
+
+                      {unsignedSigners.length > 0 && (
+                        <>
+                          <div
+                            style={{
+                              background: themeColor,
+                              color: "white",
+                              padding: "5px",
+                              fontFamily: "sans-serif",
+                              marginTop: signedSigners.length > 0 && "20px"
+                            }}
+                          >
+                            Yet to sign
+                          </div>
+                          <div style={{ marginTop: "5px" }}>
+                            {unsignedSigners.map((obj, ind) => {
+                              return (
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    padding: "10px 0",
+                                    background: checkSignerBackColor(obj)
+                                  }}
+                                  key={ind}
+                                >
+                                  <div
+                                    className="signerStyle"
+                                    style={{
+                                      background: "#abd1d0",
+                                      width: 30,
+                                      height: 30,
+                                      display: "flex",
+                                      borderRadius: 30 / 2,
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      margin: "0 10px 0 5px"
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: "12px",
+                                        textAlign: "center",
+                                        fontWeight: "bold",
+                                        color: "black",
+                                        textTransform: "uppercase"
+                                      }}
+                                    >
+                                      {getFirstLetter(obj.Name)}
+                                    </span>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "column"
+                                    }}
+                                  >
+                                    <span className="userName">{obj.Name}</span>
+                                    <span className="useEmail">
+                                      {obj.Email}
+                                    </span>
+                                  </div>
+                                  <hr />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </>
+                      )}
+                      {defaultSignImg && !alreadySign && (
+                        <DefaultSignature
+                          defaultSignImg={defaultSignImg}
+                          setDefaultSignImg={setDefaultSignImg}
+                          userObjectId={signerObjectId}
+                          setIsLoading={setIsLoading}
+                          xyPostion={signerPos}
+                          setDefaultSignAlert={setDefaultSignAlert}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      <ModalUi
-        headerColor={"#dc3545"}
-        isOpen={validateAlert}
-        title={"Validation alert"}
-        handleClose={() => {
-          setValidateAlert(false);
-        }}
-      >
-        <div style={{ height: "100%", padding: 20 }}>
-          <p>
-            The input does not meet the criteria set by the regular expression.
-          </p>
-
-          <div
-            style={{
-              height: "1px",
-              backgroundColor: "#9f9f9f",
-              width: "100%",
-              marginTop: "15px",
-              marginBottom: "15px"
+          <ModalUi
+            headerColor={"#dc3545"}
+            isOpen={validateAlert}
+            title={"Validation alert"}
+            handleClose={() => {
+              setValidateAlert(false);
             }}
-          ></div>
-          <button
-            onClick={() => setValidateAlert(false)}
-            type="button"
-            className="finishBtn cancelBtn"
           >
-            Close
-          </button>
-        </div>
-      </ModalUi>
+            <div style={{ height: "100%", padding: 20 }}>
+              <p>
+                The input does not meet the criteria set by the regular
+                expression.
+              </p>
+
+              <div
+                style={{
+                  height: "1px",
+                  backgroundColor: "#9f9f9f",
+                  width: "100%",
+                  marginTop: "15px",
+                  marginBottom: "15px"
+                }}
+              ></div>
+              <button
+                onClick={() => setValidateAlert(false)}
+                type="button"
+                className="finishBtn cancelBtn"
+              >
+                Close
+              </button>
+            </div>
+          </ModalUi>
+        </>
+      )}
     </DndProvider>
   );
 }
