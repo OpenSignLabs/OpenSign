@@ -935,6 +935,7 @@ export const embedDocId = async (pdfDoc, documentId, allPages) => {
 
 //function for save button to save signature or image url
 export function onSaveSign(
+  type,
   xyPostion,
   index,
   signKey,
@@ -975,6 +976,7 @@ export function onSaveSign(
         Width: posWidth,
         Height: posHeight,
         SignUrl: signatureImg,
+        signatureType: type && type,
         options: {
           ...position.options,
           response: signatureImg

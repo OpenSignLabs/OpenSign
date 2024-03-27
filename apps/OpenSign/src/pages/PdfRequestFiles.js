@@ -87,6 +87,7 @@ function PdfRequestFiles() {
   const [widgetsTour, setWidgetsTour] = useState(false);
   const [minRequiredCount, setminRequiredCount] = useState();
   const [sendInOrder, setSendInOrder] = useState(false);
+  const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -731,7 +732,7 @@ function PdfRequestFiles() {
   };
 
   //function for save button to save signature or image url
-  const saveSign = (isDefaultSign, width, height) => {
+  const saveSign = (type, isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign
       ? isDefaultSign === "initials"
@@ -767,6 +768,7 @@ function PdfRequestFiles() {
     const placeholderPosition = currentSigner[0].placeHolder;
     //function of save signature image and get updated position with signature image url
     const getUpdatePosition = onSaveSign(
+      type,
       placeholderPosition,
       getIndex,
       signKey,
@@ -1133,6 +1135,8 @@ function PdfRequestFiles() {
                 isInitial={isInitial}
                 setIsInitial={setIsInitial}
                 setIsStamp={setIsStamp}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               {/* pdf header which contain funish back button */}
               <Header
@@ -1179,6 +1183,7 @@ function PdfRequestFiles() {
                   unSignedWidgetId={unSignedWidgetId}
                   setSelectWidgetId={setSelectWidgetId}
                   selectWidgetId={selectWidgetId}
+                  setCurrWidgetsDetails={setCurrWidgetsDetails}
                 />
               )}
             </div>

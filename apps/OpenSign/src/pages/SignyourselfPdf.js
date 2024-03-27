@@ -90,7 +90,7 @@ function SignYourSelf() {
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
-  const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
+  const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [widgetType, setWidgetType] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
@@ -708,7 +708,7 @@ function SignYourSelf() {
   };
 
   //function for save button to save signature or image url
-  const saveSign = (isDefaultSign, width, height) => {
+  const saveSign = (type, isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign
       ? isDefaultSign === "initials"
@@ -731,6 +731,7 @@ function SignYourSelf() {
       }
     }
     const getUpdatePosition = onSaveSign(
+      type,
       xyPostion,
       index,
       signKey,
@@ -1105,6 +1106,8 @@ function SignYourSelf() {
                 setIsInitial={setIsInitial}
                 setIsStamp={setIsStamp}
                 widgetType={widgetType}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               {/*render email component to send email after finish signature on document */}
               <EmailComponent
