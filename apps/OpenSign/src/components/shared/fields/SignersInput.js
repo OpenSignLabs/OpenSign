@@ -105,7 +105,7 @@ const SignersInput = (props) => {
 
   return (
     <div className="text-xs mt-2 ">
-      <label className="block">
+      <label className="block relative">
         Signers
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
         <span className="absolute ml-1 text-xs z-50">
