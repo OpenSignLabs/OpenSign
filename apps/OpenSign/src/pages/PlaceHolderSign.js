@@ -97,7 +97,7 @@ function PlaceHolderSign() {
   const [widgetType, setWidgetType] = useState("");
   const [isUiLoading, setIsUiLoading] = useState(false);
   const [isRadio, setIsRadio] = useState(false);
-  const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
+  const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [isNameModal, setIsNameModal] = useState(false);
