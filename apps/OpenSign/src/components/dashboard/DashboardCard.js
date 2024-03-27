@@ -353,7 +353,7 @@ const DashboardCard = (props) => {
           </div>
         </div>
       </div>
-      <div className="text-xs absolute top-1 right-1">
+      <div className="text-xs absolute top-2 right-1">
         <Tooltip id={props.Label} iconColor={"white"} message={props?.Data?.tourMessage} />
       </div>
     </div>
