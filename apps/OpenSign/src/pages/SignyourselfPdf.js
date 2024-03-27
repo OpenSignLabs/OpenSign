@@ -180,14 +180,14 @@ function SignYourSelf() {
 
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
+    let isCompleted;
     //getting document details
     const documentData = await contractDocument(documentId);
 
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
 
-      const isCompleted =
-        documentData[0].IsCompleted && documentData[0].IsCompleted;
+      isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
         const docStatus = {
           isCompleted: isCompleted
@@ -263,8 +263,7 @@ function SignYourSelf() {
       setSignerUserId(contractUsersRes[0].objectId);
       const tourstatuss =
         contractUsersRes[0].TourStatus && contractUsersRes[0].TourStatus;
-
-      if (tourstatuss && tourstatuss.length > 0) {
+      if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
         setTourStatus(tourstatuss);
         const checkTourRecipients = tourstatuss.filter(
           (data) => data.signyourself
@@ -272,6 +271,8 @@ function SignYourSelf() {
         if (checkTourRecipients && checkTourRecipients.length > 0) {
           setCheckTourStatus(checkTourRecipients[0].signyourself);
         }
+      } else {
+        setCheckTourStatus(true);
       }
       const loadObj = {
         isLoad: false
@@ -291,7 +292,8 @@ function SignYourSelf() {
         const tourstatuss =
           contractContactBook[0].TourStatus &&
           contractContactBook[0].TourStatus;
-        if (tourstatuss && tourstatuss.length > 0) {
+
+        if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
           setTourStatus(tourstatuss);
           const checkTourRecipients = tourstatuss.filter(
             (data) => data.signyourself
@@ -299,6 +301,8 @@ function SignYourSelf() {
           if (checkTourRecipients && checkTourRecipients.length > 0) {
             setCheckTourStatus(checkTourRecipients[0].signyourself);
           }
+        } else {
+          setCheckTourStatus(true);
         }
       } else {
         setHandleError("No Data Found!");
