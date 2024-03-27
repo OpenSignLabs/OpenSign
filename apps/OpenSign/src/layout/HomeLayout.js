@@ -34,7 +34,6 @@ const HomeLayout = () => {
         });
         if (user) {
           checkIsSubscribed();
-          setIsLoader(false);
         } else {
           setIsUserValid(false);
         }
@@ -48,10 +47,6 @@ const HomeLayout = () => {
 
   async function checkIsSubscribed() {
     const currentUser = Parse.User.current();
-    // const userSettings = appInfo.settings;
-    // const setting = userSettings.find((x) => x.role === _currentRole);
-    // const redirectUrl =
-    //   location?.state?.from || `/${setting.pageType}/${setting.pageId}`;
     const user = await Parse.Cloud.run("getUserDetails", {
       email: currentUser.get("email")
     });
@@ -59,24 +54,12 @@ const HomeLayout = () => {
     if (_user.TenantId) {
       localStorage.setItem("TenetId", _user.TenantId.objectId);
     }
-    // localStorage.setItem("PageLanding", setting.pageId);
-    // localStorage.setItem("defaultmenuid", setting.menuId);
-    // localStorage.setItem("pageType", setting.pageType);
     if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-      // const LocalUserDetails = {
-      //   name: _user.Name,
-      //   email: _user.Email,
-      //   phone: _user.Phone,
-      //   company: _user.Company
-      // };
-      // localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
       const billingDate = _user.Next_billing_date && _user.Next_billing_date;
       if (billingDate) {
         if (billingDate > new Date()) {
-          // localStorage.removeItem("userDetails");
-          // Redirect to the appropriate URL after successful login
-          // navigate(redirectUrl);
           setIsUserValid(true);
+          setIsLoader(false);
           return true;
         } else {
           navigate(`/subscription`);
@@ -86,9 +69,8 @@ const HomeLayout = () => {
       }
     } else {
       setIsUserValid(true);
+      setIsLoader(false);
       return true;
-      // Redirect to the appropriate URL after successful login
-      // navigate(redirectUrl);
     }
   }
   const showSidebar = () => {
@@ -244,7 +226,7 @@ const HomeLayout = () => {
   return (
     <div>
       <div className="sticky top-0 z-50">
-        <Header showSidebar={showSidebar} />
+        {!isLoader && <Header showSidebar={showSidebar} />}
       </div>
       {isUserValid ? (
         <>
@@ -269,7 +251,6 @@ const HomeLayout = () => {
             <>
               <div className="flex md:flex-row flex-col z-50">
                 <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
-
                 <div
                   id="renderList"
                   className="relative h-screen flex flex-col justify-between w-full overflow-y-auto"

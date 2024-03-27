@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import { NavLink } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
 import plansArr from "../json/plansArr.json";
@@ -13,7 +13,7 @@ const listItemStyle = {
 };
 
 const PlanSubscriptions = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [yearlyVisible, setYearlyVisible] = useState(false);
   const [isLoader, setIsLoader] = useState(true);
 
@@ -35,12 +35,12 @@ const PlanSubscriptions = () => {
     company +
     phone;
   useEffect(() => {
-    if (localStorage.getItem("accesstoken")) {
+    // if (localStorage.getItem("accesstoken")) {
       setIsLoader(false);
       setYearlyVisible(false);
-    } else {
-      navigate("/", { replace: true });
-    }
+    // } else {
+    //   navigate("/", { replace: true });
+    // }
     // eslint-disable-next-line
   }, []);
 
@@ -108,7 +108,7 @@ const PlanSubscriptions = () => {
                               : ""
                           } text-sm text-center my-2`}
                         >
-                          <p
+                          <div
                             style={{
                               backgroundColor: item.subtitlecolor
                                 ? item.subtitlecolor
@@ -124,7 +124,7 @@ const PlanSubscriptions = () => {
                             ) : (
                               <span>{item.subtitle}</span>
                             )}
-                          </p>
+                          </div>
                         </div>
                       </div>
 

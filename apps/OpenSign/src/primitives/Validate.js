@@ -15,7 +15,7 @@ const Validate = () => {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
-          setIsUserValid(true);
+          checkIsSubscribed();
         } else {
           setIsUserValid(false);
         }
@@ -24,7 +24,33 @@ const Validate = () => {
         setIsUserValid(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function checkIsSubscribed() {
+    const currentUser = Parse.User.current();
+    console.log("currentUser ", currentUser)
+    const user = await Parse.Cloud.run("getUserDetails", {
+      email: currentUser.get("email")
+    });
+    const _user = user?.toJSON();
+
+    if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+      const billingDate = _user.Next_billing_date && _user.Next_billing_date;
+      if (billingDate) {
+        if (billingDate > new Date()) {
+          setIsUserValid(true);
+          return true;
+        } else {
+          // navigate(`/subscription`);
+        }
+      } else {
+        // navigate(`/subscription`);
+      }
+    } else {
+      setIsUserValid(true);
+    }
+  }
   const handleLoginBtn = () => {
     try {
       Parse.User.logOut();
