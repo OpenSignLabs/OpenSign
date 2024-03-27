@@ -6,6 +6,8 @@ import ModalUi from "../primitives/ModalUi";
 import { rejectBtn, submitBtn } from "../constant/const";
 import { openInNewTab } from "../constant/Utils";
 import Parse from "parse";
+import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
+import Tooltip from "../primitives/Tooltip";
 
 function Webhook() {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -101,7 +103,13 @@ function Webhook() {
         </div>
       ) : (
         <div className="bg-white flex flex-col justify-center shadow rounded">
-          <h1 className="ml-4 mt-3 mb-2 font-semibold">Webhook</h1>
+          <PremiumAlertHeader />
+          <h1 className="ml-4 mt-3 mb-2 font-semibold">
+            Webhook{" "}
+            <Tooltip
+              url={"https://docs.opensignlabs.com/docs/API-docs/get-webhook"}
+            />
+          </h1>
           <ul className="w-full flex flex-col  p-2 text-sm">
             <li
               className={`flex justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}

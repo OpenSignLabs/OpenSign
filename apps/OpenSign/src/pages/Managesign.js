@@ -13,7 +13,6 @@ const ManageSign = () => {
   const [signName, setSignName] = useState("");
   const [signature, setSignature] = useState("");
   const [warning, setWarning] = useState(false);
-  const [nameWarning, setNameWarning] = useState(false);
   const [isvalue, setIsValue] = useState(false);
   const allColor = ["blue", "red", "black"];
   const [isLoader, setIsLoader] = useState(true);
@@ -105,9 +104,7 @@ const ManageSign = () => {
     e.preventDefault();
     const isUrl = image.includes("https");
 
-    if (!signName) {
-      setNameWarning(true);
-    } else if (!isvalue) {
+    if (!isvalue) {
       setWarning(true);
       setTimeout(() => setWarning(false), 1000);
     } else {
@@ -222,26 +219,13 @@ const ManageSign = () => {
     setIsValue(true);
   };
   return (
-    <div
-      style={{
-        backgroundColor: "white",
-        maxHeight: "500px",
-        overflow: "auto"
-      }}
-    >
+    <div className="relative h-full bg-white flex shadow rounded overflow-auto">
       {isLoader && (
-        <div className="absolute bg-black bg-opacity-75 inset-0 z-50 flex justify-center items-center">
-          <div style={{ height: "300px" }}>
-            <div
-              style={{
-                marginLeft: "45%",
-                marginTop: "150px",
-                fontSize: "45px",
-                color: "#3dd3e0"
-              }}
-              className="loader-37"
-            ></div>
-          </div>
+        <div className="absolute bg-black bg-opacity-75 z-50 w-full h-full flex justify-center items-center">
+          <div
+            style={{ color: "#3dd3e0" }}
+            className="loader-37 text-[45px]"
+          ></div>
         </div>
       )}
       {isSuccess && (
@@ -269,61 +253,9 @@ const ManageSign = () => {
               paddingBottom: 8
             }}
           >
-            Manage Signature
+            My Signature
           </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label
-              htmlFor="signName"
-              style={{
-                fontSize: 12,
-                position: "relative",
-                paddingBottom: 5
-              }}
-            >
-              Signer&apos;s Name
-              {nameWarning && (
-                <div
-                  className="warning nameWarning"
-                  style={{ fontSize: 12 }}
-                  onAnimationEnd={() => setNameWarning(false)}
-                >
-                  <i
-                    className="fas fa-exclamation-circle"
-                    style={{ color: "#fab005", fontSize: 15 }}
-                  ></i>{" "}
-                  Please fill input field
-                </div>
-              )}
-            </label>
-            <input
-              id="signName"
-              className="signInputManage"
-              value={signName}
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: 4,
-
-                height: 35,
-                padding: "6px 12px",
-                marginBottom: 10,
-                fontSize: 12
-              }}
-              required
-              onFocus={() => setNameWarning(false)}
-              onChange={(e) => setSignName(e.target.value)}
-            />
-
-            <label
-              htmlFor="imgoverview"
-              style={{
-                fontSize: 12,
-                paddingBottom: 5
-              }}
-            >
-              Signature/Image
-            </label>
-          </div>
-          <div className="signBlock">
+          <div className="signBlock mt-4">
             <div>
               <div style={{ position: "relative" }}>
                 <div
@@ -429,10 +361,10 @@ const ManageSign = () => {
                                       key === 0 && penColor === "blue"
                                         ? "2px solid blue"
                                         : key === 1 && penColor === "red"
-                                          ? "2px solid red"
-                                          : key === 2 && penColor === "black"
-                                            ? "2px solid black"
-                                            : "2px solid white"
+                                        ? "2px solid red"
+                                        : key === 2 && penColor === "black"
+                                        ? "2px solid black"
+                                        : "2px solid white"
                                   }}
                                   onClick={() => {
                                     if (key === 0) {
@@ -537,10 +469,10 @@ const ManageSign = () => {
                                   key === 0 && initialPen === "blue"
                                     ? "2px solid blue"
                                     : key === 1 && initialPen === "red"
-                                      ? "2px solid red"
-                                      : key === 2 && initialPen === "black"
-                                        ? "2px solid black"
-                                        : "2px solid white"
+                                    ? "2px solid red"
+                                    : key === 2 && initialPen === "black"
+                                    ? "2px solid black"
+                                    : "2px solid white"
                               }}
                               onClick={() => {
                                 if (key === 0) {

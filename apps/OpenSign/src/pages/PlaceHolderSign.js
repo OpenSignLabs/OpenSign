@@ -27,7 +27,8 @@ import {
   addWidgetOptions,
   textInputWidget,
   textWidget,
-  radioButtonWidget
+  radioButtonWidget,
+  color
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -80,6 +81,7 @@ function PlaceHolderSign() {
   const [zIndex, setZIndex] = useState(1);
   const [signKey, setSignKey] = useState();
   const [tempSignerId, setTempSignerId] = useState("");
+  const [blockColor, setBlockColor] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -106,20 +108,6 @@ function PlaceHolderSign() {
     status: false,
     message: ""
   });
-  const color = [
-    "#93a3db",
-    "#e6c3db",
-    "#c0e3bc",
-    "#bce3db",
-    "#b8ccdb",
-    "#ceb8db",
-    "#ffccff",
-    "#99ffcc",
-    "#cc99ff",
-    "#ffcc99",
-    "#66ccff",
-    "#ffffcc"
-  ];
 
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
@@ -276,14 +264,17 @@ function PlaceHolderSign() {
           });
           setSignersData(updatedSigners);
           setUniqueId(updatedSigners[0].Id);
+          setBlockColor(updatedSigners[0].blockColor);
         } else {
           const updatedSigners = documentData[0].Signers.map((x, index) => ({
             ...x,
             Id: randomId(),
-            Role: "User " + (index + 1)
+            Role: "User " + (index + 1),
+            blockColor: color[index % color.length]
           }));
           setSignersData(updatedSigners);
           setUniqueId(updatedSigners[0].Id);
+          setBlockColor(updatedSigners[0].blockColor);
         }
       } else {
         setRoleName("User 1");
@@ -303,6 +294,7 @@ function PlaceHolderSign() {
           setSignersData(updatedSigners);
           setIsSelectId(0);
           setUniqueId(updatedSigners[0].Id);
+          setBlockColor(updatedSigners[0].blockColor);
         }
       }
     } else if (
@@ -1034,7 +1026,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag the signature or stamp placeholder onto the PDF to choose your desired signing location.`}
+          message={`Drag or click on a field to add it to the document.`}
           isChecked={handleDontShow}
         />
       ),
@@ -1372,7 +1364,6 @@ function PlaceHolderSign() {
   const closePopup = () => {
     setIsAddUser({});
   };
-
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1717,6 +1708,10 @@ function PlaceHolderSign() {
                   setUniqueId={setUniqueId}
                   setRoleName={setRoleName}
                   initial={true}
+                  sendInOrder={pdfDetails[0].SendinOrder}
+                  setSignersData={setSignersData}
+                  blockColor={blockColor}
+                  setBlockColor={setBlockColor}
                 />
               </div>
             ) : (
@@ -1735,6 +1730,10 @@ function PlaceHolderSign() {
                       setContractName={setContractName}
                       setUniqueId={setUniqueId}
                       setRoleName={setRoleName}
+                      sendInOrder={pdfDetails[0].SendinOrder}
+                      setSignersData={setSignersData}
+                      blockColor={blockColor}
+                      setBlockColor={setBlockColor}
                       // handleAddSigner={handleAddSigner}
                     />
                     <div data-tut="reactourSecond">

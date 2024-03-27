@@ -34,8 +34,11 @@ function WidgetComponent({
   handleRoleChange,
   handleOnBlur,
   title,
-
-  isTemplateFlow
+  setSignersData,
+  sendInOrder,
+  isTemplateFlow,
+  setBlockColor,
+  blockColor
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
 
@@ -233,14 +236,14 @@ function WidgetComponent({
     (data) =>
       data.type !== "dropdown" &&
       data.type !== radioButtonWidget &&
-      data.type !== textWidget
+      data.type !== textInputWidget
   );
   const textWidgetData = widget.filter((data) => data.type !== textWidget);
   const updateWidgets = isSignYourself
     ? filterWidgets
     : isTemplateFlow
-    ? textWidgetData
-    : widget;
+      ? textWidgetData
+      : widget;
 
   return (
     <>
@@ -256,9 +259,11 @@ function WidgetComponent({
               <div
                 data-tut={dataTut}
                 style={{
-                  background: isSelectListId
-                    ? color[isSelectListId % color.length]
-                    : color[0],
+                  background: blockColor
+                    ? blockColor
+                    : isSelectListId
+                      ? color[isSelectListId % color.length]
+                      : color[0],
                   padding: "10px 20px",
                   display: "flex",
                   alignItems: "center",
@@ -386,20 +391,25 @@ function WidgetComponent({
           handleClose={handleModal}
         >
           {signersdata.length > 0 ? (
-            <RecipientList
-              signerPos={signerPos}
-              signersdata={signersdata}
-              isSelectListId={isSelectListId}
-              setSignerObjId={setSignerObjId}
-              setIsSelectId={setIsSelectId}
-              setContractName={setContractName}
-              setUniqueId={setUniqueId}
-              setRoleName={setRoleName}
-              handleDeleteUser={handleDeleteUser}
-              handleRoleChange={handleRoleChange}
-              handleOnBlur={handleOnBlur}
-              handleModal={handleModal}
-            />
+            <div style={{ maxHeight: "600px", overflow: "auto" }}>
+              <RecipientList
+                signerPos={signerPos}
+                signersdata={signersdata}
+                isSelectListId={isSelectListId}
+                setSignerObjId={setSignerObjId}
+                setIsSelectId={setIsSelectId}
+                setContractName={setContractName}
+                setUniqueId={setUniqueId}
+                setRoleName={setRoleName}
+                handleDeleteUser={handleDeleteUser}
+                handleRoleChange={handleRoleChange}
+                handleOnBlur={handleOnBlur}
+                handleModal={handleModal}
+                sendInOrder={sendInOrder}
+                setSignersData={setSignersData}
+                setBlockColor={setBlockColor}
+              />
+            </div>
           ) : (
             <div
               style={{
