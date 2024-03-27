@@ -88,7 +88,7 @@ function Opensigndrive() {
         setHandleError("Error: Something went wrong!");
       } else if (driveDetails && driveDetails.length > 0) {
         setSkip((prevSkip) => prevSkip + limit);
-        sortApps(orderName.Date, orderName.Descending, driveDetails, true);
+        sortingData(null, null, driveDetails, true);
       }
       if (!docId) {
         setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
@@ -218,7 +218,8 @@ function Opensigndrive() {
     }
   };
 
-  const sortingApp = (appInfo, type, order) => {
+  //function to use sorting document list according to type and order
+  const sortedBy = (appInfo, type, order) => {
     if (type === orderName.Name) {
       if (order === orderName.Ascending) {
         return appInfo.sort((a, b) => (a.Name > b.Name ? 1 : -1));
@@ -234,7 +235,8 @@ function Opensigndrive() {
     }
   };
 
-  const sortApps = (type, order, driveDetails, isInitial) => {
+  //function to use get sorting type, order and document list to sort
+  const sortingData = (type, order, driveDetails, isInitial) => {
     const selectedSortType = type
       ? type
       : selectedSort
@@ -245,11 +247,14 @@ function Opensigndrive() {
       : sortingOrder
         ? sortingOrder
         : orderName.Descending;
+
+    //check isInitial true it means sort previous 20 and get on scrolling 20 = 40 document list
     const allPdfData = isInitial ? [...pdfData, ...driveDetails] : driveDetails;
+    //call sortedBy function according to selected Type and order
     if (selectedSortType === orderName.Name) {
-      sortingApp(driveDetails, orderName.Name, sortOrder);
+      sortedBy(driveDetails, orderName.Name, sortOrder);
     } else if (selectedSortType === orderName.Date) {
-      sortingApp(allPdfData, orderName.Date, sortOrder);
+      sortedBy(allPdfData, orderName.Date, sortOrder);
     }
 
     setPdfData(allPdfData);
@@ -631,7 +636,7 @@ function Opensigndrive() {
                           key={ind}
                           onClick={() => {
                             setSelectedSort(value);
-                            sortApps(value, null, pdfData);
+                            sortingData(value, null, pdfData);
                           }}
                           className="dropdown-item itemColor"
                           style={{
@@ -657,7 +662,7 @@ function Opensigndrive() {
                           key={ind}
                           onClick={() => {
                             setSortingOrder(order);
-                            sortApps(null, order, pdfData);
+                            sortingData(null, order, pdfData);
                           }}
                           className="dropdown-item itemColor"
                           style={{

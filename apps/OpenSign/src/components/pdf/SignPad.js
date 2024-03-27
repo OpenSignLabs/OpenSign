@@ -67,7 +67,7 @@ function SignPad({
     } else if (isTab === "uploadImage") {
       setImage("");
     }
-    setIsInitial(false);
+    // setIsInitial(false);
   };
   //function for set signature url
   const handleSignatureChange = () => {
@@ -154,8 +154,10 @@ function SignPad({
       const url = currWidgetsDetails?.SignUrl;
 
       //checking widget type and draw type signature url
-      if (isWidgetType === "initials" && signatureType === "draw" && url) {
-        canvasRef.current.fromDataURL(url);
+      if (isInitial) {
+        if (isWidgetType === "initials" && signatureType === "draw" && url) {
+          canvasRef.current.fromDataURL(url);
+        }
       } else if (
         isWidgetType === "signature" &&
         signatureType === "draw" &&

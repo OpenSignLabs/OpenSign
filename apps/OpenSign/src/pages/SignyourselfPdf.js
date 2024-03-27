@@ -768,6 +768,7 @@ function SignYourSelf() {
 
   //function for delete signature block
   const handleDeleteSign = (key) => {
+    setCurrWidgetsDetails({});
     const updateResizeData = [];
 
     let filterData = xyPostion[index].pos.filter((data) => data.key !== key);
