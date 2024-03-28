@@ -138,7 +138,7 @@ function Opensigndrive() {
       };
     }
     // eslint-disable-next-line
-  }, [loading, sortingOrder]); // Add/remove scroll event listener when loading changes
+  }, [loading, sortingOrder, selectedSort]); // Add/remove scroll event listener when loading changes
 
   //function for handle folder name path
   const handleRoute = (index) => {
