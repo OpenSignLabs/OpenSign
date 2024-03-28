@@ -1,65 +1,63 @@
 [
-    {
-        "planName": "SELF HOSTED",
-        "currency": "",
-        "price": "Free",
-        "subtitle": "Free for life One click install.",
-        "btnText": "Visit github",
-        "url": "https://github.com/opensignlabs/opensign",
-        "target": "_blank",
-        "benefits": [
-            "Sign Unlimited Documents",
-            "S3 Doc Storage",
-            "Unlimited Guest Signers",
-            "Unlimited completion certificates",
-            "Unique Code(OTP) verification for guest signers",
-            "Expiring docs & reject signature support",
-            "PDF Template Creation(coming soon)",
-            "Audit Trails",
-            "API support",
-            "Add-ons support(coming soon)",
-            "Self hosted cloud infrastructure",
-            "Free for lifetime",
-            "Community support"
-        ]
-    },
-    {
-        "planName": "THANKS PLAN",
-        "currency": "$",
-        "price": "29.99",
-        "subtitle": "Use code <span style='background-color: yellow;'>'FREEBETA'</span> to get this for free(First 1000 users)",
-        "btnText": "Subscribe",
-        "url": "https://subscriptions.zoho.in/subscribe/ef798486e6a0a11ea65f2bae8f2af901dbadf3175d495584fd25b9af5d2f2b9e/thanks",
-        "target": "_self",
-        "benefits": [
-            "Sign Unlimited Documents",
-            "Unlimited Secure Doc Storage with OpenSign™ Drive",
-            "Unlimited Guest Signers",
-            "Unlimited completion certificates",
-            "Unique Code(OTP) verification for guest signers",
-            "Expiring docs & reject signature support",
-            "PDF Template Creation(coming soon)",
-            "Audit Trails",
-            "API support",
-            "Add-ons support(coming soon)",
-            "Self hosted cloud infrastructure"
-        ]
-    },
-    {
-        "planName": "ENTERPRISE",
-        "currency": "",
-        "price": "Request Price",
-        "subtitle": "Customization available Priority support.",
-        "btnText": "Contact us",
-        "url": "https://www.opensignlabs.com/contact-us",
-        "target": "_blank",
-        "benefits": [
-            "All features",
-            "Custom domain",
-            "Whitelabeling",
-            "Uptime SLA",
-            "SSO support",
-            "24/7 support"
-        ]
-    }
+  {
+    "planName": "Free Plan",
+    "currency": "",
+    "price": "Free",
+    "subtitle": "Free for life.",
+    "btnText": "Subscribe",
+    "url": "",
+    "target": "_blank",
+    "benefits": [
+      "Sign Unlimited Documents",
+      "S3 Doc Storage",
+      "Unlimited Guest Signers",
+      "Unlimited completion certificates",
+      "Unique Code(OTP) verification for guest signers",
+      "Expiring docs & reject signature support",
+      "PDF Template Creation",
+      "Audit Trails",
+      "API support",
+      "Free for lifetime",
+      "Community support"
+    ]
+  },
+  {
+    "planName": "THANKS PLAN",
+    "currency": "$",
+    "price": "29.99",
+    "subtitle": "Use code <span style='background-color: yellow;'>'FREEBETA'</span> to get this for free(First 1000 users)",
+    "btnText": "Subscribe",
+    "url": "https://subscriptions.zoho.in/subscribe/ef798486e6a0a11ea65f2bae8f2af901dbadf3175d495584fd25b9af5d2f2b9e/thanks",
+    "target": "_self",
+    "benefits": [
+      "Sign Unlimited Documents",
+      "Unlimited Secure Doc Storage with OpenSign™ Drive",
+      "Unlimited Guest Signers",
+      "Unlimited completion certificates",
+      "Unique Code(OTP) verification for guest signers",
+      "Expiring docs & reject signature support",
+      "PDF Template Creation(coming soon)",
+      "Audit Trails",
+      "API support",
+      "Add-ons support(coming soon)",
+      "Self hosted cloud infrastructure"
+    ]
+  },
+  {
+    "planName": "ENTERPRISE",
+    "currency": "",
+    "price": "Request Price",
+    "subtitle": "Customization available Priority support.",
+    "btnText": "Contact us",
+    "url": "https://www.opensignlabs.com/contact-us",
+    "target": "_blank",
+    "benefits": [
+      "All features",
+      "Custom domain",
+      "Whitelabeling",
+      "Uptime SLA",
+      "SSO support",
+      "24/7 support"
+    ]
+  }
 ]

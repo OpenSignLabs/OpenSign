@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-// import { useNavigate } from "react-router";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
 import plansArr from "../json/plansArr.json";
 import Title from "../components/Title";
+import Parse from "parse";
 const listItemStyle = {
   paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -13,7 +13,7 @@ const listItemStyle = {
 };
 
 const PlanSubscriptions = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [yearlyVisible, setYearlyVisible] = useState(false);
   const [isLoader, setIsLoader] = useState(true);
 
@@ -36,14 +36,21 @@ const PlanSubscriptions = () => {
     phone;
   useEffect(() => {
     // if (localStorage.getItem("accesstoken")) {
-      setIsLoader(false);
-      setYearlyVisible(false);
+    setIsLoader(false);
+    setYearlyVisible(false);
     // } else {
     //   navigate("/", { replace: true });
     // }
     // eslint-disable-next-line
   }, []);
 
+  const handleFreePlan = async () => {
+    const params = { userId: Parse.User.current().id };
+    const res = await Parse.Cloud.run("freesubscription", params);
+    if (res.status === "success") {
+      navigate("/");
+    }
+  };
   return (
     <>
       <Title title={"Subscriptions"} />
@@ -82,10 +89,10 @@ const PlanSubscriptions = () => {
               <ul className=" flex flex-col md:flex-row h-full bg-white justify-center border-collapse border-[1px] border-gray-300">
                 {plansArr.map((item) => (
                   <li
-                    className="flex flex-col md:my-0 text-center border-[1px] border-gray-300 w-[260px]"
+                    className="flex flex-col md:my-0 text-center border-[1px] border-gray-300 max-w-[260px]"
                     key={item.planName}
                   >
-                    <div className="p-2 flex flex-col justify-center items-center">
+                    <div className="p-2 flex flex-col justify-center items-center min-h-[320px]">
                       <h3 className="text-[#002862] uppercase">
                         {item.planName}
                       </h3>
@@ -128,19 +135,28 @@ const PlanSubscriptions = () => {
                         </div>
                       </div>
 
-                      <NavLink
-                        to={
-                          item.btnText === "Subscribe"
-                            ? item.url + details
-                            : item.url
-                        }
-                        className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white"
-                        target={item.target}
-                      >
-                        {item.btnText}
-                      </NavLink>
+                      {item.url ? (
+                        <NavLink
+                          to={
+                            item.btnText === "Subscribe"
+                              ? item.url + details
+                              : item.url
+                          }
+                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                          target={item.target}
+                        >
+                          {item.btnText}
+                        </NavLink>
+                      ) : (
+                        <button
+                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                          onClick={() => handleFreePlan()}
+                        >
+                          {item.btnText}
+                        </button>
+                      )}
                     </div>
-                    <hr className="w-full bg-gray-300 p-[.5px]" />
+                    <hr className="w-full bg-gray-300 h-[0.5px]" />
                     <ul className="mx-1 p-3 text-left break-words text-sm list-none">
                       {item.benefits.map((subitem, index) => (
                         <li style={listItemStyle} key={index} className="m-1">
