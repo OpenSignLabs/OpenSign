@@ -1565,6 +1565,10 @@ export const placeholderHeight = (pos, scale, signyourself) => {
   }
 };
 
+//function to use remove spaces and invalid characters
+export function sanitizeFileName(fileName) {
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "");
+}
 //function for getting contracts_contactbook details
 export const contactBook = async (objectId) => {
   const result = await axios
