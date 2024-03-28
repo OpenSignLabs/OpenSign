@@ -245,7 +245,7 @@ function Opensigndrive() {
     const allPdfData = isInitial ? [...pdfData, ...driveDetails] : driveDetails;
     //call sortedBy function according to selected Type and order
     if (selectedSortType === orderName.Name) {
-      sortedBy(driveDetails, orderName.Name, sortOrder);
+      sortedBy(allPdfData, orderName.Name, sortOrder);
     } else if (selectedSortType === orderName.Date) {
       sortedBy(allPdfData, orderName.Date, sortOrder);
     }
