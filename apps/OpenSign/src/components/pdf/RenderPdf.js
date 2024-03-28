@@ -272,6 +272,7 @@ function RenderPdf({
                         unSignedWidgetId={unSignedWidgetId}
                         setSelectWidgetId={setSelectWidgetId}
                         selectWidgetId={selectWidgetId}
+                        setCurrWidgetsDetails={setCurrWidgetsDetails}
                       />
                     </React.Fragment>
                   )

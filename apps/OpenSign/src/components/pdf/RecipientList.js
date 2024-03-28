@@ -116,7 +116,13 @@ const RecipientList = (props) => {
               data-tut="reactourFirst"
               onMouseEnter={() => setIsHover(ind)}
               onMouseLeave={() => setIsHover(null)}
-              className={props.sendInOrder && "dragCursor"}
+              className={
+                props.sendInOrder
+                  ? props.isMailSend
+                    ? "disabled"
+                    : "dragCursor"
+                  : props.isMailSend && "disabled"
+              }
               style={
                 (!isMobile && isHover === ind) || props.isSelectListId === ind
                   ? onHoverStyle(ind, obj?.blockColor)
