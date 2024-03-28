@@ -122,6 +122,7 @@ function Opensigndrive() {
       //disableLoading is used disable initial loader
       const disableLoading = true;
       // If the fetched data length is less than the limit, it means there's no more data to fetch
+
       if (!loading && pdfData.length % 100 === 0) {
         getPdfDocumentList(disableLoading);
       }
@@ -137,7 +138,7 @@ function Opensigndrive() {
       };
     }
     // eslint-disable-next-line
-  }, [loading]); // Add/remove scroll event listener when loading changes
+  }, [loading, sortingOrder]); // Add/remove scroll event listener when loading changes
 
   //function for handle folder name path
   const handleRoute = (index) => {
@@ -237,16 +238,8 @@ function Opensigndrive() {
 
   //function to use get sorting type, order and document list to sort
   const sortingData = (type, order, driveDetails, isInitial) => {
-    const selectedSortType = type
-      ? type
-      : selectedSort
-        ? selectedSort
-        : orderName.Date;
-    const sortOrder = order
-      ? order
-      : sortingOrder
-        ? sortingOrder
-        : orderName.Descending;
+    const selectedSortType = type ? type : selectedSort;
+    const sortOrder = order ? order : sortingOrder;
 
     //check isInitial true it means sort previous 20 and get on scrolling 20 = 40 document list
     const allPdfData = isInitial ? [...pdfData, ...driveDetails] : driveDetails;
@@ -640,7 +633,7 @@ function Opensigndrive() {
                           }}
                           className="dropdown-item itemColor"
                           style={{
-                            marginLeft: selectedSort !== value && "15px"
+                            paddingLeft: selectedSort !== value && "33px"
                           }}
                         >
                           {selectedSort === value && (
@@ -666,7 +659,7 @@ function Opensigndrive() {
                           }}
                           className="dropdown-item itemColor"
                           style={{
-                            marginLeft: sortingOrder !== order && "15px"
+                            paddingLeft: sortingOrder !== order && "33px"
                           }}
                         >
                           {sortingOrder === order && (
