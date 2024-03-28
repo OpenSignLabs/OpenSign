@@ -254,10 +254,15 @@ function Login() {
                                           "userDetails",
                                           JSON.stringify(LocalUserDetails)
                                         );
+                                        const freeplan =
+                                          results[0].get("Plan") &&
+                                          results[0].get("Plan");
                                         const billingDate =
                                           results[0].get("Next_billing_date") &&
                                           results[0].get("Next_billing_date");
-                                        if (billingDate) {
+                                        if (freeplan === "freeplan") {
+                                          navigate(redirectUrl);
+                                        } else if (billingDate) {
                                           if (billingDate > new Date()) {
                                             localStorage.removeItem(
                                               "userDetails"
@@ -809,7 +814,13 @@ function Login() {
                               const billingDate =
                                 results[0].get("Next_billing_date") &&
                                 results[0].get("Next_billing_date");
-                              if (billingDate) {
+                              const freeplan =
+                                results[0]?.get("Plan") &&
+                                results[0]?.get("Plan");
+
+                              if (freeplan === "freeplan") {
+                                navigate(redirectUrl);
+                              } else if (billingDate) {
                                 if (billingDate > new Date()) {
                                   localStorage.removeItem("userDetails");
                                   // Redirect to the appropriate URL after successful login

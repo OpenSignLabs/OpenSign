@@ -52,14 +52,16 @@ const HomeLayout = () => {
       email: currentUser.get("email")
     });
     if (isEnableSubscription) {
+      const freeplan = user?.get("Plan") && user?.get("Plan");
       const billingDate =
         user?.get("Next_billing_date") && user?.get("Next_billing_date");
-
-      if (billingDate) {
+      if (freeplan === "freeplan") {
+        setIsUserValid(true);
+        setIsLoader(false);
+      } else if (billingDate) {
         if (billingDate > new Date()) {
           setIsUserValid(true);
           setIsLoader(false);
-          return true;
         } else {
           navigate(`/subscription`);
         }
@@ -69,7 +71,6 @@ const HomeLayout = () => {
     } else {
       setIsUserValid(true);
       setIsLoader(false);
-      return true;
     }
   }
   const showSidebar = () => {
