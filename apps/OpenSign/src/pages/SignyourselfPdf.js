@@ -90,7 +90,7 @@ function SignYourSelf() {
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
-  const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
+  const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [widgetType, setWidgetType] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
@@ -180,14 +180,14 @@ function SignYourSelf() {
 
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
+    let isCompleted;
     //getting document details
     const documentData = await contractDocument(documentId);
 
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
 
-      const isCompleted =
-        documentData[0].IsCompleted && documentData[0].IsCompleted;
+      isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
         const docStatus = {
           isCompleted: isCompleted
@@ -263,8 +263,7 @@ function SignYourSelf() {
       setSignerUserId(contractUsersRes[0].objectId);
       const tourstatuss =
         contractUsersRes[0].TourStatus && contractUsersRes[0].TourStatus;
-
-      if (tourstatuss && tourstatuss.length > 0) {
+      if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
         setTourStatus(tourstatuss);
         const checkTourRecipients = tourstatuss.filter(
           (data) => data.signyourself
@@ -272,6 +271,8 @@ function SignYourSelf() {
         if (checkTourRecipients && checkTourRecipients.length > 0) {
           setCheckTourStatus(checkTourRecipients[0].signyourself);
         }
+      } else {
+        setCheckTourStatus(true);
       }
       const loadObj = {
         isLoad: false
@@ -291,7 +292,8 @@ function SignYourSelf() {
         const tourstatuss =
           contractContactBook[0].TourStatus &&
           contractContactBook[0].TourStatus;
-        if (tourstatuss && tourstatuss.length > 0) {
+
+        if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
           setTourStatus(tourstatuss);
           const checkTourRecipients = tourstatuss.filter(
             (data) => data.signyourself
@@ -299,6 +301,8 @@ function SignYourSelf() {
           if (checkTourRecipients && checkTourRecipients.length > 0) {
             setCheckTourStatus(checkTourRecipients[0].signyourself);
           }
+        } else {
+          setCheckTourStatus(true);
         }
       } else {
         setHandleError("No Data Found!");
@@ -704,7 +708,7 @@ function SignYourSelf() {
   };
 
   //function for save button to save signature or image url
-  const saveSign = (isDefaultSign, width, height) => {
+  const saveSign = (type, isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign
       ? isDefaultSign === "initials"
@@ -727,6 +731,7 @@ function SignYourSelf() {
       }
     }
     const getUpdatePosition = onSaveSign(
+      type,
       xyPostion,
       index,
       signKey,
@@ -763,6 +768,7 @@ function SignYourSelf() {
 
   //function for delete signature block
   const handleDeleteSign = (key) => {
+    setCurrWidgetsDetails({});
     const updateResizeData = [];
 
     let filterData = xyPostion[index].pos.filter((data) => data.key !== key);
@@ -1101,6 +1107,8 @@ function SignYourSelf() {
                 setIsInitial={setIsInitial}
                 setIsStamp={setIsStamp}
                 widgetType={widgetType}
+                currWidgetsDetails={currWidgetsDetails}
+                setCurrWidgetsDetails={setCurrWidgetsDetails}
               />
               {/*render email component to send email after finish signature on document */}
               <EmailComponent
