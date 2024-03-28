@@ -27,6 +27,7 @@ const Opensigndrive = lazy(() => import("./pages/Opensigndrive"));
 const ManageSign = lazy(() => import("./pages/Managesign"));
 const GenerateToken = lazy(() => import("./pages/GenerateToken"));
 const Webhook = lazy(() => import("./pages/Webhook"));
+const Preferences = lazy(() => import("./pages/Preferences"));
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const Loader = () => {
@@ -174,6 +175,10 @@ function App() {
               <Route
                 path="/recipientSignPdf/:docId/:contactBookId"
                 element={<PdfRequestFiles />}
+              />
+              <Route
+                path="/preferences"
+                element={<LazyPage Page={Preferences} />}
               />
             </Route>
             <Route path="*" element={<PageNotFound />} />
