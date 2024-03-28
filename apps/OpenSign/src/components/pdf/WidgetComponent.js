@@ -364,7 +364,12 @@ function WidgetComponent({
           </div>
         )
       ) : (
-        <div data-tut={dataTut} className="signerComponent">
+        <div
+          data-tut={dataTut}
+          className={
+            isMailSend ? "disabled signerComponent " : "signerComponent"
+          }
+        >
           <div
             style={{
               background: themeColor,

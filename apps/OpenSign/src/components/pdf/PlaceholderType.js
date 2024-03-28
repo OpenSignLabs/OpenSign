@@ -307,6 +307,7 @@ function PlaceholderType(props) {
       return props.pos.SignUrl ? (
         <img
           alt="signimg"
+          draggable="false"
           src={props.pos.SignUrl}
           style={{
             width: "99%",
@@ -328,6 +329,7 @@ function PlaceholderType(props) {
       return props.pos.SignUrl ? (
         <img
           alt="signimg"
+          draggable="false"
           src={props.pos.SignUrl}
           style={{
             width: "99%",
@@ -483,6 +485,7 @@ function PlaceholderType(props) {
       return props.pos.SignUrl ? (
         <img
           alt="signimg"
+          draggable="false"
           src={props.pos.SignUrl}
           style={{
             width: "99%",
@@ -668,6 +671,7 @@ function PlaceholderType(props) {
       return props.pos.SignUrl ? (
         <img
           alt="signimg"
+          draggable="false"
           src={props.pos.SignUrl}
           style={{
             width: "99%",
@@ -787,6 +791,7 @@ function PlaceholderType(props) {
         <div style={{ pointerEvents: "none" }}>
           <img
             alt="signimg"
+            draggable="false"
             src={props.pos.SignUrl}
             style={{
               width: "99%",

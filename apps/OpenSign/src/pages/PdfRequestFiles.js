@@ -10,6 +10,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SignPad from "../components/pdf/SignPad";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import Tour from "reactour";
+import moment from "moment";
 import {
   contractDocument,
   multiSignEmbed,
@@ -68,6 +69,7 @@ function PdfRequestFiles() {
   const [currentSigner, setCurrentSigner] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
+  const [expiredDate, setExpiredDate] = useState("");
   const [defaultSignAlert, setDefaultSignAlert] = useState({
     isShow: false,
     alertMessage: ""
@@ -90,6 +92,7 @@ function PdfRequestFiles() {
   const [widgetsTour, setWidgetsTour] = useState(false);
   const [minRequiredCount, setminRequiredCount] = useState();
   const [sendInOrder, setSendInOrder] = useState(false);
+  const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isSubscribed, setIsSubscribed] = useState(false);
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
@@ -201,7 +204,11 @@ function PdfRequestFiles() {
         };
         setIsDecline(currentDecline);
       } else if (currDate > expireUpdateDate) {
+        const expireDateFormat = moment(new Date(expireDate)).format(
+          "MMM DD, YYYY"
+        );
         setIsExpired(true);
+        setExpiredDate(expireDateFormat);
       }
 
       if (documentData.length > 0) {
@@ -401,7 +408,6 @@ function PdfRequestFiles() {
       return true;
     }
   };
-
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
     const validateSigning = checkSendInOrder();
@@ -765,7 +771,7 @@ function PdfRequestFiles() {
   };
 
   //function for save button to save signature or image url
-  const saveSign = (isDefaultSign, width, height) => {
+  const saveSign = (type, isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
     const signatureImg = isDefaultSign
       ? isDefaultSign === "initials"
@@ -801,6 +807,7 @@ function PdfRequestFiles() {
     const placeholderPosition = currentSigner[0].placeHolder;
     //function of save signature image and get updated position with signature image url
     const getUpdatePosition = onSaveSign(
+      type,
       placeholderPosition,
       getIndex,
       signKey,
@@ -974,7 +981,17 @@ function PdfRequestFiles() {
                 </div>
               )}
 
-              <div className="signatureContainer" ref={divRef}>
+              <div
+                className="signatureContainer"
+                style={{
+                  pointerEvents:
+                    isExpired ||
+                    (isDecline.isDeclined && isDecline.currnt === "another")
+                      ? "none"
+                      : "auto"
+                }}
+                ref={divRef}
+              >
                 <ModalUi
                   headerColor={"#dc3545"}
                   isOpen={isAlert.isShow}
@@ -1047,7 +1064,7 @@ function PdfRequestFiles() {
                   containerWH={containerWH}
                   show={isExpired}
                   headMsg="Document Expired!"
-                  bodyMssg="This Document is no longer available."
+                  bodyMssg={`This document expired on ${expiredDate} and is no longer available to sign.`}
                 />
 
                 <ModalUi
@@ -1184,6 +1201,8 @@ function PdfRequestFiles() {
                     isInitial={isInitial}
                     setIsInitial={setIsInitial}
                     setIsStamp={setIsStamp}
+                    currWidgetsDetails={currWidgetsDetails}
+                    setCurrWidgetsDetails={setCurrWidgetsDetails}
                   />
                   {/* pdf header which contain funish back button */}
                   <Header
@@ -1230,6 +1249,7 @@ function PdfRequestFiles() {
                       unSignedWidgetId={unSignedWidgetId}
                       setSelectWidgetId={setSelectWidgetId}
                       selectWidgetId={selectWidgetId}
+                      setCurrWidgetsDetails={setCurrWidgetsDetails}
                     />
                   )}
                 </div>
