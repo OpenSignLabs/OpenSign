@@ -213,7 +213,7 @@ function Login() {
                                               x.TenantId.TenantName || ""
                                           };
                                           localStorage.setItem(
-                                            "TenetId",
+                                            "TenantId",
                                             x.TenantId.objectId
                                           );
                                           tenentInfo.push(obj);
@@ -546,7 +546,7 @@ function Login() {
                                     tenentName: x.TenantId.TenantName || ""
                                   };
                                   localStorage.setItem(
-                                    "TenetId",
+                                    "TenantId",
                                     x.TenantId.objectId
                                   );
                                   tenentInfo.push(obj);
@@ -788,7 +788,7 @@ function Login() {
                                   tenentName: x.TenantId.TenantName || ""
                                 };
                                 localStorage.setItem(
-                                  "TenetId",
+                                  "TenantId",
                                   x.TenantId.objectId
                                 );
                                 tenentInfo.push(obj);
