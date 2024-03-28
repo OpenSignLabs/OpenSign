@@ -54,11 +54,11 @@ const AddUser = (props) => {
       contactQuery.set("Email", email);
       contactQuery.set("UserRole", "contracts_Guest");
 
-      if (localStorage.getItem("TenetId")) {
+      if (localStorage.getItem("TenantId")) {
         contactQuery.set("TenantId", {
           __type: "Pointer",
           className: "partners_Tenant",
-          objectId: localStorage.getItem("TenetId")
+          objectId: localStorage.getItem("TenantId")
         });
       }
 

@@ -137,7 +137,8 @@ function UserProfile() {
         setImage(response.url());
         localStorage.setItem("profileImg", response.url());
         setpercentage(0);
-        SaveFileSize(size, response.url());
+        const tenantId = localStorage.getItem("TenantId");
+        SaveFileSize(size, response.url(), tenantId);
         return response.url();
       }
     } catch (error) {
@@ -264,7 +265,11 @@ function UserProfile() {
                 <div className="flex justify-between items-center py-2">
                   <span className="font-semibold">
                     Disable DocumentId :{" "}
-                    <Tooltip url={"https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"} />{" "}
+                    <Tooltip
+                      url={
+                        "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
+                      }
+                    />{" "}
                   </span>{" "}
                   <label
                     className={`${
