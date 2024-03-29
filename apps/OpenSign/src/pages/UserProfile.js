@@ -8,6 +8,9 @@ import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
+import { isEnableSubscription } from "../constant/const";
+import { checkIsSubscribed } from "../constant/Utils";
+import Upgrade from "../primitives/Upgrade";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -21,15 +24,24 @@ function UserProfile() {
   const [isLoader, setIsLoader] = useState(false);
   const [percentage, setpercentage] = useState(0);
   const [isDisableDocId, setIsDisableDocId] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(false);
 
   useEffect(() => {
+    getUserDetail();
+  }, []);
+
+  const getUserDetail = async () => {
     const extClass = localStorage.getItem("Extand_Class");
     const jsonSender = JSON.parse(extClass);
     const HeaderDocId = jsonSender[0]?.HeaderDocId;
+    if (isEnableSubscription) {
+      const getIsSubscribe = await checkIsSubscribed();
+      setIsSubscribe(getIsSubscribe);
+    }
     if (HeaderDocId) {
       setIsDisableDocId(HeaderDocId);
     }
-  }, []);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoader(true);
@@ -156,7 +168,6 @@ function UserProfile() {
   const handleDisableDocId = () => {
     setIsDisableDocId((prevChecked) => !prevChecked);
   };
-
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -263,18 +274,30 @@ function UserProfile() {
               </li>
               <li className="border-y-[1px] border-gray-300 break-all">
                 <div className="flex justify-between items-center py-2">
-                  <span className="font-semibold">
+                  <span
+                    className={
+                      isSubscribe
+                        ? "font-semibold"
+                        : "font-semibold text-gray-300"
+                    }
+                  >
                     Disable DocumentId :{" "}
                     <Tooltip
                       url={
                         "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
                       }
+                      isSubscribe={isSubscribe}
                     />{" "}
+                    {!isSubscribe && <Upgrade />}
                   </span>{" "}
                   <label
-                    className={`${
-                      editmode ? "cursor-pointer" : ""
-                    } relative inline-flex items-center mb-0`}
+                    className={
+                      !isSubscribe
+                        ? "relative inline-flex items-center mb-0 pointer-events-none opacity-50"
+                        : `${
+                            editmode ? "cursor-pointer" : ""
+                          } relative inline-flex items-center mb-0`
+                    }
                   >
                     <input
                       disabled={editmode ? false : true}

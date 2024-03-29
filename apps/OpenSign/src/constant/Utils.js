@@ -3,6 +3,7 @@ import moment from "moment";
 import { themeColor } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
+import Parse from "parse";
 
 export const isMobile = window.innerWidth < 767;
 export const textInputWidget = "text input";
@@ -11,6 +12,35 @@ export const radioButtonWidget = "radio button";
 export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
+
+//function to get subcripition details from Extand user class
+export async function checkIsSubscribed() {
+  // const tenantId = localStorage.getItem("TenantId");
+  // const users = new Parse.Query("partners_Tenant");
+  // users.equalTo("objectId", tenantId);
+  // const res = await users.first();
+  // const jsonRes = JSON.parse(JSON.stringify(res));
+
+  const extClass = localStorage.getItem("Extand_Class");
+  const jsonSender = JSON.parse(extClass);
+  const user = await Parse.Cloud.run("getUserDetails", {
+    email: jsonSender[0].Email
+  });
+  const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
+  const billingDate =
+    user?.get("Next_billing_date") && user?.get("Next_billing_date");
+  if (freeplan === "freeplan") {
+    return false;
+  } else if (billingDate) {
+    if (billingDate > new Date()) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
 
 export const color = [
   "#93a3db",

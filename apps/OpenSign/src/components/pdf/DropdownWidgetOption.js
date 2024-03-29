@@ -3,6 +3,7 @@ import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
 import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
+import Upgrade from "../../primitives/Upgrade";
 function DropdownWidgetOption(props) {
   const [dropdownOptionList, setDropdownOptionList] = useState([
     "option-1",
@@ -241,36 +242,59 @@ function DropdownWidgetOption(props) {
                 }}
                 className="fa-solid fa-square-plus"
               ></i>
-              {props.type === "checkbox" && !props.isSignYourself && (
-                <>
-                  <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Minimun check
-                  </label>
-                  <input
-                    required
-                    defaultValue={0}
-                    value={minCount}
-                    onChange={(e) => {
-                      const count = handleSetMinMax(e);
-                      setMinCount(count);
-                    }}
-                    className="drodown-input"
-                  />
-                  <label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Maximum check
-                  </label>
-                  <input
-                    required
-                    defaultValue={0}
-                    value={maxCount}
-                    onChange={(e) => {
-                      const count = handleSetMinMax(e);
-                      setMaxCount(count);
-                    }}
-                    className="drodown-input"
-                  />
-                </>
-              )}
+              <div>
+                {props.type === "checkbox" && !props.isSignYourself && (
+                  <>
+                    <label
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: "600",
+                        color: !props.isSubscribe && "gray"
+                      }}
+                    >
+                      Minimun check
+                    </label>
+                    {!props.isSubscribe && <Upgrade />}
+                    <input
+                      required
+                      defaultValue={0}
+                      value={minCount}
+                      onChange={(e) => {
+                        const count = handleSetMinMax(e);
+                        setMinCount(count);
+                      }}
+                      className={
+                        props.isSubscribe
+                          ? "drodown-input"
+                          : "disabled drodown-input"
+                      }
+                    />
+                    <label
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: "600",
+                        color: !props.isSubscribe && "gray"
+                      }}
+                    >
+                      Maximum check
+                    </label>
+                    <input
+                      required
+                      defaultValue={0}
+                      value={maxCount}
+                      onChange={(e) => {
+                        const count = handleSetMinMax(e);
+                        setMaxCount(count);
+                      }}
+                      className={
+                        props.isSubscribe
+                          ? "drodown-input"
+                          : "disabled drodown-input"
+                      }
+                    />
+                  </>
+                )}
+              </div>
             </div>
             {["dropdown", radioButtonWidget].includes(props.type) && (
               <>
