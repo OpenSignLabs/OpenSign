@@ -11,25 +11,16 @@ export const SaveFileSize = async (size, imageUrl, tenantId) => {
   };
   const _tenantPtr = JSON.stringify(tenantPtr);
   try {
-    const response = await axios
-      .get(
-        `${serverUrl}classes/partners_TenantCredits?where={"PartnersTenant":${_tenantPtr}}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": parseAppId
-          }
+    const res = await axios.get(
+      `${serverUrl}classes/partners_TenantCredits?where={"PartnersTenant":${_tenantPtr}}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": parseAppId
         }
-      )
-      .then((result) => {
-        const res = result.data;
-        //  console.log("res", res);
-
-        return res.results;
-      })
-      .catch((err) => {
-        console.log("axois err ", err);
-      });
+      }
+    );
+    const response = res.data.results;
     let data;
     // console.log("response", response);
     if (response && response.length > 0) {
@@ -38,43 +29,27 @@ export const SaveFileSize = async (size, imageUrl, tenantId) => {
           ? response[0].usedStorage + size
           : size
       };
-      await axios
-        .put(
-          `${serverUrl}classes/partners_TenantCredits/${response[0].objectId}`,
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": parseAppId
-            }
-          }
-        )
-        .then(() => {
-          // const res = result.data;
-          // console.log("save res", res);
-        })
-        .catch((err) => {
-          console.log("axois err ", err);
-        });
-    } else {
-      data = { usedStorage: size, PartnersTenant: tenantPtr };
-      await axios
-        .post(`${serverUrl}classes/partners_TenantCredits`, data, {
+      await axios.put(
+        `${serverUrl}classes/partners_TenantCredits/${response[0].objectId}`,
+        data,
+        {
           headers: {
             "Content-Type": "application/json",
             "X-Parse-Application-Id": parseAppId
           }
-        })
-        .then(() => {
-          // const res = result.data;
-          // console.log("res", res);
-        })
-        .catch((err) => {
-          console.log("axois err ", err);
-        });
+        }
+      );
+    } else {
+      data = { usedStorage: size, PartnersTenant: tenantPtr };
+      await axios.post(`${serverUrl}classes/partners_TenantCredits`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": parseAppId
+        }
+      });
     }
-  } catch (e) {
-    console.log("org app error", e);
+  } catch (err) {
+    console.log("err in save usage", err);
   }
   saveDataFile(size, imageUrl, tenantPtr);
 };
@@ -88,18 +63,15 @@ const saveDataFile = async (size, imageUrl, tenantPtr) => {
   };
 
   // console.log("data save",file, data)
-  await axios
-    .post(`${serverUrl}classes/partners_DataFiles`, data, {
+  try {
+    await axios.post(`${serverUrl}classes/partners_DataFiles`, data, {
       headers: {
         "Content-Type": "application/json",
         "X-Parse-Application-Id": parseAppId
       }
-    })
-    .then((result) => {
-      const res = result.data;
-      console.log("res", res);
-    })
-    .catch((err) => {
-      console.log("axois err ", err);
     });
+  } catch (err) {
+    console.log("err in save usage ", err);
+  }
 };
+  

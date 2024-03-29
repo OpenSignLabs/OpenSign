@@ -256,7 +256,7 @@ function Login() {
                                         );
                                         const freeplan =
                                           results[0].get("Plan") &&
-                                          results[0].get("Plan");
+                                          results[0].get("Plan").plan_code;
                                         const billingDate =
                                           results[0].get("Next_billing_date") &&
                                           results[0].get("Next_billing_date");
@@ -816,7 +816,7 @@ function Login() {
                                 results[0].get("Next_billing_date");
                               const freeplan =
                                 results[0]?.get("Plan") &&
-                                results[0]?.get("Plan");
+                                results[0]?.get("Plan").plan_code;
 
                               if (freeplan === "freeplan") {
                                 navigate(redirectUrl);

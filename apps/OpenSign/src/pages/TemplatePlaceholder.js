@@ -173,7 +173,7 @@ const TemplatePlaceholder = () => {
     const user = await Parse.Cloud.run("getUserDetails", {
       email: email
     });
-    const freeplan = user?.get("Plan") && user?.get("Plan");
+    const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
     const billingDate =
       user?.get("Next_billing_date") && user?.get("Next_billing_date");
     if (freeplan === "freeplan") {
