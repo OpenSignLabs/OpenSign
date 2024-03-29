@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { color, customAPIurl, replaceMailVaribles } from '../../../../Utils.js';
+import { color, customAPIurl, replaceMailVaribles, saveFileUsage } from '../../../../Utils.js';
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
 async function sendDoctoWebhook(doc, WebhookUrl, userId) {
@@ -8,6 +8,7 @@ async function sendDoctoWebhook(doc, WebhookUrl, userId) {
       event: 'created',
       ...doc,
     };
+
     await axios
       .post(WebhookUrl, params, {
         headers: { 'Content-Type': 'application/json' },
@@ -65,6 +66,7 @@ export default async function createDocumentwithCoordinate(request, response) {
   if (!reqToken) {
     return response.status(400).json({ error: 'Please Provide API Token' });
   }
+
   try {
     const tokenQuery = new Parse.Query('appToken');
     tokenQuery.equalTo('token', reqToken);
@@ -81,17 +83,22 @@ export default async function createDocumentwithCoordinate(request, response) {
       if (signers && signers.length > 0) {
         let fileUrl;
         if (request.files?.[0]) {
+          const base64 = fileData?.toString('base64');
           const file = new Parse.File(request.files?.[0]?.originalname, {
-            base64: fileData?.toString('base64'),
+            base64: base64,
           });
           await file.save({ useMasterKey: true });
           fileUrl = file.url();
+          const buffer = Buffer.from(base64, 'base64');
+          saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         } else {
           const file = new Parse.File(`${name}.pdf`, {
             base64: base64File,
           });
           await file.save({ useMasterKey: true });
           fileUrl = file.url();
+          const buffer = Buffer.from(base64File, 'base64');
+          saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         }
         const contractsUser = new Parse.Query('contracts_Users');
         contractsUser.equalTo('UserId', userPtr);
@@ -242,7 +249,6 @@ export default async function createDocumentwithCoordinate(request, response) {
           year: 'numeric',
         });
         let sender = parseExtUser.Email;
-        let sendMail;
         const serverUrl = process.env.SERVER_URL;
         const newServer = serverUrl.replaceAll('/', '%2F');
         const serverParams = `${newServer}%2F&${process.env.APP_ID}&contracts`;
@@ -332,7 +338,7 @@ export default async function createDocumentwithCoordinate(request, response) {
                 html: html,
               };
 
-              sendMail = await axios.post(url, params, { headers: headers });
+              await axios.post(url, params, { headers: headers });
             } catch (error) {
               console.log('error', error);
             }

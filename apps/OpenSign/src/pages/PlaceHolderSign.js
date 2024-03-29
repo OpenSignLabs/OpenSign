@@ -39,6 +39,7 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
+import { SaveFileSize } from "../constant/saveFileSize";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -759,6 +760,10 @@ function PlaceHolderSign() {
         // Save the Parse File if needed
         const pdfData = await pdfFile.save();
         const pdfUrl = pdfData.url();
+        const tenantId = localStorage.getItem("TenantId");
+        const buffer = atob(pdfBytes)
+        console.log("buffer", buffer.length)
+        SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
       } catch (e) {
         console.log("error", e);
