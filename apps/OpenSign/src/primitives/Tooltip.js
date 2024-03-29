@@ -1,9 +1,16 @@
 import React from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { openInNewTab } from "../constant/Utils";
-const Tooltip = ({ id, message, url, iconColor }) =>
+const Tooltip = ({ id, message, url, iconColor, isSubscribe }) =>
   url ? (
-    <button onClick={() => openInNewTab(url)} className="text-center">
+    <button
+      onClick={() => openInNewTab(url)}
+      className={
+        isSubscribe
+          ? "text-center"
+          : "text-center opacity-20 pointer-events-none"
+      }
+    >
       <sup>
         <i
           className="fa-solid fa-question rounded-full"

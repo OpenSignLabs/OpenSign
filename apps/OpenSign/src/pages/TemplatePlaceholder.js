@@ -53,6 +53,7 @@ const TemplatePlaceholder = () => {
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -180,6 +181,7 @@ const TemplatePlaceholder = () => {
       return true;
     } else if (billingDate) {
       if (billingDate > new Date()) {
+        setIsSubscribe(true);
         return true;
       } else {
         navigate(`/subscription`);
@@ -1345,6 +1347,7 @@ const TemplatePlaceholder = () => {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <DropdownWidgetOption
                 type="checkbox"
@@ -1355,6 +1358,7 @@ const TemplatePlaceholder = () => {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1365,6 +1369,7 @@ const TemplatePlaceholder = () => {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
@@ -1564,6 +1569,7 @@ const TemplatePlaceholder = () => {
         isOpen={isNameModal}
         handleClose={handleNameModal}
         handleData={handleWidgetdefaultdata}
+        isSubscribe={isSubscribe}
       />
     </div>
   );

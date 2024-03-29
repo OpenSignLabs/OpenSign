@@ -3,11 +3,12 @@ import Title from "../components/Title";
 import axios from "axios";
 import Alert from "../primitives/Alert";
 import ModalUi from "../primitives/ModalUi";
-import { rejectBtn, submitBtn } from "../constant/const";
-import { openInNewTab } from "../constant/Utils";
+import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
+import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
 import Parse from "parse";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
+import Upgrade from "../primitives/Upgrade";
 
 function Webhook() {
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -17,6 +18,7 @@ function Webhook() {
   const [isGenerate, setIsGenerate] = useState(false);
   const [isErr, setIsErr] = useState(false);
   const [isModal, setIsModal] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(false);
 
   useEffect(() => {
     fetchWebhook();
@@ -25,6 +27,10 @@ function Webhook() {
 
   const fetchWebhook = async () => {
     const email = Parse.User.current().getEmail();
+    if (isEnableSubscription) {
+      const getIsSubscribe = await checkIsSubscribed();
+      setIsSubscribe(getIsSubscribe);
+    }
     const params = { email: email };
     try {
       const extRes = await Parse.Cloud.run("getUserDetails", params);
@@ -104,13 +110,27 @@ function Webhook() {
       ) : (
         <div className="bg-white flex flex-col justify-center shadow rounded">
           <PremiumAlertHeader />
-          <h1 className="ml-4 mt-3 mb-2 font-semibold">
+          <h1
+            className={
+              isSubscribe
+                ? "ml-4 mt-3 mb-2 font-semibold"
+                : "ml-4 mt-3 mb-2 font-semibold text-gray-300"
+            }
+          >
             Webhook{" "}
             <Tooltip
               url={"https://docs.opensignlabs.com/docs/API-docs/get-webhook"}
+              isSubscribe={isSubscribe}
             />
+            {!isSubscribe && <Upgrade />}
           </h1>
-          <ul className="w-full flex flex-col  p-2 text-sm">
+          <ul
+            className={
+              isSubscribe
+                ? "w-full flex flex-col p-2 text-sm "
+                : "w-full flex flex-col p-2 text-sm opacity-20 pointer-events-none"
+            }
+          >
             <li
               className={`flex justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
             >
@@ -120,7 +140,13 @@ function Webhook() {
               </span>
             </li>
           </ul>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-2 pb-4">
+          <div
+            className={
+              isSubscribe
+                ? "flex flex-col md:flex-row items-center justify-center gap-2 pb-4"
+                : "flex flex-col md:flex-row items-center justify-center gap-2 pb-4 opacity-40 pointer-events-none"
+            }
+          >
             <button
               type="button"
               onClick={handleModal}

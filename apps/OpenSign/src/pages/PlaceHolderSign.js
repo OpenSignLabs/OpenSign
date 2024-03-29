@@ -104,6 +104,7 @@ function PlaceHolderSign() {
   const [widgetName, setWidgetName] = useState(false);
   const [mailStatus, setMailStatus] = useState("");
   const [isCurrUser, setIsCurrUser] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(false);
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
     message: ""
@@ -190,6 +191,7 @@ function PlaceHolderSign() {
       return true;
     } else if (billingDate) {
       if (billingDate > new Date()) {
+        setIsSubscribe(true);
         return true;
       } else {
         navigate(`/subscription`);
@@ -1617,6 +1619,7 @@ function PlaceHolderSign() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <DropdownWidgetOption
                 type="checkbox"
@@ -1627,6 +1630,7 @@ function PlaceHolderSign() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1637,6 +1641,7 @@ function PlaceHolderSign() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
 
               {/* pdf header which contain funish back button */}
@@ -1852,6 +1857,7 @@ function PlaceHolderSign() {
           isOpen={isNameModal}
           handleClose={handleNameModal}
           handleData={handleWidgetdefaultdata}
+          isSubscribe={isSubscribe}
         />
       </div>
     </>

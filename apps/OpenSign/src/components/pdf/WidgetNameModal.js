@@ -4,6 +4,7 @@ import "../../styles/AddUser.css";
 import RegexParser from "regex-parser";
 import { textInputWidget } from "../../constant/Utils";
 import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
+import Upgrade from "../../primitives/Upgrade";
 
 const WidgetNameModal = (props) => {
   const [formdata, setFormdata] = useState({
@@ -133,10 +134,16 @@ const WidgetNameModal = (props) => {
           props.widgetName === textInputWidget) && (
           <>
             <div className="form-section">
-              <label htmlFor="textvalidate" style={{ fontSize: 13 }}>
+              <label
+                htmlFor="textvalidate"
+                className="disabled"
+                style={{ fontSize: 13 }}
+              >
                 Validation
               </label>
+              {!props.isSubscribe && <Upgrade />}
               <div
+                className="disabled"
                 style={{
                   display: "flex",
                   flexDirection: "row",
@@ -178,6 +185,7 @@ const WidgetNameModal = (props) => {
                 </div>
               </div>
             </div>
+
             <div className="form-section">
               <label htmlFor="name" style={{ fontSize: 13 }}>
                 Default value
@@ -196,7 +204,10 @@ const WidgetNameModal = (props) => {
                 }}
               />
               {isValid === false && (
-                <div className="warning defaultvalueWarning" style={{ fontSize: 12 }}>
+                <div
+                  className="warning defaultvalueWarning"
+                  style={{ fontSize: 12 }}
+                >
                   <i
                     className="fas fa-exclamation-circle"
                     style={{ color: "#fab005", fontSize: 15 }}
