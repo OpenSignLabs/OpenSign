@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { themeColor } from "../../constant/const";
+import { isEnableSubscription, themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
 import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
@@ -254,7 +254,7 @@ function DropdownWidgetOption(props) {
                     >
                       Minimun check
                     </label>
-                    {!props.isSubscribe && <Upgrade />}
+                    {!props.isSubscribe && isEnableSubscription && <Upgrade />}
                     <input
                       required
                       defaultValue={0}
@@ -264,7 +264,7 @@ function DropdownWidgetOption(props) {
                         setMinCount(count);
                       }}
                       className={
-                        props.isSubscribe
+                        props.isSubscribe || !isEnableSubscription
                           ? "drodown-input"
                           : "disabled drodown-input"
                       }
@@ -287,7 +287,7 @@ function DropdownWidgetOption(props) {
                         setMaxCount(count);
                       }}
                       className={
-                        props.isSubscribe
+                        props.isSubscribe || !isEnableSubscription
                           ? "drodown-input"
                           : "disabled drodown-input"
                       }
@@ -402,13 +402,15 @@ function DropdownWidgetOption(props) {
               </div>
             )}
           </div>
-          {props.type === "checkbox" && !props.isSignYourself && (
-            <PremiumAlertHeader
-              message={
-                "Field validations are free in beta, this feature will incur a fee later."
-              }
-            />
-          )}
+          {props.type === "checkbox" &&
+            !props.isSignYourself &&
+            !isEnableSubscription && (
+              <PremiumAlertHeader
+                message={
+                  "Field validations are free in beta, this feature will incur a fee later."
+                }
+              />
+            )}
           <div
             className={`${
               props.type === "checkbox" && !props.isSignYourself

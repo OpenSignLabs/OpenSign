@@ -276,7 +276,7 @@ function UserProfile() {
                 <div className="flex justify-between items-center py-2">
                   <span
                     className={
-                      isSubscribe
+                      isSubscribe || !isEnableSubscription
                         ? "font-semibold"
                         : "font-semibold text-gray-300"
                     }
@@ -288,11 +288,11 @@ function UserProfile() {
                       }
                       isSubscribe={isSubscribe}
                     />{" "}
-                    {!isSubscribe && <Upgrade />}
+                    {!isSubscribe && isEnableSubscription && <Upgrade />}
                   </span>{" "}
                   <label
                     className={
-                      !isSubscribe
+                      !isSubscribe || isEnableSubscription
                         ? "relative inline-flex items-center mb-0 pointer-events-none opacity-50"
                         : `${
                             editmode ? "cursor-pointer" : ""
@@ -310,11 +310,13 @@ function UserProfile() {
                     <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                <PremiumAlertHeader
-                  message={
-                    "Disable documentId is free in beta, this feature will incur a fee later."
-                  }
-                />
+                {!isEnableSubscription && (
+                  <PremiumAlertHeader
+                    message={
+                      "Disable documentId is free in beta, this feature will incur a fee later."
+                    }
+                  />
+                )}
               </li>
             </ul>
             <div className="flex justify-center pt-2 pb-3 md:pt-3 md:pb-4">
