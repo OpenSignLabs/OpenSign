@@ -8,11 +8,24 @@ import { openInNewTab } from "../constant/Utils";
 const Header = ({ showSidebar }) => {
   const navigation = useNavigate();
   const { width } = useWindowSize();
-  let applogo = localStorage.getItem("appLogo") || "";
+  const [applogo, setAppLogo] = useState("");
   let username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
 
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    let applogo;
+    const domainName = window.location.host;
+    const tenantDomain = localStorage.getItem("tenant_domain");
+    if (domainName === tenantDomain) {
+      applogo = localStorage.getItem("tenant_logo") || "";
+      setAppLogo(applogo);
+    } else {
+      applogo = localStorage.getItem("appLogo") || "";
+      setAppLogo(applogo);
+    }
+  }, []);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
