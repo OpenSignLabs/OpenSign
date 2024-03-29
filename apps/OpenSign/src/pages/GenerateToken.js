@@ -125,10 +125,10 @@ function GenerateToken() {
         </div>
       ) : (
         <div className="bg-white flex flex-col justify-center shadow rounded">
-          <PremiumAlertHeader />
+          {!isEnableSubscription && <PremiumAlertHeader />}
           <h1
             className={
-              isSubscribe
+              isSubscribe || !isEnableSubscription
                 ? "ml-4 mt-3 mb-2 font-semibold"
                 : "ml-4 mt-3 mb-2 font-semibold text-gray-300"
             }
@@ -140,11 +140,11 @@ function GenerateToken() {
               }
               iconColor={!isSubscribe && "gray"}
             />
-            {!isSubscribe && <Upgrade />}
+            {!isSubscribe && isEnableSubscription && <Upgrade />}
           </h1>
           <ul
             className={
-              isSubscribe
+              isSubscribe || !isEnableSubscription
                 ? "w-full flex flex-col p-2 text-sm "
                 : "w-full flex flex-col p-2 text-sm opacity-20 pointer-events-none"
             }
@@ -164,7 +164,7 @@ function GenerateToken() {
           </ul>
           <div
             className={
-              isSubscribe
+              isSubscribe || !isEnableSubscription
                 ? "flex flex-col md:flex-row items-center justify-center gap-2 pb-4"
                 : "flex flex-col md:flex-row items-center justify-center gap-2 pb-4 opacity-40 pointer-events-none"
             }

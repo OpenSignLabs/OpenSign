@@ -1,12 +1,13 @@
 import React from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { openInNewTab } from "../constant/Utils";
+import { isEnableSubscription } from "../constant/const";
 const Tooltip = ({ id, message, url, iconColor, isSubscribe }) =>
   url ? (
     <button
       onClick={() => openInNewTab(url)}
       className={
-        isSubscribe
+        isSubscribe || !isEnableSubscription
           ? "text-center"
           : "text-center opacity-20 pointer-events-none"
       }

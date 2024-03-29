@@ -5,6 +5,7 @@ import RegexParser from "regex-parser";
 import { textInputWidget } from "../../constant/Utils";
 import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 import Upgrade from "../../primitives/Upgrade";
+import { isEnableSubscription } from "../../constant/const";
 
 const WidgetNameModal = (props) => {
   const [formdata, setFormdata] = useState({
@@ -101,13 +102,14 @@ const WidgetNameModal = (props) => {
       title={"Widget info"}
     >
       {(props.defaultdata?.type === textInputWidget ||
-        props.widgetName === textInputWidget) && (
-        <PremiumAlertHeader
-          message={
-            "Field validations are free in beta, this feature will incur a fee later."
-          }
-        />
-      )}
+        props.widgetName === textInputWidget) &&
+        !isEnableSubscription && (
+          <PremiumAlertHeader
+            message={
+              "Field validations are free in beta, this feature will incur a fee later."
+            }
+          />
+        )}
       <form
         onSubmit={handleSubmit}
         className={`${
@@ -136,14 +138,18 @@ const WidgetNameModal = (props) => {
             <div className="form-section">
               <label
                 htmlFor="textvalidate"
-                className="disabled"
+                className={
+                  !props.isSubscribe && isEnableSubscription && "disabled"
+                }
                 style={{ fontSize: 13 }}
               >
                 Validation
               </label>
-              {!props.isSubscribe && <Upgrade />}
+              {!props.isSubscribe && isEnableSubscription && <Upgrade />}
               <div
-                className="disabled"
+                className={
+                  !props.isSubscribe && isEnableSubscription && "disabled"
+                }
                 style={{
                   display: "flex",
                   flexDirection: "row",
