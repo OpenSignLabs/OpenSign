@@ -43,51 +43,69 @@ export function replaceMailVaribles(subject, body, variables) {
   return result;
 }
 
-export const saveFileUsage = async (size, imageUrl, tenantId) => {
+export const saveFileUsage = async (size, imageUrl, userId) => {
   //checking server url and save file's size
-  const tenantPtr = {
-    __type: 'Pointer',
-    className: 'partners_Tenant',
-    objectId: tenantId,
-  };
-  const _tenantPtr = JSON.stringify(tenantPtr);
-  try {
-    const res = await axios.get(
-      `${serverUrl}classes/partners_TenantCredits?where={"PartnersTenant":${_tenantPtr}}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Parse-Application-Id': appId,
-        },
-      }
-    );
-    const response = res.data.results;
 
-    let data;
-    // console.log("response", response);
-    if (response && response.length > 0) {
-      data = {
-        usedStorage: response[0].usedStorage ? response[0].usedStorage + size : size,
+  try {
+    const tenantQuery = new Parse.Query('partners_Tenant');
+    tenantQuery.equalTo('UserId', {
+      __type: 'Pointer',
+      className: '_User',
+      objectId: userId,
+    });
+    const tenant = await tenantQuery.first();
+    if (tenant) {
+      const tenantPtr = {
+        __type: 'Pointer',
+        className: 'partners_Tenant',
+        objectId: tenant.id,
       };
-      await axios.put(`${serverUrl}classes/partners_TenantCredits/${response[0].objectId}`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Parse-Application-Id': appId,
-        },
-      });
-    } else {
-      data = { usedStorage: size, PartnersTenant: tenantPtr };
-      await axios.post(`${serverUrl}classes/partners_TenantCredits`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Parse-Application-Id': parseAppId,
-        },
-      });
+      const _tenantPtr = JSON.stringify(tenantPtr);
+      try {
+        const res = await axios.get(
+          `${serverUrl}/classes/partners_TenantCredits?where={"PartnersTenant":${_tenantPtr}}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Parse-Application-Id': appId,
+            },
+          }
+        );
+        const response = res.data.results;
+
+        let data;
+        // console.log("response", response);
+        if (response && response.length > 0) {
+          data = {
+            usedStorage: response[0].usedStorage ? response[0].usedStorage + size : size,
+          };
+          await axios.put(
+            `${serverUrl}/classes/partners_TenantCredits/${response[0].objectId}`,
+            data,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Parse-Application-Id': appId,
+              },
+            }
+          );
+        } else {
+          data = { usedStorage: size, PartnersTenant: tenantPtr };
+          await axios.post(`${serverUrl}/classes/partners_TenantCredits`, data, {
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Parse-Application-Id': appId,
+            },
+          });
+        }
+      } catch (err) {
+        console.log('err in save usage', err);
+      }
+      saveDataFile(size, imageUrl, tenantPtr);
     }
   } catch (err) {
-    console.log('err in save usage', err);
+    console.log('err in fetch tenant Id', err);
   }
-  saveDataFile(size, imageUrl, tenantPtr);
 };
 
 //function for save fileUrl and file size in particular client db class partners_DataFiles
@@ -100,10 +118,10 @@ const saveDataFile = async (size, imageUrl, tenantPtr) => {
 
   // console.log("data save",file, data)
   try {
-    await axios.post(`${serverUrl}classes/partners_DataFiles`, data, {
+    await axios.post(`${serverUrl}/classes/partners_DataFiles`, data, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Parse-Application-Id': parseAppId,
+        'X-Parse-Application-Id': appId,
       },
     });
   } catch (err) {

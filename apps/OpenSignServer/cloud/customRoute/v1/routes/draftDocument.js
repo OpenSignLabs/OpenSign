@@ -36,17 +36,22 @@ export default async function draftDocument(request, response) {
       if (signers && signers.length > 0) {
         let fileUrl;
         if (request.files?.[0]) {
+          const base64 = fileData?.toString('base64');
           const file = new Parse.File(request.files?.[0]?.originalname, {
-            base64: fileData?.toString('base64'),
+            base64: base64,
           });
           await file.save({ useMasterKey: true });
           fileUrl = file.url();
+          const buffer = Buffer.from(base64, 'base64');
+          saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         } else {
           const file = new Parse.File(`${name}.pdf`, {
             base64: base64File,
           });
           await file.save({ useMasterKey: true });
           fileUrl = file.url();
+          const buffer = Buffer.from(base64File, 'base64');
+          saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         }
         const contractsUser = new Parse.Query('contracts_Users');
         contractsUser.equalTo('UserId', userPtr);
