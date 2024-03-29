@@ -5,6 +5,7 @@ import "../styles/signature.css";
 import { toDataUrl } from "../constant/Utils";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
+import { SaveFileSize } from "../constant/saveFileSize";
 const ManageSign = () => {
   const appName = appInfo.appname;
   const [penColor, setPenColor] = useState("blue");
@@ -158,7 +159,11 @@ const ManageSign = () => {
     try {
       const parseFile = new Parse.File(file.name, file);
       const response = await parseFile.save();
-      return response?.url();
+      if (response?.url()) {
+        const tenantId = localStorage.getItem("TenantId");
+        SaveFileSize(file.size, response.url(), tenantId);
+        return response?.url();
+      }
     } catch (err) {
       console.log("sign upload err", err);
       setIsLoader(false);
