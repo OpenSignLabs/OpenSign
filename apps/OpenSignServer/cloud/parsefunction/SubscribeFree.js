@@ -5,17 +5,20 @@ export default async function SubscribeFree(request) {
     const extQuery = new Parse.Query('contracts_Users');
     extQuery.equalTo('UserId', userPtr);
     const extUser = await extQuery.first({ useMasterKey: true });
-
-    if (extUser && extUser?.Next_billing_date < new Date()) {
-      try {
-        const extUpdate = new Parse.Object('contracts_Users');
-        extUpdate.id = extUser.id;
-        extUpdate.set('Plan', { plan_code: 'freeplan' });
-        const updatePlan = await extUpdate.save(null, { useMasterKey: true });
-        return { status: 'success', result: 'subscribed!' };
-      } catch (err) {
-        console.log('err ', err);
-        return { status: 'error', result: err.message };
+    if (extUser) {
+      if (extUser?.get('Plan')?.plan_code === 'freeplan') {
+        return { status: 'success', result: 'already subscribed!' };
+      } else if (extUser?.get('Next_billing_date') < new Date()) {
+        try {
+          const extUpdate = new Parse.Object('contracts_Users');
+          extUpdate.id = extUser.id;
+          extUpdate.set('Plan', { plan_code: 'freeplan' });
+          const updatePlan = await extUpdate.save(null, { useMasterKey: true });
+          return { status: 'success', result: 'subscribed!' };
+        } catch (err) {
+          console.log('err ', err);
+          return { status: 'error', result: err.message };
+        }
       }
     } else {
       return { status: 'error', result: 'User not found!' };
