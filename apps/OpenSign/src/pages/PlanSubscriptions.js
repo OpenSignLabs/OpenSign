@@ -45,10 +45,25 @@ const PlanSubscriptions = () => {
   }, []);
 
   const handleFreePlan = async () => {
-    const params = { userId: Parse.User.current().id };
-    const res = await Parse.Cloud.run("freesubscription", params);
-    if (res.status === "success") {
-      navigate("/");
+    setIsLoader(true);
+    try {
+      const params = { userId: Parse.User.current().id };
+      const res = await Parse.Cloud.run("freesubscription", params);
+      console.log("res.result ", res.result);
+      if (res.status === "success" && res.result === "already subscribed!") {
+        setIsLoader(false);
+        alert("You have already subscription of free plan");
+      } else if (res.status === "success") {
+        setIsLoader(false);
+        navigate("/");
+      } else if (res.status === "error") {
+        setIsLoader(false);
+        alert(res.result);
+      }
+    } catch (err) {
+      setIsLoader(false);
+      console.log("err in free subscribe", err.message);
+      alert("Somenthing went wrong, please try again later!");
     }
   };
   return (
