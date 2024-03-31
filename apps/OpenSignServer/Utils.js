@@ -128,3 +128,27 @@ const saveDataFile = async (size, imageUrl, tenantPtr) => {
     console.log('error in save usage ', err);
   }
 };
+
+export const updateMailCount = async extUserId => {
+  // Update count in contracts_Users class
+  const query = new Parse.Query('contracts_Users');
+  query.equalTo('objectId', extUserId);
+
+  try {
+    const contractUser = await query.first({ useMasterKey: true });
+    console.log("contractUser",  contractUser)
+
+    if (contractUser) {
+      contractUser.increment('EmailCount', 1);
+      await contractUser.save(null, { useMasterKey: true });
+    } else {
+      // Create new entry if not found
+      const ContractsUsers = Parse.Object.extend('contracts_users');
+      const newContractUser = new ContractsUsers();
+      newContractUser.set('EmailCount', 1);
+      await newContractUser.save(null, { useMasterKey: true });
+    }
+  } catch (error) {
+    console.log('Error updating EmailCount in contracts_users: ' + error.message);
+  }
+};

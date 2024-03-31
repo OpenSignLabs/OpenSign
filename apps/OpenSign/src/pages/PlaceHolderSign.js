@@ -110,6 +110,7 @@ function PlaceHolderSign() {
     status: false,
     message: ""
   });
+  const [extUserId, setExtUserId] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -206,6 +207,7 @@ function PlaceHolderSign() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       if (isEnableSubscription) {
         checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
       }
@@ -761,7 +763,7 @@ function PlaceHolderSign() {
         const pdfData = await pdfFile.save();
         const pdfUrl = pdfData.url();
         const tenantId = localStorage.getItem("TenantId");
-        const buffer = atob(pdfBytes)
+        const buffer = atob(pdfBytes);
         SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
       } catch (e) {
@@ -856,6 +858,7 @@ function PlaceHolderSign() {
           : "";
         const themeBGcolor = themeColor;
         let params = {
+          extUserId: extUserId,
           recipient: signerMail[i].Email,
           subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
           from: sender,

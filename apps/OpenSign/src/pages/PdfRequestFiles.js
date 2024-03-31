@@ -94,6 +94,7 @@ function PdfRequestFiles() {
   const [sendInOrder, setSendInOrder] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [extUserId, setExtUserId] = useState("");
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -169,6 +170,7 @@ function PdfRequestFiles() {
       if (isEnableSubscription) {
         await checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
       }
+      setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
       const expireDate = documentData[0].ExpiryDate.iso;
@@ -624,10 +626,10 @@ function PdfRequestFiles() {
                       : "";
                     const themeBGcolor = themeColor;
                     let params = {
+                      extUserId: extUserId,
                       recipient: user.Email,
                       subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
                       from: sender,
-
                       html:
                         "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
                         imgPng +
