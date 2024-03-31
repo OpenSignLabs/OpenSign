@@ -24,6 +24,8 @@ import GetTemplate from './parsefunction/GetTemplate.js';
 import savewebhook from './parsefunction/saveWebhook.js';
 import callWebhook from './parsefunction/callWebhook.js';
 import SubscribeFree from './parsefunction/SubscribeFree.js';
+import DocumentBeforesave from './parsefunction/DocumentBeforesave.js';
+import TemplateBeforeSave from './parsefunction/TemplateBeforesave.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
@@ -51,3 +53,5 @@ Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
 Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
 Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
 Parse.Cloud.afterSave('contracts_Template', TemplateAfterSave);
+Parse.Cloud.beforeSave('contracts_Document', DocumentBeforesave);
+Parse.Cloud.beforeSave('contracts_Template', TemplateBeforeSave);
