@@ -6,11 +6,11 @@ export default async function SubscribeFree(request) {
     extQuery.equalTo('UserId', userPtr);
     const extUser = await extQuery.first({ useMasterKey: true });
 
-    if (extUser) {
+    if (extUser && extUser?.Next_billing_date < new Date()) {
       try {
         const extUpdate = new Parse.Object('contracts_Users');
         extUpdate.id = extUser.id;
-        extUpdate.set('Plan', {  plan_code: 'freeplan' });
+        extUpdate.set('Plan', { plan_code: 'freeplan' });
         const updatePlan = await extUpdate.save(null, { useMasterKey: true });
         return { status: 'success', result: 'subscribed!' };
       } catch (err) {

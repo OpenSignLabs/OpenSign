@@ -762,7 +762,6 @@ function PlaceHolderSign() {
         const pdfUrl = pdfData.url();
         const tenantId = localStorage.getItem("TenantId");
         const buffer = atob(pdfBytes)
-        console.log("buffer", buffer.length)
         SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
       } catch (e) {
