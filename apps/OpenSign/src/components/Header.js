@@ -84,6 +84,14 @@ const Header = ({ showSidebar }) => {
         className="flex justify-between items-center gap-x-3"
       >
         <div>
+          <button
+            className="text-xs bg-[#002864] p-2 text-white rounded shadow"
+            onClick={() => navigation("/subscription")}
+          >
+            Upgrade Now
+          </button>
+        </div>
+        <div>
           <FullScreenButton />
         </div>
         {width >= 768 && (
