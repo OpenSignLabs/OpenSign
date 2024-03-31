@@ -136,8 +136,6 @@ export const updateMailCount = async extUserId => {
 
   try {
     const contractUser = await query.first({ useMasterKey: true });
-    console.log("contractUser",  contractUser)
-
     if (contractUser) {
       contractUser.increment('EmailCount', 1);
       await contractUser.save(null, { useMasterKey: true });

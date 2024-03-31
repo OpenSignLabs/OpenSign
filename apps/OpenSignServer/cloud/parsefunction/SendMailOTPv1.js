@@ -1,18 +1,30 @@
 import { updateMailCount } from '../../Utils.js';
-
+async function getDocument(docId) {
+  try {
+    const query = new Parse.Query('contracts_Document');
+    query.equalTo('objectId', docId);
+    query.include('ExtUserPtr');
+    query.include('CreatedBy');
+    query.include('Signers');
+    query.include('AuditTrail.UserPtr');
+    query.include('Placeholders');
+    query.notEqualTo('IsArchive', true);
+    const res = await query.first({ useMasterKey: true });
+    const _res = res.toJSON();
+    return _res?.ExtUserPtr?.objectId;
+  } catch (err) {
+    console.log('err ', err);
+  }
+}
 async function sendMailOTPv1(request) {
   try {
     //--for elearning app side
     let code = Math.floor(1000 + Math.random() * 9000);
     let email = request.params.email;
     var TenantId = request.params.TenantId ? request.params.TenantId : undefined;
-    // console.log("In tempSendOTPv2");
-
-    // console.log(JSON.stringify(request));
 
     if (email) {
       const recipient = request.params.email;
-      const otp = request.params.otp;
       const mailsender = process.env.SMTP_ENABLE
         ? process.env.SMTP_USER_EMAIL
         : process.env.MAILGUN_SENDER;
@@ -24,12 +36,15 @@ async function sendMailOTPv1(request) {
           text: 'This email is a test.',
           html:
             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><div style='background-color:#f5f5f5;padding:20px'><div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background-color:white;'><div style='background-color:red;padding:2px;font-family:system-ui; background-color:#47a3ad;'>    <p style='font-size:20px;font-weight:400;color:white;padding-left:20px',>OTP Verification</p></div><div style='padding:20px'><p style='font-family:system-ui;font-size:14px'>Your OTP for OpenSign™ verification is:</p><p style=' text-decoration: none; font-weight: bolder; color:blue;font-size:45px;margin:20px'>" +
-            otp +
+            code +
             '</p></div> </div> </div></body></html>',
         });
         console.log('OTP sent');
-        if (request.params?.extUserId) {
-          await updateMailCount(request.params.extUserId);
+        if (request.params?.docId) {
+          const extUserId = await getDocument(request.params?.docId);
+          if (extUserId) {
+            updateMailCount(extUserId);
+          }
         }
       } catch (err) {
         console.log('error in send OTP mail', err);
