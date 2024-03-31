@@ -99,6 +99,7 @@ function SignYourSelf() {
   });
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
+  const [extUserId, setExtUserId] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -186,7 +187,7 @@ function SignYourSelf() {
 
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
-
+      setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
         const docStatus = {
@@ -433,13 +434,13 @@ function SignYourSelf() {
         Width: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
           : dragTypeValue === "initials"
-            ? defaultWidthHeight(dragTypeValue).width
-            : "",
+          ? defaultWidthHeight(dragTypeValue).width
+          : "",
         Height: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
           : dragTypeValue === "initials"
-            ? defaultWidthHeight(dragTypeValue).height
-            : "",
+          ? defaultWidthHeight(dragTypeValue).height
+          : "",
         options: addWidgetOptions(dragTypeValue)
       };
 
@@ -1120,6 +1121,7 @@ function SignYourSelf() {
                 setSuccessEmail={setSuccessEmail}
                 sender={jsonSender}
                 setIsAlert={setIsAlert}
+                extUserId={extUserId}
               />
               {/* pdf header which contain funish back button */}
               <Header

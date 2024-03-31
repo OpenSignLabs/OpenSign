@@ -336,6 +336,7 @@ export default async function createDocumentwithCoordinate(request, response) {
                 subject: subject,
                 from: sender,
                 html: html,
+                extUserId: extUser.id,
               };
 
               await axios.post(url, params, { headers: headers });
