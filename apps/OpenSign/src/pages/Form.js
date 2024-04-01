@@ -10,6 +10,7 @@ import SelectFolder from "../components/shared/fields/SelectFolder";
 import SignersInput from "../components/shared/fields/SignersInput";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
+import { SaveFileSize } from "../constant/saveFileSize";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -82,6 +83,7 @@ const Forms = (props) => {
   const handleFileUpload = async (file) => {
     setfileload(true);
     const fileName = file.name;
+    const size = file.size;
     const name = sanitizeFileName(fileName);
     const pdfFile = file;
     const parseFile = new Parse.File(name, pdfFile);
@@ -101,6 +103,8 @@ const Forms = (props) => {
       setFileUpload(response.url());
       setfileload(false);
       if (response.url()) {
+        const tenantId = localStorage.getItem("TenantId");
+        SaveFileSize(size, response.url(), tenantId);
         return response.url();
       }
     } catch (error) {
@@ -113,6 +117,7 @@ const Forms = (props) => {
   const dropboxSuccess = async (files) => {
     setfileload(true);
     const file = files[0];
+    const size = file.bytes;
     const url = file.link;
     const mb = Math.round(file.bytes / Math.pow(1024, 2));
 
@@ -141,6 +146,8 @@ const Forms = (props) => {
         setfileload(false);
 
         if (response.url()) {
+          const tenantId = localStorage.getItem("TenantId");
+          SaveFileSize(size, response.url(), tenantId);
           return response.url();
         }
       } catch (error) {

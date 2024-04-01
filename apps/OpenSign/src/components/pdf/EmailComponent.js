@@ -15,7 +15,8 @@ function EmailComponent({
   setSuccessEmail,
   pdfName,
   sender,
-  setIsAlert
+  setIsAlert,
+  extUserId
 }) {
   const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState();
@@ -38,6 +39,7 @@ function EmailComponent({
         const openSignUrl = "https://www.opensignlabs.com/contact-us";
         const themeBGcolor = themeColor;
         let params = {
+          extUserId: extUserId,
           pdfName: pdfName,
           url: pdfUrl,
           recipient: emailList[i],

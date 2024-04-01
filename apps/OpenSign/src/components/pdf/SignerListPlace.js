@@ -1,6 +1,7 @@
 import React from "react";
 import { themeColor } from "../../constant/const";
 import RecipientList from "./RecipientList";
+import { Tooltip } from "react-tooltip";
 
 function SignerListPlace(props) {
   return (
@@ -13,6 +14,58 @@ function SignerListPlace(props) {
       >
         <span className="signedStyle">
           {props.title ? props.title : "Recipients"}
+          <span className="absolute text-xs z-[30] mt-1 ml-0.5">
+            {props?.title === "Roles" && (
+              <>
+                <a data-tooltip-id="my-tooltip">
+                  <sup>
+                    <i
+                      className="fa-solid fa-question rounded-full"
+                      style={{
+                        borderColor: "white",
+                        color: "white",
+                        fontSize: 11,
+                        borderWidth: 1.5,
+                        padding: "1px 3px"
+                      }}
+                    ></i>
+                  </sup>
+                </a>
+                <Tooltip id="my-tooltip">
+                  <div className="max-w-[450px]">
+                    <p className="font-bold">What are template roles?</p>
+                    <p>
+                      Begin by specifying each role needed for the completion of
+                      the document. Think about the parties involved in the
+                      signing process and what their responsibilities are.
+                      Common roles include HR for internal documents, Customer
+                      for agreements or Vendor for business agreements.{" "}
+                    </p>
+                    <p className="font-bold">
+                      Why pre-attach users to some roles?
+                    </p>
+                    <p>
+                      For roles that consistently involve the same individual
+                      (e.g., the CEO&apos;s signature on employee offer
+                      letters), you can pre-attach a user to a role within the
+                      template. This step is optional but recommended for
+                      efficiency and consistency across documents.
+                    </p>
+                    <p className="font-bold">
+                      When do i specify the user attached to each role?
+                    </p>
+                    <p>
+                      When you create a document from your template, you&apos;ll
+                      be prompted to attach users to each defined role. If a
+                      role already has a user attached, this will be pre-filled,
+                      but you can modify it as needed before sending out the
+                      document.
+                    </p>
+                  </div>
+                </Tooltip>
+              </>
+            )}
+          </span>
         </span>
       </div>
       <div className="signerList">

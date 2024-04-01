@@ -3,8 +3,9 @@ import https from 'https';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import { createTransport } from 'nodemailer';
+import { updateMailCount } from '../../Utils.js';
 
-async function sendmail(req) {
+async function sendmailv3(req) {
   try {
     let transporterSMTP;
     let mailgunClient;
@@ -77,6 +78,9 @@ async function sendmail(req) {
           const res = await transporterSMTP.sendMail(messageParams);
           console.log('Res ', res);
           if (!res.err) {
+            if (req.params?.extUserId) {
+              await updateMailCount(req.params.extUserId);
+            }
             return {
               status: 'success',
             };
@@ -85,6 +89,9 @@ async function sendmail(req) {
           const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
           console.log('Res ', res);
           if (res.status === 200) {
+            if (req.params?.extUserId) {
+              await updateMailCount(req.params.extUserId);
+            }
             return {
               status: 'success',
             };
@@ -109,6 +116,9 @@ async function sendmail(req) {
         const res = await transporterSMTP.sendMail(messageParams);
         console.log('Res ', res);
         if (!res.err) {
+          if (req.params?.extUserId) {
+            await updateMailCount(req.params.extUserId);
+          }
           return {
             status: 'success',
           };
@@ -117,6 +127,9 @@ async function sendmail(req) {
         const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
         console.log('Res ', res);
         if (res.status === 200) {
+          if (req.params?.extUserId) {
+            await updateMailCount(req.params.extUserId);
+          }
           return {
             status: 'success',
           };
@@ -124,11 +137,11 @@ async function sendmail(req) {
       }
     }
   } catch (err) {
-    console.log('err ', err);
+    console.log('err in sendmailv3', err);
     if (err) {
       return { status: 'error' };
     }
   }
 }
 
-export default sendmail;
+export default sendmailv3;

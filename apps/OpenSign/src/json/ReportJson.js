@@ -19,7 +19,7 @@ export default function reportJson(id) {
             redirectUrl: "draftDocument"
           }
         ],
-        helpMsg: "This are documents you have started but have not finalized for sending."
+        helpMsg: "These are documents you have started but have not finalized for sending."
       };
     // Need your sign report
     case "4Hhwbp482K":
