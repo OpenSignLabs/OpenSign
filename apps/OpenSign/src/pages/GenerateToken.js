@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Alert from "../primitives/Alert";
 import ModalUi from "../primitives/ModalUi";
 import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
 import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
-import Upgrade from "../primitives/Upgrade";
 
 function GenerateToken() {
+  const navigation = useNavigate();
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [apiToken, SetApiToken] = useState("");
@@ -98,6 +99,7 @@ function GenerateToken() {
     }, 1500); // Reset copied state after 1.5 seconds
   };
   const handleModal = () => setIsModal(!isModal);
+
   return (
     <React.Fragment>
       <Title title={"API Token"} />
@@ -126,56 +128,46 @@ function GenerateToken() {
       ) : (
         <div className="bg-white flex flex-col justify-center shadow rounded">
           {!isEnableSubscription && <PremiumAlertHeader />}
-          <h1
-            className={
-              isSubscribe || !isEnableSubscription
-                ? "ml-4 mt-3 mb-2 font-semibold"
-                : "ml-4 mt-3 mb-2 font-semibold text-gray-300"
-            }
-          >
-            API Token{" "}
+          <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
+            OpenSign™ API{" "}
             <Tooltip
               url={
                 "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
               }
-              iconColor={!isSubscribe && "gray"}
+              isSubscribe={true}
             />
-            {!isSubscribe && isEnableSubscription && <Upgrade />}
           </h1>
           <ul
             className={
               isSubscribe || !isEnableSubscription
                 ? "w-full flex flex-col p-2 text-sm "
-                : "w-full flex flex-col p-2 text-sm opacity-20 pointer-events-none"
+                : "w-full flex flex-col p-2 text-sm opacity-20 pointer-events-none select-none"
             }
           >
             <li
-              className={`flex justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
+              className={`flex flex-col md:flex-row  justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
             >
-              <span className="w-[40%]">Api Token:</span>{" "}
-              <span
-                id="token"
-                className="w-[60%] md:text-end cursor-pointer"
-                onClick={() => copytoclipboard(apiToken)}
+              <div className="w-[70%] flex-col md:flex-row flex items-center gap-5 ">
+                <span className="">Api Token:</span>{" "}
+                <span
+                  id="token"
+                  className=" md:text-end cursor-pointer"
+                  onClick={() => copytoclipboard(apiToken)}
+                >
+                  {apiToken ? apiToken : "_____"}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={apiToken ? handleModal : handleSubmit}
+                className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-4 py-2 text-xs md:text-base focus:outline-none"
               >
-                {apiToken && apiToken}
-              </span>
+                {apiToken ? "Regenerate Token" : "Generate Token"}
+              </button>
             </li>
           </ul>
-          <div
-            className={
-              isSubscribe || !isEnableSubscription
-                ? "flex flex-col md:flex-row items-center justify-center gap-2 pb-4"
-                : "flex flex-col md:flex-row items-center justify-center gap-2 pb-4 opacity-40 pointer-events-none"
-            }
-          >
-            <button
-              type="button"
-              onClick={apiToken ? handleModal : handleSubmit}
-              className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-4 py-2 text-xs md:text-base focus:outline-none"
-            >
-              {apiToken ? "Regenerate Token" : "Generate Token"}
-            </button>
+
+          <div className="flex   items-center justify-center ">
             <button
               type="button"
               onClick={() =>
@@ -183,11 +175,40 @@ function GenerateToken() {
                   "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                 )
               }
-              className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
+              className="rounded hover:bg-[#15b4e9] border-[1px] my-2 border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
             >
               View Docs
             </button>
           </div>
+
+          {!isSubscribe && isEnableSubscription && (
+            <>
+              <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
+                Upgrade to PRO Plan
+              </h1>
+              <ul className={"w-full flex flex-col p-2 text-sm "}>
+                <li
+                  className={`flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
+                >
+                  <div className="w-[70%] flex-col md:flex-row flex items-center gap-3 ">
+                    <span className="">$29.99/month:</span>{" "}
+                    <span id="token" className=" md:text-end cursor-pointer">
+                      Sign 100 docs using API. Only 0.15/docs after that.
+                    </span>
+                  </div>
+                  {!isSubscribe && isEnableSubscription && (
+                    <button
+                      type="button"
+                      onClick={() => navigation("/subscription")}
+                      className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
+                    >
+                      Upgrade Now
+                    </button>
+                  )}
+                </li>
+              </ul>
+            </>
+          )}
 
           <ModalUi
             isOpen={isModal}
