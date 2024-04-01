@@ -1464,6 +1464,7 @@ const TemplatePlaceholder = () => {
                     className="autoSignScroll"
                   >
                     <SignerListPlace
+                      isMailSend={isMailSend}
                       signerPos={signerPos}
                       signersdata={signersdata}
                       isSelectListId={isSelectListId}
@@ -1484,7 +1485,7 @@ const TemplatePlaceholder = () => {
                     />
                     <div data-tut="reactourSecond">
                       <WidgetComponent
-                        pdfUrl={isMailSend}
+                        isMailSend={isMailSend}
                         dragSignature={dragSignature}
                         signRef={signRef}
                         handleDivClick={handleDivClick}
