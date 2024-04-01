@@ -36,7 +36,7 @@ export default function reportJson(id) {
           }
         ],
         helpMsg:
-          "These is a list of documents that are waiting for your signature"
+          "This is a list of documents that are waiting for your signature"
       };
     // In progess report
     case "1MwEuxLEkF":
@@ -53,7 +53,7 @@ export default function reportJson(id) {
           }
         ],
         helpMsg:
-          "These is a list of documents you've sent to other parties for signature."
+          "This is a list of documents you've sent to other parties for signature."
       };
     // completed documents report
     case "kQUoW4hUXz":
@@ -69,7 +69,7 @@ export default function reportJson(id) {
             redirectUrl: "draftDocument"
           }
         ],
-        helpMsg: "These is a list of documents that have been signed by all parties."
+        helpMsg: "This is a list of documents that have been signed by all parties."
       };
     //  declined documents report
     case "UPr2Fm5WY3":
@@ -85,7 +85,7 @@ export default function reportJson(id) {
             redirectUrl: "draftDocument"
           }
         ],
-        helpMsg: "These is a list of documents that have been declined by one of the signers."
+        helpMsg: "This is a list of documents that have been declined by one of the signers."
       };
     //  Expired Documents report
     case "zNqBHXHsYH":
@@ -101,7 +101,7 @@ export default function reportJson(id) {
             redirectUrl: "draftDocument"
           }
         ],
-        helpMsg: "These is a list of documents that have reached their expiration date."
+        helpMsg: "This is a list of documents that have reached their expiration date."
       };
     //  Recently sent for signatures report show on dashboard
     case "d9k3UfYHBc":
@@ -162,7 +162,7 @@ export default function reportJson(id) {
           }
         ],
         form: "ContactBook",
-        helpMsg: "These is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
+        helpMsg: "This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
       };
     // template report
     case "6TeaPr321t":
@@ -186,7 +186,7 @@ export default function reportJson(id) {
           }
         ],
         helpMsg:
-          "These is a list of templates that are available to you for creating documents. You can click the 'use' button to create a new document using a template, modify the document & add signers in the next step."
+          "This is a list of templates that are available to you for creating documents. You can click the 'use' button to create a new document using a template, modify the document & add signers in the next step."
       };
     default:
       return null;
