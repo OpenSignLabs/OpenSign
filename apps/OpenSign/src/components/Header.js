@@ -4,20 +4,32 @@ import FullScreenButton from "./FullScreenButton";
 import { useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
-import { openInNewTab } from "../constant/Utils";
+import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
+import { isEnableSubscription } from "../constant/const";
+
 const Header = ({ showSidebar }) => {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const { width } = useWindowSize();
   let applogo = localStorage.getItem("appLogo") || "";
   let username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(true);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
-
+  useEffect(() => {
+    checkSubscription();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  async function checkSubscription() {
+    if (isEnableSubscription) {
+      const getIsSubscribe = await checkIsSubscribed();
+      setIsSubscribe(getIsSubscribe);
+    }
+  }
   const closeDropdown = () => {
     setIsOpen(false);
     Parse.User.logOut();
@@ -43,7 +55,7 @@ const Header = ({ showSidebar }) => {
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
 
-    navigation("/");
+    navigate("/");
   };
 
   //handle to close profile drop down menu onclick screen
@@ -83,6 +95,16 @@ const Header = ({ showSidebar }) => {
         id="profile-menu"
         className="flex justify-between items-center gap-x-3"
       >
+        {!isSubscribe && (
+          <div>
+            <button
+              className="text-xs bg-[#002864] p-2 text-white rounded shadow"
+              onClick={() => navigate("/subscription")}
+            >
+              Upgrade Now
+            </button>
+          </div>
+        )}
         <div>
           <FullScreenButton />
         </div>
@@ -123,7 +145,7 @@ const Header = ({ showSidebar }) => {
                 className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
                 onClick={() => {
                   setIsOpen(false);
-                  navigation("/profile");
+                  navigate("/profile");
                 }}
               >
                 <i className="fa-regular fa-user"></i> Profile
@@ -132,7 +154,7 @@ const Header = ({ showSidebar }) => {
                 className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
                 onClick={() => {
                   setIsOpen(false);
-                  navigation("/changepassword");
+                  navigate("/changepassword");
                 }}
               >
                 <i className="fa-solid fa-lock"></i> Change Password

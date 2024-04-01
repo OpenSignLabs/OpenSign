@@ -4,6 +4,8 @@ import "../../styles/AddUser.css";
 import RegexParser from "regex-parser";
 import { textInputWidget } from "../../constant/Utils";
 import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
+import Upgrade from "../../primitives/Upgrade";
+import { isEnableSubscription } from "../../constant/const";
 
 const WidgetNameModal = (props) => {
   const [formdata, setFormdata] = useState({
@@ -100,13 +102,14 @@ const WidgetNameModal = (props) => {
       title={"Widget info"}
     >
       {(props.defaultdata?.type === textInputWidget ||
-        props.widgetName === textInputWidget) && (
-        <PremiumAlertHeader
-          message={
-            "Field validations are free in beta, this feature will incur a fee later."
-          }
-        />
-      )}
+        props.widgetName === textInputWidget) &&
+        !isEnableSubscription && (
+          <PremiumAlertHeader
+            message={
+              "Field validations are free in beta, this feature will incur a fee later."
+            }
+          />
+        )}
       <form
         onSubmit={handleSubmit}
         className={`${
@@ -133,10 +136,20 @@ const WidgetNameModal = (props) => {
           props.widgetName === textInputWidget) && (
           <>
             <div className="form-section">
-              <label htmlFor="textvalidate" style={{ fontSize: 13 }}>
+              <label
+                htmlFor="textvalidate"
+                className={
+                  !props.isSubscribe && isEnableSubscription && "disabled"
+                }
+                style={{ fontSize: 13 }}
+              >
                 Validation
               </label>
+              {!props.isSubscribe && isEnableSubscription && <Upgrade />}
               <div
+                className={
+                  !props.isSubscribe && isEnableSubscription && "disabled"
+                }
                 style={{
                   display: "flex",
                   flexDirection: "row",
@@ -178,6 +191,7 @@ const WidgetNameModal = (props) => {
                 </div>
               </div>
             </div>
+
             <div className="form-section">
               <label htmlFor="name" style={{ fontSize: 13 }}>
                 Default value
@@ -196,7 +210,10 @@ const WidgetNameModal = (props) => {
                 }}
               />
               {isValid === false && (
-                <div className="warning defaultvalueWarning" style={{ fontSize: 12 }}>
+                <div
+                  className="warning defaultvalueWarning"
+                  style={{ fontSize: 12 }}
+                >
                   <i
                     className="fas fa-exclamation-circle"
                     style={{ color: "#fab005", fontSize: 15 }}

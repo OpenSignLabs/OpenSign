@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
 import plansArr from "../json/plansArr.json";
 import Title from "../components/Title";
+import Parse from "parse";
 const listItemStyle = {
   paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -35,15 +35,35 @@ const PlanSubscriptions = () => {
     company +
     phone;
   useEffect(() => {
-    if (localStorage.getItem("accesstoken")) {
-      setIsLoader(false);
-      setYearlyVisible(false);
-    } else {
-      navigate("/", { replace: true });
-    }
+    // if (localStorage.getItem("accesstoken")) {
+    setIsLoader(false);
+    // } else {
+    //   navigate("/", { replace: true });
+    // }
     // eslint-disable-next-line
   }, []);
 
+  const handleFreePlan = async () => {
+    setIsLoader(true);
+    try {
+      const params = { userId: Parse.User.current().id };
+      const res = await Parse.Cloud.run("freesubscription", params);
+      if (res.status === "success" && res.result === "already subscribed!") {
+        setIsLoader(false);
+        alert("You have already subscribed to plan!");
+      } else if (res.status === "success") {
+        setIsLoader(false);
+        navigate("/");
+      } else if (res.status === "error") {
+        setIsLoader(false);
+        alert(res.result);
+      }
+    } catch (err) {
+      setIsLoader(false);
+      console.log("err in free subscribe", err.message);
+      alert("Somenthing went wrong, please try again later!");
+    }
+  };
   return (
     <>
       <Title title={"Subscriptions"} />
@@ -69,23 +89,40 @@ const PlanSubscriptions = () => {
           style={{
             backgroundColor: "white",
             overflowY: "auto",
-            maxHeight: "100%",
-            "--theme-color": "#7952b3",
-            "--plan-width": 30
+            maxHeight: "100%"
           }}
         >
-          <div
-            id="monthlyPlans"
-            className={`${yearlyVisible ? "none" : "block my-2"}`}
-          >
-            <div className="flex justify-center w-full my-2">
-              <ul className=" flex flex-col md:flex-row h-full bg-white justify-center border-collapse border-[1px] border-gray-300">
+          <div id="monthlyPlans" className="block my-2">
+            <div className="flex flex-col justify-center items-center w-full">
+              <div className="mb-6 mt-2 flex flex-row border-[1px] p-2 border-gray-300 rounded text-sm">
+                <span
+                  onClick={() => setYearlyVisible(false)}
+                  className={`${
+                    !yearlyVisible
+                      ? "bg-[#002862] text-white"
+                      : "bg-white text-black"
+                  } px-4 py-1 rounded cursor-pointer`}
+                >
+                  Monthly
+                </span>
+                <span
+                  onClick={() => setYearlyVisible(true)}
+                  className={`${
+                    yearlyVisible
+                      ? "bg-[#002862] text-white"
+                      : "bg-white text-black"
+                  } px-4 py-1 rounded cursor-pointer`}
+                >
+                  Yearly (10% off)
+                </span>
+              </div>
+              <ul className="flex flex-col md:flex-row h-full bg-white justify-center">
                 {plansArr.map((item) => (
                   <li
-                    className="flex flex-col md:my-0 text-center border-[1px] border-gray-300 w-[260px]"
+                    className="flex flex-col md:my-0 text-center border-collapse border-[1px] border-gray-300 w-[260px]"
                     key={item.planName}
                   >
-                    <div className="p-2 flex flex-col justify-center items-center">
+                    <div className="p-2 flex flex-col justify-center items-center min-h-[320px]">
                       <h3 className="text-[#002862] uppercase">
                         {item.planName}
                       </h3>
@@ -99,17 +136,23 @@ const PlanSubscriptions = () => {
                       <div className="">
                         <span className="text-3xl">
                           {item.currency && <small>{item.currency}</small>}
-                          {item.price}
+                          {yearlyVisible
+                            ? item?.yearlyPrice
+                            : item.monthlyPrice}
                         </span>
+                        <p className="font-semibold pt-2 text-sm">
+                          {yearlyVisible ? "Billed Yearly" : "Billed Monthly"}
+                        </p>
                         <div
                           className={`${
                             item.subtitle.length <= 32
-                              ? "w-[150px] text-center"
+                              ? "w-[150px] h-[40px] text-center"
                               : ""
                           } text-sm text-center my-2`}
                         >
-                          <p
+                          <div
                             style={{
+                              textAlign: "center",
                               backgroundColor: item.subtitlecolor
                                 ? item.subtitlecolor
                                 : "white"
@@ -124,23 +167,33 @@ const PlanSubscriptions = () => {
                             ) : (
                               <span>{item.subtitle}</span>
                             )}
-                          </p>
+                          </div>
                         </div>
                       </div>
-
-                      <NavLink
-                        to={
-                          item.btnText === "Subscribe"
-                            ? item.url + details
-                            : item.url
-                        }
-                        className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white"
-                        target={item.target}
-                      >
-                        {item.btnText}
-                      </NavLink>
+                      {item.url ? (
+                        <NavLink
+                          to={
+                            item.btnText === "Subscribe"
+                              ? yearlyVisible
+                                ? item.yearlyUrl + details
+                                : item.url + details
+                              : item.url
+                          }
+                          className="bg-[#002862] w-full mt-1 text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                          target={item.target}
+                        >
+                          {item.btnText}
+                        </NavLink>
+                      ) : (
+                        <button
+                          className="bg-[#002862] w-full mt-1 text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                          onClick={() => handleFreePlan()}
+                        >
+                          {item.btnText}
+                        </button>
+                      )}
                     </div>
-                    <hr className="w-full bg-gray-300 p-[.5px]" />
+                    <hr className="w-full bg-gray-300 h-[0.5px]" />
                     <ul className="mx-1 p-3 text-left break-words text-sm list-none">
                       {item.benefits.map((subitem, index) => (
                         <li style={listItemStyle} key={index} className="m-1">
@@ -153,6 +206,38 @@ const PlanSubscriptions = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              className="text-sm"
+            >
+              <hr
+                className={"border-[1px] border-gray-300 w-[20%]"}
+                style={{ color: "grey" }}
+              />
+              <span style={{ color: "grey" }} className="px-2 ">
+                or
+              </span>
+              <hr
+                className={"border-[1px] border-gray-300  w-[20%]"}
+                style={{ color: "grey" }}
+              />
+            </div>
+            <div className="flex flex-col justify-center w-full items-center">
+              <h3 className="text-[#002862] mt-1 mb-2">
+                Host it yourself for free
+              </h3>
+              <NavLink
+                to={"https://github.com/OpenSignLabs/OpenSign"}
+                className="bg-[#002862] w-[200px] text-center text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                target={"_blank"}
+              >
+                Visit Github
+              </NavLink>
             </div>
           </div>
         </div>

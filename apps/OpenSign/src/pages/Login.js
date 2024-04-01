@@ -10,7 +10,11 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
-import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
+import {
+  isEnableSubscription,
+  modalCancelBtnColor,
+  modalSubmitBtnColor
+} from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
@@ -209,7 +213,7 @@ function Login() {
                                               x.TenantId.TenantName || ""
                                           };
                                           localStorage.setItem(
-                                            "TenetId",
+                                            "TenantId",
                                             x.TenantId.objectId
                                           );
                                           tenentInfo.push(obj);
@@ -239,10 +243,7 @@ function Login() {
                                         element.pageType
                                       );
                                       setState({ ...state, loading: false });
-                                      if (
-                                        process.env
-                                          .REACT_APP_ENABLE_SUBSCRIPTION
-                                      ) {
+                                      if (isEnableSubscription) {
                                         const LocalUserDetails = {
                                           name: results[0].get("Name"),
                                           email: results[0].get("Email"),
@@ -253,10 +254,15 @@ function Login() {
                                           "userDetails",
                                           JSON.stringify(LocalUserDetails)
                                         );
+                                        const freeplan =
+                                          results[0].get("Plan") &&
+                                          results[0].get("Plan").plan_code;
                                         const billingDate =
                                           results[0].get("Next_billing_date") &&
                                           results[0].get("Next_billing_date");
-                                        if (billingDate) {
+                                        if (freeplan === "freeplan") {
+                                          navigate(redirectUrl);
+                                        } else if (billingDate) {
                                           if (billingDate > new Date()) {
                                             localStorage.removeItem(
                                               "userDetails"
@@ -292,9 +298,7 @@ function Login() {
                                       element.pageType
                                     );
                                     setState({ ...state, loading: false });
-                                    if (
-                                      process.env.REACT_APP_ENABLE_SUBSCRIPTION
-                                    ) {
+                                    if (isEnableSubscription) {
                                       const LocalUserDetails = {
                                         name: _user.name,
                                         email: email,
@@ -391,6 +395,18 @@ function Login() {
   const setThirdpartyLoader = (value) => {
     setState({ ...state, thirdpartyLoader: value });
   };
+  const handleFreePlan = async (id) => {
+    try {
+      const params = { userId: id };
+      const res = await Parse.Cloud.run("freesubscription", params);
+      if (res.status === "error") {
+        alert(res.result);
+      }
+    } catch (err) {
+      console.log("err in free subscribe", err.message);
+      alert("Somenthing went wrong, please try again later!");
+    }
+  };
   const thirdpartyLoginfn = async (sessionToken, billingDate) => {
     const baseUrl = localStorage.getItem("baseUrl");
     const parseAppId = localStorage.getItem("parseAppId");
@@ -400,6 +416,11 @@ function Login() {
         "X-Parse-Application-Id": parseAppId
       }
     });
+    const param = new URLSearchParams(location.search);
+    const isFreeplan = param?.get("subscription") === "freeplan";
+    if (isFreeplan) {
+      await handleFreePlan(res.data.objectId);
+    }
     await Parse.User.become(sessionToken).then(() => {
       window.localStorage.setItem("accesstoken", sessionToken);
     });
@@ -542,7 +563,7 @@ function Login() {
                                     tenentName: x.TenantId.TenantName || ""
                                   };
                                   localStorage.setItem(
-                                    "TenetId",
+                                    "TenantId",
                                     x.TenantId.objectId
                                   );
                                   tenentInfo.push(obj);
@@ -571,18 +592,28 @@ function Login() {
                               );
                               setThirdpartyLoader(false);
                               setState({ ...state, loading: false });
-                              if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                              if (isEnableSubscription) {
                                 if (billingDate) {
                                   if (billingDate > new Date()) {
                                     localStorage.removeItem("userDetails");
+                                    navigate(redirectUrl);
+                                  } else {
+                                    if (isFreeplan) {
+                                      navigate(redirectUrl);
+                                    } else {
+                                      navigate(`/subscription`, {
+                                        replace: true
+                                      });
+                                    }
+                                  }
+                                } else {
+                                  if (isFreeplan) {
                                     navigate(redirectUrl);
                                   } else {
                                     navigate(`/subscription`, {
                                       replace: true
                                     });
                                   }
-                                } else {
-                                  navigate(`/subscription`, { replace: true });
                                 }
                               } else {
                                 navigate(redirectUrl);
@@ -597,17 +628,29 @@ function Login() {
                             localStorage.setItem("pageType", element.pageType);
                             setState({ ...state, loading: false });
                             setThirdpartyLoader(false);
-                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
+                            if (isEnableSubscription) {
                               if (billingDate) {
                                 if (billingDate > new Date()) {
                                   localStorage.removeItem("userDetails");
                                   // Redirect to the appropriate URL after successful login
                                   navigate(redirectUrl);
                                 } else {
-                                  navigate(`/subscription`, { replace: true });
+                                  if (isFreeplan) {
+                                    navigate(redirectUrl);
+                                  } else {
+                                    navigate(`/subscription`, {
+                                      replace: true
+                                    });
+                                  }
                                 }
                               } else {
-                                navigate(`/subscription`, { replace: true });
+                                if (isFreeplan) {
+                                  navigate(redirectUrl);
+                                } else {
+                                  navigate(`/subscription`, {
+                                    replace: true
+                                  });
+                                }
                               }
                             } else {
                               navigate(redirectUrl);
@@ -745,6 +788,13 @@ function Login() {
                     // Get TenentID from Extendend Class
                     localStorage.setItem("extended_class", item.extended_class);
                     const currentUser = Parse.User.current();
+                    const userSettings = appInfo.settings;
+                    const setting = userSettings.find(
+                      (x) => x.role === _currentRole
+                    );
+                    const redirectUrl =
+                      location?.state?.from ||
+                      `/${setting.pageType}/${setting.pageId}`;
                     await Parse.Cloud.run("getUserDetails", {
                       email: currentUser.get("email")
                     }).then(
@@ -777,22 +827,78 @@ function Login() {
                                   tenentName: x.TenantId.TenantName || ""
                                 };
                                 localStorage.setItem(
-                                  "TenetId",
+                                  "TenantId",
                                   x.TenantId.objectId
                                 );
                                 tenentInfo.push(obj);
                               }
                             });
-                            localStorage.setItem("PageLanding", item.pageId);
-                            localStorage.setItem("defaultmenuid", item.menuId);
-                            localStorage.setItem("pageType", item.pageType);
-                            navigate(`/${item.pageType}/${item.pageId}`);
+                            localStorage.setItem("PageLanding", setting.pageId);
+                            localStorage.setItem(
+                              "defaultmenuid",
+                              setting.menuId
+                            );
+                            localStorage.setItem("pageType", setting.pageType);
+                            if (isEnableSubscription) {
+                              const LocalUserDetails = {
+                                name: results[0].get("Name"),
+                                email: results[0].get("Email"),
+                                phone: results[0].get("Phone"),
+                                company: results[0].get("Company")
+                              };
+                              localStorage.setItem(
+                                "userDetails",
+                                JSON.stringify(LocalUserDetails)
+                              );
+                              const billingDate =
+                                results[0].get("Next_billing_date") &&
+                                results[0].get("Next_billing_date");
+                              const freeplan =
+                                results[0]?.get("Plan") &&
+                                results[0]?.get("Plan").plan_code;
+
+                              if (freeplan === "freeplan") {
+                                navigate(redirectUrl);
+                              } else if (billingDate) {
+                                if (billingDate > new Date()) {
+                                  localStorage.removeItem("userDetails");
+                                  // Redirect to the appropriate URL after successful login
+                                  navigate(redirectUrl);
+                                } else {
+                                  navigate(`/subscription`);
+                                }
+                              } else {
+                                navigate(`/subscription`);
+                              }
+                            } else {
+                              // Redirect to the appropriate URL after successful login
+                              navigate(redirectUrl);
+                            }
                           }
                         } else {
-                          localStorage.setItem("PageLanding", item.pageId);
-                          localStorage.setItem("defaultmenuid", item.menuId);
-                          localStorage.setItem("pageType", item.pageType);
-                          navigate(`/${item.pageType}/${item.pageId}`);
+                          localStorage.setItem("PageLanding", setting.pageId);
+                          localStorage.setItem("defaultmenuid", setting.menuId);
+                          localStorage.setItem("pageType", setting.pageType);
+                          setState({ ...state, loading: false });
+                          if (isEnableSubscription) {
+                            const LocalUserDetails = {
+                              name: results[0].get("Name"),
+                              email: results[0].get("Email"),
+                              phone: results[0].get("Phone")
+                              // company: results.get("Company"),
+                            };
+                            localStorage.setItem(
+                              "userDetails",
+                              JSON.stringify(LocalUserDetails)
+                            );
+                            const billingDate = "";
+                            if (billingDate) {
+                              navigate(`/subscription`);
+                            }
+                          } else {
+                            // Redirect to the appropriate URL after successful login
+                            navigate(redirectUrl);
+                          }
                         }
                       },
                       (error) => {
@@ -1045,7 +1151,11 @@ function Login() {
                         </button>
                         <NavLink
                           className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
-                          to="/signup"
+                          to={
+                            location.search
+                              ? "/signup" + location.search
+                              : "/signup"
+                          }
                           style={width < 768 ? { textAlign: "center" } : {}}
                         >
                           Create Account

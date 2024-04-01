@@ -8,6 +8,9 @@ import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
+import { isEnableSubscription } from "../constant/const";
+import { checkIsSubscribed } from "../constant/Utils";
+import Upgrade from "../primitives/Upgrade";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -21,15 +24,24 @@ function UserProfile() {
   const [isLoader, setIsLoader] = useState(false);
   const [percentage, setpercentage] = useState(0);
   const [isDisableDocId, setIsDisableDocId] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(false);
 
   useEffect(() => {
+    getUserDetail();
+  }, []);
+
+  const getUserDetail = async () => {
     const extClass = localStorage.getItem("Extand_Class");
     const jsonSender = JSON.parse(extClass);
     const HeaderDocId = jsonSender[0]?.HeaderDocId;
+    if (isEnableSubscription) {
+      const getIsSubscribe = await checkIsSubscribed();
+      setIsSubscribe(getIsSubscribe);
+    }
     if (HeaderDocId) {
       setIsDisableDocId(HeaderDocId);
     }
-  }, []);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoader(true);
@@ -137,7 +149,8 @@ function UserProfile() {
         setImage(response.url());
         localStorage.setItem("profileImg", response.url());
         setpercentage(0);
-        SaveFileSize(size, response.url());
+        const tenantId = localStorage.getItem("TenantId");
+        SaveFileSize(size, response.url(), tenantId);
         return response.url();
       }
     } catch (error) {
@@ -155,7 +168,6 @@ function UserProfile() {
   const handleDisableDocId = () => {
     setIsDisableDocId((prevChecked) => !prevChecked);
   };
-
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -262,14 +274,30 @@ function UserProfile() {
               </li>
               <li className="border-y-[1px] border-gray-300 break-all">
                 <div className="flex justify-between items-center py-2">
-                  <span className="font-semibold">
+                  <span
+                    className={
+                      isSubscribe || !isEnableSubscription
+                        ? "font-semibold"
+                        : "font-semibold text-gray-300"
+                    }
+                  >
                     Disable DocumentId :{" "}
-                    <Tooltip url={"https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"} />{" "}
+                    <Tooltip
+                      url={
+                        "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
+                      }
+                      isSubscribe={isSubscribe}
+                    />{" "}
+                    {!isSubscribe && isEnableSubscription && <Upgrade />}
                   </span>{" "}
                   <label
-                    className={`${
-                      editmode ? "cursor-pointer" : ""
-                    } relative inline-flex items-center mb-0`}
+                    className={
+                      isSubscribe || !isEnableSubscription
+                        ? `${
+                            editmode ? "cursor-pointer" : ""
+                          } relative inline-flex items-center mb-0`
+                        : "relative inline-flex items-center mb-0 pointer-events-none opacity-50"
+                    }
                   >
                     <input
                       disabled={editmode ? false : true}
@@ -282,11 +310,13 @@ function UserProfile() {
                     <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                <PremiumAlertHeader
-                  message={
-                    "Disable documentId is free in beta, this feature will incur a fee later."
-                  }
-                />
+                {!isEnableSubscription && (
+                  <PremiumAlertHeader
+                    message={
+                      "Disable documentId is free in beta, this feature will incur a fee later."
+                    }
+                  />
+                )}
               </li>
             </ul>
             <div className="flex justify-center pt-2 pb-3 md:pt-3 md:pb-4">
