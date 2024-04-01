@@ -196,7 +196,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
             {selectFolder && selectFolder.Name ? `(${folderPath})` : ""}
           </p>
         </div>
-        <div className="absolute top-1 right-1 cursor-pointer">
+        <div className="absolute top-2 right-1 cursor-pointer">
           <Tooltip
             message={
               "If you do not select a folder, your signed document will be saved in the Main OpenSign drive folder."

@@ -35,7 +35,7 @@ function Opensigndrive() {
   const scrollRef = useRef(null);
   const [isList, setIsList] = useState(false);
   const [selectedSort, setSelectedSort] = useState("Date");
-  const [sortingOrder, setSortingOrder] = useState("Decending");
+  const [sortingOrder, setSortingOrder] = useState("Descending");
   const [pdfData, setPdfData] = useState([]);
   const [isFolder, setIsFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState();
@@ -54,6 +54,14 @@ function Opensigndrive() {
   const [skip, setSkip] = useState(0);
   const limit = 100;
   const [loading, setLoading] = useState(false);
+  const sortOrder = ["Ascending", "Descending"];
+  const sortingValue = ["Name", "Date"];
+  const orderName = {
+    Ascending: "Ascending",
+    Descending: "Descending",
+    Name: "Name",
+    Date: "Date"
+  };
   const currentUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -80,7 +88,7 @@ function Opensigndrive() {
         setHandleError("Error: Something went wrong!");
       } else if (driveDetails && driveDetails.length > 0) {
         setSkip((prevSkip) => prevSkip + limit);
-        sortApps("Date", "Decending", driveDetails, true);
+        sortingData(null, null, driveDetails, true);
       }
       if (!docId) {
         setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
@@ -114,6 +122,7 @@ function Opensigndrive() {
       //disableLoading is used disable initial loader
       const disableLoading = true;
       // If the fetched data length is less than the limit, it means there's no more data to fetch
+
       if (!loading && pdfData.length % 100 === 0) {
         getPdfDocumentList(disableLoading);
       }
@@ -129,7 +138,7 @@ function Opensigndrive() {
       };
     }
     // eslint-disable-next-line
-  }, [loading]); // Add/remove scroll event listener when loading changes
+  }, [loading, sortingOrder, selectedSort]); // Add/remove scroll event listener when loading changes
 
   //function for handle folder name path
   const handleRoute = (index) => {
@@ -210,35 +219,38 @@ function Opensigndrive() {
     }
   };
 
-  const sortingApp = (appInfo, type, order) => {
-    if (type === "Name") {
-      if (order === "Accending") {
+  //function to use sorting document list according to type and order
+  const sortedBy = (appInfo, type, order) => {
+    if (type === orderName.Name) {
+      if (order === orderName.Ascending) {
         return appInfo.sort((a, b) => (a.Name > b.Name ? 1 : -1));
-      } else if (order === "Decending") {
+      } else if (order === orderName.Descending) {
         return appInfo.sort((a, b) => (a.Name > b.Name ? -1 : 1));
       }
-    } else if (type === "Date") {
-      if (order === "Accending") {
+    } else if (type === orderName.Date) {
+      if (order === orderName.Ascending) {
         return appInfo.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
-      } else if (order === "Decending") {
+      } else if (order === orderName.Descending) {
         return appInfo.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
       }
     }
   };
 
-  const sortApps = (type, order, driveDetails, isInitial) => {
-    const selectedSortType = type ? type : selectedSort ? selectedSort : "Date";
-    const sortOrder = order ? order : sortingOrder ? sortingOrder : "Decending";
-    if (selectedSortType === "Name") {
-      sortingApp(driveDetails, "Name", sortOrder);
-    } else if (selectedSortType === "Date") {
-      sortingApp(driveDetails, "Date", sortOrder);
+  //function to use get sorting type, order and document list to sort
+  const sortingData = (type, order, driveDetails, isInitial) => {
+    const selectedSortType = type ? type : selectedSort;
+    const sortOrder = order ? order : sortingOrder;
+
+    //check isInitial true it means sort previous 20 and get on scrolling 20 = 40 document list
+    const allPdfData = isInitial ? [...pdfData, ...driveDetails] : driveDetails;
+    //call sortedBy function according to selected Type and order
+    if (selectedSortType === orderName.Name) {
+      sortedBy(allPdfData, orderName.Name, sortOrder);
+    } else if (selectedSortType === orderName.Date) {
+      sortedBy(allPdfData, orderName.Date, sortOrder);
     }
-    if (isInitial) {
-      setPdfData([...pdfData, ...driveDetails]);
-    } else {
-      setPdfData(driveDetails);
-    }
+
+    setPdfData(allPdfData);
   };
 
   //function for handle auto scroll on folder path
@@ -611,95 +623,56 @@ function Opensigndrive() {
                     aria-labelledby="dropdownMenuButton"
                     aria-expanded={isShowSort ? "true" : "false"}
                   >
-                    <span
-                      onClick={() => {
-                        setSelectedSort("Name");
-                        sortApps("Name", null, pdfData);
-                      }}
-                      className="dropdown-item itemColor"
-                    >
-                      {selectedSort !== "Name" ? (
-                        <i
-                          className="fa fa-arrow-up"
-                          aria-hidden="true"
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                      ) : (
-                        <i
-                          className="fa fa-check"
-                          aria-hidden="true"
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                      )}
-                      Name
-                    </span>
-                    <span
-                      onClick={() => {
-                        setSelectedSort("Date");
-                        sortApps("Date", null, pdfData);
-                      }}
-                      className="dropdown-item itemColor"
-                    >
-                      {selectedSort !== "Date" ? (
-                        <i
-                          className="fa fa-arrow-up"
-                          aria-hidden="true"
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                      ) : (
-                        <i
-                          className="fa fa-check"
-                          aria-hidden="true"
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                      )}
-                      Date
-                    </span>
+                    {sortingValue.map((value, ind) => {
+                      return (
+                        <span
+                          key={ind}
+                          onClick={() => {
+                            setSelectedSort(value);
+                            sortingData(value, null, pdfData);
+                          }}
+                          className="dropdown-item itemColor"
+                          style={{
+                            paddingLeft: selectedSort !== value && "33px"
+                          }}
+                        >
+                          {selectedSort === value && (
+                            <i
+                              className="fa fa-check"
+                              aria-hidden="true"
+                              style={{ marginRight: "5px" }}
+                            ></i>
+                          )}
+                          {value}
+                        </span>
+                      );
+                    })}
+
                     <hr className="hrStyle" />
-                    <span
-                      onClick={() => {
-                        setSortingOrder("Accending");
-                        sortApps(null, "Accending", pdfData);
-                      }}
-                      className="dropdown-item itemColor"
-                    >
-                      {sortingOrder !== "Accending" ? (
-                        <i
-                          className="fa fa-arrow-up"
-                          aria-hidden="true"
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                      ) : (
-                        <i
-                          className="fa fa-check"
-                          aria-hidden="true"
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                      )}
-                      Accending
-                    </span>
-                    <span
-                      onClick={() => {
-                        setSortingOrder("Decending");
-                        sortApps(null, "Decending", pdfData);
-                      }}
-                      className="dropdown-item itemColor"
-                    >
-                      {sortingOrder !== "Decending" ? (
-                        <i
-                          className="fa fa-arrow-up"
-                          aria-hidden="true"
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                      ) : (
-                        <i
-                          className="fa fa-check"
-                          aria-hidden="true"
-                          style={{ marginRight: "5px" }}
-                        ></i>
-                      )}
-                      Decending
-                    </span>
+                    {sortOrder.map((order, ind) => {
+                      return (
+                        <span
+                          key={ind}
+                          onClick={() => {
+                            setSortingOrder(order);
+                            sortingData(null, order, pdfData);
+                          }}
+                          className="dropdown-item itemColor"
+                          style={{
+                            paddingLeft: sortingOrder !== order && "33px"
+                          }}
+                        >
+                          {sortingOrder === order && (
+                            <i
+                              className="fa fa-check"
+                              aria-hidden="true"
+                              style={{ marginRight: "5px" }}
+                            ></i>
+                          )}
+                          {order}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
 

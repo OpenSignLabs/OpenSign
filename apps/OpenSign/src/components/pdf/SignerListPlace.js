@@ -23,6 +23,10 @@ function SignerListPlace(props) {
           data-tut="reactourAddbtn"
           className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad]  hover:text-white cursor-pointer"
           onClick={() => props.handleAddSigner()}
+          style={{
+            opacity: props.isMailSend && "0.5",
+            pointerEvents: props.isMailSend && "none"
+          }}
         >
           <i className="fa-solid fa-plus"></i>
           <span style={{ marginLeft: 2 }}>Add role</span>

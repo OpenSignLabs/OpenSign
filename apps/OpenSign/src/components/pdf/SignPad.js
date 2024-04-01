@@ -20,7 +20,9 @@ function SignPad({
   isInitial,
   setIsInitial,
   setIsStamp,
-  widgetType
+  widgetType,
+  currWidgetsDetails,
+  setCurrWidgetsDetails
 }) {
   const [penColor, setPenColor] = useState("blue");
   const allColor = ["blue", "red", "black"];
@@ -31,6 +33,7 @@ function SignPad({
   const [signValue, setSignValue] = useState("");
   const [textWidth, setTextWidth] = useState(null);
   const [textHeight, setTextHeight] = useState(null);
+  const [signatureType, setSignatureType] = useState("draw");
   const fontOptions = [
     { value: "Fasthand" },
     { value: "Dancing Script" },
@@ -48,19 +51,11 @@ function SignPad({
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
   const jsonSender = JSON.parse(senderUser);
-
   const currentUserName = jsonSender && jsonSender.name;
 
-  useEffect(() => {
-    const trimmedName = currentUserName.trim();
-    const firstCharacter = trimmedName.charAt(0);
-    const userName = isInitial ? firstCharacter : currentUserName;
-    setSignValue(userName);
-    setFontSelect("Fasthand");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   //function for clear signature image
   const handleClear = () => {
+    setCurrWidgetsDetails({});
     if (isTab === "draw") {
       if (canvasRef.current) {
         canvasRef.current.clear();
@@ -72,7 +67,7 @@ function SignPad({
     } else if (isTab === "uploadImage") {
       setImage("");
     }
-    setIsInitial(false);
+    // setIsInitial(false);
   };
   //function for set signature url
   const handleSignatureChange = () => {
@@ -100,27 +95,28 @@ function SignPad({
 
         <button
           onClick={() => {
+            setCurrWidgetsDetails({});
             if (!image) {
               if (isTab === "mysignature") {
                 setIsSignImg("");
                 if (isInitial) {
-                  onSaveSign("initials");
+                  onSaveSign(signatureType, "initials");
                 } else {
-                  onSaveSign("default");
+                  onSaveSign(null, "default");
                 }
               } else {
                 if (isTab === "type") {
                   setIsSignImg("");
-                  onSaveSign(false, textWidth, textHeight);
+                  onSaveSign(null, false, textWidth, textHeight);
                 } else {
-                  onSaveSign();
+                  onSaveSign(signatureType);
                 }
               }
 
               setPenColor("blue");
             } else {
               setIsSignImg("");
-              onSaveImage();
+              onSaveImage(signatureType);
             }
             setIsSignPad(false);
             setIsInitial(false);
@@ -150,11 +146,27 @@ function SignPad({
       </div>
     );
   };
-
+  //useEffect for set already draw or save signature url/text url of signature text type and draw type for initial type and signature type widgets
   useEffect(() => {
-    if (canvasRef.current && isSignImg) {
-      canvasRef.current.fromDataURL(isSignImg);
+    if (currWidgetsDetails && canvasRef.current) {
+      const isWidgetType = currWidgetsDetails?.type;
+      const signatureType = currWidgetsDetails?.signatureType;
+      const url = currWidgetsDetails?.SignUrl;
+
+      //checking widget type and draw type signature url
+      if (isInitial) {
+        if (isWidgetType === "initials" && signatureType === "draw" && url) {
+          canvasRef.current.fromDataURL(url);
+        }
+      } else if (
+        isWidgetType === "signature" &&
+        signatureType === "draw" &&
+        url
+      ) {
+        canvasRef.current.fromDataURL(url);
+      }
     }
+
     const trimmedName = currentUserName.trim();
     const firstCharacter = trimmedName.charAt(0);
     const userName = isInitial ? firstCharacter : currentUserName;
@@ -349,6 +361,7 @@ function SignPad({
                               setIsDefaultSign(false);
                               setIsImageSelect(true);
                               setIsTab("uploadImage");
+                              setSignatureType("");
                             }}
                             style={{
                               color:
@@ -373,6 +386,7 @@ function SignPad({
                               setIsDefaultSign(false);
                               setIsImageSelect(false);
                               setIsTab("type");
+                              setSignatureType("");
                               setImage();
                             }}
                             style={{
@@ -400,6 +414,7 @@ function SignPad({
                                 setIsDefaultSign(true);
                                 setIsImageSelect(true);
                                 setIsTab("mysignature");
+                                setSignatureType("");
                                 setImage();
                               }}
                               style={{
@@ -430,6 +445,7 @@ function SignPad({
                                   setIsDefaultSign(true);
                                   setIsImageSelect(true);
                                   setIsTab("mysignature");
+                                  setSignatureType("");
                                   setImage();
                                 }}
                                 style={{
@@ -469,6 +485,7 @@ function SignPad({
                   setIsDefaultSign(false);
                   setImage();
                   setIsTab("draw");
+                  setSignatureType("draw");
                   setSignValue("");
                   setIsStamp(false);
                 }}
