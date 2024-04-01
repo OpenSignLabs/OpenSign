@@ -22,6 +22,7 @@ const Header = ({ showSidebar }) => {
   };
   useEffect(() => {
     checkIsSubscribed();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   async function checkIsSubscribed() {
     const currentUser = Parse.User.current();

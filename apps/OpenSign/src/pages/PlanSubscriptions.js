@@ -51,7 +51,7 @@ const PlanSubscriptions = () => {
       const res = await Parse.Cloud.run("freesubscription", params);
       if (res.status === "success" && res.result === "already subscribed!") {
         setIsLoader(false);
-        alert("You have already subscription of free plan");
+        alert("You have already subscribed to plan!");
       } else if (res.status === "success") {
         setIsLoader(false);
         navigate("/");
