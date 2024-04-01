@@ -15,7 +15,7 @@ const Header = ({ showSidebar }) => {
   const image = localStorage.getItem("profileImg") || dp;
 
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubscribe, setIsSubscribe] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(true);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

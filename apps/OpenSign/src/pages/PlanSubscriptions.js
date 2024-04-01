@@ -37,7 +37,6 @@ const PlanSubscriptions = () => {
   useEffect(() => {
     // if (localStorage.getItem("accesstoken")) {
     setIsLoader(false);
-    setYearlyVisible(false);
     // } else {
     //   navigate("/", { replace: true });
     // }
@@ -90,20 +89,37 @@ const PlanSubscriptions = () => {
           style={{
             backgroundColor: "white",
             overflowY: "auto",
-            maxHeight: "100%",
-            "--theme-color": "#7952b3",
-            "--plan-width": 30
+            maxHeight: "100%"
           }}
         >
-          <div
-            id="monthlyPlans"
-            className={`${yearlyVisible ? "none" : "block my-2"}`}
-          >
-            <div className="flex justify-center w-full my-2">
-              <ul className=" flex flex-col md:flex-row h-full bg-white justify-center border-collapse border-[1px] border-gray-300">
+          <div id="monthlyPlans" className="block my-2">
+            <div className="flex flex-col justify-center items-center w-full">
+              <div className="mb-6 mt-2 flex flex-row border-[1px] p-2 border-gray-300 rounded text-sm">
+                <span
+                  onClick={() => setYearlyVisible(false)}
+                  className={`${
+                    !yearlyVisible
+                      ? "bg-[#002862] text-white"
+                      : "bg-white text-black"
+                  } px-4 py-1 rounded cursor-pointer`}
+                >
+                  Monthly
+                </span>
+                <span
+                  onClick={() => setYearlyVisible(true)}
+                  className={`${
+                    yearlyVisible
+                      ? "bg-[#002862] text-white"
+                      : "bg-white text-black"
+                  } px-4 py-1 rounded cursor-pointer`}
+                >
+                  Yearly (10% off)
+                </span>
+              </div>
+              <ul className=" flex flex-col md:flex-row h-full bg-white justify-center">
                 {plansArr.map((item) => (
                   <li
-                    className="flex flex-col md:my-0 text-center border-[1px] border-gray-300 max-w-[260px]"
+                    className="flex flex-col md:my-0 text-center border-[1px] border-gray-300 w-[260px]"
                     key={item.planName}
                   >
                     <div className="p-2 flex flex-col justify-center items-center min-h-[320px]">
@@ -120,17 +136,23 @@ const PlanSubscriptions = () => {
                       <div className="">
                         <span className="text-3xl">
                           {item.currency && <small>{item.currency}</small>}
-                          {item.price}
+                          {yearlyVisible
+                            ? item?.yearlyPrice
+                            : item.monthlyPrice}
                         </span>
+                        <p className="font-semibold pt-2 text-sm">
+                          {yearlyVisible ? "Billed Yearly" : "Billed Monthly"}
+                        </p>
                         <div
                           className={`${
                             item.subtitle.length <= 32
-                              ? "w-[150px] text-center"
+                              ? "w-[150px] h-[40px] text-center"
                               : ""
                           } text-sm text-center my-2`}
                         >
                           <div
                             style={{
+                              textAlign: "center",
                               backgroundColor: item.subtitlecolor
                                 ? item.subtitlecolor
                                 : "white"
@@ -148,22 +170,23 @@ const PlanSubscriptions = () => {
                           </div>
                         </div>
                       </div>
-
                       {item.url ? (
                         <NavLink
                           to={
                             item.btnText === "Subscribe"
-                              ? item.url + details
+                              ? yearlyVisible
+                                ? item.yearlyUrl + details
+                                : item.url + details
                               : item.url
                           }
-                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                          className="bg-[#002862] w-full mt-1 text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
                           target={item.target}
                         >
                           {item.btnText}
                         </NavLink>
                       ) : (
                         <button
-                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                          className="bg-[#002862] w-full mt-1 text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
                           onClick={() => handleFreePlan()}
                         >
                           {item.btnText}
@@ -183,6 +206,38 @@ const PlanSubscriptions = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              className="text-sm"
+            >
+              <hr
+                className={"border-[1px] border-gray-300 w-[20%]"}
+                style={{ color: "grey" }}
+              />
+              <span style={{ color: "grey" }} className="px-2 ">
+                or
+              </span>
+              <hr
+                className={"border-[1px] border-gray-300  w-[20%]"}
+                style={{ color: "grey" }}
+              />
+            </div>
+            <div className="flex flex-col justify-center w-full items-center">
+              <h3 className="text-[#002862] mt-1 mb-2">
+                Host it yourself for free
+              </h3>
+              <NavLink
+                to={"https://github.com/OpenSignLabs/OpenSign"}
+                className="bg-[#002862] w-[200px] text-center text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                target={"_blank"}
+              >
+                Visit Github
+              </NavLink>
             </div>
           </div>
         </div>
