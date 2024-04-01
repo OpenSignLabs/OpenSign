@@ -15,12 +15,6 @@ export const openInNewTab = (url) => {
 
 //function to get subcripition details from Extand user class
 export async function checkIsSubscribed() {
-  // const tenantId = localStorage.getItem("TenantId");
-  // const users = new Parse.Query("partners_Tenant");
-  // users.equalTo("objectId", tenantId);
-  // const res = await users.first();
-  // const jsonRes = JSON.parse(JSON.stringify(res));
-
   const extClass = localStorage.getItem("Extand_Class");
   const jsonSender = JSON.parse(extClass);
   const user = await Parse.Cloud.run("getUserDetails", {

@@ -4,7 +4,7 @@ import FullScreenButton from "./FullScreenButton";
 import { useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
-import { openInNewTab } from "../constant/Utils";
+import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
 import { isEnableSubscription } from "../constant/const";
 
 const Header = ({ showSidebar }) => {
@@ -21,31 +21,13 @@ const Header = ({ showSidebar }) => {
     setIsOpen(!isOpen);
   };
   useEffect(() => {
-    checkIsSubscribed();
+    checkSubscription();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  async function checkIsSubscribed() {
-    const currentUser = Parse.User.current();
-    const user = await Parse.Cloud.run("getUserDetails", {
-      email: currentUser.get("email")
-    });
+  async function checkSubscription() {
     if (isEnableSubscription) {
-      const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
-      const billingDate =
-        user?.get("Next_billing_date") && user?.get("Next_billing_date");
-      if (freeplan === "freeplan") {
-        setIsSubscribe(true);
-      } else if (billingDate) {
-        if (billingDate > new Date()) {
-          setIsSubscribe(true);
-        } else {
-          navigate(`/subscription`);
-        }
-      } else {
-        navigate(`/subscription`);
-      }
-    } else {
-      setIsSubscribe(true);
+      const getIsSubscribe = await checkIsSubscribed();
+      setIsSubscribe(getIsSubscribe);
     }
   }
   const closeDropdown = () => {
@@ -113,7 +95,7 @@ const Header = ({ showSidebar }) => {
         id="profile-menu"
         className="flex justify-between items-center gap-x-3"
       >
-        {isSubscribe && (
+        {!isSubscribe && (
           <div>
             <button
               className="text-xs bg-[#002864] p-2 text-white rounded shadow"
