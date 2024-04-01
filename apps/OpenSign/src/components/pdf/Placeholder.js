@@ -542,7 +542,15 @@ function Placeholder(props) {
       data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
       key={props.pos.key}
       lockAspectRatio={
-        props.pos.type !== textWidget &&
+        // props.pos.type !== textWidget
+        ![
+          textWidget,
+          "email",
+          "name",
+          "company",
+          "job title",
+          textInputWidget
+        ].includes(props.pos.type) &&
         (props.pos.Width
           ? props.pos.Width / props.pos.Height
           : defaultWidthHeight(props.pos.type).width /
