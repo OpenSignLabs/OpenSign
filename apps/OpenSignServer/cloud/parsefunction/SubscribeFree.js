@@ -19,6 +19,8 @@ export default async function SubscribeFree(request) {
           console.log('err ', err);
           return { status: 'error', result: err.message };
         }
+      } else if (extUser?.get('Next_billing_date') > new Date()) {
+        return { status: 'success', result: 'already subscribed!' };
       } else {
         try {
           const extUpdate = new Parse.Object('contracts_Users');
