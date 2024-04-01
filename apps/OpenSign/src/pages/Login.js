@@ -395,6 +395,18 @@ function Login() {
   const setThirdpartyLoader = (value) => {
     setState({ ...state, thirdpartyLoader: value });
   };
+  const handleFreePlan = async (id) => {
+    try {
+      const params = { userId: id };
+      const res = await Parse.Cloud.run("freesubscription", params);
+      if (res.status === "error") {
+        alert(res.result);
+      }
+    } catch (err) {
+      console.log("err in free subscribe", err.message);
+      alert("Somenthing went wrong, please try again later!");
+    }
+  };
   const thirdpartyLoginfn = async (sessionToken, billingDate) => {
     const baseUrl = localStorage.getItem("baseUrl");
     const parseAppId = localStorage.getItem("parseAppId");
@@ -404,6 +416,11 @@ function Login() {
         "X-Parse-Application-Id": parseAppId
       }
     });
+    const param = new URLSearchParams(location.search);
+    const isFreeplan = param?.get("subscription") === "freeplan";
+    if (isFreeplan) {
+      await handleFreePlan(res.data.objectId);
+    }
     await Parse.User.become(sessionToken).then(() => {
       window.localStorage.setItem("accesstoken", sessionToken);
     });
@@ -581,12 +598,22 @@ function Login() {
                                     localStorage.removeItem("userDetails");
                                     navigate(redirectUrl);
                                   } else {
+                                    if (isFreeplan) {
+                                      navigate(redirectUrl);
+                                    } else {
+                                      navigate(`/subscription`, {
+                                        replace: true
+                                      });
+                                    }
+                                  }
+                                } else {
+                                  if (isFreeplan) {
+                                    navigate(redirectUrl);
+                                  } else {
                                     navigate(`/subscription`, {
                                       replace: true
                                     });
                                   }
-                                } else {
-                                  navigate(`/subscription`, { replace: true });
                                 }
                               } else {
                                 navigate(redirectUrl);
@@ -608,10 +635,22 @@ function Login() {
                                   // Redirect to the appropriate URL after successful login
                                   navigate(redirectUrl);
                                 } else {
-                                  navigate(`/subscription`, { replace: true });
+                                  if (isFreeplan) {
+                                    navigate(redirectUrl);
+                                  } else {
+                                    navigate(`/subscription`, {
+                                      replace: true
+                                    });
+                                  }
                                 }
                               } else {
-                                navigate(`/subscription`, { replace: true });
+                                if (isFreeplan) {
+                                  navigate(redirectUrl);
+                                } else {
+                                  navigate(`/subscription`, {
+                                    replace: true
+                                  });
+                                }
                               }
                             } else {
                               navigate(redirectUrl);
@@ -1112,7 +1151,11 @@ function Login() {
                         </button>
                         <NavLink
                           className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
-                          to="/signup"
+                          to={
+                            location.search
+                              ? "/signup" + location.search
+                              : "/signup"
+                          }
                           style={width < 768 ? { textAlign: "center" } : {}}
                         >
                           Create Account

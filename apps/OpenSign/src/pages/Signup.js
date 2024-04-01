@@ -657,7 +657,7 @@ const Signup = () => {
                     </button>
                     <NavLink
                       className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
-                      to="/"
+                      to={location.search ? "/" + location.search : "/"}
                       style={width < 768 ? { textAlign: "center" } : {}}
                     >
                       Login
