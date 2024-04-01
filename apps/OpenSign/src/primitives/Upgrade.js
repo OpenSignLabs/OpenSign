@@ -1,16 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function Upgrade() {
+  const navigation = useNavigate();
+
   return (
     <sup>
-      <a
-        href="https://www.opensignlabs.com/plans-pricing"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-800 text-sm cursor-pointer "
+      <span
+        onClick={() => navigation("/subscription")}
+        className="text-blue-800 text-sm cursor-pointer hover:underline"
       >
         Upgrade now
-      </a>
+      </span>
     </sup>
   );
 }

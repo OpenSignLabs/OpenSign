@@ -292,11 +292,11 @@ function UserProfile() {
                   </span>{" "}
                   <label
                     className={
-                      !isSubscribe || isEnableSubscription
-                        ? "relative inline-flex items-center mb-0 pointer-events-none opacity-50"
-                        : `${
+                      isSubscribe || !isEnableSubscription
+                        ? `${
                             editmode ? "cursor-pointer" : ""
                           } relative inline-flex items-center mb-0`
+                        : "relative inline-flex items-center mb-0 pointer-events-none opacity-50"
                     }
                   >
                     <input
