@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
 import Title from "../components/Title";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import Alert from "../primitives/Alert";
@@ -14,6 +14,7 @@ import { isEnableSubscription } from "../constant/const";
 const Signup = () => {
   const { width } = useWindowSize();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -68,6 +69,19 @@ const Signup = () => {
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
   };
+
+  const handleFreePlan = async (id) => {
+    try {
+      const params = { userId: id };
+      const res = await Parse.Cloud.run("freesubscription", params);
+      if (res.status === "error") {
+        alert(res.result);
+      }
+    } catch (err) {
+      console.log("err in free subscribe", err.message);
+      alert("Somenthing went wrong, please try again later!");
+    }
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     if (lengthValid && caseDigitValid && specialCharValid) {
@@ -111,7 +125,13 @@ const Signup = () => {
                     params
                   );
                   if (usersignup) {
-                    handleNavigation(r.getSessionToken());
+                    const param = new URLSearchParams(location.search);
+                    const isFreeplan =
+                      param?.get("subscription") === "freeplan";
+                    if (isFreeplan) {
+                      await handleFreePlan(r.id);
+                    }
+                    handleNavigation(r.getSessionToken(), isFreeplan);
                   }
                 } catch (err) {
                   alert(err.message);
@@ -156,7 +176,7 @@ const Signup = () => {
     }
   };
 
-  const handleNavigation = async (sessionToken) => {
+  const handleNavigation = async (sessionToken, isFreeplan = false) => {
     const baseUrl = localStorage.getItem("baseUrl");
     const parseAppId = localStorage.getItem("parseAppId");
     const res = await axios.get(baseUrl + "users/me", {
@@ -325,7 +345,13 @@ const Signup = () => {
                               );
                               setState({ loading: false });
                               if (isEnableSubscription) {
-                                navigate(`/subscription`, { replace: true });
+                                if (isFreeplan) {
+                                  navigate(
+                                    `/${element.pageType}/${element.pageId}`
+                                  );
+                                } else {
+                                  navigate(`/subscription`, { replace: true });
+                                }
                               } else {
                                 alert("Registered user successfully");
                                 navigate(
@@ -343,7 +369,13 @@ const Signup = () => {
                             localStorage.setItem("pageType", element.pageType);
                             setState({ loading: false });
                             if (isEnableSubscription) {
-                              navigate(`/subscription`, { replace: true });
+                              if (isFreeplan) {
+                                navigate(
+                                  `/${element.pageType}/${element.pageId}`
+                                );
+                              } else {
+                                navigate(`/subscription`, { replace: true });
+                              }
                             } else {
                               navigate(
                                 `/${element.pageType}/${element.pageId}`

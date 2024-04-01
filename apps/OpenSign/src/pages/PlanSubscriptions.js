@@ -116,10 +116,10 @@ const PlanSubscriptions = () => {
                   Yearly (10% off)
                 </span>
               </div>
-              <ul className=" flex flex-col md:flex-row h-full bg-white justify-center">
+              <ul className="flex flex-col md:flex-row h-full bg-white justify-center">
                 {plansArr.map((item) => (
                   <li
-                    className="flex flex-col md:my-0 text-center border-[1px] border-gray-300 w-[260px]"
+                    className="flex flex-col md:my-0 text-center border-collapse border-[1px] border-gray-300 w-[260px]"
                     key={item.planName}
                   >
                     <div className="p-2 flex flex-col justify-center items-center min-h-[320px]">
