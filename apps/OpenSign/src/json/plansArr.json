@@ -1,65 +1,70 @@
 [
-    {
-        "planName": "SELF HOSTED",
-        "currency": "",
-        "price": "Free",
-        "subtitle": "Free for life One click install.",
-        "btnText": "Visit github",
-        "url": "https://github.com/opensignlabs/opensign",
-        "target": "_blank",
-        "benefits": [
-            "Sign Unlimited Documents",
-            "S3 Doc Storage",
-            "Unlimited Guest Signers",
-            "Unlimited completion certificates",
-            "Unique Code(OTP) verification for guest signers",
-            "Expiring docs & reject signature support",
-            "PDF Template Creation(coming soon)",
-            "Audit Trails",
-            "API support",
-            "Add-ons support(coming soon)",
-            "Self hosted cloud infrastructure",
-            "Free for lifetime",
-            "Community support"
-        ]
-    },
-    {
-        "planName": "THANKS PLAN",
-        "currency": "$",
-        "price": "29.99",
-        "subtitle": "Use code <span style='background-color: yellow;'>'FREEBETA'</span> to get this for free(First 1000 users)",
-        "btnText": "Subscribe",
-        "url": "https://subscriptions.zoho.in/subscribe/ef798486e6a0a11ea65f2bae8f2af901dbadf3175d495584fd25b9af5d2f2b9e/thanks",
-        "target": "_self",
-        "benefits": [
-            "Sign Unlimited Documents",
-            "Unlimited Secure Doc Storage with OpenSign™ Drive",
-            "Unlimited Guest Signers",
-            "Unlimited completion certificates",
-            "Unique Code(OTP) verification for guest signers",
-            "Expiring docs & reject signature support",
-            "PDF Template Creation(coming soon)",
-            "Audit Trails",
-            "API support",
-            "Add-ons support(coming soon)",
-            "Self hosted cloud infrastructure"
-        ]
-    },
-    {
-        "planName": "ENTERPRISE",
-        "currency": "",
-        "price": "Request Price",
-        "subtitle": "Customization available Priority support.",
-        "btnText": "Contact us",
-        "url": "https://www.opensignlabs.com/contact-us",
-        "target": "_blank",
-        "benefits": [
-            "All features",
-            "Custom domain",
-            "Whitelabeling",
-            "Uptime SLA",
-            "SSO support",
-            "24/7 support"
-        ]
-    }
+  {
+    "planName": "OPENSIGN™ FREE",
+    "currency": "",
+    "monthlyPrice": "Free",
+    "yearlyPrice": "Free",
+    "subtitle": "Free Unlimited E-signatures, Forever.",
+    "btnText": "Subscribe",
+    "url": "",
+    "target": "_blank",
+    "benefits": [
+      "Unlimited envelopes",
+      "Sign documents yourself",
+      "Request signatures from others",
+      "14 field types",
+      "Automatic e-signatures",
+      "Completion certificates",
+      "Send in order",
+      "Document templates",
+      "Import from Dropbox",
+      "Contact book",
+      "Document expiry support",
+      "Decline document support",
+      "Email notifications",
+      "Recipient authentication using OTP",
+      "And much more"
+    ]
+  },
+  {
+    "planName": "OPENSIGN™ PROFESSIONAL",
+    "currency": "$",
+    "monthlyPrice": "29.99",
+    "yearlyPrice": "329.99",
+    "subtitle": "Exclusive Access to advanced features.",
+    "btnText": "Subscribe",
+    "url": "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d1a09dfa8085585cdd4ec4d7f32137f3/professional-monthly",
+    "yearlyUrl": "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d8ad1135190dff951330360e47585a71/professional-yearly",
+    "target": "_self",
+    "benefits": [
+      "Everything in OpenSign™ professional",
+      "Field validations",
+      "Regular expression validations",
+      "Organize docs in OpenSign™ Drive",
+      "Webhooks",
+      "Zapier integration",
+      "API Access",
+      "100 API signatures included",
+      "DocumentId removal from signed docs",
+      "Custom email templates(coming soon)"
+    ]
+  },
+  {
+    "planName": "OPENSIGN™ ENTERPRISE",
+    "currency": "",
+    "monthlyPrice": "Request Price",
+    "yearlyPrice": "Request Price",
+    "subtitle": "Scalable Features with priority support.",
+    "btnText": "Contact us",
+    "url": "https://www.opensignlabs.com/contact-us",
+    "target": "_blank",
+    "benefits": [
+      "All features",
+      "Custom domain",
+      "Custom branding",
+      "Uptime SLA",
+      "SSO support",
+      "Priority support"
+    ]
+  }
 ]

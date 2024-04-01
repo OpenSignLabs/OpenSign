@@ -86,7 +86,9 @@ if (process.env.SMTP_ENABLE) {
     console.log('Please provide valid Mailgun credentials');
   }
 }
-
+const mailsender = process.env.SMTP_ENABLE
+  ? process.env.SMTP_USER_EMAIL
+  : process.env.MAILGUN_SENDER;
 export const config = {
   databaseURI:
     process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
@@ -102,7 +104,7 @@ export const config = {
   verifyUserEmails: isMailAdapter === true ? true : false,
   publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
   // Your apps name. This will appear in the subject and body of the emails that are sent.
-  appName: 'Open Sign',
+  appName: 'Opensign',
   allowClientClassCreation: false,
   allowExpiredAuthDataToken: false,
   encodeParseObjectInCloudFunction: true,
@@ -112,9 +114,7 @@ export const config = {
           module: 'parse-server-api-mail-adapter',
           options: {
             // The email address from which emails are sent.
-            sender: process.env.SMTP_ENABLE
-              ? process.env.SMTP_USER_EMAIL
-              : process.env.MAILGUN_SENDER,
+            sender: 'Opensign™' + ' <' + mailsender + '>',
             // The email templates.
             templates: {
               // The template used by Parse Server to send an email for password
@@ -146,6 +146,14 @@ export const config = {
   auth: {
     google: {
       enabled: true,
+    },
+    ldap: {
+      enabled: true,
+      url: 'ldap://ldap.forumsys.com:389',
+      suffix: 'dc=example,dc=com',
+      // dn: 'ou=mathematicians, dc=example, dc=com',
+      groupCn: 'mathematicians',
+      groupFilter: '(&(uniqueMember=uid=,dc=example,dc=com)(objectClass=groupOfUniqueNames))',
     },
   },
 };

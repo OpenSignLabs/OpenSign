@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { isEnableSubscription } from "../constant/const";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
@@ -18,6 +19,12 @@ const HomeLayout = () => {
   const arr = useSelector((state) => state.TourSteps);
   const [isUserValid, setIsUserValid] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
+  // reactour state
+  const [isCloseBtn, setIsCloseBtn] = useState(true);
+  const [isTour, setIsTour] = useState(false);
+  const [tourStatusArr, setTourStatusArr] = useState([]);
+  const [tourConfigs, setTourConfigs] = useState([]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -27,8 +34,7 @@ const HomeLayout = () => {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
-          setIsUserValid(true);
-          setIsLoader(false);
+          checkIsSubscribed();
         } else {
           setIsUserValid(false);
         }
@@ -37,14 +43,36 @@ const HomeLayout = () => {
         setIsUserValid(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // reactour state
-  const [isCloseBtn, setIsCloseBtn] = useState(true);
-  const [isTour, setIsTour] = useState(false);
-  const [tourStatusArr, setTourStatusArr] = useState([]);
-  const [tourConfigs, setTourConfigs] = useState([]);
-
+  async function checkIsSubscribed() {
+    const currentUser = Parse.User.current();
+    const user = await Parse.Cloud.run("getUserDetails", {
+      email: currentUser.get("email")
+    });
+    if (isEnableSubscription) {
+      const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
+      const billingDate =
+        user?.get("Next_billing_date") && user?.get("Next_billing_date");
+      if (freeplan === "freeplan") {
+        setIsUserValid(true);
+        setIsLoader(false);
+      } else if (billingDate) {
+        if (billingDate > new Date()) {
+          setIsUserValid(true);
+          setIsLoader(false);
+        } else {
+          navigate(`/subscription`);
+        }
+      } else {
+        navigate(`/subscription`);
+      }
+    } else {
+      setIsUserValid(true);
+      setIsLoader(false);
+    }
+  }
   const showSidebar = () => {
     setIsOpen((value) => !value);
   };
@@ -198,7 +226,7 @@ const HomeLayout = () => {
   return (
     <div>
       <div className="sticky top-0 z-50">
-        <Header showSidebar={showSidebar} />
+        {!isLoader && <Header showSidebar={showSidebar} />}
       </div>
       {isUserValid ? (
         <>
@@ -223,7 +251,6 @@ const HomeLayout = () => {
             <>
               <div className="flex md:flex-row flex-col z-50">
                 <Sidebar isOpen={isOpen} closeSidebar={closeSidebar} />
-
                 <div
                   id="renderList"
                   className="relative h-screen flex flex-col justify-between w-full overflow-y-auto"
