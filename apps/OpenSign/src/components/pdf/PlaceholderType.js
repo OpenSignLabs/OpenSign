@@ -135,7 +135,7 @@ function PlaceholderType(props) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.pos]);
+  }, [props.pos?.options?.defaultValue]);
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
@@ -403,33 +403,6 @@ function PlaceholderType(props) {
     case textInputWidget:
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        // <input
-        //   className="inputPlaceholder"
-        //   ref={inputRef}
-        //   placeholder={validatePlaceholder}
-        //   style={{ fontSize: calculateFontSize() }}
-        //   value={textValue}
-        //   type="text"
-        //   tabIndex="0"
-        //   disabled={
-        //     props.isNeedSign && props.data?.signerObjId !== props.signerObjId
-        //       ? true
-        //       : props.isPlaceholder
-        //   }
-        //   onBlur={handleInputBlur}
-        //   onChange={(e) => {
-        //     setTextValue(e.target.value);
-        //     onChangeInput(
-        //       e.target.value,
-        //       props.pos.key,
-        //       props.xyPostion,
-        //       props.index,
-        //       props.setXyPostion,
-        //       props.data && props.data?.Id,
-        //       false
-        //     );
-        //   }}
-        // />
         <textarea
           ref={inputRef}
           placeholder={validatePlaceholder}
@@ -533,29 +506,6 @@ function PlaceholderType(props) {
     case "name":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        // <input
-        //   tabIndex="0"
-        //   ref={inputRef}
-        //   placeholder={"name"}
-        //   style={{ fontSize: calculateFontSize() }}
-        //   className="inputPlaceholder"
-        //   type="text"
-        //   value={textValue}
-        //   onBlur={handleInputBlur}
-        //   onChange={(e) => {
-        //     const isDefault = false;
-        //     handleTextValid(e);
-        //     onChangeInput(
-        //       e.target.value,
-        //       props.pos.key,
-        //       props.xyPostion,
-        //       props.index,
-        //       props.setXyPostion,
-        //       props.data && props.data?.Id,
-        //       isDefault
-        //     );
-        //   }}
-        // />
         <textarea
           ref={inputRef}
           placeholder={"name"}
@@ -597,27 +547,6 @@ function PlaceholderType(props) {
     case "company":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        // <input
-        //   className="inputPlaceholder"
-        //   type="text"
-        //   ref={inputRef}
-        //   placeholder={"company"}
-        //   style={{ fontSize: calculateFontSize() }}
-        //   value={textValue}
-        //   onBlur={handleInputBlur}
-        //   onChange={(e) => {
-        //     handleTextValid(e);
-        //     onChangeInput(
-        //       e.target.value,
-        //       props.pos.key,
-        //       props.xyPostion,
-        //       props.index,
-        //       props.setXyPostion,
-        //       props.data && props.data?.Id,
-        //       false
-        //     );
-        //   }}
-        // />
         <textarea
           ref={inputRef}
           placeholder="Enter label"
@@ -658,27 +587,6 @@ function PlaceholderType(props) {
     case "job title":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        // <input
-        //   className="inputPlaceholder"
-        //   type="text"
-        //   ref={inputRef}
-        //   placeholder={"job title"}
-        //   style={{ fontSize: calculateFontSize() }}
-        //   value={textValue}
-        //   onBlur={handleInputBlur}
-        //   onChange={(e) => {
-        //     handleTextValid(e);
-        //     onChangeInput(
-        //       e.target.value,
-        //       props.pos.key,
-        //       props.xyPostion,
-        //       props.index,
-        //       props.setXyPostion,
-        //       props.data && props.data?.Id,
-        //       false
-        //     );
-        //   }}
-        // />
         <textarea
           ref={inputRef}
           placeholder={"job title"}
@@ -801,27 +709,6 @@ function PlaceholderType(props) {
     case "email":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        // <input
-        //   className="inputPlaceholder"
-        //   type="text"
-        //   ref={inputRef}
-        //   placeholder={"email"}
-        //   style={{ fontSize: calculateFontSize() }}
-        //   value={textValue}
-        //   onBlur={handleInputBlur}
-        //   onChange={(e) => {
-        //     handleTextValid(e);
-        //     onChangeInput(
-        //       e.target.value,
-        //       props.pos.key,
-        //       props.xyPostion,
-        //       props.index,
-        //       props.setXyPostion,
-        //       props.data && props.data?.Id,
-        //       false
-        //     );
-        //   }}
-        // />
         <textarea
           ref={inputRef}
           placeholder={"email"}
