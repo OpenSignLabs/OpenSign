@@ -224,12 +224,13 @@ function Opensigndrive() {
   const sortedBy = (appInfo, type, order) => {
     if (type === orderName.Name) {
       if (order === orderName.Ascending) {
-        appInfo.sort((a, b) => (a.Name > b.Name ? 1 : -1));
         return appInfo.sort((a, b) =>
           a.Name.toLowerCase() < b.Name.toLowerCase() ? -1 : 1
         );
       } else if (order === orderName.Descending) {
-        return appInfo.sort((a, b) => (a.Name > b.Name ? -1 : 1));
+        return appInfo.sort((a, b) =>
+          a.Name.toLowerCase() < b.Name.toLowerCase() ? 1 : -1
+        );
       }
     } else if (type === orderName.Date) {
       if (order === orderName.Ascending) {
