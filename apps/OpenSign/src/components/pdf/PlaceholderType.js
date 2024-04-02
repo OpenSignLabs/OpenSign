@@ -512,7 +512,6 @@ function PlaceholderType(props) {
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
-          onBlur={handleInputBlur}
           onChange={(e) => {
             const isDefault = false;
             handleTextValid(e);
@@ -553,7 +552,6 @@ function PlaceholderType(props) {
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
-          onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
             onChangeInput(
@@ -593,7 +591,6 @@ function PlaceholderType(props) {
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
-          onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
             onChangeInput(
