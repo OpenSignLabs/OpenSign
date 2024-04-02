@@ -1273,6 +1273,7 @@ export const multiSignEmbed = async (
         }
       };
       const widgetTypeExist = [
+        textWidget,
         textInputWidget,
         "name",
         "company",
@@ -1328,7 +1329,7 @@ export const multiSignEmbed = async (
             checkbox.enableReadOnly();
           });
         }
-      } else if (position.type === textWidget) {
+      } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
         let textContent;
@@ -1404,24 +1405,8 @@ export const multiSignEmbed = async (
             color: rgb(0, 0, 0),
             size: fontSize
           });
-          y -= 15; // Adjust the line height as needed
+          y -= 18; // Adjust the line height as needed
         }
-      } else if (widgetTypeExist) {
-        const font = await pdfDoc.embedFont("Helvetica");
-        const fontSize = 12;
-        let textContent;
-        if (position?.options?.response) {
-          textContent = position.options?.response;
-        } else if (position?.options?.defaultValue) {
-          textContent = position?.options?.defaultValue;
-        }
-        page.drawText(textContent, {
-          x: xPos(position),
-          y: yPos(position) + 10,
-          size: fontSize,
-          font,
-          color: rgb(0, 0, 0)
-        });
       } else if (position.type === "dropdown") {
         const dropdownRandomId = "dropdown" + randomId();
         const dropdown = form.createDropdown(dropdownRandomId);
