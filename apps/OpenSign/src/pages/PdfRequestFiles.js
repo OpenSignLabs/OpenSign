@@ -984,7 +984,7 @@ function PdfRequestFiles() {
               )}
 
               <div
-                className="signatureContainer"
+                className="relative flex flex-col md:flex-row justify-between bg-[#ebebeb]"
                 style={{
                   pointerEvents:
                     isExpired ||
@@ -1046,7 +1046,6 @@ function PdfRequestFiles() {
 
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
-                  containerWH={containerWH}
                   show={isDecline.isDeclined}
                   headMsg="Document Declined"
                   bodyMssg={
@@ -1063,7 +1062,6 @@ function PdfRequestFiles() {
                 />
                 {/* this modal is used for show expired alert */}
                 <PdfDeclineModal
-                  containerWH={containerWH}
                   show={isExpired}
                   headMsg="Document Expired!"
                   bodyMssg={`This document expired on ${expiredDate} and is no longer available to sign.`}
