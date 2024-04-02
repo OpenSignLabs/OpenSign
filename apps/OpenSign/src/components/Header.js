@@ -13,9 +13,9 @@ const Header = ({ showSidebar }) => {
   let applogo = localStorage.getItem("appLogo") || "";
   let username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
-
   const [isOpen, setIsOpen] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(true);
+  const [isPro, setIsPro]= useState(false)
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -27,6 +27,7 @@ const Header = ({ showSidebar }) => {
   async function checkSubscription() {
     if (isEnableSubscription) {
       const getIsSubscribe = await checkIsSubscribed();
+      setIsPro(getIsSubscribe)
       setIsSubscribe(getIsSubscribe);
     }
   }
@@ -103,6 +104,11 @@ const Header = ({ showSidebar }) => {
             >
               Upgrade Now
             </button>
+          </div>
+        )}
+        {isPro && (
+          <div className="w-[35px] h-[35px] rounded-full ring-[1px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
+            PRO
           </div>
         )}
         <div>
