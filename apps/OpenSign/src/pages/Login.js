@@ -1164,25 +1164,12 @@ function Login() {
                     </form>
                     <br />
                     {(appInfo.fbAppId || appInfo.googleClietId) && (
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center"
-                        }}
-                        className="text-sm"
-                      >
-                        <hr
-                          className={"border-[1px] border-gray-300 w-full"}
-                          style={{ color: "grey" }}
-                        />
-                        <span style={{ color: "grey" }} className="px-2 ">
+                      <div className="text-sm flex justify-center items-center">
+                        <hr className="border-[1px] border-gray-300 w-full" />
+                        <span className="px-2 text-gray-500 cursor-default">
                           OR
                         </span>
-                        <hr
-                          className={"border-[1px] border-gray-300 w-full"}
-                          style={{ color: "grey" }}
-                        />
+                        <hr className="border-[1px] border-gray-300 w-full" />
                       </div>
                     )}
                     <br />
