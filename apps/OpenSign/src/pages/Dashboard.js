@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Title from "../components/Title";
 import { useDispatch } from "react-redux";
 import { saveTourSteps } from "../redux/reducers/TourStepsReducer";
-import { useCookies } from "react-cookie";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -15,25 +15,9 @@ const Dashboard = () => {
   const [classnameArray, setclassnameArray] = useState([]);
   const [loading, setloading] = useState(false);
   const [defaultQuery, setDefaultQuery] = useState("");
-  const [, setCookie] = useCookies([
-    "TenantId",
-    "userDetails",
-    "userEmail",
-    "profileImg",
-    "fev_Icon",
-    "accesstoken",
-    `Parse/${localStorage.getItem("parseAppId")}/currentUser`,
-    "appLogo",
-    "baseUrl",
-    "domain",
-    "parseAppId",
-    "username",
-    "main_Domain"
-  ]);
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
-      saveCookies();
       if (id !== undefined) {
         getDashboard(id);
       } else {
@@ -45,36 +29,6 @@ const Dashboard = () => {
     // eslint-disable-next-line
   }, [id]);
 
-  //function to use save data in cookies storage
-  const saveCookies = () => {
-    setCookie("TenantId", localStorage.getItem("TenantId"), { secure: true });
-    setCookie("userDetails", localStorage.getItem("userDetails"), {
-      secure: true
-    });
-    setCookie("userEmail", localStorage.getItem("userEmail"), { secure: true });
-    setCookie("profileImg", localStorage.getItem("profileImg"), {
-      secure: true
-    });
-    setCookie("fev_Icon", localStorage.getItem("fev_Icon"), { secure: true });
-    setCookie("accesstoken", localStorage.getItem("accesstoken"), {
-      secure: true
-    });
-    setCookie(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`,
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      ),
-      { secure: true }
-    );
-    setCookie("appLogo", localStorage.getItem("appLogo"), { secure: true });
-    setCookie("baseUrl", localStorage.getItem("baseUrl"), { secure: true });
-    setCookie("domain", localStorage.getItem("domain"), { secure: true });
-    setCookie("parseAppId", localStorage.getItem("parseAppId"), {
-      secure: true
-    });
-    setCookie("username", localStorage.getItem("username"), { secure: true });
-    setCookie("main_Domain", window.location.host, { secure: true });
-  };
   const getDashboard = async (id) => {
     setloading(true);
     try {
