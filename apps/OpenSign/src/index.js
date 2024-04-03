@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
+import { CookiesProvider } from "react-cookie";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
 import {
@@ -62,10 +63,12 @@ if (process.env.REACT_APP_GTM) {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
-    <DndProvider options={HTML5toTouch}>
-      <Preview>{generatePreview}</Preview>
-      <App />
-    </DndProvider>
-  </Provider>
+  <CookiesProvider defaultSetOptions={{ path: "/" }}>
+    <Provider store={store}>
+      <DndProvider options={HTML5toTouch}>
+        <Preview>{generatePreview}</Preview>
+        <App />
+      </DndProvider>
+    </Provider>
+  </CookiesProvider>
 );

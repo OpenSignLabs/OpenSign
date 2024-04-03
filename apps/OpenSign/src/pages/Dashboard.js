@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Title from "../components/Title";
 import { useDispatch } from "react-redux";
 import { saveTourSteps } from "../redux/reducers/TourStepsReducer";
+import { useCookies } from "react-cookie";
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -14,9 +15,44 @@ const Dashboard = () => {
   const [classnameArray, setclassnameArray] = useState([]);
   const [loading, setloading] = useState(false);
   const [defaultQuery, setDefaultQuery] = useState("");
+  const [, setCookie] = useCookies([
+    "TenantId",
+    "TenetId",
+    "TenantName",
+    "userDetails",
+    "userEmail",
+    "profileImg",
+    "UserInformation",
+    "appTitle",
+    "defaultmenuid",
+    "PageLanding",
+    "Extand_Class",
+    "fev_Icon",
+    "loglevel",
+    "accesstoken",
+    "extended_class",
+    `Parse/${localStorage.getItem("parseAppId")}/currentUser`,
+    "_user_role",
+    "appLogo",
+    "baseUrl",
+    "domain",
+    "parseAppId",
+    "pageType",
+    "userSettings",
+    "appVersion",
+    "username",
+    "_appName",
+    "_app_objectId",
+    "scriptId",
+    `Parse/${localStorage.getItem("parseAppId")}/installationId`,
+    "appName",
+    "extended_class",
+    "main_Domain"
+  ]);
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
+      saveCookies();
       if (id !== undefined) {
         getDashboard(id);
       } else {
@@ -28,6 +64,80 @@ const Dashboard = () => {
     // eslint-disable-next-line
   }, [id]);
 
+  //function to use save data in cookies storage
+  const saveCookies = () => {
+    setCookie("TenantId", localStorage.getItem("TenantId"), { secure: true });
+    setCookie("TenetId", localStorage.getItem("TenetId"), { secure: true });
+    setCookie("TenantName", localStorage.getItem("TenantName"), {
+      secure: true
+    });
+    setCookie("userDetails", localStorage.getItem("userDetails"), {
+      secure: true
+    });
+    setCookie("userEmail", localStorage.getItem("userEmail"), { secure: true });
+    setCookie("profileImg", localStorage.getItem("profileImg"), {
+      secure: true
+    });
+    setCookie("UserInformation", localStorage.getItem("UserInformation"), {
+      secure: true
+    });
+    setCookie("appTitle", localStorage.getItem("appTitle"), { secure: true });
+    setCookie("defaultmenuid", localStorage.getItem("defaultmenuid"), {
+      secure: true
+    });
+    setCookie("PageLanding", localStorage.getItem("PageLanding"), {
+      secure: true
+    });
+    setCookie("Extand_Class", localStorage.getItem("Extand_Class"), {
+      secure: true
+    });
+    setCookie("fev_Icon", localStorage.getItem("fev_Icon"), { secure: true });
+    setCookie("loglevel", localStorage.getItem("loglevel"), { secure: true });
+    setCookie("accesstoken", localStorage.getItem("accesstoken"), {
+      secure: true
+    });
+    setCookie("extended_class", localStorage.getItem("extended_class"), {
+      secure: true
+    });
+    setCookie(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`,
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      ),
+      { secure: true }
+    );
+    setCookie("_user_role", localStorage.getItem("_user_role"), {
+      secure: true
+    });
+    setCookie("appLogo", localStorage.getItem("appLogo"), { secure: true });
+    setCookie("baseUrl", localStorage.getItem("baseUrl"), { secure: true });
+    setCookie("domain", localStorage.getItem("domain"), { secure: true });
+    setCookie("parseAppId", localStorage.getItem("parseAppId"), {
+      secure: true
+    });
+    setCookie("pageType", localStorage.getItem("pageType"), { secure: true });
+    setCookie("userSettings", localStorage.getItem("userSettings"), {
+      secure: true
+    });
+    setCookie("appVersion", localStorage.getItem("appVersion"), {
+      secure: true
+    });
+    setCookie("username", localStorage.getItem("username"), { secure: true });
+    setCookie("_appName", localStorage.getItem("_appName"), { secure: true });
+    setCookie("_app_objectId", localStorage.getItem("_app_objectId"), {
+      secure: true
+    });
+    setCookie("scriptId", localStorage.getItem("scriptId"), { secure: true });
+    setCookie(
+      `Parse/${localStorage.getItem("parseAppId")}/installationId`,
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/installationId`
+      ),
+      { secure: true }
+    );
+    setCookie("appName", localStorage.getItem("appName"), { secure: true });
+    setCookie("main_Domain", window.location.host, { secure: true });
+  };
   const getDashboard = async (id) => {
     setloading(true);
     try {
