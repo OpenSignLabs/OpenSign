@@ -10,6 +10,7 @@ import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { isEnableSubscription } from "../constant/const";
+import { useCookies } from "react-cookie";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
@@ -24,6 +25,21 @@ const HomeLayout = () => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [tourConfigs, setTourConfigs] = useState([]);
+  const [, setCookie] = useCookies([
+    "TenantId",
+    "userDetails",
+    "userEmail",
+    "profileImg",
+    "fev_Icon",
+    "accesstoken",
+    `Parse/${localStorage.getItem("parseAppId")}/currentUser`,
+    "appLogo",
+    "baseUrl",
+    "domain",
+    "parseAppId",
+    "username",
+    "main_Domain"
+  ]);
 
   useEffect(() => {
     (async () => {
@@ -43,8 +59,40 @@ const HomeLayout = () => {
         setIsUserValid(false);
       }
     })();
+    saveCookies();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  //function to use save data in cookies storage
+  const saveCookies = () => {
+    setCookie("TenantId", localStorage.getItem("TenantId"), { secure: true });
+    setCookie("userDetails", localStorage.getItem("userDetails"), {
+      secure: true
+    });
+    setCookie("userEmail", localStorage.getItem("userEmail"), { secure: true });
+    setCookie("profileImg", localStorage.getItem("profileImg"), {
+      secure: true
+    });
+    setCookie("fev_Icon", localStorage.getItem("fev_Icon"), { secure: true });
+    setCookie("accesstoken", localStorage.getItem("accesstoken"), {
+      secure: true
+    });
+    setCookie(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`,
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      ),
+      { secure: true }
+    );
+    setCookie("appLogo", localStorage.getItem("appLogo"), { secure: true });
+    setCookie("baseUrl", localStorage.getItem("baseUrl"), { secure: true });
+    setCookie("domain", localStorage.getItem("domain"), { secure: true });
+    setCookie("parseAppId", localStorage.getItem("parseAppId"), {
+      secure: true
+    });
+    setCookie("username", localStorage.getItem("username"), { secure: true });
+    setCookie("main_Domain", window.location.host, { secure: true });
+  };
 
   async function checkIsSubscribed() {
     const currentUser = Parse.User.current();
