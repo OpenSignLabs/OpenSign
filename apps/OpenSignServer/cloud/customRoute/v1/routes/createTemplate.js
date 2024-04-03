@@ -1,6 +1,4 @@
-import { customAPIurl } from '../../../../Utils.js';
-
-const randomId = () => Math.floor(1000 + Math.random() * 9000);
+import { saveFileUsage } from '../../../../Utils.js';
 export default async function createTemplate(request, response) {
   const name = request.body?.title;
   const note = request.body?.note;
@@ -36,12 +34,17 @@ export default async function createTemplate(request, response) {
         });
         await file.save({ useMasterKey: true });
         fileUrl = file.url();
+        const buffer = Buffer.from(base64File, 'base64');
+        saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
       } else {
+        const base64 = fileData?.toString('base64');
         const file = new Parse.File(request.files?.[0]?.originalname, {
-          base64: fileData?.toString('base64'),
+          base64: base64,
         });
         await file.save({ useMasterKey: true });
         fileUrl = file.url();
+        const buffer = Buffer.from(base64, 'base64');
+        saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
       }
 
       const contractsUser = new Parse.Query('contracts_Users');

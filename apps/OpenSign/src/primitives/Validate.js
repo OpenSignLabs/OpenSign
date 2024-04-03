@@ -24,7 +24,9 @@ const Validate = () => {
         setIsUserValid(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const handleLoginBtn = () => {
     try {
       Parse.User.logOut();

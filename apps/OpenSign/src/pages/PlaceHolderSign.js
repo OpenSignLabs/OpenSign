@@ -3,7 +3,7 @@ import axios from "axios";
 import Parse from "parse";
 import "../styles/signature.css";
 import { PDFDocument } from "pdf-lib";
-import { themeColor } from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
@@ -39,6 +39,7 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
+import { SaveFileSize } from "../constant/saveFileSize";
 
 function PlaceHolderSign() {
   const navigate = useNavigate();
@@ -104,11 +105,12 @@ function PlaceHolderSign() {
   const [widgetName, setWidgetName] = useState(false);
   const [mailStatus, setMailStatus] = useState("");
   const [isCurrUser, setIsCurrUser] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(false);
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
     message: ""
   });
-
+  const [extUserId, setExtUserId] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -180,11 +182,35 @@ function PlaceHolderSign() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
+  async function checkIsSubscribed(email) {
+    const user = await Parse.Cloud.run("getUserDetails", {
+      email: email
+    });
+    const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
+    const billingDate =
+      user?.get("Next_billing_date") && user?.get("Next_billing_date");
+    if (freeplan === "freeplan") {
+      return true;
+    } else if (billingDate) {
+      if (billingDate > new Date()) {
+        setIsSubscribe(true);
+        return true;
+      } else {
+        navigate(`/subscription`);
+      }
+    } else {
+      navigate(`/subscription`);
+    }
+  }
   //function for get document details
   const getDocumentDetails = async () => {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
+      if (isEnableSubscription) {
+        checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
+      }
       const alreadyPlaceholder = documentData[0]?.SignedUrl;
       // Check if document is sent for signing
       if (alreadyPlaceholder) {
@@ -736,6 +762,9 @@ function PlaceHolderSign() {
         // Save the Parse File if needed
         const pdfData = await pdfFile.save();
         const pdfUrl = pdfData.url();
+        const tenantId = localStorage.getItem("TenantId");
+        const buffer = atob(pdfBytes);
+        SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
       } catch (e) {
         console.log("error", e);
@@ -829,6 +858,7 @@ function PlaceHolderSign() {
           : "";
         const themeBGcolor = themeColor;
         let params = {
+          extUserId: extUserId,
           recipient: signerMail[i].Email,
           subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
           from: sender,
@@ -1596,6 +1626,7 @@ function PlaceHolderSign() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <DropdownWidgetOption
                 type="checkbox"
@@ -1606,6 +1637,7 @@ function PlaceHolderSign() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1616,6 +1648,7 @@ function PlaceHolderSign() {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
 
               {/* pdf header which contain funish back button */}
@@ -1831,6 +1864,7 @@ function PlaceHolderSign() {
           isOpen={isNameModal}
           handleClose={handleNameModal}
           handleData={handleWidgetdefaultdata}
+          isSubscribe={isSubscribe}
         />
       </div>
     </>

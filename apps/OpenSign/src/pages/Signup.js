@@ -2,17 +2,19 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
 import Title from "../components/Title";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
-import  { showTenant } from "../redux/reducers/ShowTenant";
+import { showTenant } from "../redux/reducers/ShowTenant";
+import { isEnableSubscription } from "../constant/const";
 const Signup = () => {
   const { width } = useWindowSize();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -67,6 +69,19 @@ const Signup = () => {
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
   };
+
+  const handleFreePlan = async (id) => {
+    try {
+      const params = { userId: id };
+      const res = await Parse.Cloud.run("freesubscription", params);
+      if (res.status === "error") {
+        alert(res.result);
+      }
+    } catch (err) {
+      console.log("err in free subscribe", err.message);
+      alert("Somenthing went wrong, please try again later!");
+    }
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     if (lengthValid && caseDigitValid && specialCharValid) {
@@ -110,7 +125,13 @@ const Signup = () => {
                     params
                   );
                   if (usersignup) {
-                    handleNavigation(r.getSessionToken());
+                    const param = new URLSearchParams(location.search);
+                    const isFreeplan =
+                      param?.get("subscription") === "freeplan";
+                    if (isFreeplan) {
+                      await handleFreePlan(r.id);
+                    }
+                    handleNavigation(r.getSessionToken(), isFreeplan);
                   }
                 } catch (err) {
                   alert(err.message);
@@ -155,7 +176,7 @@ const Signup = () => {
     }
   };
 
-  const handleNavigation = async (sessionToken) => {
+  const handleNavigation = async (sessionToken, isFreeplan = false) => {
     const baseUrl = localStorage.getItem("baseUrl");
     const parseAppId = localStorage.getItem("parseAppId");
     const res = await axios.get(baseUrl + "users/me", {
@@ -259,9 +280,7 @@ const Signup = () => {
                               });
                               if (tenentInfo.length) {
                                 dispatch(
-                                  showTenant(
-                                    tenentInfo[0].tenentName || ""
-                                  )
+                                  showTenant(tenentInfo[0].tenentName || "")
                                 );
                                 localStorage.setItem(
                                   "TenantName",
@@ -297,7 +316,7 @@ const Signup = () => {
                                     tenentName: x.TenantId.TenantName || ""
                                   };
                                   localStorage.setItem(
-                                    "TenetId",
+                                    "TenantId",
                                     x.TenantId.objectId
                                   );
                                   tenentInfo.push(obj);
@@ -325,8 +344,14 @@ const Signup = () => {
                                 element.pageType
                               );
                               setState({ loading: false });
-                              if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                                navigate(`/subscription`, { replace: true });
+                              if (isEnableSubscription) {
+                                if (isFreeplan) {
+                                  navigate(
+                                    `/${element.pageType}/${element.pageId}`
+                                  );
+                                } else {
+                                  navigate(`/subscription`, { replace: true });
+                                }
                               } else {
                                 alert("Registered user successfully");
                                 navigate(
@@ -343,8 +368,14 @@ const Signup = () => {
                             );
                             localStorage.setItem("pageType", element.pageType);
                             setState({ loading: false });
-                            if (process.env.REACT_APP_ENABLE_SUBSCRIPTION) {
-                              navigate(`/subscription`, { replace: true });
+                            if (isEnableSubscription) {
+                              if (isFreeplan) {
+                                navigate(
+                                  `/${element.pageType}/${element.pageId}`
+                                );
+                              } else {
+                                navigate(`/subscription`, { replace: true });
+                              }
                             } else {
                               navigate(
                                 `/${element.pageType}/${element.pageId}`
@@ -626,7 +657,7 @@ const Signup = () => {
                     </button>
                     <NavLink
                       className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
-                      to="/"
+                      to={location.search ? "/" + location.search : "/"}
                       style={width < 768 ? { textAlign: "center" } : {}}
                     >
                       Login
@@ -661,4 +692,4 @@ const Signup = () => {
   );
 };
 
-export default Signup
+export default Signup;

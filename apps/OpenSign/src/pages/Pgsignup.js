@@ -353,7 +353,7 @@ const PgSignUp = () => {
                                     tenentName: x.TenantId.TenantName || ""
                                   };
                                   localStorage.setItem(
-                                    "TenetId",
+                                    "TenantId",
                                     x.TenantId.objectId
                                   );
                                   tenentInfo.push(obj);

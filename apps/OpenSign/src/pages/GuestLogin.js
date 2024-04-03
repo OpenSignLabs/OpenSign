@@ -59,7 +59,8 @@ function GuestLogin() {
           "X-Parse-Application-Id": parseId
         };
         let body = {
-          email: email.toString()
+          email: email.toString(),
+          docId: id
         };
         let Otp = await axios.post(url, body, { headers: headers });
 

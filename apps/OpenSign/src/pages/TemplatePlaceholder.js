@@ -3,7 +3,7 @@ import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/signature.css";
-import { themeColor } from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
@@ -35,6 +35,7 @@ import AddRoleModal from "../components/pdf/AddRoleModal";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
+import Parse from "parse";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -52,6 +53,7 @@ const TemplatePlaceholder = () => {
   const [isSelectListId, setIsSelectId] = useState();
   const [isSendAlert, setIsSendAlert] = useState(false);
   const [isCreateDocModal, setIsCreateDocModal] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -168,7 +170,26 @@ const TemplatePlaceholder = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
-
+  async function checkIsSubscribed(email) {
+    const user = await Parse.Cloud.run("getUserDetails", {
+      email: email
+    });
+    const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
+    const billingDate =
+      user?.get("Next_billing_date") && user?.get("Next_billing_date");
+    if (freeplan === "freeplan") {
+      return true;
+    } else if (billingDate) {
+      if (billingDate > new Date()) {
+        setIsSubscribe(true);
+        return true;
+      } else {
+        navigate(`/subscription`);
+      }
+    } else {
+      navigate(`/subscription`);
+    }
+  }
   // `fetchTemplate` function in used to get Template from server and setPlaceholder ,setSigner if present
   const fetchTemplate = async () => {
     try {
@@ -190,6 +211,9 @@ const TemplatePlaceholder = () => {
           : [];
 
       if (documentData && documentData.length > 0) {
+        if (isEnableSubscription) {
+          checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
+        }
         setPdfDetails(documentData);
         setIsSigners(true);
         if (documentData[0].Signers && documentData[0].Signers.length > 0) {
@@ -1323,6 +1347,7 @@ const TemplatePlaceholder = () => {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <DropdownWidgetOption
                 type="checkbox"
@@ -1333,6 +1358,7 @@ const TemplatePlaceholder = () => {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <DropdownWidgetOption
                 type="dropdown"
@@ -1343,6 +1369,7 @@ const TemplatePlaceholder = () => {
                 currWidgetsDetails={currWidgetsDetails}
                 setCurrWidgetsDetails={setCurrWidgetsDetails}
                 handleClose={handleNameModal}
+                isSubscribe={isSubscribe}
               />
               <PlaceholderCopy
                 isPageCopy={isPageCopy}
@@ -1542,6 +1569,7 @@ const TemplatePlaceholder = () => {
         isOpen={isNameModal}
         handleClose={handleNameModal}
         handleData={handleWidgetdefaultdata}
+        isSubscribe={isSubscribe}
       />
     </div>
   );

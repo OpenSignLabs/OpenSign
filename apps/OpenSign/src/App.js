@@ -15,6 +15,7 @@ import DraftDocument from "./components/pdf/DraftDocument";
 import PlaceHolderSign from "./pages/PlaceHolderSign";
 import PdfRequestFiles from "./pages/PdfRequestFiles";
 import LazyPage from "./primitives/LazyPage";
+import { isEnableSubscription } from "./constant/const";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
@@ -113,7 +114,7 @@ function App() {
               path="/forgetpassword"
               element={<LazyPage Page={ForgetPassword} />}
             />
-            {process.env.REACT_APP_ENABLE_SUBSCRIPTION && (
+            {isEnableSubscription && (
               <>
                 <Route
                   path="/pgsignup"
