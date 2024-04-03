@@ -326,7 +326,7 @@ paths:
       - Documents
       summary: Create Document from Template
       description: |
-        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug UI**](https://staging-ap.opensignlabs.com/debugpdf) or using the Create Template API.
+        The Create Document API allows you to generate new documents by just providing template_id instead of uploading a new file(in the form of base64 or binary) every time you need to create a document. Templates for repeatedly used files can be created from user interface at [**Debug UI**](https://app.opensignlabs.com/debugpdf) or using the Create Template API.
       operationId: createdocumentwithtemplateid
       parameters:
       - name: template_id
