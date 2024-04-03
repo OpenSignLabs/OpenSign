@@ -30,7 +30,7 @@ const AddRoleModal = (props) => {
               margin: "10px 0 10px 5px"
             }}
           >
-            e.g: Hr, Director, Manager, New joinee, Accountant, etc...
+            e.g: Customer, Hr, Director, Manager, Student, etc...
           </p>
           <div>
             <div

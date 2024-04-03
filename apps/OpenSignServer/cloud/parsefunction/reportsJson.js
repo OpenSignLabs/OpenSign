@@ -164,19 +164,10 @@ export default function reportJson(id, userId) {
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
           Type: { $ne: 'Folder' },
-          $and: [
-            {
-              $or: [
-                { Signers: { $ne: null }, SignedUrl: { $ne: null } },
-                { Placeholders: { $ne: null } },
-              ],
-            },
-            {
-              ExpiryDate: {
-                $lt: { __type: 'Date', iso: new Date().toISOString() },
-              },
-            },
-          ],
+          SignedUrl: { $ne: null },
+          ExpiryDate: {
+            $lt: { __type: 'Date', iso: new Date().toISOString() },
+          },
           CreatedBy: {
             __type: 'Pointer',
             className: '_User',
