@@ -58,8 +58,20 @@ async function sendmailv3(req) {
           data: process.env.SMTP_ENABLE ? undefined : PdfBuffer,
         };
 
-        // const html = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body style='text-align: center;'> <p style='font-weight: bolder; font-size: large;'>Hello!</p> <p>This is a html checking mail</p><p><button style='background-color: lightskyblue; cursor: pointer; border-radius: 5px; padding: 10px; border-style: solid; border-width: 2px; text-decoration: none; font-weight: bolder; color:blue'>Verify email</button></p></body></html>"
-
+        let attachment;
+        //  `certificateBuffer` used to create buffer from pdf file
+        try {
+          const certificateBuffer = fs.readFileSync('./exports/certificate.pdf');
+          const certificate = {
+            filename: 'certificate.pdf',
+            content: process.env.SMTP_ENABLE ? certificateBuffer : undefined, //fs.readFileSync('./exports/exported_file_1223.pdf'),
+            data: process.env.SMTP_ENABLE ? undefined : certificateBuffer,
+          };
+          attachment = [file, certificate];
+        } catch (err) {
+          attachment = [file];
+          console.log('Err in read certificate sendmailv3', err);
+        }
         const from = req.params.from || '';
         const mailsender = process.env.SMTP_ENABLE
           ? process.env.SMTP_USER_EMAIL
@@ -71,8 +83,8 @@ async function sendmailv3(req) {
           subject: req.params.subject,
           text: req.params.text || 'mail',
           html: req.params.html || '',
-          attachments: process.env.SMTP_ENABLE ? [file] : undefined,
-          attachment: process.env.SMTP_ENABLE ? undefined : file,
+          attachments: process.env.SMTP_ENABLE ? attachment : undefined,
+          attachment: process.env.SMTP_ENABLE ? undefined : attachment,
         };
         if (transporterSMTP) {
           const res = await transporterSMTP.sendMail(messageParams);
@@ -80,6 +92,11 @@ async function sendmailv3(req) {
           if (!res.err) {
             if (req.params?.extUserId) {
               await updateMailCount(req.params.extUserId);
+            }
+            try {
+              fs.unlinkSync('./exports/certificate.pdf');
+            } catch (err) {
+              console.log('Err in unlink certificate sendmailv3');
             }
             return {
               status: 'success',
@@ -91,6 +108,11 @@ async function sendmailv3(req) {
           if (res.status === 200) {
             if (req.params?.extUserId) {
               await updateMailCount(req.params.extUserId);
+            }
+            try {
+              fs.unlinkSync('./exports/certificate.pdf');
+            } catch (err) {
+              console.log('Err in unlink certificate sendmailv3');
             }
             return {
               status: 'success',

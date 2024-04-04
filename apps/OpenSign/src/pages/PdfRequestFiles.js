@@ -1152,7 +1152,7 @@ function PdfRequestFiles() {
                     isOpen={isCompleted.isModal}
                     title={"Sign Documents"}
                     handleClose={() => {
-                      setIsCompleted({ isModal: false, isCertificate: true });
+                      setIsCompleted((prev) => ({ ...prev, isModal: false }));
                     }}
                   >
                     <div style={{ height: "100%", padding: 20 }}>
@@ -1170,12 +1170,12 @@ function PdfRequestFiles() {
                       <button
                         type="button"
                         className="finishBtn cancelBtn"
-                        onClick={() =>
-                          setIsCompleted({
-                            isModal: false,
-                            isCertificate: true
-                          })
-                        }
+                        onClick={() => {
+                          setIsCompleted((prev) => ({
+                            ...prev,
+                            isModal: false
+                          }));
+                        }}
                       >
                         Close
                       </button>
@@ -1213,7 +1213,7 @@ function PdfRequestFiles() {
                     pdfDetails={pdfDetails}
                     signerPos={signerPos}
                     isSigned={isSigned}
-                    isCompleted={isCompleted}
+                    isCompleted={isCompleted.isCertificate}
                     embedWidgetsData={embedWidgetsData}
                     isShowHeader={true}
                     setIsDecline={setIsDecline}
