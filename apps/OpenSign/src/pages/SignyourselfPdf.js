@@ -67,7 +67,6 @@ function SignYourSelf() {
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [successEmail, setSuccessEmail] = useState(false);
   const imageRef = useRef(null);
-  const [documentStatus, setDocumentStatus] = useState({ isCompleted: false });
   const [myInitial, setMyInitial] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [isUiLoading, setIsUiLoading] = useState(false);
@@ -100,6 +99,7 @@ function SignYourSelf() {
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
   const [extUserId, setExtUserId] = useState("");
+  const [isCompleted, setIsCompleted] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -190,10 +190,7 @@ function SignYourSelf() {
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
-        const docStatus = {
-          isCompleted: isCompleted
-        };
-        setDocumentStatus(docStatus);
+        setIsCompleted(true);
         setPdfUrl(documentData[0].SignedUrl);
         const alreadySign = {
           status: true,
@@ -1129,7 +1126,6 @@ function SignYourSelf() {
                 allPages={allPages}
                 changePage={changePage}
                 pdfUrl={pdfUrl}
-                documentStatus={documentStatus}
                 embedWidgetsData={embedWidgetsData}
                 pdfDetails={pdfDetails}
                 isShowHeader={true}
@@ -1137,6 +1133,7 @@ function SignYourSelf() {
                 alreadySign={pdfUrl ? true : false}
                 isSignYourself={true}
                 setIsEmail={setIsEmail}
+                isCompleted={isCompleted}
               />
 
               <div data-tut="reactourSecond">
@@ -1189,7 +1186,7 @@ function SignYourSelf() {
               }}
               className="autoSignScroll"
             >
-              {!documentStatus.isCompleted ? (
+              {!isCompleted ? (
                 <div>
                   <WidgetComponent
                     dataTut="reactourFirst"
