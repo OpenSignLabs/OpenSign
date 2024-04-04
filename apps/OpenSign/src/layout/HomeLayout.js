@@ -51,7 +51,8 @@ const HomeLayout = () => {
   }, []);
   //function to use save data in cookies storage
   const saveCookies = () => {
-    const domainName = window.location.hostname;  //app.opensignlabs.com
+    const main_Domain = window.location.origin;
+    const domainName = window.location.hostname; //app.opensignlabs.com
     // Find the index of the first dot in the string
     const indexOfFirstDot = domainName.indexOf(".");
     // Remove the first dot and get the substring starting from the next character
@@ -60,7 +61,7 @@ const HomeLayout = () => {
       secure: true,
       domain: updateDomain
     });
-    setCookie("main_Domain", domainName, {
+    setCookie("main_Domain", main_Domain, {
       secure: true,
       domain: updateDomain
     });
