@@ -6,7 +6,7 @@
     "@formkit/auto-animate": "^0.8.1",
     "@radix-ui/themes": "^2.0.3",
     "@react-pdf/renderer": "^3.4.0",
-    "@reduxjs/toolkit": "^2.2.1",
+    "@reduxjs/toolkit": "^2.2.3",
     "axios": "^1.6.8",
     "file-saver": "^2.0.5",
     "jwt-decode": "^4.0.0",
