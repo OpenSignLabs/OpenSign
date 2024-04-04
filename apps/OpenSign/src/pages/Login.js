@@ -19,6 +19,7 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
+import { getAppLogo } from "../constant/Utils";
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,7 +44,7 @@ function Login() {
     Destination: ""
   });
   const [isModal, setIsModal] = useState(false);
-  const image = appInfo?.applogo || undefined;
+  const [image, setImage] = useState(appInfo?.applogo);
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
@@ -51,8 +52,19 @@ function Login() {
       GetLoginData();
     }
     dispatch(fetchAppInfo());
+    saveLogo();
+
     // eslint-disable-next-line
   }, []);
+
+  const saveLogo = async () => {
+    const logo = await getAppLogo();
+    if (logo) {
+      setImage(logo);
+    } else {
+      setImage(appInfo?.applogo || undefined);
+    }
+  };
   const handleChange = (event) => {
     const { name, value } = event.target;
     setState({ ...state, [name]: value });
