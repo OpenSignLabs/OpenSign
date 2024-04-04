@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { isEnableSubscription } from "../constant/const";
+import { getAppLogo } from "../constant/Utils";
 const Signup = () => {
   const { width } = useWindowSize();
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [jobTitle, setJobTitle] = useState("");
+  const [image, setImage] = useState(appInfo?.applogo);
   const [state, setState] = useState({
     loading: false,
     alertType: "success",
@@ -33,7 +35,6 @@ const Signup = () => {
   const [specialCharValid, setSpecialCharValid] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  const image = appInfo.applogo;
 
   const clearStorage = async () => {
     if (Parse.User.current()) {
@@ -469,8 +470,18 @@ const Signup = () => {
   };
   useEffect(() => {
     dispatch(fetchAppInfo());
+    saveLogo();
     // eslint-disable-next-line
   }, []);
+
+  const saveLogo = async () => {
+    const logo = await getAppLogo();
+    if (logo) {
+      setImage(logo);
+    } else {
+      setImage(appInfo?.applogo || undefined);
+    }
+  };
 
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
