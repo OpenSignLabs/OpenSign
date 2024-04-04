@@ -18,7 +18,7 @@
     "watch": "nodemon index.js"
   },
   "dependencies": {
-    "aws-sdk": "^2.1581.0",
+    "aws-sdk": "^2.1593.0",
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
