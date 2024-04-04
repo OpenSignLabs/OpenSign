@@ -22,7 +22,7 @@
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.18.3",
+    "express": "^4.19.2",
     "express-sse": "^0.5.3",
     "form-data": "^4.0.0",
     "generate-api-key": "^1.0.2",
