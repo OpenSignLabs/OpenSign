@@ -43,7 +43,7 @@
     "regex-parser": "^2.3.0",
     "serve": "^14.2.1",
     "styled-components": "^4.4.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^3.5.2"
   },
   "scripts": {
     "start": "serve -s build",
