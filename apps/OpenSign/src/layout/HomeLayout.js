@@ -25,21 +25,7 @@ const HomeLayout = () => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [tourConfigs, setTourConfigs] = useState([]);
-  const [, setCookie] = useCookies([
-    "TenantId",
-    "userDetails",
-    "userEmail",
-    "profileImg",
-    "fev_Icon",
-    "accesstoken",
-    `Parse/${localStorage.getItem("parseAppId")}/currentUser`,
-    "appLogo",
-    "baseUrl",
-    "domain",
-    "parseAppId",
-    "username",
-    "main_Domain"
-  ]);
+  const [, setCookie] = useCookies(["accesstoken", "main_Domain"]);
 
   useEffect(() => {
     (async () => {
@@ -65,33 +51,19 @@ const HomeLayout = () => {
   }, []);
   //function to use save data in cookies storage
   const saveCookies = () => {
-    setCookie("TenantId", localStorage.getItem("TenantId"), { secure: true });
-    setCookie("userDetails", localStorage.getItem("userDetails"), {
-      secure: true
-    });
-    setCookie("userEmail", localStorage.getItem("userEmail"), { secure: true });
-    setCookie("profileImg", localStorage.getItem("profileImg"), {
-      secure: true
-    });
-    setCookie("fev_Icon", localStorage.getItem("fev_Icon"), { secure: true });
+    const domainName = window.location.hostname;  //app.opensignlabs.com
+    // Find the index of the first dot in the string
+    const indexOfFirstDot = domainName.indexOf(".");
+    // Remove the first dot and get the substring starting from the next character
+    const updateDomain = domainName.substring(indexOfFirstDot); //.opensignlabs.com
     setCookie("accesstoken", localStorage.getItem("accesstoken"), {
-      secure: true
+      secure: true,
+      domain: updateDomain
     });
-    setCookie(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`,
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      ),
-      { secure: true }
-    );
-    setCookie("appLogo", localStorage.getItem("appLogo"), { secure: true });
-    setCookie("baseUrl", localStorage.getItem("baseUrl"), { secure: true });
-    setCookie("domain", localStorage.getItem("domain"), { secure: true });
-    setCookie("parseAppId", localStorage.getItem("parseAppId"), {
-      secure: true
+    setCookie("main_Domain", domainName, {
+      secure: true,
+      domain: updateDomain
     });
-    setCookie("username", localStorage.getItem("username"), { secure: true });
-    setCookie("main_Domain", window.location.host, { secure: true });
   };
 
   async function checkIsSubscribed() {
