@@ -11,7 +11,7 @@
     "file-saver": "^2.0.5",
     "jwt-decode": "^4.0.0",
     "moment": "^2.30.1",
-    "parse": "^4.3.1",
+    "parse": "^5.0.0",
     "pdf-lib": "^1.17.1",
     "print-js": "^1.6.0",
     "radix-ui": "^1.0.1",
