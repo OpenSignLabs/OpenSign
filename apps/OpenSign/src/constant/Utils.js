@@ -1777,3 +1777,19 @@ export const handleCopyNextToWidget = (
     setXyPostion(updatePlaceholder);
   }
 };
+//fetch tenant app logo from `partners_Tenant` class by domain name
+export const getAppLogo = async () => {
+  const domainName = window.location.host;
+  try {
+    const tenantCreditsQuery = new Parse.Query("partners_Tenant");
+    tenantCreditsQuery.equalTo("Domain", domainName);
+    const res = await tenantCreditsQuery.first();
+
+    if (res) {
+      const updateRes = JSON.parse(JSON.stringify(res));
+      return updateRes?.Logo;
+    }
+  } catch (e) {
+    return null;
+  }
+};
