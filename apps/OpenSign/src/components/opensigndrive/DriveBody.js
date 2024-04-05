@@ -70,6 +70,7 @@ function DriveBody(props) {
         return item;
       });
       props.setPdfData(updatedData);
+      props.sortingData(null, null, updatedData);
       await axios
         .put(
           `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
@@ -214,8 +215,8 @@ function DriveBody(props) {
         ? true
         : false
       : selecFolderId
-      ? false
-      : true;
+        ? false
+        : true;
     if (!checkExist) {
       if (moveFolderId) {
         updateData = {

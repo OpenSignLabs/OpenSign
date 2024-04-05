@@ -203,6 +203,7 @@ function Opensigndrive() {
             const result = JSON.parse(JSON.stringify(res));
 
             setPdfData((prev) => [...prev, result]);
+            sortingData(null, null, [result], true);
             setNewFolderName();
             setIsFolderLoader(false);
             setIsFolder(false);
@@ -223,9 +224,13 @@ function Opensigndrive() {
   const sortedBy = (appInfo, type, order) => {
     if (type === orderName.Name) {
       if (order === orderName.Ascending) {
-        return appInfo.sort((a, b) => (a.Name > b.Name ? 1 : -1));
+        return appInfo.sort((a, b) =>
+          a.Name.toLowerCase() < b.Name.toLowerCase() ? -1 : 1
+        );
       } else if (order === orderName.Descending) {
-        return appInfo.sort((a, b) => (a.Name > b.Name ? -1 : 1));
+        return appInfo.sort((a, b) =>
+          a.Name.toLowerCase() < b.Name.toLowerCase() ? 1 : -1
+        );
       }
     } else if (type === orderName.Date) {
       if (order === orderName.Ascending) {
@@ -724,6 +729,7 @@ function Opensigndrive() {
                   isList={isList}
                   setIsAlert={setIsAlert}
                   setSkip={setSkip}
+                  sortingData={sortingData}
                 />
                 {loading && (
                   <div style={{ textAlign: "center" }}>Loading...</div>
