@@ -97,11 +97,13 @@ function DashboardReport(props) {
             setIsMoreDocs(false);
           }
           setIsNextRecord(false);
-          setList((prevRecord) =>
-            prevRecord.length > 0
-              ? [...prevRecord, ...res.data.result]
-              : res.data.result
-          );
+          if (!res.data.result.error) {
+            setList((prevRecord) =>
+              prevRecord.length > 0
+                ? [...prevRecord, ...res.data.result]
+                : res.data.result
+            );
+          }
         }
         setIsLoader(false);
       } catch (err) {
@@ -110,6 +112,7 @@ function DashboardReport(props) {
           console.log("err ", err);
           setIsLoader(false);
         }
+        setIsLoader(false);
       }
     } else {
       setIsLoader(false);

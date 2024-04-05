@@ -21,7 +21,7 @@ export default async function getDocument(request) {
         query.include('Signers');
         query.include('AuditTrail.UserPtr');
         query.include('Placeholders');
-        query.notEqualTo('IsArchive', true)
+        query.notEqualTo('IsArchive', true);
         const res = await query.first({ useMasterKey: true });
         if (res) {
           const acl = res.getACL();

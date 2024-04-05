@@ -13,7 +13,7 @@ import http from 'http';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
-import S3Adapter from 'parse-server-s3-adapter';
+import S3Adapter from '@parse/s3-files-adapter';
 import FSFilesAdapter from 'parse-server-fs-adapter';
 import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
@@ -32,6 +32,8 @@ if (process.env.USE_LOCAL !== 'TRUE') {
       region: process.env.DO_REGION,
       directAccess: true,
       preserveFileName: true,
+      presignedUrl: true,
+      presignedUrlExpires: 900,
       s3overrides: {
         accessKeyId: process.env.DO_ACCESS_KEY_ID,
         secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
