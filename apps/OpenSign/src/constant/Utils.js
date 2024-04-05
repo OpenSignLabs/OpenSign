@@ -1778,7 +1778,6 @@ export const handleCopyNextToWidget = (
   }
 };
 
-
 export const getFileName = (fileUrl) => {
   if (fileUrl) {
     const url = new URL(fileUrl);
@@ -1786,6 +1785,8 @@ export const getFileName = (fileUrl) => {
     return filename || "";
   } else {
     return "";
+  }
+};
 
 //fetch tenant app logo from `partners_Tenant` class by domain name
 export const getAppLogo = async () => {
