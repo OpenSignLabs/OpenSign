@@ -4,18 +4,20 @@ import FullScreenButton from "./FullScreenButton";
 import { useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
-import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
+import { checkIsSubscribed, getAppLogo, openInNewTab } from "../constant/Utils";
 import { isEnableSubscription } from "../constant/const";
 
 const Header = ({ showSidebar }) => {
   const navigate = useNavigate();
   const { width } = useWindowSize();
-  let applogo = localStorage.getItem("appLogo") || "";
   let username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(true);
-  const [isPro, setIsPro]= useState(false)
+  const [isPro, setIsPro] = useState(false);
+  const [applogo, setAppLogo] = useState(
+    localStorage.getItem("appLogo") || " "
+  );
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -26,11 +28,18 @@ const Header = ({ showSidebar }) => {
   }, []);
   async function checkSubscription() {
     if (isEnableSubscription) {
+      const applogo = await getAppLogo();
+      if (applogo) {
+        setAppLogo(applogo);
+      } else {
+        setAppLogo(localStorage.getItem("appLogo") || "");
+      }
       const getIsSubscribe = await checkIsSubscribed();
-      setIsPro(getIsSubscribe)
+      setIsPro(getIsSubscribe);
       setIsSubscribe(getIsSubscribe);
     }
   }
+
   const closeDropdown = () => {
     setIsOpen(false);
     Parse.User.logOut();

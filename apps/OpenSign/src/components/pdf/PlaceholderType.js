@@ -135,7 +135,7 @@ function PlaceholderType(props) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.pos]);
+  }, [props.pos?.options?.defaultValue]);
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
@@ -288,7 +288,7 @@ function PlaceholderType(props) {
   };
   //handle height on enter press in text area
   const handleEnterPress = (e) => {
-    const height = 15;
+    const height = 18;
     if (e.key === "Enter") {
       //function to save height of text area
       onChangeHeightOfTextArea(
@@ -403,19 +403,12 @@ function PlaceholderType(props) {
     case textInputWidget:
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        <input
-          className="inputPlaceholder"
+        <textarea
           ref={inputRef}
           placeholder={validatePlaceholder}
-          style={{ fontSize: calculateFontSize() }}
+          rows={1}
+          onKeyDown={handleEnterPress}
           value={textValue}
-          type="text"
-          tabIndex="0"
-          disabled={
-            props.isNeedSign && props.data?.signerObjId !== props.signerObjId
-              ? true
-              : props.isPlaceholder
-          }
           onBlur={handleInputBlur}
           onChange={(e) => {
             setTextValue(e.target.value);
@@ -429,6 +422,13 @@ function PlaceholderType(props) {
               false
             );
           }}
+          className={
+            isMobile
+              ? "labelTextArea labelWidthMobile"
+              : "labelTextArea labelWidthDesktop"
+          }
+          style={{ whiteSpace: "pre-wrap" }}
+          cols="50"
         />
       ) : (
         <div
@@ -506,15 +506,12 @@ function PlaceholderType(props) {
     case "name":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        <input
-          tabIndex="0"
+        <textarea
           ref={inputRef}
           placeholder={"name"}
-          style={{ fontSize: calculateFontSize() }}
-          className="inputPlaceholder"
-          type="text"
+          rows={1}
+          onKeyDown={handleEnterPress}
           value={textValue}
-          onBlur={handleInputBlur}
           onChange={(e) => {
             const isDefault = false;
             handleTextValid(e);
@@ -528,6 +525,13 @@ function PlaceholderType(props) {
               isDefault
             );
           }}
+          className={
+            isMobile
+              ? "labelTextArea labelWidthMobile"
+              : "labelTextArea labelWidthDesktop"
+          }
+          style={{ whiteSpace: "pre-wrap" }}
+          cols="50"
         />
       ) : (
         <div
@@ -542,14 +546,12 @@ function PlaceholderType(props) {
     case "company":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        <input
-          className="inputPlaceholder"
-          type="text"
+        <textarea
           ref={inputRef}
-          placeholder={"company"}
-          style={{ fontSize: calculateFontSize() }}
+          placeholder="Enter label"
+          rows={1}
+          onKeyDown={handleEnterPress}
           value={textValue}
-          onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
             onChangeInput(
@@ -562,6 +564,13 @@ function PlaceholderType(props) {
               false
             );
           }}
+          className={
+            isMobile
+              ? "labelTextArea labelWidthMobile"
+              : "labelTextArea labelWidthDesktop"
+          }
+          style={{ whiteSpace: "pre-wrap" }}
+          cols="50"
         />
       ) : (
         <div
@@ -576,14 +585,12 @@ function PlaceholderType(props) {
     case "job title":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        <input
-          className="inputPlaceholder"
-          type="text"
+        <textarea
           ref={inputRef}
           placeholder={"job title"}
-          style={{ fontSize: calculateFontSize() }}
+          rows={1}
+          onKeyDown={handleEnterPress}
           value={textValue}
-          onBlur={handleInputBlur}
           onChange={(e) => {
             handleTextValid(e);
             onChangeInput(
@@ -596,6 +603,13 @@ function PlaceholderType(props) {
               false
             );
           }}
+          className={
+            isMobile
+              ? "labelTextArea labelWidthMobile"
+              : "labelTextArea labelWidthDesktop"
+          }
+          style={{ whiteSpace: "pre-wrap" }}
+          cols="50"
         />
       ) : (
         <div
@@ -692,12 +706,11 @@ function PlaceholderType(props) {
     case "email":
       return props.isSignYourself ||
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
-        <input
-          className="inputPlaceholder"
-          type="text"
+        <textarea
           ref={inputRef}
           placeholder={"email"}
-          style={{ fontSize: calculateFontSize() }}
+          rows={1}
+          onKeyDown={handleEnterPress}
           value={textValue}
           onBlur={handleInputBlur}
           onChange={(e) => {
@@ -712,6 +725,13 @@ function PlaceholderType(props) {
               false
             );
           }}
+          className={
+            isMobile
+              ? "labelTextArea labelWidthMobile"
+              : "labelTextArea labelWidthDesktop"
+          }
+          style={{ whiteSpace: "pre-wrap" }}
+          cols="50"
         />
       ) : (
         <div
@@ -782,7 +802,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap" }}
+          style={{ whiteSpace: "pre-wrap", overflow: "hidden" }}
           cols="50"
         />
       );

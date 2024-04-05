@@ -452,11 +452,15 @@
   overflow: hidden !important;
   text-overflow: ellipsis;
 }
+
 .disabled {
-  opacity: 0.5; /* Example: reduce opacity to visually indicate disabled state */
-  pointer-events: none; /* Prevents mouse clicks and other events */
+  opacity: 0.5;
+  /* Example: reduce opacity to visually indicate disabled state */
+  pointer-events: none;
+  /* Prevents mouse clicks and other events */
   /* background-color: #888; */
 }
+
 .useEmail {
   font-size: 10px;
   color: #424242;
@@ -800,6 +804,7 @@ option {
   z-index: 999;
   border-radius: 2px;
   resize: none;
+  overflow: hidden;
 }
 
 .labelTextArea:focus {

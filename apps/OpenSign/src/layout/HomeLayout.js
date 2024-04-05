@@ -10,6 +10,7 @@ import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { isEnableSubscription } from "../constant/const";
+import { useCookies } from "react-cookie";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const HomeLayout = () => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [tourConfigs, setTourConfigs] = useState([]);
+  const [, setCookie] = useCookies(["accesstoken", "main_Domain"]);
 
   useEffect(() => {
     (async () => {
@@ -44,8 +46,27 @@ const HomeLayout = () => {
         setIsUserValid(false);
       }
     })();
+    saveCookies();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  //function to use save data in cookies storage
+  const saveCookies = () => {
+    const main_Domain = window.location.origin;
+    const domainName = window.location.hostname; //app.opensignlabs.com
+    // Find the index of the first dot in the string
+    const indexOfFirstDot = domainName.indexOf(".");
+    // Remove the first dot and get the substring starting from the next character
+    const updateDomain = domainName.substring(indexOfFirstDot); //.opensignlabs.com
+    setCookie("accesstoken", localStorage.getItem("accesstoken"), {
+      secure: true,
+      domain: updateDomain
+    });
+    setCookie("main_Domain", main_Domain, {
+      secure: true,
+      domain: updateDomain
+    });
+  };
 
   async function checkIsSubscribed() {
     const currentUser = Parse.User.current();
