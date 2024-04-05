@@ -1211,8 +1211,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-              ? 10
-              : newUpdateHeight;
+            ? 10
+            : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
@@ -1790,5 +1790,15 @@ export const handleCopyNextToWidget = (
     });
 
     setXyPostion(updatePlaceholder);
+  }
+};
+
+export const getFileName = (fileUrl) => {
+  if (fileUrl) {
+    const url = new URL(fileUrl);
+    const filename = url.pathname.substring(url.pathname.indexOf("_") + 1);
+    return filename || "";
+  } else {
+    return "";
   }
 };

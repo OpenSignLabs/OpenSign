@@ -149,7 +149,7 @@ const DashboardCard = (props) => {
               }
             })
             .then((res) => {
-              const listData = res.data?.result.filter(
+              const listData = res.data?.result?.filter(
                 (x) => x.Signers.length > 0
               );
               let arr = [];

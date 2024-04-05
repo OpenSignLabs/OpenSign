@@ -66,6 +66,7 @@ function UserProfile() {
               SetPhone(res.phone);
               setImage(res.ProfilePic);
               localStorage.setItem("username", res.name);
+              localStorage.setItem("profileImg", res.ProfilePic);
               await updateExtUser({ Name: res.name, Phone: res.phone });
               alert("Profile updated successfully.");
               setEditMode(false);
@@ -147,7 +148,6 @@ function UserProfile() {
       // console.log("File URL:", response.url());
       if (response.url()) {
         setImage(response.url());
-        localStorage.setItem("profileImg", response.url());
         setpercentage(0);
         const tenantId = localStorage.getItem("TenantId");
         SaveFileSize(size, response.url(), tenantId);

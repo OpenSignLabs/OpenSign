@@ -136,7 +136,7 @@ export default async function createTemplatewithCoordinate(request, response) {
               const page = placeHolder.find(page => page.pageNumber === pageNumber);
               const signOpt = { name: 'signature', status: 'required' };
               const widgetData = {
-                isStamp: widget.type === 'stamp',
+                isStamp: widget.type === 'stamp'||  widget.type === 'image',
                 key: randomId(),
                 isDrag: false,
                 scale: 1,
