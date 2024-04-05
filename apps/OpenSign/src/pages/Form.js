@@ -11,6 +11,7 @@ import SignersInput from "../components/shared/fields/SignersInput";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
+import { getFileName } from "../constant/Utils";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -254,6 +255,7 @@ const Forms = (props) => {
     setpercentage(0);
     setTimeout(() => setIsReset(false), 50);
   };
+ 
   return (
     <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
       <Title title={props?.title} />
@@ -298,13 +300,10 @@ const Forms = (props) => {
               <div className="flex gap-2 justify-center items-center">
                 <div className="flex justify-between items-center px-2 py-2 w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
                   <div className="break-all">
-                    file selected :{" "}
-                    {fileupload?.split("/")?.pop()?.split("_")[1]}
+                    file selected : {getFileName(fileload)}
                   </div>
                   <div
-                    onClick={() => {
-                      setFileUpload([]);
-                    }}
+                    onClick={() => setFileUpload([])}
                     className="cursor-pointer px-[10px] text-[20px] font-bold bg-white text-red-500"
                   >
                     <i className="fa-solid fa-xmark"></i>

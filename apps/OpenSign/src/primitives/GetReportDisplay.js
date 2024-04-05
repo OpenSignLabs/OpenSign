@@ -199,7 +199,7 @@ const ReportTable = ({
   const indexOfLastDoc = currentPage * docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - docPerPage;
   // `currentLists` is total record render on current page
-  const currentLists = List.slice(indexOfFirstDoc, indexOfLastDoc);
+  const currentLists = List?.slice(indexOfFirstDoc, indexOfLastDoc);
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);

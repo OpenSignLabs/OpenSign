@@ -34,6 +34,7 @@ const HomeLayout = () => {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
+          localStorage.setItem("profileImg", user.get('ProfilePic'));
           checkIsSubscribed();
         } else {
           setIsUserValid(false);
