@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../../styles/AddUser.css";
+import { getFileName } from "../../constant/Utils";
 // import SelectFolder from "../../premitives/SelectFolder";
 
 const EditTemplate = ({ template, onSuccess }) => {
@@ -45,7 +46,7 @@ const EditTemplate = ({ template, onSuccess }) => {
                 fontWeight: "700"
               }}
             >
-              {template.URL?.split("/")?.pop()?.split("_")[1]}
+              {getFileName(template.URL)}
             </div>
           </div>
           <div className="form-section">

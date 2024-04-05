@@ -54,7 +54,7 @@ const Report = () => {
       setHeading(json.heading);
       setReportName(json.reportName);
       setForm(json.form);
-      setReportHelp(json?.helpMsg)
+      setReportHelp(json?.helpMsg);
       const currentUser = Parse.User.current().id;
 
       const headers = {
@@ -106,12 +106,14 @@ const Report = () => {
           } else {
             setIsMoreDocs(false);
           }
-          setIsNextRecord(false);
-          setList((prevRecord) =>
-            prevRecord.length > 0
-              ? [...prevRecord, ...res.data.result]
-              : res.data.result
-          );
+          if (!res.data.result.error) {
+            setIsNextRecord(false);
+            setList((prevRecord) =>
+              prevRecord.length > 0
+                ? [...prevRecord, ...res.data.result]
+                : res.data.result
+            );
+          }
         }
         setIsLoader(false);
       } catch (err) {
