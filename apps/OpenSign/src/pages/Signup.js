@@ -528,8 +528,13 @@ const Signup = () => {
       {appInfo && appInfo.applogo ? (
         <div>
           <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
-            <div className="w-[250px] h-[66px] inline-block">
-              <img src={image} width="100%" alt="" />
+            <div className="w-[250px] h-[66px] inline-block overflow-hidden">
+              <img
+                src={image}
+                loading={true}
+                className="object-contain h-full"
+                alt="logo"
+              />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
               <div className="">
