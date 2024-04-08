@@ -1,10 +1,11 @@
 export default async function saveSubscription(request, response) {
   const SubscriptionId = request.body.data.subscription.subscription_id;
   const body = request.body;
-  const customerId = request.body.data.subscription.customer_id;
+  const Email = request.body.data.email;
+  
   try {
     const extUserCls = new Parse.Query('contracts_Users');
-    extUserCls.equalTo('Customer_id', customerId);
+    extUserCls.equalTo('Email', Email);
     const extUser = await extUserCls.first({ useMasterKey: true });
     const subcriptionCls = new Parse.Query('contracts_Subscriptions');
     subcriptionCls.equalTo('SubscriptionId', SubscriptionId);
