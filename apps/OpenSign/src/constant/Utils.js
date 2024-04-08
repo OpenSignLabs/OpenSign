@@ -1,6 +1,6 @@
 import axios from "axios";
 import moment from "moment";
-import { themeColor } from "./const";
+import { isEnableSubscription, themeColor } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
 import Parse from "parse";
@@ -501,14 +501,32 @@ export const signPdfFun = async (
   base64Url,
   documentId,
   signerObjectId,
-  setIsAlert
+  setIsAlert,
+  objectId,
+  isSubscribed
 ) => {
-  let singleSign;
+  let singleSign,
+    isCustomCompletionMail = false;
+
+  //get tenant details
+  const tenantDetails = await getTenantDetails(objectId);
+  if (tenantDetails && tenantDetails === "user does not exist!") {
+    alert("User does not exist");
+  } else {
+    if (
+      tenantDetails?.CompletionBody &&
+      tenantDetails?.CompletionSubject &&
+      (!isEnableSubscription || isSubscribed)
+    ) {
+      isCustomCompletionMail = true;
+    }
+  }
 
   singleSign = {
     pdfFile: base64Url,
     docId: documentId,
-    userId: signerObjectId
+    userId: signerObjectId,
+    isCustomCompletionMail: isCustomCompletionMail
   };
 
   const response = await axios
@@ -1211,8 +1229,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-            ? 10
-            : newUpdateHeight;
+              ? 10
+              : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
@@ -1804,3 +1822,43 @@ export const getAppLogo = async () => {
     return null;
   }
 };
+
+export const getTenantDetails = async (objectId) => {
+  try {
+    const tenantCreditsQuery = new Parse.Query("partners_Tenant");
+    tenantCreditsQuery.equalTo("UserId", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: objectId
+    });
+    const res = await tenantCreditsQuery.first();
+    if (res) {
+      const updateRes = JSON.parse(JSON.stringify(res));
+      return updateRes;
+    }
+  } catch (e) {
+    return "user does not exist!";
+  }
+};
+
+//function to convert variable string name to variable value of email body and subject
+export function replaceMailVaribles(subject, body, variables) {
+  let replacedSubject = subject;
+  let replacedBody = body;
+
+  for (const variable in variables) {
+    const regex = new RegExp(`{{${variable}}}`, "g");
+    if (subject) {
+      replacedSubject = replacedSubject.replace(regex, variables[variable]);
+    }
+    if (body) {
+      replacedBody = replacedBody.replace(regex, variables[variable]);
+    }
+  }
+
+  const result = {
+    subject: replacedSubject,
+    body: replacedBody
+  };
+  return result;
+}
