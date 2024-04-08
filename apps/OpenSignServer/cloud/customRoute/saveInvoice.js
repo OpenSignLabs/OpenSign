@@ -1,10 +1,11 @@
 export default async function saveInvoice(request, response) {
   const InvoiceId = request.body.data.invoice.invoice_id;
   const body = request.body;
-  const customerId = request.body.data.customer_id;
+  const Email = request.body.data.email;
+  
   try {
     const extUserCls = new Parse.Query('contracts_Users');
-    extUserCls.equalTo('Customer_id', customerId);
+    extUserCls.equalTo('Customer_id', Email);
     const extUser = await extUserCls.first({ useMasterKey: true });
     const invoiceCls = new Parse.Query('contracts_Invoices');
     invoiceCls.equalTo('InvoiceId', InvoiceId);
