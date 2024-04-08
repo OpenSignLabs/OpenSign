@@ -1635,7 +1635,7 @@ function PlaceHolderSign() {
                               className={
                                 isSubscribe || !isEnableSubscription
                                   ? "cursor-pointer"
-                                  : "opacity-20 select-none"
+                                  : "opacity-30 select-none"
                               }
                             >
                               Cutomize Email
