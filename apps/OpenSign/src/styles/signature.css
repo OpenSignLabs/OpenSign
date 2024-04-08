@@ -968,6 +968,9 @@ option {
   }
 }
 
+.scroll-hide::-webkit-scrollbar {
+  display: none;
+}
 @media screen and (max-width: 350px) and (min-width: 311px) {
   .signatureCanvas {
     width: 280px;

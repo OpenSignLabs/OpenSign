@@ -475,11 +475,13 @@ const Signup = () => {
   }, []);
 
   const saveLogo = async () => {
-    const logo = await getAppLogo();
-    if (logo) {
-      setImage(logo);
-    } else {
-      setImage(appInfo?.applogo || undefined);
+    if (isEnableSubscription) {
+      const logo = await getAppLogo();
+      if (logo) {
+        setImage(logo);
+      } else {
+        setImage(appInfo?.applogo || undefined);
+      }
     }
   };
 

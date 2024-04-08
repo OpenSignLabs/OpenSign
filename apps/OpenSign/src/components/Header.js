@@ -28,13 +28,15 @@ const Header = ({ showSidebar }) => {
   }, []);
   async function checkSubscription() {
     if (isEnableSubscription) {
-      const applogo = await getAppLogo();
-      if (applogo) {
-        setAppLogo(applogo);
-      } else {
-        setAppLogo(localStorage.getItem("appLogo") || "");
-      }
       const getIsSubscribe = await checkIsSubscribed();
+      if (getIsSubscribe) {
+        const applogo = await getAppLogo();
+        if (applogo) {
+          setAppLogo(applogo);
+        } else {
+          setAppLogo(localStorage.getItem("appLogo") || "");
+        }
+      }
       setIsPro(getIsSubscribe);
       setIsSubscribe(getIsSubscribe);
     }
