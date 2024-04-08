@@ -1840,3 +1840,25 @@ export const getTenantDetails = async (objectId) => {
     return "user does not exist!";
   }
 };
+
+//function to convert variable string name to variable value of email body and subject
+export function replaceMailVaribles(subject, body, variables) {
+  let replacedSubject = subject;
+  let replacedBody = body;
+
+  for (const variable in variables) {
+    const regex = new RegExp(`{{${variable}}}`, "g");
+    if (subject) {
+      replacedSubject = replacedSubject.replace(regex, variables[variable]);
+    }
+    if (body) {
+      replacedBody = replacedBody.replace(regex, variables[variable]);
+    }
+  }
+
+  const result = {
+    subject: replacedSubject,
+    body: replacedBody
+  };
+  return result;
+}

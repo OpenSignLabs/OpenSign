@@ -21,7 +21,8 @@ import {
   onSaveSign,
   onSaveImage,
   addDefaultSignatureImg,
-  radioButtonWidget
+  radioButtonWidget,
+  replaceMailVaribles
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -605,7 +606,6 @@ function PdfRequestFiles() {
                   let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
                   let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
                   const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
-                  let emailBodyWithValue, emailSubjectWithValue;
 
                   try {
                     const imgPng =
@@ -633,6 +633,7 @@ function PdfRequestFiles() {
                       ? pdfDetails[0].ExtUserPtr.Company
                       : "";
                     const themeBGcolor = themeColor;
+                    let replaceVar;
                     if (
                       requestBody &&
                       requestSubject &&
@@ -647,46 +648,34 @@ function PdfRequestFiles() {
                         replacedRequestBody +
                         "</body> </html>";
 
-                      emailBodyWithValue = htmlReqBody
-                        .replace(/\{{sender_name}}/g, senderName)
-                        .replace(/\{{document_title}}/g, pdfDetails?.[0].Name)
-                        .replace(
-                          /\{{signing_url}}/g,
-                          `<a href=${signPdf}>Sign here</a>`
-                        )
-                        .replace(/\{{sender_mail}}/g, senderEmail)
-                        .replace(/\{{sender_phone}}/g, senderPhone)
-                        .replace(/\{{expiry_date}}}/g, localExpireDate)
-                        .replace(/\{{company_name}}/g, orgName)
-                        .replace(/\{{receiver_name}}/g, user.Name)
-                        .replace(/\{{receiver_email}}/g, user.Email)
-                        .replace(/\{{receiver_phone}}/g, user.Phone);
-
-                      emailSubjectWithValue = requestSubject
-                        .replace(/\{{sender_name}}/g, senderName)
-                        .replace(/\{{document_title}}/g, pdfDetails?.[0].Name)
-                        .replace(
-                          /\{{signing_url}}/g,
-                          `<a href=${signPdf}>Sign here</a>`
-                        )
-                        .replace(/\{{sender_mail}}/g, senderEmail)
-                        .replace(/\{{sender_phone}}/g, senderPhone)
-                        .replace(/\{{expiry_date}}}/g, localExpireDate)
-                        .replace(/\{{company_name}}/g, orgName)
-                        .replace(/\{{receiver_name}}/g, user.Name)
-                        .replace(/\{{receiver_email}}/g, user.Email)
-                        .replace(/\{{receiver_phone}}/g, user.Phone);
+                      const variables = {
+                        document_title: pdfDetails?.[0].Name,
+                        sender_name: senderName,
+                        sender_mail: senderEmail,
+                        sender_phone: senderPhone,
+                        receiver_name: user.Name,
+                        receiver_email: user.Email,
+                        receiver_phone: user.Phone,
+                        expiry_date: localExpireDate,
+                        company_name: orgName,
+                        signing_url: `<a href=${signPdf}>Sign here</a>`
+                      };
+                      replaceVar = replaceMailVaribles(
+                        requestSubject,
+                        htmlReqBody,
+                        variables
+                      );
                     }
 
                     let params = {
                       extUserId: extUserId,
                       recipient: user.Email,
                       subject: requestSubject
-                        ? emailSubjectWithValue
+                        ? replaceVar?.subject
                         : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
                       from: senderEmail,
                       html: requestBody
-                        ? emailBodyWithValue
+                        ? replaceVar?.body
                         : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
                           imgPng +
                           " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
