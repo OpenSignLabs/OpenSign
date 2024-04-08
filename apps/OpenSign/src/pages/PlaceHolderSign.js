@@ -29,7 +29,8 @@ import {
   textWidget,
   radioButtonWidget,
   color,
-  getTenantDetails
+  getTenantDetails,
+  replaceMailVaribles
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -915,7 +916,7 @@ function PlaceHolderSign() {
         const themeBGcolor = themeColor;
         const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
         const documentName = `${pdfDetails?.[0].Name}`;
-        let emailBodyWithValue, emailSubjectWithValue;
+        let replaceVar;
         if (
           requestBody &&
           requestSubject &&
@@ -928,40 +929,34 @@ function PlaceHolderSign() {
             replacedRequestBody +
             "</body> </html>";
 
-          emailBodyWithValue = htmlReqBody
-            .replace(/\{{sender_name}}/g, senderName)
-            .replace(/\{{document_title}}/g, documentName)
-            .replace(/\{{signing_url}}/g, `<a href=${signPdf}>Sign here</a>`)
-            .replace(/\{{sender_mail}}/g, senderEmail)
-            .replace(/\{{sender_phone}}/g, senderPhone)
-            .replace(/\{{expiry_date}}}/g, localExpireDate)
-            .replace(/\{{company_name}}/g, orgName)
-            .replace(/\{{receiver_name}}/g, signerMail[i].Name)
-            .replace(/\{{receiver_email}}/g, signerMail[i].Email)
-            .replace(/\{{receiver_phone}}/g, signerMail[i].Phone);
-
-          emailSubjectWithValue = requestSubject
-            .replace(/\{{sender_name}}/g, senderName)
-            .replace(/\{{document_title}}/g, documentName)
-            .replace(/\{{signing_url}}/g, `<a href=${signPdf}>Sign here</a>`)
-            .replace(/\{{sender_mail}}/g, senderEmail)
-            .replace(/\{{sender_phone}}/g, senderPhone)
-            .replace(/\{{expiry_date}}}/g, localExpireDate)
-            .replace(/\{{company_name}}/g, orgName)
-            .replace(/\{{receiver_name}}/g, signerMail[i].Name)
-            .replace(/\{{receiver_email}}/g, signerMail[i].Email)
-            .replace(/\{{receiver_phone}}/g, signerMail[i].Phone);
+          const variables = {
+            document_title: documentName,
+            sender_name: senderName,
+            sender_mail: senderEmail,
+            sender_phone: senderPhone,
+            receiver_name: signerMail[i].Name,
+            receiver_email: signerMail[i].Email,
+            receiver_phone: signerMail[i].Phone,
+            expiry_date: localExpireDate,
+            company_name: orgName,
+            signing_url: `<a href=${signPdf}>Sign here</a>`
+          };
+          replaceVar = replaceMailVaribles(
+            requestSubject,
+            htmlReqBody,
+            variables
+          );
         }
 
         let params = {
           extUserId: extUserId,
           recipient: signerMail[i].Email,
           subject: isCustomize
-            ? emailSubjectWithValue
+            ? replaceVar?.subject
             : `${senderName} has requested you to sign ${documentName}`,
           from: senderEmail,
           html: isCustomize
-            ? emailBodyWithValue
+            ? replaceVar?.body
             : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
               imgPng +
               " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
@@ -990,7 +985,6 @@ function PlaceHolderSign() {
         console.log("error", error);
       }
     }
-
     if (sendMail.data.result.status === "success") {
       setMailStatus("success");
       const signers = signersdata?.map((x) => {
