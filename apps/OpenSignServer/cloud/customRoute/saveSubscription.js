@@ -11,13 +11,13 @@ export default async function saveSubscription(request, response) {
     subcriptionCls.equalTo('SubscriptionId', SubscriptionId);
     const subscription = await subcriptionCls.first({ useMasterKey: true });
     if (subscription) {
-      const updateSubscription = new Parse.Object('contracts_Subscripitons');
+      const updateSubscription = new Parse.Object('contracts_Subscriptions');
       updateSubscription.id = subscription.id;
       updateSubscription.set('SubscriptionDetails', body);
       await updateSubscription.save(null, { useMasterKey: true });
       return response.status(200).json({ status: 'update subscription!' });
     } else {
-      const createSubscription = new Parse.Object('contracts_Subscripitons');
+      const createSubscription = new Parse.Object('contracts_Subscriptions');
       createSubscription.set('SubscriptionId', SubscriptionId);
       createSubscription.set('SubscriptionDetails', body);
       createSubscription.set('ExtUserPtr', {
