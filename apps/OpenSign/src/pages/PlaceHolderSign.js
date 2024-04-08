@@ -1615,7 +1615,7 @@ function PlaceHolderSign() {
                   ) : (
                     isSendAlert.mssg === "confirm" && (
                       <>
-                        <p className="ml-[15px]">
+                        <p>
                           Are you sure you want to send out this document for
                           signatures?
                         </p>
@@ -1623,7 +1623,7 @@ function PlaceHolderSign() {
                         <>
                           <div
                             className={
-                              "flex justify-end mt-4 items-center gap-1 mt-2 underline text-blue-700 focus:outline-none "
+                              "flex   mt-4 items-center gap-1 mt-2 underline text-blue-700 focus:outline-none "
                             }
                             onClick={() => {
                               isSubscribe ||
