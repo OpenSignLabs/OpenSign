@@ -28,7 +28,8 @@ import {
   textInputWidget,
   textWidget,
   radioButtonWidget,
-  color
+  color,
+  getTenantDetails
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -40,8 +41,11 @@ import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import WidgetNameModal from "../components/pdf/WidgetNameModal";
 import { SaveFileSize } from "../constant/saveFileSize";
+import { EmailBody } from "../components/pdf/EmailBody";
+import Upgrade from "../primitives/Upgrade";
 
 function PlaceHolderSign() {
+  const editorRef = useRef();
   const navigate = useNavigate();
   const { state } = useLocation();
   const [pdfDetails, setPdfDetails] = useState([]);
@@ -83,6 +87,8 @@ function PlaceHolderSign() {
   const [signKey, setSignKey] = useState();
   const [tempSignerId, setTempSignerId] = useState("");
   const [blockColor, setBlockColor] = useState("");
+  const [defaultBody, setDefaultBody] = useState("");
+  const [defaultSubject, setDefaultSubject] = useState("");
   const [pdfLoadFail, setPdfLoadFail] = useState({
     status: false,
     type: "load"
@@ -106,11 +112,14 @@ function PlaceHolderSign() {
   const [mailStatus, setMailStatus] = useState("");
   const [isCurrUser, setIsCurrUser] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
+  const [requestSubject, setRequestSubject] = useState("");
+  const [requestBody, setRequestBody] = useState("");
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
     message: ""
   });
   const [extUserId, setExtUserId] = useState("");
+  const [isCustomize, setIsCustomize] = useState(false);
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -170,6 +179,48 @@ function PlaceHolderSign() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  //function to fetch tenant Details
+  const fetchTenantDetails = async () => {
+    const user = JSON.parse(
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      )
+    );
+
+    if (user) {
+      try {
+        const tenantDetails = await getTenantDetails(user?.objectId);
+        if (tenantDetails && tenantDetails === "user does not exist!") {
+          alert("User does not exist");
+        } else if (tenantDetails) {
+          const defaultRequestBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br>`;
+          if (tenantDetails?.RequestBody) {
+            setRequestBody(tenantDetails?.RequestBody);
+            setRequestSubject(tenantDetails?.RequestSubject);
+
+            setDefaultBody(defaultRequestBody);
+            setDefaultSubject(
+              `{{senderName}} has requested you to sign {{documentName}}`
+            );
+          } else {
+            setRequestBody(defaultRequestBody);
+            setRequestSubject(
+              `{{senderName}} has requested you to sign {{documentName}}`
+            );
+            setDefaultBody(defaultRequestBody);
+            setDefaultSubject(
+              `{{senderName}} has requested you to sign {{documentName}}`
+            );
+          }
+        }
+      } catch (e) {
+        alert("User does not exist");
+      }
+    } else {
+      alert("User does not exist");
+    }
+  };
+
   useEffect(() => {
     if (divRef.current) {
       const pdfWidth = pdfNewWidthFun(divRef);
@@ -204,6 +255,7 @@ function PlaceHolderSign() {
   }
   //function for get document details
   const getDocumentDetails = async () => {
+    fetchTenantDetails();
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
@@ -816,6 +868,7 @@ function PlaceHolderSign() {
   };
 
   const sendEmailToSigners = async () => {
+    let htmlReqBody;
     setIsUiLoading(true);
     const pdfUrl = await embedPrefilllData();
     setIsSendAlert({});
@@ -827,12 +880,15 @@ function PlaceHolderSign() {
       month: "long",
       year: "numeric"
     });
-    let sender = pdfDetails?.[0].ExtUserPtr.Email;
+
+    let senderEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
+    let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
     let signerMail = signersdata.slice();
 
     if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
       signerMail.splice(1);
     }
+
     for (let i = 0; i < signerMail.length; i++) {
       try {
         const imgPng =
@@ -857,34 +913,78 @@ function PlaceHolderSign() {
           ? pdfDetails[0].ExtUserPtr.Company
           : "";
         const themeBGcolor = themeColor;
+        const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
+        const documentName = `${pdfDetails?.[0].Name}`;
+        let emailBodyWithValue, emailSubjectWithValue;
+        if (
+          requestBody &&
+          requestSubject &&
+          isCustomize &&
+          (isSubscribe || !isEnableSubscription)
+        ) {
+          const replacedRequestBody = requestBody.replace(/"/g, "'");
+          htmlReqBody =
+            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+            replacedRequestBody +
+            "</body> </html>";
+
+          emailBodyWithValue = htmlReqBody
+            .replace(/\{{sender_name}}/g, senderName)
+            .replace(/\{{document_title}}/g, documentName)
+            .replace(/\{{signing_url}}/g, `<a href=${signPdf}>Sign here</a>`)
+            .replace(/\{{sender_mail}}/g, senderEmail)
+            .replace(/\{{sender_phone}}/g, senderPhone)
+            .replace(/\{{expiry_date}}}/g, localExpireDate)
+            .replace(/\{{company_name}}/g, orgName)
+            .replace(/\{{receiver_name}}/g, signerMail[i].Name)
+            .replace(/\{{receiver_email}}/g, signerMail[i].Email)
+            .replace(/\{{receiver_phone}}/g, signerMail[i].Phone);
+
+          emailSubjectWithValue = requestSubject
+            .replace(/\{{sender_name}}/g, senderName)
+            .replace(/\{{document_title}}/g, documentName)
+            .replace(/\{{signing_url}}/g, `<a href=${signPdf}>Sign here</a>`)
+            .replace(/\{{sender_mail}}/g, senderEmail)
+            .replace(/\{{sender_phone}}/g, senderPhone)
+            .replace(/\{{expiry_date}}}/g, localExpireDate)
+            .replace(/\{{company_name}}/g, orgName)
+            .replace(/\{{receiver_name}}/g, signerMail[i].Name)
+            .replace(/\{{receiver_email}}/g, signerMail[i].Email)
+            .replace(/\{{receiver_phone}}/g, signerMail[i].Phone);
+        }
+
         let params = {
           extUserId: extUserId,
           recipient: signerMail[i].Email,
-          subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
-          from: sender,
-          html:
-            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
-            imgPng +
-            " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
-            themeBGcolor +
-            ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
-            pdfDetails?.[0].ExtUserPtr.Name +
-            " has requested you to review and sign <strong> " +
-            pdfDetails?.[0].Name +
-            "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
-            sender +
-            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
-            orgName +
-            "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
-            localExpireDate +
-            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
-            signPdf +
-            "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
-            sender +
-            " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
-            openSignUrl +
-            " target=_blank>here</a>.</p> </div></div></body> </html>"
+          subject: isCustomize
+            ? emailSubjectWithValue
+            : `${senderName} has requested you to sign ${documentName}`,
+          from: senderEmail,
+          html: isCustomize
+            ? emailBodyWithValue
+            : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+              imgPng +
+              " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+              themeBGcolor +
+              ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+              pdfDetails?.[0].ExtUserPtr.Name +
+              " has requested you to review and sign <strong> " +
+              pdfDetails?.[0].Name +
+              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+              senderEmail +
+              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+              orgName +
+              "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+              localExpireDate +
+              "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+              signPdf +
+              "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+              senderEmail +
+              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+              openSignUrl +
+              " target=_blank>here</a>.</p> </div></div></body> </html>"
         };
+
         sendMail = await axios.post(url, params, { headers: headers });
       } catch (error) {
         console.log("error", error);
@@ -923,21 +1023,45 @@ function PlaceHolderSign() {
 
       try {
         if (updateExpiryDate) {
-          data = {
-            Placeholders: filterPrefill,
-            SignedUrl: pdfUrl,
-            Signers: signers,
-            ExpiryDate: {
-              iso: updateExpiryDate,
-              __type: "Date"
-            }
-          };
+          if (isCustomize) {
+            data = {
+              RequestBody: htmlReqBody,
+              RequestSubject: requestSubject,
+              Placeholders: filterPrefill,
+              SignedUrl: pdfUrl,
+              Signers: signers,
+              ExpiryDate: {
+                iso: updateExpiryDate,
+                __type: "Date"
+              }
+            };
+          } else {
+            data = {
+              Placeholders: filterPrefill,
+              SignedUrl: pdfUrl,
+              Signers: signers,
+              ExpiryDate: {
+                iso: updateExpiryDate,
+                __type: "Date"
+              }
+            };
+          }
         } else {
-          data = {
-            Placeholders: filterPrefill,
-            SignedUrl: pdfUrl,
-            Signers: signers
-          };
+          if (isCustomize) {
+            data = {
+              RequestBody: htmlReqBody,
+              RequestSubject: requestSubject,
+              Placeholders: filterPrefill,
+              SignedUrl: pdfUrl,
+              Signers: signers
+            };
+          } else {
+            data = {
+              Placeholders: filterPrefill,
+              SignedUrl: pdfUrl,
+              Signers: signers
+            };
+          }
         }
 
         await axios
@@ -1394,6 +1518,15 @@ function PlaceHolderSign() {
   const closePopup = () => {
     setIsAddUser({});
   };
+
+  //function for handle ontext change and save again text in delta in Request Email flow
+  const handleOnchangeRequest = () => {
+    if (editorRef.current) {
+      const html = editorRef.current.editor.root.innerHTML;
+      setRequestBody(html);
+    }
+  };
+
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1475,20 +1608,78 @@ function PlaceHolderSign() {
                     : isSendAlert.mssg === "confirm" && "Send Mail"
                 }
                 handleClose={() => setIsSendAlert({})}
+                showHeaderMessage={isSendAlert.mssg === "confirm"}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div
+                  className="max-h-96 overflow-y-scroll scroll-hide"
+                  style={{ padding: 20 }}
+                >
                   {isSendAlert.mssg === "sure" ? (
-                    <p>Please add field for all recipients.</p>
+                    <span>Please add field for all recipients.</span>
                   ) : isSendAlert.mssg === textWidget ? (
                     <p>Please confirm that you have filled the text field.</p>
                   ) : (
                     isSendAlert.mssg === "confirm" && (
-                      <p>
-                        Are you sure you want to send out this document for
-                        signatures?
-                      </p>
+                      <>
+                        <p className="ml-[15px]">
+                          Are you sure you want to send out this document for
+                          signatures?
+                        </p>
+
+                        <>
+                          <div
+                            className={
+                              "flex justify-end mt-4 items-center gap-1 mt-2 underline text-blue-700 focus:outline-none "
+                            }
+                            onClick={() => {
+                              isSubscribe ||
+                                (!isEnableSubscription &&
+                                  setIsCustomize(!isCustomize));
+                            }}
+                          >
+                            <span
+                              className={
+                                isSubscribe || !isEnableSubscription
+                                  ? "cursor-pointer"
+                                  : "opacity-20 select-none"
+                              }
+                            >
+                              Cutomize Email
+                            </span>
+
+                            {!isSubscribe && isEnableSubscription && (
+                              <Upgrade />
+                            )}
+                          </div>
+                        </>
+
+                        {isCustomize &&
+                          (!isEnableSubscription || isSubscribe) && (
+                            <>
+                              <EmailBody
+                                editorRef={editorRef}
+                                requestBody={requestBody}
+                                requestSubject={requestSubject}
+                                handleOnchangeRequest={handleOnchangeRequest}
+                                setRequestSubject={setRequestSubject}
+                              />
+                              <div
+                                className={
+                                  "flex justify-end  items-center gap-1 mt-2 underline text-blue-700 focus:outline-none cursor-pointer "
+                                }
+                                onClick={() => {
+                                  setRequestBody(defaultBody);
+                                  setRequestSubject(defaultSubject);
+                                }}
+                              >
+                                <span>Reset to default</span>
+                              </div>
+                            </>
+                          )}
+                      </>
                     )
                   )}
+
                   <div
                     style={{
                       height: "1px",
@@ -1506,7 +1697,7 @@ function PlaceHolderSign() {
                       type="button"
                       className="finishBtn"
                     >
-                      Yes
+                      Send
                     </button>
                   )}
                   <button
@@ -1852,6 +2043,7 @@ function PlaceHolderSign() {
             </button>
           </div>
         </ModalUi>
+
         <LinkUserModal
           handleAddUser={handleAddUser}
           isAddUser={isAddUser}

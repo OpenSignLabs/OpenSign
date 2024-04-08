@@ -1,4 +1,6 @@
 import React from "react";
+import { isEnableSubscription } from "../constant/const";
+import PremiumAlertHeader from "./PremiumAlertHeader";
 
 const ModalUi = ({
   children,
@@ -8,12 +10,13 @@ const ModalUi = ({
   handleClose,
   showHeader = true,
   showClose = true,
-  styleClass
+  styleClass,
+  showHeaderMessage
 }) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed z-[999] top-0 left-0 w-[100%] h-[100%] bg-black bg-opacity-[75%]">
+        <div className="fixed z-[999] 2   top-0 left-0 w-[100%] h-[100%] bg-black bg-opacity-[75%]">
           <div
             className={
               styleClass
@@ -36,6 +39,13 @@ const ModalUi = ({
                   </div>
                 )}
               </div>
+            )}
+            {!isEnableSubscription && showHeaderMessage && (
+              <PremiumAlertHeader
+                message={
+                  "Cutomize Email is free in beta, this feature will incur a fee later."
+                }
+              />
             )}
             <div>{children}</div>
           </div>

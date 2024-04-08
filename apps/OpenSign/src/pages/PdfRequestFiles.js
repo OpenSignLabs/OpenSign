@@ -567,14 +567,17 @@ function PdfRequestFiles() {
             flag,
             containerWH
           );
-
+          //get ExistUserPtr object id of user class to get tenantDetails
+          const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
           //function for call to embed signature in pdf and get digital signature pdf
           try {
             const res = await signPdfFun(
               pdfBytes,
               documentId,
               signerObjectId,
-              setIsAlert
+              setIsAlert,
+              objectId,
+              isSubscribed
             );
             if (res && res.status === "success") {
               setPdfUrl(res.data);
@@ -586,10 +589,12 @@ function PdfRequestFiles() {
                 const index = pdfDetails?.[0].Signers.findIndex(
                   (x) => x.Email === jsonSender.email
                 );
+                const requestBody = pdfDetails?.[0]?.RequestBody;
+                const requestSubject = pdfDetails?.[0]?.RequestSubject;
+
                 const newIndex = index + 1;
                 const user = pdfDetails?.[0].Signers[newIndex];
                 if (user) {
-                  // console.log("pdfDetails", pdfDetails);
                   const expireDate = pdfDetails?.[0].ExpiryDate.iso;
                   const newDate = new Date(expireDate);
                   const localExpireDate = newDate.toLocaleDateString("en-US", {
@@ -597,7 +602,10 @@ function PdfRequestFiles() {
                     month: "long",
                     year: "numeric"
                   });
-                  let sender = pdfDetails?.[0].ExtUserPtr.Email;
+                  let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
+                  let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
+                  const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
+                  let emailBodyWithValue, emailSubjectWithValue;
 
                   try {
                     const imgPng =
@@ -625,33 +633,81 @@ function PdfRequestFiles() {
                       ? pdfDetails[0].ExtUserPtr.Company
                       : "";
                     const themeBGcolor = themeColor;
+                    if (
+                      requestBody &&
+                      requestSubject &&
+                      (!isEnableSubscription || isSubscribed)
+                    ) {
+                      const replacedRequestBody = requestBody.replace(
+                        /"/g,
+                        "'"
+                      );
+                      const htmlReqBody =
+                        "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+                        replacedRequestBody +
+                        "</body> </html>";
+
+                      emailBodyWithValue = htmlReqBody
+                        .replace(/\{{sender_name}}/g, senderName)
+                        .replace(/\{{document_title}}/g, pdfDetails?.[0].Name)
+                        .replace(
+                          /\{{signing_url}}/g,
+                          `<a href=${signPdf}>Sign here</a>`
+                        )
+                        .replace(/\{{sender_mail}}/g, senderEmail)
+                        .replace(/\{{sender_phone}}/g, senderPhone)
+                        .replace(/\{{expiry_date}}}/g, localExpireDate)
+                        .replace(/\{{company_name}}/g, orgName)
+                        .replace(/\{{receiver_name}}/g, user.Name)
+                        .replace(/\{{receiver_email}}/g, user.Email)
+                        .replace(/\{{receiver_phone}}/g, user.Phone);
+
+                      emailSubjectWithValue = requestSubject
+                        .replace(/\{{sender_name}}/g, senderName)
+                        .replace(/\{{document_title}}/g, pdfDetails?.[0].Name)
+                        .replace(
+                          /\{{signing_url}}/g,
+                          `<a href=${signPdf}>Sign here</a>`
+                        )
+                        .replace(/\{{sender_mail}}/g, senderEmail)
+                        .replace(/\{{sender_phone}}/g, senderPhone)
+                        .replace(/\{{expiry_date}}}/g, localExpireDate)
+                        .replace(/\{{company_name}}/g, orgName)
+                        .replace(/\{{receiver_name}}/g, user.Name)
+                        .replace(/\{{receiver_email}}/g, user.Email)
+                        .replace(/\{{receiver_phone}}/g, user.Phone);
+                    }
+
                     let params = {
                       extUserId: extUserId,
                       recipient: user.Email,
-                      subject: `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
-                      from: sender,
-                      html:
-                        "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
-                        imgPng +
-                        " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
-                        themeBGcolor +
-                        ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
-                        pdfDetails?.[0].ExtUserPtr.Name +
-                        " has requested you to review and sign <strong> " +
-                        pdfDetails?.[0].Name +
-                        "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
-                        sender +
-                        "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
-                        orgName +
-                        "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
-                        localExpireDate +
-                        "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
-                        signPdf +
-                        "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
-                        sender +
-                        " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
-                        openSignUrl +
-                        " target=_blank>here</a>.</p> </div></div></body> </html>"
+                      subject: requestSubject
+                        ? emailSubjectWithValue
+                        : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
+                      from: senderEmail,
+                      html: requestBody
+                        ? emailBodyWithValue
+                        : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+                          imgPng +
+                          " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+                          themeBGcolor +
+                          ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+                          pdfDetails?.[0].ExtUserPtr.Name +
+                          " has requested you to review and sign <strong> " +
+                          pdfDetails?.[0].Name +
+                          "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+                          senderEmail +
+                          "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+                          orgName +
+                          "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+                          localExpireDate +
+                          "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+                          signPdf +
+                          "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+                          senderEmail +
+                          " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+                          openSignUrl +
+                          " target=_blank>here</a>.</p> </div></div></body> </html>"
                     };
                     await axios.post(url, params, {
                       headers: headers
@@ -689,6 +745,7 @@ function PdfRequestFiles() {
       });
     }
   }
+
   //function for update TourStatus
   const closeTour = async () => {
     setWidgetsTour(false);
@@ -1052,9 +1109,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                      ? "You have declined this document!"
-                      : isDecline.currnt === "another" &&
-                        "You cannot sign this document as it has been declined by one or more recipient(s)."
+                        ? "You have declined this document!"
+                        : isDecline.currnt === "another" &&
+                          "You cannot sign this document as it has been declined by one or more recipient(s)."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
