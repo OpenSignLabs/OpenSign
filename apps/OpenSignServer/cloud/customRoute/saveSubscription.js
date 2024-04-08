@@ -1,7 +1,7 @@
 export default async function saveSubscription(request, response) {
   const SubscriptionId = request.body.data.subscription.subscription_id;
   const body = request.body;
-  const Email = request.body.data.customer.email;
+  const Email = request.body.data.subscription.customer.email
 
   try {
     const extUserCls = new Parse.Query('contracts_Users');
