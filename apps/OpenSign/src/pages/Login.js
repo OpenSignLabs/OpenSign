@@ -1072,7 +1072,6 @@ function Login() {
               <div className="w-[250px] h-[66px] inline-block overflow-hidden">
                 <img
                   src={image}
-                  loading={true}
                   className="object-contain h-full"
                   alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
                 />
