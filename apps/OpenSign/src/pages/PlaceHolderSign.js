@@ -1642,7 +1642,7 @@ function PlaceHolderSign() {
                             </span>
 
                             {!isSubscribe && isEnableSubscription && (
-                              <Upgrade />
+                              <Upgrade message="Upgrade to customize Email" />
                             )}
                           </div>
                         </>
