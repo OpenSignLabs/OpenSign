@@ -7,6 +7,8 @@ import "../../styles/signature.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { themeColor } from "../../constant/const";
+import Certificate from "./Certificate";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 function Header({
   isPdfRequestFiles,
@@ -91,13 +93,64 @@ function Header({
   };
 
   //handle download signed pdf
-  const handleDownloadCertificate = () => {
+  const handleDownloadCertificate = async () => {
     if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
-      const certificateUrl = pdfDetails[0] && pdfDetails[0]?.CertificateUrl;
-      saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+      try {
+        await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
+        const certificateUrl = pdfDetails[0] && pdfDetails[0]?.CertificateUrl;
+        saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+      } catch (err) {
+        console.log("err in download in certificate", err);
+      }
     }
   };
 
+  const GenerateCertificate = () => {
+    //after generate download certifcate pdf
+    const handleDownload = (pdfBlob, fileName) => {
+      if (pdfBlob) {
+        const url = window.URL.createObjectURL(pdfBlob);
+        // Create a temporary anchor element
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        // Append the anchor to the body
+        document.body.appendChild(link);
+        // Programmatically click the anchor to trigger the download
+        link.click();
+        // Remove the anchor from the body
+        document.body.removeChild(link);
+        // Release the object URL to free up resources
+        window.URL.revokeObjectURL(url);
+      }
+    };
+
+    return (
+      <PDFDownloadLink
+        onClick={(e) => e.preventDefault()}
+        style={{ textDecoration: "none", zIndex: "35" }}
+        document={<Certificate pdfData={pdfDetails} />}
+      >
+        {({ blob, loading }) => (
+          <button
+            onClick={() =>
+              handleDownload(
+                blob,
+                `completion certificate-${
+                  pdfDetails[0] && pdfDetails[0].Name
+                }.pdf`
+              )
+            }
+            disabled={loading}
+            className=" md:bg-[#08bc66] border-none focus:outline-none flex flex-row items-center md:shadow md:rounded-[3px] py-[3px] md:px-[11px] md:text-white text-black md:font-[500] text-[13px] mr-[5px]"
+          >
+            <i className="fa-solid fa-award py-[3px]" aria-hidden="true"></i>
+            <span className="md:hidden lg:block ml-1">Certificate</span>
+          </button>
+        )}
+      </PDFDownloadLink>
+    );
+  };
   return (
     <div style={{ padding: "5px 0px 5px 0px" }} className="mobileHead">
       {isMobile && isShowHeader ? (
@@ -187,21 +240,32 @@ function Header({
                       </div>
                     </DropdownMenu.Item>
                     {isCompleted && (
-                      <DropdownMenu.Item
-                        className="DropdownMenuItem"
-                        onClick={() => handleDownloadCertificate()}
-                      >
-                        <div
-                          style={{ border: "none", backgroundColor: "#fff" }}
-                        >
-                          <i
-                            className="fa-solid fa-award"
-                            style={{ marginRight: "2px" }}
-                            aria-hidden="true"
-                          ></i>
-                          Certificate
-                        </div>
-                      </DropdownMenu.Item>
+                      <>
+                        {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
+                          <DropdownMenu.Item
+                            className="DropdownMenuItem"
+                            onClick={() => handleDownloadCertificate()}
+                          >
+                            <div
+                              style={{
+                                border: "none",
+                                backgroundColor: "#fff"
+                              }}
+                            >
+                              <i
+                                className="fa-solid fa-award"
+                                style={{ marginRight: "2px" }}
+                                aria-hidden="true"
+                              ></i>
+                              Certificate
+                            </div>
+                          </DropdownMenu.Item>
+                        ) : (
+                          <DropdownMenu.Item className="DropdownMenuItem">
+                            <GenerateCertificate />
+                          </DropdownMenu.Item>
+                        )}
+                      </>
                     )}
                     {isSignYourself && (
                       <DropdownMenu.Item
@@ -342,19 +406,13 @@ function Header({
                 {setIsEditTemplate && (
                   <button
                     onClick={() => setIsEditTemplate(true)}
-                    style={{
-                      border: "none",
-                      outline: "none",
-                      textAlign: "center"
-                    }}
+                    className="outline-none border-none text-center mr-[5px]"
                   >
                     <i className="fa-solid fa-gear fa-lg"></i>
                   </button>
                 )}
                 <button
-                  onClick={() => {
-                    navigate(-1);
-                  }}
+                  onClick={() => navigate(-1)}
                   type="button"
                   className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-black font-[500] text-sm mr-[5px] bg-white"
                 >
@@ -384,17 +442,25 @@ function Header({
             alreadySign ? (
               <div style={{ display: "flex", flexDirection: "row" }}>
                 {isCompleted && (
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadCertificate()}
-                    className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
-                  >
-                    <i
-                      className="fa-solid fa-award py-[3px]"
-                      aria-hidden="true"
-                    ></i>
-                    <span className="hidden lg:block ml-1">Certificate</span>
-                  </button>
+                  <>
+                    {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadCertificate()}
+                        className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                      >
+                        <i
+                          className="fa-solid fa-award py-[3px]"
+                          aria-hidden="true"
+                        ></i>
+                        <span className="hidden lg:block ml-1">
+                          Certificate
+                        </span>
+                      </button>
+                    ) : (
+                      <GenerateCertificate />
+                    )}
+                  </>
                 )}
 
                 <button
@@ -453,17 +519,25 @@ function Header({
             )
           ) : isCompleted ? (
             <div style={{ display: "flex", flexDirection: "row" }}>
-              <button
-                type="button"
-                onClick={() => handleDownloadCertificate()}
-                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
-              >
-                <i
-                  className="fa-solid fa-award py-[3px]"
-                  aria-hidden="true"
-                ></i>
-                <span className="hidden lg:block ml-1">Certificate</span>
-              </button>
+              {isCompleted && (
+                <>
+                  {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadCertificate()}
+                      className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                    >
+                      <i
+                        className="fa-solid fa-award py-[3px]"
+                        aria-hidden="true"
+                      ></i>
+                      <span className="hidden lg:block ml-1">Certificate</span>
+                    </button>
+                  ) : (
+                    <GenerateCertificate />
+                  )}
+                </>
+              )}
               <button
                 onClick={handleToPrint}
                 type="button"
