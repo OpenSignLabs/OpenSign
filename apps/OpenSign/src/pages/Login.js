@@ -44,7 +44,7 @@ function Login() {
     Destination: ""
   });
   const [isModal, setIsModal] = useState(false);
-  const [image, setImage] = useState(appInfo?.applogo);
+  const [image, setImage] = useState();
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
@@ -65,6 +65,8 @@ function Login() {
       } else {
         setImage(appInfo?.applogo || undefined);
       }
+    } else {
+      setImage(appInfo?.applogo || undefined);
     }
   };
   const handleChange = (event) => {
