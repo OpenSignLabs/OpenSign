@@ -1155,15 +1155,7 @@ function PlaceHolderSign() {
                 }
               }
             )
-            .then(() => {
-              setIsSend(true);
-              setIsMailSend(true);
-              const loadObj = {
-                isLoad: false
-              };
-              setIsLoading(loadObj);
-              setIsUiLoading(false);
-            })
+            .then(() => {})
             .catch((err) => {
               console.log("axois err ", err);
             });
