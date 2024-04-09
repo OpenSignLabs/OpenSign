@@ -29,7 +29,7 @@ import DocumentBeforeFind from './parsefunction/DocumentAfterFind.js';
 import TemplateAfterFind from './parsefunction/TemplateAfterFind.js';
 import UserAfterFind from './parsefunction/UserAfterFInd.js';
 import SignatureAfterFind from './parsefunction/SignatureAfterFind.js';
-import getInvoices from './parsefunction/getInvoice.js';
+import getInvoices from './parsefunction/getInvoices.js';
 import getPayments from './parsefunction/getPayments.js';
 import getSubscriptions from './parsefunction/getSubscriptions.js';
 
