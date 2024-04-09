@@ -1,7 +1,7 @@
 import axios from 'axios';
 const serverUrl = process.env.SERVER_URL;
 const appId = process.env.APP_ID;
-export default async function getPayments(request) {
+export default async function getInvoices(request) {
   const limit = request.params.limit || 100;
   const skip = request.params.skip || 0;
   const extUserId = request.params.extUserId;
@@ -14,19 +14,19 @@ export default async function getPayments(request) {
     });
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
-      const paymentsCls = new Parse.Query('contracts_Payments');
-      paymentsCls.equalTo('ExtUserPtr', {
+      const invoiceCls = new Parse.Query('contracts_Invoices');
+      invoiceCls.equalTo('ExtUserPtr', {
         __type: 'Pointer',
         className: 'contracts_User',
         objectId: extUserId,
       });
-      paymentsCls.limit(limit);
-      paymentsCls.skip(skip);
-      paymentsCls.descending('createdAt');
-      const payments = await paymentsCls.find({ useMasterKey: true });
-      if (payments?.length > 0) {
-        const _payments = JSON.parse(JSON.stringify(payments));
-        return { status: 'success', result: _payments };
+      invoiceCls.limit(limit);
+      invoiceCls.skip(skip);
+      invoiceCls.descending('createdAt');
+      const invoices = await invoiceCls.find({ useMasterKey: true });
+      if (invoices?.length > 0) {
+        const _invoices = JSON.parse(JSON.stringify(invoices));
+        return { status: 'success', result: _invoices };
       } else {
         return { status: 'success', result: [] };
       }
@@ -34,7 +34,7 @@ export default async function getPayments(request) {
       return { status: 'error', result: 'Invalid session token!' };
     }
   } catch (err) {
-    console.log('Err in get Payments', err.message);
+    console.log('Err in get invoices', err.message);
     return { status: 'error', result: err.message };
   }
 }
