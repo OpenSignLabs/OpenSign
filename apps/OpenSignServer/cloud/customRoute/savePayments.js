@@ -1,11 +1,10 @@
 export default async function savePayments(request, response) {
   const PaymentId = request.body.data.payment.payment_id;
   const body = request.body;
-  const Email = request.body.data.email;
-
+  const Email = request.body.data.payment.email
   try {
     const extUserCls = new Parse.Query('contracts_Users');
-    extUserCls.equalTo('Customer_id', Email);
+    extUserCls.equalTo('Email', Email);
     const extUser = await extUserCls.first({ useMasterKey: true });
     const paymentCls = new Parse.Query('contracts_Payments');
     paymentCls.equalTo('PaymentId', PaymentId);
