@@ -201,16 +201,16 @@ function PlaceHolderSign() {
 
             setDefaultBody(defaultRequestBody);
             setDefaultSubject(
-              `{{senderName}} has requested you to sign {{documentName}}`
+              `{{sender_name}} has requested you to sign {{document_title}}`
             );
           } else {
             setRequestBody(defaultRequestBody);
             setRequestSubject(
-              `{{senderName}} has requested you to sign {{documentName}}`
+              `{{sender_name}} has requested you to sign {{document_title}}`
             );
             setDefaultBody(defaultRequestBody);
             setDefaultSubject(
-              `{{senderName}} has requested you to sign {{documentName}}`
+              `{{sender_name}}has requested you to sign {{document_title}}`
             );
           }
         }
