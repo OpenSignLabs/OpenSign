@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
-import plansArr from "../json/plansArr.json";
+import plansArr from "../json/plansArr";
 import Title from "../components/Title";
 import Parse from "parse";
 const listItemStyle = {
