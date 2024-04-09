@@ -1,8 +1,3 @@
-// import { createStore, applyMiddleware } from "redux";
-// import thunk from "redux-thunk";
-// import reducers from "./reducers";
-
-// export const store = createStore(reducers, applyMiddleware(thunk));
 import { configureStore } from "@reduxjs/toolkit";
 import infoReducer from "./reducers/infoReducer";
 import ShowTenant from "./reducers/ShowTenant";
@@ -12,5 +7,6 @@ export const store = configureStore({
     appInfo: infoReducer,
     TourSteps: TourStepsReducer,
     ShowTenant
-  }
+  },
+  devTools: process.env.NODE_ENV !== "production"
 });
