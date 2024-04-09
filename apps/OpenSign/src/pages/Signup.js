@@ -23,7 +23,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [jobTitle, setJobTitle] = useState("");
-  const [image, setImage] = useState(appInfo?.applogo);
+  const [image, setImage] = useState();
   const [state, setState] = useState({
     loading: false,
     alertType: "success",
@@ -482,6 +482,8 @@ const Signup = () => {
       } else {
         setImage(appInfo?.applogo || undefined);
       }
+    } else {
+      setImage(appInfo?.applogo || undefined);
     }
   };
 
