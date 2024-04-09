@@ -1,4 +1,4 @@
-[
+const plans= [
   {
     "planName": "OPENSIGN™ FREE",
     "currency": "",
@@ -68,3 +68,5 @@
     ]
   }
 ]
+
+export default plans
