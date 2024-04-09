@@ -1862,3 +1862,18 @@ export function replaceMailVaribles(subject, body, variables) {
   };
   return result;
 }
+
+export const copytoData = (text) => {
+  // navigator.clipboard.writeText(text);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    // Fallback for browsers that don't support navigator.clipboard
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+  }
+};
