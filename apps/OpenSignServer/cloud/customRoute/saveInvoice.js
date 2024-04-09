@@ -1,11 +1,11 @@
 export default async function saveInvoice(request, response) {
   const InvoiceId = request.body.data.invoice.invoice_id;
   const body = request.body;
-  const Email = request.body.data.email;
+  const Email = request.body.data.invoice.email
   
   try {
     const extUserCls = new Parse.Query('contracts_Users');
-    extUserCls.equalTo('Customer_id', Email);
+    extUserCls.equalTo('Email', Email);
     const extUser = await extUserCls.first({ useMasterKey: true });
     const invoiceCls = new Parse.Query('contracts_Invoices');
     invoiceCls.equalTo('InvoiceId', InvoiceId);
@@ -33,6 +33,7 @@ export default async function saveInvoice(request, response) {
       await createInvoice.save(null, { useMasterKey: true });
       return response.status(200).json({ status: 'create invoice!' });
     }
+
   } catch (err) {
     console.log('Err in save invoice', err);
     return response.status(400).json({ status: 'error:' + err.message });
