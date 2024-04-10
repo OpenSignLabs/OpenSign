@@ -24,7 +24,6 @@ export default async function getInvoices(request) {
       invoiceCls.skip(skip);
       invoiceCls.descending('createdAt');
       const invoices = await invoiceCls.find({ useMasterKey: true });
-      console.log('invoices', invoices);
       if (invoices?.length > 0) {
         const _invoices = JSON.parse(JSON.stringify(invoices));
         return { status: 'success', result: _invoices };
