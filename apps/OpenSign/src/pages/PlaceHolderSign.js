@@ -985,14 +985,7 @@ function PlaceHolderSign() {
           key={ind}
         >
           {copied && <Alert type="success">Copied</Alert>}
-          <span
-            className="w-[200px] md:w-[300px]"
-            style={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis"
-            }}
-          >
+          <span className="w-[200px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis ">
             {data.signerEmail}
           </span>
           <div className=" ">
