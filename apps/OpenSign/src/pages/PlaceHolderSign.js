@@ -853,9 +853,10 @@ function PlaceHolderSign() {
       };
       setIsSendAlert(alert);
     } else if (filterPrefill.length === signersdata.length) {
-      const IsSignerNotExist = filterPrefill?.some((x) => !x.signerObjId);
-      if (IsSignerNotExist) {
+      const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
+      if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
         setSignerExistModal(true);
+        setSelectWidgetId(IsSignerNotExist[0]?.placeHolder?.[0]?.pos?.[0]?.key);
       } else {
         saveDocumentDetails();
       }
@@ -997,7 +998,6 @@ function PlaceHolderSign() {
             </span>
             <RWebShare
               data={{
-                // text: "Like humans, flamingos make friends for life",
                 url: data.url,
                 title: "Sign url"
               }}
@@ -1220,22 +1220,12 @@ function PlaceHolderSign() {
       position: "top",
       style: { fontSize: "13px" }
     },
-    {
-      selector: '[data-tut="reactourLinkUser"]',
-      content: () => (
-        <TourContentWithBtn
-          message={`Use this icon to assign a new signer or change the existing one for the placeholder.`}
-          isChecked={handleDontShow}
-        />
-      ),
-      position: "top",
-      style: { fontSize: "13px" }
-    },
+
     {
       selector: '[data-tut="reactourFour"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking "Send" button will share the document with all the recipients.It will also send out emails to everyone on the recipients list.`}
+          message={`Clicking "Send" will save the document. In the next step you can customize the emails to be sent out to the recipients or copy the signing links and share those with the recipients yourself.`}
           isChecked={handleDontShow}
         />
       ),
@@ -1549,6 +1539,15 @@ function PlaceHolderSign() {
     }
   };
 
+  const signerAssignTour = [
+    {
+      selector: '[data-tut="assignSigner"]',
+      content:
+        " Please assign a new signer to use this icon for the placeholder. ",
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1598,6 +1597,13 @@ function PlaceHolderSign() {
                 closeWithMask={false}
               />
             )}
+            <Tour
+              onRequestClose={() => setSignerExistModal(false)}
+              steps={signerAssignTour}
+              isOpen={signerExistModal}
+              rounded={5}
+              closeWithMask={false}
+            />
             {/* this component used to render all pdf pages in left side */}
             <RenderAllPdfPage
               signPdfUrl={pdfDetails[0].URL}
@@ -2029,7 +2035,7 @@ function PlaceHolderSign() {
         )}
       </DndProvider>
       <div>
-        <ModalUi
+        {/* <ModalUi
           headerColor={"#dc3545"}
           isOpen={signerExistModal}
           title={"Users required"}
@@ -2057,7 +2063,7 @@ function PlaceHolderSign() {
               Close
             </button>
           </div>
-        </ModalUi>
+        </ModalUi> */}
         <ModalUi
           headerColor={"#dc3545"}
           isOpen={isAlreadyPlace.status}

@@ -7,6 +7,10 @@ import { useNavigate } from "react-router-dom";
 import Title from "../components/Title";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import Tour from "reactour";
+import axios from "axios";
+
 const DriveBody = React.lazy(
   () => import("../components/opensigndrive/DriveBody")
 );
@@ -42,6 +46,8 @@ function Opensigndrive() {
   const [error, setError] = useState();
   const [folderLoader, setIsFolderLoader] = useState(false);
   const [isShowSort, setIsShowSort] = useState(false);
+  const [isTour, setIsTour] = useState(false);
+  const [tourStatusArr, setTourStatusArr] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -56,6 +62,8 @@ function Opensigndrive() {
   const [loading, setLoading] = useState(false);
   const sortOrder = ["Ascending", "Descending"];
   const sortingValue = ["Name", "Date"];
+  const [isDontShow, setIsDontShow] = useState(false);
+  const [tourData, setTourData] = useState();
   const orderName = {
     Ascending: "Ascending",
     Descending: "Descending",
@@ -73,12 +81,94 @@ function Opensigndrive() {
 
   useEffect(() => {
     getPdfDocumentList();
+
     // eslint-disable-next-line
   }, [docId]);
 
+  const tourConfigs = [
+    {
+      selector: '[data-tut="reactourFirst"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`Click on the breadcrumb links to easily navigate through the folder hierarchy and view the documents within each folder.`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="reactourSecond"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`Click the add button to create a new folder or document.`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="reactourThird"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`Sort your documents by Date or Name using this menu.`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="reactourForth"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`Click on this menu to display the documents in list view.`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    },
+
+    {
+      selector: '[data-tut="reactourFifth"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`The document list is displayed according to the selected sorting option. Icons next to each document indicate its current status.`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "bottom",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="reactourSixth"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`Right-click on a document to see options such as Download, Rename, Move, and Delete. Click on the document to open it.`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "bottom",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="reactourSeventh"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`Right-click on any folder to see options. Choose ‘Rename’ to change the folder’s name or click on the folder to navigate through its contents.`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "bottom",
+      style: { fontSize: "13px" }
+    }
+  ];
   //function for get all pdf document list
   const getPdfDocumentList = async (disbaleLoading) => {
     setLoading(true);
+    checkTourStatus();
     if (!disbaleLoading) {
       setIsLoading({ isLoad: true, message: "This might take some time" });
     }
@@ -87,6 +177,22 @@ function Opensigndrive() {
       if (driveDetails && driveDetails === "Error: Something went wrong!") {
         setHandleError("Error: Something went wrong!");
       } else if (driveDetails && driveDetails.length > 0) {
+        let newTour = tourConfigs;
+        const isFolderExist = driveDetails.some(
+          (data) => data.Type === "Folder"
+        );
+        if (!isFolderExist) {
+          newTour = newTour.filter(
+            (data) => data.selector !== '[data-tut="reactourSeventh"]'
+          );
+        }
+        const isDocumentExist = driveDetails.some((data) => data.URL);
+        if (!isDocumentExist) {
+          newTour = newTour.filter(
+            (data) => data.selector !== '[data-tut="reactourSixth"]'
+          );
+        }
+        setTourData(newTour);
         setSkip((prevSkip) => prevSkip + limit);
         sortingData(null, null, driveDetails, true);
       }
@@ -358,9 +464,78 @@ function Opensigndrive() {
     setNewFolderName("");
     setError("");
   };
+
+  const handleDontShow = (isChecked) => {
+    setIsDontShow(isChecked);
+  };
+
+  const closeTour = async () => {
+    setIsTour(false);
+    if (isDontShow) {
+      const serverUrl = localStorage.getItem("baseUrl");
+      const appId = localStorage.getItem("parseAppId");
+      const extUserClass = localStorage.getItem("extended_class");
+      const json = JSON.parse(localStorage.getItem("Extand_Class"));
+      const extUserId = json && json.length > 0 && json[0].objectId;
+      let updatedTourStatus = [];
+      if (tourStatusArr.length > 0) {
+        updatedTourStatus = [...tourStatusArr];
+        const opensignTourIndex = tourStatusArr.findIndex(
+          (obj) => obj["opensignTour"] === false || obj["opensignTour"] === true
+        );
+        if (opensignTourIndex !== -1) {
+          updatedTourStatus[opensignTourIndex] = { opensignTour: true };
+        } else {
+          updatedTourStatus.push({ opensignTour: true });
+        }
+      } else {
+        updatedTourStatus = [{ opensignTour: true }];
+      }
+      await axios.put(
+        serverUrl + "classes/" + extUserClass + "/" + extUserId,
+        {
+          TourStatus: updatedTourStatus
+        },
+        {
+          headers: {
+            "X-Parse-Application-Id": appId
+          }
+        }
+      );
+    }
+  };
+  //function to use check tour status of open sign drive
+  async function checkTourStatus() {
+    const currentUser = Parse.User.current();
+    const cloudRes = await Parse.Cloud.run("getUserDetails", {
+      email: currentUser.get("email")
+    });
+    const res = { data: cloudRes.toJSON() };
+    if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
+      const tourStatus = res.data.TourStatus;
+      setTourStatusArr(tourStatus);
+      const filteredtourStatus = tourStatus.filter(
+        (obj) => obj["opensignTour"]
+      );
+      if (filteredtourStatus.length > 0) {
+        const opensignTour = filteredtourStatus[0]["opensignTour"];
+        // console.log("loginTour", loginTour);
+        if (opensignTour) {
+          setIsTour(false);
+        } else {
+          setIsTour(true);
+        }
+      } else {
+        setIsTour(true);
+      }
+    } else {
+      setIsTour(true);
+    }
+  }
   return (
     <div style={{ backgroundColor: "white" }} className="folderComponent">
       <Title title={"OpenSign™ Drive"} drive={true} />
+
       <div>
         <ModalUi
           headerColor={"#dc3545"}
@@ -523,7 +698,16 @@ function Opensigndrive() {
         ) : (
           <>
             <div className="folderContainer">
+              <Tour
+                onRequestClose={closeTour}
+                steps={tourData}
+                isOpen={isTour}
+                closeWithMask={false}
+                scrollOffset={-100}
+                rounded={5}
+              />
               <div
+                data-tut="reactourFirst"
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 ref={scrollRef}
                 style={{
@@ -541,7 +725,7 @@ function Opensigndrive() {
                   }
                   onClick={() => setIsNewFol(!isNewFol)}
                 >
-                  <div className="sort">
+                  <div className="sort" data-tut="reactourSecond">
                     <i
                       className="fa fa-plus-square"
                       aria-hidden="true"
@@ -602,7 +786,11 @@ function Opensigndrive() {
                   className={isShowSort ? "dropdown show" : "dropdown"}
                   onClick={() => setIsShowSort(!isShowSort)}
                 >
-                  <div className=" sort  " data-toggle="dropdown">
+                  <div
+                    data-tut="reactourThird"
+                    className=" sort  "
+                    data-toggle="dropdown"
+                  >
                     <i
                       className="fa fa-sort-amount-asc"
                       aria-hidden="true"
@@ -692,7 +880,11 @@ function Opensigndrive() {
                       ></i>
                     </div>
                   ) : (
-                    <div className="sort" onClick={() => setIsList(!isList)}>
+                    <div
+                      data-tut="reactourForth"
+                      className="sort"
+                      onClick={() => setIsList(!isList)}
+                    >
                       <i
                         className="fa fa-list"
                         aria-hidden="true"
@@ -717,24 +909,28 @@ function Opensigndrive() {
                 <span style={{ fontWeight: "bold" }}>No Data Found!</span>
               </div>
             ) : (
-              <React.Suspense fallback={<Loader />}>
-                <DriveBody
-                  pdfData={pdfData}
-                  setFolderName={setFolderName}
-                  setIsLoading={setIsLoading}
-                  setDocId={setDocId}
-                  getPdfDocumentList={getPdfDocumentList}
-                  isDocId={docId}
-                  setPdfData={setPdfData}
-                  isList={isList}
-                  setIsAlert={setIsAlert}
-                  setSkip={setSkip}
-                  sortingData={sortingData}
-                />
-                {loading && (
-                  <div style={{ textAlign: "center" }}>Loading...</div>
-                )}
-              </React.Suspense>
+              <div data-tut="reactourFifth">
+                <React.Suspense fallback={<Loader />}>
+                  <DriveBody
+                    dataTutSixth="reactourSixth"
+                    dataTutSeventh="reactourSeventh"
+                    pdfData={pdfData}
+                    setFolderName={setFolderName}
+                    setIsLoading={setIsLoading}
+                    setDocId={setDocId}
+                    getPdfDocumentList={getPdfDocumentList}
+                    isDocId={docId}
+                    setPdfData={setPdfData}
+                    isList={isList}
+                    setIsAlert={setIsAlert}
+                    setSkip={setSkip}
+                    sortingData={sortingData}
+                  />
+                  {loading && (
+                    <div style={{ textAlign: "center" }}>Loading...</div>
+                  )}
+                </React.Suspense>
+              </div>
             )}
           </>
         )}
