@@ -182,7 +182,8 @@ export default function reportJson(id) {
             btnIcon: "fa fa-plus",
             redirectUrl: "placeHolderSign",
             selector: "reactourSecond",
-            message: "onclick use button to create document from template."
+            message:
+              "Click the ‘Use’ button to create a new document from an existing template."
           },
           {
             btnLabel: "Edit",
@@ -191,7 +192,8 @@ export default function reportJson(id) {
             btnIcon: "fa fa-plus",
             redirectUrl: "template",
             selector: "reactourThird",
-            message: "onclick edit button you can edit template."
+            message:
+              "Use the ‘Edit’ button to add signer roles, modify fields, and update your template. Changes will apply to all future documents created from this template but won’t affect existing documents."
           }
         ],
 

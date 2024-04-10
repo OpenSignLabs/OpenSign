@@ -62,7 +62,9 @@ const Report = () => {
             selector: "[data-tut=reactourFirst]",
             content: () => (
               <TourContentWithBtn
-                message={`onclick add button you can create new template.`}
+                message={
+                  "Click the ‘Add’ button to create a new template. Templates are reusable documents designed to quickly generate new documents with the same structure and varying signers. For example, an HR template for onboarding could have predefined roles like ‘HR Manager’ and ‘New Employee’. Each time you use the template, you can assign the ‘New Employee’ role to different incoming staff members, while the ‘HR Manager’ role remains constant, facilitating a seamless onboarding process for each recruit."
+                }
                 isChecked={handleDontShow}
               />
             ),
