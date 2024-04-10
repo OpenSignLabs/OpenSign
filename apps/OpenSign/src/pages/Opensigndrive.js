@@ -90,7 +90,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourFirst"]',
       content: () => (
         <TourContentWithBtn
-          message={`click on folder path you can re-redirect to see of that folder list of document.`}
+          message={`Click on the breadcrumb links to easily navigate through the folder hierarchy and view the documents within each folder.`}
           isChecked={handleDontShow}
         />
       ),
@@ -101,7 +101,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`click on add button you can see option of to create new folder and create new document.`}
+          message={`Click the add button to create a new folder or document.`}
           isChecked={handleDontShow}
         />
       ),
@@ -112,7 +112,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourThird"]',
       content: () => (
         <TourContentWithBtn
-          message={`you can sort your document list using Date or Name.`}
+          message={`Sort your documents by Date or Name using this menu.`}
           isChecked={handleDontShow}
         />
       ),
@@ -123,7 +123,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourForth"]',
       content: () => (
         <TourContentWithBtn
-          message={`click on this menu you can change document list in table format.`}
+          message={`Click on this menu to display the documents in list view.`}
           isChecked={handleDontShow}
         />
       ),
@@ -135,7 +135,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourFifth"]',
       content: () => (
         <TourContentWithBtn
-          message={`this document list is render according to selected sort and icon show document status.`}
+          message={`The document list is displayed according to the selected sorting option. Icons next to each document indicate its current status.`}
           isChecked={handleDontShow}
         />
       ),
@@ -146,9 +146,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourSixth"]',
       content: () => (
         <TourContentWithBtn
-          message={`on right click on document you can see four option (Download,Rename,Move,Delete) and onclick on document
-          you can navigate next page to see status of document
-          .`}
+          message={`Right-click on a document to see options such as Download, Rename, Move, and Delete. Click on the document to open it.`}
           isChecked={handleDontShow}
         />
       ),
@@ -159,9 +157,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourSeventh"]',
       content: () => (
         <TourContentWithBtn
-          message={`on right click on folder you can see  option (Rename) and onclick on folder
-      you can navigate next page to see document list exist in that folder
-      .`}
+          message={`Right-click on any folder to see options. Choose ‘Rename’ to change the folder’s name or click on the folder to navigate through its contents.`}
           isChecked={handleDontShow}
         />
       ),
