@@ -6,6 +6,7 @@ import reportJson from "../json/ReportJson";
 import { useParams } from "react-router-dom";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
 
 const Report = () => {
   const { id } = useParams();
@@ -18,6 +19,8 @@ const Report = () => {
   const [isNextRecord, setIsNextRecord] = useState(false);
   const [isMoreDocs, setIsMoreDocs] = useState(true);
   const [form, setForm] = useState("");
+  const [tourData, setTourData] = useState([]);
+  const [isDontShow, setIsDontShow] = useState(false);
   const abortController = new AbortController();
   const docPerPage = 10;
 
@@ -46,10 +49,44 @@ const Report = () => {
     // eslint-disable-next-line
   }, [isNextRecord]);
 
+  const handleDontShow = (isChecked) => {
+    setIsDontShow(isChecked);
+  };
   const getReportData = async (skipUserRecord = 0, limit = 200) => {
     // setIsLoader(true);
     const json = reportJson(id);
     if (json) {
+      if (id === "6TeaPr321t") {
+        const tourConfig = [
+          {
+            selector: "[data-tut=reactourFirst]",
+            content: () => (
+              <TourContentWithBtn
+                message={`onclick add button you can create new template.`}
+                isChecked={handleDontShow}
+              />
+            ),
+            position: "top",
+            style: { fontSize: "13px" }
+          }
+        ];
+        json.actions.map((data) => {
+          const newConfig = {
+            selector: `[data-tut="${data?.selector}"]`,
+            content: () => (
+              <TourContentWithBtn
+                message={data?.message}
+                isChecked={handleDontShow}
+              />
+            ),
+            position: "top",
+            style: { fontSize: "13px" }
+          };
+          tourConfig.push(newConfig);
+        });
+        setTourData(tourConfig);
+      }
+
       setActions(json.actions);
       setHeading(json.heading);
       setReportName(json.reportName);
@@ -161,6 +198,8 @@ const Report = () => {
               docPerPage={docPerPage}
               form={form}
               report_help={reporthelp}
+              tourData={tourData}
+              isDontShow={isDontShow}
             />
           ) : (
             <PageNotFound prefix={"Report"} />

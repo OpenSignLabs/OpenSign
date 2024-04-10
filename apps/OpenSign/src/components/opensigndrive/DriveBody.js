@@ -385,6 +385,7 @@ function DriveBody(props) {
                 flexDirection: "column",
                 cursor: "pointer"
               }}
+              data-tut={props.dataTutSeventh}
             >
               <img
                 alt="no img"
@@ -452,6 +453,7 @@ function DriveBody(props) {
                     className="pdf-icon"
                     src={pdfLogo}
                     onClick={() => checkPdfStatus(data)}
+                    data-tut={props.dataTutSixth}
                   />
                   {rename === data.objectId ? (
                     <input
