@@ -8,7 +8,7 @@ function Upgrade({ message }) {
     <sup>
       <span
         onClick={() => navigation("/subscription")}
-        className="text-blue-800 text-sm cursor-pointer hover:underline"
+        className="text-blue-800 text-sm cursor-pointer underline"
       >
         {message ? message : "Upgrade now"}
       </span>
