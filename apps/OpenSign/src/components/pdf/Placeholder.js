@@ -416,7 +416,7 @@ function Placeholder(props) {
 
               {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
-                  data-tut="reactourLinkUser"
+                  data-tut="assignSigner"
                   className="fa-regular fa-user signUserIcon"
                   onClick={(e) => {
                     e.stopPropagation();
