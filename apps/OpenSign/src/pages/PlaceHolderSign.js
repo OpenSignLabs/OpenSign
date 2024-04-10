@@ -857,12 +857,7 @@ function PlaceHolderSign() {
       if (IsSignerNotExist) {
         setSignerExistModal(true);
       } else {
-        const alert = {
-          mssg: "confirm",
-          alert: true
-        };
         saveDocumentDetails();
-        setIsSendAlert(alert);
       }
     } else {
       const alert = {
@@ -875,6 +870,7 @@ function PlaceHolderSign() {
 
   //function to use save placeholder details in contracts_document
   const saveDocumentDetails = async () => {
+    setIsUiLoading(true);
     let signerMail = signersdata.slice();
     if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
       signerMail.splice(1);
@@ -939,7 +935,15 @@ function PlaceHolderSign() {
         )
         .then(() => {
           setIsMailSend(true);
+          setIsLoading({
+            isLoad: false
+          });
+          setIsUiLoading(false);
           setSignerPos([]);
+          setIsSendAlert({
+            mssg: "confirm",
+            alert: true
+          });
         })
         .catch((err) => {
           console.log("axois err ", err);
@@ -961,10 +965,7 @@ function PlaceHolderSign() {
   //function show signer list and share link to share signUrl
   const handleShareList = () => {
     const shareLinkList = [];
-    let signerMail = signersdata.slice();
-    if (pdfDetails?.[0]?.SendinOrder && pdfDetails?.[0]?.SendinOrder === true) {
-      signerMail.splice(1);
-    }
+    let signerMail = signersdata;
     for (let i = 0; i < signerMail.length; i++) {
       const serverUrl = localStorage.getItem("baseUrl");
       const newServer = serverUrl.replaceAll("/", "%2F");
@@ -984,7 +985,16 @@ function PlaceHolderSign() {
           key={ind}
         >
           {copied && <Alert type="success">Copied</Alert>}
-          <span>{data.signerEmail}</span>
+          <span
+            className="w-[200px] md:w-[300px]"
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}
+          >
+            {data.signerEmail}
+          </span>
           <div className=" ">
             <span
               className="mr-3  underline text-blue-700 cursor-pointer "
@@ -1698,22 +1708,21 @@ function PlaceHolderSign() {
                               )}
                             </div>
 
-                            {!isCustomize && (
-                              <span
-                                className={
-                                  isSubscribe || !isEnableSubscription
-                                    ? "cursor-pointer underline text-blue-700 focus:outline-none"
-                                    : "opacity-30 select-none underline text-blue-700 focus:outline-none"
-                                }
-                                onClick={() => {
-                                  isSubscribe ||
-                                    (!isEnableSubscription &&
-                                      setIsCustomize(!isCustomize));
-                                }}
-                              >
-                                Cutomize Email
-                              </span>
-                            )}
+                            {!isCustomize &&
+                              (isSubscribe || !isEnableSubscription) && (
+                                <span
+                                  className={
+                                    "cursor-pointer underline text-blue-700 focus:outline-none"
+                                  }
+                                  onClick={() => {
+                                    isSubscribe ||
+                                      (!isEnableSubscription &&
+                                        setIsCustomize(!isCustomize));
+                                  }}
+                                >
+                                  Cutomize Email
+                                </span>
+                              )}
 
                             {!isSubscribe && isEnableSubscription && (
                               <Upgrade message="Upgrade to customize Email" />
