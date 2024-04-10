@@ -19,7 +19,8 @@ export default function reportJson(id) {
             redirectUrl: "draftDocument"
           }
         ],
-        helpMsg: "These are documents you have started but have not finalized for sending."
+        helpMsg:
+          "These are documents you have started but have not finalized for sending."
       };
     // Need your sign report
     case "4Hhwbp482K":
@@ -69,7 +70,8 @@ export default function reportJson(id) {
             redirectUrl: "draftDocument"
           }
         ],
-        helpMsg: "This is a list of documents that have been signed by all parties."
+        helpMsg:
+          "This is a list of documents that have been signed by all parties."
       };
     //  declined documents report
     case "UPr2Fm5WY3":
@@ -85,7 +87,8 @@ export default function reportJson(id) {
             redirectUrl: "draftDocument"
           }
         ],
-        helpMsg: "This is a list of documents that have been declined by one of the signers."
+        helpMsg:
+          "This is a list of documents that have been declined by one of the signers."
       };
     //  Expired Documents report
     case "zNqBHXHsYH":
@@ -101,7 +104,8 @@ export default function reportJson(id) {
             redirectUrl: "draftDocument"
           }
         ],
-        helpMsg: "This is a list of documents that have reached their expiration date."
+        helpMsg:
+          "This is a list of documents that have reached their expiration date."
       };
     //  Recently sent for signatures report show on dashboard
     case "d9k3UfYHBc":
@@ -162,7 +166,8 @@ export default function reportJson(id) {
           }
         ],
         form: "ContactBook",
-        helpMsg: "This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
+        helpMsg:
+          "This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
       };
     // template report
     case "6TeaPr321t":
@@ -175,16 +180,21 @@ export default function reportJson(id) {
             btnColor: "#4bd396",
             textColor: "white",
             btnIcon: "fa fa-plus",
-            redirectUrl: "placeHolderSign"
+            redirectUrl: "placeHolderSign",
+            selector: "reactourSecond",
+            message: "onclick use button to create document from template."
           },
           {
             btnLabel: "Edit",
             btnColor: "#00c9d5",
             textColor: "white",
             btnIcon: "fa fa-plus",
-            redirectUrl: "template"
+            redirectUrl: "template",
+            selector: "reactourThird",
+            message: "onclick edit button you can edit template."
           }
         ],
+
         helpMsg:
           "This is a list of templates that are available to you for creating documents. You can click the 'use' button to create a new document using a template, modify the document & add signers in the next step."
       };

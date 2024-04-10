@@ -1072,11 +1072,13 @@ function Login() {
           <div aria-labelledby="loginHeading" role="region">
             <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-4 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
               <div className="w-[250px] h-[66px] inline-block overflow-hidden">
-                <img
-                  src={image}
-                  className="object-contain h-full"
-                  alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
-                />
+                {image && (
+                  <img
+                    src={image}
+                    className="object-contain h-full"
+                    alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
+                  />
+                )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
                 <div>
