@@ -23,15 +23,14 @@ export default async function ZohoDetails(request) {
   };
   // Make the POST request using Axios
   const res = await axios.post(url, formData, { headers });
-
   //   console.log("Access Token:", res.data);
-
   if (res.data.access_token) {
     const hostedpages = request.params.hostedpagesId;
     const userData = await axios.get('https://billing.zoho.in/api/v1/hostedpages/' + hostedpages, {
       headers: {
         Authorization: 'Zoho-oauthtoken ' + res.data.access_token,
-        'X-com-zoho-billing-organizationid': process.env.ZOHO_BILLING_ORG_ID,
+        'X-com-zoho-subscriptions-organizationid': process.env.ZOHO_BILLING_ORG_ID,
+        // 'X-com-zoho-billing-organizationid': process.env.ZOHO_BILLING_ORG_ID,
       },
     });
     // console.log(
