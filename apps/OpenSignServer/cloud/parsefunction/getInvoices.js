@@ -14,10 +14,13 @@ export default async function getInvoices(request) {
     });
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
+      if (!extUserId) {
+        return { status: 'error', result: 'Please provide parameter!' };
+      }
       const invoiceCls = new Parse.Query('contracts_Invoices');
       invoiceCls.equalTo('ExtUserPtr', {
         __type: 'Pointer',
-        className: 'contracts_User',
+        className: 'contracts_Users',
         objectId: extUserId,
       });
       invoiceCls.limit(limit);
