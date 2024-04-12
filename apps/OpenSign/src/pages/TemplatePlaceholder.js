@@ -311,10 +311,10 @@ const TemplatePlaceholder = () => {
       if (tourstatus && tourstatus.length > 0) {
         setTourStatus(tourstatus);
         const checkTourRecipients = tourstatus.filter(
-          (data) => data.templatetour
+          (data) => data.templateTour
         );
         if (checkTourRecipients && checkTourRecipients.length > 0) {
-          setCheckTourStatus(checkTourRecipients[0].templatetour);
+          setCheckTourStatus(checkTourRecipients[0].templateTour);
         }
       }
       const loadObj = {
@@ -805,15 +805,15 @@ const TemplatePlaceholder = () => {
       if (tourStatus.length > 0) {
         updatedTourStatus = [...tourStatus];
         const templatetourIndex = tourStatus.findIndex(
-          (obj) => obj["templatetour"] === false || obj["templatetour"] === true
+          (obj) => obj["templateTour"] === false || obj["templateTour"] === true
         );
         if (templatetourIndex !== -1) {
-          updatedTourStatus[templatetourIndex] = { templatetour: true };
+          updatedTourStatus[templatetourIndex] = { templateTour: true };
         } else {
-          updatedTourStatus.push({ templatetour: true });
+          updatedTourStatus.push({ templateTour: true });
         }
       } else {
-        updatedTourStatus = [{ templatetour: true }];
+        updatedTourStatus = [{ templateTour: true }];
       }
       await axios
         .put(

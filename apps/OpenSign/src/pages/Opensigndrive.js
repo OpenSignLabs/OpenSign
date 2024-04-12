@@ -480,16 +480,16 @@ function Opensigndrive() {
       let updatedTourStatus = [];
       if (tourStatusArr.length > 0) {
         updatedTourStatus = [...tourStatusArr];
-        const opensignTourIndex = tourStatusArr.findIndex(
-          (obj) => obj["opensignTour"] === false || obj["opensignTour"] === true
+        const driveTourIndex = tourStatusArr.findIndex(
+          (obj) => obj["driveTour"] === false || obj["driveTour"] === true
         );
-        if (opensignTourIndex !== -1) {
-          updatedTourStatus[opensignTourIndex] = { opensignTour: true };
+        if (driveTourIndex !== -1) {
+          updatedTourStatus[driveTourIndex] = { driveTour: true };
         } else {
-          updatedTourStatus.push({ opensignTour: true });
+          updatedTourStatus.push({ driveTour: true });
         }
       } else {
-        updatedTourStatus = [{ opensignTour: true }];
+        updatedTourStatus = [{ driveTour: true }];
       }
       await axios.put(
         serverUrl + "classes/" + extUserClass + "/" + extUserId,
@@ -514,13 +514,11 @@ function Opensigndrive() {
     if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
       const tourStatus = res.data.TourStatus;
       setTourStatusArr(tourStatus);
-      const filteredtourStatus = tourStatus.filter(
-        (obj) => obj["opensignTour"]
-      );
+      const filteredtourStatus = tourStatus.filter((obj) => obj["driveTour"]);
       if (filteredtourStatus.length > 0) {
-        const opensignTour = filteredtourStatus[0]["opensignTour"];
+        const driveTour = filteredtourStatus[0]["driveTour"];
         // console.log("loginTour", loginTour);
-        if (opensignTour) {
+        if (driveTour) {
           setIsTour(false);
         } else {
           setIsTour(true);
