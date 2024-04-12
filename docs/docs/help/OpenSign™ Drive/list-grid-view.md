@@ -3,14 +3,11 @@ sidebar_position: 3
 title: Grid vs List view
 ---
 
-# Intro
+# How to switch between grid view and list view in OpenSign drive
 
-Welcome to the [OpenSign™](https://app.opensignlabs.com) Help Center! This section is designed to provide you with all the necessary information to effectively use the OpenSign™ application. Whether you are a new user or an experienced one looking to explore more features, our comprehensive guides and resources are here to assist you.
+- Navigate to OpenSign drive using the main menu or clicking [this](https://app.opensignlabs.com/opensigndrive) link.
+- Click the list view icon on the upper right corner of the screen(marked in green) to switch to list view from gride view -
+  <img width="1159" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/d2cf0548-dd78-45b3-91ce-1007d3e779dc">
+- In case you are already in list view, you will find a button to swith to grid view at the same location(marked in green)
+  <img width="1164" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/cb613312-3338-4839-b1bb-59a5cab410b6">
 
-## Getting Started
-
-**try OpenSign on cloud** at **[OpenSignLabs](https://app.opensignlabs.com)**.
-
-Or 
-
-Get started by deploying a new instance of **OpenSign** by following these [instructions](https://docs.opensignlabs.com/docs/self-host/intro).
