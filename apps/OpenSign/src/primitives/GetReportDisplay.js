@@ -263,12 +263,12 @@ const ReportTable = ({
       // console.log("res ", res.data.TourStatus);
       setTourStatusArr(tourStatus);
       const filteredtourStatus = tourStatus.filter(
-        (obj) => obj["templateTour"]
+        (obj) => obj["templateReportTour"]
       );
       if (filteredtourStatus.length > 0) {
-        const templateTour = filteredtourStatus[0]["templateTour"];
+        const templateReportTour = filteredtourStatus[0]["templateReportTour"];
 
-        if (templateTour) {
+        if (templateReportTour) {
           setIsTour(false);
         } else {
           setIsTour(true);
@@ -296,15 +296,17 @@ const ReportTable = ({
       if (tourStatusArr.length > 0) {
         updatedTourStatus = [...tourStatusArr];
         const templateTourIndex = tourStatusArr.findIndex(
-          (obj) => obj["templateTour"] === false || obj["templateTour"] === true
+          (obj) =>
+            obj["templateReportTour"] === false ||
+            obj["templateReportTour"] === true
         );
         if (templateTourIndex !== -1) {
-          updatedTourStatus[templateTourIndex] = { templateTour: true };
+          updatedTourStatus[templateTourIndex] = { templateReportTour: true };
         } else {
-          updatedTourStatus.push({ templateTour: true });
+          updatedTourStatus.push({ templateReportTour: true });
         }
       } else {
-        updatedTourStatus = [{ templateTour: true }];
+        updatedTourStatus = [{ templateReportTour: true }];
       }
 
       await axios.put(

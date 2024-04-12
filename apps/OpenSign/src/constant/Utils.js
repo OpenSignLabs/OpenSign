@@ -1153,10 +1153,10 @@ export const multiSignEmbed = async (
             const newUrl = await convertPNGtoJPEG(signUrl);
             signUrl = newUrl;
           }
-          const checkUrl = urlValidator(signUrl);
-          if (checkUrl) {
-            signUrl = signUrl + "?get";
-          }
+          // const checkUrl = urlValidator(signUrl);
+          // if (checkUrl) {
+          //   signUrl = signUrl + "?get";
+          // }
           const res = await fetch(signUrl);
           return res.arrayBuffer();
         }
