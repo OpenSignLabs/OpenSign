@@ -24,7 +24,7 @@ export default async function getSubscription(request) {
         const _subcripitions = JSON.parse(JSON.stringify(subcripitions));
         return { status: 'success', result: _subcripitions };
       } else {
-        return { status: 'success', result: [] };
+        return { status: 'success', result: {} };
       }
     } else {
       return { status: 'error', result: 'Invalid session token!' };
