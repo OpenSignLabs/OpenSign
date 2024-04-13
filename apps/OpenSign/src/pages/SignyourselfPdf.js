@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
-import { themeColor } from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import axios from "axios";
 import Loader from "../primitives/LoaderWithMsg";
 import loader from "../assets/images/loader2.gif";
@@ -26,7 +26,9 @@ import {
   contactBook,
   randomId,
   getDate,
-  textWidget
+  textWidget,
+  getTenantDetails,
+  checkIsSubscribed
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -431,13 +433,13 @@ function SignYourSelf() {
         Width: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
           : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).width
-          : "",
+            ? defaultWidthHeight(dragTypeValue).width
+            : "",
         Height: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
           : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).height
-          : "",
+            ? defaultWidthHeight(dragTypeValue).height
+            : "",
         options: addWidgetOptions(dragTypeValue)
       };
 
@@ -595,9 +597,25 @@ function SignYourSelf() {
   // console.log("signyourself", xyPostion);
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
+    let isCustomCompletionMail = false;
+    const getIsSubscribe = await checkIsSubscribed();
+    const tenantDetails = await getTenantDetails(jsonSender.objectId);
+    if (tenantDetails && tenantDetails === "user does not exist!") {
+      alert("User does not exist");
+    } else {
+      if (
+        tenantDetails?.CompletionBody &&
+        tenantDetails?.CompletionSubject &&
+        (!isEnableSubscription || getIsSubscribe)
+      ) {
+        isCustomCompletionMail = true;
+      }
+    }
+
     let singleSign = {
       pdfFile: base64Url,
-      docId: documentId
+      docId: documentId,
+      isCustomCompletionMail: isCustomCompletionMail
     };
 
     await axios

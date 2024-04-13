@@ -18,6 +18,7 @@
     "watch": "nodemon index.js"
   },
   "dependencies": {
+    "@parse/s3-files-adapter": "^2.2.0",
     "aws-sdk": "^2.1595.0",
     "axios": "^1.6.8",
     "cors": "^2.8.5",

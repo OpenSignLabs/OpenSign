@@ -1,6 +1,6 @@
 import axios from "axios";
 import moment from "moment";
-import { themeColor } from "./const";
+import { isEnableSubscription, themeColor } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
 import Parse from "parse";
@@ -501,14 +501,32 @@ export const signPdfFun = async (
   base64Url,
   documentId,
   signerObjectId,
-  setIsAlert
+  setIsAlert,
+  objectId,
+  isSubscribed
 ) => {
-  let singleSign;
+  let singleSign,
+    isCustomCompletionMail = false;
+
+  //get tenant details
+  const tenantDetails = await getTenantDetails(objectId);
+  if (tenantDetails && tenantDetails === "user does not exist!") {
+    alert("User does not exist");
+  } else {
+    if (
+      tenantDetails?.CompletionBody &&
+      tenantDetails?.CompletionSubject &&
+      (!isEnableSubscription || isSubscribed)
+    ) {
+      isCustomCompletionMail = true;
+    }
+  }
 
   singleSign = {
     pdfFile: base64Url,
     docId: documentId,
-    userId: signerObjectId
+    userId: signerObjectId,
+    isCustomCompletionMail: isCustomCompletionMail
   };
 
   const response = await axios
@@ -1135,10 +1153,10 @@ export const multiSignEmbed = async (
             const newUrl = await convertPNGtoJPEG(signUrl);
             signUrl = newUrl;
           }
-          const checkUrl = urlValidator(signUrl);
-          if (checkUrl) {
-            signUrl = signUrl + "?get";
-          }
+          // const checkUrl = urlValidator(signUrl);
+          // if (checkUrl) {
+          //   signUrl = signUrl + "?get";
+          // }
           const res = await fetch(signUrl);
           return res.arrayBuffer();
         }
@@ -1777,6 +1795,17 @@ export const handleCopyNextToWidget = (
     setXyPostion(updatePlaceholder);
   }
 };
+
+export const getFileName = (fileUrl) => {
+  if (fileUrl) {
+    const url = new URL(fileUrl);
+    const filename = url.pathname.substring(url.pathname.indexOf("_") + 1);
+    return filename || "";
+  } else {
+    return "";
+  }
+};
+
 //fetch tenant app logo from `partners_Tenant` class by domain name
 export const getAppLogo = async () => {
   const domainName = window.location.host;
@@ -1791,5 +1820,60 @@ export const getAppLogo = async () => {
     }
   } catch (e) {
     return null;
+  }
+};
+
+export const getTenantDetails = async (objectId) => {
+  try {
+    const tenantCreditsQuery = new Parse.Query("partners_Tenant");
+    tenantCreditsQuery.equalTo("UserId", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: objectId
+    });
+    const res = await tenantCreditsQuery.first();
+    if (res) {
+      const updateRes = JSON.parse(JSON.stringify(res));
+      return updateRes;
+    }
+  } catch (e) {
+    return "user does not exist!";
+  }
+};
+
+//function to convert variable string name to variable value of email body and subject
+export function replaceMailVaribles(subject, body, variables) {
+  let replacedSubject = subject;
+  let replacedBody = body;
+
+  for (const variable in variables) {
+    const regex = new RegExp(`{{${variable}}}`, "g");
+    if (subject) {
+      replacedSubject = replacedSubject.replace(regex, variables[variable]);
+    }
+    if (body) {
+      replacedBody = replacedBody.replace(regex, variables[variable]);
+    }
+  }
+
+  const result = {
+    subject: replacedSubject,
+    body: replacedBody
+  };
+  return result;
+}
+
+export const copytoData = (text) => {
+  // navigator.clipboard.writeText(text);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    // Fallback for browsers that don't support navigator.clipboard
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
   }
 };

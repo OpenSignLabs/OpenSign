@@ -44,7 +44,7 @@ function Login() {
     Destination: ""
   });
   const [isModal, setIsModal] = useState(false);
-  const [image, setImage] = useState(appInfo?.applogo);
+  const [image, setImage] = useState();
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
@@ -58,9 +58,13 @@ function Login() {
   }, []);
 
   const saveLogo = async () => {
-    const logo = await getAppLogo();
-    if (logo) {
-      setImage(logo);
+    if (isEnableSubscription) {
+      const logo = await getAppLogo();
+      if (logo) {
+        setImage(logo);
+      } else {
+        setImage(appInfo?.applogo || undefined);
+      }
     } else {
       setImage(appInfo?.applogo || undefined);
     }
@@ -1067,12 +1071,14 @@ function Login() {
         <>
           <div aria-labelledby="loginHeading" role="region">
             <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-4 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
-              <div className="w-[250px] h-[66px] inline-block">
-                <img
-                  src={image}
-                  width="100%"
-                  alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
-                />
+              <div className="w-[250px] h-[66px] inline-block overflow-hidden">
+                {image && (
+                  <img
+                    src={image}
+                    className="object-contain h-full"
+                    alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
+                  />
+                )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
                 <div>

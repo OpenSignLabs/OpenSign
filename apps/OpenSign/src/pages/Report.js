@@ -6,6 +6,7 @@ import reportJson from "../json/ReportJson";
 import { useParams } from "react-router-dom";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
 
 const Report = () => {
   const { id } = useParams();
@@ -18,6 +19,8 @@ const Report = () => {
   const [isNextRecord, setIsNextRecord] = useState(false);
   const [isMoreDocs, setIsMoreDocs] = useState(true);
   const [form, setForm] = useState("");
+  const [tourData, setTourData] = useState([]);
+  const [isDontShow, setIsDontShow] = useState(false);
   const abortController = new AbortController();
   const docPerPage = 10;
 
@@ -46,15 +49,51 @@ const Report = () => {
     // eslint-disable-next-line
   }, [isNextRecord]);
 
+  const handleDontShow = (isChecked) => {
+    setIsDontShow(isChecked);
+  };
   const getReportData = async (skipUserRecord = 0, limit = 200) => {
     // setIsLoader(true);
     const json = reportJson(id);
     if (json) {
+      if (id === "6TeaPr321t") {
+        const tourConfig = [
+          {
+            selector: "[data-tut=reactourFirst]",
+            content: () => (
+              <TourContentWithBtn
+                message={
+                  "Click the ‘Add’ button to create a new template. Templates are reusable documents designed to quickly generate new documents with the same structure and varying signers. For example, an HR template for onboarding could have predefined roles like ‘HR Manager’ and ‘New Employee’. Each time you use the template, you can assign the ‘New Employee’ role to different incoming staff members, while the ‘HR Manager’ role remains constant, facilitating a seamless onboarding process for each recruit."
+                }
+                isChecked={handleDontShow}
+              />
+            ),
+            position: "top",
+            style: { fontSize: "13px" }
+          }
+        ];
+        json.actions.map((data) => {
+          const newConfig = {
+            selector: `[data-tut="${data?.selector}"]`,
+            content: () => (
+              <TourContentWithBtn
+                message={data?.message}
+                isChecked={handleDontShow}
+              />
+            ),
+            position: "top",
+            style: { fontSize: "13px" }
+          };
+          tourConfig.push(newConfig);
+        });
+        setTourData(tourConfig);
+      }
+
       setActions(json.actions);
       setHeading(json.heading);
       setReportName(json.reportName);
       setForm(json.form);
-      setReportHelp(json?.helpMsg)
+      setReportHelp(json?.helpMsg);
       const currentUser = Parse.User.current().id;
 
       const headers = {
@@ -106,12 +145,14 @@ const Report = () => {
           } else {
             setIsMoreDocs(false);
           }
-          setIsNextRecord(false);
-          setList((prevRecord) =>
-            prevRecord.length > 0
-              ? [...prevRecord, ...res.data.result]
-              : res.data.result
-          );
+          if (!res.data.result.error) {
+            setIsNextRecord(false);
+            setList((prevRecord) =>
+              prevRecord.length > 0
+                ? [...prevRecord, ...res.data.result]
+                : res.data.result
+            );
+          }
         }
         setIsLoader(false);
       } catch (err) {
@@ -159,6 +200,8 @@ const Report = () => {
               docPerPage={docPerPage}
               form={form}
               report_help={reporthelp}
+              tourData={tourData}
+              isDontShow={isDontShow}
             />
           ) : (
             <PageNotFound prefix={"Report"} />

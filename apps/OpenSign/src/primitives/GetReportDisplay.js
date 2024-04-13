@@ -3,10 +3,12 @@ import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalUi from "./ModalUi";
+import Tour from "reactour";
 import AddSigner from "../components/AddSigner";
 import { modalSubmitBtnColor, modalCancelBtnColor } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
+import Parse from "parse";
 const ReportTable = ({
   ReportName,
   List,
@@ -17,7 +19,9 @@ const ReportTable = ({
   isMoreDocs,
   docPerPage,
   form,
-  report_help
+  report_help,
+  tourData,
+  isDontShow
 }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,6 +31,8 @@ const ReportTable = ({
   const [isDocErr, setIsDocErr] = useState(false);
   const [isContactform, setIsContactform] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState({});
+  const [isTour, setIsTour] = useState(false);
+  const [tourStatusArr, setTourStatusArr] = useState([]);
   const startIndex = (currentPage - 1) * docPerPage;
 
   // For loop is used to calculate page numbers visible below table
@@ -40,6 +46,7 @@ const ReportTable = ({
   }, [List, docPerPage]);
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
+    checkTourStatus();
     return () => setCurrentPage(1);
   }, []);
 
@@ -146,8 +153,6 @@ const ReportTable = ({
                     }
                   }
                 );
-
-                // console.log("Res ", res.data);
                 if (res.data && res.data.objectId) {
                   setActLoader({});
                   setIsAlert(true);
@@ -199,7 +204,7 @@ const ReportTable = ({
   const indexOfLastDoc = currentPage * docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - docPerPage;
   // `currentLists` is total record render on current page
-  const currentLists = List.slice(indexOfFirstDoc, indexOfLastDoc);
+  const currentLists = List?.slice(indexOfFirstDoc, indexOfLastDoc);
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
@@ -247,6 +252,76 @@ const ReportTable = ({
   };
   const handleCloseDeleteModal = () => setIsDeleteModal({});
 
+  async function checkTourStatus() {
+    const currentUser = Parse.User.current();
+    const cloudRes = await Parse.Cloud.run("getUserDetails", {
+      email: currentUser.get("email")
+    });
+    const res = { data: cloudRes.toJSON() };
+    if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
+      const tourStatus = res.data.TourStatus;
+      // console.log("res ", res.data.TourStatus);
+      setTourStatusArr(tourStatus);
+      const filteredtourStatus = tourStatus.filter(
+        (obj) => obj["templateReportTour"]
+      );
+      if (filteredtourStatus.length > 0) {
+        const templateReportTour = filteredtourStatus[0]["templateReportTour"];
+
+        if (templateReportTour) {
+          setIsTour(false);
+        } else {
+          setIsTour(true);
+        }
+      } else {
+        setIsTour(true);
+      }
+    } else {
+      setIsTour(true);
+    }
+  }
+
+  const closeTour = async () => {
+    // console.log("closeTour");
+    setIsTour(false);
+    if (isDontShow) {
+      const serverUrl = localStorage.getItem("baseUrl");
+      const appId = localStorage.getItem("parseAppId");
+      const extUserClass = localStorage.getItem("extended_class");
+      const json = JSON.parse(localStorage.getItem("Extand_Class"));
+      const extUserId = json && json.length > 0 && json[0].objectId;
+      // console.log("extUserId ", extUserId)
+
+      let updatedTourStatus = [];
+      if (tourStatusArr.length > 0) {
+        updatedTourStatus = [...tourStatusArr];
+        const templateTourIndex = tourStatusArr.findIndex(
+          (obj) =>
+            obj["templateReportTour"] === false ||
+            obj["templateReportTour"] === true
+        );
+        if (templateTourIndex !== -1) {
+          updatedTourStatus[templateTourIndex] = { templateReportTour: true };
+        } else {
+          updatedTourStatus.push({ templateReportTour: true });
+        }
+      } else {
+        updatedTourStatus = [{ templateReportTour: true }];
+      }
+
+      await axios.put(
+        serverUrl + "classes/" + extUserClass + "/" + extUserId,
+        {
+          TourStatus: updatedTourStatus
+        },
+        {
+          headers: {
+            "X-Parse-Application-Id": appId
+          }
+        }
+      );
+    }
+  };
   return (
     <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
       {isAlert && (
@@ -256,6 +331,16 @@ const ReportTable = ({
             : "Record deleted successfully!"}
         </Alert>
       )}
+      {tourData && ReportName === "Templates" && (
+        <Tour
+          onRequestClose={closeTour}
+          steps={tourData}
+          isOpen={isTour}
+          // rounded={5}
+          closeWithMask={false}
+        />
+      )}
+
       <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
         <div className="font-light">
           {ReportName}{" "}
@@ -267,6 +352,7 @@ const ReportTable = ({
         </div>
         {ReportName === "Templates" && (
           <i
+            data-tut="reactourFirst"
             onClick={() => navigate("/form/template")}
             className="fa-solid fa-square-plus text-sky-400 text-[25px]"
           ></i>
@@ -280,6 +366,7 @@ const ReportTable = ({
           </div>
         )}
       </div>
+
       <table className="table-auto w-full border-collapse">
         <thead className="text-[14px]">
           <tr className="border-y-[1px]">
@@ -410,6 +497,7 @@ const ReportTable = ({
                       {actions?.length > 0 &&
                         actions.map((act, index) => (
                           <button
+                            data-tut={act?.selector}
                             key={index}
                             onClick={() =>
                               act?.redirectUrl

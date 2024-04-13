@@ -150,3 +150,96 @@ export const updateMailCount = async extUserId => {
     console.log('Error updating EmailCount in contracts_users: ' + error.message);
   }
 };
+
+export function formatWidgetOptions(type, options) {
+  const status = options?.required === true ? 'required' : 'optional' || 'required';
+  const defaultValue = options?.default || '';
+  const values = options?.values || [];
+  switch (type) {
+    case 'signature':
+      return { name: 'signature', status: 'required' };
+    case 'stamp':
+      return { status: status, name: 'stamp' };
+    case 'initials':
+      return { status: status, name: options.name || 'initials' };
+    case 'image':
+      return { status: status, name: options.name || 'image' };
+    case 'email':
+      return { status: status, name: options.name || 'email', validation: { type: 'email' } };
+    case 'name':
+      return { status: status, name: options.name || 'name' };
+    case 'job title':
+      return { status: status, name: options.name || 'job title' };
+    case 'company':
+      return { status: status, name: options.name || 'company' };
+    case 'date': {
+      let today = new Date();
+      let dd = String(today.getDate()).padStart(2, '0');
+      let mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+      let yyyy = today.getFullYear();
+      today = dd + '-' + mm + '-' + yyyy;
+      let dateFormat = options?.format;
+      dateFormat = dateFormat.replace(/m/g, 'M');
+      return {
+        status: status,
+        name: options.name || 'date',
+        response: defaultValue || today,
+        validation: { format: dateFormat || 'dd-MM-yyyy', type: 'date-format' },
+      };
+    }
+    case 'textbox':
+      return {
+        status: status,
+        name: 'textbox',
+        defaultValue: defaultValue,
+        hint: options.hint,
+        validation: { type: 'regex', pattern: options?.regularexpression || '/^[a-zA-Z0-9s]+$/' },
+      };
+    case 'checkbox': {
+      const arr = options?.values;
+      let selectedvalues = [];
+      for (const obj of options.selectedvalues) {
+        const index = arr.indexOf(obj);
+        selectedvalues.push(index);
+      }
+      return {
+        status: status,
+        name: options.name || 'checkbox',
+        values: values,
+        isReadOnly: options?.readonly || false,
+        isHideLabel: options?.hidelabel || false,
+        validation: {
+          minRequiredCount: options?.validation?.minselections || 0,
+          maxRequiredCount: options?.validation?.maxselections || 0,
+        },
+        defaultValue: selectedvalues || [],
+      };
+    }
+    case 'radio button': {
+      return {
+        status: status,
+        name: options.name || 'radio',
+        values: values,
+        isReadOnly: options?.readonly || false,
+        isHideLabel: options?.hidelabel || false,
+        defaultValue: defaultValue,
+      };
+    }
+    case 'dropdown':
+      return {
+        status: status,
+        name: options.name || 'dropdown',
+        values: values,
+        defaultValue: defaultValue,
+      };
+    default:
+      break;
+  }
+}
+
+export function sanitizeFileName(fileName) {
+  // Remove spaces and invalid characters
+  const file = fileName.replace(/[^a-zA-Z0-9._-]/g, '');
+  const removedot = file.replace(/\.(?=.*\.)/g, '');
+  return removedot.replace(/[^a-zA-Z0-9._-]/g, '');
+}

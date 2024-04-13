@@ -1,16 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Upgrade() {
+function Upgrade({ message }) {
   const navigation = useNavigate();
 
   return (
     <sup>
       <span
         onClick={() => navigation("/subscription")}
-        className="text-blue-800 text-sm cursor-pointer hover:underline"
+        className="text-blue-800 text-sm cursor-pointer underline"
       >
-        Upgrade now
+        {message ? message : "Upgrade now"}
       </span>
     </sup>
   );
