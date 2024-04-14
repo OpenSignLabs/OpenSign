@@ -2,6 +2,7 @@
 title: Localhost OpenSign™ Setup with Docker on Windows
 ---
 import ReactPlayer from 'react-player';
+
 ## Steps to run OpenSign™ with docker on windows:
   1. Set up WSL 2 on Windows by referring to the video provided.
 
