@@ -55,7 +55,7 @@ const FeatureList = [
             <strong><a href='https://github.com/OpenSignLabs/OpenSign/discussions'>Github Discussions</a></strong>: Discuss your ideas & issues with the community.
         </li>
         <li>
-            <strong>Social media</strong>: Join us on <a href='https://discord.com/invite/xe9TDuyAyj'>Discord</a>, <a href='https://www.twitter.com/opensignhq'>Twitter</a>, <a href='https://www.linkedin.com/company/opensign%E2%84%A2/>LinkedIn</a> & <a href='https://www.facebook.com/profile.php?id=61551030403669'>Facebook</a>.
+            <strong>Social media</strong>: Join us on <a href='https://discord.com/invite/xe9TDuyAyj'>Discord</a>, <a href='https://www.twitter.com/opensignhq'>Twitter</a>, <a href='https://www.linkedin.com/company/opensign%E2%84%A2'>LinkedIn</a> & <a href='https://www.facebook.com/profile.php?id=61551030403669'>Facebook</a>.
         </li>
     </ul>
 </div>
