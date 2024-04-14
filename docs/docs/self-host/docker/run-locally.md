@@ -1,5 +1,5 @@
 ---
-title: Localhost Setup with Docker
+title: Localhost OpenSign™ Setup with Docker on Linux/MacOS
 ---
 import ReactPlayer from 'react-player';
 
@@ -26,49 +26,6 @@ import ReactPlayer from 'react-player';
   5. For subsequent runs, open Docker and start the OpenSign container by clicking on the play button in the actions panel.
 
 *Note: If you wish to incorporate our latest features into your Docker container, delete the existing OpenSign container and follow the steps again.* 
- 
-## Steps to run OpenSign™ with docker in windows:
-  1. Set up WSL 2 on Windows by referring to the video provided.
-
-<div>
-    <ReactPlayer playing controls url='https://youtu.be/1kFFwknneD8?si=FKriXPwFqZPLUagI' />
-</div>
-      
-   2. Install Docker Desktop on Windows and launch Docker Desktop.
-   3. Enable WSL in Docker Desktop by navigating to Settings > Resources > WSL Integration. Check the box and click on "Apply & Restart." Minimize Docker Desktop.
-
-![docker](https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20201448.png) 
-   4. Now stop your local MongoDB instance by opening the Command Prompt as an administrator, and then execute the following command:
-   ```
-   net stop mongodb
-   ```
-   5. Navigate to your desired location in Windows. Open PowerShell in that folder by holding Shift and right-clicking the mouse, then select "Open PowerShell window here."
-   6. In the PowerShell window, type the following command:
-  ```
-  git clone https://github.com/OpenSignLabs/OpenSign.git
-  ```
-  and Hit Enter to clone the OpenSign project locally.
-  
-   7. Open the OpenSign folder with Visual Studio Code. Go to `apps > mongo > mongo-init.sh`. Change the file type from CRLF to LF, save the file, and close Visual Studio Code.
-
-![docker](https://legadratw3d.ams3.cdn.digitaloceanspaces.com/Screenshot%202024-02-23%20175944.png) 
-
-   8. Open the Ubuntu/WSL terminal and use the command to navigate to the folder where you cloned the OpenSign project, e.g., cd mnt/c/testing/docker/OpenSign.
- 
-   9. Execute the following command to build the container image:
-  ```
-  make build
-  ```
- This will initiate the process of creating the container image. It may take some time to complete.
-   
-   10. Refer below video for more specific details.
-   11. For subsequent runs, open Docker and start the OpenSign container by clicking on the play button in the actions panel.
-
-*Note: If you wish to incorporate our latest features into your Docker container, delete the existing OpenSign container and follow the steps again.* 
-
-<div>
-    <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
-</div>
 
 ## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
 To set up OpenSign™ locally using Docker, the following prerequisites are required: 
