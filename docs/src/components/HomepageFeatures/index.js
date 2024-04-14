@@ -49,13 +49,13 @@ const FeatureList = [
     </p>
     <ul>
         <li>
-            <strong>[Tutorial](https://docs.opensignlabs.com/docs/help/intro)</strong>: Get up and running in no time. Get all the help you need to navigate you through the already seamless UX of OpenSign.
+            <strong><a href='https://docs.opensignlabs.com/docs/help/intro'>Tutorial</a></strong>: Get up and running in no time. Get all the help you need to navigate you through the already seamless UX of OpenSign.
         </li>
         <li>
-            <strong>[Github Discussions](https://github.com/OpenSignLabs/OpenSign/discussions)</strong>: Discuss your ideas & issues with the community.
+            <strong><a href='https://github.com/OpenSignLabs/OpenSign/discussions'>Github Discussions</a></strong>: Discuss your ideas & issues with the community.
         </li>
         <li>
-            <strong>Social media</strong>: Join us on [Discord](https://discord.com/invite/xe9TDuyAyj), [Twitter](https://www.twitter.com/opensignhq), [LinkedIn](https://www.linkedin.com/company/opensign%E2%84%A2/) & [Facebook](https://www.facebook.com/profile.php?id=61551030403669).
+            <strong>Social media</strong>: Join us on <a href='https://discord.com/invite/xe9TDuyAyj'>Discord</a>, <a href='https://www.twitter.com/opensignhq'>Twitter</a>, <a href='https://www.linkedin.com/company/opensign%E2%84%A2/>LinkedIn</a> & <a href='https://www.facebook.com/profile.php?id=61551030403669'>Facebook</a>.
         </li>
     </ul>
 </div>
