@@ -9,9 +9,15 @@ const Validate = () => {
   useEffect(() => {
     (async () => {
       try {
+        const userDetails = JSON.parse(
+          localStorage.getItem(
+            `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+          )
+        );
+
         // Use the session token to validate the user
         const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(Parse.User.current().id, {
+        const user = await userQuery.get(userDetails?.objectId, {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
@@ -24,6 +30,7 @@ const Validate = () => {
         setIsUserValid(false);
       }
     })();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
