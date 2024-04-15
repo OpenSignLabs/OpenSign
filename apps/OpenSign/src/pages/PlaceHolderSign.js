@@ -32,7 +32,8 @@ import {
   color,
   getTenantDetails,
   replaceMailVaribles,
-  copytoData
+  copytoData,
+  fetchSubscription
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -238,17 +239,14 @@ function PlaceHolderSign() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
-  async function checkIsSubscribed(email) {
-    const user = await Parse.Cloud.run("getUserDetails", {
-      email: email
-    });
-    const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
-    const billingDate =
-      user?.get("Next_billing_date") && user?.get("Next_billing_date");
+  async function checkIsSubscribed() {
+    const res = await fetchSubscription();
+    const freeplan = res.plan;
+    const billingDate = res.billingDate;
     if (freeplan === "freeplan") {
       return true;
     } else if (billingDate) {
-      if (billingDate > new Date()) {
+      if (new Date(billingDate) > new Date()) {
         setIsSubscribe(true);
         return true;
       } else {

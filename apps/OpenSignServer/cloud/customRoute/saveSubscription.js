@@ -9,7 +9,11 @@ export default async function saveSubscription(request, response) {
     const extUser = await extUserCls.first({ useMasterKey: true });
     if (extUser) {
       const subcriptionCls = new Parse.Query('contracts_Subscriptions');
-      subcriptionCls.equalTo('SubscriptionId', SubscriptionId);
+      subcriptionCls.equalTo('TenantId', {
+        __type: 'Pointer',
+        className: 'partners_Tenant',
+        objectId: extUser.get('TenantId').id,
+      });
       const subscription = await subcriptionCls.first({ useMasterKey: true });
       if (subscription) {
         const updateSubscription = new Parse.Object('contracts_Subscriptions');
@@ -30,6 +34,11 @@ export default async function saveSubscription(request, response) {
           __type: 'Pointer',
           className: '_User',
           objectId: extUser.get('UserId').id,
+        });
+        createSubscription.set('TenantId', {
+          __type: 'Pointer',
+          className: 'partners_Tenant',
+          objectId: extUser.get('TenantId').id,
         });
         await createSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'create subscription!' });
