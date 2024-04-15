@@ -53,9 +53,19 @@ const SelectSigners = (props) => {
       const contactRes = await contactbook.find();
       if (contactRes) {
         const res = JSON.parse(JSON.stringify(contactRes));
-        // console.log("userList ", res);
-        setUserList(res);
-        return await res.map((item) => ({
+        const compareArrays = (res, signerObj) => {
+          return res.filter(
+            (item1) =>
+              !signerObj.find((item2) => item2.objectId === item1.objectId)
+          );
+        };
+
+        const updateSignersList =
+          props?.signersData && compareArrays(res, props?.signersData);
+
+        const result = updateSignersList ? updateSignersList : res;
+        setUserList(result);
+        return await result.map((item) => ({
           label: item.Email,
           value: item.objectId
         }));

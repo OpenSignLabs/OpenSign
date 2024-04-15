@@ -230,7 +230,9 @@ const RecipientList = (props) => {
                       </span>
                     </>
                   )}
-                  {obj.Name && <span className={"useEmail"}>{obj.Role}</span>}
+                  {obj.Name && (
+                    <span className={"useEmail"}>{obj?.Role || obj.Email}</span>
+                  )}
                 </div>
               </div>
               {isMobile && props.sendInOrder && (

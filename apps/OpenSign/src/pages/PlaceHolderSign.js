@@ -353,7 +353,7 @@ function PlaceHolderSign() {
           const updatedSigners = documentData[0].Signers.map((x, index) => ({
             ...x,
             Id: randomId(),
-            Role: "User " + (index + 1),
+            // Role: "User " + (index + 1),
             blockColor: color[index % color.length]
           }));
           setSignersData(updatedSigners);
@@ -361,7 +361,7 @@ function PlaceHolderSign() {
           setBlockColor(updatedSigners[0].blockColor);
         }
       } else {
-        setRoleName("User 1");
+        // setRoleName("User 1");
         if (
           documentData[0].Placeholders &&
           documentData[0].Placeholders.length > 0
@@ -1531,19 +1531,15 @@ function PlaceHolderSign() {
   //function to add new signer in document signers list
   const handleAddNewRecipients = (data) => {
     const newId = randomId();
-    const newRole = `User ${signersdata?.length + 1} `;
-
     signersdata.push({
       ...data,
       className: "contracts_Contactbook",
       Id: newId,
-      Role: newRole,
       blockColor: color[signersdata.length]
     });
     setUniqueId(newId);
     setIsSelectId(signersdata.length - 1);
     setBlockColor(color[signersdata.length]);
-    setRoleName(newRole);
     setContractName("contracts_Contactbook");
     setSignerObjId(data.objectId);
   };
@@ -1570,6 +1566,30 @@ function PlaceHolderSign() {
       style: { fontSize: "13px" }
     }
   ];
+
+  // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
+  const handleDeleteUser = (Id) => {
+    const updateSigner = signersdata
+      .filter((x) => x.Id !== Id)
+      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    setSignersData(updateSigner);
+    const updatePlaceholderUser = signerPos
+      .filter((x) => x.Id !== Id)
+      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    const index = signersdata.findIndex((x) => x.Id === Id);
+    if (index === signersdata.length - 1) {
+      setUniqueId(updateSigner[updateSigner.length - 1]?.Id || "");
+      setIsSelectId(index - 1 || 0);
+      setBlockColor(color[index - 1 || 0]);
+    } else {
+      setUniqueId(updateSigner[index]?.Id || "");
+      setIsSelectId(index);
+      setBlockColor(color[index]);
+    }
+
+    setSignerPos(updatePlaceholderUser);
+    setIsMailSend(false);
+  };
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -2007,6 +2027,7 @@ function PlaceHolderSign() {
                   blockColor={blockColor}
                   setBlockColor={setBlockColor}
                   setIsAddSigner={setIsAddSigner}
+                  handleDeleteUser={handleDeleteUser}
                 />
               </div>
             ) : (
@@ -2033,6 +2054,8 @@ function PlaceHolderSign() {
                       setBlockColor={setBlockColor}
                       isMailSend={isMailSend}
                       setIsAddSigner={setIsAddSigner}
+                      handleDeleteUser={handleDeleteUser}
+                      roleName={roleName}
                       // handleAddSigner={handleAddSigner}
                     />
                     <div data-tut="reactourSecond">
@@ -2097,6 +2120,7 @@ function PlaceHolderSign() {
           handleAddUser={handleAddNewRecipients}
           isAddSigner={isAddSigner}
           closePopup={closePopup}
+          signersData={signersdata}
         />
         <WidgetNameModal
           widgetName={widgetName}

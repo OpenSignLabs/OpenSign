@@ -406,7 +406,7 @@ function WidgetComponent({
       )}
       {isSignersModal && (
         <ModalUi
-          title={"Roles"}
+          title={title ? title : "Recipients"}
           isOpen={isSignersModal}
           handleClose={handleModal}
         >
@@ -439,7 +439,7 @@ function WidgetComponent({
                 textAlign: "center"
               }}
             >
-              Please add a role
+              Please add a {title ? title : "recipients"}
             </div>
           )}
         </ModalUi>

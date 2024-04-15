@@ -16,6 +16,7 @@ const LinkUserModal = (props) => {
       <SelectSigners
         details={props.handleAddUser}
         closePopup={props.closePopup}
+        signersData={props?.signersData}
       />
       <div
         style={{
