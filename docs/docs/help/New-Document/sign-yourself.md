@@ -6,11 +6,9 @@ title: Sign yourself
 # OpenSign™ Sign yourself interface
 
 This feature lets you sign documents that dont need to be sent to anybody.
+Navigate to "Sign yourself" from main menu or  by clicking the button on the Dashboard
 
-## Navigate to "Sign yourself" from main menu
-<img width="251" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/4bc203a8-67e8-4887-9ca7-d21cfa26ce9f" />
-
-# How to Sign a Document for Yourself with OpenSign™
+# How to Sign a Document for yourself with OpenSign™?
 
 <img width="750" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/ebcdc08e-81be-4ba2-9e02-b199014b5946" />
 
@@ -18,7 +16,7 @@ This feature lets you sign documents that dont need to be sent to anybody.
 
 - **[1] Choose File**: Click here to upload the document you wish to sign from your computer.
 - **[2] Upload from Dropbox**: To upload a document directly from your Dropbox account, click the Dropbox icon. You may need to provide permissions to access the file when you do it for the first time.
-
+The maximum document size allowed is 20MB.
 ### Step 2: Document Information
 
 - **[1] Title** *(Required)*: Enter a title for your document. This will help you identify it later in OpenSign™.
