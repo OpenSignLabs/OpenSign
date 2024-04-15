@@ -1537,11 +1537,12 @@ function PlaceHolderSign() {
       ...data,
       className: "contracts_Contactbook",
       Id: newId,
-      Role: newRole
+      Role: newRole,
+      blockColor: color[signersdata.length]
     });
     setUniqueId(newId);
     setIsSelectId(signersdata.length - 1);
-    setBlockColor(color[signersdata.length - 1]);
+    setBlockColor(color[signersdata.length]);
     setRoleName(newRole);
     setContractName("contracts_Contactbook");
     setSignerObjId(data.objectId);
