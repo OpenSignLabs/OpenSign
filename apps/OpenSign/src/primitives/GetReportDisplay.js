@@ -268,10 +268,10 @@ const ReportTable = ({
     const serverUrl = process.env.REACT_APP_SERVERURL
       ? process.env.REACT_APP_SERVERURL
       : window.location.origin + "/api/app";
-    const baseURL = serverUrl.replace("/", "%2F");
+    const baseURL = serverUrl.replace(/\//g, "%2F");
     const urls = item.Signers.map((x) => ({
       email: x.Email,
-      url: `${host}/login/${item.objectId}/${x.Email}/${x.objectId}/${baseURL}&opensign&contracts`
+      url: `${host}/login/${item.objectId}/${x.Email}/${x.objectId}/${baseURL}%2F&opensign&contracts`
     }));
     setShareUrls(urls);
     setIsShare({ [item.objectId]: true });
