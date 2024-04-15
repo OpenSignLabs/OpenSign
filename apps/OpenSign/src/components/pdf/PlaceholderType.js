@@ -38,15 +38,17 @@ function PlaceholderType(props) {
     "December"
   ];
   const validateExpression = (regexValidation) => {
-    let regexObject = regexValidation;
-    if (props.pos?.options.validation.type === "regex") {
-      regexObject = RegexParser(regexValidation);
-    }
-    // new RegExp(regexValidation);
-    let isValidate = regexObject.test(textValue);
-    if (!isValidate) {
-      props?.setValidateAlert(true);
-      inputRef.current.focus();
+    if (textValue) {
+      let regexObject = regexValidation;
+      if (props.pos?.options.validation.type === "regex") {
+        regexObject = RegexParser(regexValidation);
+      }
+      // new RegExp(regexValidation);
+      let isValidate = regexObject.test(textValue);
+      if (!isValidate) {
+        props?.setValidateAlert(true);
+        inputRef.current.focus();
+      }
     }
   };
 

@@ -67,6 +67,7 @@ function PlaceHolderSign() {
   const [isSendAlert, setIsSendAlert] = useState({});
   const [isSend, setIsSend] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isAddSigner, setIsAddSigner] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -1527,8 +1528,28 @@ function PlaceHolderSign() {
     }
   };
 
+  //function to add new signer in document signers list
+  const handleAddNewRecipients = (data) => {
+    const newId = randomId();
+    const newRole = `User ${signersdata?.length + 1} `;
+
+    signersdata.push({
+      ...data,
+      className: "contracts_Contactbook",
+      Id: newId,
+      Role: newRole
+    });
+    setUniqueId(newId);
+    setIsSelectId(signersdata.length - 1);
+    setBlockColor(color[signersdata.length - 1]);
+    setRoleName(newRole);
+    setContractName("contracts_Contactbook");
+    setSignerObjId(data.objectId);
+  };
+
   const closePopup = () => {
     setIsAddUser({});
+    setIsAddSigner(false);
   };
 
   //function for handle ontext change and save again text in delta in Request Email flow
@@ -1984,6 +2005,7 @@ function PlaceHolderSign() {
                   setSignersData={setSignersData}
                   blockColor={blockColor}
                   setBlockColor={setBlockColor}
+                  setIsAddSigner={setIsAddSigner}
                 />
               </div>
             ) : (
@@ -2009,6 +2031,7 @@ function PlaceHolderSign() {
                       blockColor={blockColor}
                       setBlockColor={setBlockColor}
                       isMailSend={isMailSend}
+                      setIsAddSigner={setIsAddSigner}
                       // handleAddSigner={handleAddSigner}
                     />
                     <div data-tut="reactourSecond">
@@ -2035,35 +2058,6 @@ function PlaceHolderSign() {
         )}
       </DndProvider>
       <div>
-        {/* <ModalUi
-          headerColor={"#dc3545"}
-          isOpen={signerExistModal}
-          title={"Users required"}
-          handleClose={() => {
-            setSignerExistModal(false);
-          }}
-        >
-          <div style={{ height: "100%", padding: 20 }}>
-            <p>Please assign signers to all placeholders</p>
-
-            <div
-              style={{
-                height: "1px",
-                backgroundColor: "#9f9f9f",
-                width: "100%",
-                marginTop: "15px",
-                marginBottom: "15px"
-              }}
-            ></div>
-            <button
-              onClick={() => setSignerExistModal(false)}
-              type="button"
-              className="finishBtn cancelBtn"
-            >
-              Close
-            </button>
-          </div>
-        </ModalUi> */}
         <ModalUi
           headerColor={"#dc3545"}
           isOpen={isAlreadyPlace.status}
@@ -2096,6 +2090,11 @@ function PlaceHolderSign() {
           handleAddUser={handleAddUser}
           isAddUser={isAddUser}
           uniqueId={uniqueId}
+          closePopup={closePopup}
+        />
+        <LinkUserModal
+          handleAddUser={handleAddNewRecipients}
+          isAddSigner={isAddSigner}
           closePopup={closePopup}
         />
         <WidgetNameModal

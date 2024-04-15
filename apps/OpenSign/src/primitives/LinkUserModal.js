@@ -7,7 +7,10 @@ const LinkUserModal = (props) => {
   return (
     <ModalUi
       title={"Add/Choose Signer"}
-      isOpen={props.isAddUser[props.uniqueId]}
+      isOpen={
+        props?.isAddSigner ||
+        (props?.isAddUser && props?.isAddUser[props?.uniqueId])
+      }
       handleClose={props.closePopup}
     >
       <SelectSigners
