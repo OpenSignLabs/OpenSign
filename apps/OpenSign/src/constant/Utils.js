@@ -13,25 +13,44 @@ export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
+export async function fetchSubscription() {
+  try {
+    const extClass = localStorage.getItem("Extand_Class");
+    const jsonSender = JSON.parse(extClass);
+    const baseURL = localStorage.getItem("baseUrl");
+    const url = `${baseURL}functions/getsubscriptions`;
+    const headers = {
+      "Content-Type": "application/json",
+      "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+      sessionToken: localStorage.getItem("accesstoken")
+    };
+    const params = { extUserId: jsonSender[0].objectId };
+    const tenatRes = await axios.post(url, params, { headers: headers });
+    const plan = tenatRes.data?.result?.result?.PlanName;
+    const billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
+    return { plan, billingDate };
+  } catch (err) {
+    console.log("Err in fetch subscription", err);
+    return { plan: "", billingDate: "" };
+  }
+}
 //function to get subcripition details from Extand user class
 export async function checkIsSubscribed() {
-  const extClass = localStorage.getItem("Extand_Class");
-  const jsonSender = JSON.parse(extClass);
-  const user = await Parse.Cloud.run("getUserDetails", {
-    email: jsonSender[0].Email
-  });
-  const freeplan = user?.get("Plan") && user?.get("Plan")?.plan_code;
-  const billingDate =
-    user?.get("Next_billing_date") && user?.get("Next_billing_date");
-  if (freeplan === "freeplan") {
-    return false;
-  } else if (billingDate) {
-    if (billingDate > new Date()) {
-      return true;
+  try {
+    const res = await fetchSubscription();
+    if (res.plan === "freeplan") {
+      return false;
+    } else if (res.billingDate) {
+      if (new Date(res.billingDate) > new Date()) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
-  } else {
+  } catch (err) {
+    console.log("Err in fetch subscription", err);
     return false;
   }
 }
@@ -1229,8 +1248,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-              ? 10
-              : newUpdateHeight;
+            ? 10
+            : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {

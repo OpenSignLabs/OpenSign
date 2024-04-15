@@ -31,6 +31,13 @@ export default async function saveInvoice(request, response) {
           className: '_User',
           objectId: extUser.get('UserId').id,
         });
+        if (extUser?.get('TenantId')?.id) {
+          createInvoice.set('TenantId', {
+            __type: 'Pointer',
+            className: 'partners_Tenant',
+            objectId: extUser.get('TenantId').id,
+          });
+        }
         await createInvoice.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'create invoice!' });
       }
