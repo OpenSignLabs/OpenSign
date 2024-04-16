@@ -2111,6 +2111,7 @@ function PlaceHolderSign() {
           isAddUser={isAddUser}
           uniqueId={uniqueId}
           closePopup={closePopup}
+          signersData={signersdata}
         />
         <LinkUserModal
           handleAddUser={handleAddNewRecipients}
