@@ -1092,9 +1092,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                      ? "You have declined this document!"
-                      : isDecline.currnt === "another" &&
-                        "You cannot sign this document as it has been declined by one or more recipient(s)."
+                        ? "You have declined this document!"
+                        : isDecline.currnt === "another" &&
+                          "You can not sign this document as it has been declined."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}

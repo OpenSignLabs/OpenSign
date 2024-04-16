@@ -29,6 +29,7 @@ const ReportTable = ({
   const [isDocErr, setIsDocErr] = useState(false);
   const [isContactform, setIsContactform] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState({});
+  const [isRevoke, setIsRevoke] = useState({});
   const [isShare, setIsShare] = useState({});
   const [shareUrls, setShareUrls] = useState([]);
   const [copied, setCopied] = useState(false);
@@ -200,6 +201,8 @@ const ReportTable = ({
       setIsDeleteModal({ [item.objectId]: true });
     } else if (act.action === "share") {
       handleShare(item);
+    } else if (act.action === "revoke") {
+      setIsRevoke({ [item.objectId]: true });
     }
   };
   // Get current list
@@ -260,7 +263,10 @@ const ReportTable = ({
       setActLoader({});
     }
   };
-  const handleCloseDeleteModal = () => setIsDeleteModal({});
+  const handleClose = () => {
+    setIsRevoke({});
+    setIsDeleteModal({});
+  };
 
   const handleShare = (item) => {
     setActLoader({ [item.objectId]: true });
@@ -280,6 +286,46 @@ const ReportTable = ({
   const copytoclipboard = (share) => {
     navigator.clipboard.writeText(share.url);
     setCopied({ ...copied, [share.email]: true });
+  };
+  //function to handle revoke/decline docment
+  const handleRevoke = async (item) => {
+    setIsRevoke({});
+    setActLoader({ [`${item.objectId}`]: true });
+    const data = {
+      IsDeclined: true
+    };
+
+    await axios
+      .put(
+        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+          "_appName"
+        )}_Document/${item.objectId}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      )
+      .then(async (result) => {
+        const res = result.data;
+        if (res) {
+          setActLoader({});
+          setIsAlert(true);
+          setTimeout(() => setIsAlert(false), 1500);
+          const upldatedList = List.filter((x) => x.objectId !== item.objectId);
+          setList(upldatedList);
+        }
+      })
+      .catch((err) => {
+        console.log("err", err);
+        setIsAlert(true);
+        setIsErr(true);
+        setTimeout(() => setIsAlert(false), 1500);
+        setActLoader({});
+      });
   };
   return (
     <div className="relative">
@@ -370,7 +416,7 @@ const ReportTable = ({
                           <ModalUi
                             isOpen
                             title={"Delete Contact"}
-                            handleClose={handleCloseDeleteModal}
+                            handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
@@ -388,7 +434,7 @@ const ReportTable = ({
                                   Yes
                                 </button>
                                 <button
-                                  onClick={handleCloseDeleteModal}
+                                  onClick={handleClose}
                                   className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
                                   style={{
                                     backgroundColor: modalCancelBtnColor
@@ -459,7 +505,7 @@ const ReportTable = ({
                           <ModalUi
                             isOpen
                             title={"Delete Document"}
-                            handleClose={handleCloseDeleteModal}
+                            handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
@@ -477,7 +523,7 @@ const ReportTable = ({
                                   Yes
                                 </button>
                                 <button
-                                  onClick={handleCloseDeleteModal}
+                                  onClick={handleClose}
                                   className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
                                   style={{
                                     backgroundColor: modalCancelBtnColor
@@ -528,6 +574,41 @@ const ReportTable = ({
                                   </div>
                                 </div>
                               ))}
+                            </div>
+                          </ModalUi>
+                        )}
+                        {isRevoke[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Delete Contact"}
+                            handleClose={handleClose}
+                          >
+                            <div className="m-[20px]">
+                              <div className="text-lg font-normal text-black">
+                                Are you sure you want to revoke/decline this
+                                document?
+                              </div>
+                              <hr className="bg-[#ccc] mt-4 " />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handleRevoke(item)}
+                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                  style={{
+                                    backgroundColor: modalSubmitBtnColor
+                                  }}
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={handleClose}
+                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                  style={{
+                                    backgroundColor: modalCancelBtnColor
+                                  }}
+                                >
+                                  No
+                                </button>
+                              </div>
                             </div>
                           </ModalUi>
                         )}
