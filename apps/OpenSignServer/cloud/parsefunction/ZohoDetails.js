@@ -30,15 +30,9 @@ export default async function ZohoDetails(request) {
       headers: {
         Authorization: 'Zoho-oauthtoken ' + res.data.access_token,
         'X-com-zoho-subscriptions-organizationid': process.env.ZOHO_BILLING_ORG_ID,
-        // 'X-com-zoho-billing-organizationid': process.env.ZOHO_BILLING_ORG_ID,
       },
     });
-    // console.log(
-    //   "userData.data.data.subscription.contactpersons ",
-    //   userData.data.data.subscription.contactpersons
-    // );
 
-    // console.log("userData.data.expiring_time ", userData.data.expiring_time);
     const first_name = userData.data.data.subscription.contactpersons[0].first_name || '';
     const last_name = userData.data.data.subscription.contactpersons[0].last_name || '';
     const company_name =
@@ -59,6 +53,7 @@ export default async function ZohoDetails(request) {
       customer_id: userData.data.data.subscription.customer_id,
       subscription_id: userData.data.data.subscription.subscription_id,
       jobTitle: jobTitle,
+      subscription: userData.data,
     };
     return resData;
   }
