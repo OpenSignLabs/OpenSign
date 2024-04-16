@@ -231,7 +231,9 @@ const RecipientList = (props) => {
                     </>
                   )}
                   {obj.Name && (
-                    <span className={"useEmail"}>{obj?.Role || obj.Email}</span>
+                    <span className={"useEmail"}>
+                      {obj?.Role || obj?.Email}
+                    </span>
                   )}
                 </div>
               </div>
