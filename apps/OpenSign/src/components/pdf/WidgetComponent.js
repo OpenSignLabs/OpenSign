@@ -335,19 +335,21 @@ function WidgetComponent({
                 <span style={{ marginLeft: 2 }}>Add role</span>
               </div>
             ) : (
-              <div
-                data-tut="reactourAddbtn"
-                style={{
-                  margin: "5px 0 5px 0",
-                  backgroundColor: themeColor,
-                  color: "white"
-                }}
-                className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad] hover:text-white cursor-pointer"
-                onClick={() => setIsAddSigner(true)}
-              >
-                <i className="fa-solid fa-plus"></i>
-                <span style={{ marginLeft: 2 }}>Add recipients</span>
-              </div>
+              setIsAddSigner && (
+                <div
+                  data-tut="reactourAddbtn"
+                  style={{
+                    margin: "5px 0 5px 0",
+                    backgroundColor: themeColor,
+                    color: "white"
+                  }}
+                  className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad] hover:text-white cursor-pointer"
+                  onClick={() => setIsAddSigner(true)}
+                >
+                  <i className="fa-solid fa-plus"></i>
+                  <span style={{ marginLeft: 2 }}>Add recipients</span>
+                </div>
+              )
             )}
 
             <div
