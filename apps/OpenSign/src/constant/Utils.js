@@ -26,7 +26,7 @@ export async function fetchSubscription() {
     };
     const params = { extUserId: jsonSender[0].objectId };
     const tenatRes = await axios.post(url, params, { headers: headers });
-    const plan = tenatRes.data?.result?.result?.PlanName;
+    const plan = tenatRes.data?.result?.result?.PlanCode;
     const billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
     return { plan, billingDate };
   } catch (err) {
