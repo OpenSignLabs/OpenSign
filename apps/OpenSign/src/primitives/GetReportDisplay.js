@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+ import React, { useState, useEffect, useMemo } from "react";
 import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -25,7 +25,6 @@ const ReportTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
-  const [isErr, setIsErr] = useState(false);
   const [isDocErr, setIsDocErr] = useState(false);
   const [isContactform, setIsContactform] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState({});
@@ -33,6 +32,7 @@ const ReportTable = ({
   const [isShare, setIsShare] = useState({});
   const [shareUrls, setShareUrls] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [alertMsg, setAlertMsg] = useState({ type: "success", message: "" });
   const startIndex = (currentPage - 1) * docPerPage;
 
   // For loop is used to calculate page numbers visible below table
@@ -165,7 +165,10 @@ const ReportTable = ({
               } catch (err) {
                 console.log("Err", err);
                 setIsAlert(true);
-                setIsErr(true);
+                setAlertMsg({
+                  type: "danger",
+                  message: "Something went wrong, Please try again later!"
+                });
                 setTimeout(() => setIsAlert(false), 1500);
                 setActLoader({});
               }
@@ -175,14 +178,20 @@ const ReportTable = ({
             }
           } else {
             setIsAlert(true);
-            setIsErr(true);
+            setAlertMsg({
+              type: "danger",
+              message: "Something went wrong, Please try again later!"
+            });
             setTimeout(() => setIsAlert(false), 1500);
             setActLoader({});
           }
         } catch (err) {
           console.log("err", err);
           setIsAlert(true);
-          setIsErr(true);
+          setAlertMsg({
+            type: "danger",
+            message: "Something went wrong, Please try again later!"
+          });
           setTimeout(() => setIsAlert(false), 1500);
           setActLoader({});
         }
@@ -251,6 +260,10 @@ const ReportTable = ({
       if (res.data && res.data.updatedAt) {
         setActLoader({});
         setIsAlert(true);
+        setAlertMsg({
+          type: "success",
+          message: "Record deleted successfully!"
+        });
         setTimeout(() => setIsAlert(false), 1500);
         const upldatedList = List.filter((x) => x.objectId !== item.objectId);
         setList(upldatedList);
@@ -258,7 +271,10 @@ const ReportTable = ({
     } catch (err) {
       console.log("err", err);
       setIsAlert(true);
-      setIsErr(true);
+      setAlertMsg({
+        type: "danger",
+        message: "Something went wrong, Please try again later!"
+      });
       setTimeout(() => setIsAlert(false), 1500);
       setActLoader({});
     }
@@ -314,6 +330,10 @@ const ReportTable = ({
         if (res) {
           setActLoader({});
           setIsAlert(true);
+          setAlertMsg({
+            type: "success",
+            message: "Record revoked successfully!"
+          });
           setTimeout(() => setIsAlert(false), 1500);
           const upldatedList = List.filter((x) => x.objectId !== item.objectId);
           setList(upldatedList);
@@ -322,7 +342,10 @@ const ReportTable = ({
       .catch((err) => {
         console.log("err", err);
         setIsAlert(true);
-        setIsErr(true);
+        setAlertMsg({
+          type: "danger",
+          message: "Something went wrong, Please try again later!"
+        });
         setTimeout(() => setIsAlert(false), 1500);
         setActLoader({});
       });
@@ -338,13 +361,7 @@ const ReportTable = ({
         </div>
       )}
       <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
-        {isAlert && (
-          <Alert type={isErr ? "danger" : "success"}>
-            {isErr
-              ? "Something went wrong, Please try again later!"
-              : "Record deleted successfully!"}
-          </Alert>
-        )}
+        {isAlert && <Alert type={alertMsg.type}>{alertMsg.message}</Alert>}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
             {ReportName}{" "}
@@ -580,12 +597,12 @@ const ReportTable = ({
                         {isRevoke[item.objectId] && (
                           <ModalUi
                             isOpen
-                            title={"Delete Contact"}
+                            title={"Revoke document"}
                             handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
-                               Are you sure you want to revoke this document?
+                                Are you sure you want to revoke this document?
                               </div>
                               <hr className="bg-[#ccc] mt-4 " />
                               <div className="flex items-center mt-3 gap-2 text-white">
