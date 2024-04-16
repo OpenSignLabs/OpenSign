@@ -33,6 +33,7 @@ import getInvoices from './parsefunction/getInvoices.js';
 import getPayments from './parsefunction/getPayments.js';
 import getSubscriptions from './parsefunction/getSubscriptions.js';
 import TenantAterFind from './parsefunction/TenantAfterFind.js';
+import saveSubscriptio from './parsefunction/saveSubscription.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
@@ -69,3 +70,4 @@ Parse.Cloud.afterFind('contracts_Document', DocumentBeforeFind);
 Parse.Cloud.afterFind('contracts_Template', TemplateAfterFind);
 Parse.Cloud.afterFind('contracts_Signature', SignatureAfterFind);
 Parse.Cloud.afterFind('partners_Tenant', TenantAterFind);
+Parse.Cloud.define('savesubscription', saveSubscriptio);

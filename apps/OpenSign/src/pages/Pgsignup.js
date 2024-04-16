@@ -41,12 +41,8 @@ const PgSignUp = () => {
         const url = window.location.href;
         let paramString = url.split("?")[1];
         let queryString = new URLSearchParams(paramString);
-        // console.log("url ", queryString);
-
         let obj = { ...formData };
         for (let pair of queryString.entries()) {
-          // console.log("Key is: " + pair[0]);
-          // console.log("Value is: " + pair[1]);
           obj = { ...obj, [pair[0]]: pair[1] };
         }
         const zohoRes = await axios.post(
@@ -61,34 +57,27 @@ const PgSignUp = () => {
             }
           }
         );
-        // console.log("zohoRes ", zohoRes);
         const userSettings = JSON.parse(localStorage.getItem("userSettings"));
-        const extClass = userSettings[0].extended_class;
-        // console.log("extClass ", extClass);
-        const params = { email: userDetails.email };
-        const res = await Parse.Cloud.run("getUserDetails", params);
-        // console.log("res", res);
-        if (res) {
-          const updateQuery = new Parse.Object(extClass);
-          updateQuery.id = res.id;
-          updateQuery.set(
-            "Next_billing_date",
-            new Date(zohoRes.data.result.nextBillingDate)
-          );
-          updateQuery.set("Plan", zohoRes.data.result.plan);
-          updateQuery.set("Customer_id", zohoRes.data.result.customer_id);
-          updateQuery.set(
-            "Subscription_id",
-            zohoRes.data.result.subscription_id
-          );
-          const updateRes = await updateQuery.save();
-          if (updateRes) {
+        const params = { subscription: zohoRes.data.result.subscription };
+        const baseurl = `${parseBaseUrl}functions/savesubscription`;
+        try {
+          const res = await axios.post(baseurl, params, {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": parseAppId,
+              sessiontoken: localStorage.getItem("accesstoken")
+            }
+          });
+          if (res) {
             localStorage.removeItem("userDetails");
             navigate(
               "/" + userSettings[0].pageType + "/" + userSettings[0].pageId
             );
             setIsLoader(false);
           }
+        } catch (err) {
+          console.log("err ", err.message);
+          setIsLoader(false);
         }
       } catch (err) {
         console.log("err ", err);
@@ -108,12 +97,8 @@ const PgSignUp = () => {
         const url = window.location.href;
         let paramString = url.split("?")[1];
         let queryString = new URLSearchParams(paramString);
-        // console.log("url ", queryString);
-
         let obj = { ...formData };
         for (let pair of queryString.entries()) {
-          // console.log("Key is: " + pair[0]);
-          // console.log("Value is: " + pair[1]);
           obj = { ...obj, [pair[0]]: pair[1] };
         }
         saveUser(obj);
@@ -157,19 +142,8 @@ const PgSignUp = () => {
             email: zohoRes.data.result.email,
             phone: zohoRes.data.result.phone,
             role: obj.role
-            // "pincode": "",
-            // "address": "",
-            // "country": "",
-            // "state": "",
-            // "city": ""
           },
-
-          planDetails: {
-            plan: zohoRes.data.result.plan || {},
-            nextBillingDate: zohoRes.data.result.nextBillingDate || "",
-            customer_id: zohoRes.data.result.customer_id || "",
-            subscription_id: zohoRes.data.result.subscription_id || ""
-          }
+          subscription: zohoRes.data.result.subscription
         };
         const usersignup = await Parse.Cloud.run("usersignup", params);
         // console.log("usersignup ", usersignup);
