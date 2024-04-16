@@ -1173,7 +1173,7 @@ function PdfRequestFiles() {
                 </ModalUi>
                 {/* this component used to render all pdf pages in left side */}
                 <RenderAllPdfPage
-                  signPdfUrl={pdfDetails[0].URL}
+                  signPdfUrl={pdfDetails[0] && pdfDetails[0].SignedUrl}
                   allPages={allPages}
                   setAllPages={setAllPages}
                   setPageNumber={setPageNumber}
