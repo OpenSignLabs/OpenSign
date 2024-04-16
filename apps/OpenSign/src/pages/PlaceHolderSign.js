@@ -68,6 +68,7 @@ function PlaceHolderSign() {
   const [isSendAlert, setIsSendAlert] = useState({});
   const [isSend, setIsSend] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isAddSigner, setIsAddSigner] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -350,7 +351,7 @@ function PlaceHolderSign() {
           const updatedSigners = documentData[0].Signers.map((x, index) => ({
             ...x,
             Id: randomId(),
-            Role: "User " + (index + 1),
+            // Role: "User " + (index + 1),
             blockColor: color[index % color.length]
           }));
           setSignersData(updatedSigners);
@@ -358,7 +359,7 @@ function PlaceHolderSign() {
           setBlockColor(updatedSigners[0].blockColor);
         }
       } else {
-        setRoleName("User 1");
+        // setRoleName("User 1");
         if (
           documentData[0].Placeholders &&
           documentData[0].Placeholders.length > 0
@@ -1525,8 +1526,25 @@ function PlaceHolderSign() {
     }
   };
 
+  //function to add new signer in document signers list
+  const handleAddNewRecipients = (data) => {
+    const newId = randomId();
+    signersdata.push({
+      ...data,
+      className: "contracts_Contactbook",
+      Id: newId,
+      blockColor: color[signersdata.length]
+    });
+    setUniqueId(newId);
+    setIsSelectId(signersdata.length - 1);
+    setBlockColor(color[signersdata.length]);
+    setContractName("contracts_Contactbook");
+    setSignerObjId(data.objectId);
+  };
+
   const closePopup = () => {
     setIsAddUser({});
+    setIsAddSigner(false);
   };
 
   //function for handle ontext change and save again text in delta in Request Email flow
@@ -1546,6 +1564,30 @@ function PlaceHolderSign() {
       style: { fontSize: "13px" }
     }
   ];
+
+  // `handleDeleteUser` function is used to delete record and placeholder when user click on delete which is place next user name in recipients list
+  const handleDeleteUser = (Id) => {
+    const updateSigner = signersdata
+      .filter((x) => x.Id !== Id)
+      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    setSignersData(updateSigner);
+    const updatePlaceholderUser = signerPos
+      .filter((x) => x.Id !== Id)
+      .map((x, i) => ({ ...x, blockColor: color[i] }));
+    const index = signersdata.findIndex((x) => x.Id === Id);
+    if (index === signersdata.length - 1) {
+      setUniqueId(updateSigner[updateSigner.length - 1]?.Id || "");
+      setIsSelectId(index - 1 || 0);
+      setBlockColor(color[index - 1 || 0]);
+    } else {
+      setUniqueId(updateSigner[index]?.Id || "");
+      setIsSelectId(index);
+      setBlockColor(color[index]);
+    }
+
+    setSignerPos(updatePlaceholderUser);
+    setIsMailSend(false);
+  };
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1712,9 +1754,7 @@ function PlaceHolderSign() {
                                     "cursor-pointer underline text-blue-700 focus:outline-none"
                                   }
                                   onClick={() => {
-                                    isSubscribe ||
-                                      (!isEnableSubscription &&
-                                        setIsCustomize(!isCustomize));
+                                    setIsCustomize(!isCustomize);
                                   }}
                                 >
                                   Cutomize Email
@@ -1982,6 +2022,8 @@ function PlaceHolderSign() {
                   setSignersData={setSignersData}
                   blockColor={blockColor}
                   setBlockColor={setBlockColor}
+                  setIsAddSigner={setIsAddSigner}
+                  handleDeleteUser={handleDeleteUser}
                 />
               </div>
             ) : (
@@ -2007,6 +2049,9 @@ function PlaceHolderSign() {
                       blockColor={blockColor}
                       setBlockColor={setBlockColor}
                       isMailSend={isMailSend}
+                      setIsAddSigner={setIsAddSigner}
+                      handleDeleteUser={handleDeleteUser}
+                      roleName={roleName}
                       // handleAddSigner={handleAddSigner}
                     />
                     <div data-tut="reactourSecond">
@@ -2033,35 +2078,6 @@ function PlaceHolderSign() {
         )}
       </DndProvider>
       <div>
-        {/* <ModalUi
-          headerColor={"#dc3545"}
-          isOpen={signerExistModal}
-          title={"Users required"}
-          handleClose={() => {
-            setSignerExistModal(false);
-          }}
-        >
-          <div style={{ height: "100%", padding: 20 }}>
-            <p>Please assign signers to all placeholders</p>
-
-            <div
-              style={{
-                height: "1px",
-                backgroundColor: "#9f9f9f",
-                width: "100%",
-                marginTop: "15px",
-                marginBottom: "15px"
-              }}
-            ></div>
-            <button
-              onClick={() => setSignerExistModal(false)}
-              type="button"
-              className="finishBtn cancelBtn"
-            >
-              Close
-            </button>
-          </div>
-        </ModalUi> */}
         <ModalUi
           headerColor={"#dc3545"}
           isOpen={isAlreadyPlace.status}
@@ -2095,6 +2111,13 @@ function PlaceHolderSign() {
           isAddUser={isAddUser}
           uniqueId={uniqueId}
           closePopup={closePopup}
+          signersData={signersdata}
+        />
+        <LinkUserModal
+          handleAddUser={handleAddNewRecipients}
+          isAddSigner={isAddSigner}
+          closePopup={closePopup}
+          signersData={signersdata}
         />
         <WidgetNameModal
           widgetName={widgetName}
