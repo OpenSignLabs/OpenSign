@@ -3,12 +3,12 @@ import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalUi from "./ModalUi";
-import Tour from "reactour";
 import AddSigner from "../components/AddSigner";
 import { modalSubmitBtnColor, modalCancelBtnColor } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
-import Parse from "parse";
+import { RWebShare } from "react-web-share";
+
 const ReportTable = ({
   ReportName,
   List,
@@ -19,9 +19,7 @@ const ReportTable = ({
   isMoreDocs,
   docPerPage,
   form,
-  report_help,
-  tourData,
-  isDontShow
+  report_help
 }) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,8 +29,9 @@ const ReportTable = ({
   const [isDocErr, setIsDocErr] = useState(false);
   const [isContactform, setIsContactform] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState({});
-  const [isTour, setIsTour] = useState(false);
-  const [tourStatusArr, setTourStatusArr] = useState([]);
+  const [isShare, setIsShare] = useState({});
+  const [shareUrls, setShareUrls] = useState([]);
+  const [copied, setCopied] = useState(false);
   const startIndex = (currentPage - 1) * docPerPage;
 
   // For loop is used to calculate page numbers visible below table
@@ -46,7 +45,6 @@ const ReportTable = ({
   }, [List, docPerPage]);
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
-    checkTourStatus();
     return () => setCurrentPage(1);
   }, []);
 
@@ -72,13 +70,13 @@ const ReportTable = ({
     }
   }, [isMoreDocs, pageNumbers, currentPage, setIsNextRecord]);
 
-  // `handlemicroapp` is used to open microapp
-  const handlemicroapp = async (item, url, btnLabel) => {
+  // `handleURL` is used to open microapp
+  const handleURL = async (item, act) => {
     if (ReportName === "Templates") {
-      if (btnLabel === "Edit") {
-        navigate(`/${url}/${item.objectId}`);
+      if (act.btnLabel === "Edit") {
+        navigate(`/${act.redirectUrl}/${item.objectId}`);
       } else {
-        setActLoader({ [`${item.objectId}_${btnLabel}`]: true });
+        setActLoader({ [`${item.objectId}_${act.btnId}`]: true });
         try {
           const params = {
             templateId: item.objectId
@@ -153,11 +151,13 @@ const ReportTable = ({
                     }
                   }
                 );
+
+                // console.log("Res ", res.data);
                 if (res.data && res.data.objectId) {
                   setActLoader({});
                   setIsAlert(true);
                   setTimeout(() => setIsAlert(false), 1500);
-                  navigate(`/${url}/${res.data.objectId}`, {
+                  navigate(`/${act.redirectUrl}/${res.data.objectId}`, {
                     state: { title: "Use Template" }
                   });
                 }
@@ -188,18 +188,20 @@ const ReportTable = ({
       }
     } else {
       localStorage.removeItem("rowlevel");
-      navigate(`/${url}`);
+      navigate(`/${act.redirectUrl}`);
       localStorage.setItem("rowlevel", JSON.stringify(item));
     }
-
-    // localStorage.setItem("rowlevelMicro");
   };
-  const handlebtn = async (item) => {
-    if (ReportName === "Contactbook") {
+
+  const handleActionBtn = (act, item) => {
+    if (act.action === "redirect") {
+      handleURL(item, act);
+    } else if (act.action === "delete") {
       setIsDeleteModal({ [item.objectId]: true });
+    } else if (act.action === "share") {
+      handleShare(item);
     }
   };
-
   // Get current list
   const indexOfLastDoc = currentPage * docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - docPerPage;
@@ -220,13 +222,21 @@ const ReportTable = ({
 
   const handleDelete = async (item) => {
     setIsDeleteModal({});
-    setActLoader({ [item.objectId]: true });
+    setActLoader({ [`${item.objectId}`]: true });
+    const clsObj = {
+      Contactbook: "contracts_Contactbook",
+      Templates: "contracts_Template"
+    };
     try {
       const serverUrl = process.env.REACT_APP_SERVERURL
         ? process.env.REACT_APP_SERVERURL
         : window.location.origin + "/api/app";
-      const url = serverUrl + "/classes/contracts_Contactbook/";
-      const body = { IsDeleted: true };
+      const cls = clsObj[ReportName] || "contracts_Document";
+      const url = serverUrl + `/classes/${cls}/`;
+      const body =
+        ReportName === "Contactbook"
+          ? { IsDeleted: true }
+          : { IsArchive: true };
       const res = await axios.put(url + item.objectId, body, {
         headers: {
           "Content-Type": "application/json",
@@ -252,364 +262,354 @@ const ReportTable = ({
   };
   const handleCloseDeleteModal = () => setIsDeleteModal({});
 
-  async function checkTourStatus() {
-    const currentUser = Parse.User.current();
-    const cloudRes = await Parse.Cloud.run("getUserDetails", {
-      email: currentUser.get("email")
-    });
-    const res = { data: cloudRes.toJSON() };
-    if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
-      const tourStatus = res.data.TourStatus;
-      // console.log("res ", res.data.TourStatus);
-      setTourStatusArr(tourStatus);
-      const filteredtourStatus = tourStatus.filter(
-        (obj) => obj["templateReportTour"]
-      );
-      if (filteredtourStatus.length > 0) {
-        const templateReportTour = filteredtourStatus[0]["templateReportTour"];
+  const handleShare = (item) => {
+    setActLoader({ [item.objectId]: true });
+    const host = window.location.origin;
+    const serverUrl = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : window.location.origin + "/api/app";
+    const baseURL = serverUrl.replace(/\//g, "%2F");
+    const urls = item.Signers.map((x) => ({
+      email: x.Email,
+      url: `${host}/login/${item.objectId}/${x.Email}/${x.objectId}/${baseURL}%2F&opensign&contracts`
+    }));
+    setShareUrls(urls);
+    setIsShare({ [item.objectId]: true });
+  };
 
-        if (templateReportTour) {
-          setIsTour(false);
-        } else {
-          setIsTour(true);
-        }
-      } else {
-        setIsTour(true);
-      }
-    } else {
-      setIsTour(true);
-    }
-  }
-
-  const closeTour = async () => {
-    // console.log("closeTour");
-    setIsTour(false);
-    if (isDontShow) {
-      const serverUrl = localStorage.getItem("baseUrl");
-      const appId = localStorage.getItem("parseAppId");
-      const extUserClass = localStorage.getItem("extended_class");
-      const json = JSON.parse(localStorage.getItem("Extand_Class"));
-      const extUserId = json && json.length > 0 && json[0].objectId;
-      // console.log("extUserId ", extUserId)
-
-      let updatedTourStatus = [];
-      if (tourStatusArr.length > 0) {
-        updatedTourStatus = [...tourStatusArr];
-        const templateTourIndex = tourStatusArr.findIndex(
-          (obj) =>
-            obj["templateReportTour"] === false ||
-            obj["templateReportTour"] === true
-        );
-        if (templateTourIndex !== -1) {
-          updatedTourStatus[templateTourIndex] = { templateReportTour: true };
-        } else {
-          updatedTourStatus.push({ templateReportTour: true });
-        }
-      } else {
-        updatedTourStatus = [{ templateReportTour: true }];
-      }
-
-      await axios.put(
-        serverUrl + "classes/" + extUserClass + "/" + extUserId,
-        {
-          TourStatus: updatedTourStatus
-        },
-        {
-          headers: {
-            "X-Parse-Application-Id": appId
-          }
-        }
-      );
-    }
+  const copytoclipboard = (share) => {
+    navigator.clipboard.writeText(share.url);
+    setCopied({ ...copied, [share.email]: true });
   };
   return (
-    <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
-      {isAlert && (
-        <Alert type={isErr ? "danger" : "success"}>
-          {isErr
-            ? "Something went wrong, Please try again later!"
-            : "Record deleted successfully!"}
-        </Alert>
+    <div className="relative">
+      {Object.keys(actLoader)?.length > 0 && (
+        <div className="absolute w-full h-full rounded-md flex justify-center items-center bg-black bg-opacity-30 ">
+          <div
+            style={{ fontSize: "45px", color: "#3dd3e0" }}
+            className="loader-37"
+          ></div>
+        </div>
       )}
-      {tourData && ReportName === "Templates" && (
-        <Tour
-          onRequestClose={closeTour}
-          steps={tourData}
-          isOpen={isTour}
-          // rounded={5}
-          closeWithMask={false}
-        />
-      )}
-
-      <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
-        <div className="font-light">
-          {ReportName}{" "}
-          {report_help && (
-            <span className="text-xs md:text-[13px] font-normal">
-              <Tooltip message={report_help} />
-            </span>
+      <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
+        {isAlert && (
+          <Alert type={isErr ? "danger" : "success"}>
+            {isErr
+              ? "Something went wrong, Please try again later!"
+              : "Record deleted successfully!"}
+          </Alert>
+        )}
+        <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
+          <div className="font-light">
+            {ReportName}{" "}
+            {report_help && (
+              <span className="text-xs md:text-[13px] font-normal">
+                <Tooltip message={report_help} />
+              </span>
+            )}
+          </div>
+          {ReportName === "Templates" && (
+            <i
+              onClick={() => navigate("/form/template")}
+              className="fa-solid fa-square-plus text-sky-400 text-[25px]"
+            ></i>
+          )}
+          {form && (
+            <div
+              className="cursor-pointer"
+              onClick={() => handleContactFormModal()}
+            >
+              <i className="fa-solid fa-square-plus text-sky-400 text-[25px]"></i>
+            </div>
           )}
         </div>
-        {ReportName === "Templates" && (
-          <i
-            data-tut="reactourFirst"
-            onClick={() => navigate("/form/template")}
-            className="fa-solid fa-square-plus text-sky-400 text-[25px]"
-          ></i>
-        )}
-        {form && (
-          <div
-            className="cursor-pointer"
-            onClick={() => handleContactFormModal()}
-          >
-            <i className="fa-solid fa-square-plus text-sky-400 text-[25px]"></i>
-          </div>
-        )}
-      </div>
-
-      <table className="table-auto w-full border-collapse">
-        <thead className="text-[14px]">
-          <tr className="border-y-[1px]">
-            {heading?.map((item, index) => (
-              <React.Fragment key={index}>
-                <th className="px-4 py-2 font-thin">{item}</th>
-              </React.Fragment>
-            ))}
-            {actions?.length > 0 && (
-              <th className="px-4 py-2 font-thin">Action</th>
-            )}
-          </tr>
-        </thead>
-        <tbody className="text-[12px]">
-          {List?.length > 0 ? (
-            <>
-              {currentLists.map((item, index) =>
-                ReportName === "Contactbook" ? (
-                  <tr className="border-y-[1px]" key={index}>
-                    {heading.includes("Sr.No") && (
-                      <td className="px-4 py-2">{startIndex + index + 1}</td>
-                    )}
-                    <td className="px-4 py-2 font-semibold">{item?.Name} </td>
-                    <td className="px-4 py-2">{item?.Email || "-"}</td>
-                    <td className="px-4 py-2">{item?.Phone || "-"}</td>
-                    <td className="px-3 py-2 text-white">
-                      {actions?.length > 0 &&
-                        actions.map((act, index) => (
-                          <button
-                            key={index}
-                            onClick={() =>
-                              act?.redirectUrl
-                                ? handlemicroapp(item, act.redirectUrl)
-                                : handlebtn(item)
-                            }
-                            className={`mb-1 flex justify-center items-center gap-1 px-2 py-1 rounded shadow`}
-                            style={{
-                              backgroundColor: act.btnColor
-                                ? act.btnColor
-                                : "#3ac9d6",
-                              color: act?.textColor ? act?.textColor : "white"
-                            }}
-                          >
-                            <span>
-                              {act?.btnIcon && (
-                                <i
-                                  className={
-                                    actLoader[item.objectId]
-                                      ? "fa-solid fa-spinner fa-spin-pulse"
-                                      : act.btnIcon
-                                  }
-                                ></i>
-                              )}
-                            </span>
-                            {act?.btnLabel && (
-                              <span className="uppercase">
-                                {act?.btnLabel ? act.btnLabel : "View"}
-                              </span>
-                            )}
-                          </button>
-                        ))}
-                      {isDeleteModal[item.objectId] && (
-                        <ModalUi
-                          isOpen
-                          title={"Delete Contact"}
-                          handleClose={handleCloseDeleteModal}
-                        >
-                          <div className="m-[20px]">
-                            <div className="text-lg font-normal text-black">
-                              Are you sure you want to delete this contact?
-                            </div>
-                            <hr className="bg-[#ccc] mt-4 " />
-                            <div className="flex items-center mt-3 gap-2 text-white">
-                              <button
-                                onClick={() => handleDelete(item)}
-                                className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-                                style={{ backgroundColor: modalSubmitBtnColor }}
-                              >
-                                Yes
-                              </button>
-                              <button
-                                onClick={handleCloseDeleteModal}
-                                className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
-                                style={{ backgroundColor: modalCancelBtnColor }}
-                              >
-                                No
-                              </button>
-                            </div>
-                          </div>
-                        </ModalUi>
+        <table className="table-auto w-full border-collapse">
+          <thead className="text-[14px]">
+            <tr className="border-y-[1px]">
+              {heading?.map((item, index) => (
+                <React.Fragment key={index}>
+                  <th className="px-4 py-2 font-thin">{item}</th>
+                </React.Fragment>
+              ))}
+              {actions?.length > 0 && (
+                <th className="px-4 py-2 font-thin">Action</th>
+              )}
+            </tr>
+          </thead>
+          <tbody className="text-[12px]">
+            {List?.length > 0 && (
+              <>
+                {currentLists.map((item, index) =>
+                  ReportName === "Contactbook" ? (
+                    <tr className="border-y-[1px]" key={index}>
+                      {heading.includes("Sr.No") && (
+                        <td className="px-4 py-2">{startIndex + index + 1}</td>
                       )}
-                    </td>
-                  </tr>
-                ) : (
-                  <tr className="border-y-[1px]" key={index}>
-                    {heading.includes("Sr.No") && (
-                      <td className="px-4 py-2">{startIndex + index + 1}</td>
-                    )}
-                    <td className="px-4 py-2 font-semibold w-56">
-                      {item?.Name}{" "}
-                    </td>
-                    {heading.includes("Note") && (
-                      <td className="px-4 py-2">{item?.Note || "-"}</td>
-                    )}
-                    {heading.includes("Folder") && (
-                      <td className="px-4 py-2">
-                        {item?.Folder?.Name || "OpenSign™ Drive"}
+                      <td className="px-4 py-2 font-semibold">{item?.Name} </td>
+                      <td className="px-4 py-2">{item?.Email || "-"}</td>
+                      <td className="px-4 py-2">{item?.Phone || "-"}</td>
+                      <td className="px-3 py-2 text-white grid grid-cols-2">
+                        {actions?.length > 0 &&
+                          actions.map((act, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleActionBtn(act, item)}
+                              className={`mb-1 flex justify-center items-center gap-1 px-2 py-1 rounded shadow`}
+                              title={act.btnLabel}
+                              style={{
+                                backgroundColor: act.btnColor
+                                  ? act.btnColor
+                                  : "#3ac9d6",
+                                color: act?.textColor ? act?.textColor : "white"
+                              }}
+                            >
+                              <i className={act.btnIcon}></i>
+                            </button>
+                          ))}
+                        {isDeleteModal[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Delete Contact"}
+                            handleClose={handleCloseDeleteModal}
+                          >
+                            <div className="m-[20px]">
+                              <div className="text-lg font-normal text-black">
+                                Are you sure you want to delete this contact?
+                              </div>
+                              <hr className="bg-[#ccc] mt-4 " />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handleDelete(item)}
+                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                  style={{
+                                    backgroundColor: modalSubmitBtnColor
+                                  }}
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={handleCloseDeleteModal}
+                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                  style={{
+                                    backgroundColor: modalCancelBtnColor
+                                  }}
+                                >
+                                  No
+                                </button>
+                              </div>
+                            </div>
+                          </ModalUi>
+                        )}
                       </td>
-                    )}
-                    <td className="px-4 py-2">
-                      <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title={item?.URL}
-                        href={item?.URL}
-                        download={item?.URL}
-                        className="text-[blue] hover:text-[blue] hover:underline"
-                      >
-                        {item?.URL ? "Download" : "-"}
-                      </a>
-                    </td>
+                    </tr>
+                  ) : (
+                    <tr className="border-y-[1px]" key={index}>
+                      {heading.includes("Sr.No") && (
+                        <td className="px-4 py-2">{startIndex + index + 1}</td>
+                      )}
+                      <td className="px-4 py-2 font-semibold w-56">
+                        {item?.Name}{" "}
+                      </td>
+                      {heading.includes("Note") && (
+                        <td className="px-4 py-2">{item?.Note || "-"}</td>
+                      )}
+                      {heading.includes("Folder") && (
+                        <td className="px-4 py-2">
+                          {item?.Folder?.Name || "OpenSign™ Drive"}
+                        </td>
+                      )}
+                      <td className="px-4 py-2">
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={item?.URL}
+                          href={item?.URL}
+                          download={item?.URL}
+                          className="text-[blue] hover:text-[blue] hover:underline"
+                        >
+                          {item?.URL ? "Download" : "-"}
+                        </a>
+                      </td>
 
-                    <td className="px-4 py-2">{formatRow(item?.ExtUserPtr)}</td>
-                    <td className="px-4 py-2">
-                      {item?.Signers ? formatRow(item?.Signers) : "-"}
-                    </td>
-                    <td className="px-3 py-2 text-white">
-                      {actions?.length > 0 &&
-                        actions.map((act, index) => (
-                          <button
-                            data-tut={act?.selector}
-                            key={index}
-                            onClick={() =>
-                              act?.redirectUrl
-                                ? handlemicroapp(
-                                    item,
-                                    act.redirectUrl,
-                                    act.btnLabel
-                                  )
-                                : handlebtn(item)
-                            }
-                            className={`mb-1 flex justify-center items-center gap-1 px-2 py-1 rounded shadow`}
-                            style={{
-                              backgroundColor: act.btnColor
-                                ? act.btnColor
-                                : "#3ac9d6",
-                              color: act?.textColor ? act?.textColor : "white"
+                      <td className="px-4 py-2">
+                        {formatRow(item?.ExtUserPtr)}
+                      </td>
+                      <td className="px-4 py-2">
+                        {item?.Signers ? formatRow(item?.Signers) : "-"}
+                      </td>
+                      <td className="px-3 py-2 text-white grid grid-cols-2 gap-1">
+                        {actions?.length > 0 &&
+                          actions.map((act, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleActionBtn(act, item)}
+                              className={`w-[25px] h-[25px] flex justify-center items-center rounded shadow`}
+                              title={act.btnLabel}
+                              style={{
+                                backgroundColor: act.btnColor
+                                  ? act.btnColor
+                                  : "#3ac9d6",
+                                color: act?.textColor ? act?.textColor : "white"
+                              }}
+                            >
+                              <i className={act.btnIcon}></i>
+                            </button>
+                          ))}
+                        {isDeleteModal[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Delete Document"}
+                            handleClose={handleCloseDeleteModal}
+                          >
+                            <div className="m-[20px]">
+                              <div className="text-lg font-normal text-black">
+                                Are you sure you want to delete this document?
+                              </div>
+                              <hr className="bg-[#ccc] mt-4" />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handleDelete(item)}
+                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                  style={{
+                                    backgroundColor: modalSubmitBtnColor
+                                  }}
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={handleCloseDeleteModal}
+                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                  style={{
+                                    backgroundColor: modalCancelBtnColor
+                                  }}
+                                >
+                                  No
+                                </button>
+                              </div>
+                            </div>
+                          </ModalUi>
+                        )}
+                        {isShare[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Copy link"}
+                            handleClose={() => {
+                              setIsShare({});
+                              setActLoader({});
                             }}
                           >
-                            <span>
-                              {act?.btnIcon && (
-                                <i
-                                  className={
-                                    actLoader[
-                                      `${item.objectId}_${act.btnLabel}`
-                                    ]
-                                      ? "fa-solid fa-spinner fa-spin-pulse"
-                                      : act.btnIcon
-                                  }
-                                ></i>
-                              )}
-                            </span>
-                            <span className="uppercase">
-                              {act?.btnLabel ? act.btnLabel : "view"}
-                            </span>
-                          </button>
-                        ))}
-                    </td>
-                  </tr>
-                )
+                            <div className="m-[20px]">
+                              {shareUrls.map((share, i) => (
+                                <div
+                                  key={i}
+                                  className="text-sm font-normal text-black flex my-2 justify-between items-center"
+                                >
+                                  <span className="text-sm font-semibold">
+                                    {share.email}
+                                  </span>
+                                  <div>
+                                    <RWebShare
+                                      data={{
+                                        url: share.url,
+                                        title: "Sign url"
+                                      }}
+                                    >
+                                      <button className="bg-[#002864] text-white rounded w-[32px] h-[30px] focus:outline-none">
+                                        <i className="fa-solid fa-share-from-square"></i>{" "}
+                                      </button>
+                                    </RWebShare>
+                                    <button
+                                      className="ml-2 bg-[#002864] text-white rounded w-[100px] h-[30px] focus:outline-none"
+                                      onClick={() => copytoclipboard(share)}
+                                    >
+                                      <i className="fa-solid fa-link"></i>{" "}
+                                      {copied[share.email] ? "Copied" : "Copy"}
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </ModalUi>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                )}
+              </>
+            )}
+          </tbody>
+        </table>
+        <div className="flex flex-wrap items-center gap-2 p-2 ">
+          {List.length > docPerPage && (
+            <>
+              {currentPage > 1 && (
+                <button
+                  onClick={() => paginateBack()}
+                  className="bg-blue-400 text-white rounded px-3 py-2 focus:outline-none"
+                >
+                  Prev
+                </button>
               )}
             </>
-          ) : (
-            <></>
           )}
-        </tbody>
-      </table>
-      <div className="flex flex-wrap items-center gap-2 p-2 ">
-        {List.length > docPerPage && (
-          <>
-            {currentPage > 1 && (
-              <button
-                onClick={() => paginateBack()}
-                className="bg-blue-400 text-white rounded px-3 py-2 focus:outline-none"
-              >
-                Prev
-              </button>
-            )}
-          </>
-        )}
-        {pageNumbers.map((x) => (
-          <button
-            key={x}
-            onClick={() => setCurrentPage(x)}
-            className=" bg-sky-400 text-white rounded px-3 py-2 focus:outline-none"
-          >
-            {x}
-          </button>
-        ))}
-        {isMoreDocs && (
-          <button className="text-black rounded px-1 py-2">...</button>
-        )}
-        {List.length > docPerPage && (
-          <>
-            {pageNumbers.includes(currentPage + 1) && (
-              <button
-                onClick={() => paginateFront()}
-                className="bg-blue-400 text-white rounded px-3 py-2 focus:outline-none"
-              >
-                Next
-              </button>
-            )}
-          </>
-        )}
-      </div>
-      {List?.length <= 0 && (
-        <div className="flex flex-col items-center justify-center w-full bg-white rounded py-4">
-          <div className="w-[60px] h-[60px] overflow-hidden">
-            <img className="w-full h-full object-contain" src={pad} alt="img" />
+          {pageNumbers.map((x) => (
+            <button
+              key={x}
+              onClick={() => setCurrentPage(x)}
+              className=" bg-sky-400 text-white rounded px-3 py-2 focus:outline-none"
+            >
+              {x}
+            </button>
+          ))}
+          {isMoreDocs && (
+            <button className="text-black rounded px-1 py-2">...</button>
+          )}
+          {List.length > docPerPage && (
+            <>
+              {pageNumbers.includes(currentPage + 1) && (
+                <button
+                  onClick={() => paginateFront()}
+                  className="bg-blue-400 text-white rounded px-3 py-2 focus:outline-none"
+                >
+                  Next
+                </button>
+              )}
+            </>
+          )}
+        </div>
+        {List?.length <= 0 && (
+          <div className="flex flex-col items-center justify-center w-full bg-white rounded py-4">
+            <div className="w-[60px] h-[60px] overflow-hidden">
+              <img
+                className="w-full h-full object-contain"
+                src={pad}
+                alt="img"
+              />
+            </div>
+            <div className="text-sm font-semibold">No Data Available</div>
           </div>
-          <div className="text-sm font-semibold">No Data Available</div>
-        </div>
-      )}
-      <ModalUi
-        title={"Add Contact"}
-        isOpen={isContactform}
-        handleClose={handleContactFormModal}
-      >
-        <AddSigner
-          handleUserData={handleUserData}
-          closePopup={handleContactFormModal}
-        />
-      </ModalUi>
-      <ModalUi
-        headColor={"#dc3545"}
-        isOpen={isDocErr}
-        title={"Receipent required"}
-        handleClose={() => setIsDocErr(false)}
-      >
-        <div style={{ height: "100%", padding: 20 }}>
-          <p>Please add receipent in template!</p>
-        </div>
-      </ModalUi>
+        )}
+        <ModalUi
+          title={"Add Contact"}
+          isOpen={isContactform}
+          handleClose={handleContactFormModal}
+        >
+          <AddSigner
+            handleUserData={handleUserData}
+            closePopup={handleContactFormModal}
+          />
+        </ModalUi>
+        <ModalUi
+          headColor={"#dc3545"}
+          isOpen={isDocErr}
+          title={"Receipent required"}
+          handleClose={() => setIsDocErr(false)}
+        >
+          <div style={{ height: "100%", padding: 20 }}>
+            <p>Please add receipent in template!</p>
+          </div>
+        </ModalUi>
+      </div>
     </div>
   );
 };

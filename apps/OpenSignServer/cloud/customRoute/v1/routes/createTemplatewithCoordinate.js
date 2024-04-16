@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { color, customAPIurl, saveFileUsage } from '../../../../Utils.js';
+import {
+  color,
+  customAPIurl,
+  saveFileUsage,
+  formatWidgetOptions,
+  sanitizeFileName,
+} from '../../../../Utils.js';
 
 const randomId = () => Math.floor(1000 + Math.random() * 9000);
 export default async function createTemplatewithCoordinate(request, response) {
@@ -43,9 +49,8 @@ export default async function createTemplatewithCoordinate(request, response) {
           const buffer = Buffer.from(base64, 'base64');
           saveFileUsage(buffer.length, fileUrl, parseUser.userId.objectId);
         } else {
-          const file = new Parse.File(`${name}.pdf`, {
-            base64: base64File,
-          });
+          const filename = sanitizeFileName(`${name}.pdf`);
+          const file = new Parse.File(filename, { base64: base64File }, 'application/pdf');
           await file.save({ useMasterKey: true });
           fileUrl = file.url();
           const buffer = Buffer.from(base64File, 'base64');
@@ -134,16 +139,16 @@ export default async function createTemplatewithCoordinate(request, response) {
             for (const widget of signer.widgets) {
               const pageNumber = widget.page;
               const page = placeHolder.find(page => page.pageNumber === pageNumber);
-              const signOpt = { name: 'signature', status: 'required' };
+              const options = formatWidgetOptions(widget.type, widget.options);
               const widgetData = {
-                isStamp: widget.type === 'stamp'||  widget.type === 'image',
+                isStamp: widget.type === 'stamp' || widget.type === 'image',
                 key: randomId(),
                 isDrag: false,
                 scale: 1,
                 isMobile: false,
                 zIndex: 1,
-                type: widget.type,
-                options: widget.type === 'signature' ? signOpt : widget.options,
+                type: widget.type === 'textbox' ? 'text input' : widget.type,
+                options: options,
                 Width: widget.w,
                 Height: widget.h,
                 xPosition: widget.x,

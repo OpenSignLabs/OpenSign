@@ -11,6 +11,7 @@ import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { isEnableSubscription } from "../constant/const";
 import { useCookies } from "react-cookie";
+import { fetchSubscription } from "../constant/Utils";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const HomeLayout = () => {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
-          localStorage.setItem("profileImg", user.get("ProfilePic"));
+          localStorage.setItem("profileImg", user.get("ProfilePic") || "");
           checkIsSubscribed();
         } else {
           setIsUserValid(false);
@@ -69,19 +70,13 @@ const HomeLayout = () => {
   };
 
   async function checkIsSubscribed() {
-    const currentUser = Parse.User.current();
-    const user = await Parse.Cloud.run("getUserDetails", {
-      email: currentUser.get("email")
-    });
     if (isEnableSubscription) {
-      const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
-      const billingDate =
-        user?.get("Next_billing_date") && user?.get("Next_billing_date");
-      if (freeplan === "freeplan") {
+      const res = await fetchSubscription();
+      if (res.plan === "freeplan") {
         setIsUserValid(true);
         setIsLoader(false);
-      } else if (billingDate) {
-        if (billingDate > new Date()) {
+      } else if (res.billingDate) {
+        if (new Date(res.billingDate) > new Date()) {
           setIsUserValid(true);
           setIsLoader(false);
         } else {

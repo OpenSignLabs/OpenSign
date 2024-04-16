@@ -19,7 +19,7 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
-import { getAppLogo } from "../constant/Utils";
+import { fetchSubscription, getAppLogo } from "../constant/Utils";
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -169,7 +169,7 @@ function Login() {
                               await Parse.Cloud.run("getUserDetails", {
                                 email: currentUser.get("email")
                               }).then(
-                                (result) => {
+                                async (result) => {
                                   let tenentInfo = [];
                                   const results = [result];
                                   if (results) {
@@ -270,16 +270,15 @@ function Login() {
                                           "userDetails",
                                           JSON.stringify(LocalUserDetails)
                                         );
-                                        const freeplan =
-                                          results[0].get("Plan") &&
-                                          results[0].get("Plan").plan_code;
-                                        const billingDate =
-                                          results[0].get("Next_billing_date") &&
-                                          results[0].get("Next_billing_date");
+                                        const res = await fetchSubscription();
+                                        const freeplan = res.plan;
+                                        const billingDate = res.billingDate;
                                         if (freeplan === "freeplan") {
                                           navigate(redirectUrl);
                                         } else if (billingDate) {
-                                          if (billingDate > new Date()) {
+                                          if (
+                                            new Date(billingDate) > new Date()
+                                          ) {
                                             localStorage.removeItem(
                                               "userDetails"
                                             );
@@ -814,7 +813,7 @@ function Login() {
                     await Parse.Cloud.run("getUserDetails", {
                       email: currentUser.get("email")
                     }).then(
-                      (result) => {
+                      async (result) => {
                         let tenentInfo = [];
                         const results = [result];
                         if (results) {
@@ -866,17 +865,13 @@ function Login() {
                                 "userDetails",
                                 JSON.stringify(LocalUserDetails)
                               );
-                              const billingDate =
-                                results[0].get("Next_billing_date") &&
-                                results[0].get("Next_billing_date");
-                              const freeplan =
-                                results[0]?.get("Plan") &&
-                                results[0]?.get("Plan").plan_code;
-
+                              const res = await fetchSubscription();
+                              const billingDate = res.billingDate;
+                              const freeplan = res.plan;
                               if (freeplan === "freeplan") {
                                 navigate(redirectUrl);
                               } else if (billingDate) {
-                                if (billingDate > new Date()) {
+                                if (new Date(billingDate) > new Date()) {
                                   localStorage.removeItem("userDetails");
                                   // Redirect to the appropriate URL after successful login
                                   navigate(redirectUrl);
