@@ -1756,9 +1756,7 @@ function PlaceHolderSign() {
                                     "cursor-pointer underline text-blue-700 focus:outline-none"
                                   }
                                   onClick={() => {
-                                    isSubscribe ||
-                                      (!isEnableSubscription &&
-                                        setIsCustomize(!isCustomize));
+                                    setIsCustomize(!isCustomize);
                                   }}
                                 >
                                   Cutomize Email

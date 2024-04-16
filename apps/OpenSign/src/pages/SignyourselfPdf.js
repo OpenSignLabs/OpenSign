@@ -1001,7 +1001,6 @@ function SignYourSelf() {
             {/* this component used to render all pdf pages in left side */}
 
             <RenderAllPdfPage
-              pdfUrl={pdfUrl}
               signPdfUrl={pdfDetails[0] && pdfDetails[0].URL}
               allPages={allPages}
               setAllPages={setAllPages}
