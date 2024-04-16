@@ -1548,6 +1548,7 @@ const TemplatePlaceholder = () => {
           isAddUser={isAddUser}
           uniqueId={uniqueId}
           closePopup={closePopup}
+          signersData={signersdata}
         />
       </div>
       <ModalUi
