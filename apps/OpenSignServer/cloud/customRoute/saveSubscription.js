@@ -3,7 +3,8 @@ export default async function saveSubscription(request, response) {
   const body = request.body;
   const Email = request.body.data.subscription.customer.email;
   const Next_billing_date = request.body.data.subscription.next_billing_at;
-  const planName = request.body.data.subscription.plan.name;
+  const planCode = request.body.data.subscription.plan.plan_code
+
   try {
     const extUserCls = new Parse.Query('contracts_Users');
     extUserCls.equalTo('Email', Email);
@@ -19,9 +20,10 @@ export default async function saveSubscription(request, response) {
       if (subscription) {
         const updateSubscription = new Parse.Object('contracts_Subscriptions');
         updateSubscription.id = subscription.id;
+        updateSubscription.set('SubscriptionId', SubscriptionId);
         updateSubscription.set('SubscriptionDetails', body);
         updateSubscription.set('Next_billing_date', new Date(Next_billing_date));
-        updateSubscription.set('PlanName', planName);
+        updateSubscription.set('PlanCode', planCode);
         await updateSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'update subscription!' });
       } else {
@@ -44,7 +46,7 @@ export default async function saveSubscription(request, response) {
           objectId: extUser.get('TenantId').id,
         });
         createSubscription.set('Next_billing_date', new Date(Next_billing_date));
-        createSubscription.set('PlanName', planName);
+        createSubscription.set('PlanCode', planCode);
         await createSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'create subscription!' });
       }
