@@ -84,6 +84,15 @@ export default function reportJson(id) {
             btnIcon: "fa fa-trash",
             redirectUrl: "",
             action: "delete"
+          },
+          {
+            btnId: "1688",
+            btnLabel: "Revoke",
+            btnColor: "#ff4848",
+            textColor: "white",
+            btnIcon: "fa-solid fa-file-circle-xmark",
+            redirectUrl: "",
+            action: "revoke"
           }
         ],
         helpMsg:
