@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+ import React, { useState, useEffect, useMemo } from "react";
 import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -25,13 +25,14 @@ const ReportTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
-  const [isErr, setIsErr] = useState(false);
   const [isDocErr, setIsDocErr] = useState(false);
   const [isContactform, setIsContactform] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState({});
+  const [isRevoke, setIsRevoke] = useState({});
   const [isShare, setIsShare] = useState({});
   const [shareUrls, setShareUrls] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [alertMsg, setAlertMsg] = useState({ type: "success", message: "" });
   const startIndex = (currentPage - 1) * docPerPage;
 
   // For loop is used to calculate page numbers visible below table
@@ -164,7 +165,10 @@ const ReportTable = ({
               } catch (err) {
                 console.log("Err", err);
                 setIsAlert(true);
-                setIsErr(true);
+                setAlertMsg({
+                  type: "danger",
+                  message: "Something went wrong, Please try again later!"
+                });
                 setTimeout(() => setIsAlert(false), 1500);
                 setActLoader({});
               }
@@ -174,14 +178,20 @@ const ReportTable = ({
             }
           } else {
             setIsAlert(true);
-            setIsErr(true);
+            setAlertMsg({
+              type: "danger",
+              message: "Something went wrong, Please try again later!"
+            });
             setTimeout(() => setIsAlert(false), 1500);
             setActLoader({});
           }
         } catch (err) {
           console.log("err", err);
           setIsAlert(true);
-          setIsErr(true);
+          setAlertMsg({
+            type: "danger",
+            message: "Something went wrong, Please try again later!"
+          });
           setTimeout(() => setIsAlert(false), 1500);
           setActLoader({});
         }
@@ -200,6 +210,8 @@ const ReportTable = ({
       setIsDeleteModal({ [item.objectId]: true });
     } else if (act.action === "share") {
       handleShare(item);
+    } else if (act.action === "revoke") {
+      setIsRevoke({ [item.objectId]: true });
     }
   };
   // Get current list
@@ -248,6 +260,10 @@ const ReportTable = ({
       if (res.data && res.data.updatedAt) {
         setActLoader({});
         setIsAlert(true);
+        setAlertMsg({
+          type: "success",
+          message: "Record deleted successfully!"
+        });
         setTimeout(() => setIsAlert(false), 1500);
         const upldatedList = List.filter((x) => x.objectId !== item.objectId);
         setList(upldatedList);
@@ -255,12 +271,18 @@ const ReportTable = ({
     } catch (err) {
       console.log("err", err);
       setIsAlert(true);
-      setIsErr(true);
+      setAlertMsg({
+        type: "danger",
+        message: "Something went wrong, Please try again later!"
+      });
       setTimeout(() => setIsAlert(false), 1500);
       setActLoader({});
     }
   };
-  const handleCloseDeleteModal = () => setIsDeleteModal({});
+  const handleClose = () => {
+    setIsRevoke({});
+    setIsDeleteModal({});
+  };
 
   const handleShare = (item) => {
     setActLoader({ [item.objectId]: true });
@@ -281,6 +303,53 @@ const ReportTable = ({
     navigator.clipboard.writeText(share.url);
     setCopied({ ...copied, [share.email]: true });
   };
+  //function to handle revoke/decline docment
+  const handleRevoke = async (item) => {
+    setIsRevoke({});
+    setActLoader({ [`${item.objectId}`]: true });
+    const data = {
+      IsDeclined: true
+    };
+
+    await axios
+      .put(
+        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+          "_appName"
+        )}_Document/${item.objectId}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      )
+      .then(async (result) => {
+        const res = result.data;
+        if (res) {
+          setActLoader({});
+          setIsAlert(true);
+          setAlertMsg({
+            type: "success",
+            message: "Record revoked successfully!"
+          });
+          setTimeout(() => setIsAlert(false), 1500);
+          const upldatedList = List.filter((x) => x.objectId !== item.objectId);
+          setList(upldatedList);
+        }
+      })
+      .catch((err) => {
+        console.log("err", err);
+        setIsAlert(true);
+        setAlertMsg({
+          type: "danger",
+          message: "Something went wrong, Please try again later!"
+        });
+        setTimeout(() => setIsAlert(false), 1500);
+        setActLoader({});
+      });
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -292,13 +361,7 @@ const ReportTable = ({
         </div>
       )}
       <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
-        {isAlert && (
-          <Alert type={isErr ? "danger" : "success"}>
-            {isErr
-              ? "Something went wrong, Please try again later!"
-              : "Record deleted successfully!"}
-          </Alert>
-        )}
+        {isAlert && <Alert type={alertMsg.type}>{alertMsg.message}</Alert>}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
             {ReportName}{" "}
@@ -370,7 +433,7 @@ const ReportTable = ({
                           <ModalUi
                             isOpen
                             title={"Delete Contact"}
-                            handleClose={handleCloseDeleteModal}
+                            handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
@@ -388,7 +451,7 @@ const ReportTable = ({
                                   Yes
                                 </button>
                                 <button
-                                  onClick={handleCloseDeleteModal}
+                                  onClick={handleClose}
                                   className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
                                   style={{
                                     backgroundColor: modalCancelBtnColor
@@ -459,7 +522,7 @@ const ReportTable = ({
                           <ModalUi
                             isOpen
                             title={"Delete Document"}
-                            handleClose={handleCloseDeleteModal}
+                            handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
@@ -477,7 +540,7 @@ const ReportTable = ({
                                   Yes
                                 </button>
                                 <button
-                                  onClick={handleCloseDeleteModal}
+                                  onClick={handleClose}
                                   className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
                                   style={{
                                     backgroundColor: modalCancelBtnColor
@@ -528,6 +591,40 @@ const ReportTable = ({
                                   </div>
                                 </div>
                               ))}
+                            </div>
+                          </ModalUi>
+                        )}
+                        {isRevoke[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Revoke document"}
+                            handleClose={handleClose}
+                          >
+                            <div className="m-[20px]">
+                              <div className="text-lg font-normal text-black">
+                                Are you sure you want to revoke this document?
+                              </div>
+                              <hr className="bg-[#ccc] mt-4 " />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handleRevoke(item)}
+                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                  style={{
+                                    backgroundColor: modalSubmitBtnColor
+                                  }}
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={handleClose}
+                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                  style={{
+                                    backgroundColor: modalCancelBtnColor
+                                  }}
+                                >
+                                  No
+                                </button>
+                              </div>
                             </div>
                           </ModalUi>
                         )}
