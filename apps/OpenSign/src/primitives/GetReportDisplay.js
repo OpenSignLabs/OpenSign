@@ -585,8 +585,7 @@ const ReportTable = ({
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
-                                Are you sure you want to revoke/decline this
-                                document?
+                               Are you sure you want to revoke this document?
                               </div>
                               <hr className="bg-[#ccc] mt-4 " />
                               <div className="flex items-center mt-3 gap-2 text-white">
