@@ -1,4 +1,4 @@
- import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,18 +9,7 @@ import Alert from "./Alert";
 import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
 
-const ReportTable = ({
-  ReportName,
-  List,
-  setList,
-  actions,
-  heading,
-  setIsNextRecord,
-  isMoreDocs,
-  docPerPage,
-  form,
-  report_help
-}) => {
+const ReportTable = (props) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
@@ -32,18 +21,19 @@ const ReportTable = ({
   const [isShare, setIsShare] = useState({});
   const [shareUrls, setShareUrls] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [isOption, setIsOption] = useState({});
   const [alertMsg, setAlertMsg] = useState({ type: "success", message: "" });
-  const startIndex = (currentPage - 1) * docPerPage;
-
+  const startIndex = (currentPage - 1) * props.docPerPage;
+  const { isMoreDocs, setIsNextRecord } = props;
   // For loop is used to calculate page numbers visible below table
   // Initialize pageNumbers using useMemo to avoid unnecessary re-creation
   const pageNumbers = useMemo(() => {
     const calculatedPageNumbers = [];
-    for (let i = 1; i <= Math.ceil(List.length / docPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(props.List.length / props.docPerPage); i++) {
       calculatedPageNumbers.push(i);
     }
     return calculatedPageNumbers;
-  }, [List, docPerPage]);
+  }, [props.List, props.docPerPage]);
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
     return () => setCurrentPage(1);
@@ -73,8 +63,8 @@ const ReportTable = ({
 
   // `handleURL` is used to open microapp
   const handleURL = async (item, act) => {
-    if (ReportName === "Templates") {
-      if (act.btnLabel === "Edit") {
+    if (props.ReportName === "Templates") {
+      if (act.hoverLabel === "Edit") {
         navigate(`/${act.redirectUrl}/${item.objectId}`);
       } else {
         setActLoader({ [`${item.objectId}_${act.btnId}`]: true });
@@ -212,13 +202,15 @@ const ReportTable = ({
       handleShare(item);
     } else if (act.action === "revoke") {
       setIsRevoke({ [item.objectId]: true });
+    } else if (act.action === "option") {
+      setIsOption({ [item.objectId]: !isOption[item.objectId] });
     }
   };
   // Get current list
-  const indexOfLastDoc = currentPage * docPerPage;
-  const indexOfFirstDoc = indexOfLastDoc - docPerPage;
+  const indexOfLastDoc = currentPage * props.docPerPage;
+  const indexOfFirstDoc = indexOfLastDoc - props.docPerPage;
   // `currentLists` is total record render on current page
-  const currentLists = List?.slice(indexOfFirstDoc, indexOfLastDoc);
+  const currentLists = props.List?.slice(indexOfFirstDoc, indexOfLastDoc);
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
@@ -229,7 +221,7 @@ const ReportTable = ({
   };
 
   const handleUserData = (data) => {
-    setList((prevData) => [data, ...prevData]);
+    props.setList((prevData) => [data, ...prevData]);
   };
 
   const handleDelete = async (item) => {
@@ -243,10 +235,10 @@ const ReportTable = ({
       const serverUrl = process.env.REACT_APP_SERVERURL
         ? process.env.REACT_APP_SERVERURL
         : window.location.origin + "/api/app";
-      const cls = clsObj[ReportName] || "contracts_Document";
+      const cls = clsObj[props.ReportName] || "contracts_Document";
       const url = serverUrl + `/classes/${cls}/`;
       const body =
-        ReportName === "Contactbook"
+        props.ReportName === "Contactbook"
           ? { IsDeleted: true }
           : { IsArchive: true };
       const res = await axios.put(url + item.objectId, body, {
@@ -265,8 +257,10 @@ const ReportTable = ({
           message: "Record deleted successfully!"
         });
         setTimeout(() => setIsAlert(false), 1500);
-        const upldatedList = List.filter((x) => x.objectId !== item.objectId);
-        setList(upldatedList);
+        const upldatedList = props.List.filter(
+          (x) => x.objectId !== item.objectId
+        );
+        props.setList(upldatedList);
       }
     } catch (err) {
       console.log("err", err);
@@ -335,8 +329,10 @@ const ReportTable = ({
             message: "Record revoked successfully!"
           });
           setTimeout(() => setIsAlert(false), 1500);
-          const upldatedList = List.filter((x) => x.objectId !== item.objectId);
-          setList(upldatedList);
+          const upldatedList = props.List.filter(
+            (x) => x.objectId !== item.objectId
+          );
+          props.setList(upldatedList);
         }
       })
       .catch((err) => {
@@ -364,20 +360,20 @@ const ReportTable = ({
         {isAlert && <Alert type={alertMsg.type}>{alertMsg.message}</Alert>}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
-            {ReportName}{" "}
-            {report_help && (
+            {props.ReportName}{" "}
+            {props.report_help && (
               <span className="text-xs md:text-[13px] font-normal">
-                <Tooltip message={report_help} />
+                <Tooltip message={props.report_help} />
               </span>
             )}
           </div>
-          {ReportName === "Templates" && (
+          {props.ReportName === "Templates" && (
             <i
               onClick={() => navigate("/form/template")}
               className="fa-solid fa-square-plus text-sky-400 text-[25px]"
             ></i>
           )}
-          {form && (
+          {props.form && (
             <div
               className="cursor-pointer"
               onClick={() => handleContactFormModal()}
@@ -389,36 +385,36 @@ const ReportTable = ({
         <table className="table-auto w-full border-collapse">
           <thead className="text-[14px]">
             <tr className="border-y-[1px]">
-              {heading?.map((item, index) => (
+              {props.heading?.map((item, index) => (
                 <React.Fragment key={index}>
                   <th className="px-4 py-2 font-thin">{item}</th>
                 </React.Fragment>
               ))}
-              {actions?.length > 0 && (
+              {props.actions?.length > 0 && (
                 <th className="px-4 py-2 font-thin">Action</th>
               )}
             </tr>
           </thead>
           <tbody className="text-[12px]">
-            {List?.length > 0 && (
+            {props.List?.length > 0 && (
               <>
                 {currentLists.map((item, index) =>
-                  ReportName === "Contactbook" ? (
+                  props.ReportName === "Contactbook" ? (
                     <tr className="border-y-[1px]" key={index}>
-                      {heading.includes("Sr.No") && (
+                      {props.heading.includes("Sr.No") && (
                         <td className="px-4 py-2">{startIndex + index + 1}</td>
                       )}
                       <td className="px-4 py-2 font-semibold">{item?.Name} </td>
                       <td className="px-4 py-2">{item?.Email || "-"}</td>
                       <td className="px-4 py-2">{item?.Phone || "-"}</td>
                       <td className="px-3 py-2 text-white grid grid-cols-2">
-                        {actions?.length > 0 &&
-                          actions.map((act, index) => (
+                        {props.actions?.length > 0 &&
+                          props.actions.map((act, index) => (
                             <button
                               key={index}
                               onClick={() => handleActionBtn(act, item)}
                               className={`mb-1 flex justify-center items-center gap-1 px-2 py-1 rounded shadow`}
-                              title={act.btnLabel}
+                              title={act.hoverLabel}
                               style={{
                                 backgroundColor: act.btnColor
                                   ? act.btnColor
@@ -467,16 +463,16 @@ const ReportTable = ({
                     </tr>
                   ) : (
                     <tr className="border-y-[1px]" key={index}>
-                      {heading.includes("Sr.No") && (
+                      {props.heading.includes("Sr.No") && (
                         <td className="px-4 py-2">{startIndex + index + 1}</td>
                       )}
                       <td className="px-4 py-2 font-semibold w-56">
                         {item?.Name}{" "}
                       </td>
-                      {heading.includes("Note") && (
+                      {props.heading.includes("Note") && (
                         <td className="px-4 py-2">{item?.Note || "-"}</td>
                       )}
-                      {heading.includes("Folder") && (
+                      {props.heading.includes("Folder") && (
                         <td className="px-4 py-2">
                           {item?.Folder?.Name || "OpenSign™ Drive"}
                         </td>
@@ -500,14 +496,18 @@ const ReportTable = ({
                       <td className="px-4 py-2">
                         {item?.Signers ? formatRow(item?.Signers) : "-"}
                       </td>
-                      <td className="px-3 py-2 text-white grid grid-cols-2 gap-1">
-                        {actions?.length > 0 &&
-                          actions.map((act, index) => (
+                      <td className="px-2 py-2 text-white flex flex-row gap-x-2 gap-y-1 justify-center items-center">
+                        {props.actions?.length > 0 &&
+                          props.actions.map((act, index) => (
                             <button
                               key={index}
                               onClick={() => handleActionBtn(act, item)}
-                              className={`w-[25px] h-[25px] flex justify-center items-center rounded shadow`}
-                              title={act.btnLabel}
+                              className={`${
+                                act.action === "option" ? "" : "rounded shadow"
+                              } ${
+                                act.btnLabel ? "py-[3px] px-1.5" : "py-1.5 px-2"
+                              } relative text-center flex items-center justify-center focus:outline-none`}
+                              title={act.hoverLabel}
                               style={{
                                 backgroundColor: act.btnColor
                                   ? act.btnColor
@@ -516,6 +516,33 @@ const ReportTable = ({
                               }}
                             >
                               <i className={act.btnIcon}></i>
+                              {act.btnLabel && (
+                                <span className="ml-[4px] uppercase font-medium">
+                                  {act.btnLabel}
+                                </span>
+                              )}
+                              {isOption[item.objectId] &&
+                                act.action === "option" && (
+                                  <div className="absolute -right-2 top-5 bg-white rounded shadow z-[20] overflow-hidden">
+                                    {act.subaction?.map((subact) => (
+                                      <div
+                                        key={subact.btnId}
+                                        className="hover:bg-gray-300 cursor-pointer px-2 py-1.5 flex justify-start items-center text-black"
+                                        onClick={() =>
+                                          handleActionBtn(subact, item)
+                                        }
+                                        title={subact.hoverLabel}
+                                      >
+                                        <i className={subact.btnIcon}></i>
+                                        {subact.btnLabel && (
+                                          <span className="ml-[4px] text-xs capitalize">
+                                            {subact.btnLabel}
+                                          </span>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                             </button>
                           ))}
                         {isDeleteModal[item.objectId] && (
@@ -637,7 +664,7 @@ const ReportTable = ({
           </tbody>
         </table>
         <div className="flex flex-wrap items-center gap-2 p-2 ">
-          {List.length > docPerPage && (
+          {props.List.length > props.docPerPage && (
             <>
               {currentPage > 1 && (
                 <button
@@ -661,7 +688,7 @@ const ReportTable = ({
           {isMoreDocs && (
             <button className="text-black rounded px-1 py-2">...</button>
           )}
-          {List.length > docPerPage && (
+          {props.List.length > props.docPerPage && (
             <>
               {pageNumbers.includes(currentPage + 1) && (
                 <button
@@ -674,7 +701,7 @@ const ReportTable = ({
             </>
           )}
         </div>
-        {List?.length <= 0 && (
+        {props.List?.length <= 0 && (
           <div className="flex flex-col items-center justify-center w-full bg-white rounded py-4">
             <div className="w-[60px] h-[60px] overflow-hidden">
               <img
