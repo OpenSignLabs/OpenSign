@@ -12,19 +12,25 @@ export default async function getSubscription(request) {
     });
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
-      const subscriptionCls = new Parse.Query('contracts_Subscriptions');
-      subscriptionCls.equalTo('ExtUserPtr', {
-        __type: 'Pointer',
-        className: 'contracts_Users',
-        objectId: extUserId,
-      });
-      subscriptionCls.descending('createdAt');
-      const subcripitions = await subscriptionCls.first({ useMasterKey: true });
-      if (subcripitions) {
-        const _subcripitions = JSON.parse(JSON.stringify(subcripitions));
-        return { status: 'success', result: _subcripitions };
+      const subcriptionCls = new Parse.Query('contracts_Users');
+      const exUser = await subcriptionCls.get(extUserId, { useMasterKey: true });
+      if (exUser) {
+        const subscriptionCls = new Parse.Query('contracts_Subscriptions');
+        subscriptionCls.equalTo('TenantId', {
+          __type: 'Pointer',
+          className: 'partners_Tenant',
+          objectId: exUser.get('TenantId').id,
+        });
+        subscriptionCls.descending('createdAt');
+        const subcripitions = await subscriptionCls.first({ useMasterKey: true });
+        if (subcripitions) {
+          const _subcripitions = JSON.parse(JSON.stringify(subcripitions));
+          return { status: 'success', result: _subcripitions };
+        } else {
+          return { status: 'success', result: {} };
+        }
       } else {
-        return { status: 'success', result: {} };
+        return { status: 'error', result: 'User not found!' };
       }
     } else {
       return { status: 'error', result: 'Invalid session token!' };

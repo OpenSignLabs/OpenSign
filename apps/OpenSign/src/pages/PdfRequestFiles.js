@@ -22,7 +22,8 @@ import {
   onSaveImage,
   addDefaultSignatureImg,
   radioButtonWidget,
-  replaceMailVaribles
+  replaceMailVaribles,
+  fetchSubscription
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -32,7 +33,6 @@ import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
-import Parse from "parse";
 
 function PdfRequestFiles() {
   const { docId } = useParams();
@@ -135,17 +135,14 @@ function PdfRequestFiles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
-  async function checkIsSubscribed(email) {
-    const user = await Parse.Cloud.run("getUserDetails", {
-      email: email
-    });
-    const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
-    const billingDate =
-      user?.get("Next_billing_date") && user?.get("Next_billing_date");
+  async function checkIsSubscribed() {
+    const res = await fetchSubscription();
+    const freeplan = res.plan;
+    const billingDate = res.billingDate;
     if (freeplan === "freeplan") {
       return true;
     } else if (billingDate) {
-      if (billingDate > new Date()) {
+      if (new Date(billingDate) > new Date()) {
         return true;
       } else {
         if (location.pathname.includes("/load/")) {
@@ -1095,9 +1092,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                        ? "You have declined this document!"
-                        : isDecline.currnt === "another" &&
-                          "You cannot sign this document as it has been declined by one or more recipient(s)."
+                      ? "You have declined this document!"
+                      : isDecline.currnt === "another" &&
+                        "You cannot sign this document as it has been declined by one or more recipient(s)."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
