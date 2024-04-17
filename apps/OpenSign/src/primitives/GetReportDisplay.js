@@ -423,7 +423,7 @@ const ReportTable = (props) => {
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
-        <div className="absolute w-full h-full rounded-md flex justify-center items-center bg-black bg-opacity-30 ">
+        <div className="absolute w-full h-full rounded-md flex justify-center items-center bg-black bg-opacity-30 z-30">
           <div
             style={{ fontSize: "45px", color: "#3dd3e0" }}
             className="loader-37"
