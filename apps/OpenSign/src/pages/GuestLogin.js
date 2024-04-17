@@ -5,6 +5,7 @@ import loader from "../assets/images/loader2.gif";
 import axios from "axios";
 import { isEnableSubscription, themeColor } from "../constant/const";
 import { contractUsers, getAppLogo } from "../constant/Utils";
+import logo from "../assets/images/logo.png";
 
 function GuestLogin() {
   const { id, userMail, contactBookId, serverUrl } = useParams();
@@ -14,9 +15,7 @@ function GuestLogin() {
   const [EnterOTP, setEnterOtp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [appLogo, setAppLogo] = useState(
-    "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png"
-  );
+  const [appLogo, setAppLogo] = useState("");
 
   useEffect(() => {
     handleServerUrl();
@@ -31,8 +30,10 @@ function GuestLogin() {
       if (applogo) {
         setAppLogo(applogo);
       } else {
-        setAppLogo(localStorage.getItem("appLogo") || "");
+        setAppLogo(logo);
       }
+    } else {
+      setAppLogo(logo);
     }
 
     //split url in array from '&'
@@ -178,7 +179,13 @@ function GuestLogin() {
         >
           <div className="main_head">
             <div className="w-[250px] h-[66px] inline-block overflow-hidden">
-              <img src={appLogo} className="object-contain h-full" alt="logo" />
+              {appLogo && (
+                <img
+                  src={appLogo}
+                  className="object-contain h-full"
+                  alt="logo"
+                />
+              )}
             </div>
           </div>
 
