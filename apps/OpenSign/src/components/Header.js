@@ -177,6 +177,14 @@ const Header = ({ showSidebar }) => {
                 <i className="fa-solid fa-lock"></i> Change Password
               </li>
               <li
+                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
+                onClick={() => {
+                  window.open("https://console.opensignlabs.com/");
+                }}
+              >
+                <i className="fa-regular fa-id-card"></i> Console
+              </li>
+              <li
                 className="hover:bg-gray-100 rounded-b-lg py-1 px-2 cursor-pointer font-normal"
                 onClick={closeDropdown}
               >
