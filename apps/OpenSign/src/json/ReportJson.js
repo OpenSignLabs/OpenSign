@@ -320,7 +320,10 @@ export default function reportJson(id) {
             textColor: "white",
             btnIcon: "fa fa-plus",
             redirectUrl: "placeHolderSign",
-            action: "redirect"
+            action: "redirect",
+            selector: "reactourSecond",
+            message:
+              "Click the 'Use' button to create a new document from an existing template."
           },
           {
             btnId: "2234",
@@ -329,6 +332,9 @@ export default function reportJson(id) {
             textColor: "black",
             btnIcon: "fa-solid fa-ellipsis-vertical fa-lg",
             action: "option",
+            selector: "reactourThird",
+            message:
+              "Onclick option button you can see options such as Edit & Delete. Use the 'Edit' button to add signer roles, modify fields, and update your template. Changes will apply to all future documents created from this template but won’t affect existing documents.Use the Delete button you can delete template",
             subaction: [
               {
                 btnId: "2434",
