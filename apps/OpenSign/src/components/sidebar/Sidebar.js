@@ -41,7 +41,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       <div className="flex px-2 py-3 gap-2 items-center shadow-md">
         <div className="w-[75px] h-[75px] rounded-full ring-[2px] ring-offset-2 ring-gray-400 overflow-hidden">
           <img
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             src={image}
             alt="Profile"
           />

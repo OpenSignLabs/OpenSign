@@ -1,7 +1,5 @@
 import React from "react";
 import PrevNext from "./PrevNext";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import Certificate from "./Certificate";
 import printModule from "print-js";
 import { getBase64FromUrl } from "../../constant/Utils";
 import { saveAs } from "file-saver";
@@ -9,18 +7,17 @@ import "../../styles/signature.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { themeColor } from "../../constant/const";
+import Certificate from "./Certificate";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 function Header({
   isPdfRequestFiles,
   isPlaceholder,
-  recipient,
   setIsDecline,
   pageNumber,
-  isAlreadySign,
   allPages,
   changePage,
   pdfUrl,
-  documentStatus,
   embedWidgetsData,
   pdfDetails,
   signerPos,
@@ -94,8 +91,21 @@ function Header({
     // Replace spaces with underscore
     return pdfName.replace(/ /g, "_");
   };
-  //certificate generate and download component in mobile view
-  const CertificateDropDown = () => {
+
+  //handle download signed pdf
+  const handleDownloadCertificate = async () => {
+    if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
+      try {
+        await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
+        const certificateUrl = pdfDetails[0] && pdfDetails[0]?.CertificateUrl;
+        saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+      } catch (err) {
+        console.log("err in download in certificate", err);
+      }
+    }
+  };
+
+  const GenerateCertificate = () => {
     //after generate download certifcate pdf
     const handleDownload = (pdfBlob, fileName) => {
       if (pdfBlob) {
@@ -122,76 +132,20 @@ function Header({
         document={<Certificate pdfData={pdfDetails} />}
       >
         {({ blob, loading }) => (
-          <>
-            {loading ? (
-              <div
-                style={{
-                  border: "none",
-                  backgroundColor: "#fff"
-                }}
-              >
-                <i
-                  className="fa-solid fa-award"
-                  style={{ marginRight: "2px" }}
-                  aria-hidden="true"
-                ></i>
-                Certificate
-              </div>
-            ) : (
-              <div
-                style={{ border: "none", backgroundColor: "#fff" }}
-                onClick={() =>
-                  handleDownload(
-                    blob,
-                    `completion certificate-${
-                      pdfDetails[0] && pdfDetails[0].Name
-                    }.pdf`
-                  )
-                }
-              >
-                <i
-                  className="fa-solid fa-award"
-                  style={{ marginRight: "2px" }}
-                  aria-hidden="true"
-                ></i>
-                Certificate
-              </div>
-            )}
-          </>
-        )}
-      </PDFDownloadLink>
-    );
-  };
-  const CertificateComponent = () => {
-    return (
-      <PDFDownloadLink
-        style={{ textDecoration: "none" }}
-        document={<Certificate pdfData={pdfDetails} />}
-        fileName={`completion certificate-${
-          pdfDetails[0] && pdfDetails[0].Name
-        }.pdf`}
-      >
-        {({ loading }) => (
           <button
-            type="button"
-            className="defaultBtn certificateBtn"
+            onClick={() =>
+              handleDownload(
+                blob,
+                `completion certificate-${
+                  pdfDetails[0] && pdfDetails[0].Name
+                }.pdf`
+              )
+            }
             disabled={loading}
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center"
-            }}
+            className=" md:bg-[#08bc66] border-none focus:outline-none flex flex-row items-center md:shadow md:rounded-[3px] py-[3px] md:px-[11px] md:text-white text-black md:font-[500] text-[13px] mr-[5px]"
           >
-            <i
-              className="fa-solid fa-award"
-              style={{
-                color: "white",
-                fontSize: "15px",
-                marginRight: "3px"
-              }}
-              aria-hidden="true"
-            ></i>
-            Certificate
+            <i className="fa-solid fa-award py-[3px]" aria-hidden="true"></i>
+            <span className="md:hidden lg:block ml-1">Certificate</span>
           </button>
         )}
       </PDFDownloadLink>
@@ -210,11 +164,7 @@ function Header({
           }}
         >
           <div className="preBtn2">
-            <div
-              onClick={() => {
-                navigate(-1);
-              }}
-            >
+            <div onClick={() => navigate(-1)}>
               <i
                 className="fa fa-arrow-left"
                 aria-hidden="true"
@@ -266,7 +216,6 @@ function Header({
                     <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
                   </div>
                 </DropdownMenu.Trigger>
-
                 <DropdownMenu.Portal>
                   <DropdownMenu.Content
                     className="DropdownMenuContent"
@@ -290,42 +239,53 @@ function Header({
                         Download
                       </div>
                     </DropdownMenu.Item>
-                    {recipient && pdfDetails[0] && pdfDetails.length > 0 ? (
-                      <DropdownMenu.Item className="DropdownMenuItem">
-                        <CertificateDropDown />
-                      </DropdownMenu.Item>
-                    ) : isPdfRequestFiles &&
-                      alreadySign &&
-                      isCompleted.isCertificate ? (
-                      <DropdownMenu.Item className="DropdownMenuItem">
-                        <CertificateDropDown />
-                      </DropdownMenu.Item>
-                    ) : (
-                      isSignYourself && (
-                        <>
-                          <DropdownMenu.Item className="DropdownMenuItem">
-                            <CertificateDropDown />
-                          </DropdownMenu.Item>
+                    {isCompleted && (
+                      <>
+                        {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
                           <DropdownMenu.Item
                             className="DropdownMenuItem"
-                            onClick={() => setIsEmail(true)}
+                            onClick={() => handleDownloadCertificate()}
                           >
                             <div
                               style={{
-                                display: "flex",
-                                flexDirection: "row"
+                                border: "none",
+                                backgroundColor: "#fff"
                               }}
                             >
                               <i
-                                className="fa fa-envelope"
+                                className="fa-solid fa-award"
                                 style={{ marginRight: "2px" }}
                                 aria-hidden="true"
                               ></i>
-                              Mail
+                              Certificate
                             </div>
                           </DropdownMenu.Item>
-                        </>
-                      )
+                        ) : (
+                          <DropdownMenu.Item className="DropdownMenuItem">
+                            <GenerateCertificate />
+                          </DropdownMenu.Item>
+                        )}
+                      </>
+                    )}
+                    {isSignYourself && (
+                      <DropdownMenu.Item
+                        className="DropdownMenuItem"
+                        onClick={() => setIsEmail(true)}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row"
+                          }}
+                        >
+                          <i
+                            className="fa fa-envelope"
+                            style={{ marginRight: "2px" }}
+                            aria-hidden="true"
+                          ></i>
+                          Mail
+                        </div>
+                      </DropdownMenu.Item>
                     )}
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
@@ -337,7 +297,6 @@ function Header({
                           flexDirection: "row"
                         }}
                       >
-                        {" "}
                         <i
                           className="fa fa-print"
                           aria-hidden="true"
@@ -416,217 +375,126 @@ function Header({
           </div>
         </div>
       ) : (
-        <div className="signatureHeader headerBtn">
+        <div className="flex flex-wrap justify-between items-center mt-[5px]">
           <PrevNext
             pageNumber={pageNumber}
             allPages={allPages}
             changePage={changePage}
           />
-
-          {recipient ? (
-            pdfUrl || isAlreadySign.mssg ? (
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                {pdfDetails && pdfDetails.length > 0 && (
-                  <CertificateComponent />
-                )}
-                <button
-                  onClick={handleToPrint}
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center"
-                  }}
-                  className="defaultBtn printBtn"
-                >
-                  <i
-                    className="fa fa-print"
-                    style={{
-                      fontSize: "15px",
-                      marginRight: "3px",
-                      color: "white"
-                    }}
-                    aria-hidden="true"
-                  ></i>
-                  Print
-                </button>
-
-                <button
-                  type="button"
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center"
-                  }}
-                  className="defaultBtn downloadBtn"
-                  onClick={() => handleDownloadPdf()}
-                >
-                  <i
-                    className="fa fa-download"
-                    style={{
-                      color: "white",
-                      fontSize: "15px",
-                      marginRight: "3px"
-                    }}
-                    aria-hidden="true"
-                  ></i>
-                  Download
-                </button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <button
-                  style={{
-                    background: "#de4337"
-                  }}
-                  className="finishBtn hoverCss"
-                  onClick={() => {
-                    handleDeclinePdfAlert();
-                  }}
-                >
-                  Decline
-                </button>
-
-                <button
-                  data-tut="reactourThird"
-                  style={{
-                    background: !pdfUrl ? "#188ae2" : "#d3edeb"
-                  }}
-                  className="finishBtn sendHover"
-                  onClick={() => {
-                    if (!pdfUrl) {
-                      embedWidgetsData();
-                    }
-                  }}
-                >
-                  Finish
-                </button>
-              </div>
-            )
-          ) : isPlaceholder ? (
+          {isPlaceholder ? (
             <>
-              {!isMailSend &&
-                signersdata.length > 0 &&
-                signersdata.length !== filterPrefill.length && (
-                  <div>
-                    {filterPrefill.length === 0 ? (
-                      <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add {signersdata.length - filterPrefill.length}{" "}
-                        recipients signature
-                      </span>
-                    ) : (
-                      <span style={{ fontSize: "13px", color: "#f5405e" }}>
-                        Add {signersdata.length - filterPrefill.length} more
-                        recipients signature
-                      </span>
-                    )}
-                  </div>
-                )}
-
-              <div>
+              <div className="flex mx-[100px] lg:mx-0 order-last lg:order-none">
+                {!isMailSend &&
+                  signersdata.length > 0 &&
+                  signersdata.length !== filterPrefill.length && (
+                    <div>
+                      {filterPrefill.length === 0 ? (
+                        <span style={{ fontSize: "13px", color: "#f5405e" }}>
+                          Add {signersdata.length - filterPrefill.length}{" "}
+                          recipients signature
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: "13px", color: "#f5405e" }}>
+                          Add {signersdata.length - filterPrefill.length} more
+                          recipients signature
+                        </span>
+                      )}
+                    </div>
+                  )}
+              </div>
+              <div className="flex">
                 {setIsEditTemplate && (
                   <button
                     onClick={() => setIsEditTemplate(true)}
-                    style={{
-                      border: "none",
-                      outline: "none",
-                      textAlign: "center"
-                    }}
+                    className="outline-none border-none text-center mr-[5px]"
                   >
                     <i className="fa-solid fa-gear fa-lg"></i>
                   </button>
                 )}
                 <button
-                  onClick={() => {
-                    navigate(-1);
-                  }}
+                  onClick={() => navigate(-1)}
                   type="button"
-                  className="defaultBtn backBtn"
+                  className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-black font-[500] text-sm mr-[5px] bg-white"
                 >
                   Back
                 </button>
-
                 <button
                   disabled={isMailSend && true}
                   data-tut="reactourFour"
+                  className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] font-[500] text-sm mr-[5px]"
                   style={{
                     background: isMailSend ? "rgb(203, 203, 203)" : "#188ae2",
-                    color: isMailSend && "rgb(77, 75, 75)"
+                    color: isMailSend ? "rgb(77, 75, 75)" : "white"
                   }}
                   onClick={() => {
                     alertSendEmail();
                   }}
-                  className={isMailSend ? "sendMail" : "sendMail sendHover"}
                 >
-                  {completeBtnTitle ? completeBtnTitle : "Send"}
+                  {completeBtnTitle
+                    ? completeBtnTitle
+                    : isMailSend
+                    ? "Sent"
+                    : "Send"}
                 </button>
               </div>
             </>
           ) : isPdfRequestFiles ? (
             alreadySign ? (
               <div style={{ display: "flex", flexDirection: "row" }}>
-                {isCompleted.isCertificate && <CertificateComponent />}
+                {isCompleted && (
+                  <>
+                    {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadCertificate()}
+                        className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                      >
+                        <i
+                          className="fa-solid fa-award py-[3px]"
+                          aria-hidden="true"
+                        ></i>
+                        <span className="hidden lg:block ml-1">
+                          Certificate
+                        </span>
+                      </button>
+                    ) : (
+                      <GenerateCertificate />
+                    )}
+                  </>
+                )}
+
                 <button
                   onClick={handleToPrint}
                   type="button"
-                  className="defaultBtn printBtn"
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center"
-                  }}
+                  className="flex flex-row items-center  shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
                 >
-                  <i
-                    className="fa fa-print"
-                    style={{
-                      fontSize: "15px",
-                      marginRight: "3px",
-                      color: "white"
-                    }}
-                    aria-hidden="true"
-                  ></i>
-                  Print
+                  <i className="fa fa-print py-[3px]" aria-hidden="true"></i>
+                  <span className="hidden lg:block ml-1">Print</span>
                 </button>
 
                 <button
                   type="button"
-                  className="defaultBtn downloadBtn"
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center"
-                  }}
+                  className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
                   onClick={() => handleDownloadPdf()}
                 >
-                  <i
-                    className="fa fa-download"
-                    style={{
-                      color: "white",
-                      fontSize: "15px",
-                      marginRight: "3px"
-                    }}
-                    aria-hidden="true"
-                  ></i>
-                  Download
+                  <i className="fa fa-download py-[3px]" aria-hidden="true"></i>
+                  <span className="hidden lg:block ml-1">Download</span>
                 </button>
               </div>
             ) : (
-              <div>
+              <div className="flex">
                 <button
-                  onClick={() => {
-                    navigate(-1);
-                  }}
+                  onClick={() => navigate(-1)}
                   type="button"
-                  className="defaultBtn backBtn"
+                  className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-black font-[500] text-sm mr-[5px] bg-white"
                 >
                   Back
                 </button>
                 {currentSigner && (
                   <>
                     <button
-                      style={{
-                        background: "#de4337"
-                      }}
-                      className="finishBtn hoverCss"
+                      style={{ background: "#de4337" }}
+                      className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
                       onClick={() => {
                         handleDeclinePdfAlert();
                       }}
@@ -638,7 +506,7 @@ function Header({
                         background: "#188ae2"
                       }}
                       type="button"
-                      className="finishBtn sendHover"
+                      className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
                       onClick={() => {
                         embedWidgetsData();
                       }}
@@ -649,93 +517,69 @@ function Header({
                 )}
               </div>
             )
-          ) : pdfUrl || (documentStatus && documentStatus.isCompleted) ? (
+          ) : isCompleted ? (
             <div style={{ display: "flex", flexDirection: "row" }}>
-              <CertificateComponent />
+              {isCompleted && (
+                <>
+                  {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadCertificate()}
+                      className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                    >
+                      <i
+                        className="fa-solid fa-award py-[3px]"
+                        aria-hidden="true"
+                      ></i>
+                      <span className="hidden lg:block ml-1">Certificate</span>
+                    </button>
+                  ) : (
+                    <GenerateCertificate />
+                  )}
+                </>
+              )}
               <button
                 onClick={handleToPrint}
                 type="button"
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center"
-                }}
-                className="defaultBtn printBtn"
+                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
               >
-                <i
-                  className="fa fa-print"
-                  style={{
-                    fontSize: "15px",
-                    marginRight: "3px",
-                    color: "white"
-                  }}
-                  aria-hidden="true"
-                ></i>
-                Print
+                <i className="fa fa-print py-[3px]" aria-hidden="true"></i>
+                <span className="hidden lg:block ml-1">Print</span>
               </button>
               <button
                 type="button"
-                className="defaultBtn downloadBtn"
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginLeft: "10px"
-                }}
+                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
                 onClick={() => handleDownloadPdf()}
               >
-                <i
-                  className="fa fa-download"
-                  style={{
-                    color: "white",
-                    fontSize: "15px",
-                    marginRight: "3px"
-                  }}
-                  aria-hidden="true"
-                ></i>
-                Download
+                <i className="fa fa-download py-[3px]" aria-hidden="true"></i>
+                <span className="hidden lg:block ml-1">Download</span>
               </button>
               <button
                 type="button"
-                className="defaultBtn mailBtn"
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginLeft: "10px"
-                }}
+                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#3ba7e5]"
                 onClick={() => setIsEmail(true)}
               >
-                <i
-                  className="fa fa-envelope"
-                  style={{
-                    color: "white",
-                    fontSize: "15px",
-                    marginRight: "3px"
-                  }}
-                  aria-hidden="true"
-                ></i>
-                Mail
+                <i className="fa fa-envelope py-[3px]" aria-hidden="true"></i>
+                <span className="hidden lg:block ml-1">Mail</span>
               </button>
             </div>
           ) : (
-            <div>
+            <div className="flex">
               <button
                 onClick={() => {
                   navigate(-1);
                 }}
                 type="button"
-                className="defaultBtn backBtn"
+                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-black font-[500] text-sm mr-[5px] bg-white"
               >
                 Back
               </button>
-
               <button
                 style={{
                   background: "#188ae2"
                 }}
                 type="button"
-                className="finishBtn sendHover"
+                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
                 onClick={() => {
                   if (!pdfUrl) {
                     embedWidgetsData();

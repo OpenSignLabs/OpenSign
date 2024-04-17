@@ -53,9 +53,22 @@ const SelectSigners = (props) => {
       const contactRes = await contactbook.find();
       if (contactRes) {
         const res = JSON.parse(JSON.stringify(contactRes));
-        // console.log("userList ", res);
-        setUserList(res);
-        return await res.map((item) => ({
+        //compareArrays is a function where compare between two array (total signersList and dcument signers list)
+        //and filter signers from total signer's list which already present in document's signers list
+        const compareArrays = (res, signerObj) => {
+          return res.filter(
+            (item1) =>
+              !signerObj.find((item2) => item2.objectId === item1.objectId)
+          );
+        };
+
+        //get update signer's List if signersdata is present
+        const updateSignersList =
+          props?.signersData && compareArrays(res, props?.signersData);
+
+        const result = updateSignersList ? updateSignersList : res;
+        setUserList(result);
+        return await result.map((item) => ({
           label: item.Email,
           value: item.objectId
         }));

@@ -23,7 +23,8 @@ import {
   defaultWidthHeight,
   addWidgetOptions,
   textInputWidget,
-  radioButtonWidget
+  radioButtonWidget,
+  fetchSubscription
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -35,7 +36,6 @@ import AddRoleModal from "../components/pdf/AddRoleModal";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
-import Parse from "parse";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -170,17 +170,14 @@ const TemplatePlaceholder = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
-  async function checkIsSubscribed(email) {
-    const user = await Parse.Cloud.run("getUserDetails", {
-      email: email
-    });
-    const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
-    const billingDate =
-      user?.get("Next_billing_date") && user?.get("Next_billing_date");
+  async function checkIsSubscribed() {
+    const res = await fetchSubscription();
+    const freeplan = res.plan;
+    const billingDate = res.billingDate;
     if (freeplan === "freeplan") {
       return true;
     } else if (billingDate) {
-      if (billingDate > new Date()) {
+      if (new Date(billingDate) > new Date()) {
         setIsSubscribe(true);
         return true;
       } else {
@@ -311,10 +308,10 @@ const TemplatePlaceholder = () => {
       if (tourstatus && tourstatus.length > 0) {
         setTourStatus(tourstatus);
         const checkTourRecipients = tourstatus.filter(
-          (data) => data.templatetour
+          (data) => data.templateTour
         );
         if (checkTourRecipients && checkTourRecipients.length > 0) {
-          setCheckTourStatus(checkTourRecipients[0].templatetour);
+          setCheckTourStatus(checkTourRecipients[0].templateTour);
         }
       }
       const loadObj = {
@@ -765,7 +762,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag a widget placeholder onto the PDF to choose your desired signing location.`}
+          message={`Drag or click on a field to add it to the document.`}
           isChecked={handleDontShow}
         />
       ),
@@ -787,7 +784,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourFour"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking "Save" button will save the template and will ask you if you want to create a new document using this template.`}
+          message={`Clicking ‘Save’ will store the current template. After saving, you’ll be prompted to create a new document from this template if you wish.`}
           isChecked={handleDontShow}
         />
       ),
@@ -805,15 +802,15 @@ const TemplatePlaceholder = () => {
       if (tourStatus.length > 0) {
         updatedTourStatus = [...tourStatus];
         const templatetourIndex = tourStatus.findIndex(
-          (obj) => obj["templatetour"] === false || obj["templatetour"] === true
+          (obj) => obj["templateTour"] === false || obj["templateTour"] === true
         );
         if (templatetourIndex !== -1) {
-          updatedTourStatus[templatetourIndex] = { templatetour: true };
+          updatedTourStatus[templatetourIndex] = { templateTour: true };
         } else {
-          updatedTourStatus.push({ templatetour: true });
+          updatedTourStatus.push({ templateTour: true });
         }
       } else {
-        updatedTourStatus = [{ templatetour: true }];
+        updatedTourStatus = [{ templateTour: true }];
       }
       await axios
         .put(
@@ -1551,6 +1548,7 @@ const TemplatePlaceholder = () => {
           isAddUser={isAddUser}
           uniqueId={uniqueId}
           closePopup={closePopup}
+          signersData={signersdata}
         />
       </div>
       <ModalUi

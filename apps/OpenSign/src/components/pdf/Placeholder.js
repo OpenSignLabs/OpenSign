@@ -416,7 +416,7 @@ function Placeholder(props) {
 
               {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
-                  data-tut="reactourLinkUser"
+                  data-tut="assignSigner"
                   className="fa-regular fa-user signUserIcon"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -542,7 +542,15 @@ function Placeholder(props) {
       data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
       key={props.pos.key}
       lockAspectRatio={
-        props.pos.type !== textWidget &&
+        // props.pos.type !== textWidget
+        ![
+          textWidget,
+          "email",
+          "name",
+          "company",
+          "job title",
+          textInputWidget
+        ].includes(props.pos.type) &&
         (props.pos.Width
           ? props.pos.Width / props.pos.Height
           : defaultWidthHeight(props.pos.type).width /

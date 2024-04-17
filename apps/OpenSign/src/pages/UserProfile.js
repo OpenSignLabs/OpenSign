@@ -15,6 +15,7 @@ import Upgrade from "../primitives/Upgrade";
 function UserProfile() {
   const navigate = useNavigate();
   let UserProfile = JSON.parse(localStorage.getItem("UserInformation"));
+  let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [editmode, setEditMode] = useState(false);
@@ -25,6 +26,12 @@ function UserProfile() {
   const [percentage, setpercentage] = useState(0);
   const [isDisableDocId, setIsDisableDocId] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
+  const [company, setCompany] = useState(
+    extendUser && extendUser?.[0]?.Company
+  );
+  const [jobTitle, setJobTitle] = useState(
+    extendUser && extendUser?.[0]?.JobTitle
+  );
 
   useEffect(() => {
     getUserDetail();
@@ -66,6 +73,7 @@ function UserProfile() {
               SetPhone(res.phone);
               setImage(res.ProfilePic);
               localStorage.setItem("username", res.name);
+              localStorage.setItem("profileImg", res.ProfilePic);
               await updateExtUser({ Name: res.name, Phone: res.phone });
               alert("Profile updated successfully.");
               setEditMode(false);
@@ -93,7 +101,9 @@ function UserProfile() {
     const body = {
       Phone: obj.Phone,
       Name: obj.Name,
-      HeaderDocId: isDisableDocId
+      HeaderDocId: isDisableDocId,
+      JobTitle: jobTitle,
+      Company: company
     };
     await axios.put(
       parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
@@ -147,7 +157,6 @@ function UserProfile() {
       // console.log("File URL:", response.url());
       if (response.url()) {
         setImage(response.url());
-        localStorage.setItem("profileImg", response.url());
         setpercentage(0);
         const tenantId = localStorage.getItem("TenantId");
         SaveFileSize(size, response.url(), tenantId);
@@ -263,6 +272,40 @@ function UserProfile() {
               <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
                 <span className="font-semibold">Email:</span>{" "}
                 <span>{UserProfile && UserProfile.email}</span>
+              </li>
+              <li
+                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                  editmode ? "py-1" : "py-2"
+                }`}
+              >
+                <span className="font-semibold">Company:</span>{" "}
+                {editmode ? (
+                  <input
+                    type="text"
+                    value={company}
+                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    onChange={(e) => setCompany(e.target.value)}
+                  />
+                ) : (
+                  <span>{extendUser?.[0].Company}</span>
+                )}
+              </li>
+              <li
+                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                  editmode ? "py-1" : "py-2"
+                }`}
+              >
+                <span className="font-semibold">Job title:</span>{" "}
+                {editmode ? (
+                  <input
+                    type="text"
+                    value={jobTitle}
+                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    onChange={(e) => setJobTitle(e.target.value)}
+                  />
+                ) : (
+                  <span>{extendUser?.[0]?.JobTitle}</span>
+                )}
               </li>
               <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
                 <span className="font-semibold">Is Email verified:</span>{" "}

@@ -296,9 +296,11 @@ function RenderPdf({
             {type && (
               <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
             )}
-            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
-              {`(${Role})`}
-            </div>
+            {Role && (
+              <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+                {`(${Role})`}
+              </div>
+            )}
           </>
         );
       } else {
