@@ -10,6 +10,8 @@ import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { isEnableSubscription } from "../constant/const";
+import { useCookies } from "react-cookie";
+import { fetchSubscription } from "../constant/Utils";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const HomeLayout = () => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [tourConfigs, setTourConfigs] = useState([]);
+  const [, setCookie] = useCookies(["accesstoken", "main_Domain"]);
 
   useEffect(() => {
     (async () => {
@@ -34,6 +37,7 @@ const HomeLayout = () => {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
+          localStorage.setItem("profileImg", user.get("ProfilePic") || "");
           checkIsSubscribed();
         } else {
           setIsUserValid(false);
@@ -43,23 +47,36 @@ const HomeLayout = () => {
         setIsUserValid(false);
       }
     })();
+    saveCookies();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  //function to use save data in cookies storage
+  const saveCookies = () => {
+    const main_Domain = window.location.origin;
+    const domainName = window.location.hostname; //app.opensignlabs.com
+    // Find the index of the first dot in the string
+    const indexOfFirstDot = domainName.indexOf(".");
+    // Remove the first dot and get the substring starting from the next character
+    const updateDomain = domainName.substring(indexOfFirstDot); //.opensignlabs.com
+    setCookie("accesstoken", localStorage.getItem("accesstoken"), {
+      secure: true,
+      domain: updateDomain
+    });
+    setCookie("main_Domain", main_Domain, {
+      secure: true,
+      domain: updateDomain
+    });
+  };
 
   async function checkIsSubscribed() {
-    const currentUser = Parse.User.current();
-    const user = await Parse.Cloud.run("getUserDetails", {
-      email: currentUser.get("email")
-    });
     if (isEnableSubscription) {
-      const freeplan = user?.get("Plan") && user?.get("Plan").plan_code;
-      const billingDate =
-        user?.get("Next_billing_date") && user?.get("Next_billing_date");
-      if (freeplan === "freeplan") {
+      const res = await fetchSubscription();
+      if (res.plan === "freeplan") {
         setIsUserValid(true);
         setIsLoader(false);
-      } else if (billingDate) {
-        if (billingDate > new Date()) {
+      } else if (res.billingDate) {
+        if (new Date(res.billingDate) > new Date()) {
           setIsUserValid(true);
           setIsLoader(false);
         } else {

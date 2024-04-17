@@ -70,6 +70,7 @@ function DriveBody(props) {
         return item;
       });
       props.setPdfData(updatedData);
+      props.sortingData(null, null, updatedData);
       await axios
         .put(
           `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
@@ -214,8 +215,8 @@ function DriveBody(props) {
         ? true
         : false
       : selecFolderId
-      ? false
-      : true;
+        ? false
+        : true;
     if (!checkExist) {
       if (moveFolderId) {
         updateData = {
@@ -384,6 +385,7 @@ function DriveBody(props) {
                 flexDirection: "column",
                 cursor: "pointer"
               }}
+              data-tut={props.dataTutSeventh}
             >
               <img
                 alt="no img"
@@ -451,6 +453,7 @@ function DriveBody(props) {
                     className="pdf-icon"
                     src={pdfLogo}
                     onClick={() => checkPdfStatus(data)}
+                    data-tut={props.dataTutSixth}
                   />
                   {rename === data.objectId ? (
                     <input

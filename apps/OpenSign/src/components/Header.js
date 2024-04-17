@@ -4,18 +4,20 @@ import FullScreenButton from "./FullScreenButton";
 import { useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
-import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
+import { checkIsSubscribed, getAppLogo, openInNewTab } from "../constant/Utils";
 import { isEnableSubscription } from "../constant/const";
 
 const Header = ({ showSidebar }) => {
   const navigate = useNavigate();
   const { width } = useWindowSize();
-  let applogo = localStorage.getItem("appLogo") || "";
   let username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
-
   const [isOpen, setIsOpen] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(true);
+  const [isPro, setIsPro] = useState(false);
+  const [applogo, setAppLogo] = useState(
+    localStorage.getItem("appLogo") || " "
+  );
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -27,9 +29,19 @@ const Header = ({ showSidebar }) => {
   async function checkSubscription() {
     if (isEnableSubscription) {
       const getIsSubscribe = await checkIsSubscribed();
+      if (getIsSubscribe) {
+        const applogo = await getAppLogo();
+        if (applogo) {
+          setAppLogo(applogo);
+        } else {
+          setAppLogo(localStorage.getItem("appLogo") || "");
+        }
+      }
+      setIsPro(getIsSubscribe);
       setIsSubscribe(getIsSubscribe);
     }
   }
+
   const closeDropdown = () => {
     setIsOpen(false);
     Parse.User.logOut();
@@ -105,6 +117,11 @@ const Header = ({ showSidebar }) => {
             </button>
           </div>
         )}
+        {isPro && (
+          <div className="w-[35px] h-[35px] rounded-full ring-[1px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
+            PRO
+          </div>
+        )}
         <div>
           <FullScreenButton />
         </div>
@@ -158,6 +175,14 @@ const Header = ({ showSidebar }) => {
                 }}
               >
                 <i className="fa-solid fa-lock"></i> Change Password
+              </li>
+              <li
+                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
+                onClick={() => {
+                  window.open("https://console.opensignlabs.com/");
+                }}
+              >
+                <i className="fa-regular fa-id-card"></i> Console
               </li>
               <li
                 className="hover:bg-gray-100 rounded-b-lg py-1 px-2 cursor-pointer font-normal"

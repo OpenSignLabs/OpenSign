@@ -8,19 +8,11 @@ function CustomModal({
   bodyMssg,
   footerMessage,
   declineDoc,
-  setIsDecline,
-  containerWH
+  setIsDecline
 }) {
-  const isMobile = window.innerWidth < 767;
   return (
     show && (
-      <div
-        className="bg-black bg-opacity-[75%] absolute z-[999] flex flex-col items-center justify-center"
-        style={{
-          width: containerWH && containerWH.width,
-          height: isMobile ? "100%" : containerWH && containerWH.height
-        }}
-      >
+      <div className="bg-black bg-opacity-[75%] absolute z-[999] flex flex-col items-center justify-center w-full h-full rounded">
         <div className="bg-white rounded outline-none md:w-[40%] w-[80%]">
           <div className="bg-[#de4337] text-white p-[10px] rounded-t">
             {headMsg && headMsg}

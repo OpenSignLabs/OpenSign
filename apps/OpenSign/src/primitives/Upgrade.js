@@ -1,16 +1,24 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { openInNewTab } from "../constant/Utils";
 
-function Upgrade() {
+function Upgrade({ message, newWindow }) {
   const navigation = useNavigate();
 
   return (
     <sup>
       <span
-        onClick={() => navigation("/subscription")}
-        className="text-blue-800 text-sm cursor-pointer hover:underline"
+        onClick={() => {
+          if (newWindow) {
+            const url = window.location.origin + "/subscription";
+            openInNewTab(url);
+          } else {
+            navigation("/subscription");
+          }
+        }}
+        className="text-blue-800 text-sm cursor-pointer underline"
       >
-        Upgrade now
+        {message ? message : "Upgrade now"}
       </span>
     </sup>
   );

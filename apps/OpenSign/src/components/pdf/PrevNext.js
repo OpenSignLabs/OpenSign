@@ -1,4 +1,5 @@
 import React from "react";
+import { themeColor } from "../../constant/const";
 
 function PrevNext({ pageNumber, allPages, changePage }) {
   //for go to previous page
@@ -14,41 +15,35 @@ function PrevNext({ pageNumber, allPages, changePage }) {
     <div>
       <div className="preBtn1">
         <button
-          style={{
-            padding: "3px 20px ",
-            fontSize: "10px",
-            background: "#d3edeb",
-            fontWeight: "600",
-
-            border: "0px",
-            marginRight: "5px"
-          }}
+          className="py-[3px] px-[10px] text-xs bg-[#d3edeb] font-[600] mr-[5px]"
           disabled={pageNumber <= 1}
           onClick={previousPage}
         >
-          Prev
+          <span className="block lg:hidden">
+            <i
+              className="fa fa-backward"
+              aria-hidden="true"
+              style={{ color: themeColor, cursor: "pointer" }}
+            ></i>
+          </span>
+          <span className="lg:block hidden">Prev</span>
         </button>
-        <span
-          style={{
-            fontSize: "13px",
-            fontWeight: "600"
-          }}
-        >
+        <span className="text-xs font-[500]">
           {pageNumber || (allPages ? 1 : "--")} of {allPages || "--"}
         </span>
         <button
-          style={{
-            padding: "3px 20px ",
-            fontSize: "10px",
-            background: "#d3edeb",
-            fontWeight: "600",
-            marginLeft: "5px",
-            border: "0px"
-          }}
+          className="py-[3px] px-[10px] text-xs bg-[#d3edeb] font-[600] ml-[5px]"
           disabled={pageNumber >= allPages}
           onClick={nextPage}
         >
-          Next
+          <span className="block lg:hidden">
+            <i
+              className="fa fa-forward"
+              aria-hidden="true"
+              style={{ color: themeColor, cursor: "pointer" }}
+            ></i>
+          </span>
+          <span className="lg:block hidden">Next</span>
         </button>
       </div>
     </div>

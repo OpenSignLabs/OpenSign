@@ -395,14 +395,6 @@
   margin-left: 10px;
 }
 
-.backBtn {
-  background-color: white;
-}
-
-.backBtn:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-}
-
 .defaultBtn {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
   padding: 3px 26px;
@@ -420,42 +412,6 @@
   outline: none;
 }
 
-.downloadBtn {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  padding: 3px 15px !important;
-  background-color: rgb(241 79 79);
-  border: none !important;
-  color: white !important;
-}
-
-.downloadBtn:hover {
-  box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-}
-
-.printBtn {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  padding: 3px 15px !important;
-  background: #188ae2;
-  border: none !important;
-  color: white !important;
-}
-
-.printBtn:hover {
-  box-shadow: 0 2px 4px rgba(23, 48, 137, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-}
-
-.certificateBtn {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  padding: 3px 15px !important;
-  background: #08bc66;
-  border: none !important;
-  color: white !important;
-  text-decoration: none !important;
-}
-
-.certificateBtn:hover {
-  box-shadow: 0 2px 4px rgba(15, 150, 87, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-}
 
 .signerList {
   overflow-y: scroll;
@@ -496,11 +452,15 @@
   overflow: hidden !important;
   text-overflow: ellipsis;
 }
+
 .disabled {
-  opacity: 0.5; /* Example: reduce opacity to visually indicate disabled state */
-  pointer-events: none; /* Prevents mouse clicks and other events */
+  opacity: 0.5;
+  /* Example: reduce opacity to visually indicate disabled state */
+  pointer-events: none;
+  /* Prevents mouse clicks and other events */
   /* background-color: #888; */
 }
+
 .useEmail {
   font-size: 10px;
   color: #424242;
@@ -557,13 +517,6 @@
   position: "relative";
 }
 
-.signatureHeader {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 5px;
-}
 
 .signerComponent {
   /* box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px; */
@@ -851,6 +804,7 @@ option {
   z-index: 999;
   border-radius: 2px;
   resize: none;
+  overflow: hidden;
 }
 
 .labelTextArea:focus {
@@ -1014,6 +968,9 @@ option {
   }
 }
 
+.scroll-hide::-webkit-scrollbar {
+  display: none;
+}
 @media screen and (max-width: 350px) and (min-width: 311px) {
   .signatureCanvas {
     width: 280px;

@@ -19,6 +19,7 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
+import { fetchSubscription, getAppLogo } from "../constant/Utils";
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,7 +44,7 @@ function Login() {
     Destination: ""
   });
   const [isModal, setIsModal] = useState(false);
-  const image = appInfo?.applogo || undefined;
+  const [image, setImage] = useState();
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
@@ -51,8 +52,23 @@ function Login() {
       GetLoginData();
     }
     dispatch(fetchAppInfo());
+    saveLogo();
+
     // eslint-disable-next-line
   }, []);
+
+  const saveLogo = async () => {
+    if (isEnableSubscription) {
+      const logo = await getAppLogo();
+      if (logo) {
+        setImage(logo);
+      } else {
+        setImage(appInfo?.applogo || undefined);
+      }
+    } else {
+      setImage(appInfo?.applogo || undefined);
+    }
+  };
   const handleChange = (event) => {
     const { name, value } = event.target;
     setState({ ...state, [name]: value });
@@ -153,7 +169,7 @@ function Login() {
                               await Parse.Cloud.run("getUserDetails", {
                                 email: currentUser.get("email")
                               }).then(
-                                (result) => {
+                                async (result) => {
                                   let tenentInfo = [];
                                   const results = [result];
                                   if (results) {
@@ -254,16 +270,15 @@ function Login() {
                                           "userDetails",
                                           JSON.stringify(LocalUserDetails)
                                         );
-                                        const freeplan =
-                                          results[0].get("Plan") &&
-                                          results[0].get("Plan").plan_code;
-                                        const billingDate =
-                                          results[0].get("Next_billing_date") &&
-                                          results[0].get("Next_billing_date");
+                                        const res = await fetchSubscription();
+                                        const freeplan = res.plan;
+                                        const billingDate = res.billingDate;
                                         if (freeplan === "freeplan") {
                                           navigate(redirectUrl);
                                         } else if (billingDate) {
-                                          if (billingDate > new Date()) {
+                                          if (
+                                            new Date(billingDate) > new Date()
+                                          ) {
                                             localStorage.removeItem(
                                               "userDetails"
                                             );
@@ -798,7 +813,7 @@ function Login() {
                     await Parse.Cloud.run("getUserDetails", {
                       email: currentUser.get("email")
                     }).then(
-                      (result) => {
+                      async (result) => {
                         let tenentInfo = [];
                         const results = [result];
                         if (results) {
@@ -850,17 +865,13 @@ function Login() {
                                 "userDetails",
                                 JSON.stringify(LocalUserDetails)
                               );
-                              const billingDate =
-                                results[0].get("Next_billing_date") &&
-                                results[0].get("Next_billing_date");
-                              const freeplan =
-                                results[0]?.get("Plan") &&
-                                results[0]?.get("Plan").plan_code;
-
+                              const res = await fetchSubscription();
+                              const billingDate = res.billingDate;
+                              const freeplan = res.plan;
                               if (freeplan === "freeplan") {
                                 navigate(redirectUrl);
                               } else if (billingDate) {
-                                if (billingDate > new Date()) {
+                                if (new Date(billingDate) > new Date()) {
                                   localStorage.removeItem("userDetails");
                                   // Redirect to the appropriate URL after successful login
                                   navigate(redirectUrl);
@@ -1055,12 +1066,14 @@ function Login() {
         <>
           <div aria-labelledby="loginHeading" role="region">
             <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-4 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
-              <div className="w-[250px] h-[66px] inline-block">
-                <img
-                  src={image}
-                  width="100%"
-                  alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
-                />
+              <div className="w-[250px] h-[66px] inline-block overflow-hidden">
+                {image && (
+                  <img
+                    src={image}
+                    className="object-contain h-full"
+                    alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
+                  />
+                )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
                 <div>
@@ -1164,25 +1177,12 @@ function Login() {
                     </form>
                     <br />
                     {(appInfo.fbAppId || appInfo.googleClietId) && (
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center"
-                        }}
-                        className="text-sm"
-                      >
-                        <hr
-                          className={"border-[1px] border-gray-300 w-full"}
-                          style={{ color: "grey" }}
-                        />
-                        <span style={{ color: "grey" }} className="px-2 ">
+                      <div className="text-sm flex justify-center items-center">
+                        <hr className="border-[1px] border-gray-300 w-full" />
+                        <span className="px-2 text-gray-500 cursor-default">
                           OR
                         </span>
-                        <hr
-                          className={"border-[1px] border-gray-300 w-full"}
-                          style={{ color: "grey" }}
-                        />
+                        <hr className="border-[1px] border-gray-300 w-full" />
                       </div>
                     )}
                     <br />

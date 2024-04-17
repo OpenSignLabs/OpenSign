@@ -6,27 +6,51 @@ export default async function SubscribeFree(request) {
     extQuery.equalTo('UserId', userPtr);
     const extUser = await extQuery.first({ useMasterKey: true });
     if (extUser) {
-      if (extUser?.get('Plan')?.plan_code === 'freeplan') {
+      const subscriptionCls = new Parse.Query('contracts_Subscriptions');
+      subscriptionCls.equalTo('TenantId', {
+        __type: 'Pointer',
+        className: 'partners_Tenant',
+        objectId: extUser.get('TenantId').id,
+      });
+      subscriptionCls.descending('createdAt');
+      const subcripitions = await subscriptionCls.first({ useMasterKey: true });
+      if (subcripitions?.get('PlanCode') === 'freeplan') {
         return { status: 'success', result: 'already subscribed!' };
-      } else if (extUser?.get('Next_billing_date') < new Date()) {
+      } else if (subcripitions?.get('Next_billing_date') < new Date()) {
         try {
-          const extUpdate = new Parse.Object('contracts_Users');
-          extUpdate.id = extUser.id;
-          extUpdate.set('Plan', { plan_code: 'freeplan' });
-          await extUpdate.save(null, { useMasterKey: true });
+          const updateSubscription = new Parse.Object('contracts_Subscriptions');
+          updateSubscription.id = subcripitions.id;
+          updateSubscription.set('PlanCode', 'freeplan');
+          await updateSubscription.save(null, { useMasterKey: true });
           return { status: 'success', result: 'subscribed!' };
         } catch (err) {
           console.log('err ', err);
           return { status: 'error', result: err.message };
         }
-      } else if (extUser?.get('Next_billing_date') > new Date()) {
+      } else if (subcripitions?.get('Next_billing_date') > new Date()) {
         return { status: 'success', result: 'already subscribed!' };
       } else {
         try {
-          const extUpdate = new Parse.Object('contracts_Users');
-          extUpdate.id = extUser.id;
-          extUpdate.set('Plan', { plan_code: 'freeplan' });
-          await extUpdate.save(null, { useMasterKey: true });
+          const createSubscription = new Parse.Object('contracts_Subscriptions');
+          createSubscription.set('PlanCode', 'freeplan');
+          createSubscription.set('ExtUserPtr', {
+            __type: 'Pointer',
+            className: 'contracts_Users',
+            objectId: extUser.id,
+          });
+          createSubscription.set('CreatedBy', {
+            __type: 'Pointer',
+            className: '_User',
+            objectId: extUser.get('UserId').id,
+          });
+          if (extUser?.get('TenantId')) {
+            createSubscription.set('TenantId', {
+              __type: 'Pointer',
+              className: 'partners_Tenant',
+              objectId: extUser.get('TenantId').id,
+            });
+          }
+          await createSubscription.save(null, { useMasterKey: true });
           return { status: 'success', result: 'subscribed!' };
         } catch (err) {
           console.log('err ', err);

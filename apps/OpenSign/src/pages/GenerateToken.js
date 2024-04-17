@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Alert from "../primitives/Alert";
 import ModalUi from "../primitives/ModalUi";
 import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
-import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
+import { checkIsSubscribed, copytoData, openInNewTab } from "../constant/Utils";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
 
@@ -92,7 +92,7 @@ function GenerateToken() {
   };
 
   const copytoclipboard = (text) => {
-    navigator.clipboard.writeText(text);
+    copytoData(text);
     setCopied(true);
     setTimeout(() => {
       setCopied(false);

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
-import { themeColor } from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import axios from "axios";
 import Loader from "../primitives/LoaderWithMsg";
 import loader from "../assets/images/loader2.gif";
@@ -26,7 +26,10 @@ import {
   contactBook,
   randomId,
   getDate,
-  textWidget
+  textWidget,
+  getTenantDetails,
+  checkIsSubscribed,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -67,7 +70,6 @@ function SignYourSelf() {
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [successEmail, setSuccessEmail] = useState(false);
   const imageRef = useRef(null);
-  const [documentStatus, setDocumentStatus] = useState({ isCompleted: false });
   const [myInitial, setMyInitial] = useState("");
   const [isInitial, setIsInitial] = useState(false);
   const [isUiLoading, setIsUiLoading] = useState(false);
@@ -100,6 +102,8 @@ function SignYourSelf() {
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
   const [extUserId, setExtUserId] = useState("");
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -188,12 +192,17 @@ function SignYourSelf() {
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
+      const url = documentData[0] && documentData[0]?.URL;
+      //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+      const arrayBuffer = await convertPdfArrayBuffer(url);
+      if (arrayBuffer === "Error") {
+        setHandleError("Error: Something went wrong!");
+      } else {
+        setPdfArrayBuffer(arrayBuffer);
+      }
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
-        const docStatus = {
-          isCompleted: isCompleted
-        };
-        setDocumentStatus(docStatus);
+        setIsCompleted(true);
         setPdfUrl(documentData[0].SignedUrl);
         const alreadySign = {
           status: true,
@@ -256,9 +265,7 @@ function SignYourSelf() {
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
       });
-
     const contractUsersRes = await contractUsers(jsonSender.email);
-
     if (contractUsersRes[0] && contractUsersRes.length > 0) {
       setContractName("_Users");
       setSignerUserId(contractUsersRes[0].objectId);
@@ -434,13 +441,13 @@ function SignYourSelf() {
         Width: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
           : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).width
-          : "",
+            ? defaultWidthHeight(dragTypeValue).width
+            : "",
         Height: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
           : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).height
-          : "",
+            ? defaultWidthHeight(dragTypeValue).height
+            : "",
         options: addWidgetOptions(dragTypeValue)
       };
 
@@ -562,22 +569,14 @@ function SignYourSelf() {
         setIsCeleb(false);
       }, 3000);
       setIsUiLoading(true);
-      const url = pdfDetails[0] && pdfDetails[0].URL;
-
-      const existingPdfBytes = await fetch(url).then((res) =>
-        res.arrayBuffer()
-      );
-
+      const existingPdfBytes = pdfArrayBuffer;
       // Load a PDFDocument from the existing PDF bytes
       const pdfDoc = await PDFDocument.load(existingPdfBytes, {
         ignoreEncryption: true
       });
-
-      const flag = true;
-
+      const isSignYourSelfFlow = true;
       const extUserPtr = pdfDetails[0].ExtUserPtr;
       const HeaderDocId = extUserPtr?.HeaderDocId;
-
       //embed document's object id to all pages in pdf document
       if (!HeaderDocId) {
         await embedDocId(pdfDoc, documentId, allPages);
@@ -587,7 +586,7 @@ function SignYourSelf() {
         xyPostion,
         pdfDoc,
         pdfOriginalWidth,
-        flag,
+        isSignYourSelfFlow,
         containerWH
       );
       // console.log("pdf", pdfBytes);
@@ -598,9 +597,25 @@ function SignYourSelf() {
   // console.log("signyourself", xyPostion);
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
+    let isCustomCompletionMail = false;
+    const getIsSubscribe = await checkIsSubscribed();
+    const tenantDetails = await getTenantDetails(jsonSender.objectId);
+    if (tenantDetails && tenantDetails === "user does not exist!") {
+      alert("User does not exist");
+    } else {
+      if (
+        tenantDetails?.CompletionBody &&
+        tenantDetails?.CompletionSubject &&
+        (!isEnableSubscription || getIsSubscribe)
+      ) {
+        isCustomCompletionMail = true;
+      }
+    }
+
     let singleSign = {
       pdfFile: base64Url,
-      docId: documentId
+      docId: documentId,
+      isCustomCompletionMail: isCustomCompletionMail
     };
 
     await axios
@@ -986,8 +1001,9 @@ function SignYourSelf() {
             {/* this component used to render all pdf pages in left side */}
 
             <RenderAllPdfPage
-              pdfUrl={pdfUrl}
-              signPdfUrl={pdfDetails[0] && pdfDetails[0].URL}
+              signPdfUrl={
+                pdfDetails[0] && (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
+              }
               allPages={allPages}
               setAllPages={setAllPages}
               setPageNumber={setPageNumber}
@@ -1129,7 +1145,6 @@ function SignYourSelf() {
                 allPages={allPages}
                 changePage={changePage}
                 pdfUrl={pdfUrl}
-                documentStatus={documentStatus}
                 embedWidgetsData={embedWidgetsData}
                 pdfDetails={pdfDetails}
                 isShowHeader={true}
@@ -1137,6 +1152,7 @@ function SignYourSelf() {
                 alreadySign={pdfUrl ? true : false}
                 isSignYourself={true}
                 setIsEmail={setIsEmail}
+                isCompleted={isCompleted}
               />
 
               <div data-tut="reactourSecond">
@@ -1189,7 +1205,7 @@ function SignYourSelf() {
               }}
               className="autoSignScroll"
             >
-              {!documentStatus.isCompleted ? (
+              {!isCompleted ? (
                 <div>
                   <WidgetComponent
                     dataTut="reactourFirst"

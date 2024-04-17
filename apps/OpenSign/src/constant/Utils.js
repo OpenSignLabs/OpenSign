@@ -1,6 +1,6 @@
 import axios from "axios";
 import moment from "moment";
-import { themeColor } from "./const";
+import { isEnableSubscription, themeColor } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
 import Parse from "parse";
@@ -13,25 +13,50 @@ export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
+export async function fetchSubscription(extUserId) {
+  try {
+    const extClass = localStorage.getItem("Extand_Class");
+    let extUser;
+    if (extClass) {
+      const jsonSender = JSON.parse(extClass);
+      extUser = jsonSender[0].objectId;
+    } else {
+      extUser = extUserId;
+    }
+    const baseURL = localStorage.getItem("baseUrl");
+    const url = `${baseURL}functions/getsubscriptions`;
+    const headers = {
+      "Content-Type": "application/json",
+      "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+      sessionToken: localStorage.getItem("accesstoken")
+    };
+    const params = { extUserId: extUser };
+    const tenatRes = await axios.post(url, params, { headers: headers });
+    const plan = tenatRes.data?.result?.result?.PlanCode;
+    const billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
+    return { plan, billingDate };
+  } catch (err) {
+    console.log("Err in fetch subscription", err);
+    return { plan: "", billingDate: "" };
+  }
+}
 //function to get subcripition details from Extand user class
 export async function checkIsSubscribed() {
-  const extClass = localStorage.getItem("Extand_Class");
-  const jsonSender = JSON.parse(extClass);
-  const user = await Parse.Cloud.run("getUserDetails", {
-    email: jsonSender[0].Email
-  });
-  const freeplan = user?.get("Plan") && user?.get("Plan")?.plan_code;
-  const billingDate =
-    user?.get("Next_billing_date") && user?.get("Next_billing_date");
-  if (freeplan === "freeplan") {
-    return false;
-  } else if (billingDate) {
-    if (billingDate > new Date()) {
-      return true;
+  try {
+    const res = await fetchSubscription();
+    if (res.plan === "freeplan") {
+      return false;
+    } else if (res.billingDate) {
+      if (new Date(res.billingDate) > new Date()) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
-  } else {
+  } catch (err) {
+    console.log("Err in fetch subscription", err);
     return false;
   }
 }
@@ -501,16 +526,33 @@ export const signPdfFun = async (
   base64Url,
   documentId,
   signerObjectId,
-  setIsAlert
+  setIsAlert,
+  objectId,
+  isSubscribed
 ) => {
-  let singleSign;
+  let singleSign,
+    isCustomCompletionMail = false;
+
+  //get tenant details
+  const tenantDetails = await getTenantDetails(objectId);
+  if (tenantDetails && tenantDetails === "user does not exist!") {
+    alert("User does not exist");
+  } else {
+    if (
+      tenantDetails?.CompletionBody &&
+      tenantDetails?.CompletionSubject &&
+      (!isEnableSubscription || isSubscribed)
+    ) {
+      isCustomCompletionMail = true;
+    }
+  }
 
   singleSign = {
     pdfFile: base64Url,
     docId: documentId,
-    userId: signerObjectId
+    userId: signerObjectId,
+    isCustomCompletionMail: isCustomCompletionMail
   };
-
   const response = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
       headers: {
@@ -1135,10 +1177,10 @@ export const multiSignEmbed = async (
             const newUrl = await convertPNGtoJPEG(signUrl);
             signUrl = newUrl;
           }
-          const checkUrl = urlValidator(signUrl);
-          if (checkUrl) {
-            signUrl = signUrl + "?get";
-          }
+          // const checkUrl = urlValidator(signUrl);
+          // if (checkUrl) {
+          //   signUrl = signUrl + "?get";
+          // }
           const res = await fetch(signUrl);
           return res.arrayBuffer();
         }
@@ -1273,6 +1315,7 @@ export const multiSignEmbed = async (
         }
       };
       const widgetTypeExist = [
+        textWidget,
         textInputWidget,
         "name",
         "company",
@@ -1328,7 +1371,7 @@ export const multiSignEmbed = async (
             checkbox.enableReadOnly();
           });
         }
-      } else if (position.type === textWidget) {
+      } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = 12;
         let textContent;
@@ -1404,24 +1447,8 @@ export const multiSignEmbed = async (
             color: rgb(0, 0, 0),
             size: fontSize
           });
-          y -= 15; // Adjust the line height as needed
+          y -= 18; // Adjust the line height as needed
         }
-      } else if (widgetTypeExist) {
-        const font = await pdfDoc.embedFont("Helvetica");
-        const fontSize = 12;
-        let textContent;
-        if (position?.options?.response) {
-          textContent = position.options?.response;
-        } else if (position?.options?.defaultValue) {
-          textContent = position?.options?.defaultValue;
-        }
-        page.drawText(textContent, {
-          x: xPos(position),
-          y: yPos(position) + 10,
-          size: fontSize,
-          font,
-          color: rgb(0, 0, 0)
-        });
       } else if (position.type === "dropdown") {
         const dropdownRandomId = "dropdown" + randomId();
         const dropdown = form.createDropdown(dropdownRandomId);
@@ -1790,5 +1817,103 @@ export const handleCopyNextToWidget = (
     });
 
     setXyPostion(updatePlaceholder);
+  }
+};
+
+export const getFileName = (fileUrl) => {
+  if (fileUrl) {
+    const url = new URL(fileUrl);
+    const filename = url.pathname.substring(url.pathname.indexOf("_") + 1);
+    return filename || "";
+  } else {
+    return "";
+  }
+};
+
+//fetch tenant app logo from `partners_Tenant` class by domain name
+export const getAppLogo = async () => {
+  const domainName = window.location.host;
+  try {
+    const tenantCreditsQuery = new Parse.Query("partners_Tenant");
+    tenantCreditsQuery.equalTo("Domain", domainName);
+    const res = await tenantCreditsQuery.first();
+
+    if (res) {
+      const updateRes = JSON.parse(JSON.stringify(res));
+      return updateRes?.Logo;
+    }
+  } catch (e) {
+    return null;
+  }
+};
+
+export const getTenantDetails = async (objectId) => {
+  try {
+    const tenantCreditsQuery = new Parse.Query("partners_Tenant");
+    tenantCreditsQuery.equalTo("UserId", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: objectId
+    });
+    const res = await tenantCreditsQuery.first();
+    if (res) {
+      const updateRes = JSON.parse(JSON.stringify(res));
+      return updateRes;
+    }
+  } catch (e) {
+    return "user does not exist!";
+  }
+};
+
+//function to convert variable string name to variable value of email body and subject
+export function replaceMailVaribles(subject, body, variables) {
+  let replacedSubject = subject;
+  let replacedBody = body;
+
+  for (const variable in variables) {
+    const regex = new RegExp(`{{${variable}}}`, "g");
+    if (subject) {
+      replacedSubject = replacedSubject.replace(regex, variables[variable]);
+    }
+    if (body) {
+      replacedBody = replacedBody.replace(regex, variables[variable]);
+    }
+  }
+
+  const result = {
+    subject: replacedSubject,
+    body: replacedBody
+  };
+  return result;
+}
+
+export const copytoData = (text) => {
+  // navigator.clipboard.writeText(text);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    // Fallback for browsers that don't support navigator.clipboard
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+  }
+};
+
+export const convertPdfArrayBuffer = async (url) => {
+  try {
+    const response = await fetch(url);
+    // Check if the response was successful (status 200)
+    if (!response.ok) {
+      return "Error";
+    }
+    // Convert the response to ArrayBuffer
+    const arrayBuffer = await response.arrayBuffer();
+    return arrayBuffer;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return "Error";
   }
 };

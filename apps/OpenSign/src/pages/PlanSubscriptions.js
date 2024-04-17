@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
-import plansArr from "../json/plansArr.json";
+import plansArr from "../json/plansArr";
 import Title from "../components/Title";
 import Parse from "parse";
 const listItemStyle = {
@@ -92,7 +92,7 @@ const PlanSubscriptions = () => {
             maxHeight: "100%"
           }}
         >
-          <div id="monthlyPlans" className="block my-2">
+          <div className="block my-2">
             <div className="flex flex-col justify-center items-center w-full">
               <div className="mb-6 mt-2 flex flex-row border-[1px] p-2 border-gray-300 rounded text-sm">
                 <span
@@ -119,10 +119,10 @@ const PlanSubscriptions = () => {
               <ul className="flex flex-col md:flex-row h-full bg-white justify-center">
                 {plansArr.map((item) => (
                   <li
-                    className="flex flex-col md:my-0 text-center border-collapse border-[1px] border-gray-300 w-[260px]"
+                    className="flex flex-col text-center border-collapse border-[1px] border-gray-300 max-w-[250px]"
                     key={item.planName}
                   >
-                    <div className="p-2 flex flex-col justify-center items-center min-h-[320px]">
+                    <div className="p-2 flex flex-col justify-center items-center max-h-[310px]">
                       <h3 className="text-[#002862] uppercase">
                         {item.planName}
                       </h3>
@@ -133,7 +133,7 @@ const PlanSubscriptions = () => {
                           alt="freeimg"
                         />
                       </div>
-                      <div className="">
+                      <div>
                         <span className="text-3xl">
                           {item.currency && <small>{item.currency}</small>}
                           {yearlyVisible
@@ -143,13 +143,7 @@ const PlanSubscriptions = () => {
                         <p className="font-semibold pt-2 text-sm">
                           {yearlyVisible ? "Billed Yearly" : "Billed Monthly"}
                         </p>
-                        <div
-                          className={`${
-                            item.subtitle.length <= 32
-                              ? "w-[150px] h-[40px] text-center"
-                              : ""
-                          } text-sm text-center my-2`}
-                        >
+                        <div className="max-w-[250px] h-[40px] text-center text-sm my-2">
                           <div
                             style={{
                               textAlign: "center",
@@ -179,14 +173,14 @@ const PlanSubscriptions = () => {
                                 : item.url + details
                               : item.url
                           }
-                          className="bg-[#002862] w-full mt-1 text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
                           target={item.target}
                         >
                           {item.btnText}
                         </NavLink>
                       ) : (
                         <button
-                          className="bg-[#002862] w-full mt-1 text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:text-white cursor-pointer"
                           onClick={() => handleFreePlan()}
                         >
                           {item.btnText}
@@ -207,25 +201,10 @@ const PlanSubscriptions = () => {
                 ))}
               </ul>
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-              className="text-sm"
-            >
-              <hr
-                className={"border-[1px] border-gray-300 w-[20%]"}
-                style={{ color: "grey" }}
-              />
-              <span style={{ color: "grey" }} className="px-2 ">
-                or
-              </span>
-              <hr
-                className={"border-[1px] border-gray-300  w-[20%]"}
-                style={{ color: "grey" }}
-              />
+            <div className="text-sm flex justify-center items-center">
+              <hr className="border-[1px] border-gray-300 w-[20%]" />
+              <span className="px-2 text-gray-500 cursor-default">or</span>
+              <hr className="border-[1px] border-gray-300 w-[20%]" />
             </div>
             <div className="flex flex-col justify-center w-full items-center">
               <h3 className="text-[#002862] mt-1 mb-2">

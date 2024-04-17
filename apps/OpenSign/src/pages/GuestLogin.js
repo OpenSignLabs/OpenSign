@@ -3,8 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../styles/loginPage.css";
 import loader from "../assets/images/loader2.gif";
 import axios from "axios";
-import { themeColor } from "../constant/const";
-import { contractUsers } from "../constant/Utils";
+import { isEnableSubscription, themeColor } from "../constant/const";
+import { contractUsers, getAppLogo } from "../constant/Utils";
+import logo from "../assets/images/logo.png";
 
 function GuestLogin() {
   const { id, userMail, contactBookId, serverUrl } = useParams();
@@ -14,14 +15,27 @@ function GuestLogin() {
   const [EnterOTP, setEnterOtp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [appLogo, setAppLogo] = useState("");
 
   useEffect(() => {
     handleServerUrl();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //function generate serverUrl and parseAppId from url and save it in local storage
-  const handleServerUrl = () => {
+  const handleServerUrl = async () => {
+    if (isEnableSubscription) {
+      const applogo = await getAppLogo();
+      if (applogo) {
+        setAppLogo(applogo);
+      } else {
+        setAppLogo(logo);
+      }
+    } else {
+      setAppLogo(logo);
+    }
+
     //split url in array from '&'
     localStorage.clear();
     const checkSplit = serverUrl.split("&");
@@ -164,12 +178,14 @@ function GuestLogin() {
           }}
         >
           <div className="main_head">
-            <div className="main-logo">
-              <img
-                alt="sign img"
-                src="https://qikinnovation.ams3.digitaloceanspaces.com/logo.png"
-                width="100%"
-              />
+            <div className="w-[250px] h-[66px] inline-block overflow-hidden">
+              {appLogo && (
+                <img
+                  src={appLogo}
+                  className="object-contain h-full"
+                  alt="logo"
+                />
+              )}
             </div>
           </div>
 
