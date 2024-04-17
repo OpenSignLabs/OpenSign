@@ -178,12 +178,7 @@ function GuestLogin() {
         >
           <div className="main_head">
             <div className="w-[250px] h-[66px] inline-block overflow-hidden">
-              <img
-                src={appLogo}
-                loading={true}
-                className="object-contain h-full"
-                alt="logo"
-              />
+              <img src={appLogo} className="object-contain h-full" alt="logo" />
             </div>
           </div>
 
