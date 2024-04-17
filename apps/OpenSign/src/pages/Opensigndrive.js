@@ -179,7 +179,6 @@ function Opensigndrive() {
           }
         ];
         let newTour = [...tourConfigs, ...addMoreTour];
-        console.log("tournew", newTour);
         const isFolderExist = driveDetails.some(
           (data) => data.Type === "Folder"
         );
@@ -194,7 +193,6 @@ function Opensigndrive() {
             (data) => data.selector !== '[data-tut="reactourSixth"]'
           );
         }
-        console.log("newTour", newTour);
         setTourData(newTour);
         setSkip((prevSkip) => prevSkip + limit);
         sortingData(null, null, driveDetails, true);
@@ -216,7 +214,6 @@ function Opensigndrive() {
       });
     }
   };
-  console.log("tourdata", tourData);
 
   //function to fetch drive details list on scroll bottom
   const handleScroll = () => {
