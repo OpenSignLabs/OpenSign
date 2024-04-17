@@ -23,7 +23,8 @@ import {
   addDefaultSignatureImg,
   radioButtonWidget,
   replaceMailVaribles,
-  fetchSubscription
+  fetchSubscription,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -97,6 +98,7 @@ function PdfRequestFiles() {
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
   const [extUserId, setExtUserId] = useState("");
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -167,6 +169,14 @@ function PdfRequestFiles() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      const url = documentData[0] && documentData[0]?.URL;
+      //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+      const arrayBuffer = await convertPdfArrayBuffer(url);
+      if (arrayBuffer === "Error") {
+        setHandleError("Error: Something went wrong!");
+      } else {
+        setPdfArrayBuffer(arrayBuffer);
+      }
       if (isEnableSubscription) {
         await checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
       }
@@ -543,13 +553,11 @@ function PdfRequestFiles() {
         setIsUiLoading(true);
         const pngUrl = checkUser[0].placeHolder;
         // Load a PDFDocument from the existing PDF bytes
-        const existingPdfBytes = await fetch(pdfUrl).then((res) =>
-          res.arrayBuffer()
-        );
+        const existingPdfBytes = pdfArrayBuffer;
         const pdfDoc = await PDFDocument.load(existingPdfBytes, {
           ignoreEncryption: true
         });
-        const flag = false;
+        const isSignYourSelfFlow = false;
         const extUserPtr = pdfDetails[0].ExtUserPtr;
         const HeaderDocId = extUserPtr?.HeaderDocId;
         //embed document's object id to all pages in pdf document
@@ -563,7 +571,7 @@ function PdfRequestFiles() {
           pngUrl,
           pdfDoc,
           pdfOriginalWidth,
-          flag,
+          isSignYourSelfFlow,
           containerWH
         );
         //get ExistUserPtr object id of user class to get tenantDetails
