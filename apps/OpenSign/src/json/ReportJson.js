@@ -283,7 +283,9 @@ export default function reportJson(id) {
             textColor: "white",
             btnIcon: "fa fa-plus",
             redirectUrl: "placeHolderSign",
-            action: "redirect"
+            action: "redirect",
+            selector: "reactourSecond",
+            message: "onclick use button to create document from template."
           },
           {
             btnLabel: "Edit",
@@ -292,7 +294,9 @@ export default function reportJson(id) {
             textColor: "white",
             btnIcon: "fa-solid fa-pen",
             redirectUrl: "template",
-            action: "redirect"
+            action: "redirect",
+            selector: "reactourThird",
+            message: "onclick edit button you can edit template."
           },
           {
             btnId: "1834",
@@ -301,7 +305,9 @@ export default function reportJson(id) {
             textColor: "white",
             btnIcon: "fa fa-trash",
             redirectUrl: "",
-            action: "delete"
+            action: "delete",
+            selector: "reactourForth",
+            message: "onclick delete button you can delete template."
           }
         ],
         helpMsg:

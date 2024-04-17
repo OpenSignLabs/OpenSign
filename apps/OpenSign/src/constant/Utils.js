@@ -547,7 +547,6 @@ export const signPdfFun = async (
     userId: signerObjectId,
     isCustomCompletionMail: isCustomCompletionMail
   };
-
   const response = await axios
     .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
       headers: {
@@ -1248,8 +1247,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-            ? 10
-            : newUpdateHeight;
+              ? 10
+              : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
