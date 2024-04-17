@@ -13,10 +13,16 @@ export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
-export async function fetchSubscription() {
+export async function fetchSubscription(extUserId) {
   try {
     const extClass = localStorage.getItem("Extand_Class");
-    const jsonSender = JSON.parse(extClass);
+    let extUser;
+    if (extClass) {
+      const jsonSender = JSON.parse(extClass);
+      extUser = jsonSender[0].objectId;
+    } else {
+      extUser = extUserId;
+    }
     const baseURL = localStorage.getItem("baseUrl");
     const url = `${baseURL}functions/getsubscriptions`;
     const headers = {
@@ -24,7 +30,7 @@ export async function fetchSubscription() {
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
       sessionToken: localStorage.getItem("accesstoken")
     };
-    const params = { extUserId: jsonSender[0].objectId };
+    const params = { extUserId: extUser };
     const tenatRes = await axios.post(url, params, { headers: headers });
     const plan = tenatRes.data?.result?.result?.PlanCode;
     const billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
