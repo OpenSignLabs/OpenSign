@@ -28,7 +28,8 @@ import {
   getDate,
   textWidget,
   getTenantDetails,
-  checkIsSubscribed
+  checkIsSubscribed,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -193,8 +194,12 @@ function SignYourSelf() {
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const url = documentData[0] && documentData[0]?.URL;
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-      const arrayBuffer = await fetch(url).then((res) => res.arrayBuffer());
-      setPdfArrayBuffer(arrayBuffer);
+      const arrayBuffer = await convertPdfArrayBuffer(url);
+      if (arrayBuffer === "Error") {
+        setHandleError("Error: Something went wrong!");
+      } else {
+        setPdfArrayBuffer(arrayBuffer);
+      }
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
         setIsCompleted(true);

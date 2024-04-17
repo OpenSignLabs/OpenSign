@@ -23,7 +23,8 @@ import {
   addDefaultSignatureImg,
   radioButtonWidget,
   replaceMailVaribles,
-  fetchSubscription
+  fetchSubscription,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -170,8 +171,12 @@ function PdfRequestFiles() {
     if (documentData && documentData.length > 0) {
       const url = documentData[0] && documentData[0]?.URL;
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-      const arrayBuffer = await fetch(url).then((res) => res.arrayBuffer());
-      setPdfArrayBuffer(arrayBuffer);
+      const arrayBuffer = await convertPdfArrayBuffer(url);
+      if (arrayBuffer === "Error") {
+        setHandleError("Error: Something went wrong!");
+      } else {
+        setPdfArrayBuffer(arrayBuffer);
+      }
       if (isEnableSubscription) {
         await checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
       }
