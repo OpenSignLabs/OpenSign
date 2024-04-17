@@ -550,7 +550,7 @@ function PlaceholderType(props) {
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder="Enter label"
+          placeholder="Enter text"
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}

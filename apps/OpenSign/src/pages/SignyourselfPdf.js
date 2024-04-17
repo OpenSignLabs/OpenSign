@@ -28,7 +28,8 @@ import {
   getDate,
   textWidget,
   getTenantDetails,
-  checkIsSubscribed
+  checkIsSubscribed,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -102,6 +103,7 @@ function SignYourSelf() {
   const [isDontShow, setIsDontShow] = useState(false);
   const [extUserId, setExtUserId] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -190,6 +192,14 @@ function SignYourSelf() {
     if (documentData && documentData.length > 0) {
       setPdfDetails(documentData);
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
+      const url = documentData[0] && documentData[0]?.URL;
+      //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+      const arrayBuffer = await convertPdfArrayBuffer(url);
+      if (arrayBuffer === "Error") {
+        setHandleError("Error: Something went wrong!");
+      } else {
+        setPdfArrayBuffer(arrayBuffer);
+      }
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
         setIsCompleted(true);
@@ -255,9 +265,7 @@ function SignYourSelf() {
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
       });
-
     const contractUsersRes = await contractUsers(jsonSender.email);
-
     if (contractUsersRes[0] && contractUsersRes.length > 0) {
       setContractName("_Users");
       setSignerUserId(contractUsersRes[0].objectId);
@@ -561,22 +569,14 @@ function SignYourSelf() {
         setIsCeleb(false);
       }, 3000);
       setIsUiLoading(true);
-      const url = pdfDetails[0] && pdfDetails[0].URL;
-
-      const existingPdfBytes = await fetch(url).then((res) =>
-        res.arrayBuffer()
-      );
-
+      const existingPdfBytes = pdfArrayBuffer;
       // Load a PDFDocument from the existing PDF bytes
       const pdfDoc = await PDFDocument.load(existingPdfBytes, {
         ignoreEncryption: true
       });
-
-      const flag = true;
-
+      const isSignYourSelfFlow = true;
       const extUserPtr = pdfDetails[0].ExtUserPtr;
       const HeaderDocId = extUserPtr?.HeaderDocId;
-
       //embed document's object id to all pages in pdf document
       if (!HeaderDocId) {
         await embedDocId(pdfDoc, documentId, allPages);
@@ -586,7 +586,7 @@ function SignYourSelf() {
         xyPostion,
         pdfDoc,
         pdfOriginalWidth,
-        flag,
+        isSignYourSelfFlow,
         containerWH
       );
       // console.log("pdf", pdfBytes);

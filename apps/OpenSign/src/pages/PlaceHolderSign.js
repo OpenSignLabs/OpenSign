@@ -33,7 +33,8 @@ import {
   getTenantDetails,
   replaceMailVaribles,
   copytoData,
-  fetchSubscription
+  fetchSubscription,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -121,6 +122,7 @@ function PlaceHolderSign() {
   const [isSubscribe, setIsSubscribe] = useState(false);
   const [requestSubject, setRequestSubject] = useState("");
   const [requestBody, setRequestBody] = useState("");
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
     message: ""
@@ -263,6 +265,14 @@ function PlaceHolderSign() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
+      const url = documentData[0] && documentData[0]?.URL;
+      //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+      const arrayBuffer = await convertPdfArrayBuffer(url);
+      if (arrayBuffer === "Error") {
+        setHandleError("Error: Something went wrong!");
+      } else {
+        setPdfArrayBuffer(arrayBuffer);
+      }
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       if (isEnableSubscription) {
         checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
@@ -794,10 +804,7 @@ function PlaceHolderSign() {
     const prefillExist = signerPos.filter((data) => data.Role === "prefill");
     if (prefillExist && prefillExist.length > 0) {
       const placeholder = prefillExist[0].placeHolder;
-      const pdfUrl = pdfDetails[0].URL;
-      const existingPdfBytes = await fetch(pdfUrl).then((res) =>
-        res.arrayBuffer()
-      );
+      const existingPdfBytes = pdfArrayBuffer;
       const pdfDoc = await PDFDocument.load(existingPdfBytes, {
         ignoreEncryption: true
       });

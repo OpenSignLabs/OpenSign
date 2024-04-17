@@ -1895,3 +1895,19 @@ export const copytoData = (text) => {
     document.body.removeChild(textArea);
   }
 };
+
+export const convertPdfArrayBuffer = async (url) => {
+  try {
+    const response = await fetch(url);
+    // Check if the response was successful (status 200)
+    if (!response.ok) {
+      return "Error";
+    }
+    // Convert the response to ArrayBuffer
+    const arrayBuffer = await response.arrayBuffer();
+    return arrayBuffer;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return "Error";
+  }
+};
