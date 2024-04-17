@@ -138,8 +138,8 @@ function PdfRequestFiles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
-  async function checkIsSubscribed() {
-    const res = await fetchSubscription();
+  async function checkIsSubscribed(extUserId) {
+    const res = await fetchSubscription(extUserId);
     const plan = res.plan;
     const billingDate = res.billingDate;
     if (plan === "freeplan") {
@@ -169,7 +169,8 @@ function PdfRequestFiles() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
-      const url = documentData[0] && documentData[0]?.URL;
+      const url =
+        documentData[0] && (documentData[0]?.SignedUrl || documentData[0]?.URL);
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
       const arrayBuffer = await convertPdfArrayBuffer(url);
       if (arrayBuffer === "Error") {
@@ -178,7 +179,7 @@ function PdfRequestFiles() {
         setPdfArrayBuffer(arrayBuffer);
       }
       if (isEnableSubscription) {
-        await checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
+        await checkIsSubscribed(documentData[0]?.ExtUserPtr?.objectId);
       }
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const isCompleted =
