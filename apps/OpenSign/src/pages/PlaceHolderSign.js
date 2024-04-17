@@ -33,7 +33,8 @@ import {
   getTenantDetails,
   replaceMailVaribles,
   copytoData,
-  fetchSubscription
+  fetchSubscription,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -266,8 +267,12 @@ function PlaceHolderSign() {
     if (documentData && documentData.length > 0) {
       const url = documentData[0] && documentData[0]?.URL;
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-      const arrayBuffer = await fetch(url).then((res) => res.arrayBuffer());
-      setPdfArrayBuffer(arrayBuffer);
+      const arrayBuffer = await convertPdfArrayBuffer(url);
+      if (arrayBuffer === "Error") {
+        setHandleError("Error: Something went wrong!");
+      } else {
+        setPdfArrayBuffer(arrayBuffer);
+      }
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       if (isEnableSubscription) {
         checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
