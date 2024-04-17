@@ -907,7 +907,6 @@ function PlaceHolderSign() {
     updateExpiryDate.setDate(updateExpiryDate.getDate() + addExtraDays);
     //filter label widgets after add label widgets data on pdf
     const filterPrefill = signerPos.filter((data) => data.Role !== "prefill");
-
     try {
       if (updateExpiryDate) {
         data = {
@@ -1769,7 +1768,10 @@ function PlaceHolderSign() {
                               )}
 
                             {!isSubscribe && isEnableSubscription && (
-                              <Upgrade message="Upgrade to customize Email" />
+                              <Upgrade
+                                message="Upgrade to customize Email"
+                                newWindow={true}
+                              />
                             )}
                           </div>
                         </>
