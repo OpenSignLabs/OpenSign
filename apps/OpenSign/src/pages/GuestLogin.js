@@ -5,6 +5,7 @@ import loader from "../assets/images/loader2.gif";
 import axios from "axios";
 import { isEnableSubscription, themeColor } from "../constant/const";
 import { contractUsers, getAppLogo } from "../constant/Utils";
+import logo from "../assets/images/logo.png";
 
 function GuestLogin() {
   const { id, userMail, contactBookId, serverUrl } = useParams();
@@ -29,12 +30,10 @@ function GuestLogin() {
       if (applogo) {
         setAppLogo(applogo);
       } else {
-        setAppLogo(
-          "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png"
-        );
+        setAppLogo(logo);
       }
     } else {
-      setAppLogo("https://qikinnovation.ams3.digitaloceanspaces.com/logo.png");
+      setAppLogo(logo);
     }
 
     //split url in array from '&'
