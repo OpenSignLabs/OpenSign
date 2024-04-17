@@ -75,6 +75,7 @@ function PdfRequestFiles() {
     isShow: false,
     alertMessage: ""
   });
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [isCompleted, setIsCompleted] = useState({
     isCertificate: false,
     isModal: false
@@ -94,7 +95,7 @@ function PdfRequestFiles() {
   const [minRequiredCount, setminRequiredCount] = useState();
   const [sendInOrder, setSendInOrder] = useState(false);
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
   const [extUserId, setExtUserId] = useState("");
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
@@ -137,23 +138,24 @@ function PdfRequestFiles() {
 
   async function checkIsSubscribed() {
     const res = await fetchSubscription();
-    const freeplan = res.plan;
+    const plan = res.plan;
     const billingDate = res.billingDate;
-    if (freeplan === "freeplan") {
+    if (plan === "freeplan") {
       return true;
     } else if (billingDate) {
       if (new Date(billingDate) > new Date()) {
+        setIsSubscribed(true);
         return true;
       } else {
         if (location.pathname.includes("/load/")) {
-          setIsSubscribed(true);
+          setIsSubscriptionExpired(true);
         } else {
           navigate(`/subscription`);
         }
       }
     } else {
       if (location.pathname.includes("/load/")) {
-        setIsSubscribed(true);
+        setIsSubscriptionExpired(true);
       } else {
         navigate(`/subscription`);
       }
@@ -977,10 +979,10 @@ function PdfRequestFiles() {
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Request Sign"} />
-      {isSubscribed ? (
+      {isSubscriptionExpired ? (
         <ModalUi
           title={"Subscription Expired"}
-          isOpen={isSubscribed}
+          isOpen={isSubscriptionExpired}
           showClose={false}
         >
           <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">

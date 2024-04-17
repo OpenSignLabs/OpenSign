@@ -129,40 +129,6 @@ function Opensigndrive() {
       ),
       position: "top",
       style: { fontSize: "13px" }
-    },
-
-    {
-      selector: '[data-tut="reactourFifth"]',
-      content: () => (
-        <TourContentWithBtn
-          message={`The document list is displayed according to the selected sorting option. Icons next to each document indicate its current status.`}
-          isChecked={handleDontShow}
-        />
-      ),
-      position: "bottom",
-      style: { fontSize: "13px" }
-    },
-    {
-      selector: '[data-tut="reactourSixth"]',
-      content: () => (
-        <TourContentWithBtn
-          message={`Right-click on a document to see options such as Download, Rename, Move, and Delete. Click on the document to open it.`}
-          isChecked={handleDontShow}
-        />
-      ),
-      position: "bottom",
-      style: { fontSize: "13px" }
-    },
-    {
-      selector: '[data-tut="reactourSeventh"]',
-      content: () => (
-        <TourContentWithBtn
-          message={`Right-click on any folder to see options. Choose ‘Rename’ to change the folder’s name or click on the folder to navigate through its contents.`}
-          isChecked={handleDontShow}
-        />
-      ),
-      position: "bottom",
-      style: { fontSize: "13px" }
     }
   ];
   //function for get all pdf document list
@@ -177,7 +143,42 @@ function Opensigndrive() {
       if (driveDetails && driveDetails === "Error: Something went wrong!") {
         setHandleError("Error: Something went wrong!");
       } else if (driveDetails && driveDetails.length > 0) {
-        let newTour = tourConfigs;
+        const addMoreTour = [
+          {
+            selector: '[data-tut="reactourFifth"]',
+            content: () => (
+              <TourContentWithBtn
+                message={`The document list is displayed according to the selected sorting option. Icons next to each document indicate its current status.`}
+                isChecked={handleDontShow}
+              />
+            ),
+            position: "bottom",
+            style: { fontSize: "13px" }
+          },
+          {
+            selector: '[data-tut="reactourSixth"]',
+            content: () => (
+              <TourContentWithBtn
+                message={`Right-click on a document to see options such as Download, Rename, Move, and Delete. Click on the document to open it.`}
+                isChecked={handleDontShow}
+              />
+            ),
+            position: "bottom",
+            style: { fontSize: "13px" }
+          },
+          {
+            selector: '[data-tut="reactourSeventh"]',
+            content: () => (
+              <TourContentWithBtn
+                message={`Right-click on any folder to see options. Choose ‘Rename’ to change the folder’s name or click on the folder to navigate through its contents.`}
+                isChecked={handleDontShow}
+              />
+            ),
+            position: "bottom",
+            style: { fontSize: "13px" }
+          }
+        ];
+        let newTour = [...tourConfigs, ...addMoreTour];
         const isFolderExist = driveDetails.some(
           (data) => data.Type === "Folder"
         );
@@ -195,6 +196,8 @@ function Opensigndrive() {
         setTourData(newTour);
         setSkip((prevSkip) => prevSkip + limit);
         sortingData(null, null, driveDetails, true);
+      } else {
+        setTourData(tourConfigs);
       }
       if (!docId) {
         setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
@@ -696,14 +699,17 @@ function Opensigndrive() {
         ) : (
           <>
             <div className="folderContainer">
-              <Tour
-                onRequestClose={closeTour}
-                steps={tourData}
-                isOpen={isTour}
-                closeWithMask={false}
-                scrollOffset={-100}
-                rounded={5}
-              />
+              {tourData && (
+                <Tour
+                  onRequestClose={closeTour}
+                  steps={tourData}
+                  isOpen={isTour}
+                  closeWithMask={false}
+                  scrollOffset={-100}
+                  rounded={5}
+                />
+              )}
+
               <div
                 data-tut="reactourFirst"
                 onMouseEnter={(e) => handleMouseEnter(e)}

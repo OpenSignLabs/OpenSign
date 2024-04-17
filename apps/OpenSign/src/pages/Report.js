@@ -56,39 +56,6 @@ const Report = () => {
     // setIsLoader(true);
     const json = reportJson(id);
     if (json) {
-      if (id === "6TeaPr321t") {
-        const tourConfig = [
-          {
-            selector: "[data-tut=reactourFirst]",
-            content: () => (
-              <TourContentWithBtn
-                message={
-                  "Click the ‘Add’ button to create a new template. Templates are reusable documents designed to quickly generate new documents with the same structure and varying signers. For example, an HR template for onboarding could have predefined roles like ‘HR Manager’ and ‘New Employee’. Each time you use the template, you can assign the ‘New Employee’ role to different incoming staff members, while the ‘HR Manager’ role remains constant, facilitating a seamless onboarding process for each recruit."
-                }
-                isChecked={handleDontShow}
-              />
-            ),
-            position: "top",
-            style: { fontSize: "13px" }
-          }
-        ];
-        json.actions.map((data) => {
-          const newConfig = {
-            selector: `[data-tut="${data?.selector}"]`,
-            content: () => (
-              <TourContentWithBtn
-                message={data?.message}
-                isChecked={handleDontShow}
-              />
-            ),
-            position: "top",
-            style: { fontSize: "13px" }
-          };
-          tourConfig.push(newConfig);
-        });
-        setTourData(tourConfig);
-      }
-
       setActions(json.actions);
       setHeading(json.heading);
       setReportName(json.reportName);
@@ -108,6 +75,42 @@ const Report = () => {
           headers: headers,
           signal: abortController.signal // is used to cancel fetch query
         });
+        if (id === "6TeaPr321t") {
+          const tourConfig = [
+            {
+              selector: "[data-tut=reactourFirst]",
+              content: () => (
+                <TourContentWithBtn
+                  message={
+                    "Click the 'Add' button to create a new template. Templates are reusable documents designed to quickly generate new documents with the same structure and varying signers. For example, an HR template for onboarding could have predefined roles like ‘HR Manager’ and ‘New Employee’. Each time you use the template, you can assign the ‘New Employee’ role to different incoming staff members, while the ‘HR Manager’ role remains constant, facilitating a seamless onboarding process for each recruit. "
+                  }
+                  isChecked={handleDontShow}
+                />
+              ),
+              position: "top",
+              style: { fontSize: "13px" }
+            }
+          ];
+
+          if (res.data.result && res.data.result?.length > 0) {
+            json.actions.map((data) => {
+              const newConfig = {
+                selector: `[data-tut="${data?.selector}"]`,
+                content: () => (
+                  <TourContentWithBtn
+                    message={data?.message}
+                    isChecked={handleDontShow}
+                  />
+                ),
+                position: "top",
+                style: { fontSize: "13px" }
+              };
+              tourConfig.push(newConfig);
+            });
+          }
+
+          setTourData(tourConfig);
+        }
         if (id === "4Hhwbp482K") {
           const listData = res.data?.result.filter((x) => x.Signers.length > 0);
           let arr = [];
