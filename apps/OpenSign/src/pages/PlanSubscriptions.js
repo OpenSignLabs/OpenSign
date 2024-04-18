@@ -19,15 +19,22 @@ const PlanSubscriptions = () => {
 
   const userDetails = JSON.parse(localStorage.getItem("userDetails"));
   const name =
-    userDetails && userDetails.name ? "first_name=" + userDetails.name : "";
+    userDetails && userDetails.name
+      ? "first_name=" + encodeURIComponent(userDetails.name)
+      : "";
   const email =
-    userDetails && userDetails.email ? "&email=" + userDetails.email : "";
+    userDetails && userDetails.email
+      ? "&email=" + encodeURIComponent(userDetails.email)
+      : "";
   const company =
     userDetails && userDetails.company
-      ? "&company_name=" + userDetails.company
+      ? "&company_name=" + encodeURIComponent(userDetails.company)
       : "";
   const phone =
-    userDetails && userDetails.phone ? "&mobile=" + userDetails.phone : "";
+    userDetails && userDetails.phone
+      ? "&mobile=" + encodeURIComponent(userDetails.phone)
+      : "";
+
   const details =
     "?shipping_country_code=US&billing_country_code=US&billing_state_code=CA&" +
     name +
