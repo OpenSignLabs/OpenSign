@@ -987,26 +987,32 @@ function PlaceHolderSign() {
     return shareLinkList.map((data, ind) => {
       return (
         <div
-          className="flex  flex-col md:flex-row justify-between mb-1"
+          className="flex flex-row justify-between items-center mb-1"
           key={ind}
         >
           {copied && <Alert type="success">Copied</Alert>}
-          <span className="w-[200px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis ">
+          <span className="w-[220px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis  ">
             {data.signerEmail}
           </span>
-          <div className=" ">
-            <span
-              className="mr-3  underline text-blue-700 cursor-pointer "
+          <div className="flex flex-row items-center gap-3 ">
+            <button
               onClick={() => copytoclipboard(data.url)}
+              type="button"
+              className="flex flex-row items-center text-white font-[500]"
             >
-              <i className="fa-solid fa-link  "></i> copy link
-            </span>
+              <i
+                className="fa-solid fa-link underline text-blue-700"
+                aria-hidden="true"
+              ></i>
+              <span className=" hidden md:block ml-1 underline text-blue-700">
+                Copy link
+              </span>
+            </button>
             <RWebShare
               data={{
                 url: data.url,
                 title: "Sign url"
               }}
-              // onClick={() => console.log("shared successfully!")}
             >
               <i
                 className="fa-solid fa-share-from-square cursor-pointer "
@@ -1727,7 +1733,7 @@ function PlaceHolderSign() {
                             )}
                           <div
                             className={
-                              "flex flex-col md:flex-row md:items-center   md:gap-6 mt-2 "
+                              "flex flex-row md:items-center gap-2 md:gap-6 mt-2 "
                             }
                           >
                             <div className="flex flex-row gap-2">
@@ -1768,10 +1774,12 @@ function PlaceHolderSign() {
                               )}
 
                             {!isSubscribe && isEnableSubscription && (
-                              <Upgrade
-                                message="Upgrade to customize Email"
-                                newWindow={true}
-                              />
+                              <div className="mt-2">
+                                <Upgrade
+                                  message="Upgrade to customize Email"
+                                  newWindow={true}
+                                />
+                              </div>
                             )}
                           </div>
                         </>
@@ -1781,7 +1789,7 @@ function PlaceHolderSign() {
 
                   {isSendAlert.mssg === "confirm" && (
                     <>
-                      <div className="flex justify-center items-center mt-4">
+                      <div className="flex justify-center items-center mt-3">
                         <span
                           style={{
                             height: 1,
@@ -1798,7 +1806,7 @@ function PlaceHolderSign() {
                           }}
                         ></span>
                       </div>
-                      <div className="mt-4 mb-3">{handleShareList()}</div>
+                      <div className="mt-3 mb-3">{handleShareList()}</div>
                     </>
                   )}
                 </div>
