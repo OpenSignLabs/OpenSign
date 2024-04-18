@@ -40,7 +40,7 @@ function PlaceholderType(props) {
   const validateExpression = (regexValidation) => {
     if (textValue) {
       let regexObject = regexValidation;
-      if (props.pos?.options.validation.type === "regex") {
+      if (props.pos?.options?.validation?.type === "regex") {
         regexObject = RegexParser(regexValidation);
       }
       // new RegExp(regexValidation);
@@ -89,11 +89,11 @@ function PlaceholderType(props) {
       case "number":
         setValidatePlaceholder("12345");
         break;
-      case textInputWidget:
-        setValidatePlaceholder("enter text");
+      case "text":
+        setValidatePlaceholder("please enter text");
         break;
       default:
-        setValidatePlaceholder("enter text");
+        setValidatePlaceholder("please enter value");
     }
   }
 
@@ -407,7 +407,7 @@ function PlaceholderType(props) {
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={validatePlaceholder}
+          placeholder={validatePlaceholder || "please enter value"}
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -710,7 +710,7 @@ function PlaceholderType(props) {
         (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <textarea
           ref={inputRef}
-          placeholder={"email"}
+          placeholder={"enter email"}
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
@@ -782,7 +782,7 @@ function PlaceholderType(props) {
     case textWidget:
       return (
         <textarea
-          placeholder="Enter label"
+          placeholder="Enter text"
           rows={1}
           onKeyDown={handleEnterPress}
           value={textValue}
