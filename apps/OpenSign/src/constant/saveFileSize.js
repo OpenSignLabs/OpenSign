@@ -1,6 +1,10 @@
 import axios from "axios";
-const parseAppId = localStorage.getItem("parseAppId");
-const serverUrl = localStorage.getItem("baseUrl");
+const parseAppId = process.env.REACT_APP_APPID
+  ? process.env.REACT_APP_APPID
+  : "opensign";
+const serverUrl = process.env.REACT_APP_SERVERURL
+  ? process.env.REACT_APP_SERVERURL
+  : window.location.origin + "/api/app";
 
 export const SaveFileSize = async (size, imageUrl, tenantId) => {
   //checking server url and save file's size
@@ -12,7 +16,7 @@ export const SaveFileSize = async (size, imageUrl, tenantId) => {
   const _tenantPtr = JSON.stringify(tenantPtr);
   try {
     const res = await axios.get(
-      `${serverUrl}classes/partners_TenantCredits?where={"PartnersTenant":${_tenantPtr}}`,
+      `${serverUrl}/classes/partners_TenantCredits?where={"PartnersTenant":${_tenantPtr}}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -30,7 +34,7 @@ export const SaveFileSize = async (size, imageUrl, tenantId) => {
           : size
       };
       await axios.put(
-        `${serverUrl}classes/partners_TenantCredits/${response[0].objectId}`,
+        `${serverUrl}/classes/partners_TenantCredits/${response[0].objectId}`,
         data,
         {
           headers: {
@@ -41,7 +45,7 @@ export const SaveFileSize = async (size, imageUrl, tenantId) => {
       );
     } else {
       data = { usedStorage: size, PartnersTenant: tenantPtr };
-      await axios.post(`${serverUrl}classes/partners_TenantCredits`, data, {
+      await axios.post(`${serverUrl}/classes/partners_TenantCredits`, data, {
         headers: {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": parseAppId
@@ -64,7 +68,7 @@ const saveDataFile = async (size, imageUrl, tenantPtr) => {
 
   // console.log("data save",file, data)
   try {
-    await axios.post(`${serverUrl}classes/partners_DataFiles`, data, {
+    await axios.post(`${serverUrl}/classes/partners_DataFiles`, data, {
       headers: {
         "Content-Type": "application/json",
         "X-Parse-Application-Id": parseAppId
@@ -74,4 +78,3 @@ const saveDataFile = async (size, imageUrl, tenantPtr) => {
     console.log("err in save usage ", err);
   }
 };
-  

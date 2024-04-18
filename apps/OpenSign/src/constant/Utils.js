@@ -323,15 +323,15 @@ export const addWidgetOptions = (type) => {
         options: { isReadOnly: false, isHideLabel: false }
       };
     case textInputWidget:
-      return { ...defaultOpt, validation: { type: "text", pattern: "" } };
+      return { ...defaultOpt };
     case "initials":
       return defaultOpt;
     case "name":
-      return { ...defaultOpt, validation: { type: "text", pattern: "" } };
+      return { ...defaultOpt };
     case "company":
-      return { ...defaultOpt, validation: { type: "text", pattern: "" } };
+      return { ...defaultOpt };
     case "job title":
-      return { ...defaultOpt, validation: { type: "text", pattern: "" } };
+      return { ...defaultOpt };
     case "date":
       return {
         ...defaultOpt,
