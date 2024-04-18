@@ -145,6 +145,7 @@ const TemplatePlaceholder = () => {
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState([]);
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [widgetName, setWidgetName] = useState(false);
+  const [isAddRole, setIsAddRole] = useState(false);
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -481,8 +482,19 @@ const TemplatePlaceholder = () => {
       } else {
         setIsReceipent(false);
       }
+    } else {
+      setIsAddRole(true);
     }
   };
+
+  const tourAddRole = [
+    {
+      selector: '[data-tut="reactourAddbtn"]',
+      content: "You need to add a role before you can add fields for it. ",
+      position: "top",
+      style: { fontSize: "13px" }
+    }
+  ];
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
@@ -1214,6 +1226,15 @@ const TemplatePlaceholder = () => {
                 onRequestClose={closeTour}
                 steps={tourConfig}
                 isOpen={templateTour}
+                rounded={5}
+                closeWithMask={false}
+              />
+            )}
+            {isAddRole && (
+              <Tour
+                onRequestClose={() => setIsAddRole(false)}
+                steps={tourAddRole}
+                isOpen={isAddRole}
                 rounded={5}
                 closeWithMask={false}
               />
