@@ -63,7 +63,7 @@ function PlaceholderType(props) {
           validateExpression(regexValidation);
           break;
         case "number":
-          regexValidation = /^\d+$/;
+          regexValidation = /^[0-9\s]*$/;
           validateExpression(regexValidation);
           break;
         case "text":
