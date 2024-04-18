@@ -1243,7 +1243,7 @@ const TemplatePlaceholder = () => {
                 handleClose={() => setIsSendAlert(false)}
               >
                 <div style={{ height: "100%", padding: 20 }}>
-                  <p>Please add field for all recipients.</p>
+                  <p>Please add at least one signature field for all roles.</p>
                 </div>
               </ModalUi>
               <ModalUi
