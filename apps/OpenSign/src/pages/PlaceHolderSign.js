@@ -1695,7 +1695,7 @@ function PlaceHolderSign() {
                   style={{ padding: 20 }}
                 >
                   {isSendAlert.mssg === "sure" ? (
-                    <span>Please add field for all recipients.</span>
+                    <span>Please add at least one signature field for all recipients.</span>
                   ) : isSendAlert.mssg === textWidget ? (
                     <p>Please confirm that you have filled the text field.</p>
                   ) : (
