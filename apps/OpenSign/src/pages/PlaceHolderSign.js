@@ -1571,7 +1571,7 @@ function PlaceHolderSign() {
     {
       selector: '[data-tut="assignSigner"]',
       content:
-        " Please assign a new signer to use this icon for the placeholder. ",
+        " You need to attach a Signer to every role. You can do that by clicking this icon. Once you select a Signer it will be attached to all the fields associated with that role which appear in the same colour. ",
       position: "top",
       style: { fontSize: "13px" }
     }
