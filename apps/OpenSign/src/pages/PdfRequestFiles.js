@@ -593,15 +593,21 @@ function PdfRequestFiles() {
             setSignedSigners([]);
             setUnSignedSigners([]);
             getDocumentDetails();
+            const index = pdfDetails?.[0].Signers.findIndex(
+              (x) => x.Email === jsonSender.email
+            );
+            const newIndex = index + 1;
+            const user = pdfDetails?.[0].Signers[newIndex];
+            if (user) {
+              setIsCompleted({
+                isModal: true,
+                message:
+                  "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
+              });
+            }
             if (sendInOrder) {
-              const index = pdfDetails?.[0].Signers.findIndex(
-                (x) => x.Email === jsonSender.email
-              );
               const requestBody = pdfDetails?.[0]?.RequestBody;
               const requestSubject = pdfDetails?.[0]?.RequestSubject;
-
-              const newIndex = index + 1;
-              const user = pdfDetails?.[0].Signers[newIndex];
               if (user) {
                 const expireDate = pdfDetails?.[0].ExpiryDate.iso;
                 const newDate = new Date(expireDate);
@@ -1207,7 +1213,11 @@ function PdfRequestFiles() {
                     }}
                   >
                     <div style={{ height: "100%", padding: 20 }}>
-                      <p>This document has been signed by all Signers.</p>
+                      <p>
+                        {" "}
+                        {isCompleted?.message ||
+                          "This document has been signed by all Signers."}
+                      </p>
 
                       <div
                         style={{
