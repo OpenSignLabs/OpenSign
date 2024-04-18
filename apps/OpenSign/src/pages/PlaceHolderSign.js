@@ -1375,10 +1375,7 @@ function PlaceHolderSign() {
       inputype = options.includes(defaultdata.textvalidate)
         ? defaultdata.textvalidate
         : "regex";
-    } else {
-      inputype = "text";
     }
-
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
       const getPlaceHolder = filterSignerPos[0].placeHolder;
@@ -1401,11 +1398,14 @@ function PlaceHolderSign() {
                   status: defaultdata?.status || "required",
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
-                  validation: {
-                    type: inputype,
-                    pattern:
-                      inputype === "regex" ? defaultdata.textvalidate : ""
-                  }
+                  validation:
+                    (isSubscribe || !isEnableSubscription) && inputype
+                      ? {
+                          type: inputype,
+                          pattern:
+                            inputype === "regex" ? defaultdata.textvalidate : ""
+                        }
+                      : {}
                 }
               };
             } else {
@@ -1695,7 +1695,10 @@ function PlaceHolderSign() {
                   style={{ padding: 20 }}
                 >
                   {isSendAlert.mssg === "sure" ? (
-                    <span>Please add at least one signature field for all recipients.</span>
+                    <span>
+                      Please add at least one signature field for all
+                      recipients.
+                    </span>
                   ) : isSendAlert.mssg === textWidget ? (
                     <p>Please confirm that you have filled the text field.</p>
                   ) : (
