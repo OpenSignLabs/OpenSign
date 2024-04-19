@@ -2,10 +2,9 @@ import fs from 'node:fs';
 import https from 'https';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
-import { createTransport } from 'nodemailer';
 import { updateMailCount } from '../../Utils.js';
-
-async function sendmailv3(req) {
+import sendMailGmailProvider from './sendMailGmailProvider.js';
+async function sendMailProvider(req) {
   try {
     let transporterSMTP;
     let mailgunClient;
@@ -98,9 +97,7 @@ async function sendmailv3(req) {
             } catch (err) {
               console.log('Err in unlink certificate sendmailv3');
             }
-            return {
-              status: 'success',
-            };
+            return { status: 'success' };
           }
         } else {
           const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
@@ -141,9 +138,7 @@ async function sendmailv3(req) {
           if (req.params?.extUserId) {
             await updateMailCount(req.params.extUserId);
           }
-          return {
-            status: 'success',
-          };
+          return { status: 'success' };
         }
       } else {
         const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
@@ -152,9 +147,7 @@ async function sendmailv3(req) {
           if (req.params?.extUserId) {
             await updateMailCount(req.params.extUserId);
           }
-          return {
-            status: 'success',
-          };
+          return { status: 'success' };
         }
       }
     }
@@ -163,6 +156,46 @@ async function sendmailv3(req) {
     if (err) {
       return { status: 'error' };
     }
+  }
+}
+async function sendmailv3(req) {
+  const isMailProvider = req.params.isMailProvider || false;
+  if (isMailProvider) {
+    try {
+      const extUserId = req.params.extUserId || '';
+      const pdfName = req.params.pdfName || '';
+      const template = {
+        sender: req.params.from || '',
+        receiver: req.params.recipient,
+        subject: req.params.subject,
+        html: req.params.html || '',
+        url: req.params.url ? req.params.url : '',
+        pdfName: pdfName,
+      };
+      const extUserQuery = new Parse.Query('contracts_Users');
+      const extRes = await extUserQuery.get(extUserId, { useMasterKey: true });
+      if (extRes) {
+        const _extRes = JSON.parse(JSON.stringify(extRes));
+        if (_extRes.google_refresh_token) {
+          const res = await sendMailGmailProvider(_extRes, template);
+          if (res.code === 200) {
+            await updateMailCount(req.params.extUserId);
+            return { status: 'success' };
+          } else {
+            return { status: 'error' };
+          }
+        } else {
+          const nonCustomMail = await sendMailProvider(req);
+          return nonCustomMail;
+        }
+      }
+    } catch (err) {
+      console.log('err in send custom mail', err);
+      return { status: 'error' };
+    }
+  } else {
+    const nonCustomMail = await sendMailProvider(req);
+    return nonCustomMail;
   }
 }
 
