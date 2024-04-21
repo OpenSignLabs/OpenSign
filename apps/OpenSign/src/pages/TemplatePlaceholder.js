@@ -1132,8 +1132,6 @@ const TemplatePlaceholder = () => {
       inputype = options.includes(defaultdata.textvalidate)
         ? defaultdata.textvalidate
         : "regex";
-    } else {
-      inputype = "text";
     }
 
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
@@ -1158,11 +1156,14 @@ const TemplatePlaceholder = () => {
                   status: defaultdata?.status || "required",
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
-                  validation: {
-                    type: inputype,
-                    pattern:
-                      inputype === "regex" ? defaultdata.textvalidate : ""
-                  }
+                  validation:
+                    (isSubscribe || !isEnableSubscription) && inputype
+                      ? {
+                          type: inputype,
+                          pattern:
+                            inputype === "regex" ? defaultdata.textvalidate : ""
+                        }
+                      : {}
                 }
               };
             } else {
@@ -1206,6 +1207,7 @@ const TemplatePlaceholder = () => {
     setIsCheckbox(false);
   };
 
+  console.log("signerpos", signerPos);
   return (
     <div>
       <Title title={"Template"} />
