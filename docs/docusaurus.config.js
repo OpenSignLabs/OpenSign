@@ -10,17 +10,17 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'OpenSign™',
-  tagline: 'Welcome to OpenSign™ Docs',
+  tagline: 'Official OpenSign™ Docs - tutorials, API documentation, self-host help & much more.',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
   url: 'https://docs.opensignlabs.com',
   // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
+  // For GitHub pages deployment, it is often '/<pro jectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
+  // If you aren't using GitHub pages, you don't ne ed these.
   organizationName: 'opensignlabs', // Usually your GitHub org/user name.
   projectName: 'opensign', // Usually your repo name.
 
