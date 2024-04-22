@@ -53,7 +53,11 @@ const WidgetNameModal = (props) => {
     }
   };
   const handleChange = (e) => {
-    setFormdata({ ...formdata, [e.target.name]: e.target.value });
+    if (e) {
+      setFormdata({ ...formdata, [e.target.name]: e.target.value });
+    } else {
+      setFormdata({ ...formdata, textvalidate: "" });
+    }
   };
 
   const handledefaultChange = (e) => {
@@ -173,7 +177,10 @@ const WidgetNameModal = (props) => {
                     onChange={(e) => handleChange(e)}
                     onBlur={() => handleBlurRegex()}
                   >
-                    <option disabled style={{ fontSize: "13px" }}>
+                    <option
+                      disabled={formdata?.textvalidate}
+                      style={{ fontSize: "13px" }}
+                    >
                       Select...
                     </option>
                     {inputOpt.map((data, ind) => {
