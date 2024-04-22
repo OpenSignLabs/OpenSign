@@ -138,10 +138,12 @@ function PdfRequestFiles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
-  async function checkIsSubscribed(extUserId) {
-    const res = await fetchSubscription(extUserId);
+  async function checkIsSubscribed(extUserId, contactId) {
+    const isGuestSign = localStorage.getItem("isGuestSigner");
+    const res = await fetchSubscription(extUserId, contactId);
     const plan = res.plan;
-    const billingDate = res.billingDate;
+    const billingDate = res?.billingDate;
+    const status = res?.status;
     if (plan === "freeplan") {
       return true;
     } else if (billingDate) {
@@ -155,8 +157,15 @@ function PdfRequestFiles() {
           navigate(`/subscription`);
         }
       }
+    } else if (isGuestSign) {
+      if (status) {
+        setIsSubscribed(true);
+        return true;
+      } else {
+        setIsSubscriptionExpired(true);
+      }
     } else {
-      if (location.pathname.includes("/load/")) {
+      if (isGuestSign) {
         setIsSubscriptionExpired(true);
       } else {
         navigate(`/subscription`);
@@ -178,9 +187,7 @@ function PdfRequestFiles() {
       } else {
         setPdfArrayBuffer(arrayBuffer);
       }
-      if (isEnableSubscription) {
-        await checkIsSubscribed(documentData[0]?.ExtUserPtr?.objectId);
-      }
+
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
@@ -196,6 +203,12 @@ function PdfRequestFiles() {
         );
 
       currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
+      if (isEnableSubscription) {
+        await checkIsSubscribed(
+          documentData[0]?.ExtUserPtr?.objectId,
+          currUserId
+        );
+      }
       setSignerObjectId(currUserId);
       if (documentData[0].SignedUrl) {
         setPdfUrl(documentData[0].SignedUrl);
