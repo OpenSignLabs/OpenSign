@@ -537,7 +537,8 @@ export const signPdfFun = async (
   signerObjectId,
   setIsAlert,
   objectId,
-  isSubscribed
+  isSubscribed,
+  activeMailAdapter
 ) => {
   let singleSign,
     isCustomCompletionMail = false;
@@ -557,6 +558,7 @@ export const signPdfFun = async (
   }
 
   singleSign = {
+    mailProvider: activeMailAdapter,
     pdfFile: base64Url,
     docId: documentId,
     userId: signerObjectId,
