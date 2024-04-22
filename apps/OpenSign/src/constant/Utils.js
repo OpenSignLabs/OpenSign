@@ -43,7 +43,7 @@ export async function fetchSubscription(extUserId, contactObjId) {
       plan = tenatRes.data?.result?.result?.PlanCode;
       billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
     }
-    return { plan, billingDate };
+    return { plan, billingDate, status };
   } catch (err) {
     console.log("Err in fetch subscription", err);
     return { plan: "", billingDate: "" };
