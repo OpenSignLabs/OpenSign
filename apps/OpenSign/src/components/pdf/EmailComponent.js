@@ -16,7 +16,8 @@ function EmailComponent({
   pdfName,
   sender,
   setIsAlert,
-  extUserId
+  extUserId,
+  activeMailAdapter
 }) {
   const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState();
@@ -24,6 +25,7 @@ function EmailComponent({
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
+
     let sendMail;
     for (let i = 0; i < emailList.length; i++) {
       try {
@@ -39,6 +41,7 @@ function EmailComponent({
         const openSignUrl = "https://www.opensignlabs.com/contact-us";
         const themeBGcolor = themeColor;
         let params = {
+          mailProvider: activeMailAdapter,
           extUserId: extUserId,
           pdfName: pdfName,
           url: pdfUrl,

@@ -24,7 +24,8 @@ import {
   radioButtonWidget,
   replaceMailVaribles,
   fetchSubscription,
-  convertPdfArrayBuffer
+  convertPdfArrayBuffer,
+  contractUsers
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -590,6 +591,20 @@ function PdfRequestFiles() {
         );
         //get ExistUserPtr object id of user class to get tenantDetails
         const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
+
+        const res = await contractUsers(jsonSender?.email);
+        console.log("res", res);
+        let activeMailAdapter = "";
+        if (res === "Error: Something went wrong!") {
+          setHandleError("Error: Something went wrong!");
+          setIsLoading({
+            isLoad: false
+          });
+        } else if (!res || res?.length === 0) {
+          activeMailAdapter = "";
+        } else if (res[0] && res.length) {
+          activeMailAdapter = res[0]?.active_mail_adapter;
+        }
         //function for call to embed signature in pdf and get digital signature pdf
         try {
           const res = await signPdfFun(
@@ -598,7 +613,8 @@ function PdfRequestFiles() {
             signerObjectId,
             setIsAlert,
             objectId,
-            isSubscribed
+            isSubscribed,
+            activeMailAdapter
           );
           if (res && res.status === "success") {
             setPdfUrl(res.data);
@@ -690,6 +706,7 @@ function PdfRequestFiles() {
                   }
 
                   let params = {
+                    mailProvider: activeMailAdapter,
                     extUserId: extUserId,
                     recipient: user.Email,
                     subject: requestSubject
