@@ -159,8 +159,8 @@ async function sendMailProvider(req) {
   }
 }
 async function sendmailv3(req) {
-  const isMailProvider = req.params.isMailProvider || false;
-  if (isMailProvider) {
+  const mailProvider = req.params.mailProvider || 'default';
+  if (mailProvider) {
     try {
       const extUserId = req.params.extUserId || '';
       const pdfName = req.params.pdfName || '';
@@ -176,7 +176,7 @@ async function sendmailv3(req) {
       const extRes = await extUserQuery.get(extUserId, { useMasterKey: true });
       if (extRes) {
         const _extRes = JSON.parse(JSON.stringify(extRes));
-        if (_extRes.google_refresh_token) {
+        if (_extRes.google_refresh_token && mailProvider === 'google') {
           const res = await sendMailGmailProvider(_extRes, template);
           if (res.code === 200) {
             await updateMailCount(req.params.extUserId);
