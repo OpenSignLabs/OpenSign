@@ -123,6 +123,7 @@ function PlaceHolderSign() {
   const [requestSubject, setRequestSubject] = useState("");
   const [requestBody, setRequestBody] = useState("");
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
+  const [activeMailAdapter, setActiveMailAdapter] = useState("");
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
     message: ""
@@ -406,7 +407,14 @@ function PlaceHolderSign() {
       setIsLoading(loadObj);
     }
     const res = await contractUsers(jsonSender.email);
-    if (res[0] && res.length) {
+    if (res === "Error: Something went wrong!") {
+      const loadObj = {
+        isLoad: false
+      };
+      setHandleError("Error: Something went wrong!");
+      setIsLoading(loadObj);
+    } else if (res[0] && res.length) {
+      setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;
       if (tourstatus && tourstatus.length > 0) {
@@ -421,12 +429,6 @@ function PlaceHolderSign() {
       const loadObj = {
         isLoad: false
       };
-      setIsLoading(loadObj);
-    } else if (res === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else if (res.length === 0) {
       setHandleError("No Data Found!");
@@ -1104,6 +1106,7 @@ function PlaceHolderSign() {
         }
 
         let params = {
+          mailProvider: activeMailAdapter,
           extUserId: extUserId,
           recipient: signerMail[i].Email,
           subject: isCustomize

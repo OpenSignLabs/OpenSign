@@ -104,6 +104,7 @@ function SignYourSelf() {
   const [extUserId, setExtUserId] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
+  const [activeMailAdapter, setActiveMailAdapter] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -266,7 +267,14 @@ function SignYourSelf() {
         setIsLoading(loadObj);
       });
     const contractUsersRes = await contractUsers(jsonSender.email);
-    if (contractUsersRes[0] && contractUsersRes.length > 0) {
+    if (contractUsersRes === "Error: Something went wrong!") {
+      const loadObj = {
+        isLoad: false
+      };
+      setHandleError("Error: Something went wrong!");
+      setIsLoading(loadObj);
+    } else if (contractUsersRes[0] && contractUsersRes.length > 0) {
+      setActiveMailAdapter(contractUsersRes[0]?.active_mail_adapter);
       setContractName("_Users");
       setSignerUserId(contractUsersRes[0].objectId);
       const tourstatuss =
@@ -285,12 +293,6 @@ function SignYourSelf() {
       const loadObj = {
         isLoad: false
       };
-      setIsLoading(loadObj);
-    } else if (contractUsersRes === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
     } else if (contractUsersRes.length === 0) {
       const contractContactBook = await contactBook(jsonSender.objectId);
@@ -615,7 +617,8 @@ function SignYourSelf() {
     let singleSign = {
       pdfFile: base64Url,
       docId: documentId,
-      isCustomCompletionMail: isCustomCompletionMail
+      isCustomCompletionMail: isCustomCompletionMail,
+      mailProvider: activeMailAdapter
     };
 
     await axios
@@ -1138,6 +1141,7 @@ function SignYourSelf() {
                 sender={jsonSender}
                 setIsAlert={setIsAlert}
                 extUserId={extUserId}
+                activeMailAdapter={activeMailAdapter}
               />
               {/* pdf header which contain funish back button */}
               <Header
