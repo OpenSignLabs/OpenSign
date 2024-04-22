@@ -593,7 +593,6 @@ function PdfRequestFiles() {
         const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
 
         const res = await contractUsers(jsonSender?.email);
-        console.log("res", res);
         let activeMailAdapter = "";
         if (res === "Error: Something went wrong!") {
           setHandleError("Error: Something went wrong!");
