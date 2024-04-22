@@ -27,6 +27,7 @@
     "express-sse": "^0.5.3",
     "form-data": "^4.0.0",
     "generate-api-key": "^1.0.2",
+    "googleapis": "^134.0.0",
     "jsonschema": "^1.4.1",
     "mailgun.js": "^10.2.1",
     "mongoose": "^8.2.2",
@@ -53,7 +54,8 @@
     "mongodb-runner": "^5.5.4",
     "nodemon": "^3.1.0",
     "nyc": "15.1.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "uglify-js": "^3.17.4"
   },
   "engines": {
     "node": ">=12.22.10 <21"
