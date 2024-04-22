@@ -38,7 +38,7 @@ function PlaceholderType(props) {
     "December"
   ];
   const validateExpression = (regexValidation) => {
-    if (textValue) {
+    if (textValue && regexValidation) {
       let regexObject = regexValidation;
       if (props.pos?.options?.validation?.type === "regex") {
         regexObject = RegexParser(regexValidation);
@@ -56,7 +56,7 @@ function PlaceholderType(props) {
     props.setDraggingEnabled(true);
     const validateType = props.pos?.options?.validation?.type;
     let regexValidation;
-    if (validateType) {
+    if (validateType && validateType !== "text") {
       switch (validateType) {
         case "email":
           regexValidation = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -66,12 +66,8 @@ function PlaceholderType(props) {
           regexValidation = /^[0-9\s]*$/;
           validateExpression(regexValidation);
           break;
-        case "text":
-          regexValidation = /^[a-zA-Z\s]+$/;
-          validateExpression(regexValidation);
-          break;
         default:
-          regexValidation = props.pos?.options.validation.pattern;
+          regexValidation = props.pos?.options?.validation?.pattern || "";
           validateExpression(regexValidation);
       }
     }
