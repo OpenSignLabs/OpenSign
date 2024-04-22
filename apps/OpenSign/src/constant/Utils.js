@@ -13,9 +13,10 @@ export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
-export async function fetchSubscription(extUserId) {
+export async function fetchSubscription(extUserId, contactObjId) {
   try {
     const extClass = localStorage.getItem("Extand_Class");
+    const isGuestSign = localStorage.getItem("isGuestSigner");
     let extUser;
     if (extClass) {
       const jsonSender = JSON.parse(extClass);
@@ -30,10 +31,18 @@ export async function fetchSubscription(extUserId) {
       "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
       sessionToken: localStorage.getItem("accesstoken")
     };
-    const params = { extUserId: extUser };
+    const params = isGuestSign
+      ? { contactId: contactObjId }
+      : { extUserId: extUser };
     const tenatRes = await axios.post(url, params, { headers: headers });
-    const plan = tenatRes.data?.result?.result?.PlanCode;
-    const billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
+    let plan, status, billingDate;
+    if (isGuestSign) {
+      plan = tenatRes.data?.result?.result?.plan;
+      status = tenatRes.data?.result?.result?.isSubscribed;
+    } else {
+      plan = tenatRes.data?.result?.result?.PlanCode;
+      billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
+    }
     return { plan, billingDate };
   } catch (err) {
     console.log("Err in fetch subscription", err);
