@@ -24,7 +24,8 @@ import {
   radioButtonWidget,
   replaceMailVaribles,
   fetchSubscription,
-  convertPdfArrayBuffer
+  convertPdfArrayBuffer,
+  contractUsers
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -138,10 +139,12 @@ function PdfRequestFiles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
-  async function checkIsSubscribed(extUserId) {
-    const res = await fetchSubscription(extUserId);
+  async function checkIsSubscribed(extUserId, contactId) {
+    const isGuestSign = localStorage.getItem("isGuestSigner");
+    const res = await fetchSubscription(extUserId, contactId);
     const plan = res.plan;
-    const billingDate = res.billingDate;
+    const billingDate = res?.billingDate;
+    const status = res?.status;
     if (plan === "freeplan") {
       return true;
     } else if (billingDate) {
@@ -155,8 +158,15 @@ function PdfRequestFiles() {
           navigate(`/subscription`);
         }
       }
+    } else if (isGuestSign) {
+      if (status) {
+        setIsSubscribed(true);
+        return true;
+      } else {
+        setIsSubscriptionExpired(true);
+      }
     } else {
-      if (location.pathname.includes("/load/")) {
+      if (isGuestSign) {
         setIsSubscriptionExpired(true);
       } else {
         navigate(`/subscription`);
@@ -178,9 +188,7 @@ function PdfRequestFiles() {
       } else {
         setPdfArrayBuffer(arrayBuffer);
       }
-      if (isEnableSubscription) {
-        await checkIsSubscribed(documentData[0]?.ExtUserPtr?.objectId);
-      }
+
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
@@ -196,6 +204,12 @@ function PdfRequestFiles() {
         );
 
       currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
+      if (isEnableSubscription) {
+        await checkIsSubscribed(
+          documentData[0]?.ExtUserPtr?.objectId,
+          currUserId
+        );
+      }
       setSignerObjectId(currUserId);
       if (documentData[0].SignedUrl) {
         setPdfUrl(documentData[0].SignedUrl);
@@ -577,6 +591,20 @@ function PdfRequestFiles() {
         );
         //get ExistUserPtr object id of user class to get tenantDetails
         const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
+
+        const res = await contractUsers(jsonSender?.email);
+        console.log("res", res);
+        let activeMailAdapter = "";
+        if (res === "Error: Something went wrong!") {
+          setHandleError("Error: Something went wrong!");
+          setIsLoading({
+            isLoad: false
+          });
+        } else if (!res || res?.length === 0) {
+          activeMailAdapter = "";
+        } else if (res[0] && res.length) {
+          activeMailAdapter = res[0]?.active_mail_adapter;
+        }
         //function for call to embed signature in pdf and get digital signature pdf
         try {
           const res = await signPdfFun(
@@ -585,7 +613,8 @@ function PdfRequestFiles() {
             signerObjectId,
             setIsAlert,
             objectId,
-            isSubscribed
+            isSubscribed,
+            activeMailAdapter
           );
           if (res && res.status === "success") {
             setPdfUrl(res.data);
@@ -677,6 +706,7 @@ function PdfRequestFiles() {
                   }
 
                   let params = {
+                    mailProvider: activeMailAdapter,
                     extUserId: extUserId,
                     recipient: user.Email,
                     subject: requestSubject
