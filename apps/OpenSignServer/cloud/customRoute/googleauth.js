@@ -4,9 +4,7 @@ const serverUrl = process.env.SERVER_URL;
 export default async function gooogleauth(request, response) {
   const code = request.body.code;
   const baseUrl = new URL(process.env.SERVER_URL);
-  //   const sessiontoken = request.headers;
-  //   console.log('sessiontoken', sessiontoken);
-  //   console.log('google code', code);
+
   try {
     const userRes = await axios.get(serverUrl + '/users/me', {
       headers: {
@@ -16,9 +14,10 @@ export default async function gooogleauth(request, response) {
     });
     const userId = userRes.data && userRes.data.objectId;
     if (userId) {
-      const clientId = process.env.GOOGLE_CLIENT_ID; // '918704711393-thhv3re2pfqvve76tgb86ulu1tlpssrk.apps.googleusercontent.com';
-      const clientSecret = process.env.GOOGLE_CLIENT_SECRET; //'3NqyXVNm4jUhwNE4D8eVosII';
-      const redirectUri = baseUrl.origin || 'http://localhost:3000'; // Should match the redirect URI used in the authorization request
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+      const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+      const redirectUri =
+        baseUrl?.hostname === 'localhost' ? 'http://localhost:3000' : baseUrl.origin; // Should match the redirect URI used in the authorization request
       const tokenEndpoint = 'https://oauth2.googleapis.com/token';
 
       const params = new URLSearchParams();
@@ -42,12 +41,16 @@ export default async function gooogleauth(request, response) {
         const updateExtUser = await extUserCls.save(null, { useMasterKey: true });
         // console.log('updateExtUser ', updateExtUser);
       }
-      return response.status(200).json({ status: 'success!' });
+      return response.status(200).json({ status: 'success' });
     } else {
       return response.status(404).json({ message: 'user not found!' });
     }
   } catch (err) {
-    console.log('err in google auth', err.message);
-    return response.status(404).json({ message: err.message });
+    console.log('err in google auth', err);
+    if (err?.response?.data?.error) {
+      return response.status(404).json({ message: err.response.data.error });
+    } else {
+      return response.status(404).json({ message: err.message });
+    }
   }
 }
