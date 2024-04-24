@@ -6,6 +6,7 @@ import uploadFile from './uploadFile.js';
 import saveSubscription from './saveSubscription.js';
 import saveInvoice from './saveInvoice.js';
 import savePayments from './savePayments.js';
+import gooogleauth from './googleauth.js';
 export const app = express();
 
 dotenv.config();
@@ -18,5 +19,7 @@ app.post('/file_upload', uploadFile);
 app.post('/savesubscription', saveSubscription)
 app.post('/saveinvoice', saveInvoice)
 app.post('/savepayment', savePayments)
+app.post('/googleauth', gooogleauth)
+
 
 

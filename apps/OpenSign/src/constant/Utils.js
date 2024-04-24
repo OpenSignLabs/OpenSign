@@ -13,10 +13,13 @@ export const openInNewTab = (url) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
-export async function fetchSubscription(extUserId, contactObjId) {
+export async function fetchSubscription(
+  extUserId,
+  contactObjId,
+  isGuestSign = false
+) {
   try {
     const extClass = localStorage.getItem("Extand_Class");
-    const isGuestSign = localStorage.getItem("isGuestSigner");
     let extUser;
     if (extClass) {
       const jsonSender = JSON.parse(extClass);
@@ -1264,8 +1267,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-              ? 10
-              : newUpdateHeight;
+            ? 10
+            : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
