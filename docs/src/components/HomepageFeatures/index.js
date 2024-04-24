@@ -92,34 +92,3 @@ export default function HomepageFeatures() {
     </section>
   );
 }
-
-
-/*
- {
-    title: 'Smart Attrition Control',
-    PNGUrl: '/static/img/interview.png',
-    description: (
-      <>
-        ProZone is a first-of-its-kind web 3.0 powered professional network that not only enables employees to find the right jobs & employers to find the right talent but also streamline the end-to-end recruitment process right from identification to retention. All this is achieved with the help of  the next genration DeFi powered platform.
-      </>
-    ),
-  },
-  {
-    title: 'Our own POA Blockchain',
-    PNGUrl: '/static/img/interview.png',
-    description: (
-      <>
-        ProZone is a first-of-its-kind web 3.0 powered professional network that not only enables employees to find the right jobs & employers to find the right talent but also streamline the end-to-end recruitment process right from identification to retention. All this is achieved with the help of  the next genration DeFi powered platform.
-      </>
-    ),
-  },
-  {
-    title: 'Recruitment Solution',
-    PNGUrl: '/static/img/interview.png',
-    description: (
-      <>
-        ProZone is a first-of-its-kind web 3.0 powered professional network that not only enables employees to find the right jobs & employers to find the right talent but also streamline the end-to-end recruitment process right from identification to retention. All this is achieved with the help of  the next genration DeFi powered platform.
-      </>
-    ),
-  },
-  */
