@@ -40,6 +40,7 @@ export default async function gooogleauth(request, response) {
         const extUserCls = new Parse.Object('contracts_Users');
         extUserCls.id = extUser.id;
         extUserCls.set('google_refresh_token', refresh_token);
+        extUserCls.set('active_mail_adapter', 'google');
         const updateExtUser = await extUserCls.save(null, { useMasterKey: true });
         // console.log('updateExtUser ', updateExtUser);
       }
