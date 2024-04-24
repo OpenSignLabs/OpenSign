@@ -140,8 +140,8 @@ function PdfRequestFiles() {
   }, [divRef.current]);
 
   async function checkIsSubscribed(extUserId, contactId) {
-    const isGuestSign = localStorage.getItem("isGuestSigner");
-    const res = await fetchSubscription(extUserId, contactId);
+    const isGuestSign = location.pathname.includes("/load/") || false;
+    const res = await fetchSubscription(extUserId, contactId, isGuestSign);
     const plan = res.plan;
     const billingDate = res?.billingDate;
     const status = res?.status;
@@ -1139,9 +1139,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                        ? "You have declined this document!"
-                        : isDecline.currnt === "another" &&
-                          "You can not sign this document as it has been declined/revoked."
+                      ? "You have declined this document!"
+                      : isDecline.currnt === "another" &&
+                        "You can not sign this document as it has been declined/revoked."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
