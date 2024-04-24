@@ -29,7 +29,7 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
+      title={`Official OpenSign™ Docs - tutorials, API documentation, self-host help & much more.`}
       description="Description will go into a meta tag in <head />">
       <HomepageHeader />
       <main>
