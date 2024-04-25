@@ -1,9 +1,5 @@
-// Example express application adding the parse-server module to expose Parse
-// compatible API routes.
-
 import dotenv from 'dotenv';
 dotenv.config();
-
 import express from 'express';
 import cors from 'cors';
 import { ParseServer } from 'parse-server';
@@ -21,9 +17,10 @@ import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
-// console.log("configuration ", configuration);
+import { useLocal } from './Utils.js';
+
 let fsAdapter;
-if (process.env.USE_LOCAL !== 'TRUE') {
+if (useLocal !== 'true') {
   try {
     const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
     const s3Options = {
@@ -98,6 +95,7 @@ export const config = {
     import('./cloud/main.js');
   },
   appId: process.env.APP_ID || 'myAppId',
+  logLevel: ['error'],
   maxLimit: 500,
   maxUploadSize: '30mb',
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
