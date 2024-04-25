@@ -18,8 +18,8 @@ async function DocumentAfterFind(request) {
         if (certificateUrl) {
           obj.set('CertificateUrl', getPresignedUrl(certificateUrl));
         }
+        return [obj];
       }
-      return [obj];
     }
   }
 }
