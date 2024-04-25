@@ -1,4 +1,6 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const appId = process.env.APP_ID;
 const serverUrl = process.env.SERVER_URL;
@@ -243,3 +245,5 @@ export function sanitizeFileName(fileName) {
   const removedot = file.replace(/\.(?=.*\.)/g, '');
   return removedot.replace(/[^a-zA-Z0-9._-]/g, '');
 }
+
+export const useLocal = process.env.USE_LOCAL ? process.env.USE_LOCAL.toLowerCase() : 'false';
