@@ -591,9 +591,9 @@ function PdfRequestFiles() {
         );
         //get ExistUserPtr object id of user class to get tenantDetails
         const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
-
-        const res = await contractUsers(jsonSender?.email);
-        console.log("res", res);
+        //get ExistUserPtr email to get userDetails
+        const currentUserEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
+        const res = await contractUsers(currentUserEmail);
         let activeMailAdapter = "";
         if (res === "Error: Something went wrong!") {
           setHandleError("Error: Something went wrong!");
@@ -1139,9 +1139,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                      ? "You have declined this document!"
-                      : isDecline.currnt === "another" &&
-                        "You can not sign this document as it has been declined/revoked."
+                        ? "You have declined this document!"
+                        : isDecline.currnt === "another" &&
+                          "You can not sign this document as it has been declined/revoked."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
