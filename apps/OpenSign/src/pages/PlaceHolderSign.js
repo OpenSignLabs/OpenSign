@@ -173,15 +173,6 @@ function PlaceHolderSign() {
       : rowLevel?.objectId && rowLevel.objectId;
 
   const documentId = docId ? docId : objectId && objectId;
-  const senderUser =
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    ) &&
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    );
-  const jsonSender = JSON.parse(senderUser);
-
   useEffect(() => {
     if (documentId) {
       getDocumentDetails();
@@ -406,7 +397,8 @@ function PlaceHolderSign() {
       };
       setIsLoading(loadObj);
     }
-    const res = await contractUsers(jsonSender.email);
+    const currentUserEmail = documentData[0]?.ExtUserPtr?.Email;
+    const res = await contractUsers(currentUserEmail);
     if (res === "Error: Something went wrong!") {
       const loadObj = {
         isLoad: false
