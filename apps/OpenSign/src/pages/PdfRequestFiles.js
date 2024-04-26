@@ -591,7 +591,7 @@ function PdfRequestFiles() {
         );
         //get ExistUserPtr object id of user class to get tenantDetails
         const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
-        //get ExistUserPtr email  of user class to get userDetails
+        //get ExistUserPtr email to get userDetails
         const currentUserEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
         const res = await contractUsers(currentUserEmail);
         let activeMailAdapter = "";
