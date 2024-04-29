@@ -8,9 +8,10 @@ import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
-import { isEnableSubscription } from "../constant/const";
+import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
 import { checkIsSubscribed } from "../constant/Utils";
 import Upgrade from "../primitives/Upgrade";
+import ModalUi from "../primitives/ModalUi";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -32,12 +33,16 @@ function UserProfile() {
   const [jobTitle, setJobTitle] = useState(
     extendUser && extendUser?.[0]?.JobTitle
   );
-
+  const [isVerifyModal, setIsVerifyModal] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpLoader, setOtpLoader] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   useEffect(() => {
     getUserDetail();
   }, []);
 
   const getUserDetail = async () => {
+    setIsLoader(true);
     const extClass = localStorage.getItem("Extand_Class");
     const jsonSender = JSON.parse(extClass);
     const HeaderDocId = jsonSender[0]?.HeaderDocId;
@@ -48,6 +53,9 @@ function UserProfile() {
     if (HeaderDocId) {
       setIsDisableDocId(HeaderDocId);
     }
+    const isEmailVerified = Parse.User.current()?.attributes?.emailVerified;
+    setIsEmailVerified(isEmailVerified);
+    setIsLoader(false);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -176,6 +184,50 @@ function UserProfile() {
 
   const handleDisableDocId = () => {
     setIsDisableDocId((prevChecked) => !prevChecked);
+  };
+  const handleVerifyBtn = async () => {
+    setIsVerifyModal(true);
+    await handleSendOTP();
+  };
+  const handleCloseVerifyModal = async () => {
+    setIsVerifyModal(false);
+  };
+  const handleSendOTP = async () => {
+    try {
+      let url = `${parseBaseUrl}functions/SendOTPMailV1/`;
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": parseAppId
+      };
+      const body = { email: Parse.User.current().getEmail() };
+      await axios.post(url, body, { headers: headers });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleVerifyEmail = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    try {
+      const resEmail = await Parse.Cloud.run("verifyemail", {
+        otp: otp,
+        email: Parse.User.current().getEmail()
+      });
+      alert(resEmail.message);
+      setIsVerifyModal(false);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setOtpLoader(false);
+    }
+  };
+  const handleReset = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    await handleSendOTP();
+    setOtpLoader(false);
+    alert("OTP sent on you email");
   };
   return (
     <React.Fragment>
@@ -310,9 +362,20 @@ function UserProfile() {
               <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
                 <span className="font-semibold">Is Email verified:</span>{" "}
                 <span>
-                  {UserProfile && UserProfile.emailVerified
-                    ? "Verified"
-                    : "Not verified"}
+                  {isEmailVerified ? (
+                    "Verified"
+                  ) : (
+                    <span>
+                      Not verified(
+                      <span
+                        onClick={() => handleVerifyBtn()}
+                        className="hover:underline text-blue-600 cursor-pointer"
+                      >
+                        verify
+                      </span>
+                      )
+                    </span>
+                  )}
                 </span>
               </li>
               <li className="border-y-[1px] border-gray-300 break-all">
@@ -399,6 +462,59 @@ function UserProfile() {
               </button>
             </div>
           </div>
+
+          {isVerifyModal && (
+            <ModalUi
+              isOpen
+              title={"OTP verification"}
+              handleClose={handleCloseVerifyModal}
+            >
+              {otpLoader ? (
+                <div
+                  style={{
+                    height: "150px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "45px",
+                      color: "#3dd3e0"
+                    }}
+                    className="loader-37"
+                  ></div>
+                </div>
+              ) : (
+                <form onSubmit={(e) => handleVerifyEmail(e)}>
+                  <div className="px-6 py-3">
+                    <label className="mb-2">Enter OTP</label>
+                    <input
+                      type="tel"
+                      pattern="[0-9]{4}"
+                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      placeholder="Enter OTP sent on mail"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                    />
+                  </div>
+                  <hr />
+                  <div className="px-6 my-3">
+                    <button type="submit" className={submitBtn}>
+                      Verify
+                    </button>
+                    <button
+                      className={`${rejectBtn} ml-2`}
+                      onClick={(e) => handleReset(e)}
+                    >
+                      Resend
+                    </button>
+                  </div>
+                </form>
+              )}
+            </ModalUi>
+          )}
         </div>
       )}
     </React.Fragment>
