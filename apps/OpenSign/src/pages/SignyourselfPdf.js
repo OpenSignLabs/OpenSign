@@ -443,13 +443,13 @@ function SignYourSelf() {
         Width: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
           : dragTypeValue === "initials"
-            ? defaultWidthHeight(dragTypeValue).width
-            : "",
+          ? defaultWidthHeight(dragTypeValue).width
+          : "",
         Height: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
           : dragTypeValue === "initials"
-            ? defaultWidthHeight(dragTypeValue).height
-            : "",
+          ? defaultWidthHeight(dragTypeValue).height
+          : "",
         options: addWidgetOptions(dragTypeValue)
       };
 
@@ -626,7 +626,8 @@ function SignYourSelf() {
         headers: {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          sessionToken: localStorage.getItem("accesstoken")
+          // sessionToken: localStorage.getItem("accesstoken")
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       })
       .then((Listdata) => {

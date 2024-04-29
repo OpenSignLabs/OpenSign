@@ -271,6 +271,7 @@ function PdfRequestFiles() {
           ) {
             const params = {
               event: "viewed",
+              contactId: currUserId,
               body: {
                 objectId: documentData?.[0].objectId,
                 file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
@@ -1139,9 +1140,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                        ? "You have declined this document!"
-                        : isDecline.currnt === "another" &&
-                          "You can not sign this document as it has been declined/revoked."
+                      ? "You have declined this document!"
+                      : isDecline.currnt === "another" &&
+                        "You can not sign this document as it has been declined/revoked."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
