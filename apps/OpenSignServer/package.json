@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@parse/s3-files-adapter": "^2.2.0",
-    "aws-sdk": "^2.1581.0",
+    "aws-sdk": "^2.1608.0",
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
