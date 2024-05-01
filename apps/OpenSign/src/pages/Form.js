@@ -12,6 +12,7 @@ import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
 import { getFileName } from "../constant/Utils";
+import { PDFDocument } from "pdf-lib";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -41,7 +42,7 @@ const Forms = (props) => {
     TimeToCompleteDays: 15,
     SendinOrder: "false"
   });
-  const [fileupload, setFileUpload] = useState([]);
+  const [fileupload, setFileUpload] = useState("");
   const [fileload, setfileload] = useState(false);
   const [percentage, setpercentage] = useState(0);
   const [isReset, setIsReset] = useState(false);
@@ -55,7 +56,23 @@ const Forms = (props) => {
     handleReset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.title]);
-  const handleFileInput = (e) => {
+
+  function getFileAsArrayBuffer(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        resolve(e.target.result);
+      };
+
+      reader.onerror = (e) => {
+        reject(e.target.error);
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  }
+  const handleFileInput = async (e) => {
     setpercentage(0);
     try {
       let files = e.target.files;
@@ -65,11 +82,21 @@ const Forms = (props) => {
           alert(
             `The selected file size is too large. Please select a file less than ${maxFileSize} MB`
           );
-          setFileUpload([]);
+          setFileUpload("");
           e.target.value = "";
           return;
         } else {
-          handleFileUpload(files[0]);
+          try {
+            const res = await getFileAsArrayBuffer(files[0]);
+            const pdfBytes = await PDFDocument.load(res);
+            console.log("pdfbytes ", pdfBytes);
+            handleFileUpload(files[0]);
+          } catch (err) {
+            alert(`Currently encrypted pdf files are not supported.`);
+            setFileUpload("");
+            e.target.value = "";
+            console.log("err ", err);
+          }
         }
       } else {
         alert("Please select file.");
@@ -162,64 +189,68 @@ const Forms = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsSubmit(true);
-    try {
-      const currentUser = Parse.User.current();
-      const object = new Parse.Object(props.Cls);
-      object.set("Name", formData?.Name);
-      object.set("Description", formData?.Description);
-      object.set("Note", formData?.Note);
-      if (props.title === "Request Signatures") {
-        object.set(
-          "TimeToCompleteDays",
-          parseInt(formData?.TimeToCompleteDays)
-        );
-      }
-      if (props.title !== "Sign Yourself") {
-        const isChecked = formData.SendinOrder === "false" ? false : true;
-        object.set("SendinOrder", isChecked);
-      }
-      object.set("URL", fileupload);
-      object.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
-      if (folder && folder.ObjectId) {
-        object.set("Folder", {
+    if (fileupload) {
+      setIsSubmit(true);
+      try {
+        const currentUser = Parse.User.current();
+        const object = new Parse.Object(props.Cls);
+        object.set("Name", formData?.Name);
+        object.set("Description", formData?.Description);
+        object.set("Note", formData?.Note);
+        if (props.title === "Request Signatures") {
+          object.set(
+            "TimeToCompleteDays",
+            parseInt(formData?.TimeToCompleteDays)
+          );
+        }
+        if (props.title !== "Sign Yourself") {
+          const isChecked = formData.SendinOrder === "false" ? false : true;
+          object.set("SendinOrder", isChecked);
+        }
+        object.set("URL", fileupload);
+        object.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
+        if (folder && folder.ObjectId) {
+          object.set("Folder", {
+            __type: "Pointer",
+            className: props.Cls,
+            objectId: folder.ObjectId
+          });
+        }
+        if (signers && signers.length > 0) {
+          object.set("Signers", signers);
+        }
+        const ExtCls = JSON.parse(localStorage.getItem("Extand_Class"));
+        object.set("ExtUserPtr", {
           __type: "Pointer",
-          className: props.Cls,
-          objectId: folder.ObjectId
+          className: "contracts_Users",
+          objectId: ExtCls[0].objectId
         });
-      }
-      if (signers && signers.length > 0) {
-        object.set("Signers", signers);
-      }
-      const ExtCls = JSON.parse(localStorage.getItem("Extand_Class"));
-      object.set("ExtUserPtr", {
-        __type: "Pointer",
-        className: "contracts_Users",
-        objectId: ExtCls[0].objectId
-      });
 
-      const res = await object.save();
-      if (res) {
-        setSigners([]);
-        setFolder({ ObjectId: "", Name: "" });
-        setFormData({
-          Name: "",
-          Description: "",
-          Note: ""
-        });
-        setFileUpload([]);
-        setpercentage(0);
-        navigate(`/${props?.redirectRoute}/${res.id}`);
+        const res = await object.save();
+        if (res) {
+          setSigners([]);
+          setFolder({ ObjectId: "", Name: "" });
+          setFormData({
+            Name: "",
+            Description: "",
+            Note: ""
+          });
+          setFileUpload("");
+          setpercentage(0);
+          navigate(`/${props?.redirectRoute}/${res.id}`);
+        }
+      } catch (err) {
+        console.log("err ", err);
+        setIsErr(true);
+      } finally {
+        setIsAlert(true);
+        setTimeout(() => {
+          setIsAlert(false);
+        }, 1000);
+        setIsSubmit(false);
       }
-    } catch (err) {
-      console.log("err ", err);
-      setIsErr(true);
-    } finally {
-      setIsAlert(true);
-      setTimeout(() => {
-        setIsAlert(false);
-      }, 1000);
-      setIsSubmit(false);
+    } else {
+      alert("Please wait until the PDF has been uploading.");
     }
   };
 
@@ -251,11 +282,11 @@ const Forms = (props) => {
       TimeToCompleteDays: 15,
       SendinOrder: "true"
     });
-    setFileUpload([]);
+    setFileUpload("");
     setpercentage(0);
     setTimeout(() => setIsReset(false), 50);
   };
- 
+
   return (
     <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
       <Title title={props?.title} />
@@ -303,7 +334,7 @@ const Forms = (props) => {
                     file selected : {getFileName(fileupload)}
                   </div>
                   <div
-                    onClick={() => setFileUpload([])}
+                    onClick={() => setFileUpload("")}
                     className="cursor-pointer px-[10px] text-[20px] font-bold bg-white text-red-500"
                   >
                     <i className="fa-solid fa-xmark"></i>
