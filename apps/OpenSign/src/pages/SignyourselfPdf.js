@@ -530,70 +530,79 @@ function SignYourSelf() {
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
     let showAlert = false;
-
-    for (let i = 0; i < xyPostion?.length; i++) {
-      const requiredWidgets = xyPostion[i].pos.filter(
-        (position) => position.type !== "checkbox"
-      );
-      if (requiredWidgets && requiredWidgets?.length > 0) {
-        let checkSigned;
-        for (let i = 0; i < requiredWidgets?.length; i++) {
-          checkSigned = requiredWidgets[i]?.options?.response;
-          if (!checkSigned) {
-            const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
-            let checkDefaultSigned = requiredWidgets[i]?.options?.defaultValue;
-            if (!checkSignUrl) {
-              if (!checkDefaultSigned) {
-                if (!showAlert) {
-                  showAlert = true;
+    try {
+      for (let i = 0; i < xyPostion?.length; i++) {
+        const requiredWidgets = xyPostion[i].pos.filter(
+          (position) => position.type !== "checkbox"
+        );
+        if (requiredWidgets && requiredWidgets?.length > 0) {
+          let checkSigned;
+          for (let i = 0; i < requiredWidgets?.length; i++) {
+            checkSigned = requiredWidgets[i]?.options?.response;
+            if (!checkSigned) {
+              const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
+              let checkDefaultSigned =
+                requiredWidgets[i]?.options?.defaultValue;
+              if (!checkSignUrl) {
+                if (!checkDefaultSigned) {
+                  if (!showAlert) {
+                    showAlert = true;
+                  }
                 }
               }
             }
           }
         }
       }
-    }
-    if (xyPostion.length === 0) {
-      setIsAlert({
-        isShow: true,
-        alertMessage: "Please complete your signature!"
-      });
-      return;
-    } else if (showAlert) {
-      setIsAlert({
-        isShow: true,
-        alertMessage: "Please complete your signature!"
-      });
-      return;
-    } else {
-      setIsCeleb(true);
-      setTimeout(() => {
-        setIsCeleb(false);
-      }, 3000);
-      setIsUiLoading(true);
-      const existingPdfBytes = pdfArrayBuffer;
-      // Load a PDFDocument from the existing PDF bytes
-      const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-        ignoreEncryption: true
-      });
-      const isSignYourSelfFlow = true;
-      const extUserPtr = pdfDetails[0].ExtUserPtr;
-      const HeaderDocId = extUserPtr?.HeaderDocId;
-      //embed document's object id to all pages in pdf document
-      if (!HeaderDocId) {
-        await embedDocId(pdfDoc, documentId, allPages);
+      if (xyPostion.length === 0) {
+        setIsAlert({
+          isShow: true,
+          alertMessage: "Please complete your signature!"
+        });
+        return;
+      } else if (showAlert) {
+        setIsAlert({
+          isShow: true,
+          alertMessage: "Please complete your signature!"
+        });
+        return;
+      } else {
+        setIsCeleb(true);
+        setTimeout(() => {
+          setIsCeleb(false);
+        }, 3000);
+        setIsUiLoading(true);
+        const existingPdfBytes = pdfArrayBuffer;
+        // Load a PDFDocument from the existing PDF bytes
+        const pdfDoc = await PDFDocument.load(existingPdfBytes, {
+          ignoreEncryption: true
+        });
+        const isSignYourSelfFlow = true;
+        const extUserPtr = pdfDetails[0].ExtUserPtr;
+        const HeaderDocId = extUserPtr?.HeaderDocId;
+        //embed document's object id to all pages in pdf document
+        if (!HeaderDocId) {
+          await embedDocId(pdfDoc, documentId, allPages);
+        }
+        //embed multi signature in pdf
+        const pdfBytes = await multiSignEmbed(
+          xyPostion,
+          pdfDoc,
+          pdfOriginalWidth,
+          isSignYourSelfFlow,
+          containerWH
+        );
+        // console.log("pdf", pdfBytes);
+        //function for call to embed signature in pdf and get digital signature pdf
+        await signPdfFun(pdfBytes, documentId);
       }
-      //embed multi signature in pdf
-      const pdfBytes = await multiSignEmbed(
-        xyPostion,
-        pdfDoc,
-        pdfOriginalWidth,
-        isSignYourSelfFlow,
-        containerWH
-      );
-      // console.log("pdf", pdfBytes);
-      //function for call to embed signature in pdf and get digital signature pdf
-      await signPdfFun(pdfBytes, documentId);
+    } catch (err) {
+      console.log("err in embedselfsign ", err );
+      setIsUiLoading(false);
+      setIsAlert({
+        isShow: true,
+        alertMessage: "something went wrong, please try again later."
+      });
     }
   }
   // console.log("signyourself", xyPostion);
