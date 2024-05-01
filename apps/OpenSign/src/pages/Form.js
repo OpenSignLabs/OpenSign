@@ -96,6 +96,13 @@ const Forms = (props) => {
             setFileUpload("");
             e.target.value = "";
             console.log("err ", err);
+            try {
+              await Parse.Cloud.run("encryptedpdf", {
+                email: Parse.User.current().getEmail()
+              });
+            } catch (err) {
+              console.log("err in sending posthog encryptedpdf", err);
+            }
           }
         }
       } else {
