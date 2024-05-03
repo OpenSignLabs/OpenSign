@@ -26,5 +26,12 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.1.0",
     "prettier": "3.1.0"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "express": "^4.19.2",
+    "nth-check": "^2.0.1",
+    "postcss": "^8.4.31",
+    "tough-cookie": "^4.1.3"
   }
 }
