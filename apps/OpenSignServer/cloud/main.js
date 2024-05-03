@@ -36,6 +36,7 @@ import TenantAterFind from './parsefunction/TenantAfterFind.js';
 import saveSubscription from './parsefunction/saveSubscription.js';
 import encryptedpdf from './parsefunction/encryptedPdf.js';
 import VerifyEmail from './parsefunction/VerifyEmail.js';
+import encryptedpdf from './parsefunction/encryptedPdf.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
