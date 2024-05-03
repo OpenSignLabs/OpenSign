@@ -166,11 +166,6 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(function (req, res, next) {
-  // console.log("req ", req.headers);
-  // console.log("x-forwarded-for", req.headers["x-forwarded-for"]);
-  // console.log("req.ip", req.ip);
-  // console.log("req.socket.remoteAddress; ", req.socket.remoteAddress);
-  // console.log("ip", ip.address());
   req.headers['x-real-ip'] = getUserIP(req);
   next();
 });
@@ -230,7 +225,7 @@ if (!process.env.TESTING) {
   // Set the Keep-Alive and headers timeout to 100 seconds
   httpServer.keepAliveTimeout = 100000; // in milliseconds
   httpServer.headersTimeout = 100000; // in milliseconds
-  httpServer.listen(port, function () {
+  httpServer.listen({ port: port, host: '0.0.0.0' }, function () {
     console.log('parse-server-example running on port ' + port + '.');
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);

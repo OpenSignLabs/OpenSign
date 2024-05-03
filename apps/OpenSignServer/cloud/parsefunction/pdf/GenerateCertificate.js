@@ -23,6 +23,7 @@ export default async function GenerateCertificate(docDetails) {
   const generateAt = new Date();
   const generatedUTCTime = generateAt.toUTCString();
   const generatedOn = 'Generated On ' + generatedUTCTime;
+  const OriginIp = docDetails?.OriginIp || '';
   const company = docDetails?.ExtUserPtr?.Company || '';
   const auditTrail =
     docDetails.AuditTrail?.length > 1
@@ -229,7 +230,7 @@ export default async function GenerateCertificate(docDetails) {
     font: timesRomanFont,
     color: textKeyColor,
   });
-  page.drawText(`152.58.21.622`, {
+  page.drawText(`${OriginIp}`, {
     x: 130,
     y: 505,
     size: text,
