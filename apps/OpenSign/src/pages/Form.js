@@ -11,8 +11,10 @@ import SignersInput from "../components/shared/fields/SignersInput";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
-import { getFileName } from "../constant/Utils";
+import { getFileName, toDataUrl } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
+import axios from "axios";
+import { isEnableSubscription } from "../constant/const";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -32,6 +34,7 @@ function Form() {
 
 const Forms = (props) => {
   const maxFileSize = 20;
+  const abortController = new AbortController();
   const navigate = useNavigate();
   const [signers, setSigners] = useState([]);
   const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
@@ -54,6 +57,7 @@ const Forms = (props) => {
   };
   useEffect(() => {
     handleReset();
+    return () => abortController.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.title]);
 
@@ -86,22 +90,112 @@ const Forms = (props) => {
           e.target.value = "";
           return;
         } else {
-          try {
-            const res = await getFileAsArrayBuffer(files[0]);
-            const pdfBytes = await PDFDocument.load(res);
-            console.log("pdfbytes ", pdfBytes);
-            handleFileUpload(files[0]);
-          } catch (err) {
-            alert(`Currently encrypted pdf files are not supported.`);
-            setFileUpload("");
-            e.target.value = "";
-            console.log("err ", err);
+          if (files?.[0]?.type === "application/pdf") {
             try {
-              await Parse.Cloud.run("encryptedpdf", {
-                email: Parse.User.current().getEmail()
-              });
+              const res = await getFileAsArrayBuffer(files[0]);
+              await PDFDocument.load(res);
+              handleFileUpload(files[0]);
             } catch (err) {
-              console.log("err in sending posthog encryptedpdf", err);
+              alert(`Currently encrypted pdf files are not supported.`);
+              setFileUpload("");
+              e.target.value = "";
+              console.log("err ", err);
+              try {
+                await Parse.Cloud.run("encryptedpdf", {
+                  email: Parse.User.current().getEmail()
+                });
+              } catch (err) {
+                console.log("err in sending posthog encryptedpdf", err);
+              }
+            }
+          } else {
+            if (isEnableSubscription) {
+              const isImage = files?.[0]?.type.includes("image/");
+              if (isImage) {
+                const image = await toDataUrl(files[0]);
+                const pdfDoc = await PDFDocument.create();
+                let embedImg;
+                if (files?.[0]?.type === "image/png") {
+                  embedImg = await pdfDoc.embedPng(image);
+                } else {
+                  embedImg = await pdfDoc.embedJpg(image);
+                }
+
+                // Get image dimensions
+                const imageWidth = embedImg.width;
+                const imageHeight = embedImg.height;
+                const page = pdfDoc.addPage([imageWidth, imageHeight]);
+                page.drawImage(embedImg, {
+                  x: 0,
+                  y: 0,
+                  width: imageWidth,
+                  height: imageHeight
+                });
+                const getFile = await pdfDoc.save({
+                  useObjectStreams: false
+                });
+                setfileload(true);
+                const fileName = files[0].name;
+                const size = files[0].size;
+                const name = sanitizeFileName(fileName);
+                const pdfName = `${name?.split(".")[0]}.pdf`;
+                const parseFile = new Parse.File(
+                  pdfName,
+                  [...getFile],
+                  "application/pdf"
+                );
+
+                try {
+                  const response = await parseFile.save({
+                    progress: (progressValue, loaded, total, { type }) => {
+                      if (type === "upload" && progressValue !== null) {
+                        const percentCompleted = Math.round(
+                          (loaded * 100) / total
+                        );
+                        setpercentage(percentCompleted);
+                      }
+                    }
+                  });
+                  // The response object will contain information about the uploaded file
+                  // You can access the URL of the uploaded file using response.url()
+                  setFileUpload(response.url());
+                  setfileload(false);
+                  if (response.url()) {
+                    const tenantId = localStorage.getItem("TenantId");
+                    SaveFileSize(size, response.url(), tenantId);
+                    return response.url();
+                  }
+                } catch (error) {
+                  e.target.value = "";
+                  setfileload(false);
+                  setpercentage(0);
+                  console.error("Error uploading file:", error);
+                }
+              } else {
+                try {
+                  setfileload(true);
+                  const url = "http://tools.opensignlabs.com/docxtopdf";
+                  let formData = new FormData();
+                  formData.append("file", files[0]);
+                  const config = {
+                    headers: {
+                      "content-type": "multipart/form-data",
+                      sessiontoken: Parse.User.current().getSessionToken()
+                    },
+                    signal: abortController.signal
+                  };
+                  const res = await axios.post(url, formData, config);
+                  if (res.data) {
+                    setFileUpload(res.data.url);
+                    setfileload(false);
+                  }
+                } catch (err) {
+                  e.target.value = "";
+                  setfileload(false);
+                  setpercentage(0);
+                  console.log("err in libreconverter ", err);
+                }
+              }
             }
           }
         }
@@ -360,7 +454,12 @@ const Forms = (props) => {
                   type="file"
                   className="bg-white px-2 py-1.5 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                   onChange={(e) => handleFileInput(e)}
-                  accept="application/pdf"
+                  // accept="application/pdf"
+                  accept={
+                    isEnableSubscription
+                      ? "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
+                      : "application/pdf"
+                  }
                   required
                 />
                 {process.env.REACT_APP_DROPBOX_API_KEY && (

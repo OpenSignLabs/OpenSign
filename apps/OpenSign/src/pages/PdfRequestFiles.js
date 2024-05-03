@@ -271,6 +271,7 @@ function PdfRequestFiles() {
           ) {
             const params = {
               event: "viewed",
+              contactId: currUserId,
               body: {
                 objectId: documentData?.[0].objectId,
                 file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
@@ -471,7 +472,8 @@ function PdfRequestFiles() {
                   const maxCount =
                     requiredCheckbox[i].options?.validation?.maxRequiredCount;
                   const parseMax = maxCount && parseInt(maxCount);
-                  const response = requiredCheckbox[i].options?.response?.length;
+                  const response =
+                    requiredCheckbox[i].options?.response?.length;
                   const defaultValue =
                     requiredCheckbox[i].options?.defaultValue?.length;
                   if (parseMin === 0 && parseMax === 0) {
@@ -615,7 +617,8 @@ function PdfRequestFiles() {
                 setIsAlert,
                 objectId,
                 isSubscribed,
-                activeMailAdapter
+                activeMailAdapter,
+                pngUrl
               );
               if (res && res.status === "success") {
                 setPdfUrl(res.data);
@@ -641,11 +644,14 @@ function PdfRequestFiles() {
                   if (user) {
                     const expireDate = pdfDetails?.[0].ExpiryDate.iso;
                     const newDate = new Date(expireDate);
-                    const localExpireDate = newDate.toLocaleDateString("en-US", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric"
-                    });
+                    const localExpireDate = newDate.toLocaleDateString(
+                      "en-US",
+                      {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
+                      }
+                    );
                     let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
                     let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
                     const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
@@ -682,7 +688,10 @@ function PdfRequestFiles() {
                         requestSubject &&
                         (!isEnableSubscription || isSubscribed)
                       ) {
-                        const replacedRequestBody = requestBody.replace(/"/g, "'");
+                        const replacedRequestBody = requestBody.replace(
+                          /"/g,
+                          "'"
+                        );
                         const htmlReqBody =
                           "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
                           replacedRequestBody +
@@ -1156,9 +1165,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                      ? "You have declined this document!"
-                      : isDecline.currnt === "another" &&
-                        "You can not sign this document as it has been declined/revoked."
+                        ? "You have declined this document!"
+                        : isDecline.currnt === "another" &&
+                          "You can not sign this document as it has been declined/revoked."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
