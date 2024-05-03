@@ -25,6 +25,7 @@ export default async function GenerateCertificate(docDetails) {
   const generatedOn = 'Generated On ' + generatedUTCTime;
   const OriginIp = docDetails?.OriginIp || '';
   const company = docDetails?.ExtUserPtr?.Company || '';
+  const createdAt = docDetails?.DocSentAt?.iso || docDetails.createdAt;
   const auditTrail =
     docDetails.AuditTrail?.length > 1
       ? docDetails.AuditTrail.map(x => {
@@ -33,7 +34,7 @@ export default async function GenerateCertificate(docDetails) {
             ...data,
             ipAddress: x.ipAddress,
             SignedOn: x?.SignedOn || generatedUTCTime,
-            ViewedOn: x?.ViewedOn || generatedUTCTime,
+            ViewedOn: x?.ViewedOn || x?.SignedOn || generatedUTCTime,
             Signature: x?.Signature || '',
           };
         })
@@ -42,7 +43,10 @@ export default async function GenerateCertificate(docDetails) {
             ...docDetails.ExtUserPtr,
             ipAddress: docDetails?.AuditTrail[0].ipAddress,
             SignedOn: docDetails?.AuditTrail[0]?.SignedOn || generatedUTCTime,
-            ViewedOn: docDetails?.AuditTrail[0]?.ViewedOn || generatedUTCTime,
+            ViewedOn:
+              docDetails?.AuditTrail[0]?.ViewedOn ||
+              docDetails?.AuditTrail[0]?.SignedOn ||
+              generatedUTCTime,
             Signature: docDetails?.AuditTrail[0]?.Signature || '',
           },
         ];
@@ -151,7 +155,7 @@ export default async function GenerateCertificate(docDetails) {
     color: textKeyColor,
   });
 
-  page.drawText(`${new Date(docDetails.createdAt).toUTCString()}`, {
+  page.drawText(`${new Date(createdAt).toUTCString()}`, {
     x: 105,
     y: 625,
     size: text,

@@ -25,6 +25,10 @@ async function DocumentBeforesave(request) {
       } catch (error) {
         console.log('Error updating document count in contracts_users: ' + error.message);
       }
+      if (document?.get('Signers') && document.get('Signers').length > 0) {
+        document.set('DocSentAt', new Date());
+        document.save(null, { useMasterKey: true });
+      }
     }
   } catch (err) {
     console.log('err in document beforesave', err.message);
