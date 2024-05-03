@@ -109,69 +109,69 @@ const Forms = (props) => {
               }
             }
           } else {
-            if (isEnableSubscription) {
-              const isImage = files?.[0]?.type.includes("image/");
-              if (isImage) {
-                const image = await toDataUrl(files[0]);
-                const pdfDoc = await PDFDocument.create();
-                let embedImg;
-                if (files?.[0]?.type === "image/png") {
-                  embedImg = await pdfDoc.embedPng(image);
-                } else {
-                  embedImg = await pdfDoc.embedJpg(image);
-                }
-
-                // Get image dimensions
-                const imageWidth = embedImg.width;
-                const imageHeight = embedImg.height;
-                const page = pdfDoc.addPage([imageWidth, imageHeight]);
-                page.drawImage(embedImg, {
-                  x: 0,
-                  y: 0,
-                  width: imageWidth,
-                  height: imageHeight
-                });
-                const getFile = await pdfDoc.save({
-                  useObjectStreams: false
-                });
-                setfileload(true);
-                const fileName = files[0].name;
-                const size = files[0].size;
-                const name = sanitizeFileName(fileName);
-                const pdfName = `${name?.split(".")[0]}.pdf`;
-                const parseFile = new Parse.File(
-                  pdfName,
-                  [...getFile],
-                  "application/pdf"
-                );
-
-                try {
-                  const response = await parseFile.save({
-                    progress: (progressValue, loaded, total, { type }) => {
-                      if (type === "upload" && progressValue !== null) {
-                        const percentCompleted = Math.round(
-                          (loaded * 100) / total
-                        );
-                        setpercentage(percentCompleted);
-                      }
-                    }
-                  });
-                  // The response object will contain information about the uploaded file
-                  // You can access the URL of the uploaded file using response.url()
-                  setFileUpload(response.url());
-                  setfileload(false);
-                  if (response.url()) {
-                    const tenantId = localStorage.getItem("TenantId");
-                    SaveFileSize(size, response.url(), tenantId);
-                    return response.url();
-                  }
-                } catch (error) {
-                  e.target.value = "";
-                  setfileload(false);
-                  setpercentage(0);
-                  console.error("Error uploading file:", error);
-                }
+            const isImage = files?.[0]?.type.includes("image/");
+            if (isImage) {
+              const image = await toDataUrl(files[0]);
+              const pdfDoc = await PDFDocument.create();
+              let embedImg;
+              if (files?.[0]?.type === "image/png") {
+                embedImg = await pdfDoc.embedPng(image);
               } else {
+                embedImg = await pdfDoc.embedJpg(image);
+              }
+
+              // Get image dimensions
+              const imageWidth = embedImg.width;
+              const imageHeight = embedImg.height;
+              const page = pdfDoc.addPage([imageWidth, imageHeight]);
+              page.drawImage(embedImg, {
+                x: 0,
+                y: 0,
+                width: imageWidth,
+                height: imageHeight
+              });
+              const getFile = await pdfDoc.save({
+                useObjectStreams: false
+              });
+              setfileload(true);
+              const fileName = files[0].name;
+              const size = files[0].size;
+              const name = sanitizeFileName(fileName);
+              const pdfName = `${name?.split(".")[0]}.pdf`;
+              const parseFile = new Parse.File(
+                pdfName,
+                [...getFile],
+                "application/pdf"
+              );
+
+              try {
+                const response = await parseFile.save({
+                  progress: (progressValue, loaded, total, { type }) => {
+                    if (type === "upload" && progressValue !== null) {
+                      const percentCompleted = Math.round(
+                        (loaded * 100) / total
+                      );
+                      setpercentage(percentCompleted);
+                    }
+                  }
+                });
+                // The response object will contain information about the uploaded file
+                // You can access the URL of the uploaded file using response.url()
+                setFileUpload(response.url());
+                setfileload(false);
+                if (response.url()) {
+                  const tenantId = localStorage.getItem("TenantId");
+                  SaveFileSize(size, response.url(), tenantId);
+                  return response.url();
+                }
+              } catch (error) {
+                e.target.value = "";
+                setfileload(false);
+                setpercentage(0);
+                console.error("Error uploading file:", error);
+              }
+            } else {
+              if (isEnableSubscription) {
                 try {
                   setfileload(true);
                   const url = "http://tools.opensignlabs.com/docxtopdf";
@@ -426,7 +426,10 @@ const Forms = (props) => {
           )}
           <div className="text-xs">
             <label className="block">
-              File<span className="text-red-500 text-[13px]">*</span>
+              {`File (pdf, png, jpg, jpeg${
+                isEnableSubscription ? ", docx)" : ")"
+              }`}
+              <span className="text-red-500 text-[13px]">*</span>
             </label>
             {fileupload.length > 0 ? (
               <div className="flex gap-2 justify-center items-center">
@@ -454,11 +457,10 @@ const Forms = (props) => {
                   type="file"
                   className="bg-white px-2 py-1.5 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                   onChange={(e) => handleFileInput(e)}
-                  // accept="application/pdf"
                   accept={
                     isEnableSubscription
-                      ? "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
-                      : "application/pdf"
+                      ? "application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
+                      : "application/pdf,image/png,image/jpeg"
                   }
                   required
                 />
