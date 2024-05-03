@@ -29,7 +29,9 @@ import {
   textWidget,
   getTenantDetails,
   checkIsSubscribed,
-  convertPdfArrayBuffer
+  convertPdfArrayBuffer,
+  fetchImageBase64,
+  changeImageWH
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -194,13 +196,18 @@ function SignYourSelf() {
       setPdfDetails(documentData);
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const url = documentData[0] && documentData[0]?.URL;
-      //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-      const arrayBuffer = await convertPdfArrayBuffer(url);
-      if (arrayBuffer === "Error") {
-        setHandleError("Error: Something went wrong!");
+      if (url) {
+        //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+        const arrayBuffer = await convertPdfArrayBuffer(url);
+        if (arrayBuffer === "Error") {
+          setHandleError("Error: Something went wrong!");
+        } else {
+          setPdfArrayBuffer(arrayBuffer);
+        }
       } else {
-        setPdfArrayBuffer(arrayBuffer);
+        setHandleError("Error: Something went wrong!");
       }
+
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
         setIsCompleted(true);
@@ -443,13 +450,13 @@ function SignYourSelf() {
         Width: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
           : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).width
-          : "",
+            ? defaultWidthHeight(dragTypeValue).width
+            : "",
         Height: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
           : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).height
-          : "",
+            ? defaultWidthHeight(dragTypeValue).height
+            : "",
         options: addWidgetOptions(dragTypeValue)
       };
 
@@ -526,7 +533,6 @@ function SignYourSelf() {
     setSelectWidgetId(key);
     setSignKey(key);
   };
-
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
     let showAlert = false;
@@ -613,7 +619,6 @@ function SignYourSelf() {
       });
     }
   }
-  // console.log("signyourself", xyPostion);
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
     let isCustomCompletionMail = false;
@@ -630,12 +635,36 @@ function SignYourSelf() {
         isCustomCompletionMail = true;
       }
     }
+    let getSignature;
+    for (let item of xyPostion) {
+      const typeExist = item.pos.some((data) => data?.type);
+      if (typeExist) {
+        getSignature = item.pos.filter((data) => data?.type === "signature");
+      } else {
+        getSignature = item.pos.filter((data) => !data.isStamp);
+      }
+    }
+    let base64Sign = getSignature[0].SignUrl;
+    //check https type signature (default signature exist) then convert in base64
+    const isUrl = base64Sign.includes("https");
+    if (isUrl) {
+      try {
+        base64Sign = await fetchImageBase64(base64Sign);
+      } catch (e) {
+        console.log("error", e);
+      }
+    }
+    //change image width and height to 104/44 in png base64
+    const getNewse64 = await changeImageWH(base64Sign);
+    //remove suffiix of base64
+    const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
 
     let singleSign = {
       pdfFile: base64Url,
       docId: documentId,
       isCustomCompletionMail: isCustomCompletionMail,
-      mailProvider: activeMailAdapter
+      mailProvider: activeMailAdapter,
+      signature: suffixbase64
     };
 
     await axios
