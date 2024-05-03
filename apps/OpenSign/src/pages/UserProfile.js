@@ -194,7 +194,7 @@ function UserProfile() {
   };
   const handleSendOTP = async () => {
     try {
-      let url = `${parseBaseUrl}functions/SendOTPMailV1/`;
+      let url = `${parseBaseUrl}functions/SendOTPMailV1`;
       const headers = {
         "Content-Type": "application/json",
         "X-Parse-Application-Id": parseAppId
@@ -214,6 +214,12 @@ function UserProfile() {
         otp: otp,
         email: Parse.User.current().getEmail()
       });
+      if (resEmail?.message === "Email is verified.") {
+        setIsEmailVerified(true);
+      } else if (resEmail?.message === "Email is already verified.") {
+        setIsEmailVerified(true);
+      }
+      setOtp("");
       alert(resEmail.message);
       setIsVerifyModal(false);
     } catch (error) {

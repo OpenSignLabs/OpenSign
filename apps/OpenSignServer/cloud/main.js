@@ -34,6 +34,7 @@ import getPayments from './parsefunction/getPayments.js';
 import getSubscriptions from './parsefunction/getSubscriptions.js';
 import TenantAterFind from './parsefunction/TenantAfterFind.js';
 import saveSubscription from './parsefunction/saveSubscription.js';
+import encryptedpdf from './parsefunction/encryptedPdf.js';
 import VerifyEmail from './parsefunction/VerifyEmail.js';
 
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
@@ -73,3 +74,4 @@ Parse.Cloud.afterFind('contracts_Signature', SignatureAfterFind);
 Parse.Cloud.afterFind('partners_Tenant', TenantAterFind);
 Parse.Cloud.define('savesubscription', saveSubscription);
 Parse.Cloud.define('verifyemail', VerifyEmail);
+Parse.Cloud.define('encryptedpdf', encryptedpdf)
