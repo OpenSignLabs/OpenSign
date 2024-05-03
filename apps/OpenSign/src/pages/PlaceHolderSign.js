@@ -3,7 +3,12 @@ import axios from "axios";
 import Parse from "parse";
 import "../styles/signature.css";
 import { PDFDocument } from "pdf-lib";
-import { isEnableSubscription, themeColor } from "../constant/const";
+import {
+  isEnableSubscription,
+  rejectBtn,
+  submitBtn,
+  themeColor
+} from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
@@ -34,7 +39,8 @@ import {
   replaceMailVaribles,
   copytoData,
   fetchSubscription,
-  convertPdfArrayBuffer
+  convertPdfArrayBuffer,
+  handleSendOTP
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -84,6 +90,7 @@ function PlaceHolderSign() {
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
+  const [otpLoader, setOtpLoader] = useState(false);
   const { docId } = useParams();
   const signRef = useRef(null);
   const dragRef = useRef(null);
@@ -124,6 +131,9 @@ function PlaceHolderSign() {
   const [requestBody, setRequestBody] = useState("");
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isVerifyModal, setIsVerifyModal] = useState(false);
+  const [otp, setOtp] = useState("");
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
     message: ""
@@ -251,9 +261,63 @@ function PlaceHolderSign() {
       navigate(`/subscription`);
     }
   }
+  const handleVerifyBtn = async () => {
+    setIsVerifyModal(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+  };
+
+  const handleReset = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+    setOtpLoader(false);
+    alert("OTP sent on you email");
+  };
+  const handleVerifyEmail = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    try {
+      const resEmail = await Parse.Cloud.run("verifyemail", {
+        otp: otp,
+        email: Parse.User.current().getEmail()
+      });
+      if (resEmail?.message === "Email is verified.") {
+        setIsEmailVerified(true);
+      } else if (resEmail?.message === "Email is already verified.") {
+        setIsEmailVerified(true);
+      }
+      setOtp("");
+      alert(resEmail.message);
+      setIsVerifyModal(false);
+      handleRecipientSign();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setOtpLoader(false);
+    }
+  };
+  const handleCloseVerifyModal = async () => {
+    setIsVerifyModal(false);
+  };
   //function for get document details
   const getDocumentDetails = async () => {
     fetchTenantDetails();
+
+    const jsonSender = JSON.parse(
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      )
+    );
+    // const isEmailVerified = Parse.User.current()?.attributes?.emailVerified;
+    const userQuery = new Parse.Query(Parse.User);
+    const user = await userQuery.get(jsonSender.objectId, {
+      sessionToken: localStorage.getItem("accesstoken")
+    });
+    if (user) {
+      const isEmailVerified = user?.get("emailVerified");
+      setIsEmailVerified(isEmailVerified);
+    }
+
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
@@ -1837,21 +1901,36 @@ function PlaceHolderSign() {
                       marginBottom: "15px"
                     }}
                   ></div>
-                  {isCurrUser && (
-                    <button
-                      onClick={() => {
-                        handleRecipientSign();
-                      }}
-                      style={{
-                        background: themeColor,
-                        color: "white"
-                      }}
-                      type="button"
-                      className="finishBtn"
-                    >
-                      Yes
-                    </button>
-                  )}
+                  {isCurrUser &&
+                    (isEmailVerified ? (
+                      <button
+                        onClick={() => {
+                          handleRecipientSign();
+                        }}
+                        style={{
+                          background: themeColor,
+                          color: "white"
+                        }}
+                        type="button"
+                        className="finishBtn"
+                      >
+                        Yes
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          handleVerifyBtn();
+                        }}
+                        style={{
+                          background: themeColor,
+                          color: "white"
+                        }}
+                        type="button"
+                        className="finishBtn"
+                      >
+                        Verify Email
+                      </button>
+                    ))}
 
                   <button
                     onClick={() => {
@@ -2142,6 +2221,58 @@ function PlaceHolderSign() {
           handleData={handleWidgetdefaultdata}
           isSubscribe={isSubscribe}
         />
+        {isVerifyModal && (
+          <ModalUi
+            isOpen
+            title={"OTP verification"}
+            handleClose={handleCloseVerifyModal}
+          >
+            {otpLoader ? (
+              <div
+                style={{
+                  height: "150px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "45px",
+                    color: "#3dd3e0"
+                  }}
+                  className="loader-37"
+                ></div>
+              </div>
+            ) : (
+              <form onSubmit={(e) => handleVerifyEmail(e)}>
+                <div className="px-6 py-3">
+                  <label className="mb-2">Enter OTP</label>
+                  <input
+                    type="tel"
+                    pattern="[0-9]{4}"
+                    className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                    placeholder="Enter OTP sent on mail"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                  />
+                </div>
+                <hr />
+                <div className="px-6 my-3">
+                  <button type="submit" className={submitBtn}>
+                    Verify
+                  </button>
+                  <button
+                    className={`${rejectBtn} ml-2`}
+                    onClick={(e) => handleReset(e)}
+                  >
+                    Resend
+                  </button>
+                </div>
+              </form>
+            )}
+          </ModalUi>
+        )}
       </div>
     </>
   );

@@ -53,8 +53,21 @@ function UserProfile() {
     if (HeaderDocId) {
       setIsDisableDocId(HeaderDocId);
     }
-    const isEmailVerified = Parse.User.current()?.attributes?.emailVerified;
-    setIsEmailVerified(isEmailVerified);
+    const currentUser = JSON.parse(
+      localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      )
+    );
+    // const isEmailVerified = Parse.User.current()?.attributes?.emailVerified;
+    const userQuery = new Parse.Query(Parse.User);
+    const user = await userQuery.get(currentUser.objectId, {
+      sessionToken: localStorage.getItem("accesstoken")
+    });
+    if (user) {
+      const isEmailVerified = user?.get("emailVerified");
+      setIsEmailVerified(isEmailVerified);
+    }
+
     setIsLoader(false);
   };
   const handleSubmit = async (e) => {
