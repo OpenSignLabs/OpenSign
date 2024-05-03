@@ -250,7 +250,7 @@ export default async function GenerateCertificate(docDetails) {
   let yPosition5 = 395;
   let yPosition6 = 360;
   auditTrail.slice(0, 3).forEach(async (x, i) => {
-    const embedPng = x.signature ? await pdfDoc.embedPng(x.signature) : '';
+    const embedPng = x.Signature ? await pdfDoc.embedPng(x.Signature) : '';
     page.drawText(`Signer ${i + 1}`, {
       x: 30,
       y: yPosition1,
@@ -282,7 +282,7 @@ export default async function GenerateCertificate(docDetails) {
       color: textKeyColor,
     });
 
-    page.drawText(`${new Date(x.SignedOn).toUTCString()}`, {
+    page.drawText(`${new Date(x.ViewedOn).toUTCString()}`, {
       x: half + 75,
       y: yPosition2,
       size: text,
@@ -396,7 +396,7 @@ export default async function GenerateCertificate(docDetails) {
     let currentPageIndex = 1;
     let currentPage = page;
     auditTrail.slice(3).forEach(async (x, i) => {
-      const embedPng = x.signature ? await pdfDoc.embedPng(x.signature) : '';
+      const embedPng = x.Signature ? await pdfDoc.embedPng(x.Signature) : '';
 
       // Calculate remaining space on current page
       const remainingSpace = yPosition6;
@@ -453,7 +453,7 @@ export default async function GenerateCertificate(docDetails) {
         color: textKeyColor,
       });
 
-      currentPage.drawText(`${new Date(x.SignedOn).toUTCString()}`, {
+      currentPage.drawText(`${new Date(x.ViewedOn).toUTCString()}`, {
         x: half + 75,
         y: yPosition2,
         size: text,
