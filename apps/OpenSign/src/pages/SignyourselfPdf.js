@@ -574,30 +574,38 @@ function SignYourSelf() {
         setIsUiLoading(true);
         const existingPdfBytes = pdfArrayBuffer;
         // Load a PDFDocument from the existing PDF bytes
-        const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-          ignoreEncryption: true
-        });
-        const isSignYourSelfFlow = true;
-        const extUserPtr = pdfDetails[0].ExtUserPtr;
-        const HeaderDocId = extUserPtr?.HeaderDocId;
-        //embed document's object id to all pages in pdf document
-        if (!HeaderDocId) {
-          await embedDocId(pdfDoc, documentId, allPages);
+        try {
+          const pdfDoc = await PDFDocument.load(existingPdfBytes, {
+            ignoreEncryption: true
+          });
+          const isSignYourSelfFlow = true;
+          const extUserPtr = pdfDetails[0].ExtUserPtr;
+          const HeaderDocId = extUserPtr?.HeaderDocId;
+          //embed document's object id to all pages in pdf document
+          if (!HeaderDocId) {
+            await embedDocId(pdfDoc, documentId, allPages);
+          }
+          //embed multi signature in pdf
+          const pdfBytes = await multiSignEmbed(
+            xyPostion,
+            pdfDoc,
+            pdfOriginalWidth,
+            isSignYourSelfFlow,
+            containerWH
+          );
+          // console.log("pdf", pdfBytes);
+          //function for call to embed signature in pdf and get digital signature pdf
+          await signPdfFun(pdfBytes, documentId);
+        } catch (err) {
+          setIsUiLoading(false);
+          setIsAlert({
+            isShow: true,
+            alertMessage: `Currently encrypted pdf files are not supported.`
+          });
         }
-        //embed multi signature in pdf
-        const pdfBytes = await multiSignEmbed(
-          xyPostion,
-          pdfDoc,
-          pdfOriginalWidth,
-          isSignYourSelfFlow,
-          containerWH
-        );
-        // console.log("pdf", pdfBytes);
-        //function for call to embed signature in pdf and get digital signature pdf
-        await signPdfFun(pdfBytes, documentId);
       }
     } catch (err) {
-      console.log("err in embedselfsign ", err );
+      console.log("err in embedselfsign ", err);
       setIsUiLoading(false);
       setIsAlert({
         isShow: true,
