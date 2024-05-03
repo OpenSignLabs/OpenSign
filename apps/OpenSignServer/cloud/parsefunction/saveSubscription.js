@@ -1,5 +1,5 @@
 import axios from 'axios';
-export default async function saveSubscriptio(request) {
+export default async function saveSubscription(request) {
   const serverUrl = process.env.SERVER_URL;
   const appId = process.env.APP_ID;
   const subscription = request.params.subscription;
