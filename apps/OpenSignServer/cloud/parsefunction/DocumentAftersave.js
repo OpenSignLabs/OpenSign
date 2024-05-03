@@ -4,6 +4,7 @@ async function DocumentAftersave(request) {
       console.log('new entry is insert in contracts_Document');
       const createdAt = request.object.get('createdAt');
       const Folder = request.object.get('Type');
+      const ip = request?.headers?.['x-real-ip'] || '';
       if (createdAt && Folder === undefined) {
         // console.log("IN If condition")
         const TimeToCompleteDays = request.object.get('TimeToCompleteDays');
@@ -12,6 +13,7 @@ async function DocumentAftersave(request) {
         const documentQuery = new Parse.Query('contracts_Document');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
+        updateQuery.set('OriginIp', ip);
         await updateQuery.save(null, { useMasterKey: true });
       } else if (createdAt && Folder === 'AIDoc') {
         const TimeToCompleteDays = request.object.get('TimeToCompleteDays');
@@ -24,6 +26,7 @@ async function DocumentAftersave(request) {
         const documentQuery = new Parse.Query('contracts_Document');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
+        updateQuery.set('OriginIp', ip);
         await updateQuery.save(null, { useMasterKey: true });
       }
 
