@@ -52,7 +52,7 @@ const plans = [
       "API Access",
       "100 API signatures included",
       "DocumentId removal from signed docs",
-      "Custom email templates(coming soon)"
+      "Custom email templates"
     ]
   },
   {
