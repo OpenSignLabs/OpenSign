@@ -2008,3 +2008,16 @@ export const convertPdfArrayBuffer = async (url) => {
     return "Error";
   }
 };
+export const handleSendOTP = async (email) => {
+  try {
+    let url = `${localStorage.getItem("baseUrl")}functions/SendOTPMailV1`;
+    const headers = {
+      "Content-Type": "application/json",
+      "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+    };
+    const body = { email: email };
+    await axios.post(url, body, { headers: headers });
+  } catch (error) {
+    alert(error.message);
+  }
+};

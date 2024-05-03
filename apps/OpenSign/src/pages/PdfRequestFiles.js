@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { isEnableSubscription, themeColor } from "../constant/const";
+import {
+  isEnableSubscription,
+  rejectBtn,
+  submitBtn,
+  themeColor
+} from "../constant/const";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
+import Parse from "parse";
 import axios from "axios";
 import loader from "../assets/images/loader2.gif";
 import { DndProvider } from "react-dnd";
@@ -25,7 +31,8 @@ import {
   replaceMailVaribles,
   fetchSubscription,
   convertPdfArrayBuffer,
-  contractUsers
+  contractUsers,
+  handleSendOTP
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -57,10 +64,12 @@ function PdfRequestFiles() {
   const imageRef = useRef(null);
   const [handleError, setHandleError] = useState();
   const [selectWidgetId, setSelectWidgetId] = useState("");
+  const [otpLoader, setOtpLoader] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
   });
+
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
   const [pdfNewWidth, setPdfNewWidth] = useState();
@@ -100,6 +109,9 @@ function PdfRequestFiles() {
   const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
   const [extUserId, setExtUserId] = useState("");
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [isVerifyModal, setIsVerifyModal] = useState(false);
+  const [otp, setOtp] = useState("");
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -139,6 +151,41 @@ function PdfRequestFiles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
+  const handleReset = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+    setOtpLoader(false);
+    alert("OTP sent on you email");
+  };
+  const handleVerifyEmail = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    try {
+      const resEmail = await Parse.Cloud.run("verifyemail", {
+        otp: otp,
+        email: Parse.User.current().getEmail()
+      });
+      if (resEmail?.message === "Email is verified.") {
+        setIsEmailVerified(true);
+      } else if (resEmail?.message === "Email is already verified.") {
+        setIsEmailVerified(true);
+      }
+      setOtp("");
+      alert(resEmail.message);
+      setIsVerifyModal(false);
+      // handleRecipientSign();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setOtpLoader(false);
+    }
+  };
+
+  const handleVerifyBtn = async () => {
+    setIsVerifyModal(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+  };
   async function checkIsSubscribed(extUserId, contactId) {
     const isGuestSign = location.pathname.includes("/load/") || false;
     const res = await fetchSubscription(extUserId, contactId, isGuestSign);
@@ -238,6 +285,22 @@ function PdfRequestFiles() {
         setExpiredDate(expireDateFormat);
       }
 
+      const isGuestSign = location.pathname.includes("/load/");
+      if (
+        !isGuestSign &&
+        !isCompleted &&
+        !declined &&
+        currDate < expireUpdateDate
+      ) {
+        const userQuery = new Parse.Query(Parse.User);
+        const user = await userQuery.get(jsonSender.objectId, {
+          sessionToken: localStorage.getItem("accesstoken")
+        });
+        if (user) {
+          const isEmailVerified = user?.get("emailVerified");
+          setIsEmailVerified(isEmailVerified);
+        }
+      }
       if (documentData.length > 0) {
         const checkDocIdExist =
           documentData[0].AuditTrail &&
@@ -1179,6 +1242,83 @@ function PdfRequestFiles() {
                   headMsg="Document Expired!"
                   bodyMssg={`This document expired on ${expiredDate} and is no longer available to sign.`}
                 />
+                {!isEmailVerified && (
+                  <div className="bg-black bg-opacity-[75%] absolute z-[999] flex flex-col items-center justify-center w-full h-full rounded">
+                    <div className="bg-white rounded outline-none md:w-[40%] w-[80%]">
+                      <div
+                        style={{ backgroundColor: themeColor }}
+                        className=" text-white p-[10px] rounded-t"
+                      >
+                        OTP verification
+                      </div>
+                      {isVerifyModal ? (
+                        <form
+                          onSubmit={(e) => {
+                            setIsVerifyModal(false);
+                            handleVerifyEmail(e);
+                          }}
+                        >
+                          <div className="px-6 py-3">
+                            <label className="mb-2">Enter OTP</label>
+                            <input
+                              type="tel"
+                              pattern="[0-9]{4}"
+                              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                              placeholder="Enter OTP sent on mail"
+                              value={otp}
+                              onChange={(e) => setOtp(e.target.value)}
+                            />
+                          </div>
+                          <hr />
+                          <div className="px-6 my-3">
+                            <button type="submit" className={submitBtn}>
+                              Verify
+                            </button>
+                            <button
+                              className={`${rejectBtn} ml-2`}
+                              onClick={(e) => handleReset(e)}
+                            >
+                              Resend
+                            </button>
+                          </div>
+                        </form>
+                      ) : otpLoader ? (
+                        <div
+                          style={{
+                            height: "150px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: "45px",
+                              color: "#3dd3e0"
+                            }}
+                            className="loader-37"
+                          ></div>
+                        </div>
+                      ) : (
+                        <div className="p-[15px]">
+                          <p>Please verify your email !</p>
+                          <div className="h-[1px] bg-[#9f9f9f] w-full"></div>
+                          <div className="m-[15px] ">
+                            <button
+                              className={submitBtn}
+                              type="submit"
+                              onClick={() => {
+                                handleVerifyBtn();
+                              }}
+                            >
+                              Verify
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <ModalUi
                   headerColor={defaultSignImg ? themeColor : "#dc3545"}
@@ -1558,6 +1698,92 @@ function PdfRequestFiles() {
               </button>
             </div>
           </ModalUi>
+
+          {/* {isVerifyModal && (
+            <ModalUi
+              isOpen
+              title={"OTP verification"}
+              handleClose={handleCloseVerifyModal}
+            >
+              {otpLoader ? (
+                <div
+                  style={{
+                    height: "150px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "45px",
+                      color: "#3dd3e0"
+                    }}
+                    className="loader-37"
+                  ></div>
+                </div>
+              ) : (
+                <form onSubmit={(e) => handleVerifyEmail(e)}>
+                  <div className="px-6 py-3">
+                    <label className="mb-2">Enter OTP</label>
+                    <input
+                      type="tel"
+                      pattern="[0-9]{4}"
+                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      placeholder="Enter OTP sent on mail"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                    />
+                  </div>
+                  <hr />
+                  <div className="px-6 my-3">
+                    <button type="submit" className={submitBtn}>
+                      Verify
+                    </button>
+                    <button
+                      className={`${rejectBtn} ml-2`}
+                      onClick={(e) => handleReset(e)}
+                    >
+                      Resend
+                    </button>
+                  </div>
+                </form>
+              )}
+            </ModalUi>
+          )} */}
+          {/* {!isEmailVerified && (
+            <ModalUi
+              isOpen={!isEmailVerified}
+              title={"OTP verification"}
+              handleClose={() => {
+                setValidateAlert(false);
+              }}
+            >
+              <div style={{ height: "100%", padding: 20 }}>
+                <p>Please verify your email !</p>
+
+                <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
+                  }}
+                ></div>
+                <button
+                className={submitBtn}
+                  type="submit"
+                  onClick={() => {
+                    setIsEmailVerified(true);
+                    setIsVerifyModal(true);
+                  }}
+                >
+                  Verify
+                </button>
+              </div>
+            </ModalUi>
+          )} */}
         </>
       )}
     </DndProvider>
