@@ -43,7 +43,7 @@ const plans = [
         : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d8ad1135190dff951330360e47585a71/professional-yearly",
     target: "_self",
     benefits: [
-      "Everything in OpenSign™ professional",
+      "Everything in OpenSign™ free",
       "Field validations",
       "Regular expression validations",
       "Organize docs in OpenSign™ Drive",
