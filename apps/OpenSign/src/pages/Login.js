@@ -422,7 +422,7 @@ function Login() {
       alert("Somenthing went wrong, please try again later!");
     }
   };
-  const thirdpartyLoginfn = async (sessionToken, billingDate) => {
+  const thirdpartyLoginfn = async (sessionToken) => {
     const baseUrl = localStorage.getItem("baseUrl");
     const parseAppId = localStorage.getItem("parseAppId");
     const res = await axios.get(baseUrl + "users/me", {
@@ -521,7 +521,7 @@ function Login() {
                       await Parse.Cloud.run("getUserDetails", {
                         email: currentUser.get("email")
                       }).then(
-                        (result) => {
+                        async (result) => {
                           let tenentInfo = [];
                           const results = [result];
                           if (results) {
@@ -571,7 +571,7 @@ function Login() {
                               setState({ ...state, loading: false });
                               navigate("/");
                             } else {
-                              extendedInfo.forEach((x) => {
+                              extendedInfo.forEach(async (x) => {
                                 if (x.TenantId) {
                                   let obj = {
                                     tenentId: x.TenantId.objectId,
@@ -608,8 +608,13 @@ function Login() {
                               setThirdpartyLoader(false);
                               setState({ ...state, loading: false });
                               if (isEnableSubscription) {
-                                if (billingDate) {
-                                  if (billingDate > new Date()) {
+                                const res = await fetchSubscription();
+                                const freeplan = res.plan;
+                                const billingDate = res.billingDate;
+                                if (freeplan === "freeplan") {
+                                  navigate(redirectUrl);
+                                } else if (billingDate) {
+                                  if (new Date(billingDate) > new Date()) {
                                     localStorage.removeItem("userDetails");
                                     navigate(redirectUrl);
                                   } else {
@@ -644,8 +649,13 @@ function Login() {
                             setState({ ...state, loading: false });
                             setThirdpartyLoader(false);
                             if (isEnableSubscription) {
-                              if (billingDate) {
-                                if (billingDate > new Date()) {
+                              const res = await fetchSubscription();
+                              const freeplan = res.plan;
+                              const billingDate = res.billingDate;
+                              if (freeplan === "freeplan") {
+                                navigate(redirectUrl);
+                              } else if (billingDate) {
+                                if (new Date(billingDate) > new Date()) {
                                   localStorage.removeItem("userDetails");
                                   // Redirect to the appropriate URL after successful login
                                   navigate(redirectUrl);
