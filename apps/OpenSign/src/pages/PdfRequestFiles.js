@@ -1,10 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  isEnableSubscription,
-  rejectBtn,
-  submitBtn,
-  themeColor
-} from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -42,6 +37,7 @@ import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
+import VerifyEmail from "../components/pdf/VerifyEmail";
 
 function PdfRequestFiles() {
   const { docId } = useParams();
@@ -1243,81 +1239,16 @@ function PdfRequestFiles() {
                   bodyMssg={`This document expired on ${expiredDate} and is no longer available to sign.`}
                 />
                 {!isEmailVerified && (
-                  <div className="bg-black bg-opacity-[75%] absolute z-[999] flex flex-col items-center justify-center w-full h-full rounded">
-                    <div className="bg-white rounded outline-none md:w-[40%] w-[80%]">
-                      <div
-                        style={{ backgroundColor: themeColor }}
-                        className=" text-white p-[10px] rounded-t"
-                      >
-                        OTP verification
-                      </div>
-                      {isVerifyModal ? (
-                        <form
-                          onSubmit={(e) => {
-                            setIsVerifyModal(false);
-                            handleVerifyEmail(e);
-                          }}
-                        >
-                          <div className="px-6 py-3">
-                            <label className="mb-2">Enter OTP</label>
-                            <input
-                              type="tel"
-                              pattern="[0-9]{4}"
-                              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-                              placeholder="Enter OTP sent on mail"
-                              value={otp}
-                              onChange={(e) => setOtp(e.target.value)}
-                            />
-                          </div>
-                          <hr />
-                          <div className="px-6 my-3">
-                            <button type="submit" className={submitBtn}>
-                              Verify
-                            </button>
-                            <button
-                              className={`${rejectBtn} ml-2`}
-                              onClick={(e) => handleReset(e)}
-                            >
-                              Resend
-                            </button>
-                          </div>
-                        </form>
-                      ) : otpLoader ? (
-                        <div
-                          style={{
-                            height: "150px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
-                          }}
-                        >
-                          <div
-                            style={{
-                              fontSize: "45px",
-                              color: "#3dd3e0"
-                            }}
-                            className="loader-37"
-                          ></div>
-                        </div>
-                      ) : (
-                        <div className="p-[15px]">
-                          <p>Please verify your email !</p>
-                          <div className="h-[1px] bg-[#9f9f9f] w-full"></div>
-                          <div className="m-[15px] ">
-                            <button
-                              className={submitBtn}
-                              type="submit"
-                              onClick={() => {
-                                handleVerifyBtn();
-                              }}
-                            >
-                              Verify
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <VerifyEmail
+                    isVerifyModal={isVerifyModal}
+                    setIsVerifyModal={setIsVerifyModal}
+                    handleVerifyEmail={handleVerifyEmail}
+                    setOtp={setOtp}
+                    otp={otp}
+                    otpLoader={otpLoader}
+                    handleVerifyBtn={handleVerifyBtn}
+                    handleReset={handleReset}
+                  />
                 )}
 
                 <ModalUi

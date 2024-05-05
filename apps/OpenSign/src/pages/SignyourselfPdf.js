@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
+import Parse from "parse";
 import { isEnableSubscription, themeColor } from "../constant/const";
 import axios from "axios";
 import Loader from "../primitives/LoaderWithMsg";
@@ -31,7 +32,8 @@ import {
   checkIsSubscribed,
   convertPdfArrayBuffer,
   fetchImageBase64,
-  changeImageWH
+  changeImageWH,
+  handleSendOTP
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -44,6 +46,7 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Title from "../components/Title";
 import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
+import VerifyEmail from "../components/pdf/VerifyEmail";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -91,6 +94,7 @@ function SignYourSelf() {
   const [containerWH, setContainerWH] = useState({});
   const [isPageCopy, setIsPageCopy] = useState(false);
   const [selectWidgetId, setSelectWidgetId] = useState("");
+  const [otpLoader, setOtpLoader] = useState(false);
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
@@ -107,6 +111,9 @@ function SignYourSelf() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [isVerifyModal, setIsVerifyModal] = useState(false);
+  const [otp, setOtp] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -224,6 +231,17 @@ function SignYourSelf() {
           setIsEmail(true);
           setXyPostion([]);
           setSignBtnPosition([]);
+        }
+      }
+
+      if (!isCompleted) {
+        const userQuery = new Parse.Query(Parse.User);
+        const user = await userQuery.get(jsonSender.objectId, {
+          sessionToken: localStorage.getItem("accesstoken")
+        });
+        if (user) {
+          const isEmailVerified = user?.get("emailVerified");
+          setIsEmailVerified(isEmailVerified);
         }
       }
     } else if (
@@ -532,6 +550,42 @@ function SignYourSelf() {
     setWidgetType(dragTypeValue);
     setSelectWidgetId(key);
     setSignKey(key);
+  };
+
+  const handleReset = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+    setOtpLoader(false);
+    alert("OTP sent on you email");
+  };
+  const handleVerifyEmail = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    try {
+      const resEmail = await Parse.Cloud.run("verifyemail", {
+        otp: otp,
+        email: Parse.User.current().getEmail()
+      });
+      if (resEmail?.message === "Email is verified.") {
+        setIsEmailVerified(true);
+      } else if (resEmail?.message === "Email is already verified.") {
+        setIsEmailVerified(true);
+      }
+      setOtp("");
+      alert(resEmail.message);
+      setIsVerifyModal(false);
+      // handleRecipientSign();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setOtpLoader(false);
+    }
+  };
+
+  const handleVerifyBtn = async () => {
+    setIsVerifyModal(true);
+    await handleSendOTP(Parse.User.current().getEmail());
   };
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
@@ -1037,6 +1091,18 @@ function SignYourSelf() {
           )}
 
           <div className="signatureContainer" ref={divRef}>
+            {!isEmailVerified && (
+              <VerifyEmail
+                isVerifyModal={isVerifyModal}
+                setIsVerifyModal={setIsVerifyModal}
+                handleVerifyEmail={handleVerifyEmail}
+                setOtp={setOtp}
+                otp={otp}
+                otpLoader={otpLoader}
+                handleVerifyBtn={handleVerifyBtn}
+                handleReset={handleReset}
+              />
+            )}
             {/* this component used for UI interaction and show their functionality */}
             {pdfLoadFail && !checkTourStatus && (
               <Tour
