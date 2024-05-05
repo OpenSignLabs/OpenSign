@@ -115,8 +115,8 @@ const GoogleSignInBtn = ({
       // console.log("payload ", payload);
       if (payload && payload.sessiontoken) {
         // setThirdpartyLoader(true);
-        const billingDate =
-          extRes.get("Next_billing_date") && extRes.get("Next_billing_date");
+        // const billingDate =
+        //   extRes.get("Next_billing_date") && extRes.get("Next_billing_date");
         // console.log("billingDate expired", billingDate > new Date());
         const LocalUserDetails = {
           name: details.Name,
@@ -125,7 +125,7 @@ const GoogleSignInBtn = ({
           company: extRes.get("Company")
         };
         localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
-        thirdpartyLoginfn(payload.sessiontoken, billingDate);
+        thirdpartyLoginfn(payload.sessiontoken);
       }
       return { msg: "exist" };
     } else {
