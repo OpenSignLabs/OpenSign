@@ -25,6 +25,20 @@
   "devDependencies": {
     "husky": "^8.0.0",
     "lint-staged": "^15.1.0",
-    "prettier": "3.1.0"
+    "prettier": "^3.1.0"
+  },
+  "dependencies": {
+    "@babel/runtime-corejs2": "^7.24.5",
+    "@formkit/auto-animate": "^0.8.2",
+    "@react-pdf/renderer": "^3.4.4",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9.2.0",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.3",
+    "nodemailer": "^6.9.13",
+    "pdfkit": "^0.15.0",
+    "pretty-quick": "^4.0.0",
+    "react-rnd": "^10.4.10",
+    "reactour": "^1.19.3"
   }
 }
