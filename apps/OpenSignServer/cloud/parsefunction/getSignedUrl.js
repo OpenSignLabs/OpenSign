@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { useLocal } from '../../Utils.js';
 const credentials = {
   accessKeyId: process.env.DO_ACCESS_KEY_ID,
   secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
@@ -23,4 +24,26 @@ export default function getPresignedUrl(url) {
     Expires: 160, //time to expire in seconds
   });
   return presignedGETURL;
+}
+
+export async function getSignedUrl(request) {
+  try {
+    const url = request.params.url;
+    if (!request?.user) {
+      throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
+    } else {
+      if (useLocal !== 'true') {
+        const presignedUrl = getPresignedUrl(url);
+        return presignedUrl;
+      } else {
+        return url;
+      }
+    }
+  } catch (err) {
+    console.log('error in getsignedurl', err);
+    const code = err.code || 400;
+    const msg = err.message;
+    const error = new Parse.Error(code, msg);
+    throw error;
+  }
 }
