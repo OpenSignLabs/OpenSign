@@ -235,13 +235,21 @@ function SignYourSelf() {
       }
 
       if (!isCompleted) {
-        const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(jsonSender.objectId, {
-          sessionToken: localStorage.getItem("accesstoken")
-        });
-        if (user) {
-          const isEmailVerified = user?.get("emailVerified");
+        //check current user email verified or not
+        const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+        let isEmailVerified;
+        isEmailVerified = currentUser?.emailVerified;
+        if (isEmailVerified) {
           setIsEmailVerified(isEmailVerified);
+        } else {
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(currentUser.objectId, {
+            sessionToken: localStorage.getItem("accesstoken")
+          });
+          if (user) {
+            isEmailVerified = user?.get("emailVerified");
+            setIsEmailVerified(isEmailVerified);
+          }
         }
       }
     } else if (
@@ -552,13 +560,16 @@ function SignYourSelf() {
     setSignKey(key);
   };
 
-  const handleReset = async (e) => {
+  //function to use resend otp for email verification
+  const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
     await handleSendOTP(Parse.User.current().getEmail());
     setOtpLoader(false);
     alert("OTP sent on you email");
   };
+
+  //function to use verify email with otp
   const handleVerifyEmail = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
@@ -582,7 +593,7 @@ function SignYourSelf() {
       setOtpLoader(false);
     }
   };
-
+  //function to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
     await handleSendOTP(Parse.User.current().getEmail());
@@ -1100,7 +1111,7 @@ function SignYourSelf() {
                 otp={otp}
                 otpLoader={otpLoader}
                 handleVerifyBtn={handleVerifyBtn}
-                handleReset={handleReset}
+                handleResend={handleResend}
               />
             )}
             {/* this component used for UI interaction and show their functionality */}

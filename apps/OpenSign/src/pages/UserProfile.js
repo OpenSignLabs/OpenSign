@@ -9,7 +9,7 @@ import axios from "axios";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
 import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
-import { checkIsSubscribed } from "../constant/Utils";
+import { checkIsSubscribed, handleSendOTP } from "../constant/Utils";
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 
@@ -53,19 +53,20 @@ function UserProfile() {
     if (HeaderDocId) {
       setIsDisableDocId(HeaderDocId);
     }
-    const currentUser = JSON.parse(
-      localStorage.getItem(
-        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-      )
-    );
-    // const isEmailVerified = Parse.User.current()?.attributes?.emailVerified;
-    const userQuery = new Parse.Query(Parse.User);
-    const user = await userQuery.get(currentUser.objectId, {
-      sessionToken: localStorage.getItem("accesstoken")
-    });
-    if (user) {
-      const isEmailVerified = user?.get("emailVerified");
+    const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+    let isEmailVerified;
+    isEmailVerified = currentUser?.emailVerified;
+    if (isEmailVerified) {
       setIsEmailVerified(isEmailVerified);
+    } else {
+      const userQuery = new Parse.Query(Parse.User);
+      const user = await userQuery.get(currentUser.objectId, {
+        sessionToken: localStorage.getItem("accesstoken")
+      });
+      if (user) {
+        isEmailVerified = user?.get("emailVerified");
+        setIsEmailVerified(isEmailVerified);
+      }
     }
 
     setIsLoader(false);
@@ -198,27 +199,16 @@ function UserProfile() {
   const handleDisableDocId = () => {
     setIsDisableDocId((prevChecked) => !prevChecked);
   };
+  //function to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
-    await handleSendOTP();
+    await handleSendOTP(Parse.User.current().getEmail());
   };
   const handleCloseVerifyModal = async () => {
     setIsVerifyModal(false);
   };
-  const handleSendOTP = async () => {
-    try {
-      let url = `${parseBaseUrl}functions/SendOTPMailV1`;
-      const headers = {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": parseAppId
-      };
-      const body = { email: Parse.User.current().getEmail() };
-      await axios.post(url, body, { headers: headers });
-    } catch (error) {
-      alert(error.message);
-    }
-  };
 
+  //function to use verify email with otp
   const handleVerifyEmail = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
@@ -241,7 +231,8 @@ function UserProfile() {
       setOtpLoader(false);
     }
   };
-  const handleReset = async (e) => {
+  //function to use resend otp for email verification
+  const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
     await handleSendOTP();
@@ -510,6 +501,7 @@ function UserProfile() {
                   <div className="px-6 py-3">
                     <label className="mb-2">Enter OTP</label>
                     <input
+                      required
                       type="tel"
                       pattern="[0-9]{4}"
                       className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
@@ -525,7 +517,7 @@ function UserProfile() {
                     </button>
                     <button
                       className={`${rejectBtn} ml-2`}
-                      onClick={(e) => handleReset(e)}
+                      onClick={(e) => handleResend(e)}
                     >
                       Resend
                     </button>
