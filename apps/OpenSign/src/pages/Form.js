@@ -14,7 +14,8 @@ import { SaveFileSize } from "../constant/saveFileSize";
 import { getFileName, toDataUrl } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
-import { isEnableSubscription } from "../constant/const";
+import { isEnableSubscription, submitBtn } from "../constant/const";
+import ModalUi from "../primitives/ModalUi";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -43,7 +44,9 @@ const Forms = (props) => {
     Description: "",
     Note: "",
     TimeToCompleteDays: 15,
-    SendinOrder: "false"
+    SendinOrder: "false",
+    password: "",
+    file: ""
   });
   const [fileupload, setFileUpload] = useState("");
   const [fileload, setfileload] = useState(false);
@@ -52,6 +55,8 @@ const Forms = (props) => {
   const [isAlert, setIsAlert] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const [isErr, setIsErr] = useState("");
+  const [isPassword, setIsPassword] = useState(false);
+  const [isDecrypting, setIsDecrypting] = useState(false);
   const handleStrInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -80,6 +85,7 @@ const Forms = (props) => {
     setpercentage(0);
     try {
       let files = e.target.files;
+      setFormData((prev) => ({ ...prev, file: e.target.files[0] }));
       if (typeof files[0] !== "undefined") {
         const mb = Math.round(files[0].size / Math.pow(1024, 2));
         if (mb > maxFileSize) {
@@ -96,16 +102,83 @@ const Forms = (props) => {
               await PDFDocument.load(res);
               handleFileUpload(files[0]);
             } catch (err) {
-              alert(`Currently encrypted pdf files are not supported.`);
-              setFileUpload("");
-              e.target.value = "";
-              console.log("err ", err);
-              try {
-                await Parse.Cloud.run("encryptedpdf", {
-                  email: Parse.User.current().getEmail()
-                });
-              } catch (err) {
-                console.log("err in sending posthog encryptedpdf", err);
+              if (err?.message?.includes("is encrypted")) {
+                try {
+                  await Parse.Cloud.run("encryptedpdf", {
+                    email: Parse.User.current().getEmail()
+                  });
+                } catch (err) {
+                  console.log("err in sending posthog encryptedpdf", err);
+                }
+                // console.log("err ", err);
+                try {
+                  setIsDecrypting(true);
+                  const fileName = files?.[0].name;
+                  const size = files?.[0].size;
+                  const name = sanitizeFileName(fileName);
+                  const url = "https://ai.nxglabs.in/decryptpdf"; //"https://ai.nxglabs.in/decryptpdf"; //
+                  let formData = new FormData();
+                  formData.append("file", files[0]);
+                  formData.append("password", "");
+                  const config = {
+                    headers: {
+                      "content-type": "multipart/form-data"
+                      // sessiontoken: Parse.User.current().getSessionToken()
+                    },
+                    responseType: "blob"
+                  };
+                  const response = await axios.post(url, formData, config);
+                  const pdfBlob = new Blob([response.data], {
+                    type: "application/pdf"
+                  });
+                  const pdfFile = new File([pdfBlob], name, {
+                    type: "application/pdf"
+                  });
+                  setIsDecrypting(false);
+                  setfileload(true);
+
+                  // Upload the file to Parse Server
+                  const parseFile = new Parse.File(
+                    name,
+                    pdfFile,
+                    "application/pdf"
+                  );
+
+                  await parseFile.save({
+                    progress: (progressValue, loaded, total, { type }) => {
+                      if (type === "upload" && progressValue !== null) {
+                        const percentCompleted = Math.round(
+                          (loaded * 100) / total
+                        );
+                        setpercentage(percentCompleted);
+                      }
+                    }
+                  });
+
+                  // Retrieve the URL of the uploaded file
+                  if (parseFile.url()) {
+                    console.log("parseFile.url() ", parseFile.url());
+                    setFileUpload(parseFile.url());
+                    setfileload(false);
+                    const tenantId = localStorage.getItem("TenantId");
+                    SaveFileSize(size, parseFile.url(), tenantId);
+                    return parseFile.url();
+                  }
+                } catch (err) {
+                  console.log("Error uploading file: ", err?.response);
+                  setfileload(false);
+                  setpercentage(0);
+                  if (err?.response?.status === 401) {
+                    setIsPassword(true);
+                  } else {
+                    setIsDecrypting(false);
+                    e.target.value = "";
+                  }
+                }
+              } else {
+                console.log("err ", err);
+                setFileUpload("");
+                e.target.value = "";
               }
             }
           } else {
@@ -174,7 +247,7 @@ const Forms = (props) => {
               if (isEnableSubscription) {
                 try {
                   setfileload(true);
-                  const url = "http://tools.opensignlabs.com/docxtopdf";
+                  const url = "https://ai.nxglabs.in/docxtopdf";
                   let formData = new FormData();
                   formData.append("file", files[0]);
                   const config = {
@@ -387,7 +460,68 @@ const Forms = (props) => {
     setpercentage(0);
     setTimeout(() => setIsReset(false), 50);
   };
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setIsPassword(false);
+    setfileload(true);
+    try {
+      const fileName = formData?.file?.name;
+      const size = formData?.file?.size;
+      const name = sanitizeFileName(fileName);
+      const url = "https://ai.nxglabs.in/decryptpdf"; //
+      let Data = new FormData();
+      Data.append("file", formData?.file);
+      Data.append("password", formData.password);
+      const config = {
+        headers: {
+          "content-type": "multipart/form-data"
+          // sessiontoken: Parse.User.current().getSessionToken()
+        },
+        responseType: "blob"
+      };
+      const response = await axios.post(url, Data, config);
+      const pdfBlob = new Blob([response.data], {
+        type: "application/pdf"
+      });
+      const pdfFile = new File([pdfBlob], name, {
+        type: "application/pdf"
+      });
+      setIsDecrypting(false);
+      // Upload the file to Parse Server
+      const parseFile = new Parse.File(name, pdfFile, "application/pdf");
 
+      await parseFile.save({
+        progress: (progressValue, loaded, total, { type }) => {
+          if (type === "upload" && progressValue !== null) {
+            const percentCompleted = Math.round((loaded * 100) / total);
+            setpercentage(percentCompleted);
+          }
+        }
+      });
+
+      // Retrieve the URL of the uploaded file
+      if (parseFile.url()) {
+        setFormData((prev) => ({ ...prev, password: "" }));
+        console.log("parseFile.url() ", parseFile.url());
+        setFileUpload(parseFile.url());
+        setfileload(false);
+        const tenantId = localStorage.getItem("TenantId");
+        SaveFileSize(size, parseFile.url(), tenantId);
+        return parseFile.url();
+      }
+    } catch (err) {
+      console.log("Error uploading file: ", err?.response);
+      setfileload(false);
+      setpercentage(0);
+      setFormData((prev) => ({ ...prev, password: "" }));
+      if (err?.response?.status === 401) {
+        setIsPassword(true);
+      } else {
+        setIsDecrypting(false);
+        e.target.value = "";
+      }
+    }
+  };
   return (
     <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
       <Title title={props?.title} />
@@ -411,173 +545,208 @@ const Forms = (props) => {
           ></div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <h1 className="text-[20px] font-semibold mb-4">{props?.title}</h1>
-          {fileload && (
-            <div className="flex items-center gap-x-2">
-              <div className="h-2 rounded-full w-[200px] md:w-[400px] bg-gray-200">
-                <div
-                  className="h-2 rounded-full bg-blue-500"
-                  style={{ width: `${percentage}%` }}
-                ></div>
-              </div>
-              <span className="text-black text-sm">{percentage}%</span>
-            </div>
-          )}
-          <div className="text-xs">
-            <label className="block">
-              {`File (pdf, png, jpg, jpeg${
-                isEnableSubscription ? ", docx)" : ")"
-              }`}
-              <span className="text-red-500 text-[13px]">*</span>
-            </label>
-            {fileupload.length > 0 ? (
-              <div className="flex gap-2 justify-center items-center">
-                <div className="flex justify-between items-center px-2 py-2 w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
-                  <div className="break-all">
-                    file selected : {getFileName(fileupload)}
-                  </div>
-                  <div
-                    onClick={() => setFileUpload("")}
-                    className="cursor-pointer px-[10px] text-[20px] font-bold bg-white text-red-500"
-                  >
-                    <i className="fa-solid fa-xmark"></i>
-                  </div>
-                </div>
-                {process.env.REACT_APP_DROPBOX_API_KEY && (
-                  <DropboxChooser
-                    onSuccess={dropboxSuccess}
-                    onCancel={dropboxCancel}
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="flex gap-2 justify-center items-center">
+        <>
+          <ModalUi isOpen={isPassword} title={"Enter Pdf Password"}>
+            <form onSubmit={handlePasswordSubmit}>
+              <div className="px-6 py-3">
+                {/* <label className="mb-2">Enter OTP</label> */}
                 <input
-                  type="file"
-                  className="bg-white px-2 py-1.5 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-                  onChange={(e) => handleFileInput(e)}
-                  accept={
-                    isEnableSubscription
-                      ? "application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
-                      : "application/pdf,image/png,image/jpeg"
-                  }
+                  type="text"
+                  name="password"
+                  value={formData.password}
+                  onChange={(e) => handleStrInput(e)}
+                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  placeholder="Enter pdf password"
                   required
                 />
-                {process.env.REACT_APP_DROPBOX_API_KEY && (
-                  <DropboxChooser
-                    onSuccess={dropboxSuccess}
-                    onCancel={dropboxCancel}
-                  />
-                )}
+              </div>
+              <hr />
+              <div className="px-6 my-3">
+                <button type="submit" className={submitBtn}>
+                  Submit
+                </button>
+              </div>
+            </form>
+          </ModalUi>
+          <form onSubmit={handleSubmit}>
+            <h1 className="text-[20px] font-semibold mb-4">{props?.title}</h1>
+            {fileload && (
+              <div className="flex items-center gap-x-2">
+                <div className="h-2 rounded-full w-[200px] md:w-[400px] bg-gray-200">
+                  <div
+                    className="h-2 rounded-full bg-blue-500"
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+                <span className="text-black text-sm">{percentage}%</span>
               </div>
             )}
-          </div>
-          <div className="text-xs mt-2">
-            <label className="block">
-              {props.title === "New Template"
-                ? "Template Title"
-                : "Document Title"}
-              <span className="text-red-500 text-[13px]">*</span>
-            </label>
-            <input
-              name="Name"
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-              value={formData.Name}
-              onChange={(e) => handleStrInput(e)}
-              required
-            />
-          </div>
-          <div className="text-xs mt-2">
-            <label className="block">Description</label>
-            <input
-              name="Description"
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-              value={formData.Description}
-              onChange={(e) => handleStrInput(e)}
-            />
-          </div>
-          {props.signers && (
-            <SignersInput onChange={handleSigners} isReset={isReset} required />
-          )}
-          <div className="text-xs mt-2">
-            <label className="block">
-              Note<span className="text-red-500 text-[13px]">*</span>
-            </label>
-            <input
-              name="Note"
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-              value={formData.Note}
-              onChange={(e) => handleStrInput(e)}
-              required
-            />
-          </div>
-          <SelectFolder
-            onSuccess={handleFolder}
-            folderCls={props.Cls}
-            isReset={isReset}
-          />
-
-          {props.title === "Request Signatures" && (
+            {isDecrypting && (
+              <div className="flex items-center gap-x-2">
+                <span className="text-black text-sm">
+                  Decrypting pdf please wait...
+                </span>
+              </div>
+            )}
+            <div className="text-xs">
+              <label className="block">
+                {`File (pdf, png, jpg, jpeg${
+                  isEnableSubscription ? ", docx)" : ")"
+                }`}
+                <span className="text-red-500 text-[13px]">*</span>
+              </label>
+              {fileupload.length > 0 ? (
+                <div className="flex gap-2 justify-center items-center">
+                  <div className="flex justify-between items-center px-2 py-2 w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
+                    <div className="break-all">
+                      file selected : {getFileName(fileupload)}
+                    </div>
+                    <div
+                      onClick={() => setFileUpload("")}
+                      className="cursor-pointer px-[10px] text-[20px] font-bold bg-white text-red-500"
+                    >
+                      <i className="fa-solid fa-xmark"></i>
+                    </div>
+                  </div>
+                  {process.env.REACT_APP_DROPBOX_API_KEY && (
+                    <DropboxChooser
+                      onSuccess={dropboxSuccess}
+                      onCancel={dropboxCancel}
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="flex gap-2 justify-center items-center">
+                  <input
+                    type="file"
+                    className="bg-white px-2 py-1.5 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                    onChange={(e) => handleFileInput(e)}
+                    accept={
+                      isEnableSubscription
+                        ? "application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
+                        : "application/pdf,image/png,image/jpeg"
+                    }
+                    required
+                  />
+                  {process.env.REACT_APP_DROPBOX_API_KEY && (
+                    <DropboxChooser
+                      onSuccess={dropboxSuccess}
+                      onCancel={dropboxCancel}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
             <div className="text-xs mt-2">
               <label className="block">
-                Time To Complete (Days)
+                {props.title === "New Template"
+                  ? "Template Title"
+                  : "Document Title"}
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               <input
-                type="number"
-                name="TimeToCompleteDays"
+                name="Name"
                 className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-                value={formData.TimeToCompleteDays}
+                value={formData.Name}
                 onChange={(e) => handleStrInput(e)}
                 required
               />
             </div>
-          )}
-          {props.title !== "Sign Yourself" && (
             <div className="text-xs mt-2">
-              <label className="block">Send In Order</label>
-              <div className="flex items-center gap-2 ml-2 mb-1">
+              <label className="block">Description</label>
+              <input
+                name="Description"
+                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                value={formData.Description}
+                onChange={(e) => handleStrInput(e)}
+              />
+            </div>
+            {props.signers && (
+              <SignersInput
+                onChange={handleSigners}
+                isReset={isReset}
+                required
+              />
+            )}
+            <div className="text-xs mt-2">
+              <label className="block">
+                Note<span className="text-red-500 text-[13px]">*</span>
+              </label>
+              <input
+                name="Note"
+                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                value={formData.Note}
+                onChange={(e) => handleStrInput(e)}
+                required
+              />
+            </div>
+            <SelectFolder
+              onSuccess={handleFolder}
+              folderCls={props.Cls}
+              isReset={isReset}
+            />
+
+            {props.title === "Request Signatures" && (
+              <div className="text-xs mt-2">
+                <label className="block">
+                  Time To Complete (Days)
+                  <span className="text-red-500 text-[13px]">*</span>
+                </label>
                 <input
-                  type="radio"
-                  value={"true"}
-                  name="SendinOrder"
-                  checked={formData.SendinOrder === "true"}
-                  className=""
-                  onChange={handleStrInput}
+                  type="number"
+                  name="TimeToCompleteDays"
+                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  value={formData.TimeToCompleteDays}
+                  onChange={(e) => handleStrInput(e)}
+                  required
                 />
-                <div className="text-center">Yes</div>
               </div>
-              <div className="flex items-center gap-2 ml-2 mb-1">
-                <input
-                  type="radio"
-                  value={"false"}
-                  name="SendinOrder"
-                  checked={formData.SendinOrder === "false"}
-                  onChange={handleStrInput}
-                />
-                <div className="text-center">No</div>
+            )}
+            {props.title !== "Sign Yourself" && (
+              <div className="text-xs mt-2">
+                <label className="block">Send In Order</label>
+                <div className="flex items-center gap-2 ml-2 mb-1">
+                  <input
+                    type="radio"
+                    value={"true"}
+                    name="SendinOrder"
+                    checked={formData.SendinOrder === "true"}
+                    className=""
+                    onChange={handleStrInput}
+                  />
+                  <div className="text-center">Yes</div>
+                </div>
+                <div className="flex items-center gap-2 ml-2 mb-1">
+                  <input
+                    type="radio"
+                    value={"false"}
+                    name="SendinOrder"
+                    checked={formData.SendinOrder === "false"}
+                    onChange={handleStrInput}
+                  />
+                  <div className="text-center">No</div>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center mt-3 gap-2 text-white">
+              <button
+                className={`${
+                  isSubmit && "cursor-progress"
+                } bg-[#1ab6ce] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none`}
+                type="submit"
+                disabled={isSubmit}
+              >
+                Next
+              </button>
+              <div
+                className="cursor-pointer bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
+                onClick={() => handleReset()}
+              >
+                Reset
               </div>
             </div>
-          )}
-          <div className="flex items-center mt-3 gap-2 text-white">
-            <button
-              className={`${
-                isSubmit && "cursor-progress"
-              } bg-[#1ab6ce] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none`}
-              type="submit"
-              disabled={isSubmit}
-            >
-              Next
-            </button>
-            <div
-              className="cursor-pointer bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
-              onClick={() => handleReset()}
-            >
-              Reset
-            </div>
-          </div>
-        </form>
+          </form>
+        </>
       )}
     </div>
   );
