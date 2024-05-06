@@ -507,7 +507,7 @@ function UserProfile() {
                       type="tel"
                       pattern="[0-9]{4}"
                       className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-                      placeholder="Enter OTP sent on mail"
+                      placeholder="Enter OTP received over email"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                     />
