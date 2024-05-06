@@ -48,7 +48,7 @@
   },
   "type": "module",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.23.10",
+    "@babel/eslint-parser": "^7.24.5",
     "eslint": "^8.57.0",
     "jasmine": "^5.1.0",
     "mongodb-runner": "^5.5.4",
