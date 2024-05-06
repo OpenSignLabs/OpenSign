@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { isEnableSubscription, themeColor } from "../constant/const";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
+import Parse from "parse";
 import axios from "axios";
 import loader from "../assets/images/loader2.gif";
 import { DndProvider } from "react-dnd";
@@ -25,7 +26,8 @@ import {
   replaceMailVaribles,
   fetchSubscription,
   convertPdfArrayBuffer,
-  contractUsers
+  contractUsers,
+  handleSendOTP
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -35,6 +37,7 @@ import PdfDeclineModal from "../primitives/PdfDeclineModal";
 import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
+import VerifyEmail from "../components/pdf/VerifyEmail";
 
 function PdfRequestFiles() {
   const { docId } = useParams();
@@ -57,10 +60,12 @@ function PdfRequestFiles() {
   const imageRef = useRef(null);
   const [handleError, setHandleError] = useState();
   const [selectWidgetId, setSelectWidgetId] = useState("");
+  const [otpLoader, setOtpLoader] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
   });
+
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
   const [pdfNewWidth, setPdfNewWidth] = useState();
@@ -100,6 +105,9 @@ function PdfRequestFiles() {
   const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
   const [extUserId, setExtUserId] = useState("");
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [isVerifyModal, setIsVerifyModal] = useState(false);
+  const [otp, setOtp] = useState("");
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -139,6 +147,44 @@ function PdfRequestFiles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
+  //function to use resend otp for email verification
+  const handleResend = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+    setOtpLoader(false);
+    alert("OTP sent on you email");
+  };
+  //`handleVerifyEmail` function is used to verify email with otp
+  const handleVerifyEmail = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    try {
+      const resEmail = await Parse.Cloud.run("verifyemail", {
+        otp: otp,
+        email: Parse.User.current().getEmail()
+      });
+      if (resEmail?.message === "Email is verified.") {
+        setIsEmailVerified(true);
+      } else if (resEmail?.message === "Email is already verified.") {
+        setIsEmailVerified(true);
+      }
+      setOtp("");
+      alert(resEmail.message);
+      setIsVerifyModal(false);
+      // handleRecipientSign();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setOtpLoader(false);
+    }
+  };
+
+  //`handleVerifyBtn` function is used to send otp on user mail
+  const handleVerifyBtn = async () => {
+    setIsVerifyModal(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+  };
   async function checkIsSubscribed(extUserId, contactId) {
     const isGuestSign = location.pathname.includes("/load/") || false;
     const res = await fetchSubscription(extUserId, contactId, isGuestSign);
@@ -238,6 +284,33 @@ function PdfRequestFiles() {
         setExpiredDate(expireDateFormat);
       }
 
+      const isGuestSign = location.pathname.includes("/load/");
+      if (
+        !isGuestSign &&
+        !isCompleted &&
+        !declined &&
+        currDate < expireUpdateDate
+      ) {
+        const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+        let isEmailVerified;
+        isEmailVerified = currentUser?.emailVerified;
+        if (isEmailVerified) {
+          setIsEmailVerified(isEmailVerified);
+        } else {
+          try {
+            const userQuery = new Parse.Query(Parse.User);
+            const user = await userQuery.get(currentUser.objectId, {
+              sessionToken: localStorage.getItem("accesstoken")
+            });
+            if (user) {
+              isEmailVerified = user?.get("emailVerified");
+              setIsEmailVerified(isEmailVerified);
+            }
+          } catch (e) {
+            setHandleError("Error: Something went wrong!");
+          }
+        }
+      }
       if (documentData.length > 0) {
         const checkDocIdExist =
           documentData[0].AuditTrail &&
@@ -1179,6 +1252,18 @@ function PdfRequestFiles() {
                   headMsg="Document Expired!"
                   bodyMssg={`This document expired on ${expiredDate} and is no longer available to sign.`}
                 />
+                {!isEmailVerified && (
+                  <VerifyEmail
+                    isVerifyModal={isVerifyModal}
+                    setIsVerifyModal={setIsVerifyModal}
+                    handleVerifyEmail={handleVerifyEmail}
+                    setOtp={setOtp}
+                    otp={otp}
+                    otpLoader={otpLoader}
+                    handleVerifyBtn={handleVerifyBtn}
+                    handleResend={handleResend}
+                  />
+                )}
 
                 <ModalUi
                   headerColor={defaultSignImg ? themeColor : "#dc3545"}

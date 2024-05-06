@@ -251,6 +251,7 @@ function PlaceHolderSign() {
       navigate(`/subscription`);
     }
   }
+
   //function for get document details
   const getDocumentDetails = async () => {
     fetchTenantDetails();
