@@ -741,14 +741,18 @@ function PdfRequestFiles() {
                           localStorage.getItem("parseAppId"),
                         sessionToken: localStorage.getItem("accesstoken")
                       };
-                      const serverUrl = localStorage.getItem("baseUrl");
-                      const newServer = serverUrl.replaceAll("/", "%2F");
+                      // const serverUrl = localStorage.getItem("baseUrl");
+                      // const newServer = serverUrl.replaceAll("/", "%2F");
                       const objectId = user.objectId;
-                      const serverParams = `${newServer}&${localStorage.getItem(
-                        "parseAppId"
-                      )}&${localStorage.getItem("_appName")}`;
+                      // const serverParams = `${newServer}&${localStorage.getItem(
+                      //   "parseAppId"
+                      // )}&${localStorage.getItem("_appName")}`;
                       const hostUrl = window.location.origin;
-                      let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${user.Email}/${objectId}/${serverParams}`;
+                      const encodeBase64 = btoa(
+                        `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
+                      );
+                      let signPdf = `${hostUrl}/login/${encodeBase64}`;
+                      // let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${user.Email}/${objectId}/${serverParams}`;
                       const openSignUrl =
                         "https://www.opensignlabs.com/contact-us";
                       const orgName = pdfDetails[0]?.ExtUserPtr.Company

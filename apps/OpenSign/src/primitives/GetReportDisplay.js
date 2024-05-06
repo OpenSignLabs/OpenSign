@@ -286,13 +286,19 @@ const ReportTable = (props) => {
   const handleShare = (item) => {
     setActLoader({ [item.objectId]: true });
     const host = window.location.origin;
-    const serverUrl = process.env.REACT_APP_SERVERURL
-      ? process.env.REACT_APP_SERVERURL
-      : window.location.origin + "/api/app";
-    const baseURL = serverUrl.replace(/\//g, "%2F");
+    // const serverUrl = process.env.REACT_APP_SERVERURL
+    //   ? process.env.REACT_APP_SERVERURL
+    //   : window.location.origin + "/api/app";
+    // const baseURL = serverUrl.replace(/\//g, "%2F");
+
+    const getUrl = (x) => {
+      const encodeBase64 = btoa(`${item.objectId}/${x.Email}/${x.objectId}`);
+      return `${host}/login/${encodeBase64}`;
+    };
+
     const urls = item.Signers.map((x) => ({
       email: x.Email,
-      url: `${host}/login/${item.objectId}/${x.Email}/${x.objectId}/${baseURL}%2F&opensign&contracts`
+      url: getUrl(x)
     }));
     setShareUrls(urls);
     setIsShare({ [item.objectId]: true });
