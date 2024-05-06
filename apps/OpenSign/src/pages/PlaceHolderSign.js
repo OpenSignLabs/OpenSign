@@ -251,7 +251,6 @@ function PlaceHolderSign() {
       navigate(`/subscription`);
     }
   }
-
   //function for get document details
   const getDocumentDetails = async () => {
     fetchTenantDetails();
@@ -968,15 +967,13 @@ function PlaceHolderSign() {
     const shareLinkList = [];
     let signerMail = signersdata;
     for (let i = 0; i < signerMail.length; i++) {
-      const serverUrl = localStorage.getItem("baseUrl");
-      const newServer = serverUrl.replaceAll("/", "%2F");
       const objectId = signerMail[i].objectId;
-      const serverParams = `${newServer}&${localStorage.getItem(
-        "parseAppId"
-      )}&${localStorage.getItem("_appName")}`;
-
       const hostUrl = window.location.origin;
-      let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
+      //convert this url documentId/signersEmail/signerObjId base64 and send url
+      const encodeBase64 = btoa(
+        `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
+      );
+      let signPdf = `${hostUrl}/login/${encodeBase64}`;
       shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
     }
     return shareLinkList.map((data, ind) => {
@@ -1050,15 +1047,13 @@ function PlaceHolderSign() {
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           sessionToken: localStorage.getItem("accesstoken")
         };
-        const serverUrl = localStorage.getItem("baseUrl");
-        const newServer = serverUrl.replaceAll("/", "%2F");
         const objectId = signerMail[i].objectId;
-        const serverParams = `${newServer}&${localStorage.getItem(
-          "parseAppId"
-        )}&${localStorage.getItem("_appName")}`;
-
         const hostUrl = window.location.origin;
-        let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
+        //convert this url documentId/signersEmail/signerObjId base64 and send url
+        const encodeBase64 = btoa(
+          `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
+        );
+        let signPdf = `${hostUrl}/login/${encodeBase64}`;
         const openSignUrl = "https://www.opensignlabs.com/";
         const orgName = pdfDetails[0]?.ExtUserPtr.Company
           ? pdfDetails[0].ExtUserPtr.Company
