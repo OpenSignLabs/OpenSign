@@ -278,7 +278,9 @@ export default async function createDocumentwithCoordinate(request, response) {
 
               const objectId = contactMail[i].contactPtr.objectId;
               const hostUrl = baseUrl.origin;
-              let signPdf = `${hostUrl}/login/${res.id}/${contactMail[i].email}/${objectId}/${serverParams}`;
+              const encodeBase64 = btoa(`${response.id}/${contactMail[i].email}/${objectId}`);
+              let signPdf = `${hostUrl}/login/${encodeBase64}`;
+              // let signPdf = `${hostUrl}/login/${res.id}/${contactMail[i].email}/${objectId}/${serverParams}`;
               const openSignUrl = 'https://www.opensignlabs.com/contact-us';
               const orgName = parseExtUser.Company ? parseExtUser.Company : '';
               const themeBGcolor = '#47a3ad';
@@ -359,11 +361,12 @@ export default async function createDocumentwithCoordinate(request, response) {
             properties: { response_code: 200 },
           });
         }
+        const encodeBase64 = btoa(`${res.id}/${x.email}/${x.contactPtr.objectId}`);
         return response.json({
           objectId: res.id,
           signurl: contact.map(x => ({
             email: x.email,
-            url: `${baseUrl.origin}/login/${res.id}/${x.email}/${x.contactPtr.objectId}/${serverParams}`,
+            url: `${baseUrl.origin}/login/${encodeBase64}`,
           })),
           message: 'Document sent successfully!',
         });
