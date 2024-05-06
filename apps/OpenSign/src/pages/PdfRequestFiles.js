@@ -147,13 +147,15 @@ function PdfRequestFiles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current]);
 
-  const handleReset = async (e) => {
+  //function to use resend otp for email verification
+  const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
     await handleSendOTP(Parse.User.current().getEmail());
     setOtpLoader(false);
     alert("OTP sent on you email");
   };
+  //function to use verify email with otp
   const handleVerifyEmail = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
@@ -178,6 +180,7 @@ function PdfRequestFiles() {
     }
   };
 
+  //function to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
     await handleSendOTP(Parse.User.current().getEmail());
@@ -288,13 +291,20 @@ function PdfRequestFiles() {
         !declined &&
         currDate < expireUpdateDate
       ) {
-        const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(jsonSender.objectId, {
-          sessionToken: localStorage.getItem("accesstoken")
-        });
-        if (user) {
-          const isEmailVerified = user?.get("emailVerified");
+        const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+        let isEmailVerified;
+        isEmailVerified = currentUser?.emailVerified;
+        if (isEmailVerified) {
           setIsEmailVerified(isEmailVerified);
+        } else {
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(currentUser.objectId, {
+            sessionToken: localStorage.getItem("accesstoken")
+          });
+          if (user) {
+            isEmailVerified = user?.get("emailVerified");
+            setIsEmailVerified(isEmailVerified);
+          }
         }
       }
       if (documentData.length > 0) {
@@ -1247,7 +1257,7 @@ function PdfRequestFiles() {
                     otp={otp}
                     otpLoader={otpLoader}
                     handleVerifyBtn={handleVerifyBtn}
-                    handleReset={handleReset}
+                    handleResend={handleResend}
                   />
                 )}
 

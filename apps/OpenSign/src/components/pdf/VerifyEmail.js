@@ -21,6 +21,7 @@ function VerifyEmail(props) {
             <div className="px-6 py-3">
               <label className="mb-2">Enter OTP</label>
               <input
+                required
                 type="tel"
                 pattern="[0-9]{4}"
                 className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
@@ -36,7 +37,7 @@ function VerifyEmail(props) {
               </button>
               <button
                 className={`${rejectBtn} ml-2`}
-                onClick={(e) => props.handleReset(e)}
+                onClick={(e) => props.handleResend(e)}
               >
                 Resend
               </button>
