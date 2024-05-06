@@ -39,7 +39,7 @@
     "react-signature-canvas": "^1.0.6",
     "react-tooltip": "^5.26.3",
     "react-web-share": "^2.0.2",
-    "reactour": "^1.19.2",
+    "reactour": "^1.19.3",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
     "regex-parser": "^2.3.0",
