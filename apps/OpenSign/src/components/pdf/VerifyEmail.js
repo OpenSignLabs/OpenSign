@@ -25,7 +25,7 @@ function VerifyEmail(props) {
                 type="tel"
                 pattern="[0-9]{4}"
                 className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
-                placeholder="Enter OTP sent on mail"
+                placeholder="Enter OTP received over email"
                 value={props.otp}
                 onChange={(e) => props.setOtp(e.target.value)}
               />
@@ -61,10 +61,10 @@ function VerifyEmail(props) {
             ></div>
           </div>
         ) : (
-          <div className="p-[15px]">
-            <p>Please verify your email !</p>
-            <div className="h-[1px] bg-[#9f9f9f] w-full"></div>
-            <div className="m-[15px] ">
+          <div className="px-6 py-3">
+            <p className="mb-2">Please verify your email !</p>
+            <hr />
+            <div className="px-0 mt-3">
               <button
                 className={submitBtn}
                 type="submit"
@@ -72,7 +72,7 @@ function VerifyEmail(props) {
                   props.handleVerifyBtn();
                 }}
               >
-                Verify
+                Send OTP
               </button>
             </div>
           </div>
