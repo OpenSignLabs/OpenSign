@@ -242,13 +242,17 @@ function SignYourSelf() {
         if (isEmailVerified) {
           setIsEmailVerified(isEmailVerified);
         } else {
-          const userQuery = new Parse.Query(Parse.User);
-          const user = await userQuery.get(currentUser.objectId, {
-            sessionToken: localStorage.getItem("accesstoken")
-          });
-          if (user) {
-            isEmailVerified = user?.get("emailVerified");
-            setIsEmailVerified(isEmailVerified);
+          try {
+            const userQuery = new Parse.Query(Parse.User);
+            const user = await userQuery.get(currentUser.objectId, {
+              sessionToken: localStorage.getItem("accesstoken")
+            });
+            if (user) {
+              isEmailVerified = user?.get("emailVerified");
+              setIsEmailVerified(isEmailVerified);
+            }
+          } catch (e) {
+            setHandleError("Error: Something went wrong!");
           }
         }
       }
@@ -560,7 +564,7 @@ function SignYourSelf() {
     setSignKey(key);
   };
 
-  //function to use resend otp for email verification
+  //`handleResend` function is used to resend otp for email verification
   const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
@@ -568,8 +572,7 @@ function SignYourSelf() {
     setOtpLoader(false);
     alert("OTP sent on you email");
   };
-
-  //function to use verify email with otp
+  //`handleVerifyEmail` function is used to verify email with otp
   const handleVerifyEmail = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
@@ -593,7 +596,7 @@ function SignYourSelf() {
       setOtpLoader(false);
     }
   };
-  //function to send otp on user mail
+  //`handleVerifyBtn` function is used to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
     await handleSendOTP(Parse.User.current().getEmail());

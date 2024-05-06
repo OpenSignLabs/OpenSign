@@ -54,22 +54,25 @@ function UserProfile() {
       setIsDisableDocId(HeaderDocId);
     }
     const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
-    let isEmailVerified;
-    isEmailVerified = currentUser?.emailVerified;
+    let isEmailVerified = currentUser?.emailVerified || false;
     if (isEmailVerified) {
       setIsEmailVerified(isEmailVerified);
+      setIsLoader(false);
     } else {
-      const userQuery = new Parse.Query(Parse.User);
-      const user = await userQuery.get(currentUser.objectId, {
-        sessionToken: localStorage.getItem("accesstoken")
-      });
-      if (user) {
-        isEmailVerified = user?.get("emailVerified");
-        setIsEmailVerified(isEmailVerified);
+      try {
+        const userQuery = new Parse.Query(Parse.User);
+        const user = await userQuery.get(currentUser.objectId, {
+          sessionToken: localStorage.getItem("accesstoken")
+        });
+        if (user) {
+          isEmailVerified = user?.get("emailVerified");
+          setIsEmailVerified(isEmailVerified);
+          setIsLoader(false);
+        }
+      } catch (e) {
+        alert("something went wrong!");
       }
     }
-
-    setIsLoader(false);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -199,7 +202,7 @@ function UserProfile() {
   const handleDisableDocId = () => {
     setIsDisableDocId((prevChecked) => !prevChecked);
   };
-  //function to send otp on user mail
+  //`handleVerifyBtn` function is used to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
     await handleSendOTP(Parse.User.current().getEmail());
@@ -207,8 +210,7 @@ function UserProfile() {
   const handleCloseVerifyModal = async () => {
     setIsVerifyModal(false);
   };
-
-  //function to use verify email with otp
+  //`handleVerifyEmail` function is used to verify email with otp
   const handleVerifyEmail = async (e) => {
     e.preventDefault();
     setOtpLoader(true);

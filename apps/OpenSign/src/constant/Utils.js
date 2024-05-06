@@ -2009,7 +2009,7 @@ export const convertPdfArrayBuffer = async (url) => {
   }
 };
 
-//function to use send otp on user email using `SendOTPMailV1` cloud function
+//`handleSendOTP` function is used to send otp on user's email using `SendOTPMailV1` cloud function
 export const handleSendOTP = async (email) => {
   try {
     let url = `${localStorage.getItem("baseUrl")}functions/SendOTPMailV1`;
