@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
-    "@radix-ui/themes": "^2.0.3",
+    "@radix-ui/themes": "^3.0.3",
     "@react-pdf/renderer": "^3.4.4",
     "@reduxjs/toolkit": "^2.2.1",
     "axios": "^1.6.8",
