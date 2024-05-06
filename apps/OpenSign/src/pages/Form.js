@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { formJson } from "../json/FormJson";
 import AddUser from "../components/AddUser";
@@ -36,6 +36,7 @@ function Form() {
 const Forms = (props) => {
   const maxFileSize = 20;
   const abortController = new AbortController();
+  const inputFileRef = useRef(null);
   const navigate = useNavigate();
   const [signers, setSigners] = useState([]);
   const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
@@ -57,7 +58,9 @@ const Forms = (props) => {
   const [isErr, setIsErr] = useState("");
   const [isPassword, setIsPassword] = useState(false);
   const [isDecrypting, setIsDecrypting] = useState(false);
+  const [isCorrectPass, setIsCorrectPass] = useState(true);
   const handleStrInput = (e) => {
+    setIsCorrectPass(true);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   useEffect(() => {
@@ -157,7 +160,6 @@ const Forms = (props) => {
 
                   // Retrieve the URL of the uploaded file
                   if (parseFile.url()) {
-                    console.log("parseFile.url() ", parseFile.url());
                     setFileUpload(parseFile.url());
                     setfileload(false);
                     const tenantId = localStorage.getItem("TenantId");
@@ -165,12 +167,12 @@ const Forms = (props) => {
                     return parseFile.url();
                   }
                 } catch (err) {
-                  console.log("Error uploading file: ", err?.response);
                   setfileload(false);
                   setpercentage(0);
                   if (err?.response?.status === 401) {
                     setIsPassword(true);
                   } else {
+                    console.log("Error uploading file: ", err?.response);
                     setIsDecrypting(false);
                     e.target.value = "";
                   }
@@ -502,7 +504,6 @@ const Forms = (props) => {
       // Retrieve the URL of the uploaded file
       if (parseFile.url()) {
         setFormData((prev) => ({ ...prev, password: "" }));
-        console.log("parseFile.url() ", parseFile.url());
         setFileUpload(parseFile.url());
         setfileload(false);
         const tenantId = localStorage.getItem("TenantId");
@@ -510,16 +511,28 @@ const Forms = (props) => {
         return parseFile.url();
       }
     } catch (err) {
-      console.log("Error uploading file: ", err?.response);
       setfileload(false);
       setpercentage(0);
-      setFormData((prev) => ({ ...prev, password: "" }));
       if (err?.response?.status === 401) {
         setIsPassword(true);
+        setIsCorrectPass(false);
       } else {
+        console.log("Error uploading file: ", err?.response);
+        setFormData((prev) => ({ ...prev, password: "" }));
         setIsDecrypting(false);
-        e.target.value = "";
+        if (inputFileRef.current) {
+          inputFileRef.current.value = ""; // Set file input value to empty string
+        }
       }
+    }
+  };
+  const handeCloseModal = () => {
+    setIsPassword(false);
+    setFormData((prev) => ({ ...prev, file: "", password: "" }));
+    setIsDecrypting(false);
+    setfileload(false);
+    if (inputFileRef.current) {
+      inputFileRef.current.value = ""; // Set file input value to empty string
     }
   };
   return (
@@ -546,10 +559,14 @@ const Forms = (props) => {
         </div>
       ) : (
         <>
-          <ModalUi isOpen={isPassword} title={"Enter Pdf Password"}>
+          <ModalUi
+            isOpen={isPassword}
+            handleClose={() => handeCloseModal()}
+            title={"Enter Pdf Password"}
+          >
             <form onSubmit={handlePasswordSubmit}>
-              <div className="px-6 py-3">
-                {/* <label className="mb-2">Enter OTP</label> */}
+              <div className="px-6 pt-3 pb-2">
+                <label className="mb-2 text-xs">Password</label>
                 <input
                   type="text"
                   name="password"
@@ -559,6 +576,15 @@ const Forms = (props) => {
                   placeholder="Enter pdf password"
                   required
                 />
+                {!isCorrectPass ? (
+                  <p className="ml-2 text-[11px] text-red-600">
+                    Please provide correct password
+                  </p>
+                ) : (
+                  <p className="ml-2 text-[11px] text-transparent text-red-600">
+                    .
+                  </p>
+                )}
               </div>
               <hr />
               <div className="px-6 my-3">
@@ -621,6 +647,7 @@ const Forms = (props) => {
                     type="file"
                     className="bg-white px-2 py-1.5 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                     onChange={(e) => handleFileInput(e)}
+                    ref={inputFileRef}
                     accept={
                       isEnableSubscription
                         ? "application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
