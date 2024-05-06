@@ -15,6 +15,7 @@ export default async function GenerateCertificate(docDetails) {
   const title = 25;
   const subtitle = 20;
   const text = 14;
+  const timeText = 11;
   const textKeyColor = rgb(0.12, 0.12, 0.12);
   const textValueColor = rgb(0.3, 0.3, 0.3);
   const completedAt = new Date();
@@ -280,17 +281,17 @@ export default async function GenerateCertificate(docDetails) {
     });
 
     page.drawText('Viewed on :', {
-      x: half,
+      x: half +55,
       y: yPosition2,
-      size: text,
+      size: timeText,
       font: timesRomanFont,
       color: textKeyColor,
     });
 
     page.drawText(`${new Date(x.ViewedOn).toUTCString()}`, {
-      x: half + 75,
+      x: half + 112,
       y: yPosition2,
-      size: text,
+      size: timeText,
       font: timesRomanFont,
       color: textValueColor,
     });
@@ -312,17 +313,17 @@ export default async function GenerateCertificate(docDetails) {
     });
 
     page.drawText('Signed on :', {
-      x: half,
-      y: yPosition3,
-      size: text,
+      x: half + 55,
+      y: yPosition3 + 5,
+      size: timeText,
       font: timesRomanFont,
       color: textKeyColor,
     });
 
     page.drawText(`${new Date(x.SignedOn).toUTCString()}`, {
-      x: half + 70,
-      y: yPosition3,
-      size: text,
+      x: half + 108,
+      y: yPosition3 + 5,
+      size: timeText,
       font: timesRomanFont,
       color: textValueColor,
     });
@@ -338,22 +339,22 @@ export default async function GenerateCertificate(docDetails) {
     page.drawText(x?.ipAddress, {
       x: 100,
       y: yPosition4,
-      size: text,
+      size: 13,
       font: timesRomanFont,
       color: textValueColor,
     });
     page.drawText('Security level :', {
-      x: half,
-      y: yPosition4,
-      size: text,
+      x: half + 55,
+      y: yPosition4 + 10,
+      size: timeText,
       font: timesRomanFont,
       color: textKeyColor,
     });
 
     page.drawText(`Email, OTP Auth`, {
-      x: half + 90,
-      y: yPosition4,
-      size: text,
+      x: half + 125,
+      y: yPosition4 + 10,
+      size: timeText,
       font: timesRomanFont,
       color: textValueColor,
     });
@@ -368,7 +369,7 @@ export default async function GenerateCertificate(docDetails) {
 
     page.drawRectangle({
       x: 98,
-      y: yPosition5 - 27,
+      y: yPosition5 - 30,
       width: 104,
       height: 44,
       borderColor: rgb(0.22, 0.18, 0.47),
@@ -377,7 +378,7 @@ export default async function GenerateCertificate(docDetails) {
     if (embedPng) {
       page.drawImage(embedPng, {
         x: 100,
-        y: yPosition5 - 25,
+        y: yPosition5 - 27,
         width: 100,
         height: 40,
       });
