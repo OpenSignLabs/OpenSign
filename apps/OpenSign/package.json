@@ -28,7 +28,7 @@
     "react-helmet": "^6.1.0",
     "react-konva": "^18.2.10",
     "react-modal": "^3.16.1",
-    "react-pdf": "^7.7.1",
+    "react-pdf": "^7.7.3",
     "react-quill": "^2.0.0",
     "react-redux": "^9.1.0",
     "react-rnd": "^10.4.10",
