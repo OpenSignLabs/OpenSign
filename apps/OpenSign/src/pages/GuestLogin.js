@@ -40,7 +40,7 @@ function GuestLogin() {
 
     localStorage.clear();
     let parseId, appName, newServer;
-    //first condition is used to handle old route data url that already save
+    //first condition is used to manage previously stored URL data for the old route.
     if (id) {
       //split url in array from '&'
       const checkSplit = serverUrl.split("&");
@@ -50,9 +50,11 @@ function GuestLogin() {
       newServer = server.replaceAll("%2F", "/");
       setEmail(userMail);
     } else {
+      //in this condition decode base64 route to in string and save required dataf.
       parseId = appInfo.appId;
       newServer = `${appInfo.baseUrl}/`;
       appName = appInfo.appname;
+      //`atob` function is used to decode base64
       const decodebase64 = atob(base64url);
       //split url in array from '/'
       const checkSplit = decodebase64.split("/");
