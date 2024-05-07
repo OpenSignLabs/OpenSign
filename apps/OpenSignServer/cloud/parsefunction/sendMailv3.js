@@ -4,6 +4,7 @@ import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import { updateMailCount } from '../../Utils.js';
 import sendMailGmailProvider from './sendMailGmailProvider.js';
+import { createTransport } from 'nodemailer';
 async function sendMailProvider(req) {
   try {
     let transporterSMTP;

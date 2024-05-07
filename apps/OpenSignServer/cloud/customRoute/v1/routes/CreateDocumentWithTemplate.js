@@ -217,9 +217,10 @@ export default async function createDocumentWithTemplate(request, response) {
                   };
 
                   const objectId = contactMail[i].contactPtr.objectId;
-
                   const hostUrl = baseUrl.origin;
-                  let signPdf = `${hostUrl}/login/${res.id}/${contactMail[i].email}/${objectId}/${serverParams}`;
+                  //encode this url value `${res.id}/${contactMail[i].email}/${objectId}` to base64 using `btoa` function
+                  const encodeBase64 = btoa(`${res.id}/${contactMail[i].email}/${objectId}`);
+                  let signPdf = `${hostUrl}/login/${encodeBase64}`;
                   const openSignUrl = 'https://www.opensignlabs.com/contact-us';
                   const orgName = template.ExtUserPtr.Company ? template.ExtUserPtr.Company : '';
                   const themeBGcolor = '#47a3ad';
@@ -266,13 +267,13 @@ export default async function createDocumentWithTemplate(request, response) {
                     replaceVar = { subject: replaceVar.subject, body: email_html };
                   } else if (email_body) {
                     replaceVar = replaceMailVaribles(
-                      `${template.ExtUserPtr.Name} has requested you to sign ${template.Name}`,
+                      `${template.ExtUserPtr.Name} has requested you to sign "${template.Name}"`,
                       email_body,
                       variables
                     );
                   } else {
                     replaceVar = {
-                      subject: `${template.ExtUserPtr.Name} has requested you to sign ${template.Name}`,
+                      subject: `${template.ExtUserPtr.Name} has requested you to sign "${template.Name}"`,
                       body: email_html,
                     };
                   }
@@ -320,7 +321,9 @@ export default async function createDocumentWithTemplate(request, response) {
               objectId: res.id,
               signurl: contact.map(x => ({
                 email: x.email,
-                url: `${baseUrl.origin}/login/${res.id}/${x.email}/${x.contactPtr.objectId}/${serverParams}`,
+                url: `${baseUrl.origin}/login/${btoa(
+                  `${res.id}/${x.email}/${x.contactPtr.objectId}`
+                )}`,
               })),
               message: 'Document sent successfully!',
             });

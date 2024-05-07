@@ -541,54 +541,93 @@ export const signPdfFun = async (
   setIsAlert,
   objectId,
   isSubscribed,
-  activeMailAdapter
+  activeMailAdapter,
+  xyPosition
 ) => {
   let singleSign,
     isCustomCompletionMail = false;
 
-  //get tenant details
-  const tenantDetails = await getTenantDetails(objectId);
-  if (tenantDetails && tenantDetails === "user does not exist!") {
-    alert("User does not exist");
-  } else {
-    if (
-      tenantDetails?.CompletionBody &&
-      tenantDetails?.CompletionSubject &&
-      (!isEnableSubscription || isSubscribed)
-    ) {
-      isCustomCompletionMail = true;
-    }
-  }
-
-  singleSign = {
-    mailProvider: activeMailAdapter,
-    pdfFile: base64Url,
-    docId: documentId,
-    userId: signerObjectId,
-    isCustomCompletionMail: isCustomCompletionMail
-  };
-  const response = await axios
-    .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-        sessionToken: localStorage.getItem("accesstoken")
+  try {
+    //get tenant details
+    const tenantDetails = await getTenantDetails(objectId);
+    if (tenantDetails && tenantDetails === "user does not exist!") {
+      alert("User does not exist");
+    } else {
+      if (
+        tenantDetails?.CompletionBody &&
+        tenantDetails?.CompletionSubject &&
+        (!isEnableSubscription || isSubscribed)
+      ) {
+        isCustomCompletionMail = true;
       }
-    })
-    .then((Listdata) => {
-      const json = Listdata.data;
-      const res = json.result;
-      return res;
-    })
-    .catch((err) => {
-      console.log("Err ", err);
-      setIsAlert({
-        isShow: true,
-        alertMessage: "something went wrong"
-      });
-    });
+    }
+    
+    // below for loop is used to get first signature of user to send if to signpdf
+    // for adding it in completion certificate
+    let getSignature;
+    for (let item of xyPosition) {
+      const typeExist = item.pos.some((data) => data?.type);
+      if (typeExist) {
+        getSignature = item.pos.find((data) => data?.type === "signature");
+        break;
+      } else {
+        getSignature = item.pos.find((data) => !data.isStamp);
+        break;
+      }
+    }
 
-  return response;
+    let base64Sign = getSignature.SignUrl;
+    //check https type signature (default signature exist) then convert in base64
+    const isUrl = base64Sign.includes("https");
+    if (isUrl) {
+      try {
+        base64Sign = await fetchImageBase64(base64Sign);
+      } catch (e) {
+        console.log("error", e);
+      }
+    }
+    //change image width and height to 104/44 in png base64
+    const getNewse64 = await changeImageWH(base64Sign);
+    //remove suffiix of base64
+    const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
+
+    singleSign = {
+      mailProvider: activeMailAdapter,
+      pdfFile: base64Url,
+      docId: documentId,
+      userId: signerObjectId,
+      isCustomCompletionMail: isCustomCompletionMail,
+      signature: suffixbase64
+    };
+    const response = await axios
+      .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          //  sessionToken: localStorage.getItem("accesstoken")
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
+      })
+      .then((Listdata) => {
+        const json = Listdata.data;
+        const res = json.result;
+        return res;
+      })
+      .catch((err) => {
+        console.log("Err ", err);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong"
+        });
+      });
+
+    return response;
+  } catch (e) {
+    setIsAlert({
+      isShow: true,
+      alertMessage: "something went wrong"
+    });
+  }
 };
 
 export const randomId = () => {
@@ -1125,7 +1164,6 @@ export const onImageSelect = (event, setImgWH, setImage) => {
   const imageType = event.target.files[0].type;
   const reader = new FileReader();
   reader.readAsDataURL(event.target.files[0]);
-
   reader.onloadend = function (e) {
     let width, height;
     const image = new Image();
@@ -1151,6 +1189,50 @@ export const onImageSelect = (event, setImgWH, setImage) => {
 
     setImage({ src: image.src, imgType: imageType });
   };
+};
+
+//convert https url to base64
+export const fetchImageBase64 = async (imageUrl) => {
+  try {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        resolve(base64data);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  } catch (error) {
+    throw new Error("Error converting URL to base64:", error);
+  }
+};
+//function for select image and upload image
+export const changeImageWH = async (base64Image) => {
+  const newWidth = 100;
+  const newHeight = 40;
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = base64Image;
+    img.onload = async () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+      const resizedBase64 = canvas.toDataURL("image/png", 1);
+      resolve(resizedBase64);
+    };
+    img.onerror = (error) => {
+      reject(error);
+    };
+  });
 };
 
 //function for embed multiple signature using pdf-lib
@@ -1929,5 +2011,20 @@ export const convertPdfArrayBuffer = async (url) => {
   } catch (error) {
     console.error("Error fetching data:", error);
     return "Error";
+  }
+};
+
+//`handleSendOTP` function is used to send otp on user's email using `SendOTPMailV1` cloud function
+export const handleSendOTP = async (email) => {
+  try {
+    let url = `${localStorage.getItem("baseUrl")}functions/SendOTPMailV1`;
+    const headers = {
+      "Content-Type": "application/json",
+      "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+    };
+    const body = { email: email };
+    await axios.post(url, body, { headers: headers });
+  } catch (error) {
+    alert(error.message);
   }
 };
