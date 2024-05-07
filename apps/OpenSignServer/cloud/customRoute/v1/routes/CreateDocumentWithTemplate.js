@@ -218,7 +218,6 @@ export default async function createDocumentWithTemplate(request, response) {
 
                   const objectId = contactMail[i].contactPtr.objectId;
                   const hostUrl = baseUrl.origin;
-                  // let signPdf = `${hostUrl}/login/${res.id}/${contactMail[i].email}/${objectId}/${serverParams}`;
                   //encode this url value `${res.id}/${contactMail[i].email}/${objectId}` to base64 using `btoa` function
                   const encodeBase64 = btoa(`${res.id}/${contactMail[i].email}/${objectId}`);
                   let signPdf = `${hostUrl}/login/${encodeBase64}`;

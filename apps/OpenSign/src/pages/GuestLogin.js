@@ -9,9 +9,9 @@ import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 
 function GuestLogin() {
-  const { id, userMail, contactBookId, serverUrl, base64url } = useParams();
+  const { id, userMail, contactBookId, base64url } = useParams();
   let navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(userMail);
   const [OTP, setOTP] = useState("");
   const [EnterOTP, setEnterOtp] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,33 +39,23 @@ function GuestLogin() {
     }
 
     localStorage.clear();
-    let parseId, appName, newServer;
-    //first condition is used to manage previously stored URL data for the old route.
-    if (id) {
-      //split url in array from '&'
-      const checkSplit = serverUrl.split("&");
-      const server = checkSplit[0];
-      parseId = checkSplit[1];
-      appName = checkSplit[2];
-      newServer = server.replaceAll("%2F", "/");
-      setEmail(userMail);
-    } else {
-      //in this condition decode base64 route to in string and save required dataf.
-      parseId = appInfo.appId;
-      newServer = `${appInfo.baseUrl}/`;
-      appName = appInfo.appname;
+    const parseId = appInfo.appId;
+    const newServer = `${appInfo.baseUrl}/`;
+    const appName = appInfo.appname;
+    localStorage.setItem("baseUrl", newServer);
+    localStorage.setItem("parseAppId", parseId);
+    localStorage.setItem("_appName", appName);
+    //first condition is used decode base64 to string and get userEmail,documentId, contactBoookId data.
+    if (!id) {
       //`atob` function is used to decode base64
       const decodebase64 = atob(base64url);
       //split url in array from '/'
       const checkSplit = decodebase64.split("/");
-      setEmail(checkSplit[1]);
       setDocumentId(checkSplit[0]);
+      setEmail(checkSplit[1]);
       setContactId(checkSplit[2]);
     }
 
-    localStorage.setItem("baseUrl", newServer);
-    localStorage.setItem("parseAppId", parseId);
-    localStorage.setItem("_appName", appName);
     setIsLoading(false);
   };
 
