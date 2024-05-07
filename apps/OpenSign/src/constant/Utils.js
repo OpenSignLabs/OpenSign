@@ -561,17 +561,22 @@ export const signPdfFun = async (
         isCustomCompletionMail = true;
       }
     }
-
+    
+    // below for loop is used to get first signature of user to send if to signpdf
+    // for adding it in completion certificate
     let getSignature;
     for (let item of xyPosition) {
       const typeExist = item.pos.some((data) => data?.type);
       if (typeExist) {
-        getSignature = item.pos.filter((data) => data?.type === "signature");
+        getSignature = item.pos.find((data) => data?.type === "signature");
+        break;
       } else {
-        getSignature = item.pos.filter((data) => !data.isStamp);
+        getSignature = item.pos.find((data) => !data.isStamp);
+        break;
       }
     }
-    let base64Sign = getSignature[0].SignUrl;
+
+    let base64Sign = getSignature.SignUrl;
     //check https type signature (default signature exist) then convert in base64
     const isUrl = base64Sign.includes("https");
     if (isUrl) {
@@ -1344,8 +1349,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-              ? 10
-              : newUpdateHeight;
+            ? 10
+            : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
