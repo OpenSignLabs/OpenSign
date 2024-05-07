@@ -134,6 +134,7 @@ We would like to thank all our contributors and users for their support and feed
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/VikramNagwal"><img src="https://avatars.githubusercontent.com/u/123088024?v=4?s=100" width="100px;" alt="Vikram"/><br /><sub><b>Vikram</b></sub></a><br /><a href="#code-VikramNagwal" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ugoconsonni"><img src="https://avatars.githubusercontent.com/u/13661702?v=4?s=100" width="100px;" alt="ugoconsonni"/><br /><sub><b>ugoconsonni</b></sub></a><br /><a href="#code-ugoconsonni" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
