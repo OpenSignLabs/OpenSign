@@ -287,11 +287,6 @@ const ReportTable = (props) => {
   const handleShare = (item) => {
     setActLoader({ [item.objectId]: true });
     const host = window.location.origin;
-    // const serverUrl = process.env.REACT_APP_SERVERURL
-    //   ? process.env.REACT_APP_SERVERURL
-    //   : window.location.origin + "/api/app";
-    // const baseURL = serverUrl.replace(/\//g, "%2F");
-
     const getUrl = (x) => {
       //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
       const encodeBase64 = btoa(`${item.objectId}/${x.Email}/${x.objectId}`);
