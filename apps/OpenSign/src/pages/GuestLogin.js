@@ -6,9 +6,10 @@ import axios from "axios";
 import { isEnableSubscription, themeColor } from "../constant/const";
 import { contractUsers, getAppLogo } from "../constant/Utils";
 import logo from "../assets/images/logo.png";
+import { appInfo } from "../constant/appinfo";
 
 function GuestLogin() {
-  const { id, userMail, contactBookId, serverUrl } = useParams();
+  const { id, userMail, contactBookId, base64url } = useParams();
   let navigate = useNavigate();
   const [email, setEmail] = useState(userMail);
   const [OTP, setOTP] = useState("");
@@ -16,7 +17,8 @@ function GuestLogin() {
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [appLogo, setAppLogo] = useState("");
-
+  const [documentId, setDocumentId] = useState(id);
+  const [contactId, setContactId] = useState(contactBookId);
   useEffect(() => {
     handleServerUrl();
 
@@ -36,17 +38,24 @@ function GuestLogin() {
       setAppLogo(logo);
     }
 
-    //split url in array from '&'
     localStorage.clear();
-    const checkSplit = serverUrl.split("&");
-    const server = checkSplit[0];
-    const parseId = checkSplit[1];
-    const appName = checkSplit[2];
-
-    const newServer = server.replaceAll("%2F", "/");
+    const parseId = appInfo.appId;
+    const newServer = `${appInfo.baseUrl}/`;
+    const appName = appInfo.appname;
     localStorage.setItem("baseUrl", newServer);
     localStorage.setItem("parseAppId", parseId);
     localStorage.setItem("_appName", appName);
+    //this condition is used decode base64 to string and get userEmail,documentId, contactBoookId data.
+    if (!id) {
+      //`atob` function is used to decode base64
+      const decodebase64 = atob(base64url);
+      //split url in array from '/'
+      const checkSplit = decodebase64.split("/");
+      setDocumentId(checkSplit[0]);
+      setEmail(checkSplit[1]);
+      setContactId(checkSplit[2]);
+    }
+
     setIsLoading(false);
   };
 
@@ -74,7 +83,7 @@ function GuestLogin() {
         };
         let body = {
           email: email.toString(),
-          docId: id
+          docId: documentId
         };
         let Otp = await axios.post(url, body, { headers: headers });
 
@@ -137,7 +146,7 @@ function GuestLogin() {
           //save isGuestSigner true in local to handle login flow header in mobile view
           localStorage.setItem("isGuestSigner", true);
           setLoading(false);
-          navigate(`/load/recipientSignPdf/${id}/${contactBookId}`);
+          navigate(`/load/recipientSignPdf/${documentId}/${contactId}`);
         }
       } catch (error) {
         console.log("err ", error);
