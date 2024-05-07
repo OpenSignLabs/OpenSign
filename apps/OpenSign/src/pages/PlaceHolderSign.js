@@ -201,16 +201,16 @@ function PlaceHolderSign() {
 
             setDefaultBody(defaultRequestBody);
             setDefaultSubject(
-              `{{sender_name}} has requested you to sign {{document_title}}`
+              `{{sender_name}} has requested you to sign "{{document_title}}"`
             );
           } else {
             setRequestBody(defaultRequestBody);
             setRequestSubject(
-              `{{sender_name}} has requested you to sign {{document_title}}`
+              `{{sender_name}} has requested you to sign "{{document_title}}"`
             );
             setDefaultBody(defaultRequestBody);
             setDefaultSubject(
-              `{{sender_name}}has requested you to sign {{document_title}}`
+              `{{sender_name}}has requested you to sign "{{document_title}}"`
             );
           }
         }
@@ -1104,7 +1104,7 @@ function PlaceHolderSign() {
           recipient: signerMail[i].Email,
           subject: isCustomize
             ? replaceVar?.subject
-            : `${senderName} has requested you to sign ${documentName}`,
+            : `${senderName} has requested you to sign "${documentName}"`,
           from: senderEmail,
           html: isCustomize
             ? replaceVar?.body

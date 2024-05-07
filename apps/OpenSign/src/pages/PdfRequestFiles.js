@@ -794,7 +794,7 @@ function PdfRequestFiles() {
                         recipient: user.Email,
                         subject: requestSubject
                           ? replaceVar?.subject
-                          : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign ${pdfDetails?.[0].Name}`,
+                          : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
                         from: senderEmail,
                         html: requestBody
                           ? replaceVar?.body
