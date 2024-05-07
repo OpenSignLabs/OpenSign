@@ -969,7 +969,7 @@ function PlaceHolderSign() {
     for (let i = 0; i < signerMail.length; i++) {
       const objectId = signerMail[i].objectId;
       const hostUrl = window.location.origin;
-      //convert this url documentId/signersEmail/signerObjId base64 and send url
+      //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
       const encodeBase64 = btoa(
         `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
       );
@@ -1049,7 +1049,7 @@ function PlaceHolderSign() {
         };
         const objectId = signerMail[i].objectId;
         const hostUrl = window.location.origin;
-        //convert this url documentId/signersEmail/signerObjId base64 and send url
+        //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
         const encodeBase64 = btoa(
           `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
         );

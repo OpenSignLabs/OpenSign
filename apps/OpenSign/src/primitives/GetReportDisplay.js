@@ -293,6 +293,7 @@ const ReportTable = (props) => {
     // const baseURL = serverUrl.replace(/\//g, "%2F");
 
     const getUrl = (x) => {
+      //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
       const encodeBase64 = btoa(`${item.objectId}/${x.Email}/${x.objectId}`);
       return `${host}/login/${encodeBase64}`;
     };

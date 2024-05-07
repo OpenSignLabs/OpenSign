@@ -747,6 +747,7 @@ function PdfRequestFiles() {
                       //   "parseAppId"
                       // )}&${localStorage.getItem("_appName")}`;
                       const hostUrl = window.location.origin;
+                      //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
                       const encodeBase64 = btoa(
                         `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
                       );
@@ -1249,9 +1250,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                      ? "You have declined this document!"
-                      : isDecline.currnt === "another" &&
-                        "You can not sign this document as it has been declined/revoked."
+                        ? "You have declined this document!"
+                        : isDecline.currnt === "another" &&
+                          "You can not sign this document as it has been declined/revoked."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
