@@ -471,8 +471,7 @@ function PdfRequestFiles() {
                   const maxCount =
                     requiredCheckbox[i].options?.validation?.maxRequiredCount;
                   const parseMax = maxCount && parseInt(maxCount);
-                  const response =
-                    requiredCheckbox[i].options?.response?.length;
+                  const response = requiredCheckbox[i].options?.response?.length;
                   const defaultValue =
                     requiredCheckbox[i].options?.defaultValue?.length;
                   if (parseMin === 0 && parseMax === 0) {
@@ -671,8 +670,7 @@ function PdfRequestFiles() {
                     )}&${localStorage.getItem("_appName")}`;
                     const hostUrl = window.location.origin;
                     let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${user.Email}/${objectId}/${serverParams}`;
-                    const openSignUrl =
-                      "https://www.opensignlabs.com/contact-us";
+                    const openSignUrl = "https://www.opensignlabs.com/contact-us";
                     const orgName = pdfDetails[0]?.ExtUserPtr.Company
                       ? pdfDetails[0].ExtUserPtr.Company
                       : "";
@@ -683,10 +681,7 @@ function PdfRequestFiles() {
                       requestSubject &&
                       (!isEnableSubscription || isSubscribed)
                     ) {
-                      const replacedRequestBody = requestBody.replace(
-                        /"/g,
-                        "'"
-                      );
+                      const replacedRequestBody = requestBody.replace(/"/g, "'");
                       const htmlReqBody =
                         "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
                         replacedRequestBody +
@@ -1153,9 +1148,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                        ? "You have declined this document!"
-                        : isDecline.currnt === "another" &&
-                          "You can not sign this document as it has been declined/revoked."
+                      ? "You have declined this document!"
+                      : isDecline.currnt === "another" &&
+                        "You can not sign this document as it has been declined/revoked."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
@@ -1234,10 +1229,7 @@ function PdfRequestFiles() {
                 </ModalUi>
                 {/* this component used to render all pdf pages in left side */}
                 <RenderAllPdfPage
-                  signPdfUrl={
-                    pdfDetails[0] &&
-                    (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
-                  }
+                  signPdfUrl={pdfDetails[0] && pdfDetails[0].SignedUrl}
                   allPages={allPages}
                   setAllPages={setAllPages}
                   setPageNumber={setPageNumber}
