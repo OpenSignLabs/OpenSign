@@ -45,7 +45,7 @@ function GuestLogin() {
     localStorage.setItem("baseUrl", newServer);
     localStorage.setItem("parseAppId", parseId);
     localStorage.setItem("_appName", appName);
-    //first condition is used decode base64 to string and get userEmail,documentId, contactBoookId data.
+    //this condition is used decode base64 to string and get userEmail,documentId, contactBoookId data.
     if (!id) {
       //`atob` function is used to decode base64
       const decodebase64 = atob(base64url);
