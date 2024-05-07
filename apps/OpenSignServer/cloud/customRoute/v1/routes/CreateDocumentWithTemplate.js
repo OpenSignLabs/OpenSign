@@ -266,13 +266,13 @@ export default async function createDocumentWithTemplate(request, response) {
                     replaceVar = { subject: replaceVar.subject, body: email_html };
                   } else if (email_body) {
                     replaceVar = replaceMailVaribles(
-                      `${template.ExtUserPtr.Name} has requested you to sign ${template.Name}`,
+                      `${template.ExtUserPtr.Name} has requested you to sign "${template.Name}"`,
                       email_body,
                       variables
                     );
                   } else {
                     replaceVar = {
-                      subject: `${template.ExtUserPtr.Name} has requested you to sign ${template.Name}`,
+                      subject: `${template.ExtUserPtr.Name} has requested you to sign "${template.Name}"`,
                       body: email_html,
                     };
                   }
