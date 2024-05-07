@@ -10,6 +10,7 @@ import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
 import Tour from "reactour";
 import Parse from "parse";
+import { saveAs } from "file-saver";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
@@ -426,6 +427,20 @@ const ReportTable = (props) => {
       );
     }
   };
+
+  // `handleDownload` is used to get valid doc url available in completed report
+  const handleDownload = async (item) => {
+    const url = item?.SignedUrl || item?.URL || "";
+    if (url) {
+      try {
+        const signedUrl = await Parse.Cloud.run("getsignedurl", { url: url });
+        saveAs(signedUrl);
+      } catch (err) {
+        console.log("err in getsignedurl", err);
+        alert("something went wrong, please try again later.");
+      }
+    }
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -568,18 +583,14 @@ const ReportTable = (props) => {
                         </td>
                       )}
                       <td className="px-4 py-2">
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={item?.URL}
-                          href={item?.URL}
-                          download={item?.URL}
-                          className="text-[blue] hover:text-[blue] hover:underline"
+                        <button
+                          onClick={() => handleDownload(item)}
+                          className="text-[blue] hover:text-[blue] hover:underline focus:outline-none"
+                          title={"Download"}
                         >
                           {item?.URL ? "Download" : "-"}
-                        </a>
+                        </button>
                       </td>
-
                       <td className="px-4 py-2">
                         {formatRow(item?.ExtUserPtr)}
                       </td>
