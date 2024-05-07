@@ -109,6 +109,10 @@ function App() {
               path="/login/:id/:userMail/:contactBookId/:serverUrl"
               element={<LazyPage Page={GuestLogin} />}
             />
+            <Route
+              path="/login/:base64url"
+              element={<LazyPage Page={GuestLogin} />}
+            />
             <Route path="/debugpdf" element={<LazyPage Page={DebugPdf} />} />
             <Route
               path="/forgetpassword"

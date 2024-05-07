@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
+import Parse from "parse";
 import { isEnableSubscription, themeColor } from "../constant/const";
 import axios from "axios";
 import Loader from "../primitives/LoaderWithMsg";
@@ -29,7 +30,10 @@ import {
   textWidget,
   getTenantDetails,
   checkIsSubscribed,
-  convertPdfArrayBuffer
+  convertPdfArrayBuffer,
+  fetchImageBase64,
+  changeImageWH,
+  handleSendOTP
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -42,6 +46,7 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Title from "../components/Title";
 import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
+import VerifyEmail from "../components/pdf/VerifyEmail";
 
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
@@ -89,6 +94,7 @@ function SignYourSelf() {
   const [containerWH, setContainerWH] = useState({});
   const [isPageCopy, setIsPageCopy] = useState(false);
   const [selectWidgetId, setSelectWidgetId] = useState("");
+  const [otpLoader, setOtpLoader] = useState(false);
   const [showAlreadySignDoc, setShowAlreadySignDoc] = useState({
     status: false
   });
@@ -105,6 +111,9 @@ function SignYourSelf() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [isVerifyModal, setIsVerifyModal] = useState(false);
+  const [otp, setOtp] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -194,13 +203,18 @@ function SignYourSelf() {
       setPdfDetails(documentData);
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const url = documentData[0] && documentData[0]?.URL;
-      //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-      const arrayBuffer = await convertPdfArrayBuffer(url);
-      if (arrayBuffer === "Error") {
-        setHandleError("Error: Something went wrong!");
+      if (url) {
+        //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+        const arrayBuffer = await convertPdfArrayBuffer(url);
+        if (arrayBuffer === "Error") {
+          setHandleError("Error: Something went wrong!");
+        } else {
+          setPdfArrayBuffer(arrayBuffer);
+        }
       } else {
-        setPdfArrayBuffer(arrayBuffer);
+        setHandleError("Error: Something went wrong!");
       }
+
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
         setIsCompleted(true);
@@ -217,6 +231,29 @@ function SignYourSelf() {
           setIsEmail(true);
           setXyPostion([]);
           setSignBtnPosition([]);
+        }
+      }
+
+      if (!isCompleted) {
+        //check current user email verified or not
+        const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+        let isEmailVerified;
+        isEmailVerified = currentUser?.emailVerified;
+        if (isEmailVerified) {
+          setIsEmailVerified(isEmailVerified);
+        } else {
+          try {
+            const userQuery = new Parse.Query(Parse.User);
+            const user = await userQuery.get(currentUser.objectId, {
+              sessionToken: localStorage.getItem("accesstoken")
+            });
+            if (user) {
+              isEmailVerified = user?.get("emailVerified");
+              setIsEmailVerified(isEmailVerified);
+            }
+          } catch (e) {
+            setHandleError("Error: Something went wrong!");
+          }
         }
       }
     } else if (
@@ -527,6 +564,43 @@ function SignYourSelf() {
     setSignKey(key);
   };
 
+  //`handleResend` function is used to resend otp for email verification
+  const handleResend = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+    setOtpLoader(false);
+    alert("OTP sent on you email");
+  };
+  //`handleVerifyEmail` function is used to verify email with otp
+  const handleVerifyEmail = async (e) => {
+    e.preventDefault();
+    setOtpLoader(true);
+    try {
+      const resEmail = await Parse.Cloud.run("verifyemail", {
+        otp: otp,
+        email: Parse.User.current().getEmail()
+      });
+      if (resEmail?.message === "Email is verified.") {
+        setIsEmailVerified(true);
+      } else if (resEmail?.message === "Email is already verified.") {
+        setIsEmailVerified(true);
+      }
+      setOtp("");
+      alert(resEmail.message);
+      setIsVerifyModal(false);
+      // handleRecipientSign();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setOtpLoader(false);
+    }
+  };
+  //`handleVerifyBtn` function is used to send otp on user mail
+  const handleVerifyBtn = async () => {
+    setIsVerifyModal(true);
+    await handleSendOTP(Parse.User.current().getEmail());
+  };
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
     let showAlert = false;
@@ -574,30 +648,44 @@ function SignYourSelf() {
         setIsUiLoading(true);
         const existingPdfBytes = pdfArrayBuffer;
         // Load a PDFDocument from the existing PDF bytes
-        const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-          ignoreEncryption: true
-        });
-        const isSignYourSelfFlow = true;
-        const extUserPtr = pdfDetails[0].ExtUserPtr;
-        const HeaderDocId = extUserPtr?.HeaderDocId;
-        //embed document's object id to all pages in pdf document
-        if (!HeaderDocId) {
-          await embedDocId(pdfDoc, documentId, allPages);
+        try {
+          const pdfDoc = await PDFDocument.load(existingPdfBytes);
+          const isSignYourSelfFlow = true;
+          const extUserPtr = pdfDetails[0].ExtUserPtr;
+          const HeaderDocId = extUserPtr?.HeaderDocId;
+          //embed document's object id to all pages in pdf document
+          if (!HeaderDocId) {
+            await embedDocId(pdfDoc, documentId, allPages);
+          }
+          //embed multi signature in pdf
+          const pdfBytes = await multiSignEmbed(
+            xyPostion,
+            pdfDoc,
+            pdfOriginalWidth,
+            isSignYourSelfFlow,
+            containerWH
+          );
+          // console.log("pdf", pdfBytes);
+          //function for call to embed signature in pdf and get digital signature pdf
+          await signPdfFun(pdfBytes, documentId);
+        } catch (err) {
+          setIsUiLoading(false);
+          if (err && err.message.includes("is encrypted.")) {
+            setIsAlert({
+              isShow: true,
+              alertMessage: `Currently encrypted pdf files are not supported.`
+            });
+          } else {
+            console.log("err in signing", err);
+            setIsAlert({
+              isShow: true,
+              alertMessage: `Something went wrong.`
+            });
+          }
         }
-        //embed multi signature in pdf
-        const pdfBytes = await multiSignEmbed(
-          xyPostion,
-          pdfDoc,
-          pdfOriginalWidth,
-          isSignYourSelfFlow,
-          containerWH
-        );
-        // console.log("pdf", pdfBytes);
-        //function for call to embed signature in pdf and get digital signature pdf
-        await signPdfFun(pdfBytes, documentId);
       }
     } catch (err) {
-      console.log("err in embedselfsign ", err );
+      console.log("err in embedselfsign ", err);
       setIsUiLoading(false);
       setIsAlert({
         isShow: true,
@@ -605,7 +693,6 @@ function SignYourSelf() {
       });
     }
   }
-  // console.log("signyourself", xyPostion);
   //function for get digital signature
   const signPdfFun = async (base64Url, documentId) => {
     let isCustomCompletionMail = false;
@@ -622,12 +709,40 @@ function SignYourSelf() {
         isCustomCompletionMail = true;
       }
     }
+    // below for loop is used to get first signature of user to send if to signpdf
+    // for adding it in completion certificate
+    let getSignature;
+    for (let item of xyPostion) {
+      const typeExist = item.pos.some((data) => data?.type);
+      if (typeExist) {
+        getSignature = item.pos.find((data) => data?.type === "signature");
+        break;
+      } else {
+        getSignature = item.pos.find((data) => !data.isStamp);
+        break;
+      }
+    }
+    let base64Sign = getSignature.SignUrl;
+    //check https type signature (default signature exist) then convert in base64
+    const isUrl = base64Sign.includes("https");
+    if (isUrl) {
+      try {
+        base64Sign = await fetchImageBase64(base64Sign);
+      } catch (e) {
+        console.log("error", e);
+      }
+    }
+    //change image width and height to 104/44 in png base64
+    const getNewse64 = await changeImageWH(base64Sign);
+    //remove suffiix of base64
+    const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
 
     let singleSign = {
       pdfFile: base64Url,
       docId: documentId,
       isCustomCompletionMail: isCustomCompletionMail,
-      mailProvider: activeMailAdapter
+      mailProvider: activeMailAdapter,
+      signature: suffixbase64
     };
 
     await axios
@@ -635,7 +750,8 @@ function SignYourSelf() {
         headers: {
           "Content-Type": "application/json",
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          sessionToken: localStorage.getItem("accesstoken")
+          // sessionToken: localStorage.getItem("accesstoken")
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       })
       .then((Listdata) => {
@@ -999,6 +1115,18 @@ function SignYourSelf() {
           )}
 
           <div className="signatureContainer" ref={divRef}>
+            {!isEmailVerified && (
+              <VerifyEmail
+                isVerifyModal={isVerifyModal}
+                setIsVerifyModal={setIsVerifyModal}
+                handleVerifyEmail={handleVerifyEmail}
+                setOtp={setOtp}
+                otp={otp}
+                otpLoader={otpLoader}
+                handleVerifyBtn={handleVerifyBtn}
+                handleResend={handleResend}
+              />
+            )}
             {/* this component used for UI interaction and show their functionality */}
             {pdfLoadFail && !checkTourStatus && (
               <Tour

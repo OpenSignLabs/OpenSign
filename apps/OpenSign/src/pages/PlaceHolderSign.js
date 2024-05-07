@@ -201,16 +201,16 @@ function PlaceHolderSign() {
 
             setDefaultBody(defaultRequestBody);
             setDefaultSubject(
-              `{{sender_name}} has requested you to sign {{document_title}}`
+              `{{sender_name}} has requested you to sign "{{document_title}}"`
             );
           } else {
             setRequestBody(defaultRequestBody);
             setRequestSubject(
-              `{{sender_name}} has requested you to sign {{document_title}}`
+              `{{sender_name}} has requested you to sign "{{document_title}}"`
             );
             setDefaultBody(defaultRequestBody);
             setDefaultSubject(
-              `{{sender_name}}has requested you to sign {{document_title}}`
+              `{{sender_name}}has requested you to sign "{{document_title}}"`
             );
           }
         }
@@ -967,15 +967,13 @@ function PlaceHolderSign() {
     const shareLinkList = [];
     let signerMail = signersdata;
     for (let i = 0; i < signerMail.length; i++) {
-      const serverUrl = localStorage.getItem("baseUrl");
-      const newServer = serverUrl.replaceAll("/", "%2F");
       const objectId = signerMail[i].objectId;
-      const serverParams = `${newServer}&${localStorage.getItem(
-        "parseAppId"
-      )}&${localStorage.getItem("_appName")}`;
-
       const hostUrl = window.location.origin;
-      let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
+      //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
+      const encodeBase64 = btoa(
+        `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
+      );
+      let signPdf = `${hostUrl}/login/${encodeBase64}`;
       shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
     }
     return shareLinkList.map((data, ind) => {
@@ -1049,15 +1047,13 @@ function PlaceHolderSign() {
           "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           sessionToken: localStorage.getItem("accesstoken")
         };
-        const serverUrl = localStorage.getItem("baseUrl");
-        const newServer = serverUrl.replaceAll("/", "%2F");
         const objectId = signerMail[i].objectId;
-        const serverParams = `${newServer}&${localStorage.getItem(
-          "parseAppId"
-        )}&${localStorage.getItem("_appName")}`;
-
         const hostUrl = window.location.origin;
-        let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${serverParams}`;
+        //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
+        const encodeBase64 = btoa(
+          `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
+        );
+        let signPdf = `${hostUrl}/login/${encodeBase64}`;
         const openSignUrl = "https://www.opensignlabs.com/";
         const orgName = pdfDetails[0]?.ExtUserPtr.Company
           ? pdfDetails[0].ExtUserPtr.Company
@@ -1103,7 +1099,7 @@ function PlaceHolderSign() {
           recipient: signerMail[i].Email,
           subject: isCustomize
             ? replaceVar?.subject
-            : `${senderName} has requested you to sign ${documentName}`,
+            : `${senderName} has requested you to sign "${documentName}"`,
           from: senderEmail,
           html: isCustomize
             ? replaceVar?.body

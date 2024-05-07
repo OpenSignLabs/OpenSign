@@ -10,6 +10,7 @@ import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
 import Tour from "reactour";
 import Parse from "parse";
+import { saveAs } from "file-saver";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
@@ -286,13 +287,15 @@ const ReportTable = (props) => {
   const handleShare = (item) => {
     setActLoader({ [item.objectId]: true });
     const host = window.location.origin;
-    const serverUrl = process.env.REACT_APP_SERVERURL
-      ? process.env.REACT_APP_SERVERURL
-      : window.location.origin + "/api/app";
-    const baseURL = serverUrl.replace(/\//g, "%2F");
+    const getUrl = (x) => {
+      //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
+      const encodeBase64 = btoa(`${item.objectId}/${x.Email}/${x.objectId}`);
+      return `${host}/login/${encodeBase64}`;
+    };
+
     const urls = item.Signers.map((x) => ({
       email: x.Email,
-      url: `${host}/login/${item.objectId}/${x.Email}/${x.objectId}/${baseURL}%2F&opensign&contracts`
+      url: getUrl(x)
     }));
     setShareUrls(urls);
     setIsShare({ [item.objectId]: true });
@@ -418,6 +421,20 @@ const ReportTable = (props) => {
           }
         }
       );
+    }
+  };
+
+  // `handleDownload` is used to get valid doc url available in completed report
+  const handleDownload = async (item) => {
+    const url = item?.SignedUrl || item?.URL || "";
+    if (url) {
+      try {
+        const signedUrl = await Parse.Cloud.run("getsignedurl", { url: url });
+        saveAs(signedUrl);
+      } catch (err) {
+        console.log("err in getsignedurl", err);
+        alert("something went wrong, please try again later.");
+      }
     }
   };
   return (
@@ -562,18 +579,14 @@ const ReportTable = (props) => {
                         </td>
                       )}
                       <td className="px-4 py-2">
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={item?.URL}
-                          href={item?.URL}
-                          download={item?.URL}
-                          className="text-[blue] hover:text-[blue] hover:underline"
+                        <button
+                          onClick={() => handleDownload(item)}
+                          className="text-[blue] hover:text-[blue] hover:underline focus:outline-none"
+                          title={"Download"}
                         >
                           {item?.URL ? "Download" : "-"}
-                        </a>
+                        </button>
                       </td>
-
                       <td className="px-4 py-2">
                         {formatRow(item?.ExtUserPtr)}
                       </td>
