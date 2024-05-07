@@ -20,7 +20,7 @@ export function EmailBody(props) {
                   required
                   value={props.requestSubject}
                   onChange={(e) => props.setRequestSubject(e.target.value)}
-                  placeholder="${senderName} has requested you to sign ${documentName}"
+                  placeholder='${senderName} has requested you to sign "${documentName}"'
                   className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                 />
                 <label className="text-sm ml-2 mt-3">
