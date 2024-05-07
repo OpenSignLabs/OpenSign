@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PrevNext from "./PrevNext";
 import printModule from "print-js";
 import { getBase64FromUrl } from "../../constant/Utils";
@@ -7,8 +7,9 @@ import "../../styles/signature.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { themeColor } from "../../constant/const";
-import Certificate from "./Certificate";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import axios from "axios";
+import ModalUi from "../../primitives/ModalUi";
+import Parse from "parse";
 
 function Header({
   isPdfRequestFiles,
@@ -39,6 +40,7 @@ function Header({
     signerPos && signerPos?.filter((data) => data.Role !== "prefill");
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
+  const [isCertificate, setIsCertificate] = useState(false);
   const isGuestSigner = localStorage.getItem("isGuestSigner");
   //for go to previous page
   function previousPage() {
@@ -61,30 +63,43 @@ function Header({
   const handleToPrint = async (event) => {
     event.preventDefault();
 
-    const pdf = await getBase64FromUrl(pdfUrl);
-    const isAndroidDevice = navigator.userAgent.match(/Android/i);
-    const isAppleDevice =
-      (/iPad|iPhone|iPod/.test(navigator.platform) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) &&
-      !window.MSStream;
-    if (isAndroidDevice || isAppleDevice) {
-      const byteArray = Uint8Array.from(
-        atob(pdf)
-          .split("")
-          .map((char) => char.charCodeAt(0))
-      );
-      const blob = new Blob([byteArray], { type: "application/pdf" });
-      const blobUrl = URL.createObjectURL(blob);
-      window.open(blobUrl, "_blank");
-    } else {
-      printModule({ printable: pdf, type: "pdf", base64: true });
+    try {
+      const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+      const pdf = await getBase64FromUrl(url);
+      const isAndroidDevice = navigator.userAgent.match(/Android/i);
+      const isAppleDevice =
+        (/iPad|iPhone|iPod/.test(navigator.platform) ||
+          (navigator.platform === "MacIntel" &&
+            navigator.maxTouchPoints > 1)) &&
+        !window.MSStream;
+      if (isAndroidDevice || isAppleDevice) {
+        const byteArray = Uint8Array.from(
+          atob(pdf)
+            .split("")
+            .map((char) => char.charCodeAt(0))
+        );
+        const blob = new Blob([byteArray], { type: "application/pdf" });
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, "_blank");
+      } else {
+        printModule({ printable: pdf, type: "pdf", base64: true });
+      }
+    } catch (err) {
+      console.log("err in getsignedurl", err);
+      alert("something went wrong, please try again later.");
     }
   };
 
   //handle download signed pdf
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     const pdfName = pdfDetails[0] && pdfDetails[0].Name;
-    saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    try {
+      const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+      saveAs(url, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    } catch (err) {
+      console.log("err in getsignedurl", err);
+      alert("something went wrong, please try again later.");
+    }
   };
 
   const sanitizeFileName = (pdfName) => {
@@ -102,55 +117,41 @@ function Header({
       } catch (err) {
         console.log("err in download in certificate", err);
       }
+    } else {
+      setIsCertificate(true);
+      try {
+        const data = {
+          docId: pdfDetails[0]?.objectId
+        };
+        const docDetails = await axios.post(
+          `${localStorage.getItem("baseUrl")}functions/getDocument`,
+          data,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              sessionToken: localStorage.getItem("accesstoken")
+            }
+          }
+        );
+        if (docDetails.data && docDetails.data.result) {
+          const doc = docDetails.data.result;
+          if (doc?.CertificateUrl) {
+            await fetch(doc?.CertificateUrl);
+            const certificateUrl = doc?.CertificateUrl;
+            saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+            setIsCertificate(false);
+          } else {
+            setIsCertificate(true);
+          }
+        }
+      } catch (err) {
+        console.log("err in download in certificate", err);
+        alert("something went wrong, please try again later.");
+      }
     }
   };
 
-  const GenerateCertificate = () => {
-    //after generate download certifcate pdf
-    const handleDownload = (pdfBlob, fileName) => {
-      if (pdfBlob) {
-        const url = window.URL.createObjectURL(pdfBlob);
-        // Create a temporary anchor element
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        // Append the anchor to the body
-        document.body.appendChild(link);
-        // Programmatically click the anchor to trigger the download
-        link.click();
-        // Remove the anchor from the body
-        document.body.removeChild(link);
-        // Release the object URL to free up resources
-        window.URL.revokeObjectURL(url);
-      }
-    };
-
-    return (
-      <PDFDownloadLink
-        onClick={(e) => e.preventDefault()}
-        style={{ textDecoration: "none", zIndex: "35" }}
-        document={<Certificate pdfData={pdfDetails} />}
-      >
-        {({ blob, loading }) => (
-          <button
-            onClick={() =>
-              handleDownload(
-                blob,
-                `completion certificate-${
-                  pdfDetails[0] && pdfDetails[0].Name
-                }.pdf`
-              )
-            }
-            disabled={loading}
-            className=" md:bg-[#08bc66] border-none focus:outline-none flex flex-row items-center md:shadow md:rounded-[3px] py-[3px] md:px-[11px] md:text-white text-black md:font-[500] text-[13px] mr-[5px]"
-          >
-            <i className="fa-solid fa-award py-[3px]" aria-hidden="true"></i>
-            <span className="md:hidden lg:block ml-1">Certificate</span>
-          </button>
-        )}
-      </PDFDownloadLink>
-    );
-  };
   return (
     <div style={{ padding: "5px 0px 5px 0px" }} className="mobileHead">
       {isMobile && isShowHeader ? (
@@ -240,32 +241,24 @@ function Header({
                       </div>
                     </DropdownMenu.Item>
                     {isCompleted && (
-                      <>
-                        {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
-                          <DropdownMenu.Item
-                            className="DropdownMenuItem"
-                            onClick={() => handleDownloadCertificate()}
-                          >
-                            <div
-                              style={{
-                                border: "none",
-                                backgroundColor: "#fff"
-                              }}
-                            >
-                              <i
-                                className="fa-solid fa-award"
-                                style={{ marginRight: "2px" }}
-                                aria-hidden="true"
-                              ></i>
-                              Certificate
-                            </div>
-                          </DropdownMenu.Item>
-                        ) : (
-                          <DropdownMenu.Item className="DropdownMenuItem">
-                            <GenerateCertificate />
-                          </DropdownMenu.Item>
-                        )}
-                      </>
+                      <DropdownMenu.Item
+                        className="DropdownMenuItem"
+                        onClick={() => handleDownloadCertificate()}
+                      >
+                        <div
+                          style={{
+                            border: "none",
+                            backgroundColor: "#fff"
+                          }}
+                        >
+                          <i
+                            className="fa-solid fa-award"
+                            style={{ marginRight: "2px" }}
+                            aria-hidden="true"
+                          ></i>
+                          Certificate
+                        </div>
+                      </DropdownMenu.Item>
                     )}
                     {isSignYourself && (
                       <DropdownMenu.Item
@@ -442,25 +435,17 @@ function Header({
             alreadySign ? (
               <div style={{ display: "flex", flexDirection: "row" }}>
                 {isCompleted && (
-                  <>
-                    {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
-                      <button
-                        type="button"
-                        onClick={() => handleDownloadCertificate()}
-                        className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
-                      >
-                        <i
-                          className="fa-solid fa-award py-[3px]"
-                          aria-hidden="true"
-                        ></i>
-                        <span className="hidden lg:block ml-1">
-                          Certificate
-                        </span>
-                      </button>
-                    ) : (
-                      <GenerateCertificate />
-                    )}
-                  </>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadCertificate()}
+                    className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                  >
+                    <i
+                      className="fa-solid fa-award py-[3px]"
+                      aria-hidden="true"
+                    ></i>
+                    <span className="hidden lg:block ml-1">Certificate</span>
+                  </button>
                 )}
 
                 <button
@@ -520,23 +505,17 @@ function Header({
           ) : isCompleted ? (
             <div style={{ display: "flex", flexDirection: "row" }}>
               {isCompleted && (
-                <>
-                  {pdfDetails[0] && pdfDetails[0]?.CertificateUrl ? (
-                    <button
-                      type="button"
-                      onClick={() => handleDownloadCertificate()}
-                      className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
-                    >
-                      <i
-                        className="fa-solid fa-award py-[3px]"
-                        aria-hidden="true"
-                      ></i>
-                      <span className="hidden lg:block ml-1">Certificate</span>
-                    </button>
-                  ) : (
-                    <GenerateCertificate />
-                  )}
-                </>
+                <button
+                  type="button"
+                  onClick={() => handleDownloadCertificate()}
+                  className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                >
+                  <i
+                    className="fa-solid fa-award py-[3px]"
+                    aria-hidden="true"
+                  ></i>
+                  <span className="hidden lg:block ml-1">Certificate</span>
+                </button>
               )}
               <button
                 onClick={handleToPrint}
@@ -592,6 +571,16 @@ function Header({
           )}
         </div>
       )}
+      <ModalUi
+        isOpen={isCertificate}
+        title={"Generating certificate"}
+        handleClose={() => setIsCertificate(false)}
+      >
+        <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
+          <p>Completion certificate is generating,</p>
+          <p>please wait for some time if not download try again later</p>
+        </div>
+      </ModalUi>
     </div>
   );
 }

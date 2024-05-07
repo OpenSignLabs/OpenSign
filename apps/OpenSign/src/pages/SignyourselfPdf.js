@@ -480,13 +480,13 @@ function SignYourSelf() {
         Width: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
           : dragTypeValue === "initials"
-            ? defaultWidthHeight(dragTypeValue).width
-            : "",
+          ? defaultWidthHeight(dragTypeValue).width
+          : "",
         Height: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
           : dragTypeValue === "initials"
-            ? defaultWidthHeight(dragTypeValue).height
-            : "",
+          ? defaultWidthHeight(dragTypeValue).height
+          : "",
         options: addWidgetOptions(dragTypeValue)
       };
 
@@ -649,9 +649,7 @@ function SignYourSelf() {
         const existingPdfBytes = pdfArrayBuffer;
         // Load a PDFDocument from the existing PDF bytes
         try {
-          const pdfDoc = await PDFDocument.load(existingPdfBytes, {
-            ignoreEncryption: true
-          });
+          const pdfDoc = await PDFDocument.load(existingPdfBytes);
           const isSignYourSelfFlow = true;
           const extUserPtr = pdfDetails[0].ExtUserPtr;
           const HeaderDocId = extUserPtr?.HeaderDocId;
@@ -672,10 +670,18 @@ function SignYourSelf() {
           await signPdfFun(pdfBytes, documentId);
         } catch (err) {
           setIsUiLoading(false);
-          setIsAlert({
-            isShow: true,
-            alertMessage: `Currently encrypted pdf files are not supported.`
-          });
+          if (err && err.message.includes("is encrypted.")) {
+            setIsAlert({
+              isShow: true,
+              alertMessage: `Currently encrypted pdf files are not supported.`
+            });
+          } else {
+            console.log("err in signing", err);
+            setIsAlert({
+              isShow: true,
+              alertMessage: `Something went wrong.`
+            });
+          }
         }
       }
     } catch (err) {
@@ -703,16 +709,20 @@ function SignYourSelf() {
         isCustomCompletionMail = true;
       }
     }
+    // below for loop is used to get first signature of user to send if to signpdf
+    // for adding it in completion certificate
     let getSignature;
     for (let item of xyPostion) {
       const typeExist = item.pos.some((data) => data?.type);
       if (typeExist) {
-        getSignature = item.pos.filter((data) => data?.type === "signature");
+        getSignature = item.pos.find((data) => data?.type === "signature");
+        break;
       } else {
-        getSignature = item.pos.filter((data) => !data.isStamp);
+        getSignature = item.pos.find((data) => !data.isStamp);
+        break;
       }
     }
-    let base64Sign = getSignature[0].SignUrl;
+    let base64Sign = getSignature.SignUrl;
     //check https type signature (default signature exist) then convert in base64
     const isUrl = base64Sign.includes("https");
     if (isUrl) {

@@ -214,8 +214,8 @@ function SignPad({
     const fontfamily = fontStyle
       ? fontStyle
       : fontSelect
-        ? fontSelect
-        : "Fasthand";
+      ? fontSelect
+      : "Fasthand";
 
     //creating span for getting text content width
     const span = document.createElement("span");
@@ -267,10 +267,10 @@ function SignPad({
                   key === 0 && penColor === "blue"
                     ? "2px solid blue"
                     : key === 1 && penColor === "red"
-                      ? "2px solid red"
-                      : key === 2 && penColor === "black"
-                        ? "2px solid black"
-                        : "2px solid white"
+                    ? "2px solid red"
+                    : key === 2 && penColor === "black"
+                    ? "2px solid black"
+                    : "2px solid white"
               }}
               onClick={() => {
                 props?.convertToImg &&
@@ -536,7 +536,6 @@ function SignPad({
                       style={{
                         border: "1.3px solid #007bff",
                         borderRadius: "2px",
-
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
@@ -553,7 +552,7 @@ function SignPad({
                         type="file"
                         onChange={onImageChange}
                         className="filetype"
-                        accept="image/*"
+                        accept="image/png,image/jpeg"
                         ref={imageRef}
                         hidden
                       />

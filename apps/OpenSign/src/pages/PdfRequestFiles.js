@@ -647,7 +647,6 @@ function PdfRequestFiles() {
           const existingPdfBytes = pdfArrayBuffer;
           try {
             const pdfDoc = await PDFDocument.load(existingPdfBytes);
-
             const isSignYourSelfFlow = false;
             const extUserPtr = pdfDetails[0].ExtUserPtr;
             const HeaderDocId = extUserPtr?.HeaderDocId;
@@ -847,10 +846,18 @@ function PdfRequestFiles() {
             }
           } catch (err) {
             setIsUiLoading(false);
-            setIsAlert({
-              isShow: true,
-              alertMessage: `Currently encrypted pdf files are not supported.`
-            });
+            if (err && err.message.includes("is encrypted.")) {
+              setIsAlert({
+                isShow: true,
+                alertMessage: `Currently encrypted pdf files are not supported.`
+              });
+            } else {
+              console.log("err in request signing", err);
+              setIsAlert({
+                isShow: true,
+                alertMessage: `Something went wrong.`
+              });
+            }
           }
         }
         setIsSignPad(false);
@@ -1242,9 +1249,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                        ? "You have declined this document!"
-                        : isDecline.currnt === "another" &&
-                          "You can not sign this document as it has been declined/revoked."
+                      ? "You have declined this document!"
+                      : isDecline.currnt === "another" &&
+                        "You can not sign this document as it has been declined/revoked."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
