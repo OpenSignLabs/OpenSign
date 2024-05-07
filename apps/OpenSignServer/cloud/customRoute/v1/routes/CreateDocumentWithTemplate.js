@@ -219,6 +219,7 @@ export default async function createDocumentWithTemplate(request, response) {
                   const objectId = contactMail[i].contactPtr.objectId;
                   const hostUrl = baseUrl.origin;
                   // let signPdf = `${hostUrl}/login/${res.id}/${contactMail[i].email}/${objectId}/${serverParams}`;
+                  //encode this url value `${res.id}/${contactMail[i].email}/${objectId}` to base64 using `btoa` function
                   const encodeBase64 = btoa(`${res.id}/${contactMail[i].email}/${objectId}`);
                   let signPdf = `${hostUrl}/login/${encodeBase64}`;
                   const openSignUrl = 'https://www.opensignlabs.com/contact-us';
@@ -317,6 +318,7 @@ export default async function createDocumentWithTemplate(request, response) {
                 properties: { response_code: 200 },
               });
             }
+            //encode this url value `${res.id}/${x.email}/${x.contactPtr.objectId}` to base64 using `btoa` function
             const encodeBase64 = btoa(`${res.id}/${x.email}/${x.contactPtr.objectId}`);
             return response.json({
               objectId: res.id,
