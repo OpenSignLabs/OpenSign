@@ -324,13 +324,13 @@ export default async function createDocumentwithCoordinate(request, response) {
                 replaceVar = { subject: replaceVar.subject, body: email_html };
               } else if (email_body) {
                 replaceVar = replaceMailVaribles(
-                  `${parseExtUser.Name} has requested you to sign ${name}`,
+                  `${parseExtUser.Name} has requested you to sign "${name}"`,
                   email_body,
                   variables
                 );
               } else {
                 replaceVar = {
-                  subject: `${parseExtUser.Name} has requested you to sign ${parseExtUser.Name}`,
+                  subject: `${parseExtUser.Name} has requested you to sign "${parseExtUser.Name}"`,
                   body: email_html,
                 };
               }
