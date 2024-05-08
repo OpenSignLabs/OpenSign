@@ -830,11 +830,11 @@ function PlaceHolderSign() {
       return pdfDetails[0].URL;
     }
   };
-
   const alertSendEmail = async () => {
     const filterPrefill = signerPos?.filter((data) => data.Role !== "prefill");
     const getPrefill = signerPos?.filter((data) => data.Role === "prefill");
     let isLabel = false;
+    //condition is used to check text widget data is empty or have response
     if (getPrefill && getPrefill.length > 0) {
       const prefillPlaceholder = getPrefill[0].placeHolder;
       if (prefillPlaceholder) {
@@ -845,6 +845,29 @@ function PlaceHolderSign() {
         });
       }
     }
+    let isSignatureExist = true; // variable is used to check a signature widget exit or not then execute other code
+    //for loop is used to check signature widget exist or not
+    for (let item of filterPrefill) {
+      let signatureExist = false; // Reset for each iteration
+      for (let x of item.placeHolder) {
+        if (!signatureExist) {
+          const typeExist = x.pos.some((data) => data?.type);
+          if (typeExist) {
+            signatureExist = x.pos.some((data) => data?.type === "signature");
+          } else {
+            signatureExist = x.pos.some((data) => !data.isStamp);
+          }
+        }
+      }
+      if (!signatureExist) {
+        isSignatureExist = false;
+        const alert = {
+          mssg: "sure",
+          alert: true
+        };
+        setIsSendAlert(alert);
+      }
+    }
 
     if (getPrefill && isLabel) {
       const alert = {
@@ -852,23 +875,26 @@ function PlaceHolderSign() {
         alert: true
       };
       setIsSendAlert(alert);
-    } else if (filterPrefill.length === signersdata.length) {
-      const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
-      if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
-        setSignerExistModal(true);
-        setSelectWidgetId(IsSignerNotExist[0]?.placeHolder?.[0]?.pos?.[0]?.key);
+    } else if (isSignatureExist) {
+      if (filterPrefill.length === signersdata.length) {
+        const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
+        if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
+          setSignerExistModal(true);
+          setSelectWidgetId(
+            IsSignerNotExist[0]?.placeHolder?.[0]?.pos?.[0]?.key
+          );
+        } else {
+          saveDocumentDetails();
+        }
       } else {
-        saveDocumentDetails();
+        const alert = {
+          mssg: "sure",
+          alert: true
+        };
+        setIsSendAlert(alert);
       }
-    } else {
-      const alert = {
-        mssg: "sure",
-        alert: true
-      };
-      setIsSendAlert(alert);
     }
   };
-
   //function to use save placeholder details in contracts_document
   const saveDocumentDetails = async () => {
     setIsUiLoading(true);
@@ -1687,8 +1713,8 @@ function PlaceHolderSign() {
                 >
                   {isSendAlert.mssg === "sure" ? (
                     <span>
-                      Please add at least one signature field for all
-                      recipients.
+                      Please ensure there&apos;s at least one signature widget
+                      added for all recipients.
                     </span>
                   ) : isSendAlert.mssg === textWidget ? (
                     <p>Please confirm that you have filled the text field.</p>

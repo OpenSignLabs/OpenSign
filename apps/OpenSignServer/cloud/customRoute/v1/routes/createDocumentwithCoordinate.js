@@ -130,6 +130,7 @@ export default async function createDocumentwithCoordinate(request, response) {
           object.set('SendinOrder', sendInOrder);
         }
         object.set('URL', fileUrl);
+        object.set('SignedUrl', fileUrl);
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
         object.set('IsSendMail', send_email);
@@ -279,7 +280,7 @@ export default async function createDocumentwithCoordinate(request, response) {
               const objectId = contactMail[i].contactPtr.objectId;
               const hostUrl = baseUrl.origin;
               //encode this url value `${response.id}/${contactMail[i].email}/${objectId}` to base64 using `btoa` function
-              const encodeBase64 = btoa(`${response.id}/${contactMail[i].email}/${objectId}`);
+              const encodeBase64 = btoa(`${res.id}/${contactMail[i].email}/${objectId}`);
               let signPdf = `${hostUrl}/login/${encodeBase64}`;
               const openSignUrl = 'https://www.opensignlabs.com/contact-us';
               const orgName = parseExtUser.Company ? parseExtUser.Company : '';
@@ -332,7 +333,7 @@ export default async function createDocumentwithCoordinate(request, response) {
                 );
               } else {
                 replaceVar = {
-                  subject: `${parseExtUser.Name} has requested you to sign "${parseExtUser.Name}"`,
+                  subject: `${parseExtUser.Name} has requested you to sign "${name}"`,
                   body: email_html,
                 };
               }
