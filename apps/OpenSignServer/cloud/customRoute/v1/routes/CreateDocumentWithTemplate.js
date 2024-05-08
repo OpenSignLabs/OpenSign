@@ -169,6 +169,7 @@ export default async function createDocumentWithTemplate(request, response) {
               object.set('Signers', templateSigner);
             }
             object.set('URL', template.URL);
+            object.set('SignedUrl',  template.URL);
             object.set('CreatedBy', template.CreatedBy);
             object.set('ExtUserPtr', {
               __type: 'Pointer',
