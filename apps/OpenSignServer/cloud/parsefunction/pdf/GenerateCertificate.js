@@ -28,7 +28,7 @@ export default async function GenerateCertificate(docDetails) {
   const company = docDetails?.ExtUserPtr?.Company || '';
   const createdAt = docDetails?.DocSentAt?.iso || docDetails.createdAt;
   const auditTrail =
-    docDetails.AuditTrail?.length > 1
+    docDetails?.Signers?.length > 0
       ? docDetails.AuditTrail.map(x => {
           const data = docDetails.Signers.find(y => y.objectId === x.UserPtr.objectId);
           return {
@@ -281,7 +281,7 @@ export default async function GenerateCertificate(docDetails) {
     });
 
     page.drawText('Viewed on :', {
-      x: half +55,
+      x: half + 55,
       y: yPosition2,
       size: timeText,
       font: timesRomanFont,
