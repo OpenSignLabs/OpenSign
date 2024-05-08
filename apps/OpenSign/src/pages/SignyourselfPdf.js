@@ -637,6 +637,7 @@ function SignYourSelf() {
       }
       if (xyPostion.length === 0 || !isSignatureExist) {
         setIsAlert({
+          header: "Fields required",
           isShow: true,
           alertMessage:
             "Please ensure there's at least one signature widget added"
@@ -1170,7 +1171,7 @@ function SignYourSelf() {
               <ModalUi
                 headerColor={"#dc3545"}
                 isOpen={isAlert.isShow}
-                title={"Alert"}
+                title={isAlert?.header || "Alert"}
                 handleClose={() => {
                   setIsAlert({
                     isShow: false,
@@ -1180,28 +1181,6 @@ function SignYourSelf() {
               >
                 <div style={{ height: "100%", padding: 20 }}>
                   <p>{isAlert.alertMessage}</p>
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
-                  <button
-                    onClick={() => {
-                      setIsAlert({
-                        isShow: false,
-                        alertMessage: ""
-                      });
-                    }}
-                    type="button"
-                    className="finishBtn cancelBtn"
-                  >
-                    Ok
-                  </button>
                 </div>
               </ModalUi>
 
