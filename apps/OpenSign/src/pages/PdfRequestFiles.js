@@ -740,14 +740,13 @@ function PdfRequestFiles() {
                           localStorage.getItem("parseAppId"),
                         sessionToken: localStorage.getItem("accesstoken")
                       };
-                      const serverUrl = localStorage.getItem("baseUrl");
-                      const newServer = serverUrl.replaceAll("/", "%2F");
                       const objectId = user.objectId;
-                      const serverParams = `${newServer}&${localStorage.getItem(
-                        "parseAppId"
-                      )}&${localStorage.getItem("_appName")}`;
                       const hostUrl = window.location.origin;
-                      let signPdf = `${hostUrl}/login/${pdfDetails?.[0].objectId}/${user.Email}/${objectId}/${serverParams}`;
+                      //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
+                      const encodeBase64 = btoa(
+                        `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
+                      );
+                      let signPdf = `${hostUrl}/login/${encodeBase64}`;
                       const openSignUrl =
                         "https://www.opensignlabs.com/contact-us";
                       const orgName = pdfDetails[0]?.ExtUserPtr.Company
@@ -1245,9 +1244,9 @@ function PdfRequestFiles() {
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
                       : isDecline.currnt === "YouDeclined"
-                      ? "You have declined this document!"
-                      : isDecline.currnt === "another" &&
-                        "You can not sign this document as it has been declined/revoked."
+                        ? "You have declined this document!"
+                        : isDecline.currnt === "another" &&
+                          "You can not sign this document as it has been declined/revoked."
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
@@ -1340,7 +1339,7 @@ function PdfRequestFiles() {
                 <RenderAllPdfPage
                   signPdfUrl={
                     pdfDetails[0] &&
-                    (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
+                    (pdfDetails[0]?.SignedUrl || pdfDetails[0]?.URL)
                   }
                   allPages={allPages}
                   setAllPages={setAllPages}

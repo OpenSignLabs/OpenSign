@@ -64,6 +64,7 @@ function Opensigndrive() {
   const sortingValue = ["Name", "Date"];
   const [isDontShow, setIsDontShow] = useState(false);
   const [tourData, setTourData] = useState();
+  const [showTourFirstTIme, setShowTourFirstTime] = useState(true);
   const orderName = {
     Ascending: "Ascending",
     Descending: "Descending",
@@ -134,7 +135,9 @@ function Opensigndrive() {
   //function for get all pdf document list
   const getPdfDocumentList = async (disbaleLoading) => {
     setLoading(true);
-    checkTourStatus();
+    if (showTourFirstTIme) {
+      checkTourStatus();
+    }
     if (!disbaleLoading) {
       setIsLoading({ isLoad: true, message: "This might take some time" });
     }
@@ -250,17 +253,23 @@ function Opensigndrive() {
   }, [loading, sortingOrder, selectedSort]); // Add/remove scroll event listener when loading changes
 
   //function for handle folder name path
-  const handleRoute = (index) => {
-    setPdfData([]);
+  const handleRoute = (index, folderData) => {
     setSkip(0);
+    // after onclick on route filter route from that index
     const updateFolderName = folderName.filter((x, i) => {
       if (i <= index) {
         return x;
       }
     });
     setFolderName(updateFolderName);
+    //get route details after onclick path of folder name
+    const getCurrentId = folderData[index];
     const getLastId = updateFolderName[updateFolderName.length - 1];
-    setDocId(getLastId.objectId);
+    //below condition is used to check if user click on same route which already open then don't change any thing
+    if (docId !== getCurrentId.objectId) {
+      setPdfData([]);
+      setDocId(getLastId.objectId);
+    }
   };
 
   //function for add new folder name
@@ -439,7 +448,7 @@ function Opensigndrive() {
       return (
         <React.Fragment key={id}>
           <span
-            onClick={() => handleRoute(id)}
+            onClick={() => handleRoute(id, folderData)}
             style={{
               color: "#a64b4e",
               fontWeight: "400",
@@ -474,6 +483,7 @@ function Opensigndrive() {
 
   const closeTour = async () => {
     setIsTour(false);
+    setShowTourFirstTime(false);
     if (isDontShow) {
       const serverUrl = localStorage.getItem("baseUrl");
       const appId = localStorage.getItem("parseAppId");
