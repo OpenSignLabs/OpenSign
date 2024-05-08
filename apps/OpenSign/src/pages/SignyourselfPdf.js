@@ -480,13 +480,13 @@ function SignYourSelf() {
         Width: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
           : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).width
-          : "",
+            ? defaultWidthHeight(dragTypeValue).width
+            : "",
         Height: widgetTypeExist
           ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getHeight
           : dragTypeValue === "initials"
-          ? defaultWidthHeight(dragTypeValue).height
-          : "",
+            ? defaultWidthHeight(dragTypeValue).height
+            : "",
         options: addWidgetOptions(dragTypeValue)
       };
 
@@ -603,7 +603,8 @@ function SignYourSelf() {
   };
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
-    let showAlert = false;
+    let showAlert = false,
+      isSignatureExist = false;
     try {
       for (let i = 0; i < xyPostion?.length; i++) {
         const requiredWidgets = xyPostion[i].pos.filter(
@@ -627,17 +628,25 @@ function SignYourSelf() {
             }
           }
         }
+        //condition to check exist signature widget or not
+        if (!isSignatureExist) {
+          isSignatureExist = xyPostion[i].pos.some(
+            (data) => data?.type === "signature"
+          );
+        }
       }
-      if (xyPostion.length === 0) {
+      if (xyPostion.length === 0 || !isSignatureExist) {
         setIsAlert({
           isShow: true,
-          alertMessage: "Please complete your signature!"
+          alertMessage:
+            "Please ensure there's at least one signature widget added"
         });
         return;
       } else if (showAlert) {
         setIsAlert({
           isShow: true,
-          alertMessage: "Please complete your signature!"
+          alertMessage:
+            "Please ensure all field is accurately filled and meets all requirements."
         });
         return;
       } else {
@@ -713,13 +722,13 @@ function SignYourSelf() {
     // for adding it in completion certificate
     let getSignature;
     for (let item of xyPostion) {
-      const typeExist = item.pos.some((data) => data?.type);
-      if (typeExist) {
-        getSignature = item.pos.find((data) => data?.type === "signature");
-        break;
-      } else {
-        getSignature = item.pos.find((data) => !data.isStamp);
-        break;
+      if (!getSignature) {
+        const typeExist = item.pos.some((data) => data?.type);
+        if (typeExist) {
+          getSignature = item.pos.find((data) => data?.type === "signature");
+        } else {
+          getSignature = item.pos.find((data) => !data.isStamp);
+        }
       }
     }
     let base64Sign = getSignature.SignUrl;
