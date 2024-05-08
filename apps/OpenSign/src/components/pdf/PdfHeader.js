@@ -577,8 +577,8 @@ function Header({
         handleClose={() => setIsCertificate(false)}
       >
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
-          <p>Completion certificate is generating,</p>
-          <p>please wait for some time if not download try again later</p>
+          <p>Your completion certificate is being generated. Please wait momentarily.</p>
+          <p>If the download doesn&apos;t start shortly, click the button again.</p>
         </div>
       </ModalUi>
     </div>
