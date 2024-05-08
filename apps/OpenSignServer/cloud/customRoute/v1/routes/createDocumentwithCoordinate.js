@@ -333,7 +333,7 @@ export default async function createDocumentwithCoordinate(request, response) {
                 );
               } else {
                 replaceVar = {
-                  subject: `${parseExtUser.Name} has requested you to sign "${parseExtUser.Name}"`,
+                  subject:  `${parseExtUser.Name} has requested you to sign "${name}"`,
                   body: email_html,
                 };
               }
