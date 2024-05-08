@@ -1181,16 +1181,6 @@ function SignYourSelf() {
               >
                 <div style={{ height: "100%", padding: 20 }}>
                   <p>{isAlert.alertMessage}</p>
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
                 </div>
               </ModalUi>
 
