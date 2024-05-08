@@ -130,6 +130,7 @@ export default async function createDocumentwithCoordinate(request, response) {
           object.set('SendinOrder', sendInOrder);
         }
         object.set('URL', fileUrl);
+        object.set('SignedUrl', fileUrl);
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
         object.set('IsSendMail', send_email);
