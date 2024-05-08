@@ -845,7 +845,7 @@ function PlaceHolderSign() {
         });
       }
     }
-    let notExistSignature = false; // variable is used to check a signature widget exit or not then execute other code
+    let isSignatureExist = true; // variable is used to check a signature widget exit or not then execute other code
     //for loop is used to check signature widget exist or not
     for (let item of filterPrefill) {
       let signatureExist = false; // Reset for each iteration
@@ -860,7 +860,7 @@ function PlaceHolderSign() {
         }
       }
       if (!signatureExist) {
-        notExistSignature = true;
+        isSignatureExist = false;
         const alert = {
           mssg: "sure",
           alert: true
@@ -875,7 +875,7 @@ function PlaceHolderSign() {
         alert: true
       };
       setIsSendAlert(alert);
-    } else if (!notExistSignature) {
+    } else if (isSignatureExist) {
       if (filterPrefill.length === signersdata.length) {
         const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
         if (IsSignerNotExist && IsSignerNotExist?.length > 0) {
@@ -1713,8 +1713,8 @@ function PlaceHolderSign() {
                 >
                   {isSendAlert.mssg === "sure" ? (
                     <span>
-                      Please add at least one signature field for all
-                      recipients.
+                      Please ensure there&apos;s at least one signature widget
+                      added for all recipients.
                     </span>
                   ) : isSendAlert.mssg === textWidget ? (
                     <p>Please confirm that you have filled the text field.</p>
