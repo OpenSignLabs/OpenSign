@@ -102,7 +102,6 @@ export default async function createDocumentWithTemplate(request, response) {
               className: 'contracts_Document',
               objectId: folderId,
             };
-            const template = JSON.parse(JSON.stringify(templateRes));
             const object = new Parse.Object('contracts_Document');
             object.set('Name', template.Name);
             if (template?.Note) {
