@@ -104,7 +104,6 @@ function PdfRequestFiles() {
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
   const [extUserId, setExtUserId] = useState("");
-  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [isVerifyModal, setIsVerifyModal] = useState(false);
   const [otp, setOtp] = useState("");
@@ -225,16 +224,6 @@ function PdfRequestFiles() {
     //getting document details
     const documentData = await contractDocument(documentId);
     if (documentData && documentData.length > 0) {
-      const url =
-        documentData[0] && (documentData[0]?.SignedUrl || documentData[0]?.URL);
-      //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-      const arrayBuffer = await convertPdfArrayBuffer(url);
-      if (arrayBuffer === "Error") {
-        setHandleError("Error: Something went wrong!");
-      } else {
-        setPdfArrayBuffer(arrayBuffer);
-      }
-
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const isCompleted =
         documentData[0].IsCompleted && documentData[0].IsCompleted;
@@ -642,9 +631,32 @@ function PdfRequestFiles() {
           setWidgetsTour(true);
         } else {
           setIsUiLoading(true);
+
           const pngUrl = checkUser[0].placeHolder;
+          let pdfArrBuffer;
+          //`contractDocument` function used to get updated SignedUrl
+          //resolved issue of sign document by multiple signers simultaneously
+          const documentData = await contractDocument(documentId);
+          if (documentData && documentData.length > 0) {
+            const url = documentData[0]?.SignedUrl || documentData[0]?.URL;
+            //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+            const arrayBuffer = await convertPdfArrayBuffer(url);
+            if (arrayBuffer === "Error") {
+              setHandleError("Error: invalid document!");
+            } else {
+              pdfArrBuffer = arrayBuffer;
+            }
+          } else if (
+            documentData === "Error: Something went wrong!" ||
+            (documentData.result && documentData.result.error)
+          ) {
+            setHandleError("Error: Something went wrong!");
+          } else {
+            setHandleError("Document not Found!");
+          }
+
           // Load a PDFDocument from the existing PDF bytes
-          const existingPdfBytes = pdfArrayBuffer;
+          const existingPdfBytes = pdfArrBuffer;
           try {
             const pdfDoc = await PDFDocument.load(existingPdfBytes);
             const isSignYourSelfFlow = false;
