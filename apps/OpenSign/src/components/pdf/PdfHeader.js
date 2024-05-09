@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { themeColor } from "../../constant/const";
 import axios from "axios";
 import ModalUi from "../../primitives/ModalUi";
-import Parse from "parse";
+import { appInfo } from "../../constant/appinfo";
 
 function Header({
   isPdfRequestFiles,
@@ -64,7 +64,19 @@ function Header({
     event.preventDefault();
 
     try {
-      const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+      // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+      const axiosRes = await axios.post(
+        `${appInfo.baseUrl}/functions/getsignedurl`,
+        { url: pdfUrl },
+        {
+          headers: {
+            "content-type": "Application/json",
+            "X-Parse-Application-Id": appInfo.appId,
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      const url = axiosRes.data.result;
       const pdf = await getBase64FromUrl(url);
       const isAndroidDevice = navigator.userAgent.match(/Android/i);
       const isAppleDevice =
@@ -94,7 +106,19 @@ function Header({
   const handleDownloadPdf = async () => {
     const pdfName = pdfDetails[0] && pdfDetails[0].Name;
     try {
-      const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+      // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+      const axiosRes = await axios.post(
+        `${appInfo.baseUrl}/functions/getsignedurl`,
+        { url: pdfUrl },
+        {
+          headers: {
+            "content-type": "Application/json",
+            "X-Parse-Application-Id": appInfo.appId,
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      const url = axiosRes.data.result;
       saveAs(url, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
     } catch (err) {
       console.log("err in getsignedurl", err);
@@ -577,8 +601,13 @@ function Header({
         handleClose={() => setIsCertificate(false)}
       >
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
-          <p>Your completion certificate is being generated. Please wait momentarily.</p>
-          <p>If the download doesn&apos;t start shortly, click the button again.</p>
+          <p>
+            Your completion certificate is being generated. Please wait
+            momentarily.
+          </p>
+          <p>
+            If the download doesn&apos;t start shortly, click the button again.
+          </p>
         </div>
       </ModalUi>
     </div>
