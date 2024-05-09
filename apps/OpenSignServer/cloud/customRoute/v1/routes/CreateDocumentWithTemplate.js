@@ -88,12 +88,20 @@ export default async function createDocumentWithTemplate(request, response) {
           const updateSigners = placeholder.every(y => signers?.some(x => x.role === y.Role));
           // console.log('isValid ', isValid);
           if (isValid && updateSigners) {
+            //Check if every item's placeholders contain at least one placeholder with type 'signature'.
+            let isSignature = template?.Placeholders?.every(item =>
+              item?.placeHolder.some(x => x?.pos.some(data => data?.type === 'signature'))
+            );
+            if (!isSignature) {
+              return response
+                .status(400)
+                .json({ error: 'Please add at least one signature widget for all signers' });
+            }
             const folderPtr = {
               __type: 'Pointer',
               className: 'contracts_Document',
               objectId: folderId,
             };
-            const template = JSON.parse(JSON.stringify(templateRes));
             const object = new Parse.Object('contracts_Document');
             object.set('Name', template.Name);
             if (template?.Note) {
@@ -169,7 +177,7 @@ export default async function createDocumentWithTemplate(request, response) {
               object.set('Signers', templateSigner);
             }
             object.set('URL', template.URL);
-            object.set('SignedUrl',  template.URL);
+            object.set('SignedUrl', template.URL);
             object.set('CreatedBy', template.CreatedBy);
             object.set('ExtUserPtr', {
               __type: 'Pointer',

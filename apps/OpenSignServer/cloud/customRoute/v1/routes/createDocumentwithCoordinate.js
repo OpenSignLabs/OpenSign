@@ -88,6 +88,15 @@ export default async function createDocumentwithCoordinate(request, response) {
         objectId: parseUser.userId.objectId,
       };
       if (signers && signers.length > 0) {
+        // Check if at least one signature exists among all items in the signers array
+        let isSignExist = signers.every(item =>
+          item.widgets.some(data => data?.type === 'signature')
+        );
+        if (!isSignExist) {
+          return response
+            .status(400)
+            .json({ error: 'Please add at least one signature widget for all signers' });
+        }
         let fileUrl;
         if (request.files?.[0]) {
           const base64 = fileData?.toString('base64');
