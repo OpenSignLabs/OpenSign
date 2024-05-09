@@ -88,20 +88,11 @@ export default async function createDocumentWithTemplate(request, response) {
           const updateSigners = placeholder.every(y => signers?.some(x => x.role === y.Role));
           // console.log('isValid ', isValid);
           if (isValid && updateSigners) {
-            let isSignExist = false; // variable is used to check a signature widget exit or not then execute other code
-            //for loop is used to check signature widget exist or not
-            parent: for (let item of template?.Placeholders) {
-              // Reset for each iteration
-              for (let x of item?.placeHolder) {
-                if (!isSignExist) {
-                  isSignExist = x.pos.some(data => data?.type === 'signature');
-                  if (isSignExist) {
-                    break parent;
-                  }
-                }
-              }
-            }
-            if (!isSignExist) {
+            //Check if every item's placeholders contain at least one placeholder with type 'signature'.
+            let isSignature = template?.Placeholders?.every(item =>
+              item?.placeHolder.some(x => x?.pos.some(data => data?.type === 'signature'))
+            );
+            if (!isSignature) {
               return response
                 .status(400)
                 .json({ error: 'Please add at least one signature widget for all signers' });
