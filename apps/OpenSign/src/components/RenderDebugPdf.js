@@ -22,7 +22,8 @@ const RenderDebugPdf = (props) => {
           flex: 1,
           position: "relative",
           border: "1px solid grey",
-          overflow: "auto"
+          overflow: "auto",
+          cursor: "crosshair"
         }}
         onMouseMove={props.handleMouseMoveDiv}
       >
