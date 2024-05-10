@@ -77,7 +77,7 @@ export default async function getDocumentList(request, response) {
               title: x.Name,
               note: x.Note || '',
               folder: { objectId: x?.Folder?.objectId, name: x?.Folder?.Name } || '',
-              file: x?.SignedUrl || x.URL,
+              // file: x?.SignedUrl || x.URL,
               owner: x?.ExtUserPtr?.Name,
               signers:
                 x?.Placeholders?.map(y => ({
