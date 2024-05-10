@@ -566,13 +566,13 @@ export const signPdfFun = async (
     // for adding it in completion certificate
     let getSignature;
     for (let item of xyPosition) {
-      const typeExist = item.pos.some((data) => data?.type);
-      if (typeExist) {
-        getSignature = item.pos.find((data) => data?.type === "signature");
-        break;
-      } else {
-        getSignature = item.pos.find((data) => !data.isStamp);
-        break;
+      if (!getSignature) {
+        const typeExist = item.pos.some((data) => data?.type);
+        if (typeExist) {
+          getSignature = item.pos.find((data) => data?.type === "signature");
+        } else {
+          getSignature = item.pos.find((data) => !data.isStamp);
+        }
       }
     }
 
