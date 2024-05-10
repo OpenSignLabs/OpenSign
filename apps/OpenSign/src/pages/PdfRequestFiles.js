@@ -536,7 +536,7 @@ function PdfRequestFiles() {
                     setminRequiredCount(parseMin);
                   }
                   //else condition to validate minimum required checkbox
-                  else if (parseMin > 0 && parseMin > response) {
+                  else if (parseMin > 0 && (parseMin > response || !response)) {
                     if (!showAlert) {
                       showAlert = true;
                       widgetKey = requiredCheckbox[i].key;
@@ -605,7 +605,6 @@ function PdfRequestFiles() {
             break;
           }
         }
-
         if (checkboxExist && requiredCheckbox && showAlert) {
           setUnSignedWidgetId(widgetKey);
           setPageNumber(pageNumber);
