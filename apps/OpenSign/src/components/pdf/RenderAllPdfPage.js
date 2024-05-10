@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
 import { themeColor } from "../../constant/const";
@@ -9,13 +9,48 @@ function RenderAllPdfPage({
   setAllPages,
   setPageNumber,
   setSignBtnPosition,
-  pageNumber
+  pageNumber,
+  signerPos,
+  signerObjectId
 }) {
+  const [signPageNumber, setSignPageNumber] = useState([]);
   //set all number of pages after load pdf
   function onDocumentLoad({ numPages }) {
     setAllPages(numPages);
+    if (signerPos) {
+      const checkUser = signerPos.filter(
+        (data) => data.signerObjId === signerObjectId
+      );
+      let pageNumberArr = [];
+      if (checkUser?.length > 0) {
+        checkUser[0]?.placeHolder?.map((data) => {
+          pageNumberArr.push(data?.pageNumber);
+        });
+
+        setSignPageNumber(pageNumberArr);
+      }
+    }
   }
 
+  //'function `addSignatureBookmark`f function is utilized to display the page where the user's signature is located.
+  const addSignatureBookmark = (index) => {
+    const ispageNumber = signPageNumber.includes(index + 1);
+    return (
+      ispageNumber && (
+        <div
+          style={{
+            position: "absolute",
+            zIndex: 2,
+            top: -12,
+            right: -7,
+            transform: "translate(50% -50%)"
+          }}
+        >
+          <i className="fa-solid fa-bookmark text-red-500"></i>
+        </div>
+      )
+    );
+  };
   return (
     <div className="showPages">
       <div
@@ -66,7 +101,8 @@ function RenderAllPdfPage({
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      contain: "content"
+
+                      position: "relative"
                     }}
                     onClick={() => {
                       setPageNumber(index + 1);
@@ -75,15 +111,25 @@ function RenderAllPdfPage({
                       }
                     }}
                   >
-                    <Page
-                      key={`page_${index + 1}`}
-                      pageNumber={index + 1}
-                      width={100}
-                      height={100}
-                      scale={1}
-                      renderAnnotationLayer={false}
-                      renderTextLayer={false}
-                    />
+                    {signerPos && addSignatureBookmark(index)}
+
+                    <div
+                      style={{
+                        position: "relative",
+                        zIndex: 1,
+                        overflow: "hidden"
+                      }}
+                    >
+                      <Page
+                        key={`page_${index + 1}`}
+                        pageNumber={index + 1}
+                        width={100}
+                        height={100}
+                        scale={1}
+                        renderAnnotationLayer={false}
+                        renderTextLayer={false}
+                      />
+                    </div>
                   </div>
                 ))}
               </Document>
