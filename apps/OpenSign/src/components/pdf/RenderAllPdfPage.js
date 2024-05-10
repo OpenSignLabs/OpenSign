@@ -17,6 +17,7 @@ function RenderAllPdfPage({
   //set all number of pages after load pdf
   function onDocumentLoad({ numPages }) {
     setAllPages(numPages);
+    //check is signerPos exist then save page number exist in signerPos array
     if (signerPos) {
       const checkUser = signerPos.filter(
         (data) => data.signerObjId === signerObjectId
@@ -32,7 +33,7 @@ function RenderAllPdfPage({
     }
   }
 
-  //'function `addSignatureBookmark`f function is utilized to display the page where the user's signature is located.
+  //'function `addSignatureBookmark` is used to display the page where the user's signature is located.
   const addSignatureBookmark = (index) => {
     const ispageNumber = signPageNumber.includes(index + 1);
     return (
