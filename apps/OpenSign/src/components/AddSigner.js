@@ -49,6 +49,7 @@ const AddSigner = (props) => {
     e.preventDefault();
     e.stopPropagation();
     setIsLoader(true);
+    if (localStorage.getItem("TenantId")) {
     try {
       const contactQuery = new Parse.Object("contracts_Contactbook");
       contactQuery.set("Name", name);
@@ -56,13 +57,11 @@ const AddSigner = (props) => {
       contactQuery.set("Email", email);
       contactQuery.set("UserRole", "contracts_Guest");
 
-      if (localStorage.getItem("TenantId")) {
         contactQuery.set("TenantId", {
           __type: "Pointer",
           className: "partners_Tenant",
           objectId: localStorage.getItem("TenantId")
         });
-      }
 
       try {
         const _users = Parse.Object.extend("User");
@@ -187,6 +186,9 @@ const AddSigner = (props) => {
       // console.log("err", err);
       setIsLoader(false);
       alert("something went wrong!");
+    }
+    }else{
+      alert('something went wrong, please try again later')
     }
   };
 
