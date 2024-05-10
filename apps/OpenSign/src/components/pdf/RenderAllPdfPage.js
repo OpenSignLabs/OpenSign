@@ -17,7 +17,7 @@ function RenderAllPdfPage({
   //set all number of pages after load pdf
   function onDocumentLoad({ numPages }) {
     setAllPages(numPages);
-    //check is signerPos exist then save page number exist in signerPos array
+    //check if signerPos array exist then save page number exist in signerPos array to show bookmark icon
     if (signerPos) {
       const checkUser = signerPos.filter(
         (data) => data.signerObjId === signerObjectId
