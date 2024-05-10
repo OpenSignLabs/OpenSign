@@ -560,14 +560,16 @@ function PdfRequestFiles() {
               if (requiredRadio && requiredRadio?.length > 0) {
                 let checkSigned;
                 for (let i = 0; i < requiredRadio?.length; i++) {
-                  checkSigned = requiredRadio[i]?.options.response;
-                  let checkDefaultSigned =
-                    requiredRadio[i]?.options.defaultValue;
-                  if (!checkSigned && !checkDefaultSigned && !showAlert) {
-                    showAlert = true;
-                    widgetKey = requiredRadio[i].key;
-                    pageNumber = updatePage;
-                    setminRequiredCount(null);
+                  checkSigned = requiredRadio[i]?.options?.response;
+                  if (!checkSigned) {
+                    let checkDefaultSigned =
+                      requiredRadio[i]?.options?.defaultValue;
+                    if (!checkDefaultSigned && !showAlert) {
+                      showAlert = true;
+                      widgetKey = requiredRadio[i].key;
+                      pageNumber = updatePage;
+                      setminRequiredCount(null);
+                    }
                   }
                 }
               }
@@ -587,13 +589,15 @@ function PdfRequestFiles() {
                   checkSigned = requiredWidgets[i]?.options?.response;
                   if (!checkSigned) {
                     const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
-                    let checkDefaultSigned =
-                      requiredWidgets[i]?.options?.defaultValue;
-                    if (!checkSignUrl && !checkDefaultSigned && !showAlert) {
-                      showAlert = true;
-                      widgetKey = requiredWidgets[i].key;
-                      pageNumber = updatePage;
-                      setminRequiredCount(null);
+                    if (!checkSignUrl) {
+                      let checkDefaultSigned =
+                        requiredWidgets[i]?.options?.defaultValue;
+                      if (!checkDefaultSigned && !showAlert) {
+                        showAlert = true;
+                        widgetKey = requiredWidgets[i].key;
+                        pageNumber = updatePage;
+                        setminRequiredCount(null);
+                      }
                     }
                   }
                 }

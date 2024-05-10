@@ -14,6 +14,7 @@ function RenderAllPdfPage({
   signerObjectId
 }) {
   const [signPageNumber, setSignPageNumber] = useState([]);
+  const [bookmarkColor, setBookmarkColor] = useState("");
   //set all number of pages after load pdf
   function onDocumentLoad({ numPages }) {
     setAllPages(numPages);
@@ -22,6 +23,7 @@ function RenderAllPdfPage({
       const checkUser = signerPos.filter(
         (data) => data.signerObjId === signerObjectId
       );
+      setBookmarkColor(checkUser[0]?.blockColor);
       let pageNumberArr = [];
       if (checkUser?.length > 0) {
         checkUser[0]?.placeHolder?.map((data) => {
@@ -47,7 +49,10 @@ function RenderAllPdfPage({
             transform: "translate(50% -50%)"
           }}
         >
-          <i className="fa-solid fa-bookmark text-red-500"></i>
+          <i
+            style={{ color: bookmarkColor || "red" }}
+            className="fa-solid fa-bookmark"
+          ></i>
         </div>
       )
     );
