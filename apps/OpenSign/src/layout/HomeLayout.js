@@ -28,29 +28,34 @@ const HomeLayout = () => {
   const [tourConfigs, setTourConfigs] = useState([]);
   const [, setCookie] = useCookies(["accesstoken", "main_Domain"]);
 
+  const tenantId = localStorage.getItem("TenantId");
   useEffect(() => {
-    (async () => {
-      try {
-        // Use the session token to validate the user
-        const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(Parse.User.current().id, {
-          sessionToken: localStorage.getItem("accesstoken")
-        });
-        if (user) {
-          localStorage.setItem("profileImg", user.get("ProfilePic") || "");
-          checkIsSubscribed();
-        } else {
+    if (!tenantId) {
+      setIsUserValid(false);
+    } else {
+      (async () => {
+        try {
+          // Use the session token to validate the user
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(Parse.User.current().id, {
+            sessionToken: localStorage.getItem("accesstoken")
+          });
+          if (user) {
+            localStorage.setItem("profileImg", user.get("ProfilePic") || "");
+            checkIsSubscribed();
+          } else {
+            setIsUserValid(false);
+          }
+        } catch (error) {
+          // Session token is invalid or there was an error
           setIsUserValid(false);
         }
-      } catch (error) {
-        // Session token is invalid or there was an error
-        setIsUserValid(false);
-      }
-    })();
-    saveCookies();
+      })();
+      saveCookies();
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [tenantId]);
   //function to use save data in cookies storage
   const saveCookies = () => {
     const main_Domain = window.location.origin;
