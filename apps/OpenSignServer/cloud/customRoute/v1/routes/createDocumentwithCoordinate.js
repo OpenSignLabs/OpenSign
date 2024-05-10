@@ -66,6 +66,7 @@ export default async function createDocumentwithCoordinate(request, response) {
   const email_subject = request.body.email_subject;
   const email_body = request.body.email_body;
   const sendInOrder = request.body.sendInOrder || false;
+  const TimeToCompleteDays = request.body.TimeToCompleteDays || 15;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
   const baseUrl = new URL(process.env.SERVER_URL);
@@ -142,6 +143,9 @@ export default async function createDocumentwithCoordinate(request, response) {
         object.set('SignedUrl', fileUrl);
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
+        if (TimeToCompleteDays) {
+          object.set('TimeToCompleteDays', TimeToCompleteDays);
+        }
         object.set('IsSendMail', send_email);
         let contact = [];
         if (signers && signers.length > 0) {
