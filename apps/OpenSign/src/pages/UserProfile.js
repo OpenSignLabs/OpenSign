@@ -404,7 +404,6 @@ function UserProfile() {
                       url={
                         "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
                       }
-                      isSubscribe={isSubscribe}
                     />{" "}
                     {!isSubscribe && isEnableSubscription && <Upgrade />}
                   </span>{" "}
