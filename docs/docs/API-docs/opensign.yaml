@@ -1305,15 +1305,15 @@ components:
         email:
           type: string
           description: |
-            provide user mail from signers to send request mail.
+            provide user mail from signers to re-send request mail.
           example: user@example.com
         email_subject:
           type: string
-          description: "Custom mail subject for signature request. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+          description: "Custom signature request email subject in text/html format. Can include following variables  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
           example: ""
         email_body:
           type: string
-          description: "Custom signature request email body. Can include the following  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+          description: "Custom signature request email body in text/html format. Can include following variables  {{document_title}} {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
           example: ""
     inline_response_200_2:
       type: object
