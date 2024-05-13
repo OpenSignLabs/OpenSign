@@ -40,7 +40,7 @@ export default async function getDocument(request, response) {
           note: document.Note || '',
           folder: { objectId: document?.Folder?.objectId, name: document?.Folder?.Name } || '',
           file: document?.SignedUrl || document.URL,
-          certificateUrl: document?.CertificateUrl || '',
+          certificate: document?.CertificateUrl || '',
           owner: document?.ExtUserPtr?.Name,
           signers:
             document?.Placeholders?.map(y => ({
