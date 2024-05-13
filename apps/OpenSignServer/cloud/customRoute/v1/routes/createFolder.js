@@ -54,7 +54,14 @@ export default async function createFolder(request, response) {
             properties: { response_code: 200 },
           });
         }
-        return response.status(200).json({ status: 'folder created successfully.' });
+        const parseRes = JSON.parse(JSON.stringify(_resFolder));
+        return response.json({
+          objectId: parseRes.objectId,
+          folderName: parseRes.Name,
+          parentFolderId: parseRes?.Folder?.objectId || '',
+          createdAt: parseRes.createdAt,
+          updatedAt: parseRes.updatedAt,
+        });
       }
     } else {
       return response.status(405).json({ error: 'Invalid API Token!' });
