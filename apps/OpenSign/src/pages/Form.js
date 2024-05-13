@@ -707,12 +707,13 @@ const Forms = (props) => {
                 required
               />
             </div>
+            {props.title !== "New Template" && (
             <SelectFolder
               onSuccess={handleFolder}
               folderCls={props.Cls}
               isReset={isReset}
             />
-
+            )}
             {props.title === "Request Signatures" && (
               <div className="text-xs mt-2">
                 <label className="block">
