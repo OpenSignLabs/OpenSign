@@ -1336,7 +1336,6 @@ components:
     folder_body:
       required:
       - foldername
-      - parentFolderId
       type: object
       properties:
         foldername:
