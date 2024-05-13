@@ -1,6 +1,6 @@
 export default async function getFolderList(request, response) {
   const apiToken = request.headers['x-api-token'];
-  const parentFolderId = request.body.parentFolderId;
+  const parentFolderId = request.query?.parentFolderId || '';
   if (!apiToken) {
     return response.status(400).json({ error: 'Please Provide API Token' });
   }
