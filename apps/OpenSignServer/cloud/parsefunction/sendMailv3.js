@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import https from 'https';
+import http from 'http';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import { updateMailCount } from '../../Utils.js';
@@ -32,7 +32,7 @@ async function sendMailProvider(req) {
       let Pdf = fs.createWriteStream('test.pdf');
       const writeToLocalDisk = () => {
         return new Promise((resolve, reject) => {
-          https.get(req.params.url, async function (response) {
+          http.get(req.params.url, async function (response) {
             response.pipe(Pdf);
             response.on('end', () => resolve('success'));
           });
