@@ -1068,9 +1068,19 @@ paths:
       tags:
       - Folder
       summary: Get folder list
-      description: The Folder List API empowers you to retrieve a list of folder with or without parentFolderI
+      description: The Folder List API empowers you to retrieve a list of folder with or without parentFolderId
       operationId: folderlist
       parameters:
+      - name: parentFolderId
+        in: query
+        description: objectId of folder
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: ""
       - name: limit
         in: query
         required: false
