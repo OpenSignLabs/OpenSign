@@ -169,32 +169,40 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
           {required && <span className="text-red-500 text-[13px]">*</span>}
         </label>
       </div>
-      <div className="relative rounded px-[20px] py-[20px] bg-white border border-gray-200 shadow flex max-w-sm gap-8 items-center">
-        <div>
-          <i
-            className="far fa-folder-open text-[40px] text-[#33bbff]"
-            style={{ fontSize: "40px" }}
-            aria-hidden="true"
-          ></i>
-        </div>
-        <div className="font-semibold ">
-          <div className="flex items-center gap-2">
-            <p>
-              {selectFolder && selectFolder.Name
-                ? selectFolder.Name
-                : "OpenSign™ Drive"}
-            </p>
-            <div className="text-black text-sm" onClick={() => SetIsOpen(true)}>
-              <i
-                className="fa fa-pencil"
-                title="Select Folder"
-                aria-hidden="true"
-              ></i>
-            </div>
+      <div className="relative max-w-sm">
+        <div
+          onClick={() => SetIsOpen(true)}
+          className=" cursor-pointer rounded px-[20px] py-[20px] bg-white border border-gray-200 shadow flex max-w-sm gap-8 items-center"
+        >
+          <div>
+            <i
+              className="far fa-folder-open text-[40px] text-[#33bbff]"
+              style={{ fontSize: "40px" }}
+              aria-hidden="true"
+            ></i>
           </div>
-          <p className="text-[10px] text-gray-400">
-            {selectFolder && selectFolder.Name ? `(${folderPath})` : ""}
-          </p>
+          <div className="font-semibold ">
+            <div className="flex items-center gap-2">
+              <p>
+                {selectFolder && selectFolder.Name
+                  ? selectFolder.Name
+                  : "OpenSign™ Drive"}
+              </p>
+              <div
+                className="text-black text-sm"
+                // onClick={() => SetIsOpen(true)}
+              >
+                <i
+                  className="fa fa-pencil cursor-pointer"
+                  title="Select Folder"
+                  aria-hidden="true"
+                ></i>
+              </div>
+            </div>
+            <p className="text-[10px] text-gray-400">
+              {selectFolder && selectFolder.Name ? `(${folderPath})` : ""}
+            </p>
+          </div>
         </div>
         <div className="absolute top-2 right-1 cursor-pointer">
           <Tooltip

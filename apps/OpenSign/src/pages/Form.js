@@ -16,6 +16,7 @@ import { PDFDocument } from "pdf-lib";
 import axios from "axios";
 import { isEnableSubscription, submitBtn } from "../constant/const";
 import ModalUi from "../primitives/ModalUi";
+import { Tooltip } from "react-tooltip";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -707,12 +708,13 @@ const Forms = (props) => {
                 required
               />
             </div>
-            <SelectFolder
-              onSuccess={handleFolder}
-              folderCls={props.Cls}
-              isReset={isReset}
-            />
-
+            {props.title !== "New Template" && (
+              <SelectFolder
+                onSuccess={handleFolder}
+                folderCls={props.Cls}
+                isReset={isReset}
+              />
+            )}
             {props.title === "Request Signatures" && (
               <div className="text-xs mt-2">
                 <label className="block">
@@ -731,7 +733,66 @@ const Forms = (props) => {
             )}
             {props.title !== "Sign Yourself" && (
               <div className="text-xs mt-2">
-                <label className="block">Send In Order</label>
+                <label className="block">
+                  Send In Order
+                  <a data-tooltip-id="sendInOrder-tooltip" className="ml-1">
+                    <sup>
+                      <i
+                        className="fa-solid fa-question rounded-full"
+                        style={{
+                          borderColor: "#33bbff",
+                          color: "#33bbff",
+                          fontSize: 13,
+                          borderWidth: 1.5,
+                          padding: "1.5px 4px"
+                        }}
+                      ></i>
+                    </sup>
+                  </a>
+                  <Tooltip id="sendInOrder-tooltip" className="z-50">
+                    <div className="max-w-[200px] md:max-w-[450px]">
+                      <p className="font-bold">Send in Order</p>
+                      <p>
+                        Choose how you want the signing requests to be sent to
+                        the document signers:
+                      </p>
+                      <p className="p-[5px]">
+                        <ol className="list-disc">
+                          <li>
+                            <span className="font-bold">Yes:</span>
+                            <span>
+                              {" "}
+                              Selecting this option will send the signing
+                              request to the first signer initially. Once the
+                              first signer completes their part, the next signer
+                              in the sequence will receive the request. This
+                              process continues until all signers have signed
+                              the document. This method ensures that the
+                              document is signed in a specific order.
+                            </span>
+                          </li>
+                          <li>
+                            <span className="font-bold">No: </span>
+                            <span>
+                              Selecting this option will send the signing links
+                              to all signers simultaneously. Every signer can
+                              sign the document at their convenience, regardless
+                              of whether other signers have completed their
+                              signatures. This method is faster but does not
+                              enforce any signing order among the participants.
+                            </span>
+                          </li>
+                        </ol>
+                      </p>
+
+                      <p>
+                        Select the option that best suits the needs of your
+                        document processing.
+                      </p>
+                    </div>
+                  </Tooltip>
+                </label>
+
                 <div className="flex items-center gap-2 ml-2 mb-1">
                   <input
                     type="radio"
