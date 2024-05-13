@@ -26,6 +26,10 @@ import getWebhook from './routes/getWebhook.js';
 import createDocumentwithCoordinate from './routes/createDocumentwithCoordinate.js';
 import createTemplatewithCoordinate from './routes/createTemplatewithCoordinate.js';
 import resendMail from './routes/resendMail.js';
+import getFolder from './routes/getFolder.js';
+import createFolder from './routes/createFolder.js';
+import updateFolder from './routes/updateFolder.js';
+import getFolderList from './routes/getFolderList.js';
 dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -106,3 +110,14 @@ app.delete('/webhook', deleteWebhook);
 // resend mail
 app.post('/resendmail', resendMail);
 
+// create folder
+app.post('/createfolder', createFolder);
+
+// update folder
+app.put('/folder/:folder_id', updateFolder);
+
+// get folder
+app.get('/folder/:folder_id', getFolder);
+
+// get folder list
+app.get('/folderlist', getFolderList);
