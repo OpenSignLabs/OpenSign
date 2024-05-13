@@ -1016,7 +1016,7 @@ paths:
     put:
       tags:
       - Folder
-      summary: update Folder
+      summary: Update Folder
       description: The Update Folder API allows you to uodate folder name as well as parentFolderId.
       operationId: updatefolder
       parameters:
@@ -1188,7 +1188,7 @@ components:
           example: new folder
         parentFolderId:
           type: string
-          format: objectId
+          format: string
           example: J2nas5kiPe
         createdAt:
           $ref: '#/components/schemas/date'
@@ -1209,11 +1209,11 @@ components:
           example: new folder
         parentFolderId:
           type: string
-          format: objectId
+          format: string
           example: J2nas5kiPe
         parentFolderName:
           type: string
-          format: objectId
+          format: string
           example: new sub folder
         createdAt:
           $ref: '#/components/schemas/date'
@@ -1345,7 +1345,7 @@ components:
           example: new folder
         parentFolderId:
           type: string
-          format: objectId
+          format: string
           example: Hj2bhi2Ptu
     inline_response_401_1:
       type: object
