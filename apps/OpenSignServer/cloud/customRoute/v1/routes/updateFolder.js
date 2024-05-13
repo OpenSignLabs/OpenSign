@@ -46,9 +46,7 @@ export default async function updateFolder(request, response) {
             properties: { response_code: 200 },
           });
         }
-        return response.json({
-          result: { objectId: updateRes.id, updatedAt: updateRes.updatedAt },
-        });
+        return response.json({ objectId: updateRes.id, updatedAt: updateRes.updatedAt });
       } else {
         if (request.posthog) {
           request.posthog?.capture({

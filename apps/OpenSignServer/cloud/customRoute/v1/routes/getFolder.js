@@ -29,14 +29,6 @@ export default async function getFolder(request, response) {
       const res = await folderCls.first({ useMasterKey: true });
       if (res) {
         const parseRes = JSON.parse(JSON.stringify(res));
-        const folder = {
-          objectId: parseRes.objectId,
-          folderName: parseRes.Name,
-          parentFolderId: parseRes?.Folder?.objectId || '',
-          parentFolderName: parseRes?.Folder?.Name || '',
-          createdAt: parseRes.createdAt,
-          updatedAt: parseRes.updatedAt,
-        };
         if (request.posthog) {
           request.posthog?.capture({
             distinctId: parseUser.userId.email,
@@ -44,7 +36,14 @@ export default async function getFolder(request, response) {
             properties: { response_code: 200 },
           });
         }
-        return response.json({ result: folder });
+        return response.json({
+          objectId: parseRes.objectId,
+          folderName: parseRes.Name,
+          parentFolderId: parseRes?.Folder?.objectId || '',
+          parentFolderName: parseRes?.Folder?.Name || '',
+          createdAt: parseRes.createdAt,
+          updatedAt: parseRes.updatedAt,
+        });
       } else {
         if (request.posthog) {
           request.posthog?.capture({
