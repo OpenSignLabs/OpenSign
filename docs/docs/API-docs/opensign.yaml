@@ -1355,7 +1355,7 @@ components:
         parentFolderId:
           type: string
           format: string
-          example: Hj2bhi2Ptu
+          example: ""
     inline_response_401_1:
       type: object
       properties:
