@@ -328,7 +328,6 @@ function RenderPdf({
       );
     }
   };
-
   return (
     <>
       {successEmail && <Alert type={"success"}>Email sent successfully!</Alert>}
@@ -514,7 +513,7 @@ function RenderPdf({
             height: window.innerHeight - 110 + "px"
           }}
           noScrollY={false}
-          noScrollX={pdfNewWidth < pdfOriginalWidth ? false : true}
+          noScrollX={pdfNewWidth <= pdfOriginalWidth ? false : true}
         >
           <div
             style={{

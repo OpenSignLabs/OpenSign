@@ -322,10 +322,12 @@
   background: white;
 }
 
-.ScrollbarsCustom-Track {
+.ScrollbarsCustom-TrackY {
   width: 4px !important;
 }
-
+.ScrollbarsCustom-TrackX {
+  height: 4px !important;
+}
 .signYourselfBlock {
   padding: 0px;
   display: flex !important;
