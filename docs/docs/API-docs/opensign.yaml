@@ -37,6 +37,8 @@ tags:
   description: Operations about templates
 - name: Webhook
   description: Operations about Webhook
+- name: Folder
+  description: Operations about Folder
 paths:
   /getuser:
     get:
@@ -931,6 +933,176 @@ paths:
                 $ref: '#/components/schemas/invalidtoken'
       security:
       - x-api-token: []
+  /createfolder:
+    post:
+      tags:
+      - Folder
+      summary: Create Folder
+      description: The Create Folder API allows you to create folder.
+      operationId: createfolder
+      requestBody:
+        description: Provide below parameter to create folder
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createfolder_body'
+        required: true
+      responses:
+        "200":
+          description: folder created successfully!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folder'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /folder/{folder_id}:
+    get:
+      tags:
+      - Folder
+      summary: Get Folder
+      description: The Get Folder API allows you to retrieve details about a specific folder.
+      operationId: getfolder
+      parameters:
+      - name: folder_id
+        in: path
+        description: objectId of folder
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: pH1bhc2hpb
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/folder_res'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: folder not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_8'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+    put:
+      tags:
+      - Folder
+      summary: update Folder
+      description: The Update Folder API allows you to uodate folder name as well as parentFolderId.
+      operationId: updatefolder
+      parameters:
+      - name: folder_id
+        in: path
+        description: objectId of folder
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: string
+          example: bK1cfd2hpb
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_11'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "404":
+          description: folder not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_8'
+        "405":
+          description: Invalid API token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
+  /folderlist:
+    get:
+      tags:
+      - Folder
+      summary: Get folder list
+      description: The Folder List API empowers you to retrieve a list of folder with or without parentFolderI
+      operationId: folderlist
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 500
+          type: number
+        example: 10
+      - name: skip
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+        example: 0
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_12'
+        "400":
+          description: "Something went wrong, please try again later!"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "405":
+          description: Invalid API Token!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidtoken'
+      security:
+      - x-api-token: []
 components:
   schemas:
     date:
@@ -997,6 +1169,50 @@ components:
           $ref: '#/components/schemas/date'
       xml:
         name: contactdetails
+    folder:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: ph1bhx2jp
+        folderName:
+          type: string
+          format: string
+          example: new folder
+        parentFolderId:
+          type: string
+          format: objectId
+          example: J2nas5kiPe
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
+      xml:
+        name: folderdetails
+    folder_res:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: ph1bhx2jp
+        folderName:
+          type: string
+          format: string
+          example: new folder
+        parentFolderId:
+          type: string
+          format: objectId
+          example: J2nas5kiPe
+        parentFolderName:
+          type: string
+          format: objectId
+          example: new sub folder
+        createdAt:
+          $ref: '#/components/schemas/date'
+        updatedAt:
+          $ref: '#/components/schemas/date'
     user:
       type: object
       properties:
@@ -1111,6 +1327,20 @@ components:
           type: string
           format: string
           example: "1232131321"
+    createfolder_body:
+      required:
+      - foldername
+      - parentFolderId
+      type: object
+      properties:
+        foldername:
+          type: string
+          format: string
+          example: new folder
+        parentFolderId:
+          type: string
+          format: objectId
+          example: Hj2bhi2Ptu
     inline_response_401_1:
       type: object
       properties:
@@ -1717,6 +1947,29 @@ components:
           type: string
           format: string
           example: document not found or user not found.
+    inline_response_404_8:
+      type: object
+      properties:
+        error:
+          type: string
+          format: string
+          example: folder not found.
+    inline_response_200_11:
+      type: object
+      properties:
+        objectId:
+          type: string
+          format: string
+          example: Hks2JpewIp
+        updatedAt:
+          $ref: '#/components/schemas/date'
+    inline_response_200_12:
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/folder_res'
   securitySchemes:
     x-api-token:
       type: apiKey
