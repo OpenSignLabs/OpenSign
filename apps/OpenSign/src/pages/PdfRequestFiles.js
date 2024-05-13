@@ -472,36 +472,8 @@ function PdfRequestFiles() {
       });
   };
 
-  // const checkSendInOrder = () => {
-  //   if (sendInOrder) {
-  //     const index = pdfDetails?.[0].Signers.findIndex(
-  //       (x) => x.Email === jsonSender.email
-  //     );
-  //     const newIndex = index - 1;
-  //     if (newIndex !== -1) {
-  //       const user = pdfDetails?.[0].Signers[newIndex];
-  //       const isPrevUserSigned =
-  //         pdfDetails?.[0].AuditTrail &&
-  //         pdfDetails?.[0].AuditTrail.some(
-  //           (x) =>
-  //             x.UserPtr.objectId === user.objectId && x.Activity === "Signed"
-  //         );
-  //       if (isPrevUserSigned) {
-  //         return true;
-  //       } else {
-  //         return false;
-  //       }
-  //     } else {
-  //       return true;
-  //     }
-  //   } else {
-  //     return true;
-  //   }
-  // };
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
-    // const validateSigning = checkSendInOrder();
-    // if (validateSigning) {
     try {
       const checkUser = signerPos.filter(
         (data) => data.signerObjId === signerObjectId
@@ -512,83 +484,99 @@ function PdfRequestFiles() {
           showAlert = false,
           widgetKey,
           radioExist,
-          requiredCheckbox;
+          requiredCheckbox,
+          pageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
 
         for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
           for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
+            //get current page
+            const updatePage = checkUser[0].placeHolder[i]?.pageNumber;
+            //checking checbox type widget
             checkboxExist =
               checkUser[0].placeHolder[i].pos[j].type === "checkbox";
+            //checking radio button type widget
             radioExist =
               checkUser[0].placeHolder[i].pos[j].type === radioButtonWidget;
+            //condition to check checkbox widget exist or not
             if (checkboxExist) {
+              //get all required type checkbox
               requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
                 (position) =>
                   !position.options?.isReadOnly && position.type === "checkbox"
               );
-
+              //if required type checkbox data exit then check user checked all checkbox or some checkbox remain to check
+              //also validate to minimum and maximum required checkbox
               if (requiredCheckbox && requiredCheckbox.length > 0) {
                 for (let i = 0; i < requiredCheckbox.length; i++) {
+                  //get minimum required count if  exit
                   const minCount =
                     requiredCheckbox[i].options?.validation?.minRequiredCount;
                   const parseMin = minCount && parseInt(minCount);
+                  //get maximum required count if  exit
                   const maxCount =
                     requiredCheckbox[i].options?.validation?.maxRequiredCount;
                   const parseMax = maxCount && parseInt(maxCount);
+                  //in `response` variable is used to get how many checkbox checked by user
                   const response =
                     requiredCheckbox[i].options?.response?.length;
+                  //in `defaultValue` variable is used to get how many checkbox checked by default
                   const defaultValue =
                     requiredCheckbox[i].options?.defaultValue?.length;
-                  if (parseMin === 0 && parseMax === 0) {
-                    if (!showAlert) {
-                      showAlert = false;
-                      setminRequiredCount(null);
-                    }
-                  } else if (parseMin === 0 && parseMax > 0) {
-                    if (!showAlert) {
-                      showAlert = false;
-                      setminRequiredCount(null);
-                    }
-                  } else if (!response) {
-                    if (!defaultValue) {
-                      if (!showAlert) {
-                        showAlert = true;
-                        widgetKey = requiredCheckbox[i].key;
-                        setminRequiredCount(parseMin);
-                      }
-                    }
-                  } else if (parseMin > 0 && parseMin > response) {
+                  //condition to check  parseMin  and parseMax greater than 0  then consider it as a required check box
+                  if (
+                    parseMin > 0 &&
+                    parseMax > 0 &&
+                    !response &&
+                    !defaultValue &&
+                    !showAlert
+                  ) {
+                    showAlert = true;
+                    widgetKey = requiredCheckbox[i].key;
+                    pageNumber = updatePage;
+                    setminRequiredCount(parseMin);
+                  }
+                  //else condition to validate minimum required checkbox
+                  else if (parseMin > 0 && (parseMin > response || !response)) {
                     if (!showAlert) {
                       showAlert = true;
                       widgetKey = requiredCheckbox[i].key;
+                      pageNumber = updatePage;
+
                       setminRequiredCount(parseMin);
                     }
                   }
                 }
               }
-            } else if (radioExist) {
+            }
+            //condition to check radio widget exist or not
+            else if (radioExist) {
+              //get all required type radio button
               requiredRadio = checkUser[0].placeHolder[i].pos.filter(
                 (position) =>
                   !position.options?.isReadOnly &&
                   position.type === radioButtonWidget
               );
+              //if required type radio data exit then check user checked all radio button or some radio remain to check
               if (requiredRadio && requiredRadio?.length > 0) {
                 let checkSigned;
                 for (let i = 0; i < requiredRadio?.length; i++) {
-                  checkSigned = requiredRadio[i]?.options.response;
+                  checkSigned = requiredRadio[i]?.options?.response;
                   if (!checkSigned) {
                     let checkDefaultSigned =
-                      requiredRadio[i]?.options.defaultValue;
-                    if (!checkDefaultSigned) {
-                      if (!showAlert) {
-                        showAlert = true;
-                        widgetKey = requiredRadio[i].key;
-                        setminRequiredCount(null);
-                      }
+                      requiredRadio[i]?.options?.defaultValue;
+                    if (!checkDefaultSigned && !showAlert) {
+                      showAlert = true;
+                      widgetKey = requiredRadio[i].key;
+                      pageNumber = updatePage;
+                      setminRequiredCount(null);
                     }
                   }
                 }
               }
-            } else {
+            }
+            //else condition to check all type widget data fill or not except checkbox and radio button
+            else {
+              //get all required type widgets except checkbox and radio
               const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
                 (position) =>
                   position.options?.status === "required" &&
@@ -601,16 +589,14 @@ function PdfRequestFiles() {
                   checkSigned = requiredWidgets[i]?.options?.response;
                   if (!checkSigned) {
                     const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
-
-                    let checkDefaultSigned =
-                      requiredWidgets[i]?.options?.defaultValue;
                     if (!checkSignUrl) {
-                      if (!checkDefaultSigned) {
-                        if (!showAlert) {
-                          showAlert = true;
-                          widgetKey = requiredWidgets[i].key;
-                          setminRequiredCount(null);
-                        }
+                      let checkDefaultSigned =
+                        requiredWidgets[i]?.options?.defaultValue;
+                      if (!checkDefaultSigned && !showAlert) {
+                        showAlert = true;
+                        widgetKey = requiredWidgets[i].key;
+                        pageNumber = updatePage;
+                        setminRequiredCount(null);
                       }
                     }
                   }
@@ -618,16 +604,22 @@ function PdfRequestFiles() {
               }
             }
           }
+          //when showAlert is true then break the loop and show alert to fill required data in widgets
+          if (showAlert) {
+            break;
+          }
         }
-
         if (checkboxExist && requiredCheckbox && showAlert) {
           setUnSignedWidgetId(widgetKey);
+          setPageNumber(pageNumber);
           setWidgetsTour(true);
         } else if (radioExist && showAlert) {
           setUnSignedWidgetId(widgetKey);
+          setPageNumber(pageNumber);
           setWidgetsTour(true);
         } else if (showAlert) {
           setUnSignedWidgetId(widgetKey);
+          setPageNumber(pageNumber);
           setWidgetsTour(true);
         } else {
           setIsUiLoading(true);
@@ -882,15 +874,6 @@ function PdfRequestFiles() {
         alertMessage: "something went wrong, please try again later."
       });
     }
-
-    // }
-    // else {
-    //   setIsAlert({
-    //     isShow: true,
-    //     alertMessage:
-    //       "Please wait for your turn to sign this document, as it has been set up by the creator to be signed in a specific order; you'll be notified when it's your turn."
-    //   });
-    // }
   }
 
   //function for update TourStatus
@@ -1349,6 +1332,8 @@ function PdfRequestFiles() {
                 </ModalUi>
                 {/* this component used to render all pdf pages in left side */}
                 <RenderAllPdfPage
+                  signerPos={signerPos}
+                  signerObjectId={signerObjectId}
                   signPdfUrl={
                     pdfDetails[0] &&
                     (pdfDetails[0]?.SignedUrl || pdfDetails[0]?.URL)
