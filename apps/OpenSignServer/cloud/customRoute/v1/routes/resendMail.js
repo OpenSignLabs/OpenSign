@@ -33,10 +33,11 @@ export default async function resendMail(request, response) {
       docQuery.notEqualTo('IsCompleted', true);
       docQuery.notEqualTo('IsDeclined', true);
       docQuery.notEqualTo('IsArchive', true);
-      docQuery.lessThanOrEqualTo('ExpiryDate', new Date());
+      docQuery.greaterThanOrEqualTo('ExpiryDate', new Date());
       docQuery.exists('SignedUrl');
 
       const resDoc = await docQuery.first({ useMasterKey: true });
+      // console.log("resDoc ",resDoc)
       if (resDoc) {
         const _resDoc = resDoc.toJSON();
         const contact = _resDoc.Signers.find(x => x.Email === userMail);
