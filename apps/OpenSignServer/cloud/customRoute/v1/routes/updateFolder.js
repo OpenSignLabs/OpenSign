@@ -1,7 +1,7 @@
 export default async function updateFolder(request, response) {
   const apiToken = request.headers['x-api-token'];
   const folderId = request.params.folder_id;
-  const name = request.body.foldername;
+  const name = request.body.folderName;
   const parentFolderId = request.body.parentFolderId;
   if (!apiToken) {
     return response.status(400).json({ error: 'Please Provide API Token' });
