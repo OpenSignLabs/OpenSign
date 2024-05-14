@@ -48,8 +48,11 @@ export default async function callWebhook(request) {
         }
       }
     }
+    const docQuery = new Parse.Query('contracts_Document');
+    const resDoc = await docQuery.get(docId, { useMasterKey: true });
     const extendcls = new Parse.Query('contracts_Users');
-    extendcls.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
+    extendcls.equalTo('objectId', resDoc.get('ExtUserPtr')?.id);
+    // extendcls.equalTo('UserId', { __type: 'Pointer', className: '_User', objectId: userId });
     const res = await extendcls.first({ useMasterKey: true });
     if (res) {
       const extUser = JSON.parse(JSON.stringify(res));
