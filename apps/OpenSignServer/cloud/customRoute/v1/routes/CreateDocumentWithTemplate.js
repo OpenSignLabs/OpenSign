@@ -50,7 +50,7 @@ export default async function createDocumentWithTemplate(request, response) {
   const folderId = request.body.folderId;
   const templateId = request.params.template_id;
   const protocol = customAPIurl();
-  const baseUrl = new URL(process.env.SERVER_URL);
+  const baseUrl = new URL(process.env.PUBLIC_URL);
   const send_email = request.body.send_email;
   const email_subject = request.body.email_subject;
   const email_body = request.body.email_body;
