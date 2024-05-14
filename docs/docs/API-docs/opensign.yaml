@@ -1348,7 +1348,7 @@ components:
       - foldername
       type: object
       properties:
-        foldername:
+        folderName:
           type: string
           format: string
           example: new folder
