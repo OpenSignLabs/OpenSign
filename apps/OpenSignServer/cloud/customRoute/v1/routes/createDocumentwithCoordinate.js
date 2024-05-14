@@ -69,7 +69,7 @@ export default async function createDocumentwithCoordinate(request, response) {
   const TimeToCompleteDays = request.body.timeToCompleteDays || 15;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
-  const baseUrl = new URL(process.env.SERVER_URL);
+  const baseUrl = new URL(process.env.PUBLIC_URL);
   const reqToken = request.headers['x-api-token'];
   if (!reqToken) {
     return response.status(400).json({ error: 'Please Provide API Token' });

@@ -8,7 +8,7 @@ export default async function createTemplate(request, response) {
   const base64File = request.body.file;
   const SendinOrder = request.body.sendInOrder || false;
   const fileData = request.files?.[0] ? request.files[0].buffer : null;
-  const baseUrl = new URL(process.env.SERVER_URL);
+  const baseUrl = new URL(process.env.PUBLIC_URL);
 
   try {
     const reqToken = request.headers['x-api-token'];
