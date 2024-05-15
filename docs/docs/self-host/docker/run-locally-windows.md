@@ -43,7 +43,7 @@ import ReactPlayer from 'react-player';
 *Note: If you wish to incorporate our latest features into your Docker container, delete the existing OpenSign container and follow the steps again.* 
 
 <div>
-    <ReactPlayer playing controls url='https://www.youtube.com/watch?v=GY_OP697EiU' />
+    <ReactPlayer playing controls url='https://youtu.be/eaH5I5txCc8' />
 </div>
 
 ## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
