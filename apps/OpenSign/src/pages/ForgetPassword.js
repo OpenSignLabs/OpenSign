@@ -108,7 +108,7 @@ function ForgotPassword() {
                   </button>
                   <NavLink
                     to="/"
-                    className="rounded-sm bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-3 text-xs font-semibold shadow uppercase"
+                    className="rounded-sm bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-3 text-xs font-semibold shadow uppercase cursor-pointer"
                   >
                     Login
                   </NavLink>
