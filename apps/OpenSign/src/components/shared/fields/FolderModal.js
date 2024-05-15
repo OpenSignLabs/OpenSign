@@ -25,9 +25,11 @@ const FolderModal = (props) => {
       if (folderPtr) {
         FolderQuery.equalTo("Folder", folderPtr);
         FolderQuery.equalTo("Type", "Folder");
+        FolderQuery.notEqualTo("IsArchive", true);
       } else {
         FolderQuery.doesNotExist("Folder");
         FolderQuery.equalTo("Type", "Folder");
+        FolderQuery.notEqualTo("IsArchive", true);
       }
 
       const res = await FolderQuery.find();

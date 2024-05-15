@@ -11,8 +11,8 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Tour from "reactour";
 import axios from "axios";
 
-const DriveBody = React.lazy(
-  () => import("../components/opensigndrive/DriveBody")
+const DriveBody = React.lazy(() =>
+  import("../components/opensigndrive/DriveBody")
 );
 const Loader = () => {
   return (
@@ -300,6 +300,7 @@ function Opensigndrive() {
         const exsitQuery = new Parse.Query(foldercls);
         exsitQuery.equalTo("Name", newFolderName);
         exsitQuery.equalTo("Type", "Folder");
+        exsitQuery.notEqualTo("IsArchive", true);
         if (parentId) {
           exsitQuery.equalTo("Folder", folderPtr);
         }
