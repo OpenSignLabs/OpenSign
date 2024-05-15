@@ -25,9 +25,11 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       if (parentFolderId) {
         FolderQuery.equalTo("Folder", folderPtr);
         FolderQuery.equalTo("Type", "Folder");
+        FolderQuery.notEqualTo("IsArchive", true);
       } else {
         FolderQuery.doesNotExist("Folder");
         FolderQuery.equalTo("Type", "Folder");
+        FolderQuery.notEqualTo("IsArchive", true);
       }
 
       const res = await FolderQuery.find();
@@ -49,6 +51,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       const exsitQuery = new Parse.Query(folderCls);
       exsitQuery.equalTo("Name", name);
       exsitQuery.equalTo("Type", "Folder");
+      exsitQuery.notEqualTo("IsArchive", true);
       if (parentFolderId) {
         exsitQuery.equalTo("Folder", folderPtr);
       }
