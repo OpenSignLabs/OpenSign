@@ -30,6 +30,7 @@ import getFolder from './routes/getFolder.js';
 import createFolder from './routes/createFolder.js';
 import updateFolder from './routes/updateFolder.js';
 import getFolderList from './routes/getFolderList.js';
+import deleteFolder from './routes/deleteFolder.js';
 dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -115,6 +116,9 @@ app.post('/createfolder', createFolder);
 
 // update folder
 app.put('/folder/:folder_id', updateFolder);
+
+// get folder list
+app.delete('/folder/:folder_id', deleteFolder);
 
 // get folder
 app.get('/folder/:folder_id', getFolder);
