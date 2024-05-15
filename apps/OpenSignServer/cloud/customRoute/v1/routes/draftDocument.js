@@ -14,7 +14,7 @@ export default async function draftDocument(request, response) {
   const SendinOrder = request.body.sendInOrder || false;
   // console.log('fileData ', fileData);
   const protocol = customAPIurl();
-  const baseUrl = new URL(process.env.SERVER_URL);
+  const baseUrl = new URL(process.env.PUBLIC_URL);
 
   try {
     const reqToken = request.headers['x-api-token'];

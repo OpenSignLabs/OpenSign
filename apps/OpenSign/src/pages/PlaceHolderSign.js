@@ -409,7 +409,10 @@ function PlaceHolderSign() {
       setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;
-      if (tourstatus && tourstatus.length > 0) {
+      const alreadyPlaceholder = documentData[0]?.SignedUrl;
+      if (alreadyPlaceholder) {
+        setCheckTourStatus(true);
+      } else if (tourstatus && tourstatus.length > 0) {
         setTourStatus(tourstatus);
         const checkTourRecipients = tourstatus.filter(
           (data) => data.placeholder
