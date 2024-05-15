@@ -326,7 +326,7 @@ function Header({
                 </DropdownMenu.Portal>
               </DropdownMenu.Root>
             ) : (
-              <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <div className="flex justify-around items-center">
                 {/* current signer is checking user send request and check status of pdf sign than if current 
                 user exist than show finish button else no
                 */}
@@ -334,16 +334,8 @@ function Header({
                   <>
                     {decline && (
                       <div
-                        onClick={() => {
-                          handleDeclinePdfAlert();
-                        }}
-                        style={{
-                          color: "red",
-                          border: "none",
-                          fontWeight: "650",
-                          fontSize: "16px",
-                          marginRight: "10px"
-                        }}
+                        onClick={() => handleDeclinePdfAlert()}
+                        className="text-[red] border-none font-[650] text-[14px] mr-2"
                       >
                         Decline
                       </div>
@@ -355,12 +347,8 @@ function Header({
                             alertSendEmail();
                           }
                         }}
-                        style={{
-                          color: isMailSend ? "gray" : themeColor,
-                          border: "none",
-                          fontWeight: "650",
-                          fontSize: "16px"
-                        }}
+                        className="border-none font-[650] text-[14px]"
+                        style={{ color: isMailSend ? "gray" : themeColor }}
                         data-tut={dataTut4}
                       >
                         {completeBtnTitle ? completeBtnTitle : "Send"}
@@ -375,16 +363,42 @@ function Header({
                             embedWidgetsData();
                           }
                         }}
-                        style={{
-                          color: themeColor,
-                          border: "none",
-                          fontWeight: "650",
-                          fontSize: "16px"
-                        }}
+                        style={{ color: themeColor }}
+                        className="border-none font-[650] text-[14px]"
                       >
                         Finish
                       </div>
                     )}
+                    <DropdownMenu.Root>
+                      <DropdownMenu.Trigger asChild>
+                        <div
+                          className="border-none font-[650] text-[18px] pl-2"
+                          style={{ color: themeColor }}
+                        >
+                          <i
+                            className="fa fa-ellipsis-v"
+                            aria-hidden="true"
+                          ></i>
+                        </div>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Portal>
+                        <DropdownMenu.Content
+                          className="bg-white shadow-md rounded px-2 py-1"
+                          sideOffset={5}
+                        >
+                          <DropdownMenu.Item
+                            className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                            onClick={() => handleDownloadPdf()}
+                          >
+                            <i
+                              className="fa fa-arrow-down mr-[5px]"
+                              aria-hidden="true"
+                            ></i>
+                            <span className="font-[500]">Download</span>
+                          </DropdownMenu.Item>
+                        </DropdownMenu.Content>
+                      </DropdownMenu.Portal>
+                    </DropdownMenu.Root>
                   </>
                 )}
               </div>
@@ -457,7 +471,7 @@ function Header({
             </>
           ) : isPdfRequestFiles ? (
             alreadySign ? (
-              <div style={{ display: "flex", flexDirection: "row" }}>
+              <div className="flex flex-row">
                 {isCompleted && (
                   <button
                     type="button"
@@ -502,32 +516,54 @@ function Header({
                 {currentSigner && (
                   <>
                     <button
-                      style={{ background: "#de4337" }}
-                      className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
-                      onClick={() => {
-                        handleDeclinePdfAlert();
-                      }}
+                      className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-white font-[500] text-[13px] mr-[5px] bg-[#de4337]"
+                      onClick={() => handleDeclinePdfAlert()}
                     >
                       Decline
                     </button>
                     <button
-                      style={{
-                        background: "#188ae2"
-                      }}
                       type="button"
                       className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
-                      onClick={() => {
-                        embedWidgetsData();
-                      }}
+                      onClick={() => embedWidgetsData()}
                     >
                       Finish
                     </button>
+                    <DropdownMenu.Root>
+                      <DropdownMenu.Trigger asChild>
+                        <div
+                          className="border-none font-[650] text-[16px] py-[3px] px-[11px] shadow rounded bg-white"
+                          style={{ color: themeColor }}
+                        >
+                          <i
+                            className="fa fa-ellipsis-v"
+                            aria-hidden="true"
+                          ></i>
+                        </div>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Portal>
+                        <DropdownMenu.Content
+                          className="bg-white shadow-md rounded px-2 py-1"
+                          sideOffset={5}
+                        >
+                          <DropdownMenu.Item
+                            className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                            onClick={() => handleDownloadPdf()}
+                          >
+                            <i
+                              className="fa fa-arrow-down mr-[5px]"
+                              aria-hidden="true"
+                            ></i>
+                            <span className="font-[500]">Download</span>
+                          </DropdownMenu.Item>
+                        </DropdownMenu.Content>
+                      </DropdownMenu.Portal>
+                    </DropdownMenu.Root>
                   </>
                 )}
               </div>
             )
           ) : isCompleted ? (
-            <div style={{ display: "flex", flexDirection: "row" }}>
+            <div className="flex flex-row">
               {isCompleted && (
                 <button
                   type="button"
@@ -578,9 +614,6 @@ function Header({
                 Back
               </button>
               <button
-                style={{
-                  background: "#188ae2"
-                }}
                 type="button"
                 className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
                 onClick={() => {
