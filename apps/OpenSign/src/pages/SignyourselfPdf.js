@@ -233,29 +233,6 @@ function SignYourSelf() {
           setSignBtnPosition([]);
         }
       }
-
-      if (!isCompleted) {
-        //check current user email verified or not
-        const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
-        let isEmailVerified;
-        isEmailVerified = currentUser?.emailVerified;
-        if (isEmailVerified) {
-          setIsEmailVerified(isEmailVerified);
-        } else {
-          try {
-            const userQuery = new Parse.Query(Parse.User);
-            const user = await userQuery.get(currentUser.objectId, {
-              sessionToken: localStorage.getItem("accesstoken")
-            });
-            if (user) {
-              isEmailVerified = user?.get("emailVerified");
-              setIsEmailVerified(isEmailVerified);
-            }
-          } catch (e) {
-            setHandleError("Error: Something went wrong!");
-          }
-        }
-      }
     } else if (
       documentData === "Error: Something went wrong!" ||
       (documentData.result && documentData.result.error)
@@ -603,104 +580,126 @@ function SignYourSelf() {
   };
   //function for send placeholder's co-ordinate(x,y) position embed signature url or stamp url
   async function embedWidgetsData() {
-    let showAlert = false,
-      isSignatureExist = false;
-    try {
-      for (let i = 0; i < xyPostion?.length; i++) {
-        const requiredWidgets = xyPostion[i].pos.filter(
-          (position) => position.type !== "checkbox"
-        );
-        if (requiredWidgets && requiredWidgets?.length > 0) {
-          let checkSigned;
-          for (let i = 0; i < requiredWidgets?.length; i++) {
-            checkSigned = requiredWidgets[i]?.options?.response;
-            if (!checkSigned) {
-              const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
-              let checkDefaultSigned =
-                requiredWidgets[i]?.options?.defaultValue;
-              if (!checkSignUrl) {
-                if (!checkDefaultSigned) {
-                  if (!showAlert) {
-                    showAlert = true;
+    //check current user email is verified or not
+    const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+    let isEmailVerified;
+    isEmailVerified = currentUser?.emailVerified;
+    if (isEmailVerified) {
+      setIsEmailVerified(isEmailVerified);
+    } else {
+      try {
+        const userQuery = new Parse.Query(Parse.User);
+        const user = await userQuery.get(currentUser.objectId, {
+          sessionToken: localStorage.getItem("accesstoken")
+        });
+        if (user) {
+          isEmailVerified = user?.get("emailVerified");
+          setIsEmailVerified(isEmailVerified);
+        }
+      } catch (e) {
+        setHandleError("Error: Something went wrong!");
+      }
+    }
+    if (isEmailVerified) {
+      let showAlert = false,
+        isSignatureExist = false;
+      try {
+        for (let i = 0; i < xyPostion?.length; i++) {
+          const requiredWidgets = xyPostion[i].pos.filter(
+            (position) => position.type !== "checkbox"
+          );
+          if (requiredWidgets && requiredWidgets?.length > 0) {
+            let checkSigned;
+            for (let i = 0; i < requiredWidgets?.length; i++) {
+              checkSigned = requiredWidgets[i]?.options?.response;
+              if (!checkSigned) {
+                const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
+                let checkDefaultSigned =
+                  requiredWidgets[i]?.options?.defaultValue;
+                if (!checkSignUrl) {
+                  if (!checkDefaultSigned) {
+                    if (!showAlert) {
+                      showAlert = true;
+                    }
                   }
                 }
               }
             }
           }
-        }
-        //condition to check exist signature widget or not
-        if (!isSignatureExist) {
-          isSignatureExist = xyPostion[i].pos.some(
-            (data) => data?.type === "signature"
-          );
-        }
-      }
-      if (xyPostion.length === 0 || !isSignatureExist) {
-        setIsAlert({
-          header: "Fields required",
-          isShow: true,
-          alertMessage:
-            "Please ensure there's at least one signature widget added"
-        });
-        return;
-      } else if (showAlert) {
-        setIsAlert({
-          isShow: true,
-          alertMessage:
-            "Please ensure all field is accurately filled and meets all requirements."
-        });
-        return;
-      } else {
-        setIsCeleb(true);
-        setTimeout(() => {
-          setIsCeleb(false);
-        }, 3000);
-        setIsUiLoading(true);
-        const existingPdfBytes = pdfArrayBuffer;
-        // Load a PDFDocument from the existing PDF bytes
-        try {
-          const pdfDoc = await PDFDocument.load(existingPdfBytes);
-          const isSignYourSelfFlow = true;
-          const extUserPtr = pdfDetails[0].ExtUserPtr;
-          const HeaderDocId = extUserPtr?.HeaderDocId;
-          //embed document's object id to all pages in pdf document
-          if (!HeaderDocId) {
-            await embedDocId(pdfDoc, documentId, allPages);
-          }
-          //embed multi signature in pdf
-          const pdfBytes = await multiSignEmbed(
-            xyPostion,
-            pdfDoc,
-            pdfOriginalWidth,
-            isSignYourSelfFlow,
-            containerWH
-          );
-          // console.log("pdf", pdfBytes);
-          //function for call to embed signature in pdf and get digital signature pdf
-          await signPdfFun(pdfBytes, documentId);
-        } catch (err) {
-          setIsUiLoading(false);
-          if (err && err.message.includes("is encrypted.")) {
-            setIsAlert({
-              isShow: true,
-              alertMessage: `Currently encrypted pdf files are not supported.`
-            });
-          } else {
-            console.log("err in signing", err);
-            setIsAlert({
-              isShow: true,
-              alertMessage: `Something went wrong.`
-            });
+          //condition to check exist signature widget or not
+          if (!isSignatureExist) {
+            isSignatureExist = xyPostion[i].pos.some(
+              (data) => data?.type === "signature"
+            );
           }
         }
+        if (xyPostion.length === 0 || !isSignatureExist) {
+          setIsAlert({
+            header: "Fields required",
+            isShow: true,
+            alertMessage:
+              "Please ensure there's at least one signature widget added"
+          });
+          return;
+        } else if (showAlert) {
+          setIsAlert({
+            isShow: true,
+            alertMessage:
+              "Please ensure all field is accurately filled and meets all requirements."
+          });
+          return;
+        } else {
+          setIsCeleb(true);
+          setTimeout(() => {
+            setIsCeleb(false);
+          }, 3000);
+          setIsUiLoading(true);
+          const existingPdfBytes = pdfArrayBuffer;
+          // Load a PDFDocument from the existing PDF bytes
+          try {
+            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            const isSignYourSelfFlow = true;
+            const extUserPtr = pdfDetails[0].ExtUserPtr;
+            const HeaderDocId = extUserPtr?.HeaderDocId;
+            //embed document's object id to all pages in pdf document
+            if (!HeaderDocId) {
+              await embedDocId(pdfDoc, documentId, allPages);
+            }
+            //embed multi signature in pdf
+            const pdfBytes = await multiSignEmbed(
+              xyPostion,
+              pdfDoc,
+              pdfOriginalWidth,
+              isSignYourSelfFlow,
+              containerWH
+            );
+            // console.log("pdf", pdfBytes);
+            //function for call to embed signature in pdf and get digital signature pdf
+            await signPdfFun(pdfBytes, documentId);
+          } catch (err) {
+            setIsUiLoading(false);
+            if (err && err.message.includes("is encrypted.")) {
+              setIsAlert({
+                isShow: true,
+                alertMessage: `Currently encrypted pdf files are not supported.`
+              });
+            } else {
+              console.log("err in signing", err);
+              setIsAlert({
+                isShow: true,
+                alertMessage: `Something went wrong.`
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.log("err in embedselfsign ", err);
+        setIsUiLoading(false);
+        setIsAlert({
+          isShow: true,
+          alertMessage: "something went wrong, please try again later."
+        });
       }
-    } catch (err) {
-      console.log("err in embedselfsign ", err);
-      setIsUiLoading(false);
-      setIsAlert({
-        isShow: true,
-        alertMessage: "something went wrong, please try again later."
-      });
     }
   }
   //function for get digital signature
