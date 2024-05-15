@@ -1136,34 +1136,16 @@ function Login() {
                               )}
                             </span>
                           </div>
+                          <div className="relative mt-1">
+                            <NavLink
+                              to="/forgetpassword"
+                              className="text-[13px] text-[#002864] hover:underline underline-offset-1 focus:outline-none cursor-pointer ml-1"
+                            >
+                              Forgot Password?
+                            </NavLink>
+                          </div>
                         </div>
                       </fieldset>
-                      <div className="flex flex-row justify-between items-center ml-4 py-2">
-                        <div>
-                          <label
-                            className="form-check-label inline-block cursor-pointer"
-                            htmlFor="rememberpassword"
-                          >
-                            <input
-                              type="checkbox"
-                              className="form-check-input mr-1"
-                              value=""
-                              id="rememberpassword"
-                            />
-                            <span className="text-[13px]">
-                              Remember Password
-                            </span>
-                          </label>
-                        </div>
-                        <div>
-                          <NavLink
-                            to="/forgetpassword"
-                            className="text-[13px] underline focus:outline-none focus:ring-2 focus:ring-blue-600"
-                          >
-                            Forgot Password ?
-                          </NavLink>
-                        </div>
-                      </div>
                       <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
                         <button
                           type="submit"
