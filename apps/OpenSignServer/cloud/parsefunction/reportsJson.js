@@ -98,6 +98,9 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'AuditTrail',
+          'AuditTrail.UserPtr',
+          'ExpiryDate',
         ],
       };
     // completed documents report
