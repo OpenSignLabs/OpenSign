@@ -7,7 +7,7 @@ import ReactPlayer from 'react-player';
   1. Set up WSL 2 on Windows by referring to the video provided.
 
 <div>
-    <ReactPlayer playing controls url='https://youtu.be/1kFFwknneD8?si=FKriXPwFqZPLUagI' />
+    <ReactPlayer controls url='https://youtu.be/1kFFwknneD8?si=FKriXPwFqZPLUagI' />
 </div>
       
    2. Install Docker Desktop on Windows and launch Docker Desktop.
@@ -43,7 +43,7 @@ import ReactPlayer from 'react-player';
 *Note: If you wish to incorporate our latest features into your Docker container, delete the existing OpenSign container and follow the steps again.* 
 
 <div>
-    <ReactPlayer playing controls url='https://youtu.be/eaH5I5txCc8' />
+    <ReactPlayer controls url='https://youtu.be/eaH5I5txCc8' />
 </div>
 
 ## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
