@@ -16,7 +16,7 @@ const ModalUi = ({
   return (
     <>
       {isOpen && (
-        <div className="fixed z-[999] 2   top-0 left-0 w-[100%] h-[100%] bg-black bg-opacity-[75%]">
+        <div className="fixed z-[999] top-0 left-0 w-[100%] h-[100%] bg-black bg-opacity-[75%]">
           <div
             className={
               styleClass

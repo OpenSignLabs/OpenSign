@@ -11,6 +11,13 @@ import { RWebShare } from "react-web-share";
 import Tour from "reactour";
 import Parse from "parse";
 import { saveAs } from "file-saver";
+import { replaceMailVaribles } from "../constant/Utils";
+import EditorToolbar, {
+  module1,
+  formats
+} from "../components/pdf/EditorToolbar";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
@@ -28,6 +35,10 @@ const ReportTable = (props) => {
   const [alertMsg, setAlertMsg] = useState({ type: "success", message: "" });
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
+  const [isResendMail, setIsResendMail] = useState({});
+  const [mail, setMail] = useState({ subject: "", body: "" });
+  const [userDetails, setUserDetails] = useState({});
+  const [isNextStep, setIsNextStep] = useState({});
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
   // For loop is used to calculate page numbers visible below table
@@ -89,8 +100,6 @@ const ReportTable = (props) => {
               }
             }
           );
-
-          // console.log("templateDeatils.data ", templateDeatils.data);
           const templateData =
             templateDeatils.data && templateDeatils.data.result;
           if (!templateData.error) {
@@ -149,7 +158,6 @@ const ReportTable = (props) => {
                   }
                 );
 
-                // console.log("Res ", res.data);
                 if (res.data && res.data.objectId) {
                   setActLoader({});
                   setIsAlert(true);
@@ -210,6 +218,8 @@ const ReportTable = (props) => {
       setIsRevoke({ [item.objectId]: true });
     } else if (act.action === "option") {
       setIsOption({ [item.objectId]: !isOption[item.objectId] });
+    } else if (act.action === "resend") {
+      setIsResendMail({ [item.objectId]: true });
     }
   };
   // Get current list
@@ -254,7 +264,6 @@ const ReportTable = (props) => {
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       });
-      // console.log("Res ", res.data);
       if (res.data && res.data.updatedAt) {
         setActLoader({});
         setIsAlert(true);
@@ -436,6 +445,161 @@ const ReportTable = (props) => {
         alert("something went wrong, please try again later.");
       }
     }
+  };
+
+  // `handleSubjectChange` is used to add or change subject of resend mail
+  const handleSubjectChange = (subject, doc) => {
+    const encodeBase64 = btoa(
+      `${doc.objectId}/${userDetails.Email}/${userDetails.objectId}`
+    );
+    const expireDate = doc.ExpiryDate.iso;
+    const newDate = new Date(expireDate);
+    const localExpireDate = newDate.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+    const signPdf = `${window.location.origin}/login/${encodeBase64}`;
+    const variables = {
+      document_title: doc.Name,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
+      sender_phone: doc.ExtUserPtr.Phone,
+      receiver_name: userDetails.Name,
+      receiver_email: userDetails.Email,
+      receiver_phone: userDetails.Phone,
+      expiry_date: localExpireDate,
+      company_name: doc.ExtUserPtr.Company,
+      signing_url: `<a href=${signPdf}>Sign here</a>`
+    };
+    const res = replaceMailVaribles(subject, "", variables);
+
+    setMail((prev) => ({ ...prev, subject: res.subject }));
+  };
+  // `handlebodyChange` is used to add or change body of resend mail
+  const handlebodyChange = (body, doc) => {
+    const encodeBase64 = btoa(
+      `${doc.objectId}/${userDetails.Email}/${userDetails.objectId}`
+    );
+    const expireDate = doc.ExpiryDate.iso;
+    const newDate = new Date(expireDate);
+    const localExpireDate = newDate.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+    const signPdf = `${window.location.origin}/login/${encodeBase64}`;
+    const variables = {
+      document_title: doc.Name,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
+      sender_phone: doc.ExtUserPtr.Phone,
+      receiver_name: userDetails.Name,
+      receiver_email: userDetails.Email,
+      receiver_phone: userDetails.Phone,
+      expiry_date: localExpireDate,
+      company_name: doc.ExtUserPtr.Company,
+      signing_url: `<a href=${signPdf}>Sign here</a>`
+    };
+    const res = replaceMailVaribles("", body, variables);
+
+    if (body) {
+      setMail((prev) => ({ ...prev, body: res.body }));
+    }
+  };
+  // `handleNextBtn` is used to open edit mail template screen in resend mail modal
+  // as well as replace variable with original one
+  const handleNextBtn = (user, doc) => {
+    setUserDetails(user);
+    const encodeBase64 = btoa(`${doc.objectId}/${user.Email}/${user.objectId}`);
+    const expireDate = doc.ExpiryDate.iso;
+    const newDate = new Date(expireDate);
+    const localExpireDate = newDate.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+    const signPdf = `${window.location.origin}/login/${encodeBase64}`;
+    const variables = {
+      document_title: doc.Name,
+      sender_name: doc.ExtUserPtr.Name,
+      sender_mail: doc.ExtUserPtr.Email,
+      sender_phone: doc.ExtUserPtr.Phone,
+      receiver_name: user.Name,
+      receiver_email: user.Email,
+      receiver_phone: user.Phone,
+      expiry_date: localExpireDate,
+      company_name: doc.ExtUserPtr.Company,
+      signing_url: `<a href=${signPdf}>Sign here</a>`
+    };
+
+    const subject =
+      doc?.RequestSubject ||
+      "{{sender_name}} has requested you to sign {{document_title}}";
+    const body =
+      doc?.RequestBody ||
+      "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br></body> </html>";
+    const res = replaceMailVaribles(subject, body, variables);
+    setMail((prev) => ({ ...prev, subject: res.subject, body: res.body }));
+    setIsNextStep({ [user.objectId]: true });
+  };
+  const handleResendMail = async (e, doc, user) => {
+    e.preventDefault();
+    setActLoader({ [user.objectId]: true });
+    setIsAlert(true);
+    const url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
+    const headers = {
+      "Content-Type": "application/json",
+      "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+      sessionToken: localStorage.getItem("accesstoken")
+    };
+    let params = {
+      mailProvider: doc?.ExtUserPtr?.active_mail_adapter,
+      extUserId: doc?.ExtUserPtr?.objectId,
+      recipient: userDetails.Email,
+      subject: mail.subject,
+      from: doc?.ExtUserPtr?.Email,
+      html: mail.body
+    };
+    try {
+      const res = await axios.post(url, params, { headers: headers });
+      if (res) {
+        setAlertMsg({ type: "success", message: "Mail sent successfully." });
+      }
+    } catch (err) {
+      console.log("err in sendmail", err);
+      setAlertMsg({
+        type: "danger",
+        message: "Something went wrong, please try again later!"
+      });
+    } finally {
+      setTimeout(() => setIsAlert(false), 1500);
+      setIsNextStep({});
+      setUserDetails({});
+      setActLoader({});
+    }
+  };
+  const fetchUserStatus = (user, doc) => {
+    const audit = doc.AuditTrail.find(
+      (x) => x.UserPtr.objectId === user.objectId
+    );
+    return (
+      <div className="flex flex-row gap-2 justify-center items-center">
+        <div className="flex justify-center items-center bg-gray-200 text-xs text-black shadow rounded-full w-[65px] h-[23px] cursor-default">
+          {audit?.Activity ? audit?.Activity : "Awaited"}
+        </div>
+
+        <button
+          onClick={() => handleNextBtn(user, doc)}
+          className={`${
+            audit?.Activity !== "Signed" ? "bg-[#32a3ac] shadow-md" : ""
+          } flex justify-center items-center text-center text-white  rounded w-[60px] h-[30px]`}
+          disabled={audit?.Activity === "Signed"}
+        >
+          {audit?.Activity !== "Signed" && "Resend"}
+        </button>
+      </div>
+    );
   };
   return (
     <div className="relative">
@@ -750,6 +914,113 @@ const ReportTable = (props) => {
                                   No
                                 </button>
                               </div>
+                            </div>
+                          </ModalUi>
+                        )}
+                        {isResendMail[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Resend Mail"}
+                            handleClose={() => {
+                              setIsResendMail({});
+                              setIsNextStep({});
+                              setUserDetails({});
+                            }}
+                          >
+                            <div className=" overflow-y-auto max-h-[340px] md:max-h-[400px]">
+                              {item?.Signers.map((user) => (
+                                <React.Fragment key={user.objectId}>
+                                  {isNextStep[user.objectId] && (
+                                    <div className="relative ">
+                                      {actLoader[user.objectId] && (
+                                        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
+                                          <div
+                                            style={{
+                                              fontSize: "45px",
+                                              color: "#3dd3e0"
+                                            }}
+                                            className="loader-37"
+                                          ></div>
+                                        </div>
+                                      )}
+
+                                      <form
+                                        onSubmit={(e) =>
+                                          handleResendMail(e, item, user)
+                                        }
+                                        className="w-full flex flex-col gap-2 p-3 text-black"
+                                      >
+                                        <div>
+                                          <label
+                                            className="text-xs ml-1"
+                                            htmlFor="mailsubject"
+                                          >
+                                            Subject{" "}
+                                            <Tooltip
+                                              id={isNextStep[user.objectId]}
+                                              message={
+                                                "You can use following variables which are get replace with their actual values :- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+                                              }
+                                            />
+                                          </label>
+                                          <input
+                                            id="mailsubject"
+                                            className="w-full py-1.5 px-2 border-[1px] border-gray-300 rounded"
+                                            value={mail.subject}
+                                            onChange={(e) =>
+                                              handleSubjectChange(
+                                                e.target.value,
+                                                item
+                                              )
+                                            }
+                                            required
+                                          />
+                                        </div>
+                                        <div>
+                                          <label
+                                            className="text-xs ml-1"
+                                            htmlFor="mailbody"
+                                          >
+                                            Body{" "}
+                                            <Tooltip
+                                              id={isNextStep[user.objectId]}
+                                              message={
+                                                "You can use following variables which are get replace with their actual values :- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+                                              }
+                                            />
+                                          </label>
+                                          <EditorToolbar containerId="toolbar1" />
+                                          <ReactQuill
+                                            id="mailbody"
+                                            theme="snow"
+                                            value={mail.body || ""}
+                                            placeholder="add body of email "
+                                            modules={module1}
+                                            formats={formats}
+                                            onChange={(value) =>
+                                              handlebodyChange(value, item)
+                                            }
+                                          />
+                                        </div>
+                                        <button
+                                          type="submit"
+                                          className="bg-[#32a3ac] w-[70px] font-semibold text-white py-2 rounded"
+                                        >
+                                          Resend
+                                        </button>
+                                      </form>
+                                    </div>
+                                  )}
+                                  {Object?.keys(isNextStep) <= 0 && (
+                                    <div className="flex justify-between items-center gap-2 my-2 px-3">
+                                      <div className="text-black">
+                                        {user.Name}
+                                      </div>
+                                      <>{fetchUserStatus(user, item)}</>
+                                    </div>
+                                  )}
+                                </React.Fragment>
+                              ))}
                             </div>
                           </ModalUi>
                         )}
