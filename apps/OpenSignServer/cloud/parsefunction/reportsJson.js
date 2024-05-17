@@ -216,6 +216,9 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'AuditTrail',
+          'AuditTrail.UserPtr',
+          'ExpiryDate',
         ],
       };
     //  Recent signature requests report show on dashboard
