@@ -546,7 +546,6 @@ const ReportTable = (props) => {
   const handleResendMail = async (e, doc, user) => {
     e.preventDefault();
     setActLoader({ [user.objectId]: true });
-    setIsAlert(true);
     const url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
     const headers = {
       "Content-Type": "application/json",
@@ -564,10 +563,12 @@ const ReportTable = (props) => {
     try {
       const res = await axios.post(url, params, { headers: headers });
       if (res) {
+        setIsAlert(true);
         setAlertMsg({ type: "success", message: "Mail sent successfully." });
       }
     } catch (err) {
       console.log("err in sendmail", err);
+      setIsAlert(true);
       setAlertMsg({
         type: "danger",
         message: "Something went wrong, please try again later!"
