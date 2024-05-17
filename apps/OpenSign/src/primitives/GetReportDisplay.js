@@ -580,7 +580,7 @@ const ReportTable = (props) => {
     }
   };
   const fetchUserStatus = (user, doc) => {
-    const audit = doc.AuditTrail.find(
+    const audit = doc?.AuditTrail?.find(
       (x) => x.UserPtr.objectId === user.objectId
     );
     return (

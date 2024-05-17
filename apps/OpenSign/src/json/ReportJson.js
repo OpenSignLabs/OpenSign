@@ -232,6 +232,14 @@ export default function reportJson(id) {
             action: "option",
             subaction: [
               {
+                btnId: "1631",
+                btnLabel: "Resend",
+                hoverLabel: "Resend",
+                btnIcon: "fa-solid fa-envelope",
+                redirectUrl: "",
+                action: "resend"
+              },
+              {
                 btnId: "6788",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",
