@@ -529,7 +529,7 @@ const ReportTable = (props) => {
       receiver_email: user.Email,
       receiver_phone: user.Phone,
       expiry_date: localExpireDate,
-      company_name: doc.ExtUserPtr.Company,
+      company_name: doc?.ExtUserPtr?.Company || "",
       signing_url: `<a href=${signPdf}>Sign here</a>`
     };
 
@@ -1015,7 +1015,7 @@ const ReportTable = (props) => {
                                   {Object?.keys(isNextStep) <= 0 && (
                                     <div className="flex justify-between items-center gap-2 my-2 px-3">
                                       <div className="text-black">
-                                        {user.Name}
+                                        {user.Name} {`<${user.Email}>`}
                                       </div>
                                       <>{fetchUserStatus(user, item)}</>
                                     </div>
