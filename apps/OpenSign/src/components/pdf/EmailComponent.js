@@ -251,17 +251,11 @@ function EmailComponent({
             </div>
             <div style={{ height: "100%", padding: 20 }}>
               {(isCeleb || isCompletionCeleb) && (
-                <div
-                  style={{
-                    position: "absolute",
-                    marginLeft: "50px"
-                  }}
-                >
+                <div className="absolute w-[100%] flex justify-center items-center">
                   <img
                     alt="print img"
                     width={300}
                     height={250}
-                    // style={styles.gifCeleb}
                     src={celebration}
                   />
                 </div>

@@ -340,7 +340,6 @@ function SignYourSelf() {
       setIsLoading(loadObj);
     }
   };
-  console.log("iscompletion", isCompletionCeleb);
   const getWidgetValue = (type) => {
     switch (type) {
       case "name":

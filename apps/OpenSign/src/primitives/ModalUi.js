@@ -27,12 +27,7 @@ const ModalUi = ({
             }
           >
             {isCompletionCeleb && (
-              <div
-                style={{
-                  position: "absolute",
-                  marginLeft: "50px"
-                }}
-              >
+              <div className="absolute w-[100%] flex justify-center items-center">
                 <img
                   alt="print img"
                   width={300}
