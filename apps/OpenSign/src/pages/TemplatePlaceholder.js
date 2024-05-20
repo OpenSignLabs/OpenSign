@@ -36,6 +36,7 @@ import AddRoleModal from "../components/pdf/AddRoleModal";
 import PlaceholderCopy from "../components/pdf/PlaceholderCopy";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
+import Parse from "parse";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
@@ -704,35 +705,29 @@ const TemplatePlaceholder = () => {
           Name: pdfDetails[0]?.Name || "",
           Note: pdfDetails[0]?.Note || "",
           Description: pdfDetails[0]?.Description || "",
-          SendinOrder: pdfDetails[0]?.SendinOrder || false
+          SendinOrder: pdfDetails[0]?.SendinOrder || false,
+          AutomaticReminders: pdfDetails[0]?.AutomaticReminders,
+          RemindOnceInEvery: parseInt(pdfDetails[0]?.RemindOnceInEvery),
+          NextReminderDate: pdfDetails[0]?.NextReminderDate
         };
+        const updateTemplate = new Parse.Object("contracts_Template");
+        updateTemplate.id = templateId;
+        for (const key in data) {
+          updateTemplate.set(key, data[key]);
+        }
+        await updateTemplate.save(null, {
+          sessionToken: localStorage.getItem("accesstoken")
+        });
 
-        await axios
-          .put(
-            `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-              "_appName"
-            )}_Template/${templateId}`,
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-              }
-            }
-          )
-          .then(() => {
-            setIsCreateDocModal(true);
-            setIsMailSend(true);
-            const loadObj = {
-              isLoad: false
-            };
-            setIsLoading(loadObj);
-          })
-          .catch((err) => {
-            console.log("axois err ", err);
-          });
+        setIsCreateDocModal(true);
+        setIsMailSend(true);
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
       } catch (e) {
+        setIsLoading(false);
+        alert("Something went wrong, please try again later.");
         console.log("error", e);
       }
     } else {
@@ -1207,7 +1202,6 @@ const TemplatePlaceholder = () => {
     setIsCheckbox(false);
   };
 
-  console.log("signerpos", signerPos);
   return (
     <div>
       <Title title={"Template"} />

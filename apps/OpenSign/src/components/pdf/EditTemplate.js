@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/AddUser.css";
-import { getFileName } from "../../constant/Utils";
+import { checkIsSubscribed, getFileName } from "../../constant/Utils";
+import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
+import Upgrade from "../../primitives/Upgrade";
+import { isEnableSubscription } from "../../constant/const";
 // import SelectFolder from "../../premitives/SelectFolder";
 
 const EditTemplate = ({ template, onSuccess }) => {
@@ -9,9 +12,21 @@ const EditTemplate = ({ template, onSuccess }) => {
     Name: template?.Name || "",
     Note: template?.Note || "",
     Description: template?.Description || "",
-    SendinOrder: template?.SendinOrder ? `${template?.SendinOrder}` : "false"
+    SendinOrder: template?.SendinOrder ? `${template?.SendinOrder}` : "false",
+    AutomaticReminders: template?.AutomaticReminders || false,
+    RemindOnceInEvery: template?.RemindOnceInEvery || 5
   });
-
+  const [isSubscribe, setIsSubscribe] = useState(false);
+  useEffect(() => {
+    fetchSubscription();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const fetchSubscription = async () => {
+    if (isEnableSubscription) {
+      const getIsSubscribe = await checkIsSubscribed();
+      setIsSubscribe(getIsSubscribe);
+    }
+  };
   const handleStrInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -25,12 +40,26 @@ const EditTemplate = ({ template, onSuccess }) => {
     e.preventDefault();
     e.stopPropagation();
     const isChecked = formData.SendinOrder === "true" ? true : false;
-    const data = { ...formData, SendinOrder: isChecked };
+    const AutoReminder = formData?.AutomaticReminders || false;
+
+    let reminderDate = {};
+    if (AutoReminder) {
+      const RemindOnceInEvery = parseInt(formData?.RemindOnceInEvery);
+      const ReminderDate = new Date(template?.createdAt);
+      ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
+      reminderDate = { NextReminderDate: ReminderDate };
+    }
+    const data = { ...formData, SendinOrder: isChecked, ...reminderDate };
     onSuccess(data);
   };
-
+  const handleAutoReminder = () => {
+    setFormData((prev) => ({
+      ...prev,
+      AutomaticReminders: !formData.AutomaticReminders
+    }));
+  };
   return (
-    <div className="addusercontainer">
+    <div className="max-h-[300px] md:max-h-[400px] overflow-y-scroll p-[10px]">
       <div className="form-wrapper">
         <form onSubmit={handleSubmit}>
           <div>
@@ -128,6 +157,57 @@ const EditTemplate = ({ template, onSuccess }) => {
               <div style={{ fontSize: 12 }}>No</div>
             </div>
           </div>
+          <div className="text-xs mt-2">
+            {!isEnableSubscription && (
+              <PremiumAlertHeader
+                message={
+                  "Disable Auto reminder is free in beta, this feature will incur a fee later."
+                }
+              />
+            )}
+            <span
+              className={
+                isSubscribe || !isEnableSubscription
+                  ? "font-semibold"
+                  : "font-semibold text-gray-300"
+              }
+            >
+              Auto reminder{"  "}
+              {!isSubscribe && isEnableSubscription && <Upgrade />}
+            </span>
+            <label
+              className={`${
+                isSubscribe || !isEnableSubscription
+                  ? "cursor-pointer "
+                  : "pointer-events-none opacity-50"
+              } relative block items-center mb-0`}
+            >
+              <input
+                checked={formData.AutomaticReminders}
+                onChange={handleAutoReminder}
+                type="checkbox"
+                value=""
+                className="sr-only peer"
+              />
+              <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600 mt-2"></div>
+            </label>
+          </div>
+          {isSubscribe && formData?.AutomaticReminders === true && (
+            <div className="text-xs mt-2">
+              <label className="block">
+                Remind once in every (Days)
+                <span className="text-red-500 text-[13px]">*</span>
+              </label>
+              <input
+                type="number"
+                value={formData.RemindOnceInEvery}
+                name="RemindOnceInEvery"
+                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                onChange={handleStrInput}
+                required
+              />
+            </div>
+          )}
           {/* <SelectFolder onSuccess={handleFolder} folderCls={"contracts_Template"} /> */}
           <div className="buttoncontainer">
             <button type="submit" className="submitbutton">

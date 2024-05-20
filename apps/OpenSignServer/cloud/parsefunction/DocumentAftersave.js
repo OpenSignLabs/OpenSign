@@ -14,19 +14,29 @@ async function DocumentAftersave(request) {
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
         updateQuery.set('OriginIp', ip);
+        const AutoReminder = request?.object?.get('AutomaticReminders') || false;
+        if (AutoReminder) {
+          const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
+          const ReminderDate = new Date(createdAt);
+          ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
+          updateQuery.set('NextReminderDate', ReminderDate);
+        }
         await updateQuery.save(null, { useMasterKey: true });
       } else if (createdAt && Folder === 'AIDoc') {
         const TimeToCompleteDays = request.object.get('TimeToCompleteDays');
         const ExpiryDate = new Date(createdAt);
-        // console.log("ExpiryDate")
-        // console.log(ExpiryDate)
         ExpiryDate.setDate(ExpiryDate.getDate() + TimeToCompleteDays);
-        // console.log("ExpiryDate date after update")
-        // console.log(ExpiryDate)
         const documentQuery = new Parse.Query('contracts_Document');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
         updateQuery.set('OriginIp', ip);
+        const AutoReminder = request?.object?.get('AutomaticReminders') || false;
+        if (AutoReminder) {
+          const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
+          const ReminderDate = new Date(createdAt);
+          ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
+          updateQuery.set('NextReminderDate', ReminderDate);
+        }
         await updateQuery.save(null, { useMasterKey: true });
       }
 

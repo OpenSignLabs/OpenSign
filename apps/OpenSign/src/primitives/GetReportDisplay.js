@@ -139,7 +139,10 @@ const ReportTable = (props) => {
                   className: "_User",
                   objectId: Doc.CreatedBy.objectId
                 },
-                Signers: signers
+                Signers: signers,
+                SendinOrder: Doc?.SendinOrder || false,
+                AutomaticReminders: Doc?.AutomaticReminders || false,
+                RemindOnceInEvery: Doc?.RemindOnceInEvery || 5
               };
               try {
                 const res = await axios.post(
