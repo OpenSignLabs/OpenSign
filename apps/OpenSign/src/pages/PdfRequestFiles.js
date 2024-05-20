@@ -416,8 +416,7 @@ function PdfRequestFiles() {
           setSignerPos(documentData[0].Placeholders);
         }
         setPdfDetails(documentData);
-        // Check if the current signer is the last signer and handle the complete message.
-
+        // Check if the current signer is not a last signer and handle the complete message.
         if (isNextUser) {
           const getSignedAuditTrail = documentData[0].AuditTrail.filter(
             (data) => data.Activity === "Signed"
