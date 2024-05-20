@@ -21,4 +21,4 @@ app.post('/savesubscription', saveSubscription);
 app.post('/saveinvoice', saveInvoice);
 app.post('/savepayment', savePayments);
 app.post('/googleauth', gooogleauth);
-app.post('/autoreminder', autoReminder);
+app.post('/sendreminder', autoReminder);
