@@ -17,12 +17,12 @@ function EmailComponent({
   setIsAlert,
   extUserId,
   activeMailAdapter,
-  isCompletionCeleb
+  isEmailCelebration
 }) {
   const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [isCeleb, setIsCeleb] = useState(false);
+  const [isCelebration, setIsCelebration] = useState(false);
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
@@ -63,9 +63,9 @@ function EmailComponent({
             " target=_blank>here</a> </p></div></div></body></html>"
         };
         sendMail = await axios.post(url, params, { headers: headers });
-        setIsCeleb(true);
+        setIsCelebration(true);
         setTimeout(() => {
-          setIsCeleb(false);
+          setIsCelebration(false);
         }, 3000);
       } catch (error) {
         console.log("error", error);
@@ -250,7 +250,7 @@ function EmailComponent({
               </div>
             </div>
             <div style={{ height: "100%", padding: 20 }}>
-              {(isCeleb || isCompletionCeleb) && (
+              {(isCelebration || isEmailCelebration) && (
                 <div className="absolute w-[100%] flex justify-center items-center">
                   <img
                     alt="print img"
