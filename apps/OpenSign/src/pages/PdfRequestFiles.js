@@ -61,6 +61,7 @@ function PdfRequestFiles() {
   const [handleError, setHandleError] = useState();
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
+  const [isCompletionCeleb, setIsCompletionCeleb] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -259,6 +260,9 @@ function PdfRequestFiles() {
         };
         setAlreadySign(true);
         setIsCompleted(data);
+        setTimeout(() => {
+          setIsCompletionCeleb(false);
+        }, 1500);
       } else if (declined) {
         const currentDecline = {
           currnt: "another",
@@ -702,6 +706,7 @@ function PdfRequestFiles() {
                 setSignedSigners([]);
                 setUnSignedSigners([]);
                 getDocumentDetails();
+                setIsCompletionCeleb(true);
                 const index = pdfDetails?.[0].Signers.findIndex(
                   (x) => x.Email === jsonSender.email
                 );
@@ -1120,7 +1125,6 @@ function PdfRequestFiles() {
       alertMessage: ""
     });
   };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Request Sign"} />
@@ -1358,6 +1362,9 @@ function PdfRequestFiles() {
                     handleClose={() => {
                       setIsCompleted((prev) => ({ ...prev, isModal: false }));
                     }}
+                    isCompletionCeleb={
+                      !isCompleted?.message && isCompletionCeleb
+                    }
                   >
                     <div style={{ height: "100%", padding: 20 }}>
                       <p>
