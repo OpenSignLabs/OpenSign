@@ -11,12 +11,14 @@ import SignersInput from "../components/shared/fields/SignersInput";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import { SaveFileSize } from "../constant/saveFileSize";
-import { getFileName, toDataUrl } from "../constant/Utils";
+import { checkIsSubscribed, getFileName, toDataUrl } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
 import { isEnableSubscription, submitBtn } from "../constant/const";
 import ModalUi from "../primitives/ModalUi";
 import { Tooltip } from "react-tooltip";
+import Upgrade from "../primitives/Upgrade";
+import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -48,7 +50,9 @@ const Forms = (props) => {
     TimeToCompleteDays: 15,
     SendinOrder: "false",
     password: "",
-    file: ""
+    file: "",
+    remindOnceInEvery: 5,
+    autoreminder: false
   });
   const [fileupload, setFileUpload] = useState("");
   const [fileload, setfileload] = useState(false);
@@ -60,6 +64,7 @@ const Forms = (props) => {
   const [isPassword, setIsPassword] = useState(false);
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [isCorrectPass, setIsCorrectPass] = useState(true);
+  const [isSubscribe, setIsSubscribe] = useState(false);
   const handleStrInput = (e) => {
     setIsCorrectPass(true);
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -69,6 +74,17 @@ const Forms = (props) => {
     return () => abortController.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.title]);
+
+  useEffect(() => {
+    fetchSubscription();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const fetchSubscription = async () => {
+    if (isEnableSubscription) {
+      const getIsSubscribe = await checkIsSubscribed();
+      setIsSubscribe(getIsSubscribe);
+    }
+  };
 
   function getFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
@@ -383,6 +399,8 @@ const Forms = (props) => {
         if (props.title !== "Sign Yourself") {
           const isChecked = formData.SendinOrder === "false" ? false : true;
           object.set("SendinOrder", isChecked);
+          object.set("AutomaticReminders", formData.autoreminder);
+          object.set("RemindOnceInEvery", parseInt(formData.remindOnceInEvery));
         }
         object.set("URL", fileupload);
         object.set("CreatedBy", Parse.User.createWithoutData(currentUser.id));
@@ -402,7 +420,6 @@ const Forms = (props) => {
           className: "contracts_Users",
           objectId: ExtCls[0].objectId
         });
-
         const res = await object.save();
         if (res) {
           setSigners([]);
@@ -457,7 +474,11 @@ const Forms = (props) => {
           ? "Note to myself"
           : "Please review and sign this document",
       TimeToCompleteDays: 15,
-      SendinOrder: "true"
+      SendinOrder: "true",
+      password: "",
+      file: "",
+      remindOnceInEvery: 5,
+      autoreminder: false
     });
     setFileUpload("");
     setpercentage(0);
@@ -535,6 +556,9 @@ const Forms = (props) => {
     if (inputFileRef.current) {
       inputFileRef.current.value = ""; // Set file input value to empty string
     }
+  };
+  const handleAutoReminder = () => {
+    setFormData((prev) => ({ ...prev, autoreminder: !formData.autoreminder }));
   };
   return (
     <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
@@ -732,89 +756,141 @@ const Forms = (props) => {
               </div>
             )}
             {props.title !== "Sign Yourself" && (
-              <div className="text-xs mt-2">
-                <label className="block">
-                  Send In Order
-                  <a data-tooltip-id="sendInOrder-tooltip" className="ml-1">
-                    <sup>
-                      <i
-                        className="fa-solid fa-question rounded-full"
-                        style={{
-                          borderColor: "#33bbff",
-                          color: "#33bbff",
-                          fontSize: 13,
-                          borderWidth: 1.5,
-                          padding: "1.5px 4px"
-                        }}
-                      ></i>
-                    </sup>
-                  </a>
-                  <Tooltip id="sendInOrder-tooltip" className="z-50">
-                    <div className="max-w-[200px] md:max-w-[450px]">
-                      <p className="font-bold">Send in Order</p>
-                      <p>
-                        Choose how you want the signing requests to be sent to
-                        the document signers:
-                      </p>
-                      <p className="p-[5px]">
-                        <ol className="list-disc">
-                          <li>
-                            <span className="font-bold">Yes:</span>
-                            <span>
-                              {" "}
-                              Selecting this option will send the signing
-                              request to the first signer initially. Once the
-                              first signer completes their part, the next signer
-                              in the sequence will receive the request. This
-                              process continues until all signers have signed
-                              the document. This method ensures that the
-                              document is signed in a specific order.
-                            </span>
-                          </li>
-                          <li>
-                            <span className="font-bold">No: </span>
-                            <span>
-                              Selecting this option will send the signing links
-                              to all signers simultaneously. Every signer can
-                              sign the document at their convenience, regardless
-                              of whether other signers have completed their
-                              signatures. This method is faster but does not
-                              enforce any signing order among the participants.
-                            </span>
-                          </li>
-                        </ol>
-                      </p>
+              <>
+                <div className="text-xs mt-2">
+                  <label className="block">
+                    Send In Order
+                    <a data-tooltip-id="sendInOrder-tooltip" className="ml-1">
+                      <sup>
+                        <i
+                          className="fa-solid fa-question rounded-full"
+                          style={{
+                            borderColor: "#33bbff",
+                            color: "#33bbff",
+                            fontSize: 13,
+                            borderWidth: 1.5,
+                            padding: "1.5px 4px"
+                          }}
+                        ></i>
+                      </sup>
+                    </a>
+                    <Tooltip id="sendInOrder-tooltip" className="z-50">
+                      <div className="max-w-[200px] md:max-w-[450px]">
+                        <p className="font-bold">Send in Order</p>
+                        <p>
+                          Choose how you want the signing requests to be sent to
+                          the document signers:
+                        </p>
+                        <p className="p-[5px]">
+                          <ol className="list-disc">
+                            <li>
+                              <span className="font-bold">Yes:</span>
+                              <span>
+                                {" "}
+                                Selecting this option will send the signing
+                                request to the first signer initially. Once the
+                                first signer completes their part, the next
+                                signer in the sequence will receive the request.
+                                This process continues until all signers have
+                                signed the document. This method ensures that
+                                the document is signed in a specific order.
+                              </span>
+                            </li>
+                            <li>
+                              <span className="font-bold">No: </span>
+                              <span>
+                                Selecting this option will send the signing
+                                links to all signers simultaneously. Every
+                                signer can sign the document at their
+                                convenience, regardless of whether other signers
+                                have completed their signatures. This method is
+                                faster but does not enforce any signing order
+                                among the participants.
+                              </span>
+                            </li>
+                          </ol>
+                        </p>
 
-                      <p>
-                        Select the option that best suits the needs of your
-                        document processing.
-                      </p>
-                    </div>
-                  </Tooltip>
-                </label>
-
-                <div className="flex items-center gap-2 ml-2 mb-1">
-                  <input
-                    type="radio"
-                    value={"true"}
-                    name="SendinOrder"
-                    checked={formData.SendinOrder === "true"}
-                    className=""
-                    onChange={handleStrInput}
-                  />
-                  <div className="text-center">Yes</div>
+                        <p>
+                          Select the option that best suits the needs of your
+                          document processing.
+                        </p>
+                      </div>
+                    </Tooltip>
+                  </label>
+                  <div className="flex items-center gap-2 ml-2 mb-1">
+                    <input
+                      type="radio"
+                      value={"true"}
+                      name="SendinOrder"
+                      checked={formData.SendinOrder === "true"}
+                      onChange={handleStrInput}
+                    />
+                    <div className="text-center">Yes</div>
+                  </div>
+                  <div className="flex items-center gap-2 ml-2 mb-1">
+                    <input
+                      type="radio"
+                      value={"false"}
+                      name="SendinOrder"
+                      checked={formData.SendinOrder === "false"}
+                      onChange={handleStrInput}
+                    />
+                    <div className="text-center">No</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 ml-2 mb-1">
-                  <input
-                    type="radio"
-                    value={"false"}
-                    name="SendinOrder"
-                    checked={formData.SendinOrder === "false"}
-                    onChange={handleStrInput}
-                  />
-                  <div className="text-center">No</div>
+                <div className="text-xs mt-2">
+                  {!isEnableSubscription && (
+                    <PremiumAlertHeader
+                      message={
+                        "Disable Auto reminder is free in beta, this feature will incur a fee later."
+                      }
+                    />
+                  )}
+                  <span
+                    className={
+                      isSubscribe || !isEnableSubscription
+                        ? "font-semibold"
+                        : "font-semibold text-gray-300"
+                    }
+                  >
+                    Auto reminder{"  "}
+                    {!isSubscribe && isEnableSubscription && <Upgrade />}
+                  </span>
+                  <label
+                    className={`${
+                      isSubscribe || !isEnableSubscription
+                        ? "cursor-pointer "
+                        : "pointer-events-none opacity-50"
+                    } relative block items-center mb-0`}
+                  >
+                    <input
+                      checked={formData.autoreminder}
+                      onChange={handleAutoReminder}
+                      type="checkbox"
+                      value=""
+                      className="sr-only peer"
+                    />
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600 mt-2"></div>
+                  </label>
                 </div>
-              </div>
+                {formData?.autoreminder === true && (
+                  <div className="text-xs mt-2">
+                    <label className="block">
+                      Remind once in every (Days)
+                      <span className="text-red-500 text-[13px]">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.remindOnceInEvery}
+                      name="remindOnceInEvery"
+                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      onChange={handleStrInput}
+                      required
+                    />
+                  </div>
+                )}
+              </>
             )}
             <div className="flex items-center mt-3 gap-2 text-white">
               <button

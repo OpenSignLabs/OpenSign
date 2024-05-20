@@ -405,7 +405,7 @@ function PlaceHolderSign() {
       };
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
-    } else if (res[0] && res.length) {
+    } else if (res.length && res[0]?.objectId) {
       setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;
