@@ -417,10 +417,13 @@ function PdfRequestFiles() {
         }
         setPdfDetails(documentData);
         // Check if the current signer is the last signer and handle the complete message.
+
         if (isNextUser) {
+          const getSignedAuditTrail = documentData[0].AuditTrail.filter(
+            (data) => data.Activity === "Signed"
+          );
           const isLastSigner =
-            documentData?.[0]?.AuditTrail?.length ===
-            documentData?.[0]?.Signers?.length;
+            getSignedAuditTrail?.length === documentData?.[0]?.Signers?.length;
           if (!isLastSigner) {
             setIsCompleted({
               isModal: true,
