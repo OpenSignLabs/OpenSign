@@ -220,7 +220,7 @@ function PdfRequestFiles() {
     }
   }
   //function for get document details for perticular signer with signer'object id
-  const getDocumentDetails = async () => {
+  const getDocumentDetails = async (isNextUser) => {
     let currUserId;
     //getting document details
     const documentData = await contractDocument(documentId);
@@ -416,6 +416,20 @@ function PdfRequestFiles() {
           setSignerPos(documentData[0].Placeholders);
         }
         setPdfDetails(documentData);
+        // Check if the current signer is the last signer and handle the complete message.
+        if (isNextUser) {
+          const isLastSigner =
+            documentData?.[0]?.AuditTrail?.length ===
+            documentData?.[0]?.Signers?.length;
+          if (!isLastSigner) {
+            setIsCompleted({
+              isModal: true,
+              message:
+                "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
+            });
+          }
+        }
+
         setIsUiLoading(false);
       } else {
         alert("No data found!");
@@ -705,20 +719,13 @@ function PdfRequestFiles() {
                 setIsSigned(true);
                 setSignedSigners([]);
                 setUnSignedSigners([]);
-                getDocumentDetails();
+                getDocumentDetails(true);
                 setIsCompletionCeleb(true);
                 const index = pdfDetails?.[0].Signers.findIndex(
                   (x) => x.Email === jsonSender.email
                 );
                 const newIndex = index + 1;
                 const user = pdfDetails?.[0].Signers[newIndex];
-                if (user) {
-                  setIsCompleted({
-                    isModal: true,
-                    message:
-                      "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
-                  });
-                }
                 if (sendInOrder) {
                   const requestBody = pdfDetails?.[0]?.RequestBody;
                   const requestSubject = pdfDetails?.[0]?.RequestSubject;
