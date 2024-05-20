@@ -1265,7 +1265,7 @@ function SignYourSelf() {
                 setIsAlert={setIsAlert}
                 extUserId={extUserId}
                 activeMailAdapter={activeMailAdapter}
-                isCompletionCeleb={isCompletionCeleb}
+                isEmailCelebration={isCompletionCeleb}
                 setIsCompletionCeleb={setIsCompletionCeleb}
               />
               {/* pdf header which contain funish back button */}
