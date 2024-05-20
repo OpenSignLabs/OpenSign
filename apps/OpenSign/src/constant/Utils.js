@@ -561,7 +561,7 @@ export const signPdfFun = async (
         isCustomCompletionMail = true;
       }
     }
-    
+
     // below for loop is used to get first signature of user to send if to signpdf
     // for adding it in completion certificate
     let getSignature;
@@ -676,7 +676,9 @@ export const createDocument = async (template, placeholders, signerData) => {
         objectId: Doc.CreatedBy.objectId
       },
       Signers: signers,
-      SendinOrder: Doc?.SendinOrder || false
+      SendinOrder: Doc?.SendinOrder || false,
+      AutomaticReminders: Doc?.AutomaticReminders || false,
+      RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5)
     };
 
     try {
@@ -1349,8 +1351,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-            ? 10
-            : newUpdateHeight;
+              ? 10
+              : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
