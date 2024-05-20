@@ -10,18 +10,19 @@ import loader from "../../assets/images/loader2.gif";
 function EmailComponent({
   isEmail,
   pdfUrl,
-  isCeleb,
   setIsEmail,
   setSuccessEmail,
   pdfName,
   sender,
   setIsAlert,
   extUserId,
-  activeMailAdapter
+  activeMailAdapter,
+  isCompletionCeleb
 }) {
   const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCeleb, setIsCeleb] = useState(false);
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
@@ -62,6 +63,10 @@ function EmailComponent({
             " target=_blank>here</a> </p></div></div></body></html>"
         };
         sendMail = await axios.post(url, params, { headers: headers });
+        setIsCeleb(true);
+        setTimeout(() => {
+          setIsCeleb(false);
+        }, 3000);
       } catch (error) {
         console.log("error", error);
         setIsLoading(false);
@@ -245,7 +250,7 @@ function EmailComponent({
               </div>
             </div>
             <div style={{ height: "100%", padding: 20 }}>
-              {isCeleb && (
+              {(isCeleb || isCompletionCeleb) && (
                 <div
                   style={{
                     position: "absolute",
@@ -261,6 +266,7 @@ function EmailComponent({
                   />
                 </div>
               )}
+
               <p
                 style={{
                   fontFamily: "system-ui",

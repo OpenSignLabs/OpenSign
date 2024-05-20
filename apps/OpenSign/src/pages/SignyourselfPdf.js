@@ -70,7 +70,6 @@ function SignYourSelf() {
   const [dragKey, setDragKey] = useState();
   const [signKey, setSignKey] = useState();
   const [imgWH, setImgWH] = useState({});
-  const [isCeleb, setIsCeleb] = useState(false);
   const [pdfNewWidth, setPdfNewWidth] = useState();
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [successEmail, setSuccessEmail] = useState(false);
@@ -109,6 +108,7 @@ function SignYourSelf() {
   const [isDontShow, setIsDontShow] = useState(false);
   const [extUserId, setExtUserId] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isCompletionCeleb, setIsCompletionCeleb] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(true);
@@ -231,6 +231,9 @@ function SignYourSelf() {
           setIsEmail(true);
           setXyPostion([]);
           setSignBtnPosition([]);
+          setTimeout(() => {
+            setIsCompletionCeleb(false);
+          }, 1500);
         }
       }
     } else if (
@@ -337,6 +340,7 @@ function SignYourSelf() {
       setIsLoading(loadObj);
     }
   };
+  console.log("iscompletion", isCompletionCeleb);
   const getWidgetValue = (type) => {
     switch (type) {
       case "name":
@@ -649,10 +653,6 @@ function SignYourSelf() {
           });
           return;
         } else {
-          setIsCeleb(true);
-          setTimeout(() => {
-            setIsCeleb(false);
-          }, 3000);
           setIsUiLoading(true);
           const existingPdfBytes = pdfArrayBuffer;
           // Load a PDFDocument from the existing PDF bytes
@@ -769,6 +769,7 @@ function SignYourSelf() {
         setPdfUrl(json.result.data);
         if (json.result.data) {
           getDocumentDetails(false);
+          setIsCompletionCeleb(true);
         }
       })
       .catch((err) => {
@@ -1258,7 +1259,6 @@ function SignYourSelf() {
               <EmailComponent
                 isEmail={isEmail}
                 pdfUrl={pdfUrl}
-                isCeleb={isCeleb}
                 setIsEmail={setIsEmail}
                 pdfName={pdfDetails[0] && pdfDetails[0].Name}
                 setSuccessEmail={setSuccessEmail}
@@ -1266,6 +1266,8 @@ function SignYourSelf() {
                 setIsAlert={setIsAlert}
                 extUserId={extUserId}
                 activeMailAdapter={activeMailAdapter}
+                isCompletionCeleb={isCompletionCeleb}
+                setIsCompletionCeleb={setIsCompletionCeleb}
               />
               {/* pdf header which contain funish back button */}
               <Header
