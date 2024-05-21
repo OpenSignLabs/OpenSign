@@ -1,7 +1,6 @@
 import React from "react";
 import { isEnableSubscription } from "../constant/const";
 import PremiumAlertHeader from "./PremiumAlertHeader";
-import celebration from "../assets/images/newCeleb.gif";
 
 const ModalUi = ({
   children,
@@ -12,8 +11,7 @@ const ModalUi = ({
   showHeader = true,
   showClose = true,
   styleClass,
-  showHeaderMessage,
-  isCelebration
+  showHeaderMessage
 }) => {
   return (
     <>
@@ -26,16 +24,6 @@ const ModalUi = ({
                 : "fixed z-[1000] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[500px] overflow-y-auto hide-scrollbar"
             }
           >
-            {isCelebration && (
-              <div className="absolute w-[100%] flex justify-center items-center">
-                <img
-                  alt="print img"
-                  width={300}
-                  height={100}
-                  src={celebration}
-                />
-              </div>
-            )}
             {showHeader && (
               <div
                 className="flex justify-between rounded-t items-center py-[15px] px-[20px] text-white"
