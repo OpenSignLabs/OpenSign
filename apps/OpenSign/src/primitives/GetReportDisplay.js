@@ -18,6 +18,7 @@ import EditorToolbar, {
 } from "../components/pdf/EditorToolbar";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import BulkSendUi from "../components/BulkSendUi";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
@@ -39,6 +40,11 @@ const ReportTable = (props) => {
   const [mail, setMail] = useState({ subject: "", body: "" });
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
+  const [isBulkSend, setIsBulkSend] = useState({});
+  const [templateDeatils, setTemplateDetails] = useState({});
+  const [placeholders, setPlaceholders] = useState([]);
+  const [isErr, setIsErr] = useState(false);
+
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
   // For loop is used to calculate page numbers visible below table
@@ -211,6 +217,7 @@ const ReportTable = (props) => {
   };
 
   const handleActionBtn = (act, item) => {
+    console.log("item", item);
     if (act.action === "redirect") {
       handleURL(item, act);
     } else if (act.action === "delete") {
@@ -223,6 +230,8 @@ const ReportTable = (props) => {
       setIsOption({ [item.objectId]: !isOption[item.objectId] });
     } else if (act.action === "resend") {
       setIsResendMail({ [item.objectId]: true });
+    } else if (act.action === "bulksend") {
+      handleBulkSend(item);
     }
   };
   // Get current list
@@ -605,6 +614,30 @@ const ReportTable = (props) => {
       </div>
     );
   };
+  const handleQuickSendClose = (status, count) => {
+    setIsBulkSend({});
+    setIsAlert(true);
+    if (status === "success") {
+      if (count > 1) {
+        setAlertMsg(count + " Documents sent successfully!");
+      } else {
+        setAlertMsg(count + " Document sent successfully!");
+      }
+    } else {
+      setIsAlert(true);
+      setIsErr(true);
+    }
+  };
+
+  const handleBulkSend = (template) => {
+    if (template?.Placeholders?.length > 0) {
+      setPlaceholders(template?.Placeholders);
+      setTemplateDetails(template);
+      setIsBulkSend({ [template.objectId]: true });
+    } else {
+      setIsDocErr(true);
+    }
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -843,6 +876,19 @@ const ReportTable = (props) => {
                                 </button>
                               </div>
                             </div>
+                          </ModalUi>
+                        )}
+                        {isBulkSend[`${item.objectId}`] && (
+                          <ModalUi
+                            isOpen
+                            title={"Quick send"}
+                            handleClose={() => setIsBulkSend({})}
+                          >
+                            <BulkSendUi
+                              Placeholders={placeholders}
+                              item={templateDeatils}
+                              handleClose={handleQuickSendClose}
+                            />
                           </ModalUi>
                         )}
                         {isShare[item.objectId] && (
