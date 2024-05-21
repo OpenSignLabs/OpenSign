@@ -3,6 +3,7 @@ import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
 import { isEnableSubscription, themeColor } from "../constant/const";
+import Confetti from "react-confetti";
 import axios from "axios";
 import Loader from "../primitives/LoaderWithMsg";
 import loader from "../assets/images/loader2.gif";
@@ -70,7 +71,6 @@ function SignYourSelf() {
   const [dragKey, setDragKey] = useState();
   const [signKey, setSignKey] = useState();
   const [imgWH, setImgWH] = useState({});
-  const [isCeleb, setIsCeleb] = useState(false);
   const [pdfNewWidth, setPdfNewWidth] = useState();
   const [pdfOriginalWidth, setPdfOriginalWidth] = useState();
   const [successEmail, setSuccessEmail] = useState(false);
@@ -109,6 +109,7 @@ function SignYourSelf() {
   const [isDontShow, setIsDontShow] = useState(false);
   const [extUserId, setExtUserId] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isCelebration, setIsCelebration] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(true);
@@ -229,8 +230,12 @@ function SignYourSelf() {
           setIsUiLoading(false);
           setIsSignPad(false);
           setIsEmail(true);
+          setIsCelebration(true);
           setXyPostion([]);
           setSignBtnPosition([]);
+          setTimeout(() => {
+            setIsCelebration(false);
+          }, 5000);
         }
       }
     } else if (
@@ -649,10 +654,6 @@ function SignYourSelf() {
           });
           return;
         } else {
-          setIsCeleb(true);
-          setTimeout(() => {
-            setIsCeleb(false);
-          }, 3000);
           setIsUiLoading(true);
           const existingPdfBytes = pdfArrayBuffer;
           // Load a PDFDocument from the existing PDF bytes
@@ -1122,6 +1123,11 @@ function SignYourSelf() {
               </span>
             </div>
           )}
+          {isCelebration && (
+            <div style={{ position: "relative", zIndex: "999" }}>
+              <Confetti width={window.innerWidth} height={window.innerHeight} />
+            </div>
+          )}
 
           <div className="signatureContainer" ref={divRef}>
             {!isEmailVerified && (
@@ -1258,7 +1264,6 @@ function SignYourSelf() {
               <EmailComponent
                 isEmail={isEmail}
                 pdfUrl={pdfUrl}
-                isCeleb={isCeleb}
                 setIsEmail={setIsEmail}
                 pdfName={pdfDetails[0] && pdfDetails[0].Name}
                 setSuccessEmail={setSuccessEmail}
