@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SignPad from "../components/pdf/SignPad";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import Tour from "reactour";
+import Confetti from "react-confetti";
 import moment from "moment";
 import {
   contractDocument,
@@ -61,6 +62,7 @@ function PdfRequestFiles() {
   const [handleError, setHandleError] = useState();
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
+  const [isCelebration, setIsCelebration] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -219,7 +221,7 @@ function PdfRequestFiles() {
     }
   }
   //function for get document details for perticular signer with signer'object id
-  const getDocumentDetails = async () => {
+  const getDocumentDetails = async (isNextUser) => {
     let currUserId;
     //getting document details
     const documentData = await contractDocument(documentId);
@@ -412,6 +414,27 @@ function PdfRequestFiles() {
           setSignerPos(documentData[0].Placeholders);
         }
         setPdfDetails(documentData);
+        // Check if the current signer is not a last signer and handle the complete message.
+        if (isNextUser) {
+          const getSignedAuditTrail = documentData[0].AuditTrail.filter(
+            (data) => data.Activity === "Signed"
+          );
+          const isLastSigner =
+            getSignedAuditTrail?.length === documentData?.[0]?.Signers?.length;
+          if (!isLastSigner) {
+            setIsCompleted({
+              isModal: true,
+              message:
+                "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
+            });
+          } else {
+            setIsCelebration(true);
+            setTimeout(() => {
+              setIsCelebration(false);
+            }, 5000);
+          }
+        }
+
         setIsUiLoading(false);
       } else {
         alert("No data found!");
@@ -701,19 +724,12 @@ function PdfRequestFiles() {
                 setIsSigned(true);
                 setSignedSigners([]);
                 setUnSignedSigners([]);
-                getDocumentDetails();
+                getDocumentDetails(true);
                 const index = pdfDetails?.[0].Signers.findIndex(
                   (x) => x.Email === jsonSender.email
                 );
                 const newIndex = index + 1;
                 const user = pdfDetails?.[0].Signers[newIndex];
-                if (user) {
-                  setIsCompleted({
-                    isModal: true,
-                    message:
-                      "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
-                  });
-                }
                 if (sendInOrder) {
                   const requestBody = pdfDetails?.[0]?.RequestBody;
                   const requestSubject = pdfDetails?.[0]?.RequestSubject;
@@ -1120,7 +1136,6 @@ function PdfRequestFiles() {
       alertMessage: ""
     });
   };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Request Sign"} />
@@ -1167,6 +1182,14 @@ function PdfRequestFiles() {
                   <span style={{ fontSize: "13px", fontWeight: "bold" }}>
                     This might take some time
                   </span>
+                </div>
+              )}
+              {isCelebration && (
+                <div style={{ position: "relative", zIndex: "1000" }}>
+                  <Confetti
+                    width={window.innerWidth}
+                    height={window.innerHeight}
+                  />
                 </div>
               )}
 
