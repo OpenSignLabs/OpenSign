@@ -998,9 +998,10 @@ function PlaceHolderSign() {
     for (let i = 0; i < signerMail.length; i++) {
       const objectId = signerMail[i].objectId;
       const hostUrl = window.location.origin;
+      const sendMail = false;
       //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
       const encodeBase64 = btoa(
-        `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
+        `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${sendMail}`
       );
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
       shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
