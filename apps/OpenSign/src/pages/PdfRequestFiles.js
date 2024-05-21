@@ -431,7 +431,7 @@ function PdfRequestFiles() {
             setIsCelebration(true);
             setTimeout(() => {
               setIsCelebration(false);
-            }, 2500);
+            }, 5000);
           }
         }
 

@@ -235,7 +235,7 @@ function SignYourSelf() {
           setSignBtnPosition([]);
           setTimeout(() => {
             setIsCelebration(false);
-          }, 2500);
+          }, 5000);
         }
       }
     } else if (

@@ -19,6 +19,7 @@ function GuestLogin() {
   const [appLogo, setAppLogo] = useState("");
   const [documentId, setDocumentId] = useState(id);
   const [contactId, setContactId] = useState(contactBookId);
+  const [sendMail, setSendMail] = useState();
   useEffect(() => {
     handleServerUrl();
 
@@ -54,6 +55,7 @@ function GuestLogin() {
       setDocumentId(checkSplit[0]);
       setEmail(checkSplit[1]);
       setContactId(checkSplit[2]);
+      setSendMail(checkSplit[3]);
     }
 
     setIsLoading(false);
@@ -146,7 +148,13 @@ function GuestLogin() {
           //save isGuestSigner true in local to handle login flow header in mobile view
           localStorage.setItem("isGuestSigner", true);
           setLoading(false);
-          navigate(`/load/recipientSignPdf/${documentId}/${contactId}`);
+          if (sendMail === "false") {
+            navigate(
+              `/load/recipientSignPdf/${documentId}/${contactId}?sendmail=${sendMail}`
+            );
+          } else {
+            navigate(`/load/recipientSignPdf/${documentId}/${contactId}`);
+          }
         }
       } catch (error) {
         console.log("err ", error);
