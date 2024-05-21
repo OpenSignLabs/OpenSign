@@ -3,6 +3,7 @@ import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
 import { isEnableSubscription, themeColor } from "../constant/const";
+import Confetti from "react-confetti";
 import axios from "axios";
 import Loader from "../primitives/LoaderWithMsg";
 import loader from "../assets/images/loader2.gif";
@@ -108,7 +109,7 @@ function SignYourSelf() {
   const [isDontShow, setIsDontShow] = useState(false);
   const [extUserId, setExtUserId] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isCompletionCeleb, setIsCompletionCeleb] = useState(false);
+  const [isCelebration, setIsCelebration] = useState(false);
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(true);
@@ -229,11 +230,12 @@ function SignYourSelf() {
           setIsUiLoading(false);
           setIsSignPad(false);
           setIsEmail(true);
+          setIsCelebration(true);
           setXyPostion([]);
           setSignBtnPosition([]);
           setTimeout(() => {
-            setIsCompletionCeleb(false);
-          }, 1500);
+            setIsCelebration(false);
+          }, 2500);
         }
       }
     } else if (
@@ -768,7 +770,6 @@ function SignYourSelf() {
         setPdfUrl(json.result.data);
         if (json.result.data) {
           getDocumentDetails(false);
-          setIsCompletionCeleb(true);
         }
       })
       .catch((err) => {
@@ -1122,6 +1123,11 @@ function SignYourSelf() {
               </span>
             </div>
           )}
+          {isCelebration && (
+            <div style={{ position: "relative", zIndex: "999" }}>
+              <Confetti width={window.innerWidth} height={window.innerHeight} />
+            </div>
+          )}
 
           <div className="signatureContainer" ref={divRef}>
             {!isEmailVerified && (
@@ -1265,8 +1271,6 @@ function SignYourSelf() {
                 setIsAlert={setIsAlert}
                 extUserId={extUserId}
                 activeMailAdapter={activeMailAdapter}
-                isEmailCelebration={isCompletionCeleb}
-                setIsCompletionCeleb={setIsCompletionCeleb}
               />
               {/* pdf header which contain funish back button */}
               <Header

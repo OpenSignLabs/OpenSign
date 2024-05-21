@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SignPad from "../components/pdf/SignPad";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import Tour from "reactour";
+import Confetti from "react-confetti";
 import moment from "moment";
 import {
   contractDocument,
@@ -260,9 +261,6 @@ function PdfRequestFiles() {
         };
         setAlreadySign(true);
         setIsCompleted(data);
-        setTimeout(() => {
-          setIsCelebration(false);
-        }, 1500);
       } else if (declined) {
         const currentDecline = {
           currnt: "another",
@@ -429,6 +427,11 @@ function PdfRequestFiles() {
               message:
                 "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
             });
+          } else {
+            setIsCelebration(true);
+            setTimeout(() => {
+              setIsCelebration(false);
+            }, 2500);
           }
         }
 
@@ -722,7 +725,6 @@ function PdfRequestFiles() {
                 setSignedSigners([]);
                 setUnSignedSigners([]);
                 getDocumentDetails(true);
-                setIsCelebration(true);
                 const index = pdfDetails?.[0].Signers.findIndex(
                   (x) => x.Email === jsonSender.email
                 );
@@ -1182,6 +1184,14 @@ function PdfRequestFiles() {
                   </span>
                 </div>
               )}
+              {isCelebration && (
+                <div style={{ position: "relative", zIndex: "1000" }}>
+                  <Confetti
+                    width={window.innerWidth}
+                    height={window.innerHeight}
+                  />
+                </div>
+              )}
 
               <div
                 className="relative flex flex-col md:flex-row justify-between bg-[#ebebeb]"
@@ -1371,7 +1381,6 @@ function PdfRequestFiles() {
                     handleClose={() => {
                       setIsCompleted((prev) => ({ ...prev, isModal: false }));
                     }}
-                    isCelebration={!isCompleted?.message && isCelebration}
                   >
                     <div style={{ height: "100%", padding: 20 }}>
                       <p>
