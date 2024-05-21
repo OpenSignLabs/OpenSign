@@ -76,7 +76,7 @@ Environment Varaibles:
 | PFX_BASE64  | - | Base64 encoded PFX or p12 document signing certificate file. You can generate base64 encoded self sign certificate using the passphrase. |
 | PASS_PHRASE | opensign | Pass phrase of PFX or p12 document signing certificate file.|
 
-# Steps to Generate Self Sign Certificate
+# Steps to generate self-signed document singing certificate
 ```
 # execute below command and use passphrase 'opensign'
 openssl genrsa -des3 -out ./local_dev.key 2048
