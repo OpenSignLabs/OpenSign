@@ -101,6 +101,7 @@ export default function reportJson(id, userId) {
           'AuditTrail',
           'AuditTrail.UserPtr',
           'ExpiryDate',
+          'SendMail',
         ],
       };
     // completed documents report
