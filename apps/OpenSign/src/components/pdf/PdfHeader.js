@@ -331,7 +331,7 @@ function Header({
                 user exist than show finish button else no
                 */}
                 {currentSigner && (
-                  <div className="flex" data-tut="reactourFifth">
+                  <div className="flex items-center" data-tut="reactourFifth">
                     {decline && (
                       <div
                         onClick={() => handleDeclinePdfAlert()}
@@ -372,7 +372,7 @@ function Header({
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger asChild>
                         <div
-                          className="border-none font-[650] text-[18px] pl-2"
+                          className="border-none font-[650] text-[18px] px-2 ml-[4px]"
                           style={{ color: themeColor }}
                         >
                           <i
