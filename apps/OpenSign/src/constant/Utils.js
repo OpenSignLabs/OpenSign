@@ -21,7 +21,7 @@ export async function fetchSubscription(
   try {
     const extClass = localStorage.getItem("Extand_Class");
     let extUser;
-    if (extClass) {
+    if (extClass && extClass.length > 0) {
       const jsonSender = JSON.parse(extClass);
       extUser = jsonSender[0].objectId;
     } else {
@@ -1351,8 +1351,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-              ? 10
-              : newUpdateHeight;
+            ? 10
+            : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
