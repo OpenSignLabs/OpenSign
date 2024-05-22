@@ -296,7 +296,7 @@ const ReportTable = (props) => {
   const handleShare = (item) => {
     setActLoader({ [item.objectId]: true });
     const host = window.location.origin;
-    const sendMail = false;
+    const sendMail = item?.SendMail || false;
     const getUrl = (x) => {
       //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
       const encodeBase64 = btoa(
