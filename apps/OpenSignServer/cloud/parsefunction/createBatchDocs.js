@@ -33,7 +33,7 @@ async function sendMail(document, sessionToken) {
       if (objectId) {
         encodeBase64 = btoa(`${document.objectId}}/${signerMail[i].signerPtr.Email}/${objectId}`);
       } else {
-        encodeBase64 = btoa(`${document.objectId}}/${signerMail[i].email}/${objectId}`);
+        encodeBase64 = btoa(`${document.objectId}}/${signerMail[i].email}`);
       }
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
       const openSignUrl = 'https://www.opensignlabs.com/';
@@ -80,7 +80,7 @@ export default async function createBatchDocs(request) {
   const strDocuments = request.params.Documents;
   const sessionToken = request.headers['sessiontoken'];
   const Documents = JSON.parse(strDocuments);
-
+  const Ip = request?.headers?.['x-real-ip'] || '';
   // console.log('Documents ', Documents);
   const parseConfig = {
     baseURL: serverUrl, //localStorage.getItem('baseUrl'),
@@ -91,51 +91,79 @@ export default async function createBatchDocs(request) {
     },
   };
   try {
-    const requests = Documents.map(x => ({
-      method: 'POST',
-      path: '/app/classes/contracts_Document',
-      body: {
-        Name: x.Name,
-        URL: x.URL,
-        Note: x.Note,
-        Description: x.Description,
-        CreatedBy: x.CreatedBy,
-        ExtUserPtr: {
-          __type: 'Pointer',
-          className: x.ExtUserPtr.className,
-          objectId: x.ExtUserPtr.objectId,
+    const requests = Documents.map(x => {
+      const Signers = x.Signers;
+      const allSigner = x?.Placeholders?.map(item => {
+        const signer = Signers?.find(e => item?.signerPtr?.objectId === e?.objectId);
+        if (signer) {
+          return signer;
+        } else {
+          return item?.signerPtr?.objectId && item?.signerPtr;
+        }
+      });
+      const date = new Date();
+      const isoDate = date.toISOString();
+      let Acl = { [x.CreatedBy.objectId]: { read: true, write: true } };
+      // console.log('allSigner ', allSigner);
+      if (allSigner && allSigner.length > 0) {
+        allSigner.forEach(x => {
+          const obj = { [x.CreatedBy.objectId]: { read: true, write: true } };
+          Acl = { ...Acl, ...obj };
+        });
+      }
+      return {
+        method: 'POST',
+        path: '/app/classes/contracts_Document',
+        body: {
+          Name: x.Name,
+          URL: x.URL,
+          Note: x.Note,
+          Description: x.Description,
+          CreatedBy: x.CreatedBy,
+          SendinOrder: x.SendinOrder || true,
+          ExtUserPtr: {
+            __type: 'Pointer',
+            className: x.ExtUserPtr.className,
+            objectId: x.ExtUserPtr.objectId,
+          },
+          Placeholders: x.Placeholders.map(y =>
+            y?.signerPtr?.objectId
+              ? {
+                  ...y,
+                  signerPtr: {
+                    __type: 'Pointer',
+                    className: 'contracts_Contactbook',
+                    objectId: y.signerPtr.objectId,
+                  },
+                  signerObjId: y.signerObjId,
+                }
+              : { ...y, signerPtr: {}, signerObjId: '' }
+          ),
+          SignedUrl: x.URL || x.SignedUrl,
+          Signers: allSigner?.map(y => ({
+            __type: 'Pointer',
+            className: 'contracts_Contactbook',
+            objectId: y.objectId,
+          })),
+          ACL: Acl,
+          RemindOnceInEvery: x.RemindOnceInEvery,
+          AutomaticReminders: x.AutomaticReminders || false,
+          TimeToCompleteDays: x.TimeToCompleteDays || 15,
+          OriginIp: Ip,
+          DocSentAt: { __type: 'Date', iso: isoDate },
         },
-        Placeholders: x.Placeholders.map(y =>
-          y?.signerPtr?.objectId
-            ? {
-                ...y,
-                signerPtr: {
-                  __type: 'Pointer',
-                  className: y.signerPtr.className,
-                  objectId: y.signerPtr.objectId,
-                },
-                signerObjId: y.signerObjId,
-              }
-            : { ...y, signerPtr: {}, signerObjId: '' }
-        ),
-        SignedUrl: x.SignedUrl,
-        Signers: x.Signers.map(y => ({
-          __type: 'Pointer',
-          className: y.className,
-          objectId: y.objectId,
-        })),
-      },
-    }));
+      };
+    });
     // console.log('requests ', requests);
 
     const response = await axios.post('batch', { requests: requests }, parseConfig);
     // // Handle the batch query response
-    // console.log('Batch query response:', response.data)
+    // console.log('Batch query response:', response.data);
     if (response.data && response.data.length > 0) {
       const updateDocuments = Documents.map((x, i) => ({
         ...x,
         objectId: response.data[i]?.success?.objectId,
-        createdAt: response.data[i]?.success.createdAt,
+        createdAt: response.data[i]?.success?.createdAt,
       }));
       for (let i = 0; i < updateDocuments.length; i++) {
         // console.log('updateDocuments ', updateDocuments);
