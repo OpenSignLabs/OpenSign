@@ -1241,7 +1241,7 @@ function PdfRequestFiles() {
           }
         );
       } catch (e) {
-        console.log("update tour messages error", err);
+        console.log("update tour messages error", e);
       }
     }
   };
