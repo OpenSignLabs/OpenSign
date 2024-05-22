@@ -7,6 +7,7 @@ exports.up = async Parse => {
   const className = 'contracts_Document';
   const schema = new Parse.Schema(className);
   schema.addBoolean('SendMail');
+  schema.addBoolean('SendCompletionMail');
   // TODO: Set the schema here
   // Example:
   // schema.addString('name').addNumber('cash');
@@ -23,6 +24,7 @@ exports.down = async Parse => {
   const className = 'contracts_Document';
   const schema = new Parse.Schema(className);
   schema.deleteField('SendMail');
+  schema.deleteField('SendCompletionMail');
 
   // TODO: Set the schema here
   // Example:
