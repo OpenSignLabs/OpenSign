@@ -331,7 +331,7 @@ function Header({
                 user exist than show finish button else no
                 */}
                 {currentSigner && (
-                  <>
+                  <div className="flex" data-tut="reactourFifth">
                     {decline && (
                       <div
                         onClick={() => handleDeclinePdfAlert()}
@@ -399,7 +399,7 @@ function Header({
                         </DropdownMenu.Content>
                       </DropdownMenu.Portal>
                     </DropdownMenu.Root>
-                  </>
+                  </div>
                 )}
               </div>
             )}
@@ -464,8 +464,8 @@ function Header({
                   {completeBtnTitle
                     ? completeBtnTitle
                     : isMailSend
-                    ? "Sent"
-                    : "Send"}
+                      ? "Sent"
+                      : "Send"}
                 </button>
               </div>
             </>
@@ -505,7 +505,7 @@ function Header({
                 </button>
               </div>
             ) : (
-              <div className="flex">
+              <div className="flex" data-tut="reactourFifth">
                 <button
                   onClick={() => navigate(-1)}
                   type="button"
