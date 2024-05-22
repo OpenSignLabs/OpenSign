@@ -632,11 +632,27 @@ const ReportTable = (props) => {
     }
   };
 
-  const handleBulkSend = (template) => {
-    if (template?.Placeholders?.length > 0) {
-      setPlaceholders(template?.Placeholders);
-      setTemplateDetails(template);
-      setIsBulkSend({ [template.objectId]: true });
+  const handleBulkSend = async (template) => {
+    const params = {
+      templateId: template.objectId,
+      include: ["Placeholders.signerPtr"]
+    };
+    const axiosRes = await axios.post(
+      `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+      params,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          sessionToken: localStorage.getItem("accesstoken")
+        }
+      }
+    );
+    const templateRes = axiosRes.data && axiosRes.data.result;
+    if (templateRes?.Placeholders?.length > 0) {
+      setPlaceholders(templateRes?.Placeholders);
+      setTemplateDetails(templateRes);
+      setIsBulkSend({ [templateRes.objectId]: true });
     } else {
       setIsDocErr(true);
     }

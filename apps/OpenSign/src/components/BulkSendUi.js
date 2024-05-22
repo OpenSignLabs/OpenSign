@@ -118,8 +118,8 @@ const BulkSendUi = (props) => {
       // Push a new document object with updated Placeholders into the Documents array
       Documents.push({ ...props.item, Placeholders: updatedPlaceholders });
     });
-    console.log("Documents ", Documents);
-    // await batchQuery(Documents);
+    // console.log("Documents ", Documents);
+    await batchQuery(Documents);
   };
 
   const batchQuery = async (Documents) => {
