@@ -1,20 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { openInNewTab } from "../constant/Utils";
 
-function Upgrade({ message, newWindow }) {
-  const navigation = useNavigate();
-
+function Upgrade({ message }) {
   return (
     <sup>
       <span
         onClick={() => {
-          if (newWindow) {
-            const url = window.location.origin + "/subscription";
-            openInNewTab(url);
-          } else {
-            navigation("/subscription");
-          }
+          const url = window.location.origin + "/subscription";
+          openInNewTab(url);
         }}
         className="text-blue-800 text-sm cursor-pointer underline"
       >

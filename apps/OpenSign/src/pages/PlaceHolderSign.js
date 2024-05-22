@@ -1804,10 +1804,7 @@ function PlaceHolderSign() {
 
                             {!isSubscribe && isEnableSubscription && (
                               <div className="mt-2">
-                                <Upgrade
-                                  message="Upgrade to customize Email"
-                                  newWindow={true}
-                                />
+                                <Upgrade message="Upgrade to customize Email" />
                               </div>
                             )}
                           </div>
