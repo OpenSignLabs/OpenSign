@@ -998,9 +998,10 @@ function PlaceHolderSign() {
     for (let i = 0; i < signerMail.length; i++) {
       const objectId = signerMail[i].objectId;
       const hostUrl = window.location.origin;
+      const sendMail = false;
       //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
       const encodeBase64 = btoa(
-        `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
+        `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${sendMail}`
       );
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
       shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
@@ -1162,40 +1163,45 @@ function PlaceHolderSign() {
     }
     if (sendMail.data.result.status === "success") {
       setMailStatus("success");
-
-      if (
-        requestBody &&
-        requestSubject &&
-        isCustomize &&
-        (isSubscribe || !isEnableSubscription)
-      ) {
-        try {
-          const data = {
+      try {
+        let data;
+        if (
+          requestBody &&
+          requestSubject &&
+          isCustomize &&
+          (isSubscribe || !isEnableSubscription)
+        ) {
+          data = {
             RequestBody: htmlReqBody,
-            RequestSubject: requestSubject
+            RequestSubject: requestSubject,
+            SendMail: true
           };
-
-          await axios
-            .put(
-              `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-                "_appName"
-              )}_Document/${documentId}`,
-              data,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-                  "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-                }
-              }
-            )
-            .then(() => {})
-            .catch((err) => {
-              console.log("axois err ", err);
-            });
-        } catch (e) {
-          console.log("error", e);
+        } else {
+          data = {
+            SendMail: true
+          };
         }
+
+        await axios
+          .put(
+            `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+              "_appName"
+            )}_Document/${documentId}`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+              }
+            }
+          )
+          .then(() => {})
+          .catch((err) => {
+            console.log("axois err ", err);
+          });
+      } catch (e) {
+        console.log("error", e);
       }
 
       setIsSend(true);

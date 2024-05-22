@@ -39,11 +39,16 @@ import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
 import VerifyEmail from "../components/pdf/VerifyEmail";
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 function PdfRequestFiles() {
   const { docId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const query = useQuery();
+  const sendmail = query.get("sendmail");
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
   const [unsignedSigners, setUnSignedSigners] = useState([]);
@@ -730,7 +735,7 @@ function PdfRequestFiles() {
                 );
                 const newIndex = index + 1;
                 const user = pdfDetails?.[0].Signers[newIndex];
-                if (sendInOrder) {
+                if (sendmail !== "false" && sendInOrder) {
                   const requestBody = pdfDetails?.[0]?.RequestBody;
                   const requestSubject = pdfDetails?.[0]?.RequestSubject;
                   if (user) {
