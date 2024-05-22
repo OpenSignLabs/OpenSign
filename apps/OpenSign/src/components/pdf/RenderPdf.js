@@ -334,6 +334,7 @@ function RenderPdf({
       {successEmail && <Alert type={"success"}>Email sent successfully!</Alert>}
       {isMobile && scale ? (
         <div
+          data-tut="reactourForth"
           style={{
             border: "0.1px solid #ebe8e8",
             marginTop: isGuestSigner && "30px"
@@ -517,6 +518,7 @@ function RenderPdf({
           noScrollX={pdfNewWidth < pdfOriginalWidth ? false : true}
         >
           <div
+            data-tut="reactourForth"
             style={{
               border: "0.1px solid #ebe8e8",
               width: pdfOriginalWidth

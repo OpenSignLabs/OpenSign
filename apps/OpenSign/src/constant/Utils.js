@@ -171,11 +171,10 @@ export const contractUsers = async (email) => {
     .then((Listdata) => {
       const json = Listdata.data;
       let data = [];
-
       if (json && json.result) {
         data.push(json.result);
-        return data;
       }
+      return data;
     })
     .catch((err) => {
       console.log("Err ", err);
