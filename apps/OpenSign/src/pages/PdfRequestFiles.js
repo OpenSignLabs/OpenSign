@@ -1590,10 +1590,8 @@ function PdfRequestFiles() {
                         <div className="px-[15px]">
                           <span>
                             Congratulations! 🎉 This document has been
-                            successfully
+                            successfully signed by all participants!
                           </span>
-                          <br />
-                          <span>signed by all participants!</span>
                         </div>
                       )}
                       {!isCompleted?.message && (
