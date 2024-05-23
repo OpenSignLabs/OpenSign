@@ -144,29 +144,32 @@ function GenerateToken() {
                 : "w-full flex flex-col p-2 text-sm opacity-20 pointer-events-none select-none"
             }
           >
-            <li
-              className={`flex flex-col md:flex-row  justify-between items-center border-y-[1px] border-gray-300 break-all py-2`}
-            >
-              <div className="w-[70%] flex-col md:flex-row flex items-center gap-5 ">
+            <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
+              <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5 ">
                 <span className="">Api Token:</span>{" "}
-                <span
-                  id="token"
-                  className=" md:text-end cursor-pointer"
-                  onClick={() => copytoclipboard(apiToken)}
-                >
-                  {apiToken ? apiToken : "_____"}
+                <span id="token" className="md:text-end py-2 md:py-0">
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => copytoclipboard(apiToken)}
+                  >
+                    {apiToken ? apiToken : "_____"}
+                  </span>
+                  <button
+                    className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-2.5 py-2 focus:outline-none ml-2"
+                    onClick={() => copytoclipboard(apiToken)}
+                  >
+                    <i className="fa-solid fa-copy"></i>
+                  </button>
                 </span>
               </div>
               <button
-                type="button"
                 onClick={apiToken ? handleModal : handleSubmit}
-                className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-4 py-2 text-xs md:text-base focus:outline-none"
+                className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white text-xs md:text-sm lg:text-base px-2 py-2 focus:outline-none"
               >
                 {apiToken ? "Regenerate Token" : "Generate Token"}
               </button>
             </li>
           </ul>
-
           <div className="flex   items-center justify-center ">
             <button
               type="button"
