@@ -10,7 +10,6 @@ import loader from "../../assets/images/loader2.gif";
 function EmailComponent({
   isEmail,
   pdfUrl,
-  isCeleb,
   setIsEmail,
   setSuccessEmail,
   pdfName,
@@ -22,6 +21,7 @@ function EmailComponent({
   const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [isEmailCelebration, setIsEmailCelebration] = useState(false);
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
@@ -62,6 +62,10 @@ function EmailComponent({
             " target=_blank>here</a> </p></div></div></body></html>"
         };
         sendMail = await axios.post(url, params, { headers: headers });
+        setIsEmailCelebration(true);
+        setTimeout(() => {
+          setIsEmailCelebration(false);
+        }, 3000);
       } catch (error) {
         console.log("error", error);
         setIsLoading(false);
@@ -245,22 +249,17 @@ function EmailComponent({
               </div>
             </div>
             <div style={{ height: "100%", padding: 20 }}>
-              {isCeleb && (
-                <div
-                  style={{
-                    position: "absolute",
-                    marginLeft: "50px"
-                  }}
-                >
+              {isEmailCelebration && (
+                <div className="absolute w-[100%] flex justify-center items-center">
                   <img
                     alt="print img"
                     width={300}
                     height={250}
-                    // style={styles.gifCeleb}
                     src={celebration}
                   />
                 </div>
               )}
+
               <p
                 style={{
                   fontFamily: "system-ui",

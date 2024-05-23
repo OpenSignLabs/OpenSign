@@ -128,7 +128,7 @@ export default async function createContact(request, response) {
                   userId: userRes.objectId,
                 };
                 await axios.post(roleurl, body, { headers: headers });
-                contactQuery.set('CreatedBy', userPtr.objectId);
+                contactQuery.set('CreatedBy', userPtr);
                 contactQuery.set('UserId', {
                   __type: 'Pointer',
                   className: '_User',

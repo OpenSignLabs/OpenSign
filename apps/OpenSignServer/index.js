@@ -10,7 +10,7 @@ import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
 import S3Adapter from '@parse/s3-files-adapter';
-import FSFilesAdapter from 'parse-server-fs-adapter';
+import FSFilesAdapter from '@parse/fs-files-adapter';
 import AWS from 'aws-sdk';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';

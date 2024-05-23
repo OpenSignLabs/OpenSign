@@ -17,7 +17,7 @@ function DefaultSignature({ defaultSignImg, xyPostion, setDefaultSignAlert }) {
   };
 
   return (
-    <div>
+    <div data-tut="reactourThird">
       <div
         style={{
           background: themeColor,

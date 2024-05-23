@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { isEnableSubscription } from "../constant/const";
-import { getAppLogo } from "../constant/Utils";
+import { getAppLogo, openInNewTab } from "../constant/Utils";
 const Signup = () => {
   const { width } = useWindowSize();
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Signup = () => {
   const [lengthValid, setLengthValid] = useState(false);
   const [caseDigitValid, setCaseDigitValid] = useState(false);
   const [specialCharValid, setSpecialCharValid] = useState(false);
-
+  const [isAuthorize, setIsAuthorize] = useState(false);
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const clearStorage = async () => {
@@ -658,10 +658,34 @@ const Signup = () => {
                             {specialCharValid ? "✓" : "✗"} Password should
                             contain special character
                           </p>
-                          {/* </>
-                          )} */}
                         </div>
                       )}
+                      <div className="mt-2.5 ml-1 flex flex-row items-center">
+                        <input
+                          type="checkbox"
+                          id="termsandcondition"
+                          checked={isAuthorize}
+                          onChange={(e) => setIsAuthorize(e.target.checked)}
+                          required
+                        />
+                        <label
+                          className="text-xs cursor-pointer ml-1 mb-0"
+                          htmlFor="termsandcondition"
+                        >
+                          I agree to the
+                        </label>
+                        <span
+                          className="underline cursor-pointer ml-1"
+                          onClick={() =>
+                            openInNewTab(
+                              "https://www.opensignlabs.com/terms-and-conditions"
+                            )
+                          }
+                        >
+                          Terms of Service
+                        </span>
+                        <span>.</span>
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">

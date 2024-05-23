@@ -4,7 +4,14 @@ export default async function TemplateAfterSave(request) {
       console.log('new entry is insert in contracts_Template');
       // update acl of New Document If There are signers present in array
       const signers = request.object.get('Signers');
-
+      const AutoReminder = request?.object?.get('AutomaticReminders') || false;
+      if (AutoReminder) {
+        const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
+        const ReminderDate = new Date(request?.object?.get('createdAt'));
+        ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
+        request.object.set('NextReminderDate', ReminderDate);
+        await request.object.save(null, { useMasterKey: true });
+      }
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
       } else {

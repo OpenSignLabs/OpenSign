@@ -21,7 +21,7 @@ export async function fetchSubscription(
   try {
     const extClass = localStorage.getItem("Extand_Class");
     let extUser;
-    if (extClass) {
+    if (extClass && extClass.length > 0) {
       const jsonSender = JSON.parse(extClass);
       extUser = jsonSender[0].objectId;
     } else {
@@ -171,11 +171,10 @@ export const contractUsers = async (email) => {
     .then((Listdata) => {
       const json = Listdata.data;
       let data = [];
-
       if (json && json.result) {
         data.push(json.result);
-        return data;
       }
+      return data;
     })
     .catch((err) => {
       console.log("Err ", err);
@@ -561,7 +560,7 @@ export const signPdfFun = async (
         isCustomCompletionMail = true;
       }
     }
-    
+
     // below for loop is used to get first signature of user to send if to signpdf
     // for adding it in completion certificate
     let getSignature;
@@ -676,7 +675,9 @@ export const createDocument = async (template, placeholders, signerData) => {
         objectId: Doc.CreatedBy.objectId
       },
       Signers: signers,
-      SendinOrder: Doc?.SendinOrder || false
+      SendinOrder: Doc?.SendinOrder || false,
+      AutomaticReminders: Doc?.AutomaticReminders || false,
+      RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5)
     };
 
     try {
