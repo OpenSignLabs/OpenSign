@@ -10,7 +10,7 @@ const ModalUi = ({
   handleClose,
   showHeader = true,
   showClose = true,
-  styleClass,
+  reduceWidth,
   showHeaderMessage
 }) => {
   return (
@@ -18,11 +18,9 @@ const ModalUi = ({
       {isOpen && (
         <div className="fixed z-[999] top-0 left-0 w-[100%] h-[100%] bg-black bg-opacity-[75%]">
           <div
-            className={
-              styleClass
-                ? styleClass
-                : "fixed z-[1000] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[500px] overflow-y-auto hide-scrollbar"
-            }
+            className={`${
+              reduceWidth ? "md:min-w-[430px]" : "md:min-w-[500px]"
+            } fixed z-[1000] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%]   overflow-y-auto hide-scrollbar `}
           >
             {showHeader && (
               <div
