@@ -43,7 +43,7 @@ const ReportTable = (props) => {
   const [isBulkSend, setIsBulkSend] = useState({});
   const [templateDeatils, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
-  const [isErr, setIsErr] = useState(false);
+  const [isLoader, setIsLoader] = useState({});
 
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
@@ -217,7 +217,6 @@ const ReportTable = (props) => {
   };
 
   const handleActionBtn = (act, item) => {
-    console.log("item", item);
     if (act.action === "redirect") {
       handleURL(item, act);
     } else if (act.action === "delete") {
@@ -560,7 +559,6 @@ const ReportTable = (props) => {
   };
   const handleResendMail = async (e, doc, user) => {
     e.preventDefault();
-    console.log("first");
     setActLoader({ [user.objectId]: true });
     const url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
     const headers = {
@@ -618,44 +616,73 @@ const ReportTable = (props) => {
       </div>
     );
   };
+  // `handleQuickSendClose` is trigger when bulk send component trigger close event
   const handleQuickSendClose = (status, count) => {
     setIsBulkSend({});
     setIsAlert(true);
     if (status === "success") {
       if (count > 1) {
-        setAlertMsg(count + " Documents sent successfully!");
+        setAlertMsg({
+          type: "success",
+          message: count + " Document sent successfully!"
+        });
+        setTimeout(() => setIsAlert(false), 1500);
       } else {
-        setAlertMsg(count + " Document sent successfully!");
+        setAlertMsg({
+          type: "success",
+          message: count + " Document sent successfully!"
+        });
+        setTimeout(() => setIsAlert(false), 1500);
       }
     } else {
-      setIsAlert(true);
-      setIsErr(true);
+      setAlertMsg({
+        type: "danger",
+        message: "Something went wrong, Please try again later!"
+      });
+      setTimeout(() => setIsAlert(false), 1500);
     }
   };
 
+  // `handleBulkSend` is used to open modal as well as fetch template
+  // and show Ui on the basis template response
   const handleBulkSend = async (template) => {
-    const params = {
-      templateId: template.objectId,
-      include: ["Placeholders.signerPtr"]
-    };
-    const axiosRes = await axios.post(
-      `${localStorage.getItem("baseUrl")}functions/getTemplate`,
-      params,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          sessionToken: localStorage.getItem("accesstoken")
+    setIsBulkSend({ [template.objectId]: true });
+    setIsLoader({ [template.objectId]: true });
+    try {
+      const params = {
+        templateId: template.objectId,
+        include: ["Placeholders.signerPtr"]
+      };
+      const axiosRes = await axios.post(
+        `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            sessionToken: localStorage.getItem("accesstoken")
+          }
         }
+      );
+      const templateRes = axiosRes.data && axiosRes.data.result;
+      if (templateRes?.Placeholders?.length > 0) {
+        setPlaceholders(templateRes?.Placeholders);
+        setTemplateDetails(templateRes);
+        setIsLoader({});
+      } else {
+        setIsLoader(false);
+        setIsDocErr(true);
       }
-    );
-    const templateRes = axiosRes.data && axiosRes.data.result;
-    if (templateRes?.Placeholders?.length > 0) {
-      setPlaceholders(templateRes?.Placeholders);
-      setTemplateDetails(templateRes);
-      setIsBulkSend({ [templateRes.objectId]: true });
-    } else {
-      setIsDocErr(true);
+    } catch (err) {
+      console.log("err in fetch template in bulk modal", err);
+      setIsBulkSend({});
+      setIsDocErr(false);
+      setIsAlert(true);
+      setAlertMsg({
+        type: "danger",
+        message: "Something went wrong, Please try again later!"
+      });
+      setTimeout(() => setIsAlert(false), 1500);
     }
   };
   return (
@@ -842,11 +869,11 @@ const ReportTable = (props) => {
                               )}
                               {isOption[item.objectId] &&
                                 act.action === "option" && (
-                                  <div className="absolute -right-2 top-5 bg-white rounded shadow z-[20] overflow-hidden">
+                                  <div className="absolute -right-2 top-5 bg-white text-nowrap rounded shadow z-[20] overflow-hidden">
                                     {act.subaction?.map((subact) => (
                                       <div
                                         key={subact.btnId}
-                                        className="hover:bg-gray-300 cursor-pointer px-2 py-1.5 flex justify-start items-center text-black"
+                                        className="hover:bg-gray-300 cursor-pointer px-2 py-1.5  flex justify-start items-center text-black"
                                         onClick={() =>
                                           handleActionBtn(subact, item)
                                         }
@@ -898,17 +925,34 @@ const ReportTable = (props) => {
                             </div>
                           </ModalUi>
                         )}
-                        {isBulkSend[`${item.objectId}`] && (
+                        {isBulkSend[item.objectId] && (
                           <ModalUi
                             isOpen
                             title={"Quick send"}
                             handleClose={() => setIsBulkSend({})}
                           >
-                            <BulkSendUi
-                              Placeholders={placeholders}
-                              item={templateDeatils}
-                              handleClose={handleQuickSendClose}
-                            />
+                            {isLoader[item.objectId] ? (
+                              <div className="w-full h-[100px] md:h-[100px] rounded-b-md flex justify-center items-center bg-black bg-opacity-30 z-30">
+                                <div
+                                  style={{ fontSize: "45px", color: "#3dd3e0" }}
+                                  className="loader-37"
+                                ></div>
+                              </div>
+                            ) : (
+                              <>
+                                {isDocErr ? (
+                                  <div className="text-black bg-white w-full h-[80px] md:h-[100px] text-sm md:text-xl flex justify-center items-center">
+                                    Please add Signers or Roles in template
+                                  </div>
+                                ) : (
+                                  <BulkSendUi
+                                    Placeholders={placeholders}
+                                    item={templateDeatils}
+                                    handleClose={handleQuickSendClose}
+                                  />
+                                )}
+                              </>
+                            )}
                           </ModalUi>
                         )}
                         {isShare[item.objectId] && (
@@ -1157,16 +1201,6 @@ const ReportTable = (props) => {
             handleUserData={handleUserData}
             closePopup={handleContactFormModal}
           />
-        </ModalUi>
-        <ModalUi
-          headColor={"#dc3545"}
-          isOpen={isDocErr}
-          title={"Receipent required"}
-          handleClose={() => setIsDocErr(false)}
-        >
-          <div style={{ height: "100%", padding: 20 }}>
-            <p>Please add receipent in template!</p>
-          </div>
         </ModalUi>
       </div>
     </div>

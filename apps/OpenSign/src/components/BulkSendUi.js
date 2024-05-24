@@ -8,6 +8,8 @@ const BulkSendUi = (props) => {
   const formRef = useRef(null);
   const [scrollOnNextUpdate, setScrollOnNextUpdate] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
+  const [allowedForm, setAllowedForm] = useState(0);
+  const allowedSigners = 50;
   useEffect(() => {
     if (scrollOnNextUpdate && formRef.current) {
       formRef.current.scrollIntoView({
@@ -37,45 +39,48 @@ const BulkSendUi = (props) => {
           }
         });
         setForms((prevForms) => [...prevForms, { Id: 1, fields: users }]);
+        const totalForms = Math.floor(allowedSigners / users?.length);
+        setAllowedForm(totalForms);
       }
     })();
     // eslint-disable-next-line
   }, []);
   const handleInputChange = (index, signer, fieldIndex) => {
-    console.log("index", index);
-    console.log("signer", signer);
-    console.log("fieldIndex", fieldIndex);
-
     const newForms = [...forms];
     newForms[index].fields[fieldIndex].email = signer?.Email
       ? signer?.Email
       : signer || "";
     newForms[index].fields[fieldIndex].signer = signer?.objectId ? signer : "";
-    console.log("newForms[index] ", newForms[index]);
     setForms(newForms);
   };
 
   const handleAddForm = (e) => {
     e.preventDefault();
-    if (props?.Placeholders.length > 0) {
-      let newForm = [];
-      props?.Placeholders?.forEach((element) => {
-        if (!element.signerObjId) {
-          newForm = [
-            ...newForm,
-            {
-              fieldId: element.Id,
-              email: "",
-              label: element.Role,
-              signer: {}
-            }
-          ];
-        }
-      });
-      setForms([...forms, { Id: formId, fields: newForm }]);
+    // Check if the quick send limit has been reached
+    if (forms?.length < allowedForm) {
+      if (props?.Placeholders.length > 0) {
+        let newForm = [];
+        props?.Placeholders?.forEach((element) => {
+          if (!element.signerObjId) {
+            newForm = [
+              ...newForm,
+              {
+                fieldId: element.Id,
+                email: "",
+                label: element.Role,
+                signer: {}
+              }
+            ];
+          }
+        });
+        setForms([...forms, { Id: formId, fields: newForm }]);
+      }
+      setFormId(formId + 1);
+      setScrollOnNextUpdate(true);
+    } else {
+      // If the limit has been reached, throw an error with the appropriate message
+      alert("Quick send reached limit.");
     }
-    setFormId(formId + 1);
-    setScrollOnNextUpdate(true);
   };
 
   const handleRemoveForm = (index) => {
@@ -102,7 +107,6 @@ const BulkSendUi = (props) => {
         );
         // If a matching field is found, update the email value in the placeholder
         const signer = field?.signer?.objectId ? field.signer : {};
-        console.log("signer ", signer);
         if (field) {
           return {
             ...placeholder,
