@@ -19,11 +19,12 @@ export async function fetchSubscription(
   isGuestSign = false
 ) {
   try {
-    const extClass = localStorage.getItem("Extand_Class");
+    const Extand_Class = localStorage.getItem("Extand_Class");
+    const extClass = Extand_Class && JSON.parse(Extand_Class);
+    // console.log("extClass ", extClass);
     let extUser;
     if (extClass && extClass.length > 0) {
-      const jsonSender = JSON.parse(extClass);
-      extUser = jsonSender[0].objectId;
+      extUser = extClass[0].objectId;
     } else {
       extUser = extUserId;
     }
