@@ -136,7 +136,8 @@ function GuestLogin() {
             `Parse/${parseId}/currentUser`,
             JSON.stringify(_user)
           );
-          if (contractUserDetails) {
+          // console.log("contractUserDetails ", contractUserDetails);
+          if (contractUserDetails && contractUserDetails.length > 0) {
             localStorage.setItem(
               "Extand_Class",
               JSON.stringify(contractUserDetails)

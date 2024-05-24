@@ -28,7 +28,8 @@ import {
   fetchSubscription,
   convertPdfArrayBuffer,
   contractUsers,
-  handleSendOTP
+  handleSendOTP,
+  contactBook
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -39,6 +40,7 @@ import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
 import VerifyEmail from "../components/pdf/VerifyEmail";
+import TourContentWithBtn from "../primitives/TourContentWithBtn";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -68,6 +70,8 @@ function PdfRequestFiles() {
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
+  const [requestSignTour, setRequestSignTour] = useState(true);
+  const [tourStatus, setTourStatus] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -85,6 +89,8 @@ function PdfRequestFiles() {
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [unSignedWidgetId, setUnSignedWidgetId] = useState("");
   const [expiredDate, setExpiredDate] = useState("");
+  const [signerUserId, setSignerUserId] = useState();
+  const [isDontShow, setIsDontShow] = useState(false);
   const [defaultSignAlert, setDefaultSignAlert] = useState({
     isShow: false,
     alertMessage: ""
@@ -114,6 +120,7 @@ function PdfRequestFiles() {
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [isVerifyModal, setIsVerifyModal] = useState(false);
   const [otp, setOtp] = useState("");
+  const [contractName, setContractName] = useState("");
   const divRef = useRef(null);
   const isMobile = window.innerWidth < 767;
   const rowLevel =
@@ -439,7 +446,62 @@ function PdfRequestFiles() {
             }, 5000);
           }
         }
-
+        //checking if condition current user already sign or owner does not exist as a signer or document has been declined by someone or document has been expired
+        //then stop to display tour message
+        if (
+          (checkAlreadySign &&
+            checkAlreadySign[0] &&
+            checkAlreadySign.length > 0) ||
+          !currUserId ||
+          declined ||
+          currDate > expireUpdateDate
+        ) {
+          setRequestSignTour(false);
+        } else {
+          //else condition to check current user exist in contracts_Users class and check tour message status
+          //if not then check user exist in contracts_Contactbook class and check tour message status
+          const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+          const currentUserEmail = currentUser.email;
+          const res = await contractUsers(currentUserEmail);
+          if (res === "Error: Something went wrong!") {
+            setHandleError("Error: Something went wrong!");
+          } else if (res[0] && res?.length) {
+            setContractName("_Users");
+            currUserId = res[0].objectId;
+            setSignerUserId(currUserId);
+            const tourstatus = res[0].TourStatus && res[0].TourStatus;
+            if (tourstatus && tourstatus.length > 0) {
+              setTourStatus(tourstatus);
+              const checkTourRequestSign = tourstatus.filter(
+                (data) => data.requestSign
+              );
+              if (checkTourRequestSign && checkTourRequestSign.length > 0) {
+                setRequestSignTour(checkTourRequestSign[0].requestSign);
+              }
+            }
+          } else if (res?.length === 0) {
+            const res = await contactBook(currUserId);
+            if (res === "Error: Something went wrong!") {
+              setHandleError("Error: Something went wrong!");
+            } else if (res[0] && res.length) {
+              setContractName("_Contactbook");
+              const objectId = res[0].objectId;
+              setSignerUserId(objectId);
+              const tourstatus = res[0].TourStatus && res[0].TourStatus;
+              if (tourstatus && tourstatus.length > 0) {
+                setTourStatus(tourstatus);
+                const checkTourRequestSign = tourstatus.filter(
+                  (data) => data.requestSign
+                );
+                if (checkTourRequestSign && checkTourRequestSign.length > 0) {
+                  setRequestSignTour(checkTourRequestSign[0].requestSign);
+                }
+              }
+            } else if (res.length === 0) {
+              setHandleError("Error: User does not exist!");
+            }
+          }
+        }
         setIsUiLoading(false);
       } else {
         alert("No data found!");
@@ -1141,6 +1203,134 @@ function PdfRequestFiles() {
       alertMessage: ""
     });
   };
+  const handleDontShow = (isChecked) => {
+    setIsDontShow(isChecked);
+  };
+  //function to close tour and save tour status
+  const closeRequestSignTour = async () => {
+    setRequestSignTour(false);
+    if (isDontShow) {
+      let updatedTourStatus = [];
+      if (tourStatus.length > 0) {
+        updatedTourStatus = [...tourStatus];
+        const requestSignIndex = tourStatus.findIndex(
+          (obj) => obj["requestSign"] === false || obj["requestSign"] === true
+        );
+        if (requestSignIndex !== -1) {
+          updatedTourStatus[requestSignIndex] = { requestSign: true };
+        } else {
+          updatedTourStatus.push({ requestSign: true });
+        }
+      } else {
+        updatedTourStatus = [{ requestSign: true }];
+      }
+      try {
+        await axios.put(
+          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+            "_appName"
+          )}${contractName}/${signerUserId}`,
+          {
+            TourStatus: updatedTourStatus
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+              "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+            }
+          }
+        );
+      } catch (e) {
+        console.log("update tour messages error", e);
+      }
+    }
+  };
+  const requestSignTourFunction = () => {
+    const tourConfig = [
+      {
+        selector: '[data-tut="reactourFirst"]',
+        content: () => (
+          <TourContentWithBtn
+            message={`List of signers who still need to sign the document .`}
+            isChecked={handleDontShow}
+          />
+        ),
+        position: "top",
+        style: { fontSize: "13px" }
+      },
+      {
+        selector: '[data-tut="reactourForth"]',
+        content: () => (
+          <TourContentWithBtn
+            message={`Click any of the placeholders appearing on the document to sign. You will then see options to draw your signature, type it, or upload an image .`}
+            isChecked={handleDontShow}
+          />
+        ),
+        position: "top",
+        style: { fontSize: "13px" }
+      },
+      {
+        selector: '[data-tut="reactourFifth"]',
+        content: () => (
+          <TourContentWithBtn
+            message={`Click the Back, Decline, or Finish buttons to navigate your document. Use the ellipsis menu for additional options, including the Download button .`}
+            isChecked={handleDontShow}
+          />
+        ),
+        position: "top",
+        style: { fontSize: "13px" }
+      }
+    ];
+    const signedByStep = {
+      selector: '[data-tut="reactourSecond"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`List of signers who have already signed the document .`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    };
+    //checking if signed by user component exist then add signed step
+    const signedBy =
+      signedSigners.length > 0
+        ? [...tourConfig.slice(0, 0), signedByStep, ...tourConfig.slice(0)]
+        : tourConfig;
+
+    //checking if default signature component exist then add defaultSign step
+    const defaultSignStep = {
+      selector: '[data-tut="reactourThird"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`You can click "Auto Sign All" to automatically sign at all the locations meant to be signed by you. Make sure that you review the document properly before you click this button .`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    };
+    //index is handle is signed by exist then 2 else 1 to add tour step
+    const index = signedSigners.length > 0 ? 2 : 1;
+    const defaultSignTour = defaultSignImg
+      ? [...signedBy.slice(0, index), defaultSignStep, ...signedBy.slice(index)]
+      : signedBy;
+
+    if (isMobile) {
+      tourConfig.shift();
+    }
+
+    return (
+      <Tour
+        onRequestClose={closeRequestSignTour}
+        steps={isMobile ? tourConfig : defaultSignTour}
+        isOpen={true}
+        closeWithMask={false}
+        rounded={5}
+      />
+    );
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Request Sign"} />
@@ -1209,6 +1399,7 @@ function PdfRequestFiles() {
                 }}
                 ref={divRef}
               >
+                {requestSignTour && requestSignTourFunction()}
                 <ModalUi
                   headerColor={"#dc3545"}
                   isOpen={isAlert.isShow}
@@ -1496,7 +1687,7 @@ function PdfRequestFiles() {
                       className="autoSignScroll"
                     >
                       {signedSigners.length > 0 && (
-                        <>
+                        <div data-tut="reactourSecond">
                           <div
                             style={{ background: themeColor }}
                             className="signedStyle"
@@ -1556,11 +1747,11 @@ function PdfRequestFiles() {
                               );
                             })}
                           </div>
-                        </>
+                        </div>
                       )}
 
                       {unsignedSigners.length > 0 && (
-                        <>
+                        <div data-tut="reactourFirst">
                           <div
                             style={{
                               background: themeColor,
@@ -1626,7 +1817,7 @@ function PdfRequestFiles() {
                               );
                             })}
                           </div>
-                        </>
+                        </div>
                       )}
                       {defaultSignImg && !alreadySign && (
                         <DefaultSignature
