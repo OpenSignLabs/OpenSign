@@ -31,9 +31,9 @@ async function sendMail(document, sessionToken) {
       const hostUrl = baseUrl.origin;
       let encodeBase64;
       if (objectId) {
-        encodeBase64 = btoa(`${document.objectId}}/${signerMail[i].signerPtr.Email}/${objectId}`);
+        encodeBase64 = btoa(`${document.objectId}/${signerMail[i].signerPtr.Email}/${objectId}`);
       } else {
-        encodeBase64 = btoa(`${document.objectId}}/${signerMail[i].email}`);
+        encodeBase64 = btoa(`${document.objectId}/${signerMail[i].email}`);
       }
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
       const openSignUrl = 'https://www.opensignlabs.com/';
@@ -93,18 +93,12 @@ export default async function createBatchDocs(request) {
   try {
     const requests = Documents.map(x => {
       const Signers = x.Signers;
-      const allSigner = x?.Placeholders?.map(item => {
-        const signer = Signers?.find(e => item?.signerPtr?.objectId === e?.objectId);
-        if (signer) {
-          return signer;
-        } else {
-          return item?.signerPtr?.objectId && item?.signerPtr;
-        }
-      });
+      const allSigner = x?.Placeholders?.map(
+        item => Signers?.find(e => item?.signerPtr?.objectId === e?.objectId) || item?.signerPtr
+      ).filter(signer => Object.keys(signer).length > 0);
       const date = new Date();
       const isoDate = date.toISOString();
       let Acl = { [x.CreatedBy.objectId]: { read: true, write: true } };
-      // console.log('allSigner ', allSigner);
       if (allSigner && allSigner.length > 0) {
         allSigner.forEach(x => {
           const obj = { [x.CreatedBy.objectId]: { read: true, write: true } };
@@ -146,7 +140,7 @@ export default async function createBatchDocs(request) {
             objectId: y.objectId,
           })),
           ACL: Acl,
-          RemindOnceInEvery: x.RemindOnceInEvery,
+          RemindOnceInEvery: x.RemindOnceInEvery || 5,
           AutomaticReminders: x.AutomaticReminders || false,
           TimeToCompleteDays: x.TimeToCompleteDays || 15,
           OriginIp: Ip,

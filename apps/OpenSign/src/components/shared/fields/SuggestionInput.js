@@ -67,7 +67,7 @@ const SuggestionInput = (props) => {
         value={inputValue}
         onChange={handleInputChange}
         placeholder="Enter text..."
-        className="w-full border border-gray-300 p-2 text-black rounded"
+        className="w-full border-[1px] border-gray-400 p-2 text-black rounded"
         required={props.required}
       />
       {showSuggestions && (
