@@ -324,6 +324,7 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'Placeholders',
         ],
       };
     default:
