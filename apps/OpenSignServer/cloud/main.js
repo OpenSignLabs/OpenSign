@@ -37,27 +37,7 @@ import saveSubscription from './parsefunction/saveSubscription.js';
 import VerifyEmail from './parsefunction/VerifyEmail.js';
 import encryptedpdf from './parsefunction/encryptedPdf.js';
 import { getSignedUrl } from './parsefunction/getSignedUrl.js';
-import createBatchDocs from './parsefunction/createBatchDocs.js';
-import linkContactToDoc from './parsefunction/linkContactToDoc.js';
 
-// This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
-Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
-Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
-Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
-Parse.Cloud.afterSave('contracts_Template', TemplateAfterSave);
-
-// This beforeSave function triggers before an object is added or updated in the specified class, allowing for validation or modification.
-Parse.Cloud.beforeSave('contracts_Document', DocumentBeforesave);
-Parse.Cloud.beforeSave('contracts_Template', TemplateBeforeSave);
-
-// This afterFind function triggers after a query retrieves objects from the specified class, allowing for post-processing of the results.
-Parse.Cloud.afterFind(Parse.User, UserAfterFind);
-Parse.Cloud.afterFind('contracts_Document', DocumentBeforeFind);
-Parse.Cloud.afterFind('contracts_Template', TemplateAfterFind);
-Parse.Cloud.afterFind('contracts_Signature', SignatureAfterFind);
-Parse.Cloud.afterFind('partners_Tenant', TenantAterFind);
-
-// This define function creates a custom Cloud Function that can be called from the client-side, enabling custom business logic on the server.
 Parse.Cloud.define('AddUserToRole', addUserToGroups);
 Parse.Cloud.define('UserGroups', getUserGroups);
 Parse.Cloud.define('signPdf', PDF);
@@ -82,9 +62,18 @@ Parse.Cloud.define('freesubscription', SubscribeFree);
 Parse.Cloud.define('getinvoices', getInvoices);
 Parse.Cloud.define('getpayments', getPayments);
 Parse.Cloud.define('getsubscriptions', getSubscriptions);
+Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
+Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
+Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
+Parse.Cloud.afterSave('contracts_Template', TemplateAfterSave);
+Parse.Cloud.beforeSave('contracts_Document', DocumentBeforesave);
+Parse.Cloud.beforeSave('contracts_Template', TemplateBeforeSave);
+Parse.Cloud.afterFind(Parse.User, UserAfterFind);
+Parse.Cloud.afterFind('contracts_Document', DocumentBeforeFind);
+Parse.Cloud.afterFind('contracts_Template', TemplateAfterFind);
+Parse.Cloud.afterFind('contracts_Signature', SignatureAfterFind);
+Parse.Cloud.afterFind('partners_Tenant', TenantAterFind);
 Parse.Cloud.define('savesubscription', saveSubscription);
 Parse.Cloud.define('verifyemail', VerifyEmail);
 Parse.Cloud.define('encryptedpdf', encryptedpdf);
 Parse.Cloud.define('getsignedurl', getSignedUrl);
-Parse.Cloud.define('batchdocuments', createBatchDocs);
-Parse.Cloud.define('linkcontacttodoc', linkContactToDoc);

@@ -361,14 +361,6 @@ export default function reportJson(id) {
                 action: "redirect"
               },
               {
-                btnId: "1631",
-                btnLabel: "Quick send",
-                hoverLabel: "Quick send",
-                btnIcon: "fa-solid fa-envelope",
-                redirectUrl: "",
-                action: "bulksend"
-              },
-              {
                 btnId: "1834",
                 btnLabel: "Delete",
                 hoverLabel: "Delete",

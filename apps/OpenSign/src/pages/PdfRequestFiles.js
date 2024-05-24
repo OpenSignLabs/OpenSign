@@ -41,7 +41,6 @@ import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
-import { appInfo } from "../constant/appinfo";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -461,10 +460,7 @@ function PdfRequestFiles() {
         } else {
           //else condition to check current user exist in contracts_Users class and check tour message status
           //if not then check user exist in contracts_Contactbook class and check tour message status
-          const localuser = localStorage.getItem(
-            `Parse/${appInfo.appId}/currentUser`
-          );
-          const currentUser = JSON.parse(JSON.stringify(localuser));
+          const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
           const currentUserEmail = currentUser.email;
           const res = await contractUsers(currentUserEmail);
           if (res === "Error: Something went wrong!") {
