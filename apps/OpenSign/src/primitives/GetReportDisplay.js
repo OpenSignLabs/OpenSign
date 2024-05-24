@@ -560,6 +560,7 @@ const ReportTable = (props) => {
   };
   const handleResendMail = async (e, doc, user) => {
     e.preventDefault();
+    console.log("first");
     setActLoader({ [user.objectId]: true });
     const url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
     const headers = {
@@ -1017,20 +1018,22 @@ const ReportTable = (props) => {
                                         onSubmit={(e) =>
                                           handleResendMail(e, item, user)
                                         }
-                                        className="w-full flex flex-col gap-2 p-3 text-black"
+                                        className="w-full flex flex-col gap-2 p-3 text-black relative"
                                       >
+                                        <div className="absolute right-5 text-xs z-40">
+                                          <Tooltip
+                                            id={`${user.objectId}_help`}
+                                            message={
+                                              "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+                                            }
+                                          />
+                                        </div>
                                         <div>
                                           <label
                                             className="text-xs ml-1"
                                             htmlFor="mailsubject"
                                           >
                                             Subject{" "}
-                                            <Tooltip
-                                              id={isNextStep[user.objectId]}
-                                              message={
-                                                "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
-                                              }
-                                            />
                                           </label>
                                           <input
                                             id="mailsubject"
@@ -1051,12 +1054,6 @@ const ReportTable = (props) => {
                                             htmlFor="mailbody"
                                           >
                                             Body{" "}
-                                            <Tooltip
-                                              id={isNextStep[user.objectId]}
-                                              message={
-                                                "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
-                                              }
-                                            />
                                           </label>
                                           <EditorToolbar containerId="toolbar1" />
                                           <ReactQuill
