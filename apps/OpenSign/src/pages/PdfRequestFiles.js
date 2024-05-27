@@ -29,7 +29,10 @@ import {
   convertPdfArrayBuffer,
   contractUsers,
   handleSendOTP,
-  contactBook
+  contactBook,
+  handleDownloadPdf,
+  handleToPrint,
+  handleDownloadCertificate
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -92,6 +95,7 @@ function PdfRequestFiles() {
   const [expiredDate, setExpiredDate] = useState("");
   const [signerUserId, setSignerUserId] = useState();
   const [isDontShow, setIsDontShow] = useState(false);
+  const [isCertificate, setIsCertificate] = useState(false);
   const [defaultSignAlert, setDefaultSignAlert] = useState({
     isShow: false,
     alertMessage: ""
@@ -1581,38 +1585,85 @@ function PdfRequestFiles() {
                     handleClose={() => {
                       setIsCompleted((prev) => ({ ...prev, isModal: false }));
                     }}
+                    reduceWidth={!isCompleted?.message}
                   >
                     <div style={{ height: "100%", padding: 20 }}>
-                      <p>
-                        {" "}
-                        {isCompleted?.message ||
-                          "This document has been signed by all Signers."}
-                      </p>
-
-                      <div
-                        style={{
-                          height: "1px",
-                          backgroundColor: "#9f9f9f",
-                          width: "100%",
-                          marginTop: "15px",
-                          marginBottom: "15px"
-                        }}
-                      ></div>
-                      <button
-                        type="button"
-                        className="finishBtn cancelBtn"
-                        onClick={() => {
-                          setIsCompleted((prev) => ({
-                            ...prev,
-                            isModal: false
-                          }));
-                        }}
-                      >
-                        Close
-                      </button>
+                      {isCompleted?.message ? (
+                        <p>{isCompleted?.message}</p>
+                      ) : (
+                        <div className="px-[15px]">
+                          <span>
+                            Congratulations! 🎉 This document has been
+                            successfully signed by all participants!
+                          </span>
+                        </div>
+                      )}
+                      {!isCompleted?.message && (
+                        <div className="flex mt-4 gap-1 px-[15px]">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDownloadCertificate(
+                                pdfDetails,
+                                setIsCertificate
+                              )
+                            }
+                            className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                          >
+                            <i
+                              className="fa-solid fa-award py-[3px]"
+                              aria-hidden="true"
+                            ></i>
+                            <span className="hidden lg:block ml-1">
+                              Certificate
+                            </span>
+                          </button>
+                          <button
+                            onClick={(e) => handleToPrint(e, pdfUrl)}
+                            type="button"
+                            className="flex flex-row items-center  shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
+                          >
+                            <i
+                              className="fa fa-print py-[3px]"
+                              aria-hidden="true"
+                            ></i>
+                            <span className="hidden lg:block ml-1">Print</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
+                            onClick={() =>
+                              handleDownloadPdf(pdfDetails, pdfUrl)
+                            }
+                          >
+                            <i
+                              className="fa fa-download py-[3px]"
+                              aria-hidden="true"
+                            ></i>
+                            <span className="hidden lg:block ml-1">
+                              Download
+                            </span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </ModalUi>
-
+                  <ModalUi
+                    isOpen={isCertificate}
+                    title={"Generating certificate"}
+                    handleClose={() => setIsCertificate(false)}
+                  >
+                    <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
+                      <p>
+                        Your completion certificate is being generated. Please
+                        wait momentarily.
+                      </p>
+                      <p>
+                        If the download doesn&apos;t start shortly, click the
+                        button again.
+                      </p>
+                    </div>
+                  </ModalUi>
                   {/* this component is used for signature pad modal */}
                   <SignPad
                     isSignPad={isSignPad}
