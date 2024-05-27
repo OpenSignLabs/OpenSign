@@ -39,6 +39,8 @@ import encryptedpdf from './parsefunction/encryptedPdf.js';
 import { getSignedUrl } from './parsefunction/getSignedUrl.js';
 import createBatchDocs from './parsefunction/createBatchDocs.js';
 import linkContactToDoc from './parsefunction/linkContactToDoc.js';
+import CreatePublicTemplate from './parsefunction/CreatePublicTemplate.js';
+import GetPublicUserName from './parsefunction/getPublicUserName.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -88,3 +90,5 @@ Parse.Cloud.define('encryptedpdf', encryptedpdf);
 Parse.Cloud.define('getsignedurl', getSignedUrl);
 Parse.Cloud.define('batchdocuments', createBatchDocs);
 Parse.Cloud.define('linkcontacttodoc', linkContactToDoc);
+Parse.Cloud.define('createPublicTemplate', CreatePublicTemplate);
+Parse.Cloud.define('getPublicUserName', GetPublicUserName);

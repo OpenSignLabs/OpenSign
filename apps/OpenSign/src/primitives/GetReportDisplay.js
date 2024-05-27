@@ -12,6 +12,7 @@ import Tour from "reactour";
 import Parse from "parse";
 import { saveAs } from "file-saver";
 import { replaceMailVaribles } from "../constant/Utils";
+import Confetti from "react-confetti";
 import EditorToolbar, {
   module1,
   formats
@@ -37,6 +38,7 @@ const ReportTable = (props) => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [isResendMail, setIsResendMail] = useState({});
+  const [isMakePublic, setIsMakePublic] = useState({});
   const [mail, setMail] = useState({ subject: "", body: "" });
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
@@ -44,6 +46,9 @@ const ReportTable = (props) => {
   const [templateDeatils, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
+  const [role, setRole] = useState([]);
+  const [selectedPublicRole, setSelectedPublicRole] = useState("");
+  const [isCelebration, setIsCelebration] = useState(false);
 
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
@@ -231,6 +236,17 @@ const ReportTable = (props) => {
       setIsResendMail({ [item.objectId]: true });
     } else if (act.action === "bulksend") {
       handleBulkSend(item);
+    } else if (act.action === "public") {
+      const getRole = [];
+      const getPlaceholder = item.Placeholders;
+      getPlaceholder.map((data) => {
+        getRole.push(data.Role);
+      });
+      if (getRole.length === 1) {
+        setSelectedPublicRole(getRole[0]);
+      }
+      setRole(getRole);
+      setIsMakePublic({ [item.objectId]: true });
     }
   };
   // Get current list
@@ -302,6 +318,7 @@ const ReportTable = (props) => {
   const handleClose = () => {
     setIsRevoke({});
     setIsDeleteModal({});
+    setIsMakePublic({});
   };
 
   const handleShare = (item) => {
@@ -685,6 +702,70 @@ const ReportTable = (props) => {
       setTimeout(() => setIsAlert(false), 1500);
     }
   };
+
+  //function to make template public and set public role
+  const handlePublicTemplate = async (item) => {
+    if (selectedPublicRole) {
+      setActLoader({ [item.objectId]: true });
+      setIsMakePublic(false);
+      let params = {
+        templateId: item.objectId
+      };
+      let url = `${localStorage.getItem(
+        "baseUrl"
+      )}functions/createPublicTemplate/`;
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: localStorage.getItem("accesstoken")
+      };
+      try {
+        const res = await axios.post(url, params, { headers: headers });
+        if (res.data.result.status === "success") {
+          const data = {
+            PublicRole: [selectedPublicRole]
+          };
+          const res = await axios.put(
+            `${localStorage.getItem("baseUrl")}classes/contracts_Template/${
+              item.objectId
+            }`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+              }
+            }
+          );
+          if (res) {
+            setIsAlert(true);
+            setAlertMsg({
+              type: "success",
+              message: "You have successfully made the template public."
+            });
+            setTimeout(() => setIsAlert(false), 1500);
+            setIsCelebration(true);
+            setTimeout(() => {
+              setIsCelebration(false);
+            }, 5000);
+            setSelectedPublicRole("");
+            setActLoader({});
+          }
+        }
+      } catch (e) {
+        console.log("save public template error", e);
+      }
+    } else {
+      setIsAlert(true);
+      setAlertMsg({
+        type: "danger",
+        message: "You need to select a role for the public signers."
+      });
+      setTimeout(() => setIsAlert(false), 1500);
+    }
+  };
+
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -696,6 +777,11 @@ const ReportTable = (props) => {
         </div>
       )}
       <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
+        {isCelebration && (
+          <div style={{ position: "relative", zIndex: "1000" }}>
+            <Confetti width={window.innerWidth} height={window.innerHeight} />
+          </div>
+        )}
         {isAlert && <Alert type={alertMsg.type}>{alertMsg.message}</Alert>}
         {props.tourData && props.ReportName === "Templates" && (
           <Tour
@@ -1131,6 +1217,83 @@ const ReportTable = (props) => {
                                   )}
                                 </React.Fragment>
                               ))}
+                            </div>
+                          </ModalUi>
+                        )}
+                        {isMakePublic[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Make template public"}
+                            handleClose={() => {
+                              setIsMakePublic({});
+                            }}
+                          >
+                            <div className="m-[20px]">
+                              <div className="font-normal text-black">
+                                <p className="text-lg">
+                                  {" "}
+                                  Are you sure you want to make this template
+                                  public?
+                                </p>
+                                <div className="flex mt-2 gap-2 md:items-center">
+                                  <p className="text-[15px]">Public role : </p>
+                                  {role.length > 1 ? (
+                                    <select
+                                      className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]"
+                                      name="textvalidate"
+                                      value={selectedPublicRole}
+                                      onChange={(e) =>
+                                        setSelectedPublicRole(e.target.value)
+                                      }
+                                    >
+                                      <option
+                                        disabled
+                                        style={{ fontSize: "13px" }}
+                                        value=""
+                                      >
+                                        Select...
+                                      </option>
+                                      {role.map((data, ind) => {
+                                        return (
+                                          <option
+                                            style={{ fontSize: "13px" }}
+                                            key={ind}
+                                            value={data}
+                                          >
+                                            {data}
+                                          </option>
+                                        );
+                                      })}
+                                    </select>
+                                  ) : (
+                                    <div className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]">
+                                      {role}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <hr className="bg-[#ccc] mt-2 " />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handlePublicTemplate(item)}
+                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                  style={{
+                                    backgroundColor: modalSubmitBtnColor
+                                  }}
+                                >
+                                  Submit
+                                </button>
+                                <button
+                                  onClick={handleClose}
+                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                  style={{
+                                    backgroundColor: modalCancelBtnColor
+                                  }}
+                                >
+                                  No
+                                </button>
+                              </div>
                             </div>
                           </ModalUi>
                         )}
