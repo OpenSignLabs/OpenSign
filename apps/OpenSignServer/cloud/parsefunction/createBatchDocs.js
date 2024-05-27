@@ -166,8 +166,6 @@ export default async function createBatchDocs(request) {
         createdAt: response.data[i]?.success?.createdAt,
       }));
       for (let i = 0; i < updateDocuments.length; i++) {
-        console.log('updateDocuments ', updateDocuments);
-
         sendMail(updateDocuments[i], sessionToken);
       }
       return 'success';

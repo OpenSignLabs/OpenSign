@@ -308,14 +308,18 @@ const ReportTable = (props) => {
     const sendMail = item?.SendMail || false;
     const getUrl = (x) => {
       //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
-      const encodeBase64 = btoa(
-        `${item.objectId}/${x.Email}/${x.objectId}/${sendMail}`
-      );
-      return `${host}/login/${encodeBase64}`;
+      if (x.objectId) {
+        const encodeBase64 = btoa(
+          `${item.objectId}/${x.signerPtr.Email}/${x.signerPtr.objectId}/${sendMail}`
+        );
+        return `${host}/login/${encodeBase64}`;
+      } else {
+        const encodeBase64 = btoa(`${item.objectId}/${x.email}`);
+        return `${host}/login/${encodeBase64}`;
+      }
     };
-
-    const urls = item.Signers.map((x) => ({
-      email: x.Email,
+    const urls = item?.Placeholders?.map((x) => ({
+      email: x.email ? x.email : x.signerPtr.Email,
       url: getUrl(x)
     }));
     setShareUrls(urls);

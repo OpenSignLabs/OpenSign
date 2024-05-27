@@ -102,6 +102,7 @@ export default function reportJson(id, userId) {
           'AuditTrail.UserPtr',
           'ExpiryDate',
           'SendMail',
+          'Placeholders',
         ],
       };
     // completed documents report
@@ -220,6 +221,7 @@ export default function reportJson(id, userId) {
           'AuditTrail',
           'AuditTrail.UserPtr',
           'ExpiryDate',
+          'Placeholders',
         ],
       };
     //  Recent signature requests report show on dashboard
