@@ -25,7 +25,6 @@ const ReportTable = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
-  const [isDocErr, setIsDocErr] = useState(false);
   const [isContactform, setIsContactform] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState({});
   const [isRevoke, setIsRevoke] = useState({});
@@ -186,7 +185,6 @@ const ReportTable = (props) => {
                 setActLoader({});
               }
             } else {
-              setIsDocErr(true);
               setActLoader({});
             }
           } else {
@@ -648,7 +646,6 @@ const ReportTable = (props) => {
   const handleBulkSend = async (template) => {
     setIsBulkSend({ [template.objectId]: true });
     setIsLoader({ [template.objectId]: true });
-    setIsDocErr(false);
     try {
       const params = {
         templateId: template.objectId,
@@ -666,18 +663,12 @@ const ReportTable = (props) => {
         }
       );
       const templateRes = axiosRes.data && axiosRes.data.result;
-      if (templateRes?.Placeholders?.length > 0) {
-        setPlaceholders(templateRes?.Placeholders);
-        setTemplateDetails(templateRes);
-        setIsLoader({});
-      } else {
-        setIsLoader(false);
-        setIsDocErr(true);
-      }
+      setPlaceholders(templateRes?.Placeholders);
+      setTemplateDetails(templateRes);
+      setIsLoader({});
     } catch (err) {
       console.log("err in fetch template in bulk modal", err);
       setIsBulkSend({});
-      setIsDocErr(false);
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
@@ -940,19 +931,11 @@ const ReportTable = (props) => {
                                 ></div>
                               </div>
                             ) : (
-                              <>
-                                {isDocErr ? (
-                                  <div className="text-black bg-white w-full h-[80px] md:h-[100px] text-sm md:text-xl flex justify-center items-center">
-                                    Please add Signers or Roles in template
-                                  </div>
-                                ) : (
-                                  <BulkSendUi
-                                    Placeholders={placeholders}
-                                    item={templateDeatils}
-                                    handleClose={handleQuickSendClose}
-                                  />
-                                )}
-                              </>
+                              <BulkSendUi
+                                Placeholders={placeholders}
+                                item={templateDeatils}
+                                handleClose={handleQuickSendClose}
+                              />
                             )}
                           </ModalUi>
                         )}
