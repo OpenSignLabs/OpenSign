@@ -24,7 +24,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dnd-multi-backend": "^8.0.3",
     "react-dnd-touch-backend": "^16.0.1",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "react-gtm-module": "^2.0.11",
     "react-helmet": "^6.1.0",
     "react-konva": "^18.2.10",
