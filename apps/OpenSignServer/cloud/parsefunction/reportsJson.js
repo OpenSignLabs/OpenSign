@@ -75,7 +75,7 @@ export default function reportJson(id, userId) {
         reportName: 'In-progress documents',
         params: {
           Type: { $ne: 'Folder' },
-          Signers: { $exists: true, $ne: [] },
+          SignedUrl: { $ne: null },
           Placeholders: { $ne: null },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
@@ -195,7 +195,7 @@ export default function reportJson(id, userId) {
         reportName: 'Recently sent for signatures',
         params: {
           Type: { $ne: 'Folder' },
-          Signers: { $exists: true, $ne: [] },
+          SignedUrl: { $ne: null },
           Placeholders: { $ne: null },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
