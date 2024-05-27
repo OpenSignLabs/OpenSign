@@ -648,6 +648,7 @@ const ReportTable = (props) => {
   const handleBulkSend = async (template) => {
     setIsBulkSend({ [template.objectId]: true });
     setIsLoader({ [template.objectId]: true });
+    setIsDocErr(false);
     try {
       const params = {
         templateId: template.objectId,

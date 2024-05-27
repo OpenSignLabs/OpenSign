@@ -48,6 +48,7 @@ async function sendMail(document, sessionToken) {
         extUserId: document.ExtUserPtr.objectId,
         recipient: objectId ? signerMail[i].signerPtr.Email : signerMail[i].email,
         subject: `${document.ExtUserPtr.Name} has requested you to sign "${document.Name}"`,
+        mailProvider: document?.ExtUserPtr?.active_mail_adapter || '',
         from: sender,
         html:
           "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'> <div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src='" +
