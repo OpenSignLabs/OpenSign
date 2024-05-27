@@ -31,7 +31,7 @@
     "express-sse": "^0.5.3",
     "form-data": "^4.0.0",
     "generate-api-key": "^1.0.2",
-    "googleapis": "^134.0.0",
+    "googleapis": "^137.1.0",
     "jsonschema": "^1.4.1",
     "mailgun.js": "^10.2.1",
     "mongoose": "^8.4.0",
