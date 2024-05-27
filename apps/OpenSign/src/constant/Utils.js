@@ -22,11 +22,12 @@ export async function fetchSubscription(
   isGuestSign = false
 ) {
   try {
-    const extClass = localStorage.getItem("Extand_Class");
+    const Extand_Class = localStorage.getItem("Extand_Class");
+    const extClass = Extand_Class && JSON.parse(Extand_Class);
+    // console.log("extClass ", extClass);
     let extUser;
     if (extClass && extClass.length > 0) {
-      const jsonSender = JSON.parse(extClass);
-      extUser = jsonSender[0].objectId;
+      extUser = extClass[0].objectId;
     } else {
       extUser = extUserId;
     }
@@ -2032,7 +2033,6 @@ export const handleSendOTP = async (email) => {
     alert(error.message);
   }
 };
-
 //handle download signed pdf
 export const handleDownloadPdf = async (pdfDetails, pdfUrl) => {
   const pdfName = pdfDetails[0] && pdfDetails[0].Name;
@@ -2150,3 +2150,23 @@ export const handleDownloadCertificate = async (
     }
   }
 };
+ export async function findContact(value) {
+  try {
+    const currentUser = Parse.User.current();
+    const contactbook = new Parse.Query("contracts_Contactbook");
+    contactbook.equalTo(
+      "CreatedBy",
+      Parse.User.createWithoutData(currentUser.id)
+    );
+    contactbook.notEqualTo("IsDeleted", true);
+    contactbook.matches("Email", new RegExp(value, "i"));
+
+    const contactRes = await contactbook.find();
+    if (contactRes) {
+      const res = JSON.parse(JSON.stringify(contactRes));
+      return res;
+    }
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+  }
+}
