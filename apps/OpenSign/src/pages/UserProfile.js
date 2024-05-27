@@ -27,6 +27,9 @@ function UserProfile() {
   const [percentage, setpercentage] = useState(0);
   const [isDisableDocId, setIsDisableDocId] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
+  const [publicUserName, setPublicUserName] = useState(
+    (extendUser && extendUser?.[0]?.UserName) || ""
+  );
   const [company, setCompany] = useState(
     extendUser && extendUser?.[0]?.Company
   );
@@ -37,6 +40,7 @@ function UserProfile() {
   const [otp, setOtp] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [userNameError, setUserNameError] = useState("");
   useEffect(() => {
     getUserDetail();
   }, []);
@@ -74,46 +78,68 @@ function UserProfile() {
       }
     }
   };
+
+  const handleCheckPublicUserName = async () => {
+    try {
+      const res = await Parse.Cloud.run("getPublicUserName", {
+        userName: publicUserName
+      });
+      if (res) {
+        setIsLoader(false);
+        setUserNameError("user name already exist");
+        setTimeout(() => {
+          setUserNameError("");
+        }, 3000);
+        return res;
+      }
+    } catch (e) {
+      console.log("extend error");
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoader(true);
     let phn = Phone;
 
-    try {
-      const tour = Parse.Object.extend("_User");
-      const query = new Parse.Query(tour);
+    const res = await handleCheckPublicUserName();
+    if (!res) {
+      try {
+        const tour = Parse.Object.extend("_User");
+        const query = new Parse.Query(tour);
 
-      await query.get(UserProfile.objectId).then((object) => {
-        object.set("name", name);
-        object.set("ProfilePic", Image);
-        object.set("phone", phn);
+        await query.get(UserProfile.objectId).then((object) => {
+          object.set("name", name);
+          object.set("ProfilePic", Image);
+          object.set("phone", phn);
 
-        object.save().then(
-          async (response) => {
-            if (response) {
-              let res = response.toJSON();
-              let rr = JSON.stringify(res);
-              localStorage.setItem("UserInformation", rr);
-              SetName(res.name);
-              SetPhone(res.phone);
-              setImage(res.ProfilePic);
-              localStorage.setItem("username", res.name);
-              localStorage.setItem("profileImg", res.ProfilePic);
-              await updateExtUser({ Name: res.name, Phone: res.phone });
-              alert("Profile updated successfully.");
-              setEditMode(false);
-              navigate("/dashboard/35KBoSgoAK");
+          object.save().then(
+            async (response) => {
+              if (response) {
+                let res = response.toJSON();
+                let rr = JSON.stringify(res);
+                localStorage.setItem("UserInformation", rr);
+                SetName(res.name);
+                SetPhone(res.phone);
+                setImage(res.ProfilePic);
+                localStorage.setItem("username", res.name);
+                localStorage.setItem("profileImg", res.ProfilePic);
+                await updateExtUser({ Name: res.name, Phone: res.phone });
+                alert("Profile updated successfully.");
+                setEditMode(false);
+                setIsLoader(false);
+                // navigate("/dashboard/35KBoSgoAK");
+              }
+            },
+            (error) => {
+              alert("Something went wrong.");
+              console.error("Error while updating tour", error);
+              setIsLoader(false);
             }
-          },
-          (error) => {
-            alert("Something went wrong.");
-            console.error("Error while updating tour", error);
-            setIsLoader(false);
-          }
-        );
-      });
-    } catch (error) {
-      console.log("err", error);
+          );
+        });
+      } catch (error) {
+        console.log("err", error);
+      }
     }
   };
 
@@ -128,7 +154,8 @@ function UserProfile() {
       Name: obj.Name,
       HeaderDocId: isDisableDocId,
       JobTitle: jobTitle,
-      Company: company
+      Company: company,
+      UserName: publicUserName
     };
     await axios.put(
       parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
@@ -147,9 +174,7 @@ function UserProfile() {
 
     const json = JSON.parse(JSON.stringify([res]));
     const extRes = JSON.stringify(json);
-
     localStorage.setItem("Extand_Class", extRes);
-    // console.log("updateRes ", updateRes);
   };
   // file upload function
   const fileUpload = async (file) => {
@@ -241,6 +266,9 @@ function UserProfile() {
     setOtpLoader(false);
     alert("OTP sent on you email");
   };
+  const handlePublicUrl = (e) => {
+    setPublicUserName(e.target.value);
+  };
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -262,7 +290,15 @@ function UserProfile() {
           ></div>
         </div>
       ) : (
-        <div className="flex justify-center items-center w-full">
+        <div className="flex justify-center items-center w-full relative">
+          {/* <Alert type={alertMsg.type}>{alertMsg.message}</Alert> */}
+          {userNameError && (
+            <div
+              className={`z-[1000] fixed top-20  transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]`}
+            >
+              {userNameError}
+            </div>
+          )}
           <div className="bg-white flex flex-col justify-center shadow rounded w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
               <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
@@ -390,6 +426,21 @@ function UserProfile() {
                   )}
                 </span>
               </li>
+              <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
+                <span className="font-semibold">Public profile:</span>
+                <div className="flex items-center">
+                  <span>opensign.me/</span>
+
+                  <input
+                    onChange={handlePublicUrl}
+                    value={publicUserName}
+                    disabled={!editmode}
+                    placeholder="enter user name"
+                    className="border-[1px] border-gray-200 rounded-[3px]"
+                  />
+                </div>
+              </li>
+
               <li className="border-y-[1px] border-gray-300 break-all">
                 <div className="flex justify-between items-center py-2">
                   <span

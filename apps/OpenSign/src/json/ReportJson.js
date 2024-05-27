@@ -369,6 +369,14 @@ export default function reportJson(id) {
                 action: "bulksend"
               },
               {
+                btnId: "1835",
+                btnLabel: "Make public",
+                hoverLabel: "Make public",
+                btnIcon: "fa-solid fa-users-line",
+                redirectUrl: "",
+                action: "public"
+              },
+              {
                 btnId: "1834",
                 btnLabel: "Delete",
                 hoverLabel: "Delete",
