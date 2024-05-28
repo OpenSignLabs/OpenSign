@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import PrevNext from "./PrevNext";
-import printModule from "print-js";
-import { getBase64FromUrl } from "../../constant/Utils";
-import { saveAs } from "file-saver";
+import {
+  handleDownloadCertificate,
+  handleDownloadPdf,
+  handleToPrint
+} from "../../constant/Utils";
 import "../../styles/signature.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { themeColor } from "../../constant/const";
-import axios from "axios";
 import ModalUi from "../../primitives/ModalUi";
-import { appInfo } from "../../constant/appinfo";
 
 function Header({
   isPdfRequestFiles,
@@ -57,130 +57,6 @@ function Header({
       isDeclined: true
     };
     setIsDecline(currentDecline);
-  };
-
-  //function for print digital sign pdf
-  const handleToPrint = async (event) => {
-    event.preventDefault();
-    setIsDownloading("pdf");
-    try {
-      // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
-      const axiosRes = await axios.post(
-        `${appInfo.baseUrl}/functions/getsignedurl`,
-        { url: pdfUrl },
-        {
-          headers: {
-            "content-type": "Application/json",
-            "X-Parse-Application-Id": appInfo.appId,
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
-        }
-      );
-      const url = axiosRes.data.result;
-      const pdf = await getBase64FromUrl(url);
-      const isAndroidDevice = navigator.userAgent.match(/Android/i);
-      const isAppleDevice =
-        (/iPad|iPhone|iPod/.test(navigator.platform) ||
-          (navigator.platform === "MacIntel" &&
-            navigator.maxTouchPoints > 1)) &&
-        !window.MSStream;
-      if (isAndroidDevice || isAppleDevice) {
-        const byteArray = Uint8Array.from(
-          atob(pdf)
-            .split("")
-            .map((char) => char.charCodeAt(0))
-        );
-        const blob = new Blob([byteArray], { type: "application/pdf" });
-        const blobUrl = URL.createObjectURL(blob);
-        window.open(blobUrl, "_blank");
-        setIsDownloading("");
-      } else {
-        printModule({ printable: pdf, type: "pdf", base64: true });
-        setIsDownloading("");
-      }
-    } catch (err) {
-      setIsDownloading("");
-      console.log("err in getsignedurl", err);
-      alert("something went wrong, please try again later.");
-    }
-  };
-
-  //handle download signed pdf
-  const handleDownloadPdf = async () => {
-    setIsDownloading("pdf");
-    const pdfName = pdfDetails[0] && pdfDetails[0].Name;
-    try {
-      // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
-      const axiosRes = await axios.post(
-        `${appInfo.baseUrl}/functions/getsignedurl`,
-        { url: pdfUrl },
-        {
-          headers: {
-            "content-type": "Application/json",
-            "X-Parse-Application-Id": appInfo.appId,
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
-        }
-      );
-      const url = axiosRes.data.result;
-      saveAs(url, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
-      setIsDownloading("");
-    } catch (err) {
-      console.log("err in getsignedurl", err);
-      setIsDownloading("");
-      alert("something went wrong, please try again later.");
-    }
-  };
-
-  const sanitizeFileName = (pdfName) => {
-    // Replace spaces with underscore
-    return pdfName.replace(/ /g, "_");
-  };
-
-  //handle download signed pdf
-  const handleDownloadCertificate = async () => {
-    if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
-      try {
-        await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
-        const certificateUrl = pdfDetails[0] && pdfDetails[0]?.CertificateUrl;
-        saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
-      } catch (err) {
-        console.log("err in download in certificate", err);
-      }
-    } else {
-      setIsDownloading("certificate");
-      try {
-        const data = {
-          docId: pdfDetails[0]?.objectId
-        };
-        const docDetails = await axios.post(
-          `${localStorage.getItem("baseUrl")}functions/getDocument`,
-          data,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-              sessionToken: localStorage.getItem("accesstoken")
-            }
-          }
-        );
-        if (docDetails.data && docDetails.data.result) {
-          const doc = docDetails.data.result;
-          if (doc?.CertificateUrl) {
-            await fetch(doc?.CertificateUrl);
-            const certificateUrl = doc?.CertificateUrl;
-            saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
-            setIsDownloading("");
-          } else {
-            setIsDownloading("certificate");
-          }
-        }
-      } catch (err) {
-        setIsDownloading("");
-        console.log("err in download in certificate", err);
-        alert("something went wrong, please try again later.");
-      }
-    }
   };
 
   return (
@@ -255,7 +131,9 @@ function Header({
                   >
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
-                      onClick={() => handleDownloadPdf()}
+                      onClick={() =>
+                        handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
+                      }
                     >
                       <div
                         style={{
@@ -274,7 +152,12 @@ function Header({
                     {isCompleted && (
                       <DropdownMenu.Item
                         className="DropdownMenuItem"
-                        onClick={() => handleDownloadCertificate()}
+                        onClick={() =>
+                          handleDownloadCertificate(
+                            pdfDetails,
+                            setIsDownloading
+                          )
+                        }
                       >
                         <div
                           style={{
@@ -313,7 +196,9 @@ function Header({
                     )}
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
-                      onClick={handleToPrint}
+                      onClick={(e) =>
+                        handleToPrint(e, pdfUrl, setIsDownloading)
+                      }
                     >
                       <div
                         style={{
@@ -395,7 +280,13 @@ function Header({
                         >
                           <DropdownMenu.Item
                             className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
-                            onClick={() => handleDownloadPdf()}
+                            onClick={() =>
+                              handleDownloadPdf(
+                                pdfDetails,
+                                pdfUrl,
+                                setIsDownloading
+                              )
+                            }
                           >
                             <i
                               className="fa fa-arrow-down mr-[5px]"
@@ -482,7 +373,9 @@ function Header({
                 {isCompleted && (
                   <button
                     type="button"
-                    onClick={() => handleDownloadCertificate()}
+                    onClick={() =>
+                      handleDownloadCertificate(pdfDetails, setIsDownloading)
+                    }
                     className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
                   >
                     <i
@@ -494,7 +387,7 @@ function Header({
                 )}
 
                 <button
-                  onClick={handleToPrint}
+                  onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
                   type="button"
                   className="flex flex-row items-center  shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
                 >
@@ -505,7 +398,9 @@ function Header({
                 <button
                   type="button"
                   className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
-                  onClick={() => handleDownloadPdf()}
+                  onClick={() =>
+                    handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
+                  }
                 >
                   <i className="fa fa-download py-[3px]" aria-hidden="true"></i>
                   <span className="hidden lg:block ml-1">Download</span>
@@ -554,7 +449,13 @@ function Header({
                         >
                           <DropdownMenu.Item
                             className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
-                            onClick={() => handleDownloadPdf()}
+                            onClick={() =>
+                              handleDownloadPdf(
+                                pdfDetails,
+                                pdfUrl,
+                                setIsDownloading
+                              )
+                            }
                           >
                             <i
                               className="fa fa-arrow-down mr-[5px]"
@@ -574,7 +475,9 @@ function Header({
               {isCompleted && (
                 <button
                   type="button"
-                  onClick={() => handleDownloadCertificate()}
+                  onClick={() =>
+                    handleDownloadCertificate(pdfDetails, setIsDownloading)
+                  }
                   className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
                 >
                   <i
@@ -585,7 +488,7 @@ function Header({
                 </button>
               )}
               <button
-                onClick={handleToPrint}
+                onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
                 type="button"
                 className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
               >
@@ -595,7 +498,9 @@ function Header({
               <button
                 type="button"
                 className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
-                onClick={() => handleDownloadPdf()}
+                onClick={() =>
+                  handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
+                }
               >
                 <i className="fa fa-download py-[3px]" aria-hidden="true"></i>
                 <span className="hidden lg:block ml-1">Download</span>
