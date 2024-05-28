@@ -66,7 +66,7 @@ const SuggestionInput = (props) => {
         type={props?.type || "text"}
         value={inputValue}
         onChange={handleInputChange}
-        placeholder="Enter text..."
+        placeholder="Enter Email..."
         className="w-full border-[1px] border-gray-400 p-2 text-black rounded"
         required={props.required}
       />

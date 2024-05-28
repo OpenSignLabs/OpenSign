@@ -1,4 +1,4 @@
-import PDF from './parsefunction/pdf/PDF.min.js';
+import PDF from './parsefunction/pdf/PDF.js';
 import sendmailv3 from './parsefunction/sendMailv3.js';
 import GoogleSign from './parsefunction/GoogleSign.js';
 import ZohoDetails from './parsefunction/ZohoDetails.js';
