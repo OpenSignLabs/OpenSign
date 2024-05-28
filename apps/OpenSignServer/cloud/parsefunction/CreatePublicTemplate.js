@@ -30,7 +30,6 @@ export default async function CreatePublicTemplate(request) {
       };
     }
   } catch (err) {
-    console.log('err', err);
     if (err.code == 209) {
       return { error: 'Invalid session token' };
     } else {
