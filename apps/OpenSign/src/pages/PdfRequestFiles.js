@@ -95,7 +95,7 @@ function PdfRequestFiles() {
   const [expiredDate, setExpiredDate] = useState("");
   const [signerUserId, setSignerUserId] = useState();
   const [isDontShow, setIsDontShow] = useState(false);
-  const [isCertificate, setIsCertificate] = useState(false);
+  const [isDownloading, setIsDownloading] = useState("");
   const [defaultSignAlert, setDefaultSignAlert] = useState({
     isShow: false,
     alertMessage: ""
@@ -787,7 +787,10 @@ function PdfRequestFiles() {
                   (x) => x.Email === jsonSender.email
                 );
                 const newIndex = index + 1;
-                const user = pdfDetails?.[0].Signers[newIndex];
+                const usermail = {
+                  Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
+                };
+                const user = usermail || pdfDetails?.[0]?.Signers[newIndex];
                 if (sendmail !== "false" && sendInOrder) {
                   const requestBody = pdfDetails?.[0]?.RequestBody;
                   const requestSubject = pdfDetails?.[0]?.RequestSubject;
@@ -1588,7 +1591,7 @@ function PdfRequestFiles() {
                             onClick={() =>
                               handleDownloadCertificate(
                                 pdfDetails,
-                                setIsCertificate
+                                setIsDownloading
                               )
                             }
                             className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
@@ -1602,7 +1605,9 @@ function PdfRequestFiles() {
                             </span>
                           </button>
                           <button
-                            onClick={(e) => handleToPrint(e, pdfUrl)}
+                            onClick={(e) =>
+                              handleToPrint(e, pdfUrl, setIsDownloading)
+                            }
                             type="button"
                             className="flex flex-row items-center  shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
                           >
@@ -1616,7 +1621,11 @@ function PdfRequestFiles() {
                             type="button"
                             className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
                             onClick={() =>
-                              handleDownloadPdf(pdfDetails, pdfUrl)
+                              handleDownloadPdf(
+                                pdfDetails,
+                                pdfUrl,
+                                setIsDownloading
+                              )
                             }
                           >
                             <i
@@ -1631,12 +1640,25 @@ function PdfRequestFiles() {
                       )}
                     </div>
                   </ModalUi>
+                  {isDownloading === "pdf" && (
+                    <div className="fixed z-[1000] inset-0 flex justify-center items-center bg-black bg-opacity-30">
+                      <div
+                        style={{ fontSize: "45px", color: "#3dd3e0" }}
+                        className="loader-37"
+                      ></div>
+                    </div>
+                  )}
                   <ModalUi
-                    isOpen={isCertificate}
-                    title={"Generating certificate"}
-                    handleClose={() => setIsCertificate(false)}
+                    isOpen={isDownloading === "certificate"}
+                    title={
+                      isDownloading === "certificate"
+                        ? "Generating certificate"
+                        : "PDF Download"
+                    }
+                    handleClose={() => setIsDownloading("")}
                   >
                     <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
+                      {isDownloading === "certificate"}{" "}
                       <p>
                         Your completion certificate is being generated. Please
                         wait momentarily.
