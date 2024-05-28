@@ -4,10 +4,8 @@ async function GetPublicUserName(request) {
     const userQuery = new Parse.Query('contracts_Users');
     userQuery.equalTo('UserName', userName);
     const res = await userQuery.first({ useMasterKey: true });
-    console.log('res', res);
     return res;
   } catch (err) {
-    console.log('Err ', err);
     return err;
   }
 }
