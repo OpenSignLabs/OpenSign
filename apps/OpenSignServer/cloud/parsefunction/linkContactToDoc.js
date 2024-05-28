@@ -99,8 +99,8 @@ export default async function linkContactToDoc(req) {
           };
           updateDoc.set('Placeholders', Placeholders);
           const Acl = docRes.getACL();
-          Acl.setReadAccess(existContact.get('CreatedBy').id, true);
-          Acl.setWriteAccess(existContact.get('CreatedBy').id, true);
+          Acl.setReadAccess(existContact.get('UserId').id, true);
+          Acl.setWriteAccess(existContact.get('UserId').id, true);
           updateDoc.setACL(Acl);
           //   const parseData = JSON.parse(JSON.stringify(res));
           const resDoc = await updateDoc.save(null, { useMasterKey: true });

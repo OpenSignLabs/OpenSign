@@ -2034,8 +2034,13 @@ export const handleSendOTP = async (email) => {
   }
 };
 //handle download signed pdf
-export const handleDownloadPdf = async (pdfDetails, pdfUrl) => {
+export const handleDownloadPdf = async (
+  pdfDetails,
+  pdfUrl,
+  setIsDownloading
+) => {
   const pdfName = pdfDetails[0] && pdfDetails[0].Name;
+  setIsDownloading("pdf");
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     const axiosRes = await axios.post(
@@ -2051,8 +2056,10 @@ export const handleDownloadPdf = async (pdfDetails, pdfUrl) => {
     );
     const url = axiosRes.data.result;
     saveAs(url, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    setIsDownloading("");
   } catch (err) {
     console.log("err in getsignedurl", err);
+    setIsDownloading("");
     alert("something went wrong, please try again later.");
   }
 };
@@ -2062,9 +2069,9 @@ export const sanitizeFileName = (pdfName) => {
   return pdfName.replace(/ /g, "_");
 };
 //function for print digital sign pdf
-export const handleToPrint = async (event, pdfUrl) => {
+export const handleToPrint = async (event, pdfUrl, setIsDownloading) => {
   event.preventDefault();
-
+  setIsDownloading("pdf");
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     const axiosRes = await axios.post(
@@ -2094,10 +2101,13 @@ export const handleToPrint = async (event, pdfUrl) => {
       const blob = new Blob([byteArray], { type: "application/pdf" });
       const blobUrl = URL.createObjectURL(blob);
       window.open(blobUrl, "_blank");
+      setIsDownloading("");
     } else {
       printModule({ printable: pdf, type: "pdf", base64: true });
+      setIsDownloading("");
     }
   } catch (err) {
+    setIsDownloading("");
     console.log("err in getsignedurl", err);
     alert("something went wrong, please try again later.");
   }
@@ -2106,7 +2116,7 @@ export const handleToPrint = async (event, pdfUrl) => {
 //handle download signed pdf
 export const handleDownloadCertificate = async (
   pdfDetails,
-  setIsCertificate
+  setIsDownloading
 ) => {
   if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
     try {
@@ -2117,7 +2127,7 @@ export const handleDownloadCertificate = async (
       console.log("err in download in certificate", err);
     }
   } else {
-    setIsCertificate(true);
+    setIsDownloading("certificate");
     try {
       const data = {
         docId: pdfDetails[0]?.objectId
@@ -2139,9 +2149,9 @@ export const handleDownloadCertificate = async (
           await fetch(doc?.CertificateUrl);
           const certificateUrl = doc?.CertificateUrl;
           saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
-          setIsCertificate(false);
+          setIsDownloading("");
         } else {
-          setIsCertificate(true);
+          setIsDownloading("certificate");
         }
       }
     } catch (err) {
@@ -2150,7 +2160,7 @@ export const handleDownloadCertificate = async (
     }
   }
 };
- export async function findContact(value) {
+export async function findContact(value) {
   try {
     const currentUser = Parse.User.current();
     const contactbook = new Parse.Query("contracts_Contactbook");
