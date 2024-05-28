@@ -40,7 +40,7 @@ function Header({
     signerPos && signerPos?.filter((data) => data.Role !== "prefill");
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
-  const [isCertificate, setIsCertificate] = useState(false);
+  const [isDownloading, setIsDownloading] = useState("");
   const isGuestSigner = localStorage.getItem("isGuestSigner");
   //for go to previous page
   function previousPage() {
@@ -62,7 +62,7 @@ function Header({
   //function for print digital sign pdf
   const handleToPrint = async (event) => {
     event.preventDefault();
-
+    setIsDownloading("pdf");
     try {
       // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
       const axiosRes = await axios.post(
@@ -93,10 +93,13 @@ function Header({
         const blob = new Blob([byteArray], { type: "application/pdf" });
         const blobUrl = URL.createObjectURL(blob);
         window.open(blobUrl, "_blank");
+        setIsDownloading("");
       } else {
         printModule({ printable: pdf, type: "pdf", base64: true });
+        setIsDownloading("");
       }
     } catch (err) {
+      setIsDownloading("");
       console.log("err in getsignedurl", err);
       alert("something went wrong, please try again later.");
     }
@@ -104,6 +107,7 @@ function Header({
 
   //handle download signed pdf
   const handleDownloadPdf = async () => {
+    setIsDownloading("pdf");
     const pdfName = pdfDetails[0] && pdfDetails[0].Name;
     try {
       // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
@@ -120,8 +124,10 @@ function Header({
       );
       const url = axiosRes.data.result;
       saveAs(url, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+      setIsDownloading("");
     } catch (err) {
       console.log("err in getsignedurl", err);
+      setIsDownloading("");
       alert("something went wrong, please try again later.");
     }
   };
@@ -142,7 +148,7 @@ function Header({
         console.log("err in download in certificate", err);
       }
     } else {
-      setIsCertificate(true);
+      setIsDownloading("certificate");
       try {
         const data = {
           docId: pdfDetails[0]?.objectId
@@ -164,12 +170,13 @@ function Header({
             await fetch(doc?.CertificateUrl);
             const certificateUrl = doc?.CertificateUrl;
             saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
-            setIsCertificate(false);
+            setIsDownloading("");
           } else {
-            setIsCertificate(true);
+            setIsDownloading("certificate");
           }
         }
       } catch (err) {
+        setIsDownloading("");
         console.log("err in download in certificate", err);
         alert("something went wrong, please try again later.");
       }
@@ -628,12 +635,25 @@ function Header({
           )}
         </div>
       )}
+      {isDownloading === "pdf" && (
+        <div className="fixed z-[200] inset-0 flex justify-center items-center bg-black bg-opacity-30">
+          <div
+            style={{ fontSize: "45px", color: "#3dd3e0" }}
+            className="loader-37"
+          ></div>
+        </div>
+      )}
       <ModalUi
-        isOpen={isCertificate}
-        title={"Generating certificate"}
-        handleClose={() => setIsCertificate(false)}
+        isOpen={isDownloading === "certificate"}
+        title={
+          isDownloading === "certificate"
+            ? "Generating certificate"
+            : "PDF Download"
+        }
+        handleClose={() => setIsDownloading("")}
       >
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
+          {isDownloading === "certificate"}{" "}
           <p>
             Your completion certificate is being generated. Please wait
             momentarily.
