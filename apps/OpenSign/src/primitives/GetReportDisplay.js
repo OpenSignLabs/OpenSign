@@ -25,7 +25,6 @@ const ReportTable = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
-  const [isDocErr, setIsDocErr] = useState(false);
   const [isContactform, setIsContactform] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState({});
   const [isRevoke, setIsRevoke] = useState({});
@@ -186,7 +185,6 @@ const ReportTable = (props) => {
                 setActLoader({});
               }
             } else {
-              setIsDocErr(true);
               setActLoader({});
             }
           } else {
@@ -310,14 +308,18 @@ const ReportTable = (props) => {
     const sendMail = item?.SendMail || false;
     const getUrl = (x) => {
       //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
-      const encodeBase64 = btoa(
-        `${item.objectId}/${x.Email}/${x.objectId}/${sendMail}`
-      );
-      return `${host}/login/${encodeBase64}`;
+      if (x.objectId) {
+        const encodeBase64 = btoa(
+          `${item.objectId}/${x.signerPtr.Email}/${x.signerPtr.objectId}/${sendMail}`
+        );
+        return `${host}/login/${encodeBase64}`;
+      } else {
+        const encodeBase64 = btoa(`${item.objectId}/${x.email}`);
+        return `${host}/login/${encodeBase64}`;
+      }
     };
-
-    const urls = item.Signers.map((x) => ({
-      email: x.Email,
+    const urls = item?.Placeholders?.map((x) => ({
+      email: x.email ? x.email : x.signerPtr.Email,
       url: getUrl(x)
     }));
     setShareUrls(urls);
@@ -665,18 +667,12 @@ const ReportTable = (props) => {
         }
       );
       const templateRes = axiosRes.data && axiosRes.data.result;
-      if (templateRes?.Placeholders?.length > 0) {
-        setPlaceholders(templateRes?.Placeholders);
-        setTemplateDetails(templateRes);
-        setIsLoader({});
-      } else {
-        setIsLoader(false);
-        setIsDocErr(true);
-      }
+      setPlaceholders(templateRes?.Placeholders);
+      setTemplateDetails(templateRes);
+      setIsLoader({});
     } catch (err) {
       console.log("err in fetch template in bulk modal", err);
       setIsBulkSend({});
-      setIsDocErr(false);
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
@@ -939,19 +935,11 @@ const ReportTable = (props) => {
                                 ></div>
                               </div>
                             ) : (
-                              <>
-                                {isDocErr ? (
-                                  <div className="text-black bg-white w-full h-[80px] md:h-[100px] text-sm md:text-xl flex justify-center items-center">
-                                    Please add Signers or Roles in template
-                                  </div>
-                                ) : (
-                                  <BulkSendUi
-                                    Placeholders={placeholders}
-                                    item={templateDeatils}
-                                    handleClose={handleQuickSendClose}
-                                  />
-                                )}
-                              </>
+                              <BulkSendUi
+                                Placeholders={placeholders}
+                                item={templateDeatils}
+                                handleClose={handleQuickSendClose}
+                              />
                             )}
                           </ModalUi>
                         )}

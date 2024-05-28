@@ -278,6 +278,10 @@ function PdfRequestFiles() {
         };
         setAlreadySign(true);
         setIsCompleted(data);
+        setIsCelebration(true);
+        setTimeout(() => {
+          setIsCelebration(false);
+        }, 5000);
       } else if (declined) {
         const currentDecline = {
           currnt: "another",
@@ -290,6 +294,13 @@ function PdfRequestFiles() {
         );
         setIsExpired(true);
         setExpiredDate(expireDateFormat);
+      } // Check if the current signer is not a last signer and handle the complete message.
+      else if (isNextUser) {
+        setIsCompleted({
+          isModal: true,
+          message:
+            "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
+        });
       }
 
       const isGuestSign = location.pathname.includes("/load/");
@@ -319,164 +330,157 @@ function PdfRequestFiles() {
           }
         }
       }
-      if (documentData.length > 0) {
-        const checkDocIdExist =
-          documentData[0].AuditTrail &&
-          documentData[0].AuditTrail.length > 0 &&
-          documentData[0].AuditTrail.filter(
-            (data) => data.Activity === "Signed"
-          );
+      const checkDocIdExist =
+        documentData[0].AuditTrail &&
+        documentData[0].AuditTrail.length > 0 &&
+        documentData[0].AuditTrail.filter((data) => data.Activity === "Signed");
 
-        const checkAlreadySign =
-          documentData[0].AuditTrail &&
-          documentData[0].AuditTrail.length > 0 &&
-          documentData[0].AuditTrail.filter(
-            (data) =>
-              data.UserPtr.objectId === currUserId && data.Activity === "Signed"
-          );
+      const checkAlreadySign =
+        documentData[0].AuditTrail &&
+        documentData[0].AuditTrail.length > 0 &&
+        documentData[0].AuditTrail.filter(
+          (data) =>
+            data.UserPtr.objectId === currUserId && data.Activity === "Signed"
+        );
+      if (
+        checkAlreadySign &&
+        checkAlreadySign[0] &&
+        checkAlreadySign.length > 0
+      ) {
+        setAlreadySign(true);
+      } else {
+        const obj = documentData?.[0];
+        setSendInOrder(obj?.SendinOrder || false);
         if (
-          checkAlreadySign &&
-          checkAlreadySign[0] &&
-          checkAlreadySign.length > 0
+          obj &&
+          obj.Signers &&
+          obj.Signers.length > 0 &&
+          obj.Placeholders &&
+          obj.Placeholders.length > 0
         ) {
-          setAlreadySign(true);
-        } else {
-          const obj = documentData?.[0];
-          setSendInOrder(obj?.SendinOrder || false);
-          if (
-            obj &&
-            obj.Signers &&
-            obj.Signers.length > 0 &&
-            obj.Placeholders &&
-            obj.Placeholders.length > 0
-          ) {
-            const params = {
-              event: "viewed",
-              contactId: currUserId,
-              body: {
-                objectId: documentData?.[0].objectId,
-                file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
-                name: documentData?.[0].Name,
-                note: documentData?.[0].Note || "",
-                description: documentData?.[0].Description || "",
-                signers: documentData?.[0].Signers?.map((x) => ({
-                  name: x?.Name,
-                  email: x?.Email,
-                  phone: x?.Phone
-                })),
-                viewedBy: jsonSender.email,
-                viewedAt: new Date(),
-                createdAt: documentData?.[0].createdAt
-              }
-            };
+          const params = {
+            event: "viewed",
+            contactId: currUserId,
+            body: {
+              objectId: documentData?.[0].objectId,
+              file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
+              name: documentData?.[0].Name,
+              note: documentData?.[0].Note || "",
+              description: documentData?.[0].Description || "",
+              signers: documentData?.[0].Signers?.map((x) => ({
+                name: x?.Name,
+                email: x?.Email,
+                phone: x?.Phone
+              })),
+              viewedBy: jsonSender.email,
+              viewedAt: new Date(),
+              createdAt: documentData?.[0].createdAt
+            }
+          };
 
-            try {
-              await axios.post(
-                `${localStorage.getItem("baseUrl")}functions/callwebhook`,
-                params,
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    "X-Parse-Application-Id":
-                      localStorage.getItem("parseAppId"),
-                    sessiontoken: localStorage.getItem("accesstoken")
-                  }
+          try {
+            await axios.post(
+              `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+              params,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                  sessiontoken: localStorage.getItem("accesstoken")
                 }
-              );
-            } catch (err) {
-              console.log("Err ", err);
-            }
-          }
-        }
-
-        let signers = [];
-        let unSignedSigner = [];
-
-        //check document is signed or not
-        if (checkDocIdExist && checkDocIdExist.length > 0) {
-          setIsDocId(true);
-          const signerRes = documentData[0].Signers;
-          //comparison auditTrail user details with signers user details
-          for (let i = 0; i < signerRes.length; i++) {
-            const signerId = signerRes[i].objectId;
-
-            let isSignedSignature = false;
-            for (let j = 0; j < checkDocIdExist.length; j++) {
-              const signedExist =
-                checkDocIdExist[j] && checkDocIdExist[j].UserPtr.objectId;
-              //checking signerObjId and auditTrail User objId
-              // if match then add signed data in signer array and break loop
-
-              if (signerId === signedExist) {
-                signers.push({ ...signerRes[i], ...signerRes[i] });
-                isSignedSignature = true;
-                break;
               }
-              // if does not match then add unsigned data in unSignedSigner array
-            }
-            if (!isSignedSignature) {
-              unSignedSigner.push({ ...signerRes[i], ...signerRes[i] });
-            }
+            );
+          } catch (err) {
+            console.log("Err ", err);
           }
-          setSignedSigners(signers);
-          setUnSignedSigners(unSignedSigner);
+        }
+      }
 
-          setSignerPos(documentData[0].Placeholders);
-        } else {
-          let unsigned = [];
-          for (let i = 0; i < documentData.length; i++) {
-            unsigned.push(documentData[i].Signers);
+      let signers = [];
+      let unSignedSigner = [];
+
+      //check document is signed or not
+      if (checkDocIdExist && checkDocIdExist.length > 0) {
+        setIsDocId(true);
+        const signerRes = documentData[0].Signers;
+        //comparison auditTrail user details with signers user details
+        for (let i = 0; i < signerRes.length; i++) {
+          const signerId = signerRes[i].objectId;
+
+          let isSignedSignature = false;
+          for (let j = 0; j < checkDocIdExist.length; j++) {
+            const signedExist =
+              checkDocIdExist[j] && checkDocIdExist[j].UserPtr.objectId;
+            //checking signerObjId and auditTrail User objId
+            // if match then add signed data in signer array and break loop
+
+            if (signerId === signedExist) {
+              signers.push({ ...signerRes[i], ...signerRes[i] });
+              isSignedSignature = true;
+              break;
+            }
+            // if does not match then add unsigned data in unSignedSigner array
           }
-          setUnSignedSigners(unsigned[0]);
-          setSignerPos(documentData[0].Placeholders);
-        }
-        setPdfDetails(documentData);
-        // Check if the current signer is not a last signer and handle the complete message.
-        if (isNextUser) {
-          const getSignedAuditTrail = documentData[0].AuditTrail.filter(
-            (data) => data.Activity === "Signed"
-          );
-          const isLastSigner =
-            getSignedAuditTrail?.length === documentData?.[0]?.Signers?.length;
-          if (!isLastSigner) {
-            setIsCompleted({
-              isModal: true,
-              message:
-                "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
-            });
-          } else {
-            setIsCelebration(true);
-            setTimeout(() => {
-              setIsCelebration(false);
-            }, 5000);
+          if (!isSignedSignature) {
+            unSignedSigner.push({ ...signerRes[i], ...signerRes[i] });
           }
         }
-        //checking if condition current user already sign or owner does not exist as a signer or document has been declined by someone or document has been expired
-        //then stop to display tour message
-        if (
-          (checkAlreadySign &&
-            checkAlreadySign[0] &&
-            checkAlreadySign.length > 0) ||
-          !currUserId ||
-          declined ||
-          currDate > expireUpdateDate
-        ) {
-          setRequestSignTour(false);
-        } else {
-          //else condition to check current user exist in contracts_Users class and check tour message status
-          //if not then check user exist in contracts_Contactbook class and check tour message status
-          const localuser = localStorage.getItem(
-            `Parse/${appInfo.appId}/currentUser`
-          );
-          const currentUser = JSON.parse(JSON.stringify(localuser));
-          const currentUserEmail = currentUser.email;
-          const res = await contractUsers(currentUserEmail);
+        setSignedSigners(signers);
+        setUnSignedSigners(unSignedSigner);
+        setSignerPos(documentData[0].Placeholders);
+      } else {
+        let unsigned = [];
+        for (let i = 0; i < documentData.length; i++) {
+          unsigned.push(documentData[i].Signers);
+        }
+        setUnSignedSigners(unsigned[0]);
+        setSignerPos(documentData[0].Placeholders);
+      }
+      setPdfDetails(documentData);
+      //checking if condition current user already sign or owner does not exist as a signer or document has been declined by someone or document has been expired
+      //then stop to display tour message
+      if (
+        (checkAlreadySign &&
+          checkAlreadySign[0] &&
+          checkAlreadySign.length > 0) ||
+        !currUserId ||
+        declined ||
+        currDate > expireUpdateDate
+      ) {
+        setRequestSignTour(false);
+      } else {
+        //else condition to check current user exist in contracts_Users class and check tour message status
+        //if not then check user exist in contracts_Contactbook class and check tour message status
+        const localuser = localStorage.getItem(
+          `Parse/${appInfo.appId}/currentUser`
+        );
+        const currentUser = JSON.parse(JSON.stringify(localuser));
+        const currentUserEmail = currentUser.email;
+        const res = await contractUsers(currentUserEmail);
+        if (res === "Error: Something went wrong!") {
+          setHandleError("Error: Something went wrong!");
+        } else if (res[0] && res?.length) {
+          setContractName("_Users");
+          currUserId = res[0].objectId;
+          setSignerUserId(currUserId);
+          const tourstatus = res[0].TourStatus && res[0].TourStatus;
+          if (tourstatus && tourstatus.length > 0) {
+            setTourStatus(tourstatus);
+            const checkTourRequestSign = tourstatus.filter(
+              (data) => data.requestSign
+            );
+            if (checkTourRequestSign && checkTourRequestSign.length > 0) {
+              setRequestSignTour(checkTourRequestSign[0].requestSign);
+            }
+          }
+        } else if (res?.length === 0) {
+          const res = await contactBook(currUserId);
           if (res === "Error: Something went wrong!") {
             setHandleError("Error: Something went wrong!");
-          } else if (res[0] && res?.length) {
-            setContractName("_Users");
-            currUserId = res[0].objectId;
-            setSignerUserId(currUserId);
+          } else if (res[0] && res.length) {
+            setContractName("_Contactbook");
+            const objectId = res[0].objectId;
+            setSignerUserId(objectId);
             const tourstatus = res[0].TourStatus && res[0].TourStatus;
             if (tourstatus && tourstatus.length > 0) {
               setTourStatus(tourstatus);
@@ -487,33 +491,12 @@ function PdfRequestFiles() {
                 setRequestSignTour(checkTourRequestSign[0].requestSign);
               }
             }
-          } else if (res?.length === 0) {
-            const res = await contactBook(currUserId);
-            if (res === "Error: Something went wrong!") {
-              setHandleError("Error: Something went wrong!");
-            } else if (res[0] && res.length) {
-              setContractName("_Contactbook");
-              const objectId = res[0].objectId;
-              setSignerUserId(objectId);
-              const tourstatus = res[0].TourStatus && res[0].TourStatus;
-              if (tourstatus && tourstatus.length > 0) {
-                setTourStatus(tourstatus);
-                const checkTourRequestSign = tourstatus.filter(
-                  (data) => data.requestSign
-                );
-                if (checkTourRequestSign && checkTourRequestSign.length > 0) {
-                  setRequestSignTour(checkTourRequestSign[0].requestSign);
-                }
-              }
-            } else if (res.length === 0) {
-              setHandleError("Error: User does not exist!");
-            }
+          } else if (res.length === 0) {
+            setHandleError("Error: User does not exist!");
           }
         }
-        setIsUiLoading(false);
-      } else {
-        alert("No data found!");
       }
+      setIsUiLoading(false);
     } else if (
       documentData === "Error: Something went wrong!" ||
       (documentData.result && documentData.result.error)
@@ -828,7 +811,7 @@ function PdfRequestFiles() {
                         "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
                       let url = `${localStorage.getItem(
                         "baseUrl"
-                      )}functions/sendmailv3/`;
+                      )}functions/sendmailv3`;
                       const headers = {
                         "Content-Type": "application/json",
                         "X-Parse-Application-Id":
