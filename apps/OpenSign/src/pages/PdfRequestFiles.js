@@ -783,7 +783,10 @@ function PdfRequestFiles() {
                   (x) => x.Email === jsonSender.email
                 );
                 const newIndex = index + 1;
-                const user = pdfDetails?.[0].Signers[newIndex];
+                const usermail = {
+                  Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
+                };
+                const user = usermail || pdfDetails?.[0]?.Signers[newIndex];
                 if (sendmail !== "false" && sendInOrder) {
                   const requestBody = pdfDetails?.[0]?.RequestBody;
                   const requestSubject = pdfDetails?.[0]?.RequestSubject;
