@@ -30,7 +30,7 @@ function UserProfile() {
   const [publicUserName, setPublicUserName] = useState(
     extendUser && extendUser?.[0]?.UserName
   );
-  const previousStateValueRef = useRef(publicUserName);
+  const previousPublicUserName = useRef(publicUserName);
   const [company, setCompany] = useState(
     extendUser && extendUser?.[0]?.Company
   );
@@ -79,7 +79,7 @@ function UserProfile() {
       }
     }
   };
-
+  //function to check public username already exist
   const handleCheckPublicUserName = async () => {
     try {
       const res = await Parse.Cloud.run("getpublicusername", {
@@ -99,14 +99,11 @@ function UserProfile() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     let phn = Phone,
       res;
-
-    if (previousStateValueRef.current !== publicUserName) {
+    if (previousPublicUserName.current !== publicUserName) {
       res = await handleCheckPublicUserName();
     }
-
     if (!res) {
       setIsLoader(true);
       try {
