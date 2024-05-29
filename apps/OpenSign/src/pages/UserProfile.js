@@ -152,26 +152,14 @@ function UserProfile() {
     const extClass = localStorage.getItem("extended_class");
     const extData = JSON.parse(localStorage.getItem("Extand_Class"));
     const ExtUserId = extData[0].objectId;
-    let body;
-    if (publicUserName) {
-      body = {
-        Phone: obj?.Phone || "",
-        Name: obj.Name,
-        HeaderDocId: isDisableDocId,
-        JobTitle: jobTitle,
-        Company: company,
-        UserName: publicUserName
-      };
-    } else {
-      body = {
-        Phone: obj?.Phone || "",
-        Name: obj.Name,
-        HeaderDocId: isDisableDocId,
-        JobTitle: jobTitle,
-        Company: company
-      };
-    }
-
+    const body = {
+      Phone: obj?.Phone || "",
+      Name: obj.Name,
+      HeaderDocId: isDisableDocId,
+      JobTitle: jobTitle,
+      Company: company,
+      UserName: publicUserName
+    };
     await axios.put(
       parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
       body,
