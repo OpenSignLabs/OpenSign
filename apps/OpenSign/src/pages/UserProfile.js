@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
@@ -28,8 +28,9 @@ function UserProfile() {
   const [isDisableDocId, setIsDisableDocId] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
   const [publicUserName, setPublicUserName] = useState(
-    (extendUser && extendUser?.[0]?.UserName) || ""
+    extendUser && extendUser?.[0]?.UserName
   );
+  const previousStateValueRef = useRef(publicUserName);
   const [company, setCompany] = useState(
     extendUser && extendUser?.[0]?.Company
   );
@@ -81,8 +82,8 @@ function UserProfile() {
 
   const handleCheckPublicUserName = async () => {
     try {
-      const res = await Parse.Cloud.run("getPublicUserName", {
-        userName: publicUserName
+      const res = await Parse.Cloud.run("getpublicusername", {
+        username: publicUserName
       });
       if (res) {
         setIsLoader(false);
@@ -98,15 +99,19 @@ function UserProfile() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoader(true);
-    let phn = Phone;
 
-    const res = await handleCheckPublicUserName();
+    let phn = Phone,
+      res;
+
+    if (previousStateValueRef.current !== publicUserName) {
+      res = await handleCheckPublicUserName();
+    }
+
     if (!res) {
+      setIsLoader(true);
       try {
-        const tour = Parse.Object.extend("_User");
-        const query = new Parse.Query(tour);
-
+        const userQuery = Parse.Object.extend("_User");
+        const query = new Parse.Query(userQuery);
         await query.get(UserProfile.objectId).then((object) => {
           object.set("name", name);
           object.set("ProfilePic", Image);
@@ -148,15 +153,26 @@ function UserProfile() {
     const extClass = localStorage.getItem("extended_class");
     const extData = JSON.parse(localStorage.getItem("Extand_Class"));
     const ExtUserId = extData[0].objectId;
+    let body;
+    if (publicUserName) {
+      body = {
+        Phone: obj.Phone,
+        Name: obj.Name,
+        HeaderDocId: isDisableDocId,
+        JobTitle: jobTitle,
+        Company: company,
+        UserName: publicUserName
+      };
+    } else {
+      body = {
+        Phone: obj.Phone,
+        Name: obj.Name,
+        HeaderDocId: isDisableDocId,
+        JobTitle: jobTitle,
+        Company: company
+      };
+    }
 
-    const body = {
-      Phone: obj.Phone,
-      Name: obj.Name,
-      HeaderDocId: isDisableDocId,
-      JobTitle: jobTitle,
-      Company: company,
-      UserName: publicUserName
-    };
     await axios.put(
       parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
       body,
@@ -267,7 +283,15 @@ function UserProfile() {
     alert("OTP sent on you email");
   };
   const handlePublicUrl = (e) => {
-    setPublicUserName(e.target.value);
+    const value = e.target.value;
+    if (value.length > 6 && !isSubscribe) {
+      setUserNameError("Please upgrade to allow more than 6 characters.");
+      setTimeout(() => {
+        setUserNameError("");
+      }, 2000);
+    } else {
+      setPublicUserName(e.target.value);
+    }
   };
   return (
     <React.Fragment>
@@ -291,10 +315,9 @@ function UserProfile() {
         </div>
       ) : (
         <div className="flex justify-center items-center w-full relative">
-          {/* <Alert type={alertMsg.type}>{alertMsg.message}</Alert> */}
           {userNameError && (
             <div
-              className={`z-[1000] fixed top-20  transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]`}
+              className={`z-[1000] fixed top-[50%]  transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]`}
             >
               {userNameError}
             </div>
@@ -426,20 +449,22 @@ function UserProfile() {
                   )}
                 </span>
               </li>
-              <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                <span className="font-semibold">Public profile:</span>
-                <div className="flex items-center">
-                  <span>opensign.me/</span>
+              {!isEnableSubscription && (
+                <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
+                  <span className="font-semibold">Public profile:</span>
+                  <div className="flex items-center">
+                    <span>opensign.me/</span>
 
-                  <input
-                    onChange={handlePublicUrl}
-                    value={publicUserName}
-                    disabled={!editmode}
-                    placeholder="enter user name"
-                    className="border-[1px] border-gray-200 rounded-[3px]"
-                  />
-                </div>
-              </li>
+                    <input
+                      onChange={handlePublicUrl}
+                      value={publicUserName}
+                      disabled={!editmode}
+                      placeholder="enter user name"
+                      className="border-[1px] border-gray-200 rounded-[3px]"
+                    />
+                  </div>
+                </li>
+              )}
 
               <li className="border-y-[1px] border-gray-300 break-all">
                 <div className="flex justify-between items-center py-2">

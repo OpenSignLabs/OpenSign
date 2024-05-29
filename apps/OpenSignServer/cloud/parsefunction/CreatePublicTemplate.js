@@ -1,39 +1,42 @@
-import axios from 'axios';
 export default async function CreatePublicTemplate(request) {
-  const templateId = request.params.templateId;
-  const serverUrl = process.env.SERVER_URL;
-  const appId = process.env.APP_ID;
-
+  const templateid = request.params.templateid;
+  const ispublic = request.params.ispublic;
+  const publicrole = request.params.publicrole;
   try {
-    const userRes = await axios.get(serverUrl + '/users/me', {
-      headers: {
-        'X-Parse-Application-Id': appId,
-        'X-Parse-Session-Token': request.headers['sessiontoken'],
-      },
-    });
-    const userId = userRes.data && userRes.data.objectId;
-    if (userId) {
-      const Query = new Parse.Query('contracts_Template');
-      Query.equalTo('CreatedBy', {
-        __type: 'Pointer',
-        className: '_User',
-        objectId: userId,
-      });
-      const updateACL = await Query.get(templateId, { useMasterKey: true });
-      const newACL = new Parse.ACL();
-      newACL.setPublicReadAccess(true);
-      newACL.setPublicWriteAccess(true);
-      updateACL.setACL(newACL);
-      updateACL.save(null, { useMasterKey: true });
-      return {
-        status: 'success',
-      };
+    console.log('session token', request);
+    if (!request?.user) {
+      throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
+    } else {
+      const userId = request?.user && request?.user?.id;
+      if (userId) {
+        const updateTemplate = new Parse.Object('contracts_Template');
+        updateTemplate.id = templateid;
+        if (ispublic) {
+          updateTemplate.set('PublicRole', publicrole);
+        }
+        updateTemplate.set('IsPublic', ispublic);
+        const Acl = new Parse.ACL();
+        if (ispublic) {
+          Acl.setPublicReadAccess(true);
+        }
+        Acl.setReadAccess(userId, true);
+        Acl.setWriteAccess(userId, true);
+        updateTemplate.setACL(Acl);
+        const savedObject = await updateTemplate.save(null, { useMasterKey: true });
+        const res = savedObject.toJSON();
+        if (res) {
+          return {
+            status: 'success',
+          };
+        }
+      } else {
+        throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User does not exist.');
+      }
     }
   } catch (err) {
-    if (err.code == 209) {
-      return { error: 'Invalid session token' };
-    } else {
-      return { error: "You don't have access of this document!" };
-    }
+    const code = err.code || 400;
+    const msg = err.message;
+    const error = new Parse.Error(code, msg);
+    throw error;
   }
 }
