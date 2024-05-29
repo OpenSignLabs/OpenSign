@@ -30,7 +30,9 @@ async function saveUser(userDetails) {
     user.set('username', userDetails.email);
     user.set('password', userDetails.password);
     user.set('email', userDetails.email);
-    user.set('phone', userDetails.phone);
+    if (userDetails?.phone) {
+      user.set('phone', userDetails.phone);
+    }
     user.set('name', userDetails.name);
 
     const res = await user.signUp();
@@ -77,7 +79,9 @@ export default async function usersignup(request) {
         objectId: user.id,
       });
 
-      partnerQuery.set('ContactNumber', userDetails.phone);
+      if (userDetails?.phone) {
+        partnerQuery.set('ContactNumber', userDetails.phone);
+      }
       partnerQuery.set('TenantName', userDetails.name);
       partnerQuery.set('EmailAddress', userDetails.email);
       partnerQuery.set('IsActive', true);
@@ -113,7 +117,9 @@ export default async function usersignup(request) {
       newObj.set('UserRole', userDetails.role);
       newObj.set('Email', userDetails.email);
       newObj.set('Name', userDetails.name);
-      newObj.set('Phone', userDetails.phone);
+      if (userDetails?.phone) {
+        newObj.set('Phone', userDetails?.phone);
+      }
       newObj.set('TenantId', {
         __type: 'Pointer',
         className: 'partners_Tenant',
