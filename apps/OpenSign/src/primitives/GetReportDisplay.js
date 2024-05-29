@@ -754,18 +754,22 @@ const ReportTable = (props) => {
   const handleViewSigners = (item) => {
     setIsViewShare({ [item.objectId]: true });
   };
+  //function to handle change template status is public or private
   const handlePublicChange = async (e, item) => {
     const getPlaceholder = item?.Placeholders;
+    //condiiton to check role is exist or not
     if (getPlaceholder && getPlaceholder.length > 0) {
       let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
       const userName = extendUser[0]?.UserName;
       setIsPublicUserName(extendUser[0]?.UserName);
+      //condition to check user have public url or not
       if (userName) {
         setIsPublic({ [item.objectId]: e.target.checked });
         const getRole = [];
         getPlaceholder.map((data) => {
           getRole.push(data.Role);
         });
+        //condiiton to handle role length if only one then set it default selected role
         if (getRole.length === 1) {
           setSelectedPublicRole(getRole[0]);
         }
@@ -784,6 +788,7 @@ const ReportTable = (props) => {
     }
   };
 
+  //function to copy public profile link
   const copytoProfileLink = () => {
     const url = `https://opensign.me/${publicUserName}`;
     copytoData(url);
