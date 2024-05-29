@@ -922,7 +922,7 @@ const ReportTable = (props) => {
                                 <thead className="text-white h-[38px] sticky top-0 bg-[#32a3ac]">
                                   <tr>
                                     {props.ReportName === "Templates" && (
-                                      <th className="p-2">Roles</th>
+                                      <th className="p-2 pl-3">Roles</th>
                                     )}
                                     <th className="p-2">Signers</th>
                                   </tr>
@@ -934,11 +934,11 @@ const ReportTable = (props) => {
                                       className="text-sm font-normal text-black odd:bg-white even:bg-gray-200"
                                     >
                                       {props.ReportName === "Templates" && (
-                                        <td className="text-[13px] md:text-sm font-semibold p-2 ">
+                                        <td className="text-[12px] p-2 pl-3">
                                           {x.Role && x.Role}
                                         </td>
                                       )}
-                                      <td className="text-[13px] md:text-sm p-2 break-all">
+                                      <td className="text-[12px] p-2 break-all">
                                         {x.email
                                           ? x.email
                                           : x?.signerPtr?.Email || "-"}
