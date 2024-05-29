@@ -1574,7 +1574,7 @@ function PdfRequestFiles() {
                   {/* this modal is used show this document is already sign */}
                   <ModalUi
                     isOpen={isCompleted.isModal}
-                    title={"Sign Documents"}
+                    title={"Document signed"}
                     handleClose={() => {
                       setIsCompleted((prev) => ({ ...prev, isModal: false }));
                     }}

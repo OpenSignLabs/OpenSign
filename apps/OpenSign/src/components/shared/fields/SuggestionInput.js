@@ -41,7 +41,7 @@ const SuggestionInput = (props) => {
 
   const handleInputChange = async (e) => {
     const value = e.target.value;
-    setInputValue(value);
+    setInputValue(value?.toLowerCase());
     if (props.onChange) {
       props.onChange(value);
     }
@@ -67,7 +67,7 @@ const SuggestionInput = (props) => {
         value={inputValue}
         onChange={handleInputChange}
         placeholder="Enter Email..."
-        className="w-full border-[1px] border-gray-400 p-2 text-black rounded"
+        className="w-full border-[1px] border-gray-400 p-2 text-black rounded lowercase"
         required={props.required}
       />
       {showSuggestions && (
