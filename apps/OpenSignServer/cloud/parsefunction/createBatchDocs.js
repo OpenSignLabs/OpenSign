@@ -17,7 +17,12 @@ async function sendMail(document, sessionToken) {
     year: 'numeric',
   });
   const sender = document.ExtUserPtr.Email;
-  const signerMail = document.Placeholders;
+  let signerMail = document.Placeholders;
+
+  if (document.SendinOrder) {
+    signerMail = signerMail.slice();
+    signerMail.splice(1);
+  }
   for (let i = 0; i < signerMail.length; i++) {
     try {
       const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
@@ -42,7 +47,8 @@ async function sendMail(document, sessionToken) {
       let params = {
         extUserId: document.ExtUserPtr.objectId,
         recipient: objectId ? signerMail[i].signerPtr.Email : signerMail[i].email,
-        subject: `${document.ExtUserPtr.Name} has requested you to sign ${document.Name}`,
+        subject: `${document.ExtUserPtr.Name} has requested you to sign "${document.Name}"`,
+        mailProvider: document?.ExtUserPtr?.active_mail_adapter || '',
         from: sender,
         html:
           "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'> <div style='box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src='" +
@@ -160,7 +166,6 @@ export default async function createBatchDocs(request) {
         createdAt: response.data[i]?.success?.createdAt,
       }));
       for (let i = 0; i < updateDocuments.length; i++) {
-        // console.log('updateDocuments ', updateDocuments);
         sendMail(updateDocuments[i], sessionToken);
       }
       return 'success';

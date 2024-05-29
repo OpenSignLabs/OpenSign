@@ -40,7 +40,7 @@ function Header({
     signerPos && signerPos?.filter((data) => data.Role !== "prefill");
   const isMobile = window.innerWidth < 767;
   const navigate = useNavigate();
-  const [isCertificate, setIsCertificate] = useState(false);
+  const [isDownloading, setIsDownloading] = useState("");
   const isGuestSigner = localStorage.getItem("isGuestSigner");
   //for go to previous page
   function previousPage() {
@@ -131,7 +131,9 @@ function Header({
                   >
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
-                      onClick={() => handleDownloadPdf(pdfDetails, pdfUrl)}
+                      onClick={() =>
+                        handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
+                      }
                     >
                       <div
                         style={{
@@ -153,7 +155,7 @@ function Header({
                         onClick={() =>
                           handleDownloadCertificate(
                             pdfDetails,
-                            setIsCertificate
+                            setIsDownloading
                           )
                         }
                       >
@@ -194,7 +196,9 @@ function Header({
                     )}
                     <DropdownMenu.Item
                       className="DropdownMenuItem"
-                      onClick={(e) => handleToPrint(e, pdfUrl)}
+                      onClick={(e) =>
+                        handleToPrint(e, pdfUrl, setIsDownloading)
+                      }
                     >
                       <div
                         style={{
@@ -277,7 +281,11 @@ function Header({
                           <DropdownMenu.Item
                             className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
                             onClick={() =>
-                              handleDownloadPdf(pdfDetails, pdfUrl)
+                              handleDownloadPdf(
+                                pdfDetails,
+                                pdfUrl,
+                                setIsDownloading
+                              )
                             }
                           >
                             <i
@@ -366,7 +374,7 @@ function Header({
                   <button
                     type="button"
                     onClick={() =>
-                      handleDownloadCertificate(pdfDetails, setIsCertificate)
+                      handleDownloadCertificate(pdfDetails, setIsDownloading)
                     }
                     className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
                   >
@@ -379,7 +387,7 @@ function Header({
                 )}
 
                 <button
-                  onClick={(e) => handleToPrint(e, pdfUrl)}
+                  onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
                   type="button"
                   className="flex flex-row items-center  shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
                 >
@@ -390,7 +398,9 @@ function Header({
                 <button
                   type="button"
                   className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
-                  onClick={() => handleDownloadPdf(pdfDetails, pdfUrl)}
+                  onClick={() =>
+                    handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
+                  }
                 >
                   <i className="fa fa-download py-[3px]" aria-hidden="true"></i>
                   <span className="hidden lg:block ml-1">Download</span>
@@ -440,7 +450,11 @@ function Header({
                           <DropdownMenu.Item
                             className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
                             onClick={() =>
-                              handleDownloadPdf(pdfDetails, pdfUrl)
+                              handleDownloadPdf(
+                                pdfDetails,
+                                pdfUrl,
+                                setIsDownloading
+                              )
                             }
                           >
                             <i
@@ -462,7 +476,7 @@ function Header({
                 <button
                   type="button"
                   onClick={() =>
-                    handleDownloadCertificate(pdfDetails, setIsCertificate)
+                    handleDownloadCertificate(pdfDetails, setIsDownloading)
                   }
                   className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
                 >
@@ -474,7 +488,7 @@ function Header({
                 </button>
               )}
               <button
-                onClick={(e) => handleToPrint(e, pdfUrl)}
+                onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
                 type="button"
                 className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
               >
@@ -484,7 +498,9 @@ function Header({
               <button
                 type="button"
                 className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
-                onClick={() => handleDownloadPdf(pdfDetails, pdfUrl)}
+                onClick={() =>
+                  handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
+                }
               >
                 <i className="fa fa-download py-[3px]" aria-hidden="true"></i>
                 <span className="hidden lg:block ml-1">Download</span>
@@ -524,12 +540,25 @@ function Header({
           )}
         </div>
       )}
+      {isDownloading === "pdf" && (
+        <div className="fixed z-[200] inset-0 flex justify-center items-center bg-black bg-opacity-30">
+          <div
+            style={{ fontSize: "45px", color: "#3dd3e0" }}
+            className="loader-37"
+          ></div>
+        </div>
+      )}
       <ModalUi
-        isOpen={isCertificate}
-        title={"Generating certificate"}
-        handleClose={() => setIsCertificate(false)}
+        isOpen={isDownloading === "certificate"}
+        title={
+          isDownloading === "certificate"
+            ? "Generating certificate"
+            : "PDF Download"
+        }
+        handleClose={() => setIsDownloading("")}
       >
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
+          {isDownloading === "certificate"}{" "}
           <p>
             Your completion certificate is being generated. Please wait
             momentarily.

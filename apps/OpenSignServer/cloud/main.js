@@ -1,4 +1,4 @@
-import PDF from './parsefunction/pdf/PDF.min.js';
+import PDF from './parsefunction/pdf/PDF.js';
 import sendmailv3 from './parsefunction/sendMailv3.js';
 import GoogleSign from './parsefunction/GoogleSign.js';
 import ZohoDetails from './parsefunction/ZohoDetails.js';
@@ -40,7 +40,6 @@ import { getSignedUrl } from './parsefunction/getSignedUrl.js';
 import createBatchDocs from './parsefunction/createBatchDocs.js';
 import linkContactToDoc from './parsefunction/linkContactToDoc.js';
 import CreatePublicTemplate from './parsefunction/CreatePublicTemplate.js';
-import GetPublicUserName from './parsefunction/getPublicUserName.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);

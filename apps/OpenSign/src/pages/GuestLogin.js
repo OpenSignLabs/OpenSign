@@ -169,10 +169,10 @@ function GuestLogin() {
     e.preventDefault();
     const params = { ...contact, docId: documentId };
     try {
+      setLoading(true);
       const linkContactRes = await Parse.Cloud.run("linkcontacttodoc", params);
       // console.log("linkContactRes ", linkContactRes);
       setContactId(linkContactRes.contactId);
-      setLoading(true);
       setEnterOtp(true);
       await SendOtp();
     } catch (err) {
