@@ -113,7 +113,6 @@ function UserProfile() {
           object.set("name", name);
           object.set("ProfilePic", Image);
           object.set("phone", phn || "");
-
           object.save().then(
             async (response) => {
               if (response) {
@@ -156,7 +155,7 @@ function UserProfile() {
     let body;
     if (publicUserName) {
       body = {
-        Phone: obj.Phone,
+        Phone: obj?.Phone || "",
         Name: obj.Name,
         HeaderDocId: isDisableDocId,
         JobTitle: jobTitle,
@@ -165,13 +164,14 @@ function UserProfile() {
       };
     } else {
       body = {
-        Phone: obj.Phone,
+        Phone: obj?.Phone || "",
         Name: obj.Name,
         HeaderDocId: isDisableDocId,
         JobTitle: jobTitle,
         Company: company
       };
     }
+
     await axios.put(
       parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
       body,

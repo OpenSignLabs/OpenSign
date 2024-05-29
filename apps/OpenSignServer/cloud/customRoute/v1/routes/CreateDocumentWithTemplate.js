@@ -265,10 +265,10 @@ export default async function createDocumentWithTemplate(request, response) {
                     document_title: template.Name,
                     sender_name: template.ExtUserPtr.Name,
                     sender_mail: template.ExtUserPtr.Email,
-                    sender_phone: template.ExtUserPtr.Phone,
+                    sender_phone: template.ExtUserPtr?.Phone || '',
                     receiver_name: contactMail[i].name,
                     receiver_email: contactMail[i].email,
-                    receiver_phone: contactMail[i].phone,
+                    receiver_phone: contactMail[i]?.phone || '',
                     expiry_date: localExpireDate,
                     company_name: orgName,
                     signing_url: signPdf,
@@ -314,7 +314,11 @@ export default async function createDocumentWithTemplate(request, response) {
                 name: template?.Name,
                 note: template?.Note || '',
                 description: template?.Description || '',
-                signers: contact?.map(x => ({ name: x.name, email: x.email, phone: x.phone })),
+                signers: contact?.map(x => ({
+                  name: x.name,
+                  email: x.email,
+                  phone: x?.phone || '',
+                })),
                 createdAt: res.createdAt,
               };
               if (template.ExtUserPtr && template.ExtUserPtr?.Webhook) {
