@@ -208,11 +208,9 @@ export default async function linkContactToDoc(req) {
                 _user.set('name', name);
                 _user.set('username', email);
                 _user.set('email', email);
+                _user.set('password', email);
                 if (phone) {
                   _user.set('phone', phone);
-                  _user.set('password', phone);
-                } else {
-                  _user.set('password', email);
                 }
                 const newUserRes = await _user.save();
                 const contact = {
