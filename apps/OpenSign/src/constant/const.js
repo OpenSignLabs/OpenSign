@@ -9,5 +9,4 @@ export const modalSubmitBtnColor = "#17a2b8";
 export const modalCancelBtnColor = "white";
 export const themeColor = "#47a3ad";
 export const iconColor = "#686968";
-export const isEnableSubscription = false;
-// process.env.REACT_APP_ENABLE_SUBSCRIPTION;
+export const isEnableSubscription = process.env.REACT_APP_ENABLE_SUBSCRIPTION;
