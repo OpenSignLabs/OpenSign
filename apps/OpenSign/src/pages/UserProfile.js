@@ -449,22 +449,22 @@ function UserProfile() {
                   )}
                 </span>
               </li>
-              {!isEnableSubscription && (
-                <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                  <span className="font-semibold">Public profile:</span>
-                  <div className="flex items-center">
-                    <span>opensign.me/</span>
+              {/* {!isEnableSubscription && ( */}
+              <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
+                <span className="font-semibold">Public profile:</span>
+                <div className="flex items-center">
+                  <span>opensign.me/</span>
 
-                    <input
-                      onChange={handlePublicUrl}
-                      value={publicUserName}
-                      disabled={!editmode}
-                      placeholder="enter user name"
-                      className="border-[1px] border-gray-200 rounded-[3px]"
-                    />
-                  </div>
-                </li>
-              )}
+                  <input
+                    onChange={handlePublicUrl}
+                    value={publicUserName}
+                    disabled={!editmode}
+                    placeholder="enter user name"
+                    className="border-[1px] border-gray-200 rounded-[3px]"
+                  />
+                </div>
+              </li>
+              {/* )} */}
 
               <li className="border-y-[1px] border-gray-300 break-all">
                 <div className="flex justify-between items-center py-2">

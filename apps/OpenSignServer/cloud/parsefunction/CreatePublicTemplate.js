@@ -3,7 +3,6 @@ export default async function CreatePublicTemplate(request) {
   const ispublic = request.params.ispublic;
   const publicrole = request.params.publicrole;
   try {
-    console.log('session token', request);
     if (!request?.user) {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
     } else {
