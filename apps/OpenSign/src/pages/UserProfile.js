@@ -112,7 +112,7 @@ function UserProfile() {
         await query.get(UserProfile.objectId).then((object) => {
           object.set("name", name);
           object.set("ProfilePic", Image);
-          object.set("phone", phn);
+          object.set("phone", phn || "");
 
           object.save().then(
             async (response) => {
@@ -121,15 +121,18 @@ function UserProfile() {
                 let rr = JSON.stringify(res);
                 localStorage.setItem("UserInformation", rr);
                 SetName(res.name);
-                SetPhone(res.phone);
+                SetPhone(res?.phone || "");
                 setImage(res.ProfilePic);
                 localStorage.setItem("username", res.name);
                 localStorage.setItem("profileImg", res.ProfilePic);
-                await updateExtUser({ Name: res.name, Phone: res.phone });
+                await updateExtUser({
+                  Name: res.name,
+                  Phone: res?.phone || ""
+                });
                 alert("Profile updated successfully.");
                 setEditMode(false);
                 setIsLoader(false);
-                // navigate("/dashboard/35KBoSgoAK");
+                //navigate("/dashboard/35KBoSgoAK");
               }
             },
             (error) => {
@@ -169,7 +172,6 @@ function UserProfile() {
         Company: company
       };
     }
-
     await axios.put(
       parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
       body,
@@ -188,6 +190,7 @@ function UserProfile() {
     const json = JSON.parse(JSON.stringify([res]));
     const extRes = JSON.stringify(json);
     localStorage.setItem("Extand_Class", extRes);
+    // console.log("updateRes ", updateRes);
   };
   // file upload function
   const fileUpload = async (file) => {
@@ -279,7 +282,8 @@ function UserProfile() {
     setOtpLoader(false);
     alert("OTP sent on you email");
   };
-  const handlePublicUrl = (e) => {
+  //function to handle onchange user name  nad restict 6 characters username for free users
+  const handleOnchangeUserName = (e) => {
     const value = e.target.value;
     if (value.length > 6 && !isSubscribe) {
       setUserNameError("Please upgrade to allow more than 6 characters.");
@@ -453,7 +457,7 @@ function UserProfile() {
                   <span>opensign.me/</span>
 
                   <input
-                    onChange={handlePublicUrl}
+                    onChange={handleOnchangeUserName}
                     value={publicUserName}
                     disabled={!editmode}
                     placeholder="enter user name"
@@ -462,7 +466,6 @@ function UserProfile() {
                 </div>
               </li>
               {/* )} */}
-
               <li className="border-y-[1px] border-gray-300 break-all">
                 <div className="flex justify-between items-center py-2">
                   <span
