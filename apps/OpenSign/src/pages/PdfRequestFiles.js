@@ -821,12 +821,19 @@ function PdfRequestFiles() {
                           localStorage.getItem("parseAppId"),
                         sessionToken: localStorage.getItem("accesstoken")
                       };
-                      const objectId = user.objectId;
+                      const objectId = user?.objectId;
                       const hostUrl = window.location.origin;
                       //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
-                      const encodeBase64 = btoa(
-                        `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
-                      );
+                      let encodeBase64;
+                      if (objectId) {
+                        encodeBase64 = btoa(
+                          `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
+                        );
+                      } else {
+                        encodeBase64 = btoa(
+                          `${pdfDetails?.[0].objectId}/${user.Email}`
+                        );
+                      }
                       let signPdf = `${hostUrl}/login/${encodeBase64}`;
                       const openSignUrl =
                         "https://www.opensignlabs.com/contact-us";
