@@ -255,7 +255,7 @@ export default async function createDocumentwithCoordinate(request, response) {
           name: name,
           note: note || '',
           description: description || '',
-          signers: contact?.map(x => ({ name: x.name, email: x.email, phone: x.phone })),
+          signers: contact?.map(x => ({ name: x.name, email: x.email, phone: x?.phone || '' })),
           createdAt: res.createdAt,
         };
         if (parseExtUser && parseExtUser.Webhook) {
@@ -325,10 +325,10 @@ export default async function createDocumentwithCoordinate(request, response) {
                 document_title: name,
                 sender_name: parseExtUser.Name,
                 sender_mail: parseExtUser.Email,
-                sender_phone: parseExtUser.Phone,
+                sender_phone: parseExtUser?.Phone || '',
                 receiver_name: contactMail[i].name,
                 receiver_email: contactMail[i].email,
-                receiver_phone: contactMail[i].phone,
+                receiver_phone: contactMail[i]?.phone || '',
                 expiry_date: localExpireDate,
                 company_name: orgName,
                 signing_url: signPdf,
