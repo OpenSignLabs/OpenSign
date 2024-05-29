@@ -26,7 +26,6 @@ const ReportTable = (props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
-  const [isDocErr, setIsDocErr] = useState(false);
   const [isContactform, setIsContactform] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState({});
   const [isRevoke, setIsRevoke] = useState({});
@@ -50,6 +49,7 @@ const ReportTable = (props) => {
   const [selectedPublicRole, setSelectedPublicRole] = useState("");
   const [isCelebration, setIsCelebration] = useState(false);
 
+  const [isViewShare, setIsViewShare] = useState({});
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
   // For loop is used to calculate page numbers visible below table
@@ -191,7 +191,6 @@ const ReportTable = (props) => {
                 setActLoader({});
               }
             } else {
-              setIsDocErr(true);
               setActLoader({});
             }
           } else {
@@ -327,14 +326,18 @@ const ReportTable = (props) => {
     const sendMail = item?.SendMail || false;
     const getUrl = (x) => {
       //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
-      const encodeBase64 = btoa(
-        `${item.objectId}/${x.Email}/${x.objectId}/${sendMail}`
-      );
-      return `${host}/login/${encodeBase64}`;
+      if (x.objectId) {
+        const encodeBase64 = btoa(
+          `${item.objectId}/${x.signerPtr.Email}/${x.signerPtr.objectId}/${sendMail}`
+        );
+        return `${host}/login/${encodeBase64}`;
+      } else {
+        const encodeBase64 = btoa(`${item.objectId}/${x.email}`);
+        return `${host}/login/${encodeBase64}`;
+      }
     };
-
-    const urls = item.Signers.map((x) => ({
-      email: x.Email,
+    const urls = item?.Placeholders?.map((x) => ({
+      email: x.email ? x.email : x.signerPtr.Email,
       url: getUrl(x)
     }));
     setShareUrls(urls);
@@ -355,9 +358,9 @@ const ReportTable = (props) => {
 
     await axios
       .put(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document/${item.objectId}`,
+        `${localStorage.getItem("baseUrl")}classes/contracts_Document/${
+          item.objectId
+        }`,
         data,
         {
           headers: {
@@ -593,9 +596,15 @@ const ReportTable = (props) => {
     };
     try {
       const res = await axios.post(url, params, { headers: headers });
-      if (res) {
+      if (res?.data?.result?.status === "success") {
         setIsAlert(true);
         setAlertMsg({ type: "success", message: "Mail sent successfully." });
+      } else {
+        setIsAlert(true);
+        setAlertMsg({
+          type: "danger",
+          message: "Something went wrong, please try again later!"
+        });
       }
     } catch (err) {
       console.log("err in sendmail", err);
@@ -682,18 +691,12 @@ const ReportTable = (props) => {
         }
       );
       const templateRes = axiosRes.data && axiosRes.data.result;
-      if (templateRes?.Placeholders?.length > 0) {
-        setPlaceholders(templateRes?.Placeholders);
-        setTemplateDetails(templateRes);
-        setIsLoader({});
-      } else {
-        setIsLoader(false);
-        setIsDocErr(true);
-      }
+      setPlaceholders(templateRes?.Placeholders);
+      setTemplateDetails(templateRes);
+      setIsLoader({});
     } catch (err) {
       console.log("err in fetch template in bulk modal", err);
       setIsBulkSend({});
-      setIsDocErr(false);
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
@@ -766,6 +769,9 @@ const ReportTable = (props) => {
     }
   };
 
+  const handleViewSigners = (item) => {
+    setIsViewShare({ [item.objectId]: true });
+  };
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -925,7 +931,17 @@ const ReportTable = (props) => {
                         {formatRow(item?.ExtUserPtr)}
                       </td>
                       <td className="px-4 py-2">
-                        {item?.Signers ? formatRow(item?.Signers) : "-"}
+                        {/* {item?.Signers ? formatRow(item?.Signers) : "-"} */}
+                        {item?.Placeholders ? (
+                          <button
+                            onClick={() => handleViewSigners(item)}
+                            className="text-[blue] hover:underline focus:outline-none"
+                          >
+                            View
+                          </button>
+                        ) : (
+                          "-"
+                        )}
                       </td>
                       <td className="px-2 py-2 text-white flex flex-row gap-x-2 gap-y-1 justify-center items-center">
                         {props.actions?.length > 0 &&
@@ -955,19 +971,21 @@ const ReportTable = (props) => {
                               )}
                               {isOption[item.objectId] &&
                                 act.action === "option" && (
-                                  <div className="absolute -right-2 top-5 bg-white text-nowrap rounded shadow z-[20] overflow-hidden">
+                                  <div className="absolute -right-2 top-5 p-1.5 bg-white text-nowrap rounded shadow-md z-[20] overflow-hidden">
                                     {act.subaction?.map((subact) => (
                                       <div
                                         key={subact.btnId}
-                                        className="hover:bg-gray-300 cursor-pointer px-2 py-1.5  flex justify-start items-center text-black"
+                                        className="hover:bg-gray-300 rounded cursor-pointer px-2 py-1.5 flex justify-start items-center text-black"
                                         onClick={() =>
                                           handleActionBtn(subact, item)
                                         }
                                         title={subact.hoverLabel}
                                       >
-                                        <i className={subact.btnIcon}></i>
+                                        <i
+                                          className={`${subact.btnIcon} mr-1.5`}
+                                        ></i>
                                         {subact.btnLabel && (
-                                          <span className="ml-[4px] text-xs capitalize">
+                                          <span className="ml-[4px] text-[13px] capitalize font-medium">
                                             {subact.btnLabel}
                                           </span>
                                         )}
@@ -977,6 +995,48 @@ const ReportTable = (props) => {
                                 )}
                             </button>
                           ))}
+                        {isViewShare[item.objectId] && (
+                          <div className="fixed z-[999] inset-0 w-full h-full bg-black bg-opacity-[75%]">
+                            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[400px] overflow-y-auto max-h-[340px] md:max-h-[400px] hide-scrollbar">
+                              <div
+                                className="cursor-pointer absolute text-white text-[22px] font-medium rounded-full z-50 top-1 right-3"
+                                onClick={() => setIsViewShare({})}
+                              >
+                                &times;
+                              </div>
+
+                              <table className="table-auto w-full">
+                                <thead className="text-white h-[38px] sticky top-0 bg-[#32a3ac]">
+                                  <tr>
+                                    {props.ReportName === "Templates" && (
+                                      <th className="p-2 pl-3">Roles</th>
+                                    )}
+                                    <th className="p-2">Signers</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {item.Placeholders.map((x, i) => (
+                                    <tr
+                                      key={i}
+                                      className="text-sm font-normal text-black odd:bg-white even:bg-gray-200"
+                                    >
+                                      {props.ReportName === "Templates" && (
+                                        <td className="text-[12px] p-2 pl-3">
+                                          {x.Role && x.Role}
+                                        </td>
+                                      )}
+                                      <td className="text-[12px] p-2 break-all">
+                                        {x.email
+                                          ? x.email
+                                          : x?.signerPtr?.Email || "-"}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        )}
                         {isDeleteModal[item.objectId] && (
                           <ModalUi
                             isOpen
@@ -1025,19 +1085,11 @@ const ReportTable = (props) => {
                                 ></div>
                               </div>
                             ) : (
-                              <>
-                                {isDocErr ? (
-                                  <div className="text-black bg-white w-full h-[80px] md:h-[100px] text-sm md:text-xl flex justify-center items-center">
-                                    Please add Signers or Roles in template
-                                  </div>
-                                ) : (
-                                  <BulkSendUi
-                                    Placeholders={placeholders}
-                                    item={templateDeatils}
-                                    handleClose={handleQuickSendClose}
-                                  />
-                                )}
-                              </>
+                              <BulkSendUi
+                                Placeholders={placeholders}
+                                item={templateDeatils}
+                                handleClose={handleQuickSendClose}
+                              />
                             )}
                           </ModalUi>
                         )}

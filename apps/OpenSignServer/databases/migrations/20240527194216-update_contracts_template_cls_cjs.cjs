@@ -7,6 +7,7 @@ exports.up = async Parse => {
   const className = 'contracts_Template';
   const schema = new Parse.Schema(className);
   schema.addArray('PublicRole');
+  schema.addBoolean('IsPublic');
 
   // TODO: Set the schema here
   // Example:
@@ -24,6 +25,7 @@ exports.down = async Parse => {
   const className = 'contracts_Template';
   const schema = new Parse.Schema(className);
   schema.deleteField('PublicRole');
+  schema.deleteField('IsPublic');
 
   // TODO: Set the schema here
   // Example:

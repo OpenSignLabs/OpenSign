@@ -211,27 +211,25 @@ function RenderPdf({
       setCurrentSigner(true);
     }
     const handleAllUserName = (Id, Role, type) => {
-      return pdfDetails[0].Signers.map((signerData, key) => {
-        return (
-          signerData.objectId === data.signerObjId && (
-            <React.Fragment key={key}>
-              {signerData?.Name && (
-                <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
-                  {signerData.Name}
-                </div>
-              )}
-              {type && (
-                <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
-              )}
-              {Role && (
-                <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
-                  {`(${Role})`}
-                </div>
-              )}
-            </React.Fragment>
-          )
-        );
-      });
+      return (
+        <React.Fragment>
+          <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+            {
+              pdfDetails[0].Signers?.find(
+                (signer) => signer.objectId === data.signerObjId
+              )?.Name
+            }
+          </div>
+          {type && (
+            <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+          )}
+          {Role && (
+            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+              {`(${Role})`}
+            </div>
+          )}
+        </React.Fragment>
+      );
     };
 
     return (
