@@ -1578,7 +1578,10 @@ function PdfRequestFiles() {
                     handleClose={() => {
                       setIsCompleted((prev) => ({ ...prev, isModal: false }));
                     }}
-                    reduceWidth={!isCompleted?.message}
+                    reduceWidth={
+                      !isCompleted?.message &&
+                      "md:min-w-[440px] md:max-w-[400px]"
+                    }
                   >
                     <div style={{ height: "100%", padding: 20 }}>
                       {isCompleted?.message ? (
