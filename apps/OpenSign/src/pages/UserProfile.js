@@ -86,7 +86,7 @@ function UserProfile() {
       await query.get(UserProfile.objectId).then((object) => {
         object.set("name", name);
         object.set("ProfilePic", Image);
-        object.set("phone", phn);
+        object.set("phone", phn || "");
 
         object.save().then(
           async (response) => {
@@ -95,11 +95,11 @@ function UserProfile() {
               let rr = JSON.stringify(res);
               localStorage.setItem("UserInformation", rr);
               SetName(res.name);
-              SetPhone(res.phone);
+              SetPhone(res?.phone || "");
               setImage(res.ProfilePic);
               localStorage.setItem("username", res.name);
               localStorage.setItem("profileImg", res.ProfilePic);
-              await updateExtUser({ Name: res.name, Phone: res.phone });
+              await updateExtUser({ Name: res.name, Phone: res?.phone || "" });
               alert("Profile updated successfully.");
               setEditMode(false);
               navigate("/dashboard/35KBoSgoAK");
@@ -124,7 +124,7 @@ function UserProfile() {
     const ExtUserId = extData[0].objectId;
 
     const body = {
-      Phone: obj.Phone,
+      Phone: obj?.Phone || "",
       Name: obj.Name,
       HeaderDocId: isDisableDocId,
       JobTitle: jobTitle,

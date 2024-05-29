@@ -132,10 +132,10 @@ async function sendCompletedMail(obj) {
           document_title: pdfName,
           sender_name: sender.Name,
           sender_mail: sender.Email,
-          sender_phone: sender.Phone,
+          sender_phone: sender?.Phone || '',
           receiver_name: sender.Name,
           receiver_email: sender.Email,
-          receiver_phone: sender.Phone,
+          receiver_phone: sender?.Phone || '',
           expiry_date: localExpireDate,
           company_name: sender.Company,
         };

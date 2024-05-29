@@ -3,7 +3,7 @@ export default async function createContact(request, response) {
   const serverUrl = process.env.SERVER_URL;
   const appId = process.env.APP_ID;
   const name = request.body.name;
-  const phone = request.body.phone;
+  const phone = request.body?.phone;
   const email = request.body.email;
   const reqToken = request.headers['x-api-token'];
   if (!reqToken) {
@@ -49,7 +49,9 @@ export default async function createContact(request, response) {
 
             const contactQuery = new Parse.Object('contracts_Contactbook');
             contactQuery.set('Name', name);
-            contactQuery.set('Phone', phone);
+            if (phone) {
+              contactQuery.set('Phone', phone);
+            }
             contactQuery.set('Email', email);
             contactQuery.set('UserRole', 'contracts_Guest');
             if (tenantRes && tenantRes.id) {
@@ -65,8 +67,10 @@ export default async function createContact(request, response) {
               _user.set('name', name);
               _user.set('username', email);
               _user.set('email', email);
-              _user.set('phone', phone);
-              _user.set('password', phone);
+              _user.set('password', email);
+              if (phone) {
+                _user.set('phone', phone);
+              }
 
               const user = await _user.save();
               if (user) {
@@ -106,7 +110,7 @@ export default async function createContact(request, response) {
                   objectId: parseRes.objectId,
                   name: parseRes.Name,
                   email: parseRes.Email,
-                  phone: parseRes.Phone,
+                  phone: parseRes?.Phone || '',
                   createdAt: parseRes.createdAt,
                   updatedAt: parseRes.updatedAt,
                 });
@@ -155,7 +159,7 @@ export default async function createContact(request, response) {
                     objectId: parseRes.objectId,
                     name: parseRes.Name,
                     email: parseRes.Email,
-                    phone: parseRes.Phone,
+                    phone: parseRes?.Phone || '',
                     createdAt: parseRes.createdAt,
                     updatedAt: parseRes.updatedAt,
                   });
