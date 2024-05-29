@@ -263,7 +263,7 @@ function Login() {
                                         const LocalUserDetails = {
                                           name: results[0].get("Name"),
                                           email: results[0].get("Email"),
-                                          phone: results[0].get("Phone"),
+                                          phone: results[0]?.get("Phone") || "",
                                           company: results[0].get("Company")
                                         };
                                         localStorage.setItem(
@@ -317,7 +317,7 @@ function Login() {
                                       const LocalUserDetails = {
                                         name: _user.name,
                                         email: email,
-                                        phone: _user.phone
+                                        phone: _user?.phone || ""
                                         // company: results.get("Company"),
                                       };
                                       localStorage.setItem(
@@ -868,7 +868,7 @@ function Login() {
                               const LocalUserDetails = {
                                 name: results[0].get("Name"),
                                 email: results[0].get("Email"),
-                                phone: results[0].get("Phone"),
+                                phone: results[0]?.get("Phone") || "",
                                 company: results[0].get("Company")
                               };
                               localStorage.setItem(
@@ -905,7 +905,7 @@ function Login() {
                             const LocalUserDetails = {
                               name: results[0].get("Name"),
                               email: results[0].get("Email"),
-                              phone: results[0].get("Phone")
+                              phone: results[0]?.get("Phone") || ""
                               // company: results.get("Company"),
                             };
                             localStorage.setItem(
@@ -982,7 +982,7 @@ function Login() {
           userDetails: {
             name: userInformation.name,
             email: userInformation.email,
-            phone: userInformation.phone,
+            phone: userInformation?.phone || "",
             role: "contracts_User",
             company: userDetails.Company,
             jobTitle: userDetails.Destination
@@ -994,7 +994,7 @@ function Login() {
           const LocalUserDetails = {
             name: userInformation.name,
             email: userInformation.email,
-            phone: userInformation.phone,
+            phone: userInformation?.phone || "",
             company: userDetails.Company,
             jobTitle: userDetails.JobTitle
           };
