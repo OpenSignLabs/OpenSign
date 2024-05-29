@@ -23,7 +23,7 @@ const AddSigner = (props) => {
     );
     if (savedUserDetails && addYourself) {
       setName(savedUserDetails.name);
-      setPhone(savedUserDetails.phone);
+      setPhone(savedUserDetails?.phone || "");
       setEmail(savedUserDetails.email);
     }
   }, [addYourself]);
@@ -79,11 +79,9 @@ const AddSigner = (props) => {
             _user.set("name", name);
             _user.set("username", email);
             _user.set("email", email);
+            _user.set("password", email);
             if (phone) {
               _user.set("phone", phone);
-              _user.set("password", phone);
-            } else {
-              _user.set("password", email);
             }
             const user = await _user.save();
             if (user) {
