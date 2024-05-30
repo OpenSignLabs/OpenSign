@@ -16,14 +16,17 @@ async function GetPublicTemplate(request) {
         templatQuery.equalTo('IsPublic', true);
         const getTemplate = await templatQuery.find({ useMasterKey: true });
         return getTemplate;
+      } else {
+        throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Template not found');
       }
-      return { error: "You don't have access of this document!" };
     } else {
-      return { error: 'Please provide username!' };
+      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Please provide required parameters!');
     }
   } catch (err) {
-    console.log('error', err);
-    return { error: "You don't have access of this document!" };
+    const code = err.code || 400;
+    const msg = err.message;
+    const error = new Parse.Error(code, msg);
+    throw error;
   }
 }
 export default GetPublicTemplate;

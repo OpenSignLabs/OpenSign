@@ -94,7 +94,7 @@ function UserProfile() {
         return res;
       }
     } catch (e) {
-      console.log("extend error");
+      console.log("error in getpublicusername cloud function");
     }
   };
   const handleSubmit = async (e) => {
@@ -153,25 +153,15 @@ function UserProfile() {
     const extClass = localStorage.getItem("extended_class");
     const extData = JSON.parse(localStorage.getItem("Extand_Class"));
     const ExtUserId = extData[0].objectId;
-    let body;
-    if (publicUserName) {
-      body = {
-        Phone: obj?.Phone || "",
-        Name: obj.Name,
-        HeaderDocId: isDisableDocId,
-        JobTitle: jobTitle,
-        Company: company,
-        UserName: publicUserName
-      };
-    } else {
-      body = {
-        Phone: obj?.Phone || "",
-        Name: obj.Name,
-        HeaderDocId: isDisableDocId,
-        JobTitle: jobTitle,
-        Company: company
-      };
-    }
+    const body = {
+      Phone: obj?.Phone || "",
+      Name: obj.Name,
+      HeaderDocId: isDisableDocId,
+      JobTitle: jobTitle,
+      Company: company,
+      UserName: publicUserName || ""
+    };
+
     await axios.put(
       parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
       body,
@@ -282,7 +272,7 @@ function UserProfile() {
     setOtpLoader(false);
     alert("OTP sent on you email");
   };
-  //function to handle onchange user name  nad restict 6 characters username for free users
+  //function to handle onchange username and restrict 6-characters username for free users
   const handleOnchangeUserName = (e) => {
     const value = e.target.value;
     if (value.length > 6 && !isSubscribe) {
@@ -293,6 +283,15 @@ function UserProfile() {
     } else {
       setPublicUserName(e.target.value);
     }
+  };
+  const handleCancel = () => {
+    setEditMode(false);
+    SetName(localStorage.getItem("username"));
+    SetPhone(UserProfile && UserProfile.phone);
+    setImage(localStorage.getItem("profileImg"));
+    setPublicUserName(extendUser && extendUser?.[0]?.UserName);
+    setCompany(extendUser && extendUser?.[0]?.Company);
+    setJobTitle(extendUser?.[0]?.JobTitle);
   };
   return (
     <React.Fragment>
@@ -450,22 +449,37 @@ function UserProfile() {
                   )}
                 </span>
               </li>
-              {/* {!isEnableSubscription && ( */}
-              <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                <span className="font-semibold">Public profile:</span>
-                <div className="flex items-center">
-                  <span>opensign.me/</span>
-
-                  <input
-                    onChange={handleOnchangeUserName}
-                    value={publicUserName}
-                    disabled={!editmode}
-                    placeholder="enter user name"
-                    className="border-[1px] border-gray-200 rounded-[3px]"
-                  />
-                </div>
-              </li>
-              {/* )} */}
+              {!isEnableSubscription && (
+                <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
+                  <span className="font-semibold">
+                    Public profile :{" "}
+                    <Tooltip
+                      message={`this is your public URL. Copy or share it
+                   with the signer, and you will be able to see
+                   all your publicly set templates.`}
+                    />
+                  </span>
+                  <div className="flex items-center">
+                    <span>opensign.me/</span>
+                    {editmode ? (
+                      <input
+                        onChange={handleOnchangeUserName}
+                        value={publicUserName}
+                        disabled={!editmode}
+                        placeholder="enter user name"
+                        className="border-[1px] border-gray-200 rounded-[3px]"
+                      />
+                    ) : (
+                      <input
+                        value={extendUser?.[0]?.UserName}
+                        disabled
+                        placeholder="enter user name"
+                        className="border-[1px] border-gray-200 rounded-[3px]"
+                      />
+                    )}
+                  </div>
+                </li>
+              )}
               <li className="border-y-[1px] border-gray-300 break-all">
                 <div className="flex justify-between items-center py-2">
                   <span
@@ -536,7 +550,7 @@ function UserProfile() {
                 type="button"
                 onClick={() => {
                   if (editmode) {
-                    setEditMode(false);
+                    handleCancel();
                   } else {
                     navigate("/changepassword");
                   }

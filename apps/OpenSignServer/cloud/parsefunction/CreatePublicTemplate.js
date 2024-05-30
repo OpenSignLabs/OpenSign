@@ -7,7 +7,7 @@ export default async function CreatePublicTemplate(request) {
       throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
     } else {
       const userId = request?.user && request?.user?.id;
-      if (userId) {
+      if (templateid) {
         const updateTemplate = new Parse.Object('contracts_Template');
         updateTemplate.id = templateid;
         if (ispublic) {
@@ -29,7 +29,7 @@ export default async function CreatePublicTemplate(request) {
           };
         }
       } else {
-        throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User does not exist.');
+        throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Please provide required parameters!');
       }
     }
   } catch (err) {

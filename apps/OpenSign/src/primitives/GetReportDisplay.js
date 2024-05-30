@@ -6,8 +6,8 @@ import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
 import {
   modalSubmitBtnColor,
-  modalCancelBtnColor
-  // isEnableSubscription
+  modalCancelBtnColor,
+  isEnableSubscription
 } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
@@ -49,12 +49,12 @@ const ReportTable = (props) => {
   const [templateDeatils, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
-  const [role, setRole] = useState([]);
   const [selectedPublicRole, setSelectedPublicRole] = useState("");
   const [isCelebration, setIsCelebration] = useState(false);
+  const [currentLists, setCurrentLists] = useState([]);
   const [isPublic, setIsPublic] = useState({});
   const [isPublicProfile, setIsPublicProfile] = useState({});
-  const [publicUserName, setIsPublicUserName] = useState("raktima");
+  const [publicUserName, setIsPublicUserName] = useState("");
   const [isViewShare, setIsViewShare] = useState({});
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
@@ -246,8 +246,19 @@ const ReportTable = (props) => {
   // Get current list
   const indexOfLastDoc = currentPage * props.docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - props.docPerPage;
-  // `currentLists` is total record render on current page
-  const currentLists = props.List?.slice(indexOfFirstDoc, indexOfLastDoc);
+  useEffect(() => {
+    // `currentLists` is total record render on current page
+    const currentList = props.List?.slice(indexOfFirstDoc, indexOfLastDoc);
+    //check public template and save in a object to show public and private template
+    setIsPublic(
+      currentList.reduce((acc, item) => {
+        acc[item.objectId] = item?.IsPublic || false;
+        return acc;
+      }, {})
+    );
+    setCurrentLists(currentList);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [indexOfLastDoc, indexOfFirstDoc]);
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
@@ -309,12 +320,15 @@ const ReportTable = (props) => {
       setActLoader({});
     }
   };
-  const handleClose = () => {
+  const handleClose = (item) => {
     setIsRevoke({});
     setIsDeleteModal({});
     setIsMakePublic({});
     setSelectedPublicRole("");
-    setIsPublic({});
+    setIsPublic((prevStates) => ({
+      ...prevStates,
+      [item.objectId]: !prevStates[item.objectId]
+    }));
     setIsPublicProfile({});
   };
 
@@ -706,7 +720,7 @@ const ReportTable = (props) => {
 
   //function to make template public and set public role
   const handlePublicTemplate = async (item) => {
-    if (selectedPublicRole) {
+    if (selectedPublicRole || !isPublic[item.objectId]) {
       setActLoader({ [item.objectId]: true });
       setIsMakePublic(false);
       try {
@@ -740,7 +754,7 @@ const ReportTable = (props) => {
           setActLoader({});
         }
       } catch (e) {
-        console.log("save public template error", e);
+        console.log("error in createpublictemplate", e);
       }
     } else {
       setIsAlert(true);
@@ -764,16 +778,15 @@ const ReportTable = (props) => {
       setIsPublicUserName(extendUser[0]?.UserName);
       //condition to check user have public url or not
       if (userName) {
-        setIsPublic({ [item.objectId]: e.target.checked });
-        const getRole = [];
-        getPlaceholder.map((data) => {
-          getRole.push(data.Role);
-        });
-        //condiiton to handle role length if only one then set it default selected role
-        if (getRole.length === 1) {
-          setSelectedPublicRole(getRole[0]);
+        setIsPublic((prevStates) => ({
+          ...prevStates,
+          [item.objectId]: e.target.checked
+        }));
+        const getPlaceholder = item?.Placeholders;
+        if (getPlaceholder.length === 1) {
+          setSelectedPublicRole(getPlaceholder[0]?.Role);
         }
-        setRole(getRole);
+
         setIsMakePublic({ [item.objectId]: true });
       } else {
         setIsPublicProfile({ [item.objectId]: true });
@@ -788,7 +801,7 @@ const ReportTable = (props) => {
     }
   };
 
-  //function to copy public profile link
+  //function to copy public profile links
   const copytoProfileLink = () => {
     const url = `https://opensign.me/${publicUserName}`;
     copytoData(url);
@@ -862,8 +875,7 @@ const ReportTable = (props) => {
               {props.actions?.length > 0 && (
                 <th className="px-4 py-2 font-thin">Action</th>
               )}
-              {props.ReportName === "Templates" && (
-                // && !isEnableSubscription
+              {props.ReportName === "Templates" && !isEnableSubscription && (
                 <th className="px-4 py-2 font-thin">Public</th>
               )}
             </tr>
@@ -1305,165 +1317,170 @@ const ReportTable = (props) => {
                           </ModalUi>
                         )}
                       </td>
-                      {/* {!isEnableSubscription && ( */}
-                      <td className=" pl-[20px] py-2    ">
-                        {props.ReportName === "Templates" && (
-                          <div className="  flex flex-row-">
-                            <label
-                              className={
-                                "cursor-pointer relative inline-flex items-center mb-0"
-                              }
-                            >
-                              <input
-                                checked={
-                                  (isPublic && isPublic[item.objectId]) ||
-                                  item?.IsPublic ||
-                                  false
+                      {!isEnableSubscription && (
+                        <td className=" pl-[20px] py-2    ">
+                          {props.ReportName === "Templates" && (
+                            <div className="  flex flex-row-">
+                              <label
+                                className={
+                                  "cursor-pointer relative inline-flex items-center mb-0"
                                 }
-                                onChange={(e) => handlePublicChange(e, item)}
-                                type="checkbox"
-                                value=""
-                                className="sr-only peer"
-                              />
-                              <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
-                            </label>
-                          </div>
-                        )}
-                        {isMakePublic[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={"Make template public"}
-                            handleClose={() => {
-                              setIsMakePublic({});
-                              setSelectedPublicRole("");
-                              setIsPublic({});
-                            }}
-                          >
-                            <div className="m-[20px]">
-                              <div className="font-normal text-black">
-                                <p className="text-lg">
-                                  {" "}
-                                  {isPublic[item.objectId]
-                                    ? `Are you sure you want to make this template
-            public ?`
-                                    : `Are you sure you want to make this template
-              private ?`}
-                                </p>
-                                {isPublic[item.objectId] && (
-                                  <div className="flex mt-2 gap-2 md:items-center">
-                                    <p className="text-[15px]">
-                                      Public role :{" "}
-                                    </p>
-                                    {role.length > 1 ? (
-                                      <select
-                                        className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]"
-                                        name="textvalidate"
-                                        value={selectedPublicRole}
-                                        onChange={(e) =>
-                                          setSelectedPublicRole(e.target.value)
-                                        }
-                                      >
-                                        <option
-                                          disabled
-                                          style={{ fontSize: "13px" }}
-                                          value=""
-                                        >
-                                          Select...
-                                        </option>
-                                        {role.map((data, ind) => {
-                                          return (
-                                            <option
-                                              style={{ fontSize: "13px" }}
-                                              key={ind}
-                                              value={data}
-                                            >
-                                              {data}
-                                            </option>
-                                          );
-                                        })}
-                                      </select>
-                                    ) : (
-                                      <div className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]">
-                                        {role}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-
-                              <hr className="bg-[#ccc] mt-2 " />
-                              <div className="flex items-center mt-3 gap-2 text-white">
-                                <button
-                                  onClick={() => handlePublicTemplate(item)}
-                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-                                  style={{
-                                    backgroundColor: modalSubmitBtnColor
-                                  }}
-                                >
-                                  Submit
-                                </button>
-                                <button
-                                  onClick={handleClose}
-                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
-                                  style={{
-                                    backgroundColor: modalCancelBtnColor
-                                  }}
-                                >
-                                  No
-                                </button>
-                              </div>
+                              >
+                                <input
+                                  checked={isPublic[item.objectId]}
+                                  onChange={(e) => handlePublicChange(e, item)}
+                                  type="checkbox"
+                                  value=""
+                                  className="sr-only peer"
+                                />
+                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
+                              </label>
                             </div>
-                          </ModalUi>
-                        )}
-                        {isPublicProfile[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={"Public url"}
-                            handleClose={() => {
-                              setIsPublicProfile({});
-                            }}
-                            reduceWidth={"md:min-w-[440px] md:max-w-[400px]"}
-                          >
-                            <div className="m-[20px]">
-                              {publicUserName ? (
+                          )}
+                          {isMakePublic[item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={
+                                isPublic[item.objectId]
+                                  ? "Make template public"
+                                  : "Make template private"
+                              }
+                              handleClose={() => {
+                                setIsMakePublic({});
+                                setSelectedPublicRole("");
+                                setIsPublic((prevStates) => ({
+                                  ...prevStates,
+                                  [item.objectId]: !prevStates[item.objectId]
+                                }));
+                              }}
+                            >
+                              <div className="m-[20px]">
                                 <div className="font-normal text-black">
-                                  <p>
-                                    Here’s your public URL. Copy or share it
-                                    with the signer, and you will be able to see
-                                    all your publicly set templates.
+                                  <p className="text-lg">
+                                    {" "}
+                                    {isPublic[item.objectId]
+                                      ? `Are you sure you want tof make this templat public ?`
+                                      : `Are you sure you want to make this template private? This will remove it from your public profile ?`}
                                   </p>
-                                  <div className=" flex items-center gap-5 mt-2  p-[2px] w-[75%]">
-                                    <span className="font-bold">
-                                      Public Url :{" "}
-                                    </span>
-                                    <span
-                                      onClick={() => copytoProfileLink()}
-                                      className="underline underline-offset-2 cursor-pointer"
-                                    >{`https://opensign.me/${publicUserName}`}</span>
-                                  </div>
+                                  {isPublic[item.objectId] && (
+                                    <div className="flex mt-2 gap-2 md:items-center">
+                                      <p className="text-[15px]">
+                                        Public role :{" "}
+                                      </p>
+                                      {item?.Placeholders?.length > 1 ? (
+                                        <select
+                                          className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]"
+                                          name="textvalidate"
+                                          value={selectedPublicRole}
+                                          onChange={(e) =>
+                                            setSelectedPublicRole(
+                                              e.target.value
+                                            )
+                                          }
+                                        >
+                                          <option
+                                            disabled
+                                            style={{ fontSize: "13px" }}
+                                            value=""
+                                          >
+                                            Select...
+                                          </option>
+                                          {item?.Placeholders.map(
+                                            (data, ind) => {
+                                              return (
+                                                <option
+                                                  style={{ fontSize: "13px" }}
+                                                  key={ind}
+                                                  value={data?.Role}
+                                                >
+                                                  {data?.Role}
+                                                </option>
+                                              );
+                                            }
+                                          )}
+                                        </select>
+                                      ) : (
+                                        <div className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]">
+                                          {item?.Placeholders[0]?.Role}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
-                              ) : (
-                                <div className="font-normal text-black">
-                                  <p>
-                                    Please add your public URL, and you will be
-                                    able to make a public template.
-                                  </p>
+
+                                <hr className="bg-[#ccc] mt-2 " />
+                                <div className="flex items-center mt-3 gap-2 text-white">
                                   <button
-                                    className="px-4 py-1.5 mt-3 text-white rounded shadow-md text-center focus:outline-none "
+                                    onClick={() => handlePublicTemplate(item)}
+                                    className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
                                     style={{
                                       backgroundColor: modalSubmitBtnColor
                                     }}
-                                    onClick={() => navigate("/profile")}
                                   >
-                                    Add
+                                    Submit
+                                  </button>
+                                  <button
+                                    onClick={() => handleClose(item)}
+                                    className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                    style={{
+                                      backgroundColor: modalCancelBtnColor
+                                    }}
+                                  >
+                                    No
                                   </button>
                                 </div>
-                              )}
-                            </div>
-                          </ModalUi>
-                        )}
-                      </td>
-                      {/* )} */}
+                              </div>
+                            </ModalUi>
+                          )}
+                          {isPublicProfile[item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={"Public URL"}
+                              handleClose={() => {
+                                setIsPublicProfile({});
+                              }}
+                              reduceWidth={"md:min-w-[440px] md:max-w-[400px]"}
+                            >
+                              <div className="m-[20px]">
+                                {publicUserName ? (
+                                  <div className="font-normal text-black">
+                                    <p>
+                                      Here’s your public URL. Copy or share it
+                                      with the signer, and you will be able to
+                                      see all your publicly set templates.
+                                    </p>
+                                    <div className=" flex items-center gap-5 mt-2  p-[2px] w-[75%]">
+                                      <span className="font-bold">
+                                        Public URL :{" "}
+                                      </span>
+                                      <span
+                                        onClick={() => copytoProfileLink()}
+                                        className="underline underline-offset-2 cursor-pointer"
+                                      >{`https://opensign.me/${publicUserName}`}</span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="font-normal text-black">
+                                    <p>
+                                      Please add your public URL, and you will
+                                      be able to make a public template.
+                                    </p>
+                                    <button
+                                      className="px-4 py-1.5 mt-3 text-white rounded shadow-md text-center focus:outline-none "
+                                      style={{
+                                        backgroundColor: modalSubmitBtnColor
+                                      }}
+                                      onClick={() => navigate("/profile")}
+                                    >
+                                      Add
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </ModalUi>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   )
                 )}
