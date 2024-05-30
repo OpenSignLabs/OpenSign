@@ -449,7 +449,7 @@ function UserProfile() {
                   )}
                 </span>
               </li>
-              {!isEnableSubscription && (
+              {isEnableSubscription && (
                 <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
                   <span className="font-semibold">
                     Public profile :{" "}
