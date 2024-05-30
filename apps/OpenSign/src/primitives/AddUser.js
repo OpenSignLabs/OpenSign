@@ -21,7 +21,7 @@ const AddUser = (props) => {
     );
     if (savedUserDetails && addYourself) {
       setName(savedUserDetails.name);
-      setPhone(savedUserDetails.phone);
+      setPhone(savedUserDetails?.phone || "");
       setEmail(savedUserDetails.email);
     }
   }, [addYourself]);
@@ -68,8 +68,10 @@ const AddUser = (props) => {
         _user.set("name", name);
         _user.set("username", email);
         _user.set("email", email);
-        _user.set("phone", phone);
-        _user.set("password", phone);
+        if (phone) {
+          _user.set("phone", phone);
+        }
+        _user.set("email", email);
 
         const user = await _user.save();
         if (user) {
@@ -245,10 +247,10 @@ const AddUser = (props) => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value?.toLowerCase())}
               required
               disabled={addYourself}
-              className="addUserInput"
+              className="addUserInput lowercase"
             />
           </div>
           <div className="form-section">

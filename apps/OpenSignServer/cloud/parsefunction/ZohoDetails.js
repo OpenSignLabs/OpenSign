@@ -47,7 +47,7 @@ export default async function ZohoDetails(request) {
         userData.data.data.subscription.customer.cd_job_title) ||
       '';
     const resData = {
-      phone: userData.data.data.subscription.contactpersons[0].mobile,
+      phone: userData.data.data.subscription.contactpersons[0]?.mobile || '',
       name: first_name + ' ' + last_name,
       email: userData.data.data.subscription.contactpersons[0].email,
       nextBillingDate: userData.data.data.subscription.next_billing_at,
