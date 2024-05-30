@@ -748,13 +748,28 @@ const ReportTable = (props) => {
               type: "success",
               message: "You have successfully made the template private."
             });
-
             setSelectedPublicRole("");
           }
+          const updateList = props.List.map((x) =>
+            x.objectId === item.objectId
+              ? { ...x, IsPublic: isPublic[item.objectId] }
+              : x
+          );
+          props.setList(updateList);
           setActLoader({});
         }
       } catch (e) {
         console.log("error in createpublictemplate", e);
+        setIsAlert(true);
+        setAlertMsg({
+          type: "danger",
+          message: "Something went wrong, Please try again later!"
+        });
+        setTimeout(() => setIsAlert(false), 1500);
+        setIsPublic((prevStates) => ({
+          ...prevStates,
+          [item.objectId]: !prevStates[item.objectId]
+        }));
       }
     } else {
       setIsAlert(true);
@@ -765,6 +780,7 @@ const ReportTable = (props) => {
       setTimeout(() => setIsAlert(false), 1500);
     }
   };
+
   const handleViewSigners = (item) => {
     setIsViewShare({ [item.objectId]: true });
   };
@@ -1327,7 +1343,7 @@ const ReportTable = (props) => {
                                 }
                               >
                                 <input
-                                  checked={isPublic[item.objectId]}
+                                  checked={isPublic?.[item.objectId]}
                                   onChange={(e) => handlePublicChange(e, item)}
                                   type="checkbox"
                                   value=""
