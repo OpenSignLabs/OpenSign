@@ -1,6 +1,6 @@
 import React from "react";
 import SelectSigners from "../components/shared/fields/SelectSigners";
-import AddUser from "./AddUser";
+import AddContact from "./AddContact";
 import ModalUi from "./ModalUi";
 
 const LinkUserModal = (props) => {
@@ -43,7 +43,7 @@ const LinkUserModal = (props) => {
           }}
         ></span>
       </div>
-      <AddUser details={props.handleAddUser} closePopup={props.closePopup} />
+      <AddContact details={props.handleAddUser} closePopup={props.closePopup} />
     </ModalUi>
   );
 };
