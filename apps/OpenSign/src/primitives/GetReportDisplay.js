@@ -803,7 +803,7 @@ const ReportTable = (props) => {
 
   //function to copy public profile links
   const copytoProfileLink = () => {
-    const url = `https://opensign.me/${publicUserName}`;
+    const url = `https://opensign-me.vercel.app/${publicUserName}`;
     copytoData(url);
     setIsAlert(true);
     setAlertMsg({

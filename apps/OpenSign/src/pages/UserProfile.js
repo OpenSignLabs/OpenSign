@@ -460,7 +460,7 @@ function UserProfile() {
                     />
                   </span>
                   <div className="flex items-center">
-                    <span>opensign.me/</span>
+                    <span>opensign-me.vercel.app/</span>
                     {editmode ? (
                       <input
                         onChange={handleOnchangeUserName}
