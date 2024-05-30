@@ -891,7 +891,7 @@ const ReportTable = (props) => {
               {props.actions?.length > 0 && (
                 <th className="px-4 py-2 font-thin">Action</th>
               )}
-              {props.ReportName === "Templates" && !isEnableSubscription && (
+              {props.ReportName === "Templates" && isEnableSubscription && (
                 <th className="px-4 py-2 font-thin">Public</th>
               )}
             </tr>
@@ -1333,7 +1333,7 @@ const ReportTable = (props) => {
                           </ModalUi>
                         )}
                       </td>
-                      {!isEnableSubscription && (
+                      {isEnableSubscription && (
                         <td className=" pl-[20px] py-2    ">
                           {props.ReportName === "Templates" && (
                             <div className="  flex flex-row-">
