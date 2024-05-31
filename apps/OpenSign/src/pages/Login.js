@@ -1041,10 +1041,15 @@ function Login() {
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
   };
+
+  // `handleSignInWithSSO` is trigger when user click sign in with sso and open sso authorize endpoint
   const handleSignInWithSSO = () => {
     if (state?.email) {
+      const encodedEmail = encodeURIComponent(state.email);
+      const clientUrl = window.location.origin;
       openInNewTab(
-        `https://osl-jacksonv2.vercel.app/api/oauth/authorize?response_type=code&provider=saml&tenant=Okta-dev-nxglabs-in&product=OpenSign&redirect_uri=http://localhost:3000/sso&state=${state.email}`
+        `https://osl-jacksonv2.vercel.app/api/oauth/authorize?response_type=code&provider=saml&tenant=Okta-dev-nxglabs-in&product=OpenSign&redirect_uri=${clientUrl}/sso&state=${encodedEmail}`,
+        "_self"
       );
     } else {
       alert("Please provide email.");

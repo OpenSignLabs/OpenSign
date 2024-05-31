@@ -1,21 +1,22 @@
 import axios from 'axios';
-
+import dotenv from 'dotenv';
+dotenv.config();
+const ssoApiUrl = process.env.SSO_API_URL || 'https://osl-jacksonv2.vercel.app/api';
 export const SSOAuth = {
   // Returns a promise that fulfills if this user mail is valid.
   validateAuthData: async authData => {
     try {
-      const response = await axios.get('https://osl-jacksonv2.vercel.app/api/oauth/userinfo', {
+      const response = await axios.get(ssoApiUrl + '/oauth/userinfo', {
         headers: {
           Authorization: `Bearer ${authData.access_token}`,
         },
       });
-      //   console.log('response.data.id ', response.data.email);
-      //   console.log('authData.id', authData.id);
       if (response.data && response.data.id && response.data.email === authData.id) {
         return;
       }
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'SSO auth is invalid for this user.');
     } catch (error) {
+      console.log('error in sso adapter', error?.response);
       throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'SSO auth is invalid for this user.');
     }
   },
