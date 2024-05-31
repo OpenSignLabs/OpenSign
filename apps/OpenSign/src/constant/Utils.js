@@ -12,8 +12,12 @@ export const isMobile = window.innerWidth < 767;
 export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
-export const openInNewTab = (url) => {
-  window.open(url, "_blank", "noopener,noreferrer");
+export const openInNewTab = (url, target) => {
+  if (target) {
+    window.open(url, target, "noopener,noreferrer");
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
 };
 
 export async function fetchSubscription(

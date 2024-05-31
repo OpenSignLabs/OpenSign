@@ -132,7 +132,9 @@ export default async function usersignup(request) {
         newObj.set('JobTitle', userDetails.jobTitle);
       }
       const extRes = await newObj.save(null, { useMasterKey: true });
-      await saveSubscription(extRes.id, user.id, tenantRes.id, subscription);
+      if (subscription) {
+        await saveSubscription(extRes.id, user.id, tenantRes.id, subscription);
+      }
       return { message: 'User sign up', sessionToken: user.sessionToken };
     }
   } catch (err) {
