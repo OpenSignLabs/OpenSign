@@ -45,6 +45,7 @@ function Login() {
   });
   const [isModal, setIsModal] = useState(false);
   const [image, setImage] = useState();
+  const [isLoginSSO, setIsLoginSSO] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
@@ -1045,10 +1046,14 @@ function Login() {
   // `handleSignInWithSSO` is trigger when user click sign in with sso and open sso authorize endpoint
   const handleSignInWithSSO = () => {
     if (state?.email) {
+      setIsLoginSSO(true);
       const encodedEmail = encodeURIComponent(state.email);
       const clientUrl = window.location.origin;
+      const domain = state.email.split("@")?.pop();
+      const ssoApiUrl =
+        process.env.SSO_API_URL || "https://sso.opensignlabs.com/api";
       openInNewTab(
-        `https://osl-jacksonv2.vercel.app/api/oauth/authorize?response_type=code&provider=saml&tenant=Okta-dev-nxglabs-in&product=OpenSign&redirect_uri=${clientUrl}/sso&state=${encodedEmail}`,
+        `${ssoApiUrl}/oauth/authorize?response_type=code&provider=saml&tenant=${domain}&product=OpenSign&redirect_uri=${clientUrl}/sso&state=${encodedEmail}`,
         "_self"
       );
     } else {
@@ -1122,34 +1127,40 @@ function Login() {
                           required
                         />
                         <hr className="my-2 border-none" />
-                        <label className="block text-xs" htmlFor="password">
-                          Password
-                        </label>
-                        <div className="relative">
-                          <input
-                            id="password"
-                            type={state.passwordVisible ? "text" : "password"}
-                            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
-                            name="password"
-                            value={state.password}
-                            onChange={handleChange}
-                            required
-                          />
-                          <span
-                            className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
-                              state.passwordVisible
-                                ? "text-[#007bff]"
-                                : "text-black"
-                            }`}
-                            onClick={togglePasswordVisibility}
-                          >
-                            {state.passwordVisible ? (
-                              <i className="fa fa-eye-slash text-xs pb-1" /> // Close eye icon
-                            ) : (
-                              <i className="fa fa-eye text-xs pb-1 " /> // Open eye icon
-                            )}
-                          </span>
-                        </div>
+                        {isLoginSSO && (
+                          <>
+                            <label className="block text-xs" htmlFor="password">
+                              Password
+                            </label>
+                            <div className="relative">
+                              <input
+                                id="password"
+                                type={
+                                  state.passwordVisible ? "text" : "password"
+                                }
+                                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
+                                name="password"
+                                value={state.password}
+                                onChange={handleChange}
+                                required
+                              />
+                              <span
+                                className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
+                                  state.passwordVisible
+                                    ? "text-[#007bff]"
+                                    : "text-black"
+                                }`}
+                                onClick={togglePasswordVisibility}
+                              >
+                                {state.passwordVisible ? (
+                                  <i className="fa fa-eye-slash text-xs pb-1" /> // Close eye icon
+                                ) : (
+                                  <i className="fa fa-eye text-xs pb-1 " /> // Open eye icon
+                                )}
+                              </span>
+                            </div>
+                          </>
+                        )}
                         <div className="relative mt-1">
                           <NavLink
                             to="/forgetpassword"
@@ -1209,12 +1220,14 @@ function Login() {
                         setThirdpartyLoader={setThirdpartyLoader}
                       />
                     )}
-                    <div
-                      className="cursor-pointer border-[1px] border-gray-300 rounded px-[40px] py-2 font-semibold text-sm hover:border-[#d2e3fc] hover:bg-[#ecf3feb7]"
-                      onClick={() => handleSignInWithSSO()}
-                    >
-                      Sign in with SSO
-                    </div>
+                    {isEnableSubscription && (
+                      <div
+                        className="cursor-pointer border-[1px] border-gray-300 rounded px-[40px] py-2 font-semibold text-sm hover:border-[#d2e3fc] hover:bg-[#ecf3feb7]"
+                        onClick={() => handleSignInWithSSO()}
+                      >
+                        Sign in with SSO
+                      </div>
+                    )}
                   </div>
                 </div>
                 {width >= 768 && (

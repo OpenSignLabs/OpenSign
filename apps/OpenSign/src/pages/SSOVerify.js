@@ -12,13 +12,14 @@ import { fetchSubscription } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import ModalUi from "../primitives/ModalUi";
+import loader from "../assets/images/loader2.gif";
 
 const SSOVerify = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isModal, setIsModal] = useState(false);
-  const [ssoErrMsg, setSsoErrMsg] = useState("Verifying SSO...");
+  const [message, setMessage] = useState("Verifying SSO...");
   const [isLoader, setIsLoader] = useState(false);
   const [userDetails, setUserDetails] = useState({
     name: "",
@@ -48,7 +49,7 @@ const SSOVerify = () => {
       // `checkExtUser` checks if the user is present in the extended class `contracts_Users` and if not, initiates the new user flow
       await checkExtUser(ssosign);
     } catch (err) {
-      setSsoErrMsg(err.message);
+      setMessage("Error: " + err.message);
       console.log("err", err.message);
     }
   };
@@ -81,7 +82,7 @@ const SSOVerify = () => {
       }
     } catch (err) {
       console.log("Err in isextenduser or getuserdetails cloud function", err);
-      alert(err.message);
+      setMessage("Error: " + err.message);
     }
   };
   // `handleSubmitbtn` is used to create a user in the extended class
@@ -124,12 +125,12 @@ const SSOVerify = () => {
         } catch (err) {
           console.log("error in usersignup", err);
           localStorage.removeItem("accesstoken");
-          alert("something went wrong, please try again later.");
+          alert("Something went wrong.");
           setIsLoader(false);
         }
       } else {
         localStorage.removeItem("accesstoken");
-        alert("Internal server error !");
+        alert("Internal server error.");
         setIsLoader(false);
       }
     } else {
@@ -251,13 +252,16 @@ const SSOVerify = () => {
                 }
               } catch (err) {
                 alert("user not exist.");
+                setMessage("Error: User not exist.");
                 console.log("err in get extUser", err);
               }
             } else {
               alert("Role does not exists.");
+              setMessage("Error: Role does not exists.");
             }
           } else {
             alert("Role does not exists.");
+            setMessage("Error: Role does not exists.");
           }
         } catch (err) {
           console.log("err in usergroups", err);
@@ -286,8 +290,11 @@ const SSOVerify = () => {
   }
   return (
     <div>
-      <div className="w-full h-screen flex justify-center items-center text-sm md:text-xl ">
-        {ssoErrMsg}
+      <div className="w-full h-screen flex flex-col justify-center items-center text-sm md:text-xl ">
+        {message === "Verifying SSO..." && (
+          <img alt="loader" src={loader} className="w-[80px] h-[80px]" />
+        )}
+        <div className="text-[gray]">{message}</div>
       </div>
       <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>
         <div className="relative">
