@@ -1127,7 +1127,7 @@ function Login() {
                           required
                         />
                         <hr className="my-2 border-none" />
-                        {isLoginSSO && (
+                        {!isLoginSSO && (
                           <>
                             <label className="block text-xs" htmlFor="password">
                               Password
