@@ -44,7 +44,9 @@ const Header = ({ showSidebar }) => {
 
   const closeDropdown = () => {
     setIsOpen(false);
-    Parse.User.logOut();
+    if (Parse?.User?.current()) {
+      Parse.User.logOut();
+    }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
     let appName = localStorage.getItem("appName");

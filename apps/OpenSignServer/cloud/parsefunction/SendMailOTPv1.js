@@ -39,7 +39,7 @@ async function sendMailOTPv1(request) {
             code +
             '</p></div> </div> </div></body></html>',
         });
-        console.log('OTP sent');
+        console.log('OTP sent', code);
         if (request.params?.docId) {
           const extUserId = await getDocument(request.params?.docId);
           if (extUserId) {
