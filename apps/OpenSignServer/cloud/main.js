@@ -43,6 +43,7 @@ import CreatePublicTemplate from './parsefunction/CreatePublicTemplate.js';
 import GetPublicUserName from './parsefunction/GetPublicUserName.js';
 import GetPublicTemplate from './parsefunction/GetPublicTemplate.js';
 import ssoSignin from './parsefunction/ssoSignin.js';
+import isextenduser from './parsefunction/isextenduser.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -96,3 +97,4 @@ Parse.Cloud.define('createpublictemplate', CreatePublicTemplate);
 Parse.Cloud.define('getpublicusername', GetPublicUserName);
 Parse.Cloud.define('getpublictemplate', GetPublicTemplate);
 Parse.Cloud.define('ssosign', ssoSignin);
+Parse.Cloud.define('isextenduser', isextenduser);
