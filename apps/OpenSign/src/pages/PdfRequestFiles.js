@@ -41,6 +41,7 @@ import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import { appInfo } from "../constant/appinfo";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -164,7 +165,11 @@ function PdfRequestFiles() {
   const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
-    await handleSendOTP(Parse.User.current().getEmail());
+    const localuser = localStorage.getItem(
+      `Parse/${appInfo.appId}/currentUser`
+    );
+    const currentUser = JSON.parse(JSON.stringify(localuser));
+    await handleSendOTP(currentUser?.email);
     setOtpLoader(false);
     alert("OTP sent on you email");
   };
@@ -172,10 +177,14 @@ function PdfRequestFiles() {
   const handleVerifyEmail = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
+    const localuser = localStorage.getItem(
+      `Parse/${appInfo.appId}/currentUser`
+    );
+    const currentUser = JSON.parse(JSON.stringify(localuser));
     try {
       const resEmail = await Parse.Cloud.run("verifyemail", {
         otp: otp,
-        email: Parse.User.current().getEmail()
+        email: currentUser?.email
       });
       if (resEmail?.message === "Email is verified.") {
         setIsEmailVerified(true);
@@ -196,7 +205,11 @@ function PdfRequestFiles() {
   //`handleVerifyBtn` function is used to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
-    await handleSendOTP(Parse.User.current().getEmail());
+    const localuser = localStorage.getItem(
+      `Parse/${appInfo.appId}/currentUser`
+    );
+    const currentUser = JSON.parse(JSON.stringify(localuser));
+    await handleSendOTP(currentUser?.email);
   };
   async function checkIsSubscribed(extUserId, contactId) {
     const isGuestSign = location.pathname.includes("/load/") || false;
@@ -460,8 +473,11 @@ function PdfRequestFiles() {
         } else {
           //else condition to check current user exist in contracts_Users class and check tour message status
           //if not then check user exist in contracts_Contactbook class and check tour message status
-          const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
-          const currentUserEmail = currentUser.email;
+          const localuser = localStorage.getItem(
+            `Parse/${appInfo.appId}/currentUser`
+          );
+          const currentUser = JSON.parse(JSON.stringify(localuser));
+          const currentUserEmail = currentUser?.email;
           const res = await contractUsers(currentUserEmail);
           if (res === "Error: Something went wrong!") {
             setHandleError("Error: Something went wrong!");
