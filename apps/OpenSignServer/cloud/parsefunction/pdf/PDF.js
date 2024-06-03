@@ -278,7 +278,7 @@ const sendMailsaveCertifcate = async (doc, P12Buffer, url, isCustomMail, mailPro
     },
   });
   // used in API only
-  if (doc.IsSendMail && doc.IsSendMail === false) {
+  if (doc.IsSendMail === false) {
     console.log("don't send mail");
   } else {
     const mailObj = {

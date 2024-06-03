@@ -36,7 +36,7 @@ async function sendDoctoWebhook(doc, WebhookUrl, userId) {
         }
       })
       .catch(err => {
-        console.log('Err send data to webhook', err);
+        console.log('Err send data to webhook', err?.message);
         try {
           const webhook = new Parse.Object('contracts_Webhook');
           webhook.set('Log', err?.status);
@@ -47,7 +47,7 @@ async function sendDoctoWebhook(doc, WebhookUrl, userId) {
           });
           webhook.save(null, { useMasterKey: true });
         } catch (err) {
-          console.log('err save in contracts_Webhook', err);
+          console.log('err save in contracts_Webhook', err?.message);
         }
       });
     // console.log('res ', res.data);
@@ -269,9 +269,6 @@ export default async function createDocumentwithCoordinate(request, response) {
           year: 'numeric',
         });
         let sender = parseExtUser.Email;
-        const serverUrl = process.env.SERVER_URL;
-        const newServer = serverUrl.replaceAll('/', '%2F');
-        const serverParams = `${newServer}%2F&${process.env.APP_ID}&contracts`;
         if (send_email === false) {
           console.log("don't send mail");
         } else {
