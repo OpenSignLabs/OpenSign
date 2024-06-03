@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
-    "@radix-ui/themes": "^2.0.3",
+    "@radix-ui/themes": "^3.0.5",
     "@react-pdf/renderer": "^3.4.4",
     "@reduxjs/toolkit": "^2.2.5",
     "axios": "^1.7.2",
@@ -29,7 +29,7 @@
     "react-helmet": "^6.1.0",
     "react-konva": "^18.2.10",
     "react-modal": "^3.16.1",
-    "react-pdf": "^8.0.2",
+    "react-pdf": "^9.0.0",
     "react-quill": "^2.0.0",
     "react-redux": "^9.1.2",
     "react-rnd": "^10.4.10",
