@@ -1045,19 +1045,21 @@ function Login() {
 
   // `handleSignInWithSSO` is trigger when user click sign in with sso and open sso authorize endpoint
   const handleSignInWithSSO = () => {
-    if (state?.email) {
-      setIsLoginSSO(true);
-      const encodedEmail = encodeURIComponent(state.email);
-      const clientUrl = window.location.origin;
-      const domain = state.email.split("@")?.pop();
-      const ssoApiUrl =
-        process.env.SSO_API_URL || "https://sso.opensignlabs.com/api";
-      openInNewTab(
-        `${ssoApiUrl}/oauth/authorize?response_type=code&provider=saml&tenant=${domain}&product=OpenSign&redirect_uri=${clientUrl}/sso&state=${encodedEmail}`,
-        "_self"
-      );
-    } else {
-      alert("Please provide email.");
+    if (isLoginSSO === false) {
+      if (state?.email) {
+        setIsLoginSSO(true);
+        const encodedEmail = encodeURIComponent(state.email);
+        const clientUrl = window.location.origin;
+        const domain = state.email.split("@")?.pop();
+        const ssoApiUrl =
+          process.env.SSO_API_URL || "https://sso.opensignlabs.com/api";
+        openInNewTab(
+          `${ssoApiUrl}/oauth/authorize?response_type=code&provider=saml&tenant=${domain}&product=OpenSign&redirect_uri=${clientUrl}/sso&state=${encodedEmail}`,
+          "_self"
+        );
+      } else {
+        alert("Please provide email.");
+      }
     }
   };
   return (
