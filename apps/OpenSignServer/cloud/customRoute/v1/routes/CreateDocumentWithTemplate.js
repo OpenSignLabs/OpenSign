@@ -208,9 +208,6 @@ export default async function createDocumentWithTemplate(request, response) {
             });
             let sender = template.ExtUserPtr.Email;
             let sendMail;
-            const serverUrl = process.env.SERVER_URL;
-            const newServer = serverUrl.replaceAll('/', '%2F');
-            const serverParams = `${newServer}%2F&${process.env.APP_ID}&contracts`;
             if (send_email === false) {
               console.log("don't send mail");
             } else {
