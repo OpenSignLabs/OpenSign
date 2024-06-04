@@ -3,14 +3,12 @@ sidebar_position: 1
 title: Sign yourself
 ---
 
-# OpenSign™ Sign yourself interface
+# How to digitally sign a document using OpenSign™ for free?
 
-This feature lets you sign documents that dont need to be sent to anybody.
-Navigate to "Sign yourself" from main menu or  by clicking the button on the Dashboard
+OpenSign lets you digitally sign documents that dont need to be sent to anybody with ease. This feature is available in all the plans including **OpenSign free**. Navigate to "Sign yourself" from main menu or  by clicking the button on the Dashboard
 
-# How to Sign a Document for yourself with OpenSign™?
+<img width="786" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/537f10ce-f688-4106-8cd6-142505bbcde4" />
 
-<img width="750" alt="image" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/ebcdc08e-81be-4ba2-9e02-b199014b5946" />
 
 ### Step 1: Uploading Your Document
 
