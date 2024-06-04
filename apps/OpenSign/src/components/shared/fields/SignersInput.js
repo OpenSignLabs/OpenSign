@@ -111,7 +111,9 @@ const SignersInput = (props) => {
         <span className="absolute ml-1 text-xs z-50">
           <Tooltip
             id={"signer-tooltip"}
-            message={"Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."}
+            message={
+              "Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."
+            }
           />
         </span>
       </label>
@@ -133,16 +135,7 @@ const SignersInput = (props) => {
             setIsModel(true);
             openModal();
           }}
-          style={{
-            cursor: "pointer",
-            borderRadius: 4,
-            border: "1px solid #ccc",
-            minHeight: 38,
-            minWidth: 48,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
+          className="cursor-pointer rounded border-[1px] border-[#ccc] min-h-[38px] min-w-[48px] flex justify-center items-center"
         >
           <i className="fas fa-plus"></i>
         </div>

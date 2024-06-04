@@ -880,19 +880,20 @@ const ReportTable = (props) => {
             </div>
           )}
         </div>
-        <table className="table-auto w-full border-collapse">
+        <table className="optable optable-zebra">
+          {/* <table className="table-auto w-full border-collapse"> */}
           <thead className="text-[14px]">
             <tr className="border-y-[1px]">
               {props.heading?.map((item, index) => (
                 <React.Fragment key={index}>
-                  <th className="px-4 py-2 font-thin">{item}</th>
+                  <th className="px-4 py-2">{item}</th>
                 </React.Fragment>
               ))}
-              {props.actions?.length > 0 && (
-                <th className="px-4 py-2 font-thin">Action</th>
-              )}
               {props.ReportName === "Templates" && isEnableSubscription && (
-                <th className="px-4 py-2 font-thin">Public</th>
+                <th className="px-4 py-2">Public</th>
+              )}
+              {props.actions?.length > 0 && (
+                <th className="px-4 py-2">Action</th>
               )}
             </tr>
           </thead>
@@ -903,7 +904,7 @@ const ReportTable = (props) => {
                   props.ReportName === "Contactbook" ? (
                     <tr className="border-y-[1px]" key={index}>
                       {props.heading.includes("Sr.No") && (
-                        <td className="px-4 py-2">{startIndex + index + 1}</td>
+                        <th className="px-4 py-2">{startIndex + index + 1}</th>
                       )}
                       <td className="px-4 py-2 font-semibold">{item?.Name} </td>
                       <td className="px-4 py-2">{item?.Email || "-"}</td>
@@ -965,7 +966,7 @@ const ReportTable = (props) => {
                   ) : (
                     <tr className="border-y-[1px]" key={index}>
                       {props.heading.includes("Sr.No") && (
-                        <td className="px-4 py-2">{startIndex + index + 1}</td>
+                        <th className="px-4 py-2">{startIndex + index + 1}</th>
                       )}
                       <td className="px-4 py-2 font-semibold w-56">
                         {item?.Name}{" "}
@@ -1003,6 +1004,174 @@ const ReportTable = (props) => {
                           "-"
                         )}
                       </td>
+                      {props.ReportName === "Templates" &&
+                        isEnableSubscription && (
+                          <td className=" pl-[20px] py-2">
+                            {props.ReportName === "Templates" && (
+                              <div className="flex flex-row-">
+                                <label
+                                  className={
+                                    "cursor-pointer relative inline-flex items-center mb-0"
+                                  }
+                                >
+                                  <input
+                                    checked={isPublic?.[item.objectId]}
+                                    onChange={(e) =>
+                                      handlePublicChange(e, item)
+                                    }
+                                    type="checkbox"
+                                    value=""
+                                    className="sr-only peer"
+                                  />
+                                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
+                                </label>
+                              </div>
+                            )}
+                            {isMakePublic[item.objectId] && (
+                              <ModalUi
+                                isOpen
+                                title={
+                                  isPublic[item.objectId]
+                                    ? "Make template public"
+                                    : "Make template private"
+                                }
+                                handleClose={() => {
+                                  setIsMakePublic({});
+                                  setSelectedPublicRole("");
+                                  setIsPublic((prevStates) => ({
+                                    ...prevStates,
+                                    [item.objectId]: !prevStates[item.objectId]
+                                  }));
+                                }}
+                              >
+                                <div className="m-[20px]">
+                                  <div className="font-normal text-black">
+                                    <p className="text-lg">
+                                      {" "}
+                                      {isPublic[item.objectId]
+                                        ? `Are you sure you want tof make this templat public ?`
+                                        : `Are you sure you want to make this template private? This will remove it from your public profile ?`}
+                                    </p>
+                                    {isPublic[item.objectId] && (
+                                      <div className="flex mt-2 gap-2 md:items-center">
+                                        <p className="text-[15px]">
+                                          Public role :{" "}
+                                        </p>
+                                        {item?.Placeholders?.length > 1 ? (
+                                          <select
+                                            className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]"
+                                            name="textvalidate"
+                                            value={selectedPublicRole}
+                                            onChange={(e) =>
+                                              setSelectedPublicRole(
+                                                e.target.value
+                                              )
+                                            }
+                                          >
+                                            <option
+                                              disabled
+                                              style={{ fontSize: "13px" }}
+                                              value=""
+                                            >
+                                              Select...
+                                            </option>
+                                            {item?.Placeholders.map(
+                                              (data, ind) => {
+                                                return (
+                                                  <option
+                                                    style={{ fontSize: "13px" }}
+                                                    key={ind}
+                                                    value={data?.Role}
+                                                  >
+                                                    {data?.Role}
+                                                  </option>
+                                                );
+                                              }
+                                            )}
+                                          </select>
+                                        ) : (
+                                          <div className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]">
+                                            {item?.Placeholders[0]?.Role}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <hr className="bg-[#ccc] mt-2 " />
+                                  <div className="flex items-center mt-3 gap-2 text-white">
+                                    <button
+                                      onClick={() => handlePublicTemplate(item)}
+                                      className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                      style={{
+                                        backgroundColor: modalSubmitBtnColor
+                                      }}
+                                    >
+                                      Submit
+                                    </button>
+                                    <button
+                                      onClick={() => handleClose(item)}
+                                      className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                      style={{
+                                        backgroundColor: modalCancelBtnColor
+                                      }}
+                                    >
+                                      No
+                                    </button>
+                                  </div>
+                                </div>
+                              </ModalUi>
+                            )}
+                            {isPublicProfile[item.objectId] && (
+                              <ModalUi
+                                isOpen
+                                title={"Public URL"}
+                                handleClose={() => {
+                                  setIsPublicProfile({});
+                                }}
+                                reduceWidth={
+                                  "md:min-w-[440px] md:max-w-[400px]"
+                                }
+                              >
+                                <div className="m-[20px]">
+                                  {publicUserName ? (
+                                    <div className="font-normal text-black">
+                                      <p>
+                                        Here’s your public URL. Copy or share it
+                                        with the signer, and you will be able to
+                                        see all your publicly set templates.
+                                      </p>
+                                      <div className=" flex items-center gap-5 mt-2  p-[2px] w-[75%]">
+                                        <span className="font-bold">
+                                          Public URL :{" "}
+                                        </span>
+                                        <span
+                                          onClick={() => copytoProfileLink()}
+                                          className="underline underline-offset-2 cursor-pointer"
+                                        >{`https://opensign.me/${publicUserName}`}</span>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="font-normal text-black">
+                                      <p>
+                                        Please add your public URL, and you will
+                                        be able to make a public template.
+                                      </p>
+                                      <button
+                                        className="px-4 py-1.5 mt-3 text-white rounded shadow-md text-center focus:outline-none "
+                                        style={{
+                                          backgroundColor: modalSubmitBtnColor
+                                        }}
+                                        onClick={() => navigate("/profile")}
+                                      >
+                                        Add
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              </ModalUi>
+                            )}
+                          </td>
+                        )}
                       <td className="px-2 py-2 text-white flex flex-row gap-x-2 gap-y-1 justify-center items-center">
                         {props.actions?.length > 0 &&
                           props.actions.map((act, index) => (
@@ -1333,170 +1502,6 @@ const ReportTable = (props) => {
                           </ModalUi>
                         )}
                       </td>
-                      {isEnableSubscription && (
-                        <td className=" pl-[20px] py-2    ">
-                          {props.ReportName === "Templates" && (
-                            <div className="  flex flex-row-">
-                              <label
-                                className={
-                                  "cursor-pointer relative inline-flex items-center mb-0"
-                                }
-                              >
-                                <input
-                                  checked={isPublic?.[item.objectId]}
-                                  onChange={(e) => handlePublicChange(e, item)}
-                                  type="checkbox"
-                                  value=""
-                                  className="sr-only peer"
-                                />
-                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
-                              </label>
-                            </div>
-                          )}
-                          {isMakePublic[item.objectId] && (
-                            <ModalUi
-                              isOpen
-                              title={
-                                isPublic[item.objectId]
-                                  ? "Make template public"
-                                  : "Make template private"
-                              }
-                              handleClose={() => {
-                                setIsMakePublic({});
-                                setSelectedPublicRole("");
-                                setIsPublic((prevStates) => ({
-                                  ...prevStates,
-                                  [item.objectId]: !prevStates[item.objectId]
-                                }));
-                              }}
-                            >
-                              <div className="m-[20px]">
-                                <div className="font-normal text-black">
-                                  <p className="text-lg">
-                                    {" "}
-                                    {isPublic[item.objectId]
-                                      ? `Are you sure you want tof make this templat public ?`
-                                      : `Are you sure you want to make this template private? This will remove it from your public profile ?`}
-                                  </p>
-                                  {isPublic[item.objectId] && (
-                                    <div className="flex mt-2 gap-2 md:items-center">
-                                      <p className="text-[15px]">
-                                        Public role :{" "}
-                                      </p>
-                                      {item?.Placeholders?.length > 1 ? (
-                                        <select
-                                          className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]"
-                                          name="textvalidate"
-                                          value={selectedPublicRole}
-                                          onChange={(e) =>
-                                            setSelectedPublicRole(
-                                              e.target.value
-                                            )
-                                          }
-                                        >
-                                          <option
-                                            disabled
-                                            style={{ fontSize: "13px" }}
-                                            value=""
-                                          >
-                                            Select...
-                                          </option>
-                                          {item?.Placeholders.map(
-                                            (data, ind) => {
-                                              return (
-                                                <option
-                                                  style={{ fontSize: "13px" }}
-                                                  key={ind}
-                                                  value={data?.Role}
-                                                >
-                                                  {data?.Role}
-                                                </option>
-                                              );
-                                            }
-                                          )}
-                                        </select>
-                                      ) : (
-                                        <div className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]">
-                                          {item?.Placeholders[0]?.Role}
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-
-                                <hr className="bg-[#ccc] mt-2 " />
-                                <div className="flex items-center mt-3 gap-2 text-white">
-                                  <button
-                                    onClick={() => handlePublicTemplate(item)}
-                                    className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-                                    style={{
-                                      backgroundColor: modalSubmitBtnColor
-                                    }}
-                                  >
-                                    Submit
-                                  </button>
-                                  <button
-                                    onClick={() => handleClose(item)}
-                                    className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
-                                    style={{
-                                      backgroundColor: modalCancelBtnColor
-                                    }}
-                                  >
-                                    No
-                                  </button>
-                                </div>
-                              </div>
-                            </ModalUi>
-                          )}
-                          {isPublicProfile[item.objectId] && (
-                            <ModalUi
-                              isOpen
-                              title={"Public URL"}
-                              handleClose={() => {
-                                setIsPublicProfile({});
-                              }}
-                              reduceWidth={"md:min-w-[440px] md:max-w-[400px]"}
-                            >
-                              <div className="m-[20px]">
-                                {publicUserName ? (
-                                  <div className="font-normal text-black">
-                                    <p>
-                                      Here’s your public URL. Copy or share it
-                                      with the signer, and you will be able to
-                                      see all your publicly set templates.
-                                    </p>
-                                    <div className=" flex items-center gap-5 mt-2  p-[2px] w-[75%]">
-                                      <span className="font-bold">
-                                        Public URL :{" "}
-                                      </span>
-                                      <span
-                                        onClick={() => copytoProfileLink()}
-                                        className="underline underline-offset-2 cursor-pointer"
-                                      >{`https://opensign.me/${publicUserName}`}</span>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="font-normal text-black">
-                                    <p>
-                                      Please add your public URL, and you will
-                                      be able to make a public template.
-                                    </p>
-                                    <button
-                                      className="px-4 py-1.5 mt-3 text-white rounded shadow-md text-center focus:outline-none "
-                                      style={{
-                                        backgroundColor: modalSubmitBtnColor
-                                      }}
-                                      onClick={() => navigate("/profile")}
-                                    >
-                                      Add
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-                            </ModalUi>
-                          )}
-                        </td>
-                      )}
                     </tr>
                   )
                 )}

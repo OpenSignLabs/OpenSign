@@ -35,8 +35,8 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
   return (
     <aside
-      className={`bg-white text-[#444] h-screen w-full md:w-[300px] overflow-y-auto transform transition-transform z-40 md:translate-x-0
-      ${isOpen ? "translate-x-0 block" : "-translate-x-full hidden"}`}
+      className={`absolute md:relative bg-white text-[#444] h-screen overflow-y-auto transition-all z-40 hide-scrollbar
+     ${isOpen ? "w-full md:w-[300px]" : "w-0"}`}
     >
       <div className="flex px-2 py-3 gap-2 items-center shadow-md">
         <div className="w-[75px] h-[75px] rounded-full ring-[2px] ring-offset-2 ring-gray-400 overflow-hidden">
