@@ -667,10 +667,11 @@ const Forms = (props) => {
                   )}
                 </div>
               ) : (
-                <div className="flex gap-2 justify-center items-center">
+                <div className="flex gap-2 justify-center items-center ">
                   <input
                     type="file"
-                    className="bg-white px-2 py-1.5 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                    className="opfile-input opfile-input-bordered opfile-input-sm w-full text-xs"
+                    // className="bg-white px-2 py-1.5 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                     onChange={(e) => handleFileInput(e)}
                     ref={inputFileRef}
                     accept={
@@ -698,7 +699,8 @@ const Forms = (props) => {
               </label>
               <input
                 name="Name"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="opinput opinput-bordered w-full opinput-sm text-xs"
+                // className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                 value={formData.Name}
                 onChange={(e) => handleStrInput(e)}
                 required
@@ -708,7 +710,8 @@ const Forms = (props) => {
               <label className="block">Description</label>
               <input
                 name="Description"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="opinput opinput-bordered w-full opinput-sm text-xs"
+                // className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                 value={formData.Description}
                 onChange={(e) => handleStrInput(e)}
               />
@@ -726,7 +729,8 @@ const Forms = (props) => {
               </label>
               <input
                 name="Note"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="opinput opinput-bordered w-full opinput-sm text-xs"
+                // className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                 value={formData.Note}
                 onChange={(e) => handleStrInput(e)}
                 required
@@ -748,7 +752,8 @@ const Forms = (props) => {
                 <input
                   type="number"
                   name="TimeToCompleteDays"
-                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  className="opinput opinput-bordered w-full opinput-sm text-xs"
+                  // className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                   value={formData.TimeToCompleteDays}
                   onChange={(e) => handleStrInput(e)}
                   required
@@ -822,6 +827,7 @@ const Forms = (props) => {
                     <input
                       type="radio"
                       value={"true"}
+                      className="opradio opradio-xs"
                       name="SendinOrder"
                       checked={formData.SendinOrder === "true"}
                       onChange={handleStrInput}
@@ -833,6 +839,7 @@ const Forms = (props) => {
                       type="radio"
                       value={"false"}
                       name="SendinOrder"
+                      className="opradio opradio-xs"
                       checked={formData.SendinOrder === "false"}
                       onChange={handleStrInput}
                     />
@@ -857,7 +864,7 @@ const Forms = (props) => {
                     Auto reminder{"  "}
                     {!isSubscribe && isEnableSubscription && <Upgrade />}
                   </span>
-                  <label
+                  {/* <label
                     className={`${
                       isSubscribe || !isEnableSubscription
                         ? "cursor-pointer "
@@ -872,6 +879,20 @@ const Forms = (props) => {
                       className="sr-only peer"
                     />
                     <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600 mt-2"></div>
+                  </label> */}
+                  <label
+                    className={`${
+                      isSubscribe || !isEnableSubscription
+                        ? "cursor-pointer "
+                        : "pointer-events-none opacity-50"
+                    } relative block items-center mb-0`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="optoggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
+                      checked={formData.autoreminder}
+                      onChange={handleAutoReminder}
+                    />
                   </label>
                 </div>
                 {formData?.autoreminder === true && (
@@ -884,7 +905,8 @@ const Forms = (props) => {
                       type="number"
                       value={formData.remindOnceInEvery}
                       name="remindOnceInEvery"
-                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      className="opinput opinput-bordered w-full opinput-sm text-xs"
+                      // className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                       onChange={handleStrInput}
                       required
                     />
@@ -895,15 +917,19 @@ const Forms = (props) => {
             <div className="flex items-center mt-3 gap-2 text-white">
               <button
                 className={`${
-                  isSubmit && "cursor-progress"
-                } bg-[#1ab6ce] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none`}
+                  isSubmit ? "cursor-progress" : ""
+                } opbtn opbtn-primary`}
+                // className={`${
+                //   isSubmit && "cursor-progress"
+                // } bg-[#1ab6ce] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none`}
                 type="submit"
                 disabled={isSubmit}
               >
                 Next
               </button>
               <div
-                className="cursor-pointer bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
+                className="opbtn opbtn-neutral"
+                // className="cursor-pointer bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
                 onClick={() => handleReset()}
               >
                 Reset

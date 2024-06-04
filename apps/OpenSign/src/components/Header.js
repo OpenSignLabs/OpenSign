@@ -89,14 +89,16 @@ const Header = ({ showSidebar }) => {
   }, [isOpen]);
 
   return (
-    <div className="flex flex-row justify-between items-center gap-x-3 md:gap-x-4 bg-white md:px-4 px-2 shadow h-[50px] md:w-full ">
-      <button
-        className="cursor-pointer focus:outline-none"
-        onClick={showSidebar}
-      >
-        <i className={`fa-solid fa-bars text-xl `}></i>
-      </button>
-      <div className="flex-1">
+    <div className="opnavbar bg-base-100 shadow">
+      <div className="flex-none">
+        <button
+          className="opbtn opbtn-square opbtn-ghost focus:outline-none"
+          onClick={showSidebar}
+        >
+          <i className="fa-solid fa-bars text-xl text-black"></i>
+        </button>
+      </div>
+      <div className="flex-1 ml-2">
         <div className="h-[25px] md:h-[40px] w-auto overflow-hidden">
           <img
             className="object-contain h-full w-auto"
@@ -105,10 +107,7 @@ const Header = ({ showSidebar }) => {
           />
         </div>
       </div>
-      <div
-        id="profile-menu"
-        className="flex justify-between items-center gap-x-3"
-      >
+      <div className="flex-none gap-2">
         {!isSubscribe && (
           <div>
             <button
@@ -144,56 +143,61 @@ const Header = ({ showSidebar }) => {
             {username && username}
           </div>
         )}
-        <div className="relative">
-          <div className="cursor-pointer">
-            <i onClick={toggleDropdown} className="fa-solid fa-angle-down"></i>
+        <div className="opdropdown opdropdown-end" id="profile-menu">
+          <div tabIndex={0} role="button" className="opbtn opbtn-ghost">
+            <div className="">
+              <i
+                tabIndex={0}
+                role="button"
+                onClick={toggleDropdown}
+                className="fa-solid fa-angle-down"
+              ></i>
+            </div>
           </div>
-          <div
-            className={`dropdown absolute text-sm text-gray-700 font-light right-0 mt-4 p-1 w-48 bg-white border rounded-lg shadow-lg z-10 ${
-              isOpen ? "block" : "hidden"
-            }`}
+          <ul
+            tabIndex={0}
+            className="mt-3 z-[1] p-2 shadow opmenu opmenu-sm opdropdown-content bg-base-100 rounded-box w-52"
           >
-            <ul>
-              <li
-                className="hover:bg-gray-100 rounded-t-lg py-1 px-2 cursor-pointer font-normal"
-                onClick={() => openInNewTab("https://docs.opensignlabs.com")}
-              >
+            <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
+              <span>
                 <i className="fa-solid fa-book"></i> Docs
-              </li>
-              <li
-                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate("/profile");
-                }}
-              >
+              </span>
+            </li>
+            <li
+              onClick={() => {
+                setIsOpen(false);
+                navigate("/profile");
+              }}
+            >
+              <span>
                 <i className="fa-regular fa-user"></i> Profile
-              </li>
-              <li
-                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate("/changepassword");
-                }}
-              >
+              </span>
+            </li>
+            <li
+              onClick={() => {
+                setIsOpen(false);
+                navigate("/changepassword");
+              }}
+            >
+              <span>
                 <i className="fa-solid fa-lock"></i> Change Password
-              </li>
-              <li
-                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
-                onClick={() => {
-                  window.open("https://console.opensignlabs.com/");
-                }}
-              >
+              </span>
+            </li>
+            <li
+              onClick={() => {
+                window.open("https://console.opensignlabs.com/");
+              }}
+            >
+              <span>
                 <i className="fa-regular fa-id-card"></i> Console
-              </li>
-              <li
-                className="hover:bg-gray-100 rounded-b-lg py-1 px-2 cursor-pointer font-normal"
-                onClick={closeDropdown}
-              >
+              </span>
+            </li>
+            <li onClick={closeDropdown}>
+              <span>
                 <i className="fa-solid fa-arrow-right-from-bracket"></i> Log Out
-              </li>
-            </ul>
-          </div>
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
