@@ -77,7 +77,7 @@ export default async function ssoSignin(request) {
       }
     } else {
       // console.log("in sign up condition");
-      const response = await axios.get('ttps://sso.opensignlabs.com/api/oauth/userinfo', {
+      const response = await axios.get(ssoApiUrl + '/oauth/userinfo', {
         headers: {
           Authorization: `Bearer ${ssoAccessToken}`,
         },
