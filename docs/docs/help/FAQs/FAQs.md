@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: FAQs on Utilizing Various Features of OpenSign™ - The World's Leading Free & Open Source Document Signing Platform
+title: Why is there no dropdown list when I sign a document myself?
 ---
 
 # Why is there no dropdown list when I sign a document myself?
