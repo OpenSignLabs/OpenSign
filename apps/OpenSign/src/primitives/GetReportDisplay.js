@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import pad from "../assets/images/pad.svg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -60,13 +60,65 @@ const ReportTable = (props) => {
   const { isMoreDocs, setIsNextRecord } = props;
   // For loop is used to calculate page numbers visible below table
   // Initialize pageNumbers using useMemo to avoid unnecessary re-creation
-  const pageNumbers = useMemo(() => {
-    const calculatedPageNumbers = [];
-    for (let i = 1; i <= Math.ceil(props.List.length / props.docPerPage); i++) {
-      calculatedPageNumbers.push(i);
+  // const pageNumbers = useMemo(() => {
+  //   const calculatedPageNumbers = [];
+  //   for (let i = 1; i <= Math.ceil(props.List.length / props.docPerPage); i++) {
+  //     calculatedPageNumbers.push(i);
+  //   }
+  //   return calculatedPageNumbers;
+  // }, [props.List, props.docPerPage]);
+  const getPaginationRange = () => {
+    const totalPageNumbers = 7; // Adjust this value to show more/less page numbers
+    const pages = [];
+    const totalPages = Math.ceil(props.List.length / props.docPerPage);
+    if (totalPages <= totalPageNumbers) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const leftSiblingIndex = Math.max(currentPage - 1, 1);
+      const rightSiblingIndex = Math.min(currentPage + 1, totalPages);
+
+      const showLeftDots = leftSiblingIndex > 2;
+      const showRightDots = rightSiblingIndex < totalPages - 2;
+
+      const firstPageIndex = 1;
+      const lastPageIndex = totalPages;
+
+      if (!showLeftDots && showRightDots) {
+        let leftItemCount = 3;
+        let leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+
+        pages.push(...leftRange);
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (showLeftDots && !showRightDots) {
+        let rightItemCount = 3;
+        let rightRange = Array.from(
+          { length: rightItemCount },
+          (_, i) => totalPages - rightItemCount + i + 1
+        );
+
+        pages.push(firstPageIndex);
+        pages.push("...");
+        pages.push(...rightRange);
+      } else if (showLeftDots && showRightDots) {
+        let middleRange = Array.from(
+          { length: 3 },
+          (_, i) => leftSiblingIndex + i
+        );
+
+        pages.push(firstPageIndex);
+        pages.push("...");
+        pages.push(...middleRange);
+        pages.push("...");
+        pages.push(lastPageIndex);
+      }
     }
-    return calculatedPageNumbers;
-  }, [props.List, props.docPerPage]);
+
+    return pages;
+  };
+  const pageNumbers = getPaginationRange();
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
     checkTourStatus();
@@ -839,7 +891,7 @@ const ReportTable = (props) => {
           ></div>
         </div>
       )}
-      <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
+      <div className="p-2 overflow-x-scroll w-full bg-white rounded-xl">
         {isCelebration && (
           <div style={{ position: "relative", zIndex: "1000" }}>
             <Confetti width={window.innerWidth} height={window.innerHeight} />
@@ -1509,46 +1561,42 @@ const ReportTable = (props) => {
             )}
           </tbody>
         </table>
-        <div className="flex flex-wrap items-center gap-2 p-2 ">
+        <div className="opjoin flex flex-wrap items-center p-2 ">
           {props.List.length > props.docPerPage && (
             <>
-              {currentPage > 1 && (
-                <button
-                  onClick={() => paginateBack()}
-                  className="bg-blue-400 text-white rounded px-3 py-2 focus:outline-none"
-                >
-                  Prev
-                </button>
-              )}
+              <button
+                onClick={() => paginateBack()}
+                className="opjoin-item opbtn "
+              >
+                Prev
+              </button>
             </>
           )}
-          {pageNumbers.map((x) => (
+          {pageNumbers.map((x, i) => (
             <button
-              key={x}
+              key={i}
               onClick={() => setCurrentPage(x)}
-              className=" bg-sky-400 text-white rounded px-3 py-2 focus:outline-none"
+              disabled={x === "..."}
+              className={`${
+                x === currentPage ? "opbtn-active" : ""
+              } opjoin-item opbtn`}
             >
               {x}
             </button>
           ))}
-          {isMoreDocs && (
-            <button className="text-black rounded px-1 py-2">...</button>
-          )}
           {props.List.length > props.docPerPage && (
             <>
-              {pageNumbers.includes(currentPage + 1) && (
-                <button
-                  onClick={() => paginateFront()}
-                  className="bg-blue-400 text-white rounded px-3 py-2 focus:outline-none"
-                >
-                  Next
-                </button>
-              )}
+              <button
+                onClick={() => paginateFront()}
+                className="opjoin-item opbtn"
+              >
+                Next
+              </button>
             </>
           )}
         </div>
         {props.List?.length <= 0 && (
-          <div className="flex flex-col items-center justify-center w-full bg-white rounded py-4">
+          <div className="flex flex-col items-center justify-center w-full bg-white rounded-xl py-4">
             <div className="w-[60px] h-[60px] overflow-hidden">
               <img
                 className="w-full h-full object-contain"

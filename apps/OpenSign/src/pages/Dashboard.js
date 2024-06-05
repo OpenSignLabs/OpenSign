@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Parse from "parse";
 import "../styles/loader.css";
 import GetDashboard from "../components/dashboard/GetDashboard";
 import { useNavigate, useParams } from "react-router-dom";
 import Title from "../components/Title";
 import { useDispatch } from "react-redux";
 import { saveTourSteps } from "../redux/reducers/TourStepsReducer";
+import dashboardJson from "../json/dashboardJson";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const Dashboard = () => {
   const { id } = useParams();
   const [dashboard, setdashboard] = useState([]);
   const [classnameArray, setclassnameArray] = useState([]);
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   const [defaultQuery, setDefaultQuery] = useState("");
 
   useEffect(() => {
@@ -30,53 +30,27 @@ const Dashboard = () => {
   }, [id]);
 
   const getDashboard = async (id) => {
-    setloading(true);
     try {
-      var forms = Parse.Object.extend("w_dashboard");
-      var query = new Parse.Query(forms);
-      query.equalTo("objectId", id);
-      const results = await query.first();
-      const resultjson = results.toJSON();
+      const dashboard = dashboardJson.find((x) => x.id === id);
       let classArray = [];
-      let DefaultQuery = "";
-      resultjson.rows.forEach((x) => {
-        let col_lg = "",
-          col_md = "",
-          col_xs = "",
-          col_sm = "",
-          col_ = "",
-          obj = {};
-        let subItem = [];
+      dashboard?.columns?.forEach((row) => {
         let item = "";
-        x.columns.forEach((y) => {
-          if (y.widget.type === "customeHtml") {
-            DefaultQuery = y.widget.data[0].default;
-          }
-          if (Number(y["collg"]) > 0) {
-            col_lg = "col-lg-" + y["collg"];
-          }
-          if (Number(y["colmd"]) > 0) {
-            col_md = "col-md-" + y["colmd"];
-          }
-          if (Number(y["colxs"]) > 0) {
-            col_xs = "col-xs-" + y["colxs"];
-          }
-          if (Number(y["colsm"]) > 0) {
-            col_sm = "col-sm-" + y["colsm"];
-          }
-          if (Number(y["col"]) > 0) {
-            col_ = "col-" + y["col"];
-          }
-          item =
-            col_lg + " " + col_md + " " + col_xs + " " + col_sm + " " + col_;
-          subItem.push(item);
-        });
-        obj = subItem;
-        classArray.push(obj);
+        if (row?.colxs) {
+          item += " col-span-" + row?.colxs;
+        }
+        if (row?.colmd) {
+          item += " md:col-span-" + row?.colmd;
+        }
+        if (row?.collg) {
+          item += " lg:col-span-" + row?.collg + " ";
+        }
+        if (!row?.colxs && !row?.colmd && !row?.collg) {
+          item += "col-span-12";
+        }
+        classArray.push(item);
       });
-      setdashboard(resultjson.rows);
-      // console.log("resultjson.rows ", resultjson.rows);
-      const arr = resultjson.rows[0].columns
+      setdashboard(dashboard);
+      const dashboardTour = dashboard.columns
         .filter((col) => {
           if (col.widget.data && col.widget.data.tourSection) {
             return col;
@@ -90,13 +64,10 @@ const Dashboard = () => {
             // style: { backgroundColor: "#abd4d2" },
           };
         });
-      dispatch(saveTourSteps(arr));
-      // console.log("arr ", arr);
+      dispatch(saveTourSteps(dashboardTour));
       setclassnameArray(classArray);
       if (localStorage.getItem("DashboardDefaultFilter")) {
         setDefaultQuery(localStorage.getItem("DashboardDefaultFilter"));
-      } else {
-        setDefaultQuery(DefaultQuery);
       }
       setloading(false);
     } catch (e) {
@@ -105,32 +76,28 @@ const Dashboard = () => {
     }
   };
 
-  let _dash = (
-    <GetDashboard
-      dashboard={dashboard}
-      classnameArray={classnameArray}
-      DefaultQuery={defaultQuery}
-    />
-  );
-  if (loading) {
-    _dash = (
-      <div style={{ height: "300px", backgroundColor: "white" }}>
-        <div
-          style={{
-            marginLeft: "45%",
-            marginTop: "150px",
-            fontSize: "45px",
-            color: "#3dd3e0"
-          }}
-          className="loader-37"
-        ></div>
-      </div>
-    );
-  }
   return (
     <React.Fragment>
       <Title title="Dashboard" />
-      {_dash}
+      {loading ? (
+        <div style={{ height: "300px", backgroundColor: "white" }}>
+          <div
+            style={{
+              marginLeft: "45%",
+              marginTop: "150px",
+              fontSize: "45px",
+              color: "#3dd3e0"
+            }}
+            className="loader-37"
+          ></div>
+        </div>
+      ) : (
+        <GetDashboard
+          dashboard={dashboard}
+          classnameArray={classnameArray}
+          DefaultQuery={defaultQuery}
+        />
+      )}
     </React.Fragment>
   );
 };
