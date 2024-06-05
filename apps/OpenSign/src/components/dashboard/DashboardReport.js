@@ -121,19 +121,9 @@ function DashboardReport(props) {
   return (
     <>
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
+        <div className="h-[250px] flex justify-center items-center">
           <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
+            style={{ fontSize: "45px", color: "#3dd3e0" }}
             className="loader-37"
           ></div>
         </div>

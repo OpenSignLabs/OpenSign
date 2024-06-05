@@ -56,8 +56,12 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           />
         </div>
         <div>
-          <p className="text-[14px] font-bold">{username}</p>
-          <p className={`text-[12px] ${tenantname ? "mt-2" : ""}`}>
+          <p className="text-[14px] font-bold text-base-content">{username}</p>
+          <p
+            className={`text-[12px] text-base-content ${
+              tenantname ? "mt-2" : ""
+            }`}
+          >
             {tenantname}
           </p>
         </div>

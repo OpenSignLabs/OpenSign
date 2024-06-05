@@ -336,9 +336,9 @@ const DashboardCard = (props) => {
         props.Data && props.Data.Redirect_type
           ? "cursor-pointer"
           : "cursor-default"
-      } w-full h-[140px] px-3 pt-4 pb-10 text-white rounded-md shadow overflow-hidden relative`}
+      }`}
     >
-      <div className="flex items-center justify-start gap-5">
+      <div className="flex items-center justify-start gap-5 text-white">
         <span className="rounded-full bg-black bg-opacity-20 w-[60px] h-[60px]  self-start flex justify-center items-center">
           <i
             className={`${
@@ -346,15 +346,19 @@ const DashboardCard = (props) => {
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
-        <div className="">
+        <div className=" font-medium">
           <div className="text-base lg:text-lg"> {props.Label}</div>
           <div className="text-2xl font-light">
             {loading ? <div className="loader-01"></div> : setFormat(response)}
           </div>
         </div>
       </div>
-      <div className="text-xs absolute top-2 right-1">
-        <Tooltip id={props.Label} iconColor={"white"} message={props?.Data?.tourMessage} />
+      <div className="text-xs absolute top-3 right-2">
+        <Tooltip
+          id={props.Label}
+          iconColor={"white"}
+          message={props?.Data?.tourMessage}
+        />
       </div>
     </div>
   );
