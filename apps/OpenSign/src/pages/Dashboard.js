@@ -11,9 +11,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-  const [dashboard, setdashboard] = useState([]);
+  const [dashboard, setdashboard] = useState({});
   const [loading, setloading] = useState(true);
-  const [defaultQuery, setDefaultQuery] = useState("");
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
@@ -47,9 +46,6 @@ const Dashboard = () => {
           };
         });
       dispatch(saveTourSteps(dashboardTour));
-      if (localStorage.getItem("DashboardDefaultFilter")) {
-        setDefaultQuery(localStorage.getItem("DashboardDefaultFilter"));
-      }
       setloading(false);
     } catch (e) {
       console.error("Problem", e);
@@ -61,19 +57,11 @@ const Dashboard = () => {
     <React.Fragment>
       <Title title="Dashboard" />
       {loading ? (
-        <div style={{ height: "300px", backgroundColor: "white" }}>
-          <div
-            style={{
-              marginLeft: "45%",
-              marginTop: "150px",
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[300px] text-[45px] text-[#3dd3e0] w-full bg-white flex justify-center items-center rounded-md">
+          <div className="loader-37"></div>
         </div>
       ) : (
-        <GetDashboard dashboard={dashboard} DefaultQuery={defaultQuery} />
+        <GetDashboard dashboard={dashboard} />
       )}
     </React.Fragment>
   );
