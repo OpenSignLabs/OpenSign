@@ -146,25 +146,11 @@ const GetDashboard = (props) => {
       <div className="grid grid-cols-12 w-full gap-x-4">
         {props?.dashboard?.columns?.map((col, i) =>
           col.widget.data && col.widget.data.tourSection ? (
-            <div
-              key={i}
-              className={`${
-                props?.classnameArray?.[i]
-                  ? props?.classnameArray[i]
-                  : "col-span-12"
-              }`}
-            >
+            <div key={i} className={`${col.colxs} ${col.colmd} ${col.collg} `}>
               {renderSwitchWithTour(col)}
             </div>
           ) : (
-            <div
-              key={i}
-              className={`${
-                props?.classnameArray?.[i]
-                  ? props?.classnameArray[i]
-                  : "col-span-12"
-              }`}
-            >
+            <div key={i} className={`${col.colxs} ${col.colmd} ${col.collg} `}>
               {renderSwitch(col)}
             </div>
           )
