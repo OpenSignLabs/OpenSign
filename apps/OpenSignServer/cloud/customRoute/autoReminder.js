@@ -23,7 +23,7 @@ function replaceMailVaribles(subject, body, variables) {
 }
 
 // `sendmail` is used to signing reminder mail to signer
-async function sendMail(doc, signer, mailcount) {
+async function sendMail(doc, signer) {
   const subject = `{{sender_name}} has requested you to sign "{{document_title}}"`;
   const body = `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;<b>"{{document_title}}"</b>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br></body> </html>`;
   const url = `${process.env.SERVER_URL}/functions/sendmailv3`;
@@ -69,8 +69,7 @@ async function sendMail(doc, signer, mailcount) {
     const res = await axios.post(url, params, { headers: headers });
     // console.log('res ', res.data.result);
     if (res.data.result.status === 'success') {
-      mailcount += 1;
-      return { status: 'success', count: mailcount };
+      return { status: 'success' };
     }
   } catch (err) {
     console.log('err in mail of sendreminder api', err);
@@ -99,10 +98,11 @@ export default async function autoReminder(request, response) {
     if (docsArr && docsArr.length > 0) {
       const _docsArr = JSON.parse(JSON.stringify(docsArr));
       let mailCount = 0;
+      let docCount = 0;
       for (const doc of _docsArr) {
         // The reminderDate variable is used to calculate the next reminder date.
         const RemindOnceInEvery = doc?.RemindOnceInEvery || 5;
-        const ReminderDate = new Date(doc?.NextReminderDate?.iso);
+        const ReminderDate = new Date();
         ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
         // The sendInOrder variable is used to determine whether to send emails in order or not.
         const SendInOrder = doc?.SendinOrder || false;
@@ -112,9 +112,10 @@ export default async function autoReminder(request, response) {
           const count = auditTrail?.length || 0;
           const signer = doc?.Signers?.[count];
           if (signer) {
-            const mailRes = await sendMail(doc, signer, mailCount);
+            docCount += 1;
+            const mailRes = await sendMail(doc, signer);
             if (mailRes && mailRes.status === 'success') {
-              mailCount += mailRes.count;
+              mailCount += 1;
             }
             try {
               // The code below is used to update the next reminder date of the document based on the "remind once every X days" setting.
@@ -139,11 +140,12 @@ export default async function autoReminder(request, response) {
               }
             });
             if (signers?.length > 0) {
+              docCount += 1;
               // The for...of loop below is used to send a signing reminder to every signer who hasn't signed the document yet.
               for (const signer of signers) {
-                const mailRes = await sendMail(doc, signer, mailCount);
+                const mailRes = await sendMail(doc, signer);
                 if (mailRes && mailRes.status === 'success') {
-                  mailCount += mailRes.count;
+                  mailCount += 1;
                 }
               }
             }
@@ -151,10 +153,11 @@ export default async function autoReminder(request, response) {
             // The for...of loop below is used to send a signing reminder to every signer who hasn't signed the document yet.
             const signers = doc?.Signers;
             if (signers?.length > 0) {
+              docCount += 1;
               for (const signer of signers) {
-                const mailRes = await sendMail(doc, signer, mailCount);
+                const mailRes = await sendMail(doc, signer);
                 if (mailRes && mailRes.status === 'success') {
-                  mailCount += mailRes.count;
+                  mailCount += 1;
                 }
               }
             }
@@ -171,7 +174,11 @@ export default async function autoReminder(request, response) {
           }
         }
       }
-      response.json({ status: 'success', document_count: docsArr.length, mail_count: mailCount });
+      if (docCount > 0) {
+        response.json({ status: 'success', document_count: docCount, mail_count: mailCount });
+      } else {
+        response.json({ status: 'no record found' });
+      }
     } else {
       response.json({ status: 'no record found' });
     }
