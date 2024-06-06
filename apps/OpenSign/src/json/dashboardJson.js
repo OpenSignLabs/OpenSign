@@ -3,9 +3,7 @@ const dashboardJson = [
     id: "35KBoSgoAK",
     columns: [
       {
-        colxs: "12",
-        colmd: "6",
-        collg: "6",
+        colsize: "col-span-12 md:col-span-6 lg:col-span-6",
         widget: {
           type: "Card",
           icon: "fas fa-signature",
@@ -28,9 +26,7 @@ const dashboardJson = [
         }
       },
       {
-        colxs: "12",
-        colmd: "6",
-        collg: "6",
+        colsize: "col-span-12 md:col-span-6 lg:col-span-6",
         widget: {
           type: "Card",
           icon: "fas fa-sign-out-alt",
@@ -53,9 +49,7 @@ const dashboardJson = [
         }
       },
       {
-        colxs: "12",
-        colmd: "6",
-        collg: "6",
+        colsize: "col-span-12 md:col-span-6 lg:col-span-6",
         widget: {
           type: "report",
           reportId: "5Go51Q7T8r",
@@ -67,9 +61,7 @@ const dashboardJson = [
         }
       },
       {
-        colxs: "12",
-        colmd: "6",
-        collg: "6",
+        colsize: "col-span-12 md:col-span-6 lg:col-span-6",
         widget: {
           type: "report",
           reportId: "d9k3UfYHBc",
@@ -81,9 +73,7 @@ const dashboardJson = [
         }
       },
       {
-        colxs: "12",
-        colmd: "12",
-        collg: "12",
+        colsize: "col-span-12 md:col-span-12 lg:col-span-12",
         widget: {
           type: "report",
           reportId: "kC5mfynCi4",
