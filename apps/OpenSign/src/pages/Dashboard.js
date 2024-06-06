@@ -12,7 +12,6 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const [dashboard, setdashboard] = useState([]);
-  const [classnameArray, setclassnameArray] = useState([]);
   const [loading, setloading] = useState(true);
   const [defaultQuery, setDefaultQuery] = useState("");
 
@@ -32,23 +31,6 @@ const Dashboard = () => {
   const getDashboard = async (id) => {
     try {
       const dashboard = dashboardJson.find((x) => x.id === id);
-      let classArray = [];
-      dashboard?.columns?.forEach((row) => {
-        let item = "";
-        if (row?.colxs) {
-          item += " col-span-" + row?.colxs;
-        }
-        if (row?.colmd) {
-          item += " md:col-span-" + row?.colmd;
-        }
-        if (row?.collg) {
-          item += " lg:col-span-" + row?.collg + " ";
-        }
-        if (!row?.colxs && !row?.colmd && !row?.collg) {
-          item += "col-span-12";
-        }
-        classArray.push(item);
-      });
       setdashboard(dashboard);
       const dashboardTour = dashboard.columns
         .filter((col) => {
@@ -65,7 +47,6 @@ const Dashboard = () => {
           };
         });
       dispatch(saveTourSteps(dashboardTour));
-      setclassnameArray(classArray);
       if (localStorage.getItem("DashboardDefaultFilter")) {
         setDefaultQuery(localStorage.getItem("DashboardDefaultFilter"));
       }
@@ -92,11 +73,7 @@ const Dashboard = () => {
           ></div>
         </div>
       ) : (
-        <GetDashboard
-          dashboard={dashboard}
-          classnameArray={classnameArray}
-          DefaultQuery={defaultQuery}
-        />
+        <GetDashboard dashboard={dashboard} DefaultQuery={defaultQuery} />
       )}
     </React.Fragment>
   );
