@@ -117,8 +117,8 @@ const SignersInput = (props) => {
           />
         </span>
       </label>
-      <div style={{ display: "flex", gap: 5 }}>
-        <div style={{ flexWrap: "wrap", width: "100%" }}>
+      <div className="flex gap-x-[5px]">
+        <div className="w-full">
           <Select
             onSortEnd={onSortEnd}
             distance={4}
@@ -128,6 +128,18 @@ const SignersInput = (props) => {
             onChange={onChange}
             closeMenuOnSelect={false}
             required={props.required}
+            styles={{
+              control: (baseStyles) => ({
+                ...baseStyles,
+                backgroundColor: "inherit",
+                borderRadius: 10,
+                borderColor: "current"
+              }),
+              option: (baseStyles) => ({
+                ...baseStyles,
+                backgroundColor: "inherit"
+              })
+            }}
           />
         </div>
         <div
@@ -135,7 +147,7 @@ const SignersInput = (props) => {
             setIsModel(true);
             openModal();
           }}
-          className="cursor-pointer rounded border-[1px] border-[#ccc] min-h-[38px] min-w-[48px] flex justify-center items-center"
+          className="cursor-pointer  border-[1px] opinut opinput-bordered min-h-[38px] min-w-[48px] flex justify-center items-center"
         >
           <i className="fas fa-plus"></i>
         </div>

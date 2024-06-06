@@ -277,7 +277,7 @@ const HomeLayout = () => {
                   id="renderList"
                   className="relative h-screen flex flex-col justify-between w-full overflow-y-auto"
                 >
-                  <div className="bg-[#eef1f5] p-3">{<Outlet />}</div>
+                  <div className="bg-base-200 p-3">{<Outlet />}</div>
                   <div className="z-30">
                     <Footer />
                   </div>
