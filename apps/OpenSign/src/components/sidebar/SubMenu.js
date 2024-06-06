@@ -4,10 +4,10 @@ import { NavLink } from "react-router-dom";
 const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
   const { title, icon, children } = item;
   return (
-    <li role="none">
+    <li role="none" className="my-0.5">
       <button
         onClick={() => toggleSubmenu(item.title)}
-        className="flex items-center text-left p-3 lg:p-4 focus:outline-none hover:text-base-content "
+        className="flex items-center text-left p-3 lg:p-4 text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none "
         aria-expanded={submenuOpen}
         aria-haspopup="true"
         aria-controls={`submenu-${title}`}
@@ -28,7 +28,7 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
       {submenuOpen[item.title] && (
         <ul id={`submenu-${title}`} role="menu" aria-label={`${title} submenu`}>
           {children.map((childItem) => (
-            <li key={childItem.title} role="none">
+            <li key={childItem.title} role="none" className="my-0.5">
               <NavLink
                 to={
                   childItem.pageType
@@ -37,8 +37,8 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
                 }
                 className={({ isActive }) =>
                   `${
-                    isActive ? "bg-base-300" : ""
-                  } flex items-center text-left pl-6 md:pl-8 py-2 text-sm cursor-pointer hover:text-base-content focus:outline-none hover:no-underline`
+                    isActive ? "bg-base-300 text-base-content" : ""
+                  } flex items-center text-left pl-6 md:pl-8 py-2 text-sm cursor-pointer text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
                 }
                 onClick={closeSidebar}
                 role="menuitem"
