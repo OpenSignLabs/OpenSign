@@ -66,7 +66,10 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           </p>
         </div>
       </div>
-      <nav aria-label="OpenSign Sidebar Navigation">
+      <nav
+        className="opmenu opmenu-sm"
+        aria-label="OpenSign Sidebar Navigation"
+      >
         <ul
           className="text-sm"
           role="menubar"

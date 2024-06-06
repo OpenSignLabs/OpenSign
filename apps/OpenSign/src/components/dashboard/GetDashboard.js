@@ -21,16 +21,8 @@ const GetDashboard = (props) => {
     <>
       <Suspense
         fallback={
-          <div style={{ height: "300px" }}>
-            <div
-              style={{
-                marginLeft: "45%",
-                marginTop: "150px",
-                fontSize: "45px",
-                color: "#3dd3e0"
-              }}
-              className="loader-37"
-            ></div>
+          <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
+            <div className="loader-37"></div>
           </div>
         }
       >
@@ -53,16 +45,8 @@ const GetDashboard = (props) => {
           >
             <Suspense
               fallback={
-                <div style={{ height: "300px" }}>
-                  <div
-                    style={{
-                      marginLeft: "45%",
-                      marginTop: "150px",
-                      fontSize: "45px",
-                      color: "#3dd3e0"
-                    }}
-                    className="loader-37"
-                  ></div>
+                <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
+                  <div className="loader-37"></div>
                 </div>
               }
             >
@@ -72,7 +56,6 @@ const GetDashboard = (props) => {
                 Format={col.widget.format && col.widget.format}
                 Data={col.widget.data}
                 FilterData={col.widget.filter}
-                DefaultQuery={props.DefaultQuery}
               />
             </Suspense>
           </div>
@@ -107,7 +90,6 @@ const GetDashboard = (props) => {
                 Format={col.widget.format && col.widget.format}
                 Data={col.widget.data}
                 FilterData={col.widget.filter}
-                DefaultQuery={props.DefaultQuery}
               />
             </Suspense>
           </div>

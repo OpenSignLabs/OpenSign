@@ -884,11 +884,8 @@ const ReportTable = (props) => {
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
-        <div className="absolute w-full h-full rounded-md flex justify-center items-center bg-black bg-opacity-30 z-30">
-          <div
-            style={{ fontSize: "45px", color: "#3dd3e0" }}
-            className="loader-37"
-          ></div>
+        <div className="absolute w-full h-full text-[45px] text-[#3dd3e0] rounded-md flex justify-center items-center bg-black bg-opacity-30 z-30">
+          <div className="loader-37"></div>
         </div>
       )}
       <div className="p-2 overflow-x-scroll w-full bg-white rounded-xl">
@@ -1044,7 +1041,6 @@ const ReportTable = (props) => {
                         {formatRow(item?.ExtUserPtr)}
                       </td>
                       <td className="px-4 py-2">
-                        {/* {item?.Signers ? formatRow(item?.Signers) : "-"} */}
                         {item?.Placeholders ? (
                           <button
                             onClick={() => handleViewSigners(item)}
@@ -1224,58 +1220,66 @@ const ReportTable = (props) => {
                             )}
                           </td>
                         )}
-                      <td className="px-2 py-2 text-white flex flex-row gap-x-2 gap-y-1 justify-center items-center">
-                        {props.actions?.length > 0 &&
-                          props.actions.map((act, index) => (
-                            <button
-                              data-tut={act?.selector}
-                              key={index}
-                              onClick={() => handleActionBtn(act, item)}
-                              className={`${
-                                act.action === "option" ? "" : "rounded shadow"
-                              } ${
-                                act.btnLabel ? "py-[3px] px-1.5" : "py-1.5 px-2"
-                              } relative text-center flex items-center justify-center focus:outline-none`}
-                              title={act.hoverLabel}
-                              style={{
-                                backgroundColor: act.btnColor
-                                  ? act.btnColor
-                                  : "#3ac9d6",
-                                color: act?.textColor ? act?.textColor : "white"
-                              }}
-                            >
-                              <i className={act.btnIcon}></i>
-                              {act.btnLabel && (
-                                <span className="ml-[4px] uppercase font-medium">
-                                  {act.btnLabel}
-                                </span>
-                              )}
-                              {isOption[item.objectId] &&
-                                act.action === "option" && (
-                                  <div className="absolute -right-2 top-5 p-1.5 bg-white text-nowrap rounded shadow-md z-[20] overflow-hidden">
-                                    {act.subaction?.map((subact) => (
-                                      <div
-                                        key={subact.btnId}
-                                        className="hover:bg-gray-300 rounded cursor-pointer px-2 py-1.5 flex justify-start items-center text-black"
-                                        onClick={() =>
-                                          handleActionBtn(subact, item)
-                                        }
-                                        title={subact.hoverLabel}
-                                      >
-                                        <i
-                                          className={`${subact.btnIcon} mr-1.5`}
-                                        ></i>
-                                        {subact.btnLabel && (
-                                          <span className="ml-[4px] text-[13px] capitalize font-medium">
-                                            {subact.btnLabel}
-                                          </span>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
+                      <td className="px-2 py-2">
+                        <div className="text-white flex flex-row gap-x-2 gap-y-1 justify-start items-center">
+                          {props.actions?.length > 0 &&
+                            props.actions.map((act, index) => (
+                              <button
+                                data-tut={act?.selector}
+                                key={index}
+                                onClick={() => handleActionBtn(act, item)}
+                                className={`${
+                                  act.action === "option"
+                                    ? ""
+                                    : "rounded shadow"
+                                } ${
+                                  act.btnLabel
+                                    ? "py-[3px] px-1.5"
+                                    : "py-1.5 px-2"
+                                } relative text-center flex text-nowrap items-center justify-center focus:outline-none`}
+                                title={act.hoverLabel}
+                                style={{
+                                  backgroundColor: act.btnColor
+                                    ? act.btnColor
+                                    : "#3ac9d6",
+                                  color: act?.textColor
+                                    ? act?.textColor
+                                    : "white"
+                                }}
+                              >
+                                <i className={act.btnIcon}></i>
+                                {act.btnLabel && (
+                                  <span className="ml-[4px] uppercase font-medium">
+                                    {act.btnLabel}
+                                  </span>
                                 )}
-                            </button>
-                          ))}
+                                {isOption[item.objectId] &&
+                                  act.action === "option" && (
+                                    <div className="absolute -right-2 top-5 p-1.5 bg-white text-nowrap rounded shadow-md z-[20] overflow-hidden">
+                                      {act.subaction?.map((subact) => (
+                                        <div
+                                          key={subact.btnId}
+                                          className="hover:bg-gray-300 rounded cursor-pointer px-2 py-1.5 flex justify-start items-center text-black"
+                                          onClick={() =>
+                                            handleActionBtn(subact, item)
+                                          }
+                                          title={subact.hoverLabel}
+                                        >
+                                          <i
+                                            className={`${subact.btnIcon} mr-1.5`}
+                                          ></i>
+                                          {subact.btnLabel && (
+                                            <span className="ml-[4px] text-[13px] capitalize font-medium">
+                                              {subact.btnLabel}
+                                            </span>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                              </button>
+                            ))}
+                        </div>
                         {isViewShare[item.objectId] && (
                           <div className="fixed z-[999] inset-0 w-full h-full bg-black bg-opacity-[75%]">
                             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[400px] overflow-y-auto max-h-[340px] md:max-h-[400px] hide-scrollbar">
@@ -1359,11 +1363,8 @@ const ReportTable = (props) => {
                             handleClose={() => setIsBulkSend({})}
                           >
                             {isLoader[item.objectId] ? (
-                              <div className="w-full h-[100px] md:h-[100px] rounded-b-md flex justify-center items-center bg-black bg-opacity-30 z-30">
-                                <div
-                                  style={{ fontSize: "45px", color: "#3dd3e0" }}
-                                  className="loader-37"
-                                ></div>
+                              <div className="w-full h-[100px] text-[45px] text-[#3dd3e0] rounded-b-md flex justify-center items-center bg-black bg-opacity-30 z-30">
+                                <div className="loader-37"></div>
                               </div>
                             ) : (
                               <BulkSendUi
@@ -1466,17 +1467,10 @@ const ReportTable = (props) => {
                                   {isNextStep[user.objectId] && (
                                     <div className="relative ">
                                       {actLoader[user.objectId] && (
-                                        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
-                                          <div
-                                            style={{
-                                              fontSize: "45px",
-                                              color: "#3dd3e0"
-                                            }}
-                                            className="loader-37"
-                                          ></div>
+                                        <div className="absolute text-[45px] text-[#3dd3e0] w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
+                                          <div className="loader-37"></div>
                                         </div>
                                       )}
-
                                       <form
                                         onSubmit={(e) =>
                                           handleResendMail(e, item, user)
@@ -1563,14 +1557,12 @@ const ReportTable = (props) => {
         </table>
         <div className="opjoin flex flex-wrap items-center p-2 ">
           {props.List.length > props.docPerPage && (
-            <>
-              <button
-                onClick={() => paginateBack()}
-                className="opjoin-item opbtn "
-              >
-                Prev
-              </button>
-            </>
+            <button
+              onClick={() => paginateBack()}
+              className="opjoin-item opbtn "
+            >
+              Prev
+            </button>
           )}
           {pageNumbers.map((x, i) => (
             <button
@@ -1585,14 +1577,12 @@ const ReportTable = (props) => {
             </button>
           ))}
           {props.List.length > props.docPerPage && (
-            <>
-              <button
-                onClick={() => paginateFront()}
-                className="opjoin-item opbtn"
-              >
-                Next
-              </button>
-            </>
+            <button
+              onClick={() => paginateFront()}
+              className="opjoin-item opbtn"
+            >
+              Next
+            </button>
           )}
         </div>
         {props.List?.length <= 0 && (

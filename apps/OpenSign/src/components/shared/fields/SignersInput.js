@@ -108,7 +108,7 @@ const SignersInput = (props) => {
       <label className="block relative">
         Signers
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
-        <span className="absolute ml-1 text-xs z-50">
+        <span className="absolute ml-1 text-xs z-30">
           <Tooltip
             id={"signer-tooltip"}
             message={

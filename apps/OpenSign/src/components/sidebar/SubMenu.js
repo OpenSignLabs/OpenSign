@@ -7,7 +7,7 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
     <li role="none">
       <button
         onClick={() => toggleSubmenu(item.title)}
-        className="w-full flex items-center text-left text-base-content p-3 lg:p-4 hover:bg-base-300 focus:outline-none hover:text-base-content "
+        className="flex items-center text-left p-3 lg:p-4 focus:outline-none hover:text-base-content "
         aria-expanded={submenuOpen}
         aria-haspopup="true"
         aria-controls={`submenu-${title}`}
@@ -38,7 +38,7 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
                 className={({ isActive }) =>
                   `${
                     isActive ? "bg-base-300" : ""
-                  } mx-auto text-base-content hover:text-base-content hover:bg-base-300 block pl-6 md:pl-8 py-2 text-sm cursor-pointer hover:no-underline`
+                  } flex items-center text-left pl-6 md:pl-8 py-2 text-sm cursor-pointer hover:text-base-content focus:outline-none hover:no-underline`
                 }
                 onClick={closeSidebar}
                 role="menuitem"
