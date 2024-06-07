@@ -5,25 +5,25 @@ const Alert = ({ children, type }) => {
   function theme(color) {
     switch (color) {
       case "success":
-        return "border-[#c3e6cb] bg-[#d4edda] text-[#155724]";
+        return "op-alert-success";
       case "info":
-        return "border-[#adcdeb] bg-[#c1daf0] text-[#153756]";
+        return "op-alert-info";
       case "danger":
-        return "border-[#f0a8a8] bg-[#f4bebe] text-[#c42121]";
+        return "op-alert-error";
+      case "warning":
+        return "op-alert-warning";
       default:
-        return "border-[#d6d6d6] bg-[#d9d9d9] text-[#575757]";
+        return "";
     }
   }
   return (
-    <>
-      {children && (
-        <div
-          className={`z-[1000] fixed top-20 left-1/2 transform -translate-x-1/2 border-[1px] text-sm ${textcolor} rounded py-[.75rem] px-[1.25rem] z-50`}
-        >
-          {children}
+    children && (
+      <div className="z-[1000] fixed top-20 left-1/2 transform -translate-x-1/2 text-sm">
+        <div className={`op-alert ${textcolor}`}>
+          <span>{children}</span>
         </div>
-      )}
-    </>
+      </div>
+    )
   );
 };
 

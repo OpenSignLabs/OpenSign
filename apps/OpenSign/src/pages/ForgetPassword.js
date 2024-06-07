@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import Parse from "parse";
 import Alert from "../primitives/Alert";
@@ -10,6 +10,7 @@ import { fetchAppInfo } from "../redux/reducers/infoReducer";
 
 function ForgotPassword() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     email: "",
     password: "",
@@ -79,7 +80,7 @@ function ForgotPassword() {
             )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-            <div className="">
+            <div>
               <form onSubmit={handleSubmit}>
                 <h2 className="text-[30px] mt-6">Welcome Back !</h2>
                 <span className="text-[12px] text-[#878787]">
@@ -89,9 +90,9 @@ function ForgotPassword() {
                   <div className="px-6 py-4">
                     <label className="block text-xs">Email</label>
                     <input
-                      type="text"
-                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      type="email"
                       name="email"
+                      className="op-input op-input-bordered op-input-sm w-full"
                       value={state.email}
                       onChange={handleChange}
                       required
@@ -103,12 +104,12 @@ function ForgotPassword() {
                   <button type="submit" className="op-btn op-btn-primary">
                     Submit
                   </button>
-                  <NavLink
-                    to="/"
-                    className="rounded-sm bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-3 text-xs font-semibold shadow uppercase cursor-pointer"
+                  <button
+                    onClick={() => navigate("/", { replace: true })}
+                    className="op-btn op-btn-secondary"
                   >
                     Login
-                  </NavLink>
+                  </button>
                 </div>
               </form>
             </div>

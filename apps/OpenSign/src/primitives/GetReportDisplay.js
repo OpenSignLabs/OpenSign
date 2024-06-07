@@ -888,7 +888,7 @@ const ReportTable = (props) => {
           <div className="loader-37"></div>
         </div>
       )}
-      <div className="p-2 overflow-x-scroll w-full bg-white rounded-xl">
+      <div className="p-2 overflow-x-scroll w-full bg-base-100 text-base-content rounded-xl">
         {isCelebration && (
           <div style={{ position: "relative", zIndex: "1000" }}>
             <Confetti width={window.innerWidth} height={window.innerHeight} />
@@ -929,8 +929,7 @@ const ReportTable = (props) => {
             </div>
           )}
         </div>
-        <table className="op-table op-table-zebra">
-          {/* <table className="table-auto w-full border-collapse"> */}
+        <table className="op-table op-table-zebra border-collapse">
           <thead className="text-[14px]">
             <tr className="border-y-[1px]">
               {props.heading?.map((item, index) => (
@@ -1586,7 +1585,7 @@ const ReportTable = (props) => {
           )}
         </div>
         {props.List?.length <= 0 && (
-          <div className="flex flex-col items-center justify-center w-full bg-white rounded-xl py-4">
+          <div className="flex flex-col items-center justify-center w-full bg-base-100 text-base-content rounded-xl py-4">
             <div className="w-[60px] h-[60px] overflow-hidden">
               <img
                 className="w-full h-full object-contain"

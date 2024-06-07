@@ -529,7 +529,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                        className="op-input op-input-bordered op-input-sm w-full"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
@@ -541,8 +541,8 @@ const Signup = () => {
                       </label>
                       <input
                         id="email"
-                        type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs lowercase"
+                        type="email"
+                        className="op-input op-input-bordered op-input-sm w-full"
                         value={email}
                         onChange={(e) =>
                           setEmail(e.target.value?.toLowerCase())
@@ -556,7 +556,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="tel"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                        className="op-input op-input-bordered op-input-sm w-full"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         required
@@ -568,7 +568,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                        className="op-input op-input-bordered op-input-sm w-full"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         required
@@ -580,7 +580,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                        className="op-input op-input-bordered op-input-sm w-full"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
                         required
@@ -593,16 +593,14 @@ const Signup = () => {
                       <div className="relative">
                         <input
                           type={showPassword ? "text" : "password"}
-                          className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                          className="op-input op-input-bordered op-input-sm w-full"
                           name="password"
                           value={password}
                           onChange={(e) => handlePasswordChange(e)}
                           required
                         />
                         <span
-                          className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
-                            showPassword ? "text-[#007bff]" : "text-black"
-                          }`}
+                          className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer text-base-content`}
                           onClick={togglePasswordVisibility}
                         >
                           {showPassword ? (
