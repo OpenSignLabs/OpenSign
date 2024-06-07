@@ -89,10 +89,10 @@ const Header = ({ showSidebar }) => {
   }, [isOpen]);
 
   return (
-    <div className="opnavbar bg-base-100 shadow">
+    <div className="op-navbar bg-base-100 shadow">
       <div className="flex-none">
         <button
-          className="opbtn opbtn-square opbtn-ghost focus:outline-none"
+          className="op-btn op-btn-square op-btn-ghost focus:outline-none"
           onClick={showSidebar}
         >
           <i className="fa-solid fa-bars text-xl text-base-content"></i>
@@ -107,7 +107,7 @@ const Header = ({ showSidebar }) => {
           />
         </div>
       </div>
-      <div className="flex-none gap-2">
+      <div id="profile-menu" className="flex-none gap-2">
         {!isSubscribe && (
           <div>
             <button
@@ -146,8 +146,8 @@ const Header = ({ showSidebar }) => {
             {username && username}
           </div>
         )}
-        <div className="opdropdown opdropdown-end" id="profile-menu">
-          <div tabIndex={0} role="button" className="opbtn opbtn-ghost">
+        <div className="op-dropdown op-dropdown-end" id="profile-menu">
+          <div tabIndex={0} role="button" className="op-btn op-btn-ghost">
             <i
               tabIndex={0}
               role="button"
@@ -157,7 +157,7 @@ const Header = ({ showSidebar }) => {
           </div>
           <ul
             tabIndex={0}
-            className="mt-3 z-[1] p-2 shadow opmenu opmenu-sm opdropdown-content text-base-content bg-base-100 rounded-box w-52"
+            className="mt-3 z-[1] p-2 shadow op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-52"
           >
             <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
               <span>

@@ -147,7 +147,7 @@ const SignersInput = (props) => {
             setIsModel(true);
             openModal();
           }}
-          className="cursor-pointer  border-[1px] opinut opinput-bordered min-h-[38px] min-w-[48px] flex justify-center items-center"
+          className="cursor-pointer border-[1px] op-inut op-input-bordered min-h-[38px] min-w-[48px] flex justify-center items-center"
         >
           <i className="fas fa-plus"></i>
         </div>

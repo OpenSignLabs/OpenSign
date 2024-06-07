@@ -67,7 +67,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         </div>
       </div>
       <nav
-        className="opmenu opmenu-sm"
+        className="op-menu op-menu-sm"
         aria-label="OpenSign Sidebar Navigation"
       >
         <ul

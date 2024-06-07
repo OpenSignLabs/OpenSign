@@ -7,6 +7,6 @@ module.exports = {
   plugins: [require("daisyui")],
   daisyui: {
     themes: ["emerald", "dark"],
-    prefix: "op"
+    prefix: "op-"
   }
 };

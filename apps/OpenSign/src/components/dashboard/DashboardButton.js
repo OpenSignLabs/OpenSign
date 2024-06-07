@@ -26,7 +26,7 @@ const DashboardButton = (props) => {
         props.Data && props.Data.Redirect_type
           ? "cursor-pointer"
           : "cursor-default"
-      } w-full shadow-md px-3 py-2 opcard bg-base-100`}
+      } w-full shadow-md px-3 py-2 op-card bg-base-100`}
     >
       <div className="flex flex-row items-center">
         <span className="rounded-full bg-base-content bg-opacity-20 w-[60px] h-[60px] self-start flex justify-center items-center">
@@ -36,7 +36,7 @@ const DashboardButton = (props) => {
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
-        <div className="opcard-title text-lg ml-3 text-base-content">
+        <div className="op-card-title text-lg ml-3 text-base-content">
           {props.Label}
         </div>
       </div>
