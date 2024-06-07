@@ -179,6 +179,7 @@ export default async function createDocumentWithTemplate(request, response) {
             }
             object.set('URL', template.URL);
             object.set('SignedUrl', template.URL);
+            object.set('SentToOthers', true);
             if (TimeToCompleteDays) {
               object.set('TimeToCompleteDays', TimeToCompleteDays);
             }

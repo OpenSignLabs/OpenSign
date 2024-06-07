@@ -9,7 +9,23 @@ const BulkSendUi = (props) => {
   const [scrollOnNextUpdate, setScrollOnNextUpdate] = useState(false);
   const [isSubmit, setIsSubmit] = useState(false);
   const [allowedForm, setAllowedForm] = useState(0);
+  const [isSignatureExist, setIsSignatureExist] = useState();
   const allowedSigners = 50;
+  useEffect(() => {
+    signatureExist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  //function to check atleast one signature field exist
+  const signatureExist = () => {
+    const getPlaceholder = props.item?.Placeholders;
+    const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
+      placeholderObj?.placeHolder?.some((holder) =>
+        holder?.pos?.some((posItem) => posItem?.type === "signature")
+      )
+    );
+    setIsSignatureExist(checkIsSignatureExistt);
+  };
   useEffect(() => {
     if (scrollOnNextUpdate && formRef.current) {
       formRef.current.scrollIntoView({
@@ -165,65 +181,73 @@ const BulkSendUi = (props) => {
         </div>
       )}
       {props.Placeholders?.length > 0 ? (
-        <>
-          {props.Placeholders?.some((x) => !x.signerObjId) ? (
-            <form onSubmit={handleSubmit}>
-              <div className=" min-h-max max-h-[250px] overflow-y-auto">
-                {forms?.map((form, index) => (
-                  <div
-                    key={form.Id}
-                    className="p-3 rounded-xl border-[1px] border-gray-400 m-4 bg-white text-black grid grid-cols-1 md:grid-cols-2 gap-2 relative"
+        isSignatureExist ? (
+          <>
+            {props.Placeholders?.some((x) => !x.signerObjId) ? (
+              <form onSubmit={handleSubmit}>
+                <div className=" min-h-max max-h-[250px] overflow-y-auto">
+                  {forms?.map((form, index) => (
+                    <div
+                      key={form.Id}
+                      className="p-3 rounded-xl border-[1px] border-gray-400 m-4 bg-white text-black grid grid-cols-1 md:grid-cols-2 gap-2 relative"
+                    >
+                      {form?.fields?.map((field, fieldIndex) => (
+                        <div className="flex flex-col " key={field.fieldId}>
+                          <label>{field.label}</label>
+                          <SuggestionInput
+                            required
+                            type="email"
+                            value={field.value}
+                            index={fieldIndex}
+                            onChange={(signer) =>
+                              handleInputChange(index, signer, fieldIndex)
+                            }
+                          />
+                        </div>
+                      ))}
+                      {forms?.length > 1 && (
+                        <button
+                          onClick={() => handleRemoveForm(index)}
+                          className="absolute right-3 top-1 border border-gray-300 rounded-lg px-2 py-1"
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      )}
+                      <div ref={formRef}></div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col mx-4 mb-4 gap-3">
+                  <button
+                    onClick={handleAddForm}
+                    className="bg-[#32a3ac] p-2 text-white w-full rounded-full focus:outline-none"
                   >
-                    {form?.fields?.map((field, fieldIndex) => (
-                      <div className="flex flex-col " key={field.fieldId}>
-                        <label>{field.label}</label>
-                        <SuggestionInput
-                          required
-                          type="email"
-                          value={field.value}
-                          index={fieldIndex}
-                          onChange={(signer) =>
-                            handleInputChange(index, signer, fieldIndex)
-                          }
-                        />
-                      </div>
-                    ))}
-                    {forms?.length > 1 && (
-                      <button
-                        onClick={() => handleRemoveForm(index)}
-                        className="absolute right-3 top-1 border border-gray-300 rounded-lg px-2 py-1"
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
-                    )}
-                    <div ref={formRef}></div>
-                  </div>
-                ))}
+                    <i className="fa-solid fa-plus"></i> <span>Add new</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-[#32a3ac] p-2 text-white w-full rounded-full focus:outline-none"
+                  >
+                    <i className="fa-solid fa-paper-plane"></i>{" "}
+                    <span>Send</span>
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
+                All roles in this document are currently linked to contacts. To
+                &apos;quick send&apos; copies of this template to multiple
+                signers, please ensure that at least one role is not linked to
+                any contact.
               </div>
-              <div className="flex flex-col mx-4 mb-4 gap-3">
-                <button
-                  onClick={handleAddForm}
-                  className="bg-[#32a3ac] p-2 text-white w-full rounded-full focus:outline-none"
-                >
-                  <i className="fa-solid fa-plus"></i> <span>Add new</span>
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#32a3ac] p-2 text-white w-full rounded-full focus:outline-none"
-                >
-                  <i className="fa-solid fa-paper-plane"></i> <span>Send</span>
-                </button>
-              </div>
-            </form>
-          ) : (
-            <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
-              All roles in this document are currently linked to contacts. To
-              &apos;quick send&apos; copies of this template to multiple
-              signers, please ensure that at least one role is not linked to any
-              contact.
-            </div>
-          )}
-        </>
+            )}
+          </>
+        ) : (
+          <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
+            Please ensure there&#39;s at least one signature widget added for
+            all recipients.
+          </div>
+        )
       ) : (
         <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
           Please add at least one role to this template in order to &apos;quick

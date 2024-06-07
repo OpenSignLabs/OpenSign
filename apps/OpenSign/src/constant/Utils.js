@@ -669,6 +669,7 @@ export const createDocument = async (template, placeholders, signerData) => {
       Name: Doc.Name,
       URL: Doc.URL,
       SignedUrl: Doc.SignedUrl,
+      SentToOthers: Doc.SentToOthers,
       Description: Doc.Description,
       Note: Doc.Note,
       Placeholders: placeholdersArr,
