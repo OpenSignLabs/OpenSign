@@ -101,24 +101,11 @@ function Webhook() {
       {isErr && <Alert type="danger">Something went wrong!</Alert>}
 
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[100vh] flex justify-center items-center text-[45px] text-[#3dd3e0]">
+          <div className="loader-37"></div>
         </div>
       ) : (
-        <div className="bg-white flex flex-col justify-center shadow rounded">
+        <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded">
           {!isEnableSubscription && <PremiumAlertHeader />}
           <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
             OpenSign™ Webhook{" "}
@@ -146,7 +133,7 @@ function Webhook() {
               <button
                 type="button"
                 onClick={handleModal}
-                className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-4 py-2 text-xs md:text-base focus:outline-none"
+                className="op-btn op-btn-primary "
               >
                 {webhook ? "Update Webhook" : "Add Webhook"}
               </button>
@@ -161,7 +148,7 @@ function Webhook() {
                   "https://docs.opensignlabs.com/docs/API-docs/save-update-webhook"
                 )
               }
-              className="rounded hover:bg-[#15b4e9] border-[1px] my-2 border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
+              className="op-btn op-btn-primary my-2"
             >
               View Docs
             </button>
