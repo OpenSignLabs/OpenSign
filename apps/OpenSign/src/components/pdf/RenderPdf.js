@@ -206,13 +206,9 @@ function RenderPdf({
   const checkSignedSignes = (data) => {
     let checkSign = [];
     //condition to handle quick send flow and using normal request sign flow
-    if (signedSigners[0]?.Id) {
-      checkSign = signedSigners.filter((sign) => sign.Id === data.Id);
-    } else {
-      checkSign = signedSigners.filter(
-        (sign) => sign.objectId === data.signerObjId
-      );
-    }
+    checkSign = signedSigners.filter(
+      (sign) => sign?.Id === data?.Id || sign?.objectId === data?.signerObjId
+    );
     if (data.signerObjId === signerObjectId) {
       setCurrentSigner(true);
     }
