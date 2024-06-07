@@ -339,14 +339,14 @@ const DashboardCard = (props) => {
       }`}
     >
       <div className="flex items-center justify-start gap-5 text-white">
-        <span className="rounded-full bg-black bg-opacity-20 w-[60px] h-[60px]  self-start flex justify-center items-center">
+        <span className="rounded-full bg-black bg-opacity-20 w-[60px] h-[60px] self-start flex justify-center items-center">
           <i
             className={`${
               props.Icon ? props.Icon : "fa fa-solid fa-info"
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
-        <div className=" font-medium">
+        <div className="font-medium">
           <div className="text-base lg:text-lg"> {props.Label}</div>
           <div className="text-2xl font-light">
             {loading ? <div className="loader-01"></div> : setFormat(response)}

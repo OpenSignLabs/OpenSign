@@ -322,7 +322,7 @@ function UserProfile() {
               {userNameError}
             </div>
           )}
-          <div className="bg-white flex flex-col justify-center shadow rounded w-[450px]">
+          <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
               <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
                 <img
@@ -334,7 +334,7 @@ function UserProfile() {
               {editmode && (
                 <input
                   type="file"
-                  className="max-w-[270px] text-sm py-1 px-2 mt-4 border-[1px] border-[#15b4e9] text-black rounded"
+                  className="max-w-[270px] text-sm py-1 px-2 mt-4 border-[1px] border-[#15b4e9] rounded"
                   accept="image/png, image/gif, image/jpeg"
                   onChange={(e) => {
                     let files = e.target.files;
@@ -368,7 +368,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={name}
-                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] rounded"
                     onChange={(e) => SetName(e.target.value)}
                   />
                 ) : (
@@ -384,7 +384,7 @@ function UserProfile() {
                 {editmode ? (
                   <input
                     type="text"
-                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] rounded"
                     onChange={(e) => SetPhone(e.target.value)}
                     value={Phone}
                   />
@@ -406,7 +406,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={company}
-                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] rounded"
                     onChange={(e) => setCompany(e.target.value)}
                   />
                 ) : (
@@ -423,7 +423,8 @@ function UserProfile() {
                   <input
                     type="text"
                     value={jobTitle}
-                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    className="py-1 px-2 text-sm op-input op-input-bordered rounded-xl"
+                    // className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
                     onChange={(e) => setJobTitle(e.target.value)}
                   />
                 ) : (

@@ -45,7 +45,7 @@ const Footer = () => {
   };
   return (
     <>
-      <footer className="opfooter opfooter-center py-3 bg-base-300 text-base-content text-center text-[13px]">
+      <footer className="op-footer op-footer-center py-3 bg-base-300 text-base-content text-center text-[13px]">
         <aside>
           <p>
             All Rights Reserved &copy; {new Date().getFullYear()} &nbsp;

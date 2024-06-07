@@ -18,28 +18,26 @@ const buttonList = [
 ];
 const GetDashboard = (props) => {
   const Button = ({ label, redirectId, redirectType, icon }) => (
-    <>
-      <Suspense
-        fallback={
-          <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
-            <div className="loader-37"></div>
-          </div>
-        }
-      >
-        <DashboardButton
-          Icon={icon}
-          Label={label}
-          Data={{ Redirect_type: redirectType, Redirect_id: redirectId }}
-        />
-      </Suspense>
-    </>
+    <Suspense
+      fallback={
+        <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
+          <div className="loader-37"></div>
+        </div>
+      }
+    >
+      <DashboardButton
+        Icon={icon}
+        Label={label}
+        Data={{ Redirect_type: redirectType, Redirect_id: redirectId }}
+      />
+    </Suspense>
   );
   const renderSwitchWithTour = (col) => {
     switch (col.widget.type) {
       case "Card":
         return (
           <div
-            className="opcard bg-[#2ed8b6] w-full h-[140px] px-3 pt-4 mb-3 shadow-md"
+            className="op-card bg-[#2ed8b6] w-full h-[140px] px-3 pt-4 mb-3 shadow-md"
             data-tut={col.widget.data.tourSection}
             style={{ background: col.widget.bgColor }}
           >
@@ -80,7 +78,7 @@ const GetDashboard = (props) => {
       case "Card":
         return (
           <div
-            className="opcard bg-[#2ed8b6] w-full h-[140px] px-3 pt-4 mb-3 shadow-md"
+            className="op-card bg-[#2ed8b6] w-full h-[140px] px-3 pt-4 mb-3 shadow-md"
             style={{ background: col.widget.bgColor }}
           >
             <Suspense fallback={<div>please wait</div>}>

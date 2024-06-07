@@ -571,16 +571,8 @@ const Forms = (props) => {
         </Alert>
       )}
       {isSubmit ? (
-        <div style={{ height: "300px" }}>
-          <div
-            style={{
-              marginLeft: "45%",
-              marginTop: "150px",
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
+          <div className="loader-37"></div>
         </div>
       ) : (
         <>
@@ -648,7 +640,7 @@ const Forms = (props) => {
               </label>
               {fileupload.length > 0 ? (
                 <div className="flex gap-2 justify-center items-center">
-                  <div className="flex justify-between items-center opinput opinput-bordered w-full opinput-sm text-x text-[13px]">
+                  <div className="flex justify-between items-center op-input op-input-bordered op-input-sm w-full text-x text-[13px]">
                     <div className="break-all">
                       file selected : {getFileName(fileupload)}
                     </div>
@@ -670,7 +662,7 @@ const Forms = (props) => {
                 <div className="flex gap-2 justify-center items-center ">
                   <input
                     type="file"
-                    className="opfile-input opfile-input-bordered opfile-input-sm w-full text-xs"
+                    className="op-file-input op-file-input-bordered op-file-input-sm w-full text-xs"
                     onChange={(e) => handleFileInput(e)}
                     ref={inputFileRef}
                     accept={
@@ -698,7 +690,7 @@ const Forms = (props) => {
               </label>
               <input
                 name="Name"
-                className="opinput opinput-bordered w-full opinput-sm text-xs"
+                className="op-input op-input-bordered op-input-sm w-full text-xs"
                 value={formData.Name}
                 onChange={(e) => handleStrInput(e)}
                 required
@@ -708,7 +700,7 @@ const Forms = (props) => {
               <label className="block">Description</label>
               <input
                 name="Description"
-                className="opinput opinput-bordered w-full opinput-sm text-xs"
+                className="op-input op-input-bordered op-input-sm w-full text-xs"
                 value={formData.Description}
                 onChange={(e) => handleStrInput(e)}
               />
@@ -726,7 +718,7 @@ const Forms = (props) => {
               </label>
               <input
                 name="Note"
-                className="opinput opinput-bordered w-full opinput-sm text-xs"
+                className="op-input op-input-bordered op-input-sm w-full text-xs"
                 value={formData.Note}
                 onChange={(e) => handleStrInput(e)}
                 required
@@ -748,7 +740,7 @@ const Forms = (props) => {
                 <input
                   type="number"
                   name="TimeToCompleteDays"
-                  className="opinput opinput-bordered w-full opinput-sm text-xs"
+                  className="op-input op-input-bordered op-input-sm w-full text-xs"
                   value={formData.TimeToCompleteDays}
                   onChange={(e) => handleStrInput(e)}
                   required
@@ -821,7 +813,7 @@ const Forms = (props) => {
                     <input
                       type="radio"
                       value={"true"}
-                      className="opradio opradio-xs"
+                      className="op-radio op-radio-xs"
                       name="SendinOrder"
                       checked={formData.SendinOrder === "true"}
                       onChange={handleStrInput}
@@ -833,7 +825,7 @@ const Forms = (props) => {
                       type="radio"
                       value={"false"}
                       name="SendinOrder"
-                      className="opradio opradio-xs"
+                      className="op-radio op-radio-xs"
                       checked={formData.SendinOrder === "false"}
                       onChange={handleStrInput}
                     />
@@ -867,7 +859,7 @@ const Forms = (props) => {
                   >
                     <input
                       type="checkbox"
-                      className="optoggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
+                      className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
                       checked={formData.autoreminder}
                       onChange={handleAutoReminder}
                     />
@@ -883,7 +875,7 @@ const Forms = (props) => {
                       type="number"
                       value={formData.remindOnceInEvery}
                       name="remindOnceInEvery"
-                      className="opinput opinput-bordered w-full opinput-sm text-xs"
+                      className="op-input op-input-bordered op-input-sm w-full text-xs"
                       onChange={handleStrInput}
                       required
                     />
@@ -895,14 +887,14 @@ const Forms = (props) => {
               <button
                 className={`${
                   isSubmit ? "cursor-progress" : ""
-                } opbtn opbtn-primary`}
+                } op-btn op-btn-primary`}
                 type="submit"
                 disabled={isSubmit}
               >
                 Next
               </button>
               <div
-                className="opbtn opbtn-neutral"
+                className="op-btn op-btn-neutral"
                 onClick={() => handleReset()}
               >
                 Reset
