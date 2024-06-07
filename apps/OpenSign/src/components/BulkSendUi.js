@@ -13,6 +13,7 @@ const BulkSendUi = (props) => {
   const allowedSigners = 50;
   useEffect(() => {
     signatureExist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //function to check atleast one signature field exist

@@ -6,8 +6,8 @@ import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
 import {
   modalSubmitBtnColor,
-  modalCancelBtnColor,
-  isEnableSubscription
+  modalCancelBtnColor
+  // isEnableSubscription
 } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
@@ -15,8 +15,11 @@ import { RWebShare } from "react-web-share";
 import Tour from "reactour";
 import Parse from "parse";
 import { saveAs } from "file-saver";
-import { copytoData, replaceMailVaribles } from "../constant/Utils";
-import Confetti from "react-confetti";
+import {
+  // copytoData,
+  replaceMailVaribles
+} from "../constant/Utils";
+// import Confetti from "react-confetti";
 import EditorToolbar, {
   module1,
   formats
@@ -41,7 +44,7 @@ const ReportTable = (props) => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [isResendMail, setIsResendMail] = useState({});
-  const [isMakePublic, setIsMakePublic] = useState({});
+  // const [isMakePublic, setIsMakePublic] = useState({});
   const [mail, setMail] = useState({ subject: "", body: "" });
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
@@ -49,12 +52,12 @@ const ReportTable = (props) => {
   const [templateDeatils, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
-  const [selectedPublicRole, setSelectedPublicRole] = useState("");
-  const [isCelebration, setIsCelebration] = useState(false);
+  // const [selectedPublicRole, setSelectedPublicRole] = useState("");
+  // const [isCelebration, setIsCelebration] = useState(false);
   const [currentLists, setCurrentLists] = useState([]);
-  const [isPublic, setIsPublic] = useState({});
-  const [isPublicProfile, setIsPublicProfile] = useState({});
-  const [publicUserName, setIsPublicUserName] = useState("");
+  // const [isPublic, setIsPublic] = useState({});
+  // const [isPublicProfile, setIsPublicProfile] = useState({});
+  // const [publicUserName, setIsPublicUserName] = useState("");
   const [isViewShare, setIsViewShare] = useState({});
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
@@ -251,12 +254,12 @@ const ReportTable = (props) => {
     // `currentLists` is total record render on current page
     const currentList = props.List?.slice(indexOfFirstDoc, indexOfLastDoc);
     //check public template and save in a object to show public and private template
-    setIsPublic(
-      currentList.reduce((acc, item) => {
-        acc[item.objectId] = item?.IsPublic || false;
-        return acc;
-      }, {})
-    );
+    // setIsPublic(
+    //   currentList.reduce((acc, item) => {
+    //     acc[item.objectId] = item?.IsPublic || false;
+    //     return acc;
+    //   }, {})
+    // );
     setCurrentLists(currentList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [indexOfLastDoc, indexOfFirstDoc]);
@@ -321,16 +324,16 @@ const ReportTable = (props) => {
       setActLoader({});
     }
   };
-  const handleClose = (item) => {
+  const handleClose = () => {
     setIsRevoke({});
     setIsDeleteModal({});
-    setIsMakePublic({});
-    setSelectedPublicRole("");
-    setIsPublic((prevStates) => ({
-      ...prevStates,
-      [item.objectId]: !prevStates[item.objectId]
-    }));
-    setIsPublicProfile({});
+    // setIsMakePublic({});
+    // setSelectedPublicRole("");
+    // setIsPublic((prevStates) => ({
+    //   ...prevStates,
+    //   [item.objectId]: !prevStates[item.objectId]
+    // }));
+    // setIsPublicProfile({});
   };
 
   const handleShare = (item) => {
@@ -730,130 +733,130 @@ const ReportTable = (props) => {
   };
 
   //function to make template public and set public role
-  const handlePublicTemplate = async (item) => {
-    if (selectedPublicRole || !isPublic[item.objectId]) {
-      setActLoader({ [item.objectId]: true });
-      setIsMakePublic(false);
-      try {
-        const res = await Parse.Cloud.run("createpublictemplate", {
-          templateid: item.objectId,
-          ispublic: isPublic[item.objectId],
-          publicrole: [selectedPublicRole]
-        });
+  // const handlePublicTemplate = async (item) => {
+  //   if (selectedPublicRole || !isPublic[item.objectId]) {
+  //     setActLoader({ [item.objectId]: true });
+  //     setIsMakePublic(false);
+  //     try {
+  //       const res = await Parse.Cloud.run("createpublictemplate", {
+  //         templateid: item.objectId,
+  //         ispublic: isPublic[item.objectId],
+  //         publicrole: [selectedPublicRole]
+  //       });
 
-        if (res.status === "success") {
-          setIsAlert(true);
-          setTimeout(() => setIsAlert(false), 1500);
-          if (isPublic[item.objectId]) {
-            setAlertMsg({
-              type: "success",
-              message: "You have successfully made the template public."
-            });
-            setIsCelebration(true);
-            setTimeout(() => {
-              setIsCelebration(false);
-            }, 5000);
-            setIsPublicProfile({ [item.objectId]: isPublic[item.objectId] });
-          } else {
-            setAlertMsg({
-              type: "success",
-              message: "You have successfully made the template private."
-            });
-            setSelectedPublicRole("");
-          }
-          const updateList = props.List.map((x) =>
-            x.objectId === item.objectId
-              ? { ...x, IsPublic: isPublic[item.objectId] }
-              : x
-          );
-          props.setList(updateList);
-          setActLoader({});
-        }
-      } catch (e) {
-        console.log("error in createpublictemplate", e);
-        setIsAlert(true);
-        setAlertMsg({
-          type: "danger",
-          message: "Something went wrong, Please try again later!"
-        });
-        setTimeout(() => setIsAlert(false), 1500);
-        setIsPublic((prevStates) => ({
-          ...prevStates,
-          [item.objectId]: !prevStates[item.objectId]
-        }));
-      }
-    } else {
-      setIsAlert(true);
-      setAlertMsg({
-        type: "danger",
-        message: "You need to select a role for the public signers."
-      });
-      setTimeout(() => setIsAlert(false), 1500);
-    }
-  };
+  //       if (res.status === "success") {
+  //         setIsAlert(true);
+  //         setTimeout(() => setIsAlert(false), 1500);
+  //         if (isPublic[item.objectId]) {
+  //           setAlertMsg({
+  //             type: "success",
+  //             message: "You have successfully made the template public."
+  //           });
+  //           setIsCelebration(true);
+  //           setTimeout(() => {
+  //             setIsCelebration(false);
+  //           }, 5000);
+  //           setIsPublicProfile({ [item.objectId]: isPublic[item.objectId] });
+  //         } else {
+  //           setAlertMsg({
+  //             type: "success",
+  //             message: "You have successfully made the template private."
+  //           });
+  //           setSelectedPublicRole("");
+  //         }
+  //         const updateList = props.List.map((x) =>
+  //           x.objectId === item.objectId
+  //             ? { ...x, IsPublic: isPublic[item.objectId] }
+  //             : x
+  //         );
+  //         props.setList(updateList);
+  //         setActLoader({});
+  //       }
+  //     } catch (e) {
+  //       console.log("error in createpublictemplate", e);
+  //       setIsAlert(true);
+  //       setAlertMsg({
+  //         type: "danger",
+  //         message: "Something went wrong, Please try again later!"
+  //       });
+  //       setTimeout(() => setIsAlert(false), 1500);
+  //       setIsPublic((prevStates) => ({
+  //         ...prevStates,
+  //         [item.objectId]: !prevStates[item.objectId]
+  //       }));
+  //     }
+  //   } else {
+  //     setIsAlert(true);
+  //     setAlertMsg({
+  //       type: "danger",
+  //       message: "You need to select a role for the public signers."
+  //     });
+  //     setTimeout(() => setIsAlert(false), 1500);
+  //   }
+  // };
 
   const handleViewSigners = (item) => {
     setIsViewShare({ [item.objectId]: true });
   };
   //function to handle change template status is public or private
-  const handlePublicChange = async (e, item) => {
-    const getPlaceholder = item?.Placeholders;
-    //condiiton to check role is exist or not
-    if (getPlaceholder && getPlaceholder.length > 0) {
-      const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
-        placeholderObj?.placeHolder?.some((holder) =>
-          holder?.pos?.some((posItem) => posItem?.type === "signature")
-        )
-      );
-      if (checkIsSignatureExistt) {
-        let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
-        const userName = extendUser[0]?.UserName;
-        setIsPublicUserName(extendUser[0]?.UserName);
-        //condition to check user have public url or not
-        if (userName) {
-          setIsPublic((prevStates) => ({
-            ...prevStates,
-            [item.objectId]: e.target.checked
-          }));
-          const getPlaceholder = item?.Placeholders;
-          if (getPlaceholder.length === 1) {
-            setSelectedPublicRole(getPlaceholder[0]?.Role);
-          }
+  // const handlePublicChange = async (e, item) => {
+  //   const getPlaceholder = item?.Placeholders;
+  //   //condiiton to check role is exist or not
+  //   if (getPlaceholder && getPlaceholder.length > 0) {
+  //     const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
+  //       placeholderObj?.placeHolder?.some((holder) =>
+  //         holder?.pos?.some((posItem) => posItem?.type === "signature")
+  //       )
+  //     );
+  //     if (checkIsSignatureExistt) {
+  //       let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+  //       const userName = extendUser[0]?.UserName;
+  //       setIsPublicUserName(extendUser[0]?.UserName);
+  //       //condition to check user have public url or not
+  //       if (userName) {
+  //         setIsPublic((prevStates) => ({
+  //           ...prevStates,
+  //           [item.objectId]: e.target.checked
+  //         }));
+  //         const getPlaceholder = item?.Placeholders;
+  //         if (getPlaceholder.length === 1) {
+  //           setSelectedPublicRole(getPlaceholder[0]?.Role);
+  //         }
 
-          setIsMakePublic({ [item.objectId]: true });
-        } else {
-          setIsPublicProfile({ [item.objectId]: true });
-        }
-      } else {
-        setIsAlert(true);
-        setAlertMsg({
-          type: "danger",
-          message:
-            " Please ensure there's at least one signature widget added for all recipients."
-        });
-        setTimeout(() => setIsAlert(false), 5000);
-      }
-    } else {
-      setIsAlert(true);
-      setAlertMsg({
-        type: "danger",
-        message: "Please assign at least one role to make this template public."
-      });
-      setTimeout(() => setIsAlert(false), 5000);
-    }
-  };
+  //         setIsMakePublic({ [item.objectId]: true });
+  //       } else {
+  //         setIsPublicProfile({ [item.objectId]: true });
+  //       }
+  //     } else {
+  //       setIsAlert(true);
+  //       setAlertMsg({
+  //         type: "danger",
+  //         message:
+  //           " Please ensure there's at least one signature widget added for all recipients."
+  //       });
+  //       setTimeout(() => setIsAlert(false), 5000);
+  //     }
+  //   } else {
+  //     setIsAlert(true);
+  //     setAlertMsg({
+  //       type: "danger",
+  //       message: "Please assign at least one role to make this template public."
+  //     });
+  //     setTimeout(() => setIsAlert(false), 5000);
+  //   }
+  // };
 
   //function to copy public profile links
-  const copytoProfileLink = () => {
-    const url = `https://opensign-me.vercel.app/${publicUserName}`;
-    copytoData(url);
-    setIsAlert(true);
-    setAlertMsg({
-      type: "success",
-      message: "Copied."
-    });
-    setTimeout(() => setIsAlert(false), 1500);
-  };
+  // const copytoProfileLink = () => {
+  //   const url = `https://opensign-me.vercel.app/${publicUserName}`;
+  //   copytoData(url);
+  //   setIsAlert(true);
+  //   setAlertMsg({
+  //     type: "success",
+  //     message: "Copied."
+  //   });
+  //   setTimeout(() => setIsAlert(false), 1500);
+  // };
 
   return (
     <div className="relative">
@@ -866,11 +869,11 @@ const ReportTable = (props) => {
         </div>
       )}
       <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
-        {isCelebration && (
+        {/* {isCelebration && (
           <div style={{ position: "relative", zIndex: "1000" }}>
             <Confetti width={window.innerWidth} height={window.innerHeight} />
           </div>
-        )}
+        )} */}
         {isAlert && <Alert type={alertMsg.type}>{alertMsg.message}</Alert>}
         {props.tourData && props.ReportName === "Templates" && (
           <Tour
@@ -917,9 +920,9 @@ const ReportTable = (props) => {
               {props.actions?.length > 0 && (
                 <th className="px-4 py-2 font-thin">Action</th>
               )}
-              {props.ReportName === "Templates" && isEnableSubscription && (
+              {/* {props.ReportName === "Templates" && isEnableSubscription && (
                 <th className="px-4 py-2 font-thin">Public</th>
-              )}
+              )} */}
             </tr>
           </thead>
           <tbody className="text-[12px]">
@@ -1364,7 +1367,7 @@ const ReportTable = (props) => {
                           </ModalUi>
                         )}
                       </td>
-                      {isEnableSubscription && (
+                      {/* {isEnableSubscription && (
                         <td className=" pl-[20px] py-2    ">
                           {props.ReportName === "Templates" && (
                             <div className="  flex flex-row-">
@@ -1527,7 +1530,7 @@ const ReportTable = (props) => {
                             </ModalUi>
                           )}
                         </td>
-                      )}
+                      )} */}
                     </tr>
                   )
                 )}
