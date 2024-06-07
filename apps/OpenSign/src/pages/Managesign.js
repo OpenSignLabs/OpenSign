@@ -6,6 +6,7 @@ import { toDataUrl } from "../constant/Utils";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
 import { SaveFileSize } from "../constant/saveFileSize";
+import Alert from "../primitives/Alert";
 const ManageSign = () => {
   const appName = appInfo.appname;
   const [penColor, setPenColor] = useState("blue");
@@ -17,7 +18,7 @@ const ManageSign = () => {
   const [isvalue, setIsValue] = useState(false);
   const allColor = ["blue", "red", "black"];
   const [isLoader, setIsLoader] = useState(true);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isAlert, setIsAlert] = useState({ type: "success", message: "" });
   const [Initials, setInitials] = useState("");
   const [isInitials, setIsInitials] = useState(false);
   const [id, setId] = useState("");
@@ -185,12 +186,20 @@ const ManageSign = () => {
         updateSign.set("UserId", userId);
         const res = await updateSign.save();
         setIsLoader(false);
-        setIsSuccess(true);
+        setIsAlert({
+          type: "success",
+          message: "Signature saved successfully."
+        });
+        setTimeout(() => setIsAlert({}), 2000);
         return res;
       } catch (err) {
         console.log(err);
         setIsLoader(false);
-        alert(`${err.message}`);
+        setIsAlert({
+          type: "danger",
+          message: `${err.message}`
+        });
+        setTimeout(() => setIsAlert({}), 2000);
       }
     } else {
       try {
@@ -201,12 +210,20 @@ const ManageSign = () => {
         updateSign.set("UserId", userId);
         const res = await updateSign.save();
         setIsLoader(false);
-        setIsSuccess(true);
+        setIsAlert({
+          type: "success",
+          message: "Signature saved successfully."
+        });
+        setTimeout(() => setIsAlert({}), 2000);
         return res;
       } catch (err) {
         console.log(err);
         setIsLoader(false);
-        alert(`${err.message}`);
+        setIsAlert({
+          type: "success",
+          message: `${err.message}`
+        });
+        setTimeout(() => setIsAlert({}), 2000);
       }
     }
   };
@@ -230,15 +247,7 @@ const ManageSign = () => {
           <div className="loader-37 "></div>
         </div>
       )}
-      {isSuccess && (
-        <div
-          className="alert alert-success successBox"
-          role="alert"
-          onAnimationEnd={() => setIsSuccess(false)}
-        >
-          Signature saved successfully!
-        </div>
-      )}
+      {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
       <div
         className="mainDiv"
         style={{

@@ -599,42 +599,22 @@ function DriveBody(props) {
         isOpen={isDeleteDoc}
         headerColor={themeColor}
         title={"Delete Document"}
-        handleClose={() => {
-          setIsDeleteDoc(false);
-        }}
+        handleClose={() => setIsDeleteDoc(false)}
       >
-        <div style={{ height: "100%", padding: 20 }}>
+        <div className="h-full p-[20px]">
           <p>Are you sure you want to delete this document?</p>
-
-          <div
-            style={{
-              height: "1px",
-              backgroundColor: "#9f9f9f",
-              width: "100%",
-              marginTop: "15px",
-              marginBottom: "15px"
-            }}
-          ></div>
-
+          <div className="h-[1px] w-full bg-[#9f9f9f] my-[15px]"></div>
           <button
-            onClick={() => {
-              handleDeleteDocument(selectDoc);
-            }}
-            style={{
-              background: themeColor,
-              color: "white"
-            }}
+            onClick={() => handleDeleteDocument(selectDoc)}
             type="button"
-            className="finishBtn"
+            className="op-btn op-btn-primary mr-2"
           >
             Yes
           </button>
           <button
-            onClick={() => {
-              setIsDeleteDoc(false);
-            }}
+            onClick={() => setIsDeleteDoc(false)}
             type="button"
-            className="finishBtn cancelBtn"
+            className="op-btn op-btn-neutral"
           >
             No
           </button>
