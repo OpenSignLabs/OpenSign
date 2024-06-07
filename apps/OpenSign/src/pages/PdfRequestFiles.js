@@ -32,7 +32,8 @@ import {
   contactBook,
   handleDownloadPdf,
   handleToPrint,
-  handleDownloadCertificate
+  handleDownloadCertificate,
+  darkenColor
 } from "../constant/Utils";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -74,7 +75,7 @@ function PdfRequestFiles() {
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isCelebration, setIsCelebration] = useState(false);
-  const [requestSignTour, setRequestSignTour] = useState(true);
+  const [requestSignTour, setRequestSignTour] = useState(false);
   const [tourStatus, setTourStatus] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
@@ -296,6 +297,10 @@ function PdfRequestFiles() {
         setExpiredDate(expireDateFormat);
       } // Check if the current signer is not a last signer and handle the complete message.
       else if (isNextUser) {
+        setIsCelebration(true);
+        setTimeout(() => {
+          setIsCelebration(false);
+        }, 5000);
         setIsCompleted({
           isModal: true,
           message:
@@ -330,7 +335,7 @@ function PdfRequestFiles() {
           }
         }
       }
-      const checkDocIdExist =
+      const audittrailData =
         documentData[0].AuditTrail &&
         documentData[0].AuditTrail.length > 0 &&
         documentData[0].AuditTrail.filter((data) => data.Activity === "Signed");
@@ -399,41 +404,53 @@ function PdfRequestFiles() {
       let signers = [];
       let unSignedSigner = [];
 
-      //check document is signed or not
-      if (checkDocIdExist && checkDocIdExist.length > 0) {
+      const placeholdersOrSigners = [];
+      for (const placeholder of documentData[0].Placeholders) {
+        //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
+        const emailExist = placeholder?.email;
+        if (emailExist) {
+          placeholdersOrSigners.push(placeholder);
+        } else {
+          const getSignerData = documentData[0].Signers.filter(
+            (data) => data.objectId === placeholder?.signerObjId
+          );
+          placeholdersOrSigners.push(getSignerData[0]);
+        }
+      }
+      //condition to check already signed document by someone
+      if (audittrailData && audittrailData.length > 0) {
         setIsDocId(true);
-        const signerRes = documentData[0].Signers;
-        //comparison auditTrail user details with signers user details
-        for (let i = 0; i < signerRes.length; i++) {
-          const signerId = signerRes[i].objectId;
 
+        for (const item of placeholdersOrSigners) {
+          const checkEmail = item?.email;
+          //if email exist then compare user signed by using email else signers objectId
+          const emailOrId = checkEmail ? item.email : item.objectId;
+          //`isSignedSignature` variable to handle break loop whenever it get true
           let isSignedSignature = false;
-          for (let j = 0; j < checkDocIdExist.length; j++) {
-            const signedExist =
-              checkDocIdExist[j] && checkDocIdExist[j].UserPtr.objectId;
-            //checking signerObjId and auditTrail User objId
-            // if match then add signed data in signer array and break loop
+          //checking the signer who signed the document by using audit trail details.
+          //and save signedSigners and unsignedSigners details
+          for (const doc of audittrailData) {
+            const signedExist = checkEmail
+              ? doc?.UserPtr.Email
+              : doc?.UserPtr.objectId;
 
-            if (signerId === signedExist) {
-              signers.push({ ...signerRes[i], ...signerRes[i] });
+            if (emailOrId === signedExist) {
+              signers.push({ ...item });
               isSignedSignature = true;
               break;
             }
-            // if does not match then add unsigned data in unSignedSigner array
           }
           if (!isSignedSignature) {
-            unSignedSigner.push({ ...signerRes[i], ...signerRes[i] });
+            unSignedSigner.push({ ...item });
           }
         }
         setSignedSigners(signers);
         setUnSignedSigners(unSignedSigner);
         setSignerPos(documentData[0].Placeholders);
       } else {
-        let unsigned = [];
-        for (let i = 0; i < documentData.length; i++) {
-          unsigned.push(documentData[i].Signers);
-        }
-        setUnSignedSigners(unsigned[0]);
+        //else condition is show there are no details in audit trail then direct push all signers details
+        //in unsignedsigners array
+        setUnSignedSigners(placeholdersOrSigners);
         setSignerPos(documentData[0].Placeholders);
       }
       setPdfDetails(documentData);
@@ -447,7 +464,7 @@ function PdfRequestFiles() {
         declined ||
         currDate > expireUpdateDate
       ) {
-        setRequestSignTour(false);
+        setRequestSignTour(true);
       } else {
         //else condition to check current user exist in contracts_Users class and check tour message status
         //if not then check user exist in contracts_Contactbook class and check tour message status
@@ -463,33 +480,25 @@ function PdfRequestFiles() {
           setContractName("_Users");
           currUserId = res[0].objectId;
           setSignerUserId(currUserId);
-          const tourstatus = res[0].TourStatus && res[0].TourStatus;
-          if (tourstatus && tourstatus.length > 0) {
-            setTourStatus(tourstatus);
-            const checkTourRequestSign = tourstatus.filter(
-              (data) => data.requestSign
-            );
-            if (checkTourRequestSign && checkTourRequestSign.length > 0) {
-              setRequestSignTour(checkTourRequestSign[0].requestSign);
-            }
+          const tourData = res[0].TourStatus && res[0].TourStatus;
+          if (tourData && tourData.length > 0) {
+            setTourStatus(tourData);
+            setRequestSignTour(tourData[0]?.requestSign || false);
           }
         } else if (res?.length === 0) {
           const res = await contactBook(currUserId);
+
           if (res === "Error: Something went wrong!") {
             setHandleError("Error: Something went wrong!");
           } else if (res[0] && res.length) {
             setContractName("_Contactbook");
             const objectId = res[0].objectId;
             setSignerUserId(objectId);
-            const tourstatus = res[0].TourStatus && res[0].TourStatus;
-            if (tourstatus && tourstatus.length > 0) {
-              setTourStatus(tourstatus);
-              const checkTourRequestSign = tourstatus.filter(
-                (data) => data.requestSign
-              );
-              if (checkTourRequestSign && checkTourRequestSign.length > 0) {
-                setRequestSignTour(checkTourRequestSign[0].requestSign);
-              }
+            const tourData = res[0].TourStatus && res[0].TourStatus;
+
+            if (tourData && tourData.length > 0) {
+              setTourStatus(tourData);
+              setRequestSignTour(tourData[0]?.requestSign || false);
             }
           } else if (res.length === 0) {
             setHandleError("Error: User does not exist!");
@@ -552,7 +561,6 @@ function PdfRequestFiles() {
         setIsLoading(loadObj);
       });
   };
-
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
     try {
@@ -996,8 +1004,10 @@ function PdfRequestFiles() {
   }
 
   const getFirstLetter = (name) => {
-    const firstLetter = name.charAt(0);
-    return firstLetter;
+    if (name) {
+      const firstLetter = name.charAt(0);
+      return firstLetter;
+    }
   };
   //function for image upload or update
   const onImageChange = (event) => {
@@ -1109,8 +1119,22 @@ function PdfRequestFiles() {
   };
 
   const checkSignerBackColor = (obj) => {
-    const data = signerPos.filter((data) => data.signerObjId === obj.objectId);
+    let data = "";
+    if (obj?.Id) {
+      data = signerPos.filter((data) => data.Id === obj.Id);
+    } else {
+      data = signerPos.filter((data) => data.signerObjId === obj.objectId);
+    }
     return data && data.length > 0 && data[0].blockColor;
+  };
+  const checkUserNameColor = (obj) => {
+    const getBackColor = checkSignerBackColor(obj);
+    if (getBackColor) {
+      const color = darkenColor(getBackColor, 0.4);
+      return color;
+    } else {
+      return "#abd1d0";
+    }
   };
 
   //function for set decline true on press decline button
@@ -1210,7 +1234,7 @@ function PdfRequestFiles() {
   };
   //function to close tour and save tour status
   const closeRequestSignTour = async () => {
-    setRequestSignTour(false);
+    setRequestSignTour(true);
     if (isDontShow) {
       let updatedTourStatus = [];
       if (tourStatus.length > 0) {
@@ -1332,7 +1356,6 @@ function PdfRequestFiles() {
       />
     );
   };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Request Sign"} />
@@ -1401,7 +1424,7 @@ function PdfRequestFiles() {
                 }}
                 ref={divRef}
               >
-                {requestSignTour && requestSignTourFunction()}
+                {!requestSignTour && requestSignTourFunction()}
                 <ModalUi
                   headerColor={"#dc3545"}
                   isOpen={isAlert.isShow}
@@ -1781,7 +1804,7 @@ function PdfRequestFiles() {
                                   <div
                                     className="signerStyle"
                                     style={{
-                                      background: "#abd1d0",
+                                      background: checkUserNameColor(obj),
                                       width: 30,
                                       height: 30,
                                       display: "flex",
@@ -1800,7 +1823,7 @@ function PdfRequestFiles() {
                                         textTransform: "uppercase"
                                       }}
                                     >
-                                      {getFirstLetter(obj.Name)}
+                                      {getFirstLetter(obj?.Name || obj?.Role)}
                                     </span>
                                   </div>
                                   <div
@@ -1809,9 +1832,11 @@ function PdfRequestFiles() {
                                       flexDirection: "column"
                                     }}
                                   >
-                                    <span className="userName">{obj.Name}</span>
+                                    <span className="userName">
+                                      {obj?.Name || obj?.Role}
+                                    </span>
                                     <span className="useEmail">
-                                      {obj.Email}
+                                      {obj?.Email || obj?.email}
                                     </span>
                                   </div>
                                 </div>
@@ -1850,7 +1875,7 @@ function PdfRequestFiles() {
                                   <div
                                     className="signerStyle"
                                     style={{
-                                      background: "#abd1d0",
+                                      background: checkUserNameColor(obj),
                                       width: 30,
                                       height: 30,
                                       display: "flex",
@@ -1869,7 +1894,7 @@ function PdfRequestFiles() {
                                         textTransform: "uppercase"
                                       }}
                                     >
-                                      {getFirstLetter(obj.Name)}
+                                      {getFirstLetter(obj?.Name || obj?.email)}
                                     </span>
                                   </div>
                                   <div
@@ -1878,9 +1903,11 @@ function PdfRequestFiles() {
                                       flexDirection: "column"
                                     }}
                                   >
-                                    <span className="userName">{obj.Name}</span>
+                                    <span className="userName">
+                                      {obj?.Name || obj?.Role}
+                                    </span>
                                     <span className="useEmail">
-                                      {obj.Email}
+                                      {obj?.Email || obj?.email}
                                     </span>
                                   </div>
                                   <hr />

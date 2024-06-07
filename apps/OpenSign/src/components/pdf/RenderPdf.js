@@ -204,8 +204,10 @@ function RenderPdf({
   };
   //function for render placeholder block over pdf document
   const checkSignedSignes = (data) => {
-    const checkSign = signedSigners.filter(
-      (sign) => sign.objectId === data.signerObjId
+    let checkSign = [];
+    //condition to handle quick send flow and using normal request sign flow
+    checkSign = signedSigners.filter(
+      (sign) => sign?.Id === data?.Id || sign?.objectId === data?.signerObjId
     );
     if (data.signerObjId === signerObjectId) {
       setCurrentSigner(true);

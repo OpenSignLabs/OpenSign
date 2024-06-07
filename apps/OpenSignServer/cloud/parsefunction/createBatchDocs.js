@@ -35,8 +35,10 @@ async function sendMail(document, sessionToken) {
       const objectId = signerMail[i]?.signerObjId;
       const hostUrl = baseUrl.origin;
       let encodeBase64;
+      let existSigner = {};
       if (objectId) {
-        encodeBase64 = btoa(`${document.objectId}/${signerMail[i].signerPtr.Email}/${objectId}`);
+        existSigner = document?.Signers?.find(user => user.objectId === objectId);
+        encodeBase64 = btoa(`${document.objectId}/${existSigner?.Email}/${objectId}`);
       } else {
         encodeBase64 = btoa(`${document.objectId}/${signerMail[i].email}`);
       }
@@ -46,7 +48,7 @@ async function sendMail(document, sessionToken) {
       const themeBGcolor = '#47a3ad';
       let params = {
         extUserId: document.ExtUserPtr.objectId,
-        recipient: objectId ? signerMail[i].signerPtr.Email : signerMail[i].email,
+        recipient: objectId ? existSigner?.Email : signerMail[i].email,
         subject: `${document.ExtUserPtr.Name} has requested you to sign "${document.Name}"`,
         mailProvider: document?.ExtUserPtr?.active_mail_adapter || '',
         from: sender,
@@ -140,12 +142,14 @@ export default async function createBatchDocs(request) {
               : { ...y, signerPtr: {}, signerObjId: '' }
           ),
           SignedUrl: x.URL || x.SignedUrl,
+          SentToOthers: true,
           Signers: allSigner?.map(y => ({
             __type: 'Pointer',
             className: 'contracts_Contactbook',
             objectId: y.objectId,
           })),
           ACL: Acl,
+          SentToOthers: true,
           RemindOnceInEvery: x.RemindOnceInEvery || 5,
           AutomaticReminders: x.AutomaticReminders || false,
           TimeToCompleteDays: x.TimeToCompleteDays || 15,
