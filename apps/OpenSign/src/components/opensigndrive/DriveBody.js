@@ -376,23 +376,15 @@ function DriveBody(props) {
         </tr>
       )
     ) : listType === "list" && data.Type === "Folder" ? (
-      <div key={ind} className="folderBox">
+      <div key={ind} className="icon-container">
         <ContextMenu.Root>
           <ContextMenu.Trigger className="ContextMenuTrigger">
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                cursor: "pointer"
-              }}
-              data-tut={props.dataTutSeventh}
-            >
+            <div data-tut={props.dataTutSeventh}>
               <img
-                alt="no img"
+                alt="folder"
                 onClick={() => handleOnclikFolder(data)}
                 src={folder}
-                width={100}
-                height={103}
+                className="w-full h-full"
               />
               {rename === data.objectId ? (
                 <input
@@ -450,7 +442,7 @@ function DriveBody(props) {
                 <ContextMenu.Trigger className="ContextMenuTrigger">
                   <img
                     alt="PDF"
-                    className="pdf-icon"
+                    className="w-full h-full"
                     src={pdfLogo}
                     onClick={() => checkPdfStatus(data)}
                     data-tut={props.dataTutSixth}
@@ -587,13 +579,9 @@ function DriveBody(props) {
           </Table>
         </div>
       ) : (
-        <div className="pdfContainer">
+        <div className="flex flex-row flex-wrap items-center mt-1 pb-[20px] mx-[5px]">
           {props.pdfData.map((data, ind) => {
-            return (
-              <div className="box" key={ind}>
-                {handleFolderData(data, ind, "list")}
-              </div>
-            );
+            return <div key={ind}>{handleFolderData(data, ind, "list")}</div>;
           })}
         </div>
       )}

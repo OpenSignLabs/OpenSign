@@ -59,7 +59,7 @@ function ForgotPassword() {
 
   let image = appInfo.applogo;
   return (
-    <div className="bg-white">
+    <div>
       <Title title="Forgot password page" />
       {sentStatus === "success" && (
         <Alert type="success">
@@ -69,8 +69,8 @@ function ForgotPassword() {
       {sentStatus === "failed" && (
         <Alert type={"danger"}>Please setup email adapter </Alert>
       )}
-      <div>
-        <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
+      <div className="md:p-10 lg:p-16">
+        <div className=" md:p-4 lg:p-10 p-5 bg-base-100 text-base-content md:border-[1px] md:border-gray-400 ">
           <div className="w-[250px] h-[66px] inline-block">
             {state.hideNav ? (
               <img src={image} width="100%" alt="" />
@@ -100,10 +100,7 @@ function ForgotPassword() {
                   </div>
                 </div>
                 <div className="flex justify-between items-center px-4">
-                  <button
-                    type="submit"
-                    className="rounded-sm bg-[#3ac9d6] text-white px-4 py-3 text-xs font-semibold shadow uppercase"
-                  >
+                  <button type="submit" className="op-btn op-btn-primary">
                     Submit
                   </button>
                   <NavLink

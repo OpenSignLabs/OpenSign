@@ -126,7 +126,7 @@ function GenerateToken() {
           ></div>
         </div>
       ) : (
-        <div className="bg-white flex flex-col justify-center shadow rounded">
+        <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded">
           {!isEnableSubscription && <PremiumAlertHeader />}
           <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
             OpenSign™ API{" "}
@@ -155,7 +155,7 @@ function GenerateToken() {
                     {apiToken ? apiToken : "_____"}
                   </span>
                   <button
-                    className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-2.5 py-2 focus:outline-none ml-2"
+                    className="op-btn op-btn-primary op-btn-sm ml-2"
                     onClick={() => copytoclipboard(apiToken)}
                   >
                     <i className="fa-solid fa-copy"></i>
@@ -164,7 +164,7 @@ function GenerateToken() {
               </div>
               <button
                 onClick={apiToken ? handleModal : handleSubmit}
-                className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white text-xs md:text-sm lg:text-base px-2 py-2 focus:outline-none"
+                className="op-btn op-btn-primary"
               >
                 {apiToken ? "Regenerate Token" : "Generate Token"}
               </button>
@@ -178,7 +178,7 @@ function GenerateToken() {
                   "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                 )
               }
-              className="rounded hover:bg-[#15b4e9] border-[1px] my-2 border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
+              className="op-btn op-btn-primary my-2"
             >
               View Docs
             </button>

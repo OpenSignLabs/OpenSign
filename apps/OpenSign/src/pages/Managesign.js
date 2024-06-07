@@ -224,13 +224,10 @@ const ManageSign = () => {
     setIsValue(true);
   };
   return (
-    <div className="relative h-full bg-white flex shadow rounded overflow-auto">
+    <div className="relative h-full bg-base-100 text-base-content flex shadow rounded overflow-auto">
       {isLoader && (
-        <div className="absolute bg-black bg-opacity-75 z-50 w-full h-full flex justify-center items-center">
-          <div
-            style={{ color: "#3dd3e0" }}
-            className="loader-37 text-[45px]"
-          ></div>
+        <div className="absolute bg-black text-[45px] text-[#3dd3e0] bg-opacity-75 z-50 w-full h-full flex justify-center items-center">
+          <div className="loader-37 "></div>
         </div>
       )}
       {isSuccess && (
@@ -249,39 +246,13 @@ const ManageSign = () => {
           paddingRight: "10px"
         }}
       >
-        <div style={{ margin: 20 }}>
-          <div
-            style={{
-              fontWeight: "700",
-              fontSize: 15,
-              color: "#000",
-              paddingBottom: 8
-            }}
-          >
-            My Signature
-          </div>
+        <div className="m-[20px]">
+          <div className="font-[700] text-[15px] pb-[8px]">My Signature</div>
           <div className="signBlock mt-4">
             <div>
-              <div style={{ position: "relative" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "50%",
-                    paddingLeft: 10
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-around",
-                      alignItems: "center",
-                      gap: 10,
-                      marginBottom: 10
-                    }}
-                  >
+              <div className="relative">
+                <div className="flex flex-row justify-between w-1/2 pl-[10px]">
+                  <div className="flex flex-row justify-around items-center gap-[10px] mb-[10px]">
                     <>
                       <span
                         onClick={() => handleSignatureBtn()}
@@ -307,24 +278,14 @@ const ManageSign = () => {
                     />
                   </div>
                 </div>
-                <div style={{ position: "relative" }}>
+                <div className="relative">
                   <div>
                     {image ? (
-                      <div
-                        style={{
-                          position: "relative",
-                          border: "2px solid #888"
-                        }}
-                        className="signatureCanvas"
-                      >
+                      <div className="signatureCanvas relative border-[2px] border-[#888]">
                         <img
                           alt="preview image"
                           src={image}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "contain"
-                          }}
+                          className="w-full h-full object-contain"
                         />
                       </div>
                     ) : (
@@ -366,10 +327,10 @@ const ManageSign = () => {
                                       key === 0 && penColor === "blue"
                                         ? "2px solid blue"
                                         : key === 1 && penColor === "red"
-                                        ? "2px solid red"
-                                        : key === 2 && penColor === "black"
-                                        ? "2px solid black"
-                                        : "2px solid white"
+                                          ? "2px solid red"
+                                          : key === 2 && penColor === "black"
+                                            ? "2px solid black"
+                                            : "2px solid white"
                                   }}
                                   onClick={() => {
                                     if (key === 0) {
@@ -474,10 +435,10 @@ const ManageSign = () => {
                                   key === 0 && initialPen === "blue"
                                     ? "2px solid blue"
                                     : key === 1 && initialPen === "red"
-                                    ? "2px solid red"
-                                    : key === 2 && initialPen === "black"
-                                    ? "2px solid black"
-                                    : "2px solid white"
+                                      ? "2px solid red"
+                                      : key === 2 && initialPen === "black"
+                                        ? "2px solid black"
+                                        : "2px solid white"
                               }}
                               onClick={() => {
                                 if (key === 0) {
@@ -509,20 +470,11 @@ const ManageSign = () => {
                   </div>
                 </div>
               </div>
-              {/* {!warning && (
-                <div className="warning signWarning" style={{ fontSize: 12 }}>
-                  <i
-                    className="fas fa-exclamation-circle"
-                    style={{ color: "#fab005", fontSize: 15 }}
-                  ></i>{" "}
-                  Please upload signature/Image
-                </div>
-              )} */}
             </div>
           </div>
           <div style={{ paddingTop: 10 }}>
             <button
-              className="customBtn successBtn"
+              className="op-btn op-btn-primary"
               onClick={(e) => handleSubmit(e)}
             >
               save

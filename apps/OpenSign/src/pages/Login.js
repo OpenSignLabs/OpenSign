@@ -1063,7 +1063,7 @@ function Login() {
     }
   };
   return (
-    <div className="bg-white">
+    <div>
       <Title title={"Login Page"} />
       {state.loading && (
         <div
@@ -1096,8 +1096,12 @@ function Login() {
       )}
       {appInfo && appInfo.appId ? (
         <>
-          <div aria-labelledby="loginHeading" role="region">
-            <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-4 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
+          <div
+            aria-labelledby="loginHeading"
+            role="region"
+            className="md:p-10 lg:p-16 "
+          >
+            <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content md:border-[1px] md:border-gray-400 ">
               <div className="w-[250px] h-[66px] inline-block overflow-hidden">
                 {image && (
                   <img

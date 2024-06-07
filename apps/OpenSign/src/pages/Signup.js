@@ -501,44 +501,24 @@ const Signup = () => {
     setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>]/.test(newPassword));
   };
   return (
-    <div className="bg-white">
+    <div className="">
       {state.loading && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            top: 0,
-            left: 0,
-            zIndex: 2
-          }}
-        >
-          <div
-            style={{
-              position: "fixed",
-              fontSize: "50px",
-              color: "#3ac9d6",
-              top: "50%",
-              left: "45%"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="fixed w-[100vw] h-[100vh] top-0 left-0 z-20 bg-black bg-opacity-25 text-[#3ac9d6] text-[50px]">
+          <div className="loader-37 fixed text-[50px] top-[50%] left-[45%]"></div>
         </div>
       )}
 
       <Title title={"Signup page"} />
-
       {appInfo && appInfo.applogo ? (
-        <div>
-          <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
+        <div className="md:p-10 lg:p-16">
+          <div className="md:p-4 lg:p-10 p-5 bg-base-100 text-base-content md:border-[1px] md:border-gray-400 ">
             <div className="w-[250px] h-[66px] inline-block overflow-hidden">
               {image && (
                 <img src={image} className="object-contain h-full" alt="logo" />
               )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-              <div className="">
+              <div>
                 <form onSubmit={handleSubmit}>
                   <h2 className="text-[30px] mt-6">Create Account !</h2>
                   <div className="outline outline-1 outline-slate-300/50 shadow-md rounded my-4">
