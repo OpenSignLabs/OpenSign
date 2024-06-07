@@ -143,6 +143,7 @@ const ReportTable = (props) => {
                 Name: Doc.Name,
                 URL: Doc.URL,
                 SignedUrl: Doc.SignedUrl,
+                SentToOthers: Doc?.SentToOthers || false,
                 Description: Doc.Description,
                 Note: Doc.Note,
                 Placeholders: placeholdersArr,
@@ -338,7 +339,7 @@ const ReportTable = (props) => {
     const sendMail = item?.SendMail || false;
     const getUrl = (x) => {
       //encode this url value `${item.objectId}/${x.Email}/${x.objectId}` to base64 using `btoa` function
-      if (x.objectId) {
+      if (x?.signerObjId) {
         const encodeBase64 = btoa(
           `${item.objectId}/${x.signerPtr.Email}/${x.signerPtr.objectId}/${sendMail}`
         );
@@ -495,9 +496,9 @@ const ReportTable = (props) => {
 
   // `handleSubjectChange` is used to add or change subject of resend mail
   const handleSubjectChange = (subject, doc) => {
-    const encodeBase64 = btoa(
-      `${doc.objectId}/${userDetails.Email}/${userDetails.objectId}`
-    );
+    const encodeBase64 = userDetails?.objectId
+      ? btoa(`${doc.objectId}/${userDetails.Email}/${userDetails.objectId}`)
+      : btoa(`${doc.objectId}/${userDetails.Email}`);
     const expireDate = doc.ExpiryDate.iso;
     const newDate = new Date(expireDate);
     const localExpireDate = newDate.toLocaleDateString("en-US", {
@@ -511,8 +512,8 @@ const ReportTable = (props) => {
       sender_name: doc.ExtUserPtr.Name,
       sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
-      receiver_name: userDetails.Name,
-      receiver_email: userDetails.Email,
+      receiver_name: userDetails?.Name,
+      receiver_email: userDetails?.Email,
       receiver_phone: userDetails?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc.ExtUserPtr.Company,
@@ -524,9 +525,9 @@ const ReportTable = (props) => {
   };
   // `handlebodyChange` is used to add or change body of resend mail
   const handlebodyChange = (body, doc) => {
-    const encodeBase64 = btoa(
-      `${doc.objectId}/${userDetails.Email}/${userDetails.objectId}`
-    );
+    const encodeBase64 = userDetails?.objectId
+      ? btoa(`${doc.objectId}/${userDetails.Email}/${userDetails.objectId}`)
+      : btoa(`${doc.objectId}/${userDetails.Email}`);
     const expireDate = doc.ExpiryDate.iso;
     const newDate = new Date(expireDate);
     const localExpireDate = newDate.toLocaleDateString("en-US", {
@@ -540,8 +541,8 @@ const ReportTable = (props) => {
       sender_name: doc.ExtUserPtr.Name,
       sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
-      receiver_name: userDetails.Name,
-      receiver_email: userDetails.Email,
+      receiver_name: userDetails?.Name || "",
+      receiver_email: userDetails?.Email || "",
       receiver_phone: userDetails?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc.ExtUserPtr.Company,
@@ -556,8 +557,18 @@ const ReportTable = (props) => {
   // `handleNextBtn` is used to open edit mail template screen in resend mail modal
   // as well as replace variable with original one
   const handleNextBtn = (user, doc) => {
-    setUserDetails(user);
-    const encodeBase64 = btoa(`${doc.objectId}/${user.Email}/${user.objectId}`);
+    const userdata = {
+      Name: user?.signerPtr?.Name,
+      Email: user.email ? user?.email : user.signerPtr?.Email,
+      Phone: user?.signerPtr?.Phone,
+      objectId: user?.signerPtr?.objectId
+    };
+    setUserDetails(userdata);
+    const encodeBase64 = user.email
+      ? btoa(`${doc.objectId}/${user.email}`)
+      : btoa(
+          `${doc.objectId}/${user.signerPtr.Email}/${user.signerPtr.objectId}`
+        );
     const expireDate = doc.ExpiryDate.iso;
     const newDate = new Date(expireDate);
     const localExpireDate = newDate.toLocaleDateString("en-US", {
@@ -571,9 +582,9 @@ const ReportTable = (props) => {
       sender_name: doc.ExtUserPtr.Name,
       sender_mail: doc.ExtUserPtr.Email,
       sender_phone: doc.ExtUserPtr?.Phone || "",
-      receiver_name: user.Name,
-      receiver_email: user.Email,
-      receiver_phone: user?.Phone || "",
+      receiver_name: user?.signerPtr?.Name || "",
+      receiver_email: user?.email ? user?.email : user?.signerPtr?.Email,
+      receiver_phone: user?.signerPtr?.Phone || "",
       expiry_date: localExpireDate,
       company_name: doc?.ExtUserPtr?.Company || "",
       signing_url: `<a href=${signPdf}>Sign here</a>`
@@ -584,14 +595,14 @@ const ReportTable = (props) => {
       `{{sender_name}} has requested you to sign "{{document_title}}"`;
     const body =
       doc?.RequestBody ||
-      `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;<b>"{{document_title}}"</b>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br></body> </html>`;
+      `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}} has requested you to review and sign <b>"{{document_title}}"</b>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br></body> </html>`;
     const res = replaceMailVaribles(subject, body, variables);
     setMail((prev) => ({ ...prev, subject: res.subject, body: res.body }));
-    setIsNextStep({ [user.objectId]: true });
+    setIsNextStep({ [user.Id]: true });
   };
   const handleResendMail = async (e, doc, user) => {
     e.preventDefault();
-    setActLoader({ [user.objectId]: true });
+    setActLoader({ [user?.Id]: true });
     const url = `${localStorage.getItem("baseUrl")}functions/sendmailv3`;
     const headers = {
       "Content-Type": "application/json",
@@ -601,7 +612,7 @@ const ReportTable = (props) => {
     let params = {
       mailProvider: doc?.ExtUserPtr?.active_mail_adapter,
       extUserId: doc?.ExtUserPtr?.objectId,
-      recipient: userDetails.Email,
+      recipient: userDetails?.Email,
       subject: mail.subject,
       from: doc?.ExtUserPtr?.Email,
       html: mail.body
@@ -633,9 +644,9 @@ const ReportTable = (props) => {
     }
   };
   const fetchUserStatus = (user, doc) => {
-    const audit = doc?.AuditTrail?.find(
-      (x) => x.UserPtr.objectId === user.objectId
-    );
+    const email = user.email ? user.email : user.signerPtr.Email;
+    const audit = doc?.AuditTrail?.find((x) => x.UserPtr.Email === email);
+
     return (
       <div className="flex flex-row gap-2 justify-center items-center">
         <div className="flex justify-center items-center bg-gray-200 text-xs text-black shadow rounded-full w-[65px] h-[23px] cursor-default">
@@ -789,23 +800,38 @@ const ReportTable = (props) => {
     const getPlaceholder = item?.Placeholders;
     //condiiton to check role is exist or not
     if (getPlaceholder && getPlaceholder.length > 0) {
-      let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
-      const userName = extendUser[0]?.UserName;
-      setIsPublicUserName(extendUser[0]?.UserName);
-      //condition to check user have public url or not
-      if (userName) {
-        setIsPublic((prevStates) => ({
-          ...prevStates,
-          [item.objectId]: e.target.checked
-        }));
-        const getPlaceholder = item?.Placeholders;
-        if (getPlaceholder.length === 1) {
-          setSelectedPublicRole(getPlaceholder[0]?.Role);
-        }
+      const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
+        placeholderObj?.placeHolder?.some((holder) =>
+          holder?.pos?.some((posItem) => posItem?.type === "signature")
+        )
+      );
+      if (checkIsSignatureExistt) {
+        let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+        const userName = extendUser[0]?.UserName;
+        setIsPublicUserName(extendUser[0]?.UserName);
+        //condition to check user have public url or not
+        if (userName) {
+          setIsPublic((prevStates) => ({
+            ...prevStates,
+            [item.objectId]: e.target.checked
+          }));
+          const getPlaceholder = item?.Placeholders;
+          if (getPlaceholder.length === 1) {
+            setSelectedPublicRole(getPlaceholder[0]?.Role);
+          }
 
-        setIsMakePublic({ [item.objectId]: true });
+          setIsMakePublic({ [item.objectId]: true });
+        } else {
+          setIsPublicProfile({ [item.objectId]: true });
+        }
       } else {
-        setIsPublicProfile({ [item.objectId]: true });
+        setIsAlert(true);
+        setAlertMsg({
+          type: "danger",
+          message:
+            " Please ensure there's at least one signature widget added for all recipients."
+        });
+        setTimeout(() => setIsAlert(false), 5000);
       }
     } else {
       setIsAlert(true);
@@ -813,7 +839,7 @@ const ReportTable = (props) => {
         type: "danger",
         message: "Please assign at least one role to make this template public."
       });
-      setTimeout(() => setIsAlert(false), 3000);
+      setTimeout(() => setIsAlert(false), 5000);
     }
   };
 
@@ -1240,11 +1266,11 @@ const ReportTable = (props) => {
                             }}
                           >
                             <div className=" overflow-y-auto max-h-[340px] md:max-h-[400px]">
-                              {item?.Signers.map((user) => (
-                                <React.Fragment key={user.objectId}>
-                                  {isNextStep[user.objectId] && (
+                              {item?.Placeholders?.map((user) => (
+                                <React.Fragment key={user.Id}>
+                                  {isNextStep[user.Id] && (
                                     <div className="relative ">
-                                      {actLoader[user.objectId] && (
+                                      {actLoader[user.Id] && (
                                         <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
                                           <div
                                             style={{
@@ -1264,7 +1290,7 @@ const ReportTable = (props) => {
                                       >
                                         <div className="absolute right-5 text-xs z-40">
                                           <Tooltip
-                                            id={`${user.objectId}_help`}
+                                            id={`${user.Id}_help`}
                                             message={
                                               "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
                                             }
@@ -1322,7 +1348,12 @@ const ReportTable = (props) => {
                                   {Object?.keys(isNextStep) <= 0 && (
                                     <div className="flex justify-between items-center gap-2 my-2 px-3">
                                       <div className="text-black">
-                                        {user.Name} {`<${user.Email}>`}
+                                        {user?.signerPtr?.Name || "-"}{" "}
+                                        {`<${
+                                          user?.email
+                                            ? user.email
+                                            : user.signerPtr.Email
+                                        }>`}
                                       </div>
                                       <>{fetchUserStatus(user, item)}</>
                                     </div>

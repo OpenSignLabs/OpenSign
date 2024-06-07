@@ -403,25 +403,34 @@ function PdfRequestFiles() {
 
       let signers = [];
       let unSignedSigner = [];
-      //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
-      const emailExist = documentData[0].Placeholders[0]?.email;
 
+      const placeholdersOrSigners = [];
+      for (const placeholder of documentData[0].Placeholders) {
+        //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
+        const emailExist = placeholder?.email;
+        if (emailExist) {
+          placeholdersOrSigners.push(placeholder);
+        } else {
+          const getSignerData = documentData[0].Signers.filter(
+            (data) => data.objectId === placeholder?.signerObjId
+          );
+          placeholdersOrSigners.push(getSignerData[0]);
+        }
+      }
       //condition to check already signed document by someone
       if (audittrailData && audittrailData.length > 0) {
         setIsDocId(true);
-        const placeholdersOrSigners = emailExist
-          ? documentData[0].Placeholders
-          : documentData[0].Signers;
 
         for (const item of placeholdersOrSigners) {
+          const checkEmail = item?.email;
           //if email exist then compare user signed by using email else signers objectId
-          const emailOrId = emailExist ? item.email : item.objectId;
+          const emailOrId = checkEmail ? item.email : item.objectId;
           //`isSignedSignature` variable to handle break loop whenever it get true
           let isSignedSignature = false;
           //checking the signer who signed the document by using audit trail details.
           //and save signedSigners and unsignedSigners details
           for (const doc of audittrailData) {
-            const signedExist = emailExist
+            const signedExist = checkEmail
               ? doc?.UserPtr.Email
               : doc?.UserPtr.objectId;
 
@@ -441,12 +450,7 @@ function PdfRequestFiles() {
       } else {
         //else condition is show there are no details in audit trail then direct push all signers details
         //in unsignedsigners array
-        let unsigned = [];
-        const placeholdersOrSigners = emailExist
-          ? documentData[0].Placeholders
-          : documentData[0].Signers;
-        unsigned.push(placeholdersOrSigners);
-        setUnSignedSigners(unsigned[0]);
+        setUnSignedSigners(placeholdersOrSigners);
         setSignerPos(documentData[0].Placeholders);
       }
       setPdfDetails(documentData);
@@ -1000,8 +1004,10 @@ function PdfRequestFiles() {
   }
 
   const getFirstLetter = (name) => {
-    const firstLetter = name.charAt(0);
-    return firstLetter;
+    if (name) {
+      const firstLetter = name.charAt(0);
+      return firstLetter;
+    }
   };
   //function for image upload or update
   const onImageChange = (event) => {
@@ -1123,8 +1129,12 @@ function PdfRequestFiles() {
   };
   const checkUserNameColor = (obj) => {
     const getBackColor = checkSignerBackColor(obj);
-    const color = darkenColor(getBackColor, 0.4);
-    return color;
+    if (getBackColor) {
+      const color = darkenColor(getBackColor, 0.4);
+      return color;
+    } else {
+      return "#abd1d0";
+    }
   };
 
   //function for set decline true on press decline button

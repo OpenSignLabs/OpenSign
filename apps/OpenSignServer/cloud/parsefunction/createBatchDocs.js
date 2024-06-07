@@ -140,12 +140,14 @@ export default async function createBatchDocs(request) {
               : { ...y, signerPtr: {}, signerObjId: '' }
           ),
           SignedUrl: x.URL || x.SignedUrl,
+          SentToOthers: true,
           Signers: allSigner?.map(y => ({
             __type: 'Pointer',
             className: 'contracts_Contactbook',
             objectId: y.objectId,
           })),
           ACL: Acl,
+          SentToOthers: true,
           RemindOnceInEvery: x.RemindOnceInEvery || 5,
           AutomaticReminders: x.AutomaticReminders || false,
           TimeToCompleteDays: x.TimeToCompleteDays || 15,

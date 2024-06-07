@@ -141,6 +141,7 @@ export default async function createDocumentwithCoordinate(request, response) {
         }
         object.set('URL', fileUrl);
         object.set('SignedUrl', fileUrl);
+        object.set('SentToOthers', true);
         object.set('CreatedBy', userPtr);
         object.set('ExtUserPtr', extUserPtr);
         if (TimeToCompleteDays) {
