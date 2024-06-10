@@ -798,9 +798,9 @@ function PdfRequestFiles() {
                 const usermail = {
                   Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
                 };
-                const user =
-                  (usermail?.Email && usermail) ||
-                  pdfDetails?.[0]?.Signers[newIndex];
+                const user = usermail?.Email
+                  ? usermail
+                  : pdfDetails?.[0]?.Signers[newIndex];
                 if (sendmail !== "false" && sendInOrder) {
                   const requestBody = pdfDetails?.[0]?.RequestBody;
                   const requestSubject = pdfDetails?.[0]?.RequestSubject;
