@@ -3,14 +3,42 @@ sidebar_position: 1
 title: Expired
 ---
 
-# Organize Documents using OpenSign™ Drive
+# Declined Documents Report in OpenSign
 
-Welcome to the [OpenSign™](https://app.opensignlabs.com) Help Center! This section is designed to provide you with all the necessary information to effectively use the OpenSign™ application. Whether you are a new user or an experienced one looking to explore more features, our comprehensive guides and resources are here to assist you.
+The **Expired Documents** report in OpenSign allows you to manage and review documents that have reached their expiration date without being signed. This feature is essential for maintaining an organized record of inactive documents that may require follow-up or archival.
 
-## Getting Started
+## Accessing Expired Documents
 
-**try OpenSign on cloud** at **[OpenSignLabs](https://app.opensignlabs.com)**.
+To view your expired documents:
 
-Or 
+1. Log in to your OpenSign account.
+2. Navigate to the left sidebar.
+3. Click on the `Expired` link under the Reports section.
 
-Get started by deploying a new instance of **OpenSign** by following these [instructions](https://docs.opensignlabs.com/docs/self-host/intro).
+## Understanding the Report
+
+The Expired Documents report displays a list of documents that have not been signed by all parties before the designated expiration date. Each entry in the report includes the following information:
+
+- **Title**: The name of the document.
+- **Note**: A brief note associated with the document at the time of creation.
+- **Folder**: The folder in which the document is stored, helping you organize and locate documents efficiently in OpenSign drive.
+- **File**: Link to download the document for offline storage.
+- **Owner**: The user who uploaded or owns the document.
+- **Signers**: Lists the parties required to sign the document.
+
+## Actions Available
+
+For each expired document, you can perform several actions:
+
+- **Delete**: Deletes the document from your OpenSign account.
+- **View**: Opens the document in a viewer within OpenSign, allowing you to review the details and contents of the document.
+
+## Managing Expired Documents
+
+Managing your expired documents effectively can help ensure that no important document is overlooked. Consider the following tips:
+
+- **Review Regularly**: Check the Expired Documents report periodically to manage documents that require attention.
+- **Follow Up**: Contact the signers who have not completed their signatures informing them about the expired documents and resend the documents if necessary.
+- **Archive**: Move documents that are no longer active or needed to an archive folder to keep your workspace organized.
+
+By keeping track of your expired documents, you can maintain a clear overview of your document workflows & ensure that all the necessary actions are taken on time.
