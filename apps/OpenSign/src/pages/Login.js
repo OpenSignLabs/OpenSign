@@ -1064,28 +1064,9 @@ function Login() {
       {state.loading && (
         <div
           aria-live="assertive"
-          style={{
-            position: "fixed",
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            top: 0,
-            left: 0,
-            zIndex: 2
-          }}
+          className="fixed w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-20 text-[50px] text-[#3ac9d6]"
         >
-          <div
-            role="status"
-            style={{
-              position: "fixed",
-              fontSize: "50px",
-              color: "#3ac9d6",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)"
-            }}
-            className="loader-37"
-          >
+          <div role="status" className="loader-37">
             <span className="sr-only">Loading...</span>
           </div>
         </div>
@@ -1097,13 +1078,13 @@ function Login() {
             role="region"
             className="md:p-10 lg:p-16"
           >
-            <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content md:border-[1px] md:border-gray-400 ">
+            <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
               <div className="w-[250px] h-[66px] inline-block overflow-hidden">
                 {image && (
                   <img
                     src={image}
                     className="object-contain h-full"
-                    alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
+                    alt="applogo"
                   />
                 )}
               </div>
@@ -1115,7 +1096,7 @@ function Login() {
                       <legend className="text-[12px] text-[#878787]">
                         Login to your account
                       </legend>
-                      <div className="px-6 py-4 outline outline-1 outline-slate-300/50 my-2 rounded shadow-md">
+                      <div className="w-full px-6 py-3 my-1 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                         <label className="block text-xs" htmlFor="email">
                           Email
                         </label>
@@ -1128,7 +1109,7 @@ function Login() {
                           onChange={handleChange}
                           required
                         />
-                        <hr className="my-2 border-none" />
+                        <hr className="my-1 border-none" />
                         {!isLoginSSO && (
                           <>
                             <label className="block text-xs" htmlFor="password">
@@ -1190,7 +1171,7 @@ function Login() {
                       </NavLink>
                     </div>
                   </form>
-                  {appInfo.googleClietId && (
+                  {(appInfo.googleClietId || isEnableSubscription) && (
                     <div className="op-divider my-4 text-sm">OR</div>
                   )}
                   <div className="flex flex-col justify-center items-center gap-y-3">

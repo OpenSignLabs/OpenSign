@@ -7,6 +7,8 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
+import { isEnableSubscription } from "../constant/const";
+import { getAppLogo } from "../constant/Utils";
 
 function ForgotPassword() {
   const dispatch = useDispatch();
@@ -17,6 +19,8 @@ function ForgotPassword() {
     hideNav: ""
   });
   const [sentStatus, setSentStatus] = useState("");
+  const [image, setImage] = useState();
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setState({ ...state, [name]: value });
@@ -52,13 +56,24 @@ function ForgotPassword() {
 
   useEffect(() => {
     dispatch(fetchAppInfo());
+    saveLogo();
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
     // eslint-disable-next-line
   }, []);
-
-  let image = appInfo.applogo;
+  const saveLogo = async () => {
+    if (isEnableSubscription) {
+      const logo = await getAppLogo();
+      if (logo) {
+        setImage(logo);
+      } else {
+        setImage(appInfo?.applogo || undefined);
+      }
+    } else {
+      setImage(appInfo?.applogo || undefined);
+    }
+  };
   return (
     <div>
       <Title title="Forgot password page" />
@@ -71,12 +86,14 @@ function ForgotPassword() {
         <Alert type={"danger"}>Please setup email adapter </Alert>
       )}
       <div className="md:p-10 lg:p-16">
-        <div className=" md:p-4 lg:p-10 p-5 bg-base-100 text-base-content md:border-[1px] md:border-gray-400 ">
-          <div className="w-[250px] h-[66px] inline-block">
-            {state.hideNav ? (
-              <img src={image} width="100%" alt="" />
-            ) : (
-              <img src={image} width="100%" alt="" />
+        <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
+          <div className="w-[250px] h-[66px] inline-block overflow-hidden">
+            {image && (
+              <img
+                src={image}
+                className="object-contain h-full"
+                alt="applogo"
+              />
             )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
@@ -86,7 +103,7 @@ function ForgotPassword() {
                 <span className="text-[12px] text-[#878787]">
                   Reset Your Password
                 </span>
-                <div className="shadow-md rounded my-4">
+                <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                   <div className="px-6 py-4">
                     <label className="block text-xs">Email</label>
                     <input
