@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
-import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 
 const AddSigner = (props) => {
   const [name, setName] = useState("");
@@ -305,19 +304,14 @@ const AddSigner = (props) => {
             />
           </div>
 
-          <div className="mt-4 flex justify-start">
-            <button
-              type="submit"
-              style={{ backgroundColor: modalSubmitBtnColor }}
-              className="mr-2 px-[20px] py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-            >
+          <div className="mt-4 flex gap-x-2 justify-start">
+            <button type="submit" className="op-btn op-btn-primary">
               Submit
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
-              style={{ backgroundColor: modalCancelBtnColor }}
-              className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+              className="op-btn op-btn-secondary"
             >
               Reset
             </button>

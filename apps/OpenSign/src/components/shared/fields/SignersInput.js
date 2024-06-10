@@ -128,17 +128,12 @@ const SignersInput = (props) => {
             onChange={onChange}
             closeMenuOnSelect={false}
             required={props.required}
-            styles={{
-              control: (baseStyles) => ({
-                ...baseStyles,
-                backgroundColor: "inherit",
-                borderRadius: 10,
-                borderColor: "current"
-              }),
-              option: (baseStyles) => ({
-                ...baseStyles,
-                backgroundColor: "inherit"
-              })
+            unstyled
+            classNames={{
+              control: () =>
+                "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs",
+              option: () =>
+                "bg-base-200 text-base-content hover:bg-base-300 p-2 shadow-md"
             }}
           />
         </div>

@@ -667,18 +667,17 @@ const Signup = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold mt-2">
                     <button
                       type="submit"
-                      className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow uppercase"
+                      className="op-btn op-btn-primary"
                       disabled={state.loading}
                     >
                       {state.loading ? "Loading..." : "Register"}
                     </button>
                     <NavLink
-                      className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
+                      className={`op-btn op-btn-secondary hover:no-underline hover:text-base-content`}
                       to={location.search ? "/" + location.search : "/"}
-                      style={width < 768 ? { textAlign: "center" } : {}}
                     >
                       Login
                     </NavLink>

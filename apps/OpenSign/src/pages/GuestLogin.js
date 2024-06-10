@@ -2,11 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import loader from "../assets/images/loader2.gif";
 import axios from "axios";
-import {
-  isEnableSubscription,
-  modalSubmitBtnColor,
-  themeColor
-} from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import { contractUsers, getAppLogo } from "../constant/Utils";
 import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
@@ -322,8 +318,7 @@ function GuestLogin() {
                 <div className="mt-4 flex justify-start">
                   <button
                     type="submit"
-                    style={{ backgroundColor: modalSubmitBtnColor }}
-                    className="mr-2 px-[20px] py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                    className="op-btn op-btn-primary"
                     disabled={loading}
                   >
                     {loading ? "Loading..." : "Next"}
