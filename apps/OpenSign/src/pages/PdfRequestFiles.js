@@ -265,7 +265,9 @@ function PdfRequestFiles() {
           currUserId
         );
       }
-      setSignerObjectId(currUserId);
+      if (currUserId) {
+        setSignerObjectId(currUserId);
+      }
       if (documentData[0].SignedUrl) {
         setPdfUrl(documentData[0].SignedUrl);
       } else {
