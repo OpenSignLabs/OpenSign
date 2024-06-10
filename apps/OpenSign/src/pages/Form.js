@@ -484,6 +484,9 @@ const Forms = (props) => {
     setpercentage(0);
     setTimeout(() => setIsReset(false), 50);
   };
+  const handleCancel = () => {
+    navigate("/dashboard/35KBoSgoAK");
+  };
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setIsPassword(false);
@@ -662,7 +665,7 @@ const Forms = (props) => {
                 <div className="flex gap-2 justify-center items-center ">
                   <input
                     type="file"
-                    className="op-file-input op-file-input-bordered op-file-input-sm w-full text-xs"
+                    className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     onChange={(e) => handleFileInput(e)}
                     ref={inputFileRef}
                     accept={
@@ -690,7 +693,7 @@ const Forms = (props) => {
               </label>
               <input
                 name="Name"
-                className="op-input op-input-bordered op-input-sm w-full text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Name}
                 onChange={(e) => handleStrInput(e)}
                 required
@@ -700,7 +703,7 @@ const Forms = (props) => {
               <label className="block">Description</label>
               <input
                 name="Description"
-                className="op-input op-input-bordered op-input-sm w-full text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Description}
                 onChange={(e) => handleStrInput(e)}
               />
@@ -718,7 +721,7 @@ const Forms = (props) => {
               </label>
               <input
                 name="Note"
-                className="op-input op-input-bordered op-input-sm w-full text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Note}
                 onChange={(e) => handleStrInput(e)}
                 required
@@ -740,7 +743,7 @@ const Forms = (props) => {
                 <input
                   type="number"
                   name="TimeToCompleteDays"
-                  className="op-input op-input-bordered op-input-sm w-full text-xs"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                   value={formData.TimeToCompleteDays}
                   onChange={(e) => handleStrInput(e)}
                   required
@@ -875,7 +878,7 @@ const Forms = (props) => {
                       type="number"
                       value={formData.remindOnceInEvery}
                       name="remindOnceInEvery"
-                      className="op-input op-input-bordered op-input-sm w-full text-xs"
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       onChange={handleStrInput}
                       required
                     />
@@ -883,7 +886,7 @@ const Forms = (props) => {
                 )}
               </>
             )}
-            <div className="flex items-center mt-3 gap-2 text-white">
+            <div className="flex items-center mt-3 gap-2">
               <button
                 className={`${
                   isSubmit ? "cursor-progress" : ""
@@ -894,10 +897,10 @@ const Forms = (props) => {
                 Next
               </button>
               <div
-                className="op-btn op-btn-neutral"
-                onClick={() => handleReset()}
+                className="op-btn op-btn-ghost"
+                onClick={() => handleCancel()}
               >
-                Reset
+                Cancel
               </div>
             </div>
           </form>

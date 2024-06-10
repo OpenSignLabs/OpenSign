@@ -221,7 +221,7 @@ const AddUser = (props) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="mb-3">
@@ -238,7 +238,7 @@ const AddUser = (props) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="mb-3">
@@ -255,7 +255,7 @@ const AddUser = (props) => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
 

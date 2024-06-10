@@ -1474,7 +1474,7 @@ const ReportTable = (props) => {
                                         onSubmit={(e) =>
                                           handleResendMail(e, item, user)
                                         }
-                                        className="w-full flex flex-col gap-2 p-3 text-black relative"
+                                        className="w-full flex flex-col gap-2 p-3 text-base-content relative"
                                       >
                                         <div className="absolute right-5 text-xs z-40">
                                           <Tooltip
@@ -1493,7 +1493,7 @@ const ReportTable = (props) => {
                                           </label>
                                           <input
                                             id="mailsubject"
-                                            className="w-full py-1.5 px-2 border-[1px] border-gray-300 rounded"
+                                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                                             value={mail.subject}
                                             onChange={(e) =>
                                               handleSubjectChange(
@@ -1526,7 +1526,7 @@ const ReportTable = (props) => {
                                         </div>
                                         <button
                                           type="submit"
-                                          className="bg-[#32a3ac] w-[70px] font-semibold text-white py-2 rounded"
+                                          className="op-btn op-btn-primary"
                                         >
                                           Resend
                                         </button>

@@ -529,7 +529,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="op-input op-input-bordered op-input-sm w-full"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
@@ -542,7 +542,7 @@ const Signup = () => {
                       <input
                         id="email"
                         type="email"
-                        className="op-input op-input-bordered op-input-sm w-full"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={email}
                         onChange={(e) =>
                           setEmail(e.target.value?.toLowerCase())
@@ -556,7 +556,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="tel"
-                        className="op-input op-input-bordered op-input-sm w-full"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         required
@@ -568,7 +568,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="op-input op-input-bordered op-input-sm w-full"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         required
@@ -580,7 +580,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="op-input op-input-bordered op-input-sm w-full"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
                         required
@@ -593,7 +593,7 @@ const Signup = () => {
                       <div className="relative">
                         <input
                           type={showPassword ? "text" : "password"}
-                          className="op-input op-input-bordered op-input-sm w-full"
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                           name="password"
                           value={password}
                           onChange={(e) => handlePasswordChange(e)}

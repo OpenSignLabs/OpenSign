@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/AddUser.css";
 import { checkIsSubscribed, getFileName } from "../../constant/Utils";
 import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 import Upgrade from "../../primitives/Upgrade";
@@ -60,28 +59,20 @@ const EditTemplate = ({ template, onSuccess }) => {
   };
   return (
     <div className="max-h-[300px] md:max-h-[400px] overflow-y-scroll p-[10px]">
-      <div className="form-wrapper">
+      <div className="text-base-content">
         <form onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="name" style={{ fontSize: 13 }}>
+            <label htmlFor="name" className="text-[13px]">
               File
             </label>
-            <div
-              style={{
-                padding: "0.5rem 0.75rem",
-                border: "1px solid #d1d5db",
-                borderRadius: "0.375rem",
-                fontSize: "0.75rem",
-                fontWeight: "700"
-              }}
-            >
+            <div className="op-input op-input-bordered op-input-sm focus:outline-none py-2 font-semibold w-full text-xs">
               {getFileName(template.URL)}
             </div>
           </div>
           <div className="form-section">
-            <label htmlFor="name" style={{ fontSize: 13 }}>
+            <label htmlFor="name" className="text-[13px]">
               Name
-              <span style={{ color: "red", fontSize: 13 }}> *</span>
+              <span className="text-[13px] text-[red]"> *</span>
             </label>
             <input
               type="text"
@@ -89,11 +80,11 @@ const EditTemplate = ({ template, onSuccess }) => {
               value={formData.Name}
               onChange={(e) => handleStrInput(e)}
               required
-              className="addUserInput"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="form-section">
-            <label htmlFor="Note" style={{ fontSize: 13 }}>
+            <label htmlFor="Note" className="text-[13px]">
               Note
             </label>
             <input
@@ -102,11 +93,11 @@ const EditTemplate = ({ template, onSuccess }) => {
               id="Note"
               value={formData.Note}
               onChange={(e) => handleStrInput(e)}
-              className="addUserInput"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="form-section">
-            <label htmlFor="Description" style={{ fontSize: 13 }}>
+            <label htmlFor="Description" className="text-[13px]">
               Description
             </label>
             <input
@@ -115,46 +106,32 @@ const EditTemplate = ({ template, onSuccess }) => {
               id="Description"
               value={formData.Description}
               onChange={(e) => handleStrInput(e)}
-              className="addUserInput"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="form-section">
-            <label style={{ fontSize: 13 }}>Send In Order</label>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                marginLeft: 8,
-                marginBottom: 5
-              }}
-            >
+            <label className="text-[13px]">Send In Order</label>
+            <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
               <input
                 type="radio"
                 value={"true"}
+                className="op-radio op-radio-xs"
                 name="SendinOrder"
                 checked={formData.SendinOrder === "true"}
                 onChange={handleStrInput}
               />
-              <div style={{ fontSize: 12 }}>Yes</div>
+              <div className="text-[12px]">Yes</div>
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                marginLeft: 8,
-                marginBottom: 5
-              }}
-            >
+            <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
               <input
                 type="radio"
                 value={"false"}
                 name="SendinOrder"
+                className="op-radio op-radio-xs"
                 checked={formData.SendinOrder === "false"}
                 onChange={handleStrInput}
               />
-              <div style={{ fontSize: 12 }}>No</div>
+              <div className="text-[12px]">No</div>
             </div>
           </div>
           <div className="text-xs mt-2">
@@ -186,10 +163,8 @@ const EditTemplate = ({ template, onSuccess }) => {
                 checked={formData.AutomaticReminders}
                 onChange={handleAutoReminder}
                 type="checkbox"
-                value=""
-                className="sr-only peer"
+                className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white mt-2"
               />
-              <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600 mt-2"></div>
             </label>
           </div>
           {isSubscribe && formData?.AutomaticReminders === true && (
@@ -202,15 +177,14 @@ const EditTemplate = ({ template, onSuccess }) => {
                 type="number"
                 value={formData.RemindOnceInEvery}
                 name="RemindOnceInEvery"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 onChange={handleStrInput}
                 required
               />
             </div>
           )}
-          {/* <SelectFolder onSuccess={handleFolder} folderCls={"contracts_Template"} /> */}
-          <div className="buttoncontainer">
-            <button type="submit" className="submitbutton">
+          <div className="mt-[1rem] flex justify-start">
+            <button type="submit" className="op-btn op-btn-primary">
               Submit
             </button>
           </div>

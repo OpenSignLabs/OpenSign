@@ -1122,7 +1122,7 @@ function Login() {
                         <input
                           id="email"
                           type="email"
-                          className="op-input op-input-bordered op-input-sm w-full"
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                           name="email"
                           value={state.email}
                           onChange={handleChange}
@@ -1140,7 +1140,7 @@ function Login() {
                                 type={
                                   state.passwordVisible ? "text" : "password"
                                 }
-                                className="op-input op-input-bordered op-input-sm w-full"
+                                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                                 name="password"
                                 value={state.password}
                                 onChange={handleChange}
@@ -1247,7 +1247,7 @@ function Login() {
                 </label>
                 <input
                   type="text"
-                  className="op-input op-input-bordered op-input-sm w-full"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                   id="Company"
                   value={userDetails.Company}
                   onChange={(e) =>
@@ -1270,7 +1270,7 @@ function Login() {
                 </label>
                 <input
                   type="text"
-                  className="op-input op-input-bordered op-input-sm w-full"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                   id="JobTitle"
                   value={userDetails.Destination}
                   onChange={(e) =>
@@ -1292,7 +1292,7 @@ function Login() {
                 </button>
                 <button
                   type="button"
-                  className="op-btn op-btn-neutral"
+                  className="op-btn op-btn-ghost"
                   onClick={handleCloseModal}
                 >
                   Cancel
