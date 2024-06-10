@@ -15,6 +15,8 @@ To view your expired documents:
 2. Navigate to the left sidebar.
 3. Click on the `Expired` link under the Reports section.
 
+![OpenSignExpired Document](https://github.com/OpenSignLabs/OpenSign/assets/5486116/33151953-f2a2-44a2-b930-734c5d737798)
+
 ## Understanding the Report
 
 The Expired Documents report displays a list of documents that have not been signed by all parties before the designated expiration date. Each entry in the report includes the following information:
