@@ -411,10 +411,10 @@ function PdfRequestFiles() {
         if (emailExist) {
           placeholdersOrSigners.push(placeholder);
         } else {
-          const getSignerData = documentData[0].Signers.filter(
+          const getSignerData = documentData[0].Signers.find(
             (data) => data.objectId === placeholder?.signerObjId
           );
-          placeholdersOrSigners.push(getSignerData[0]);
+          placeholdersOrSigners.push(getSignerData);
         }
       }
       //condition to check already signed document by someone
@@ -799,7 +799,9 @@ function PdfRequestFiles() {
                   Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
                 };
                 const user =
-                  usermail?.Email || pdfDetails?.[0]?.Signers[newIndex];
+                  (usermail?.Email && usermail) ||
+                  pdfDetails?.[0]?.Signers[newIndex];
+                console.log("user", user);
                 if (sendmail !== "false" && sendInOrder) {
                   const requestBody = pdfDetails?.[0]?.RequestBody;
                   const requestSubject = pdfDetails?.[0]?.RequestSubject;
