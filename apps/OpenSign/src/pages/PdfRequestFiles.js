@@ -801,7 +801,6 @@ function PdfRequestFiles() {
                 const user =
                   (usermail?.Email && usermail) ||
                   pdfDetails?.[0]?.Signers[newIndex];
-                console.log("user", user);
                 if (sendmail !== "false" && sendInOrder) {
                   const requestBody = pdfDetails?.[0]?.RequestBody;
                   const requestSubject = pdfDetails?.[0]?.RequestSubject;
