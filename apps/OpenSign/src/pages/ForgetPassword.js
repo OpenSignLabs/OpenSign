@@ -117,7 +117,7 @@ function ForgotPassword() {
                     <hr className="my-2 border-none" />
                   </div>
                 </div>
-                <div className="flex justify-between items-center px-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold">
                   <button type="submit" className="op-btn op-btn-primary">
                     Submit
                   </button>

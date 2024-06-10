@@ -3,18 +3,6 @@ import Parse from "parse";
 import "../../../styles/AddUser.css";
 import AsyncSelect from "react-select/async";
 
-const customStyles = {
-  control: (baseStyles) => ({
-    ...baseStyles,
-    backgroundColor: "inherit",
-    borderRadius: 10,
-    borderColor: "current"
-  }),
-  option: (baseStyles) => ({
-    ...baseStyles,
-    backgroundColor: "inherit"
-  })
-};
 const SelectSigners = (props) => {
   const [userList, setUserList] = useState([]);
   const [selected, setSelected] = useState();
@@ -84,7 +72,7 @@ const SelectSigners = (props) => {
     <div className="h-full px-[20px] py-[10px] text-base-content">
       <div className="w-full mx-auto p-[8px]">
         <div className="mb-0">
-          <label className="text-[14px] font-bold">Choose User</label>
+          <label className="text-[14px] font-bold">Choose from contacts</label>
           <AsyncSelect
             cacheOptions
             defaultOptions
@@ -93,7 +81,13 @@ const SelectSigners = (props) => {
             noOptionsMessage={() => "User not Found"}
             loadOptions={loadOptions}
             onChange={handleOptions}
-            styles={customStyles}
+            unstyled
+            classNames={{
+              control: () =>
+                "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs",
+              option: () =>
+                "bg-base-200 text-base-content hover:bg-base-300 p-2 shadow-md"
+            }}
           />
         </div>
         <p

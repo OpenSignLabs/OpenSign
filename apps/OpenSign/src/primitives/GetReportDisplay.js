@@ -4,11 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
-import {
-  modalSubmitBtnColor,
-  modalCancelBtnColor,
-  isEnableSubscription
-} from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
@@ -377,11 +373,13 @@ const ReportTable = (props) => {
     setIsDeleteModal({});
     setIsMakePublic({});
     setSelectedPublicRole("");
-    setIsPublic((prevStates) => ({
-      ...prevStates,
-      [item.objectId]: !prevStates[item.objectId]
-    }));
     setIsPublicProfile({});
+    if (item?.objectId) {
+      setIsPublic((prevStates) => ({
+        ...prevStates,
+        [item.objectId]: !prevStates[item.objectId]
+      }));
+    }
   };
 
   const handleShare = (item) => {
@@ -940,9 +938,9 @@ const ReportTable = (props) => {
               {props.ReportName === "Templates" && isEnableSubscription && (
                 <th className="px-4 py-2">Public</th>
               )}
-              {props.actions?.length > 0 && (
+              {/* {props.actions?.length > 0 && (
                 <th className="px-4 py-2">Action</th>
-              )}
+              )} */}
             </tr>
           </thead>
           <tbody className="text-[12px]">
@@ -963,14 +961,10 @@ const ReportTable = (props) => {
                             <button
                               key={index}
                               onClick={() => handleActionBtn(act, item)}
-                              className={`mb-1 flex justify-center items-center gap-1 px-2 py-1 rounded shadow`}
                               title={act.hoverLabel}
-                              style={{
-                                backgroundColor: act.btnColor
-                                  ? act.btnColor
-                                  : "#3ac9d6",
-                                color: act?.textColor ? act?.textColor : "white"
-                              }}
+                              className={`${
+                                act?.btnColor ? act.btnColor : ""
+                              } op-btn op-btn-sm`}
                             >
                               <i className={act.btnIcon}></i>
                             </button>
@@ -989,19 +983,13 @@ const ReportTable = (props) => {
                               <div className="flex items-center mt-3 gap-2 text-white">
                                 <button
                                   onClick={() => handleDelete(item)}
-                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-                                  style={{
-                                    backgroundColor: modalSubmitBtnColor
-                                  }}
+                                  className="op-btn op-btn-primary"
                                 >
                                   Yes
                                 </button>
                                 <button
                                   onClick={handleClose}
-                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
-                                  style={{
-                                    backgroundColor: modalCancelBtnColor
-                                  }}
+                                  className="op-btn op-btn-secondary"
                                 >
                                   No
                                 </button>
@@ -1094,10 +1082,9 @@ const ReportTable = (props) => {
                                 <div className="m-[20px]">
                                   <div className="font-normal text-black">
                                     <p className="text-lg">
-                                      {" "}
                                       {isPublic[item.objectId]
-                                        ? `Are you sure you want tof make this templat public ?`
-                                        : `Are you sure you want to make this template private? This will remove it from your public profile ?`}
+                                        ? `Are you sure you want to make this template public ?`
+                                        : `Are you sure you want to make this template private ? This will remove it from your public profile ?`}
                                     </p>
                                     {isPublic[item.objectId] && (
                                       <div className="flex mt-2 gap-2 md:items-center">
@@ -1148,19 +1135,13 @@ const ReportTable = (props) => {
                                   <div className="flex items-center mt-3 gap-2 text-white">
                                     <button
                                       onClick={() => handlePublicTemplate(item)}
-                                      className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-                                      style={{
-                                        backgroundColor: modalSubmitBtnColor
-                                      }}
+                                      className="op-btn op-btn-primary"
                                     >
                                       Submit
                                     </button>
                                     <button
                                       onClick={() => handleClose(item)}
-                                      className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
-                                      style={{
-                                        backgroundColor: modalCancelBtnColor
-                                      }}
+                                      className="op-btn op-btn-secondary"
                                     >
                                       No
                                     </button>
@@ -1204,10 +1185,7 @@ const ReportTable = (props) => {
                                         be able to make a public template.
                                       </p>
                                       <button
-                                        className="px-4 py-1.5 mt-3 text-white rounded shadow-md text-center focus:outline-none "
-                                        style={{
-                                          backgroundColor: modalSubmitBtnColor
-                                        }}
+                                        className="mt-3 op-btn op-btn-primary"
                                         onClick={() => navigate("/profile")}
                                       >
                                         Add
@@ -1227,28 +1205,18 @@ const ReportTable = (props) => {
                                 data-tut={act?.selector}
                                 key={index}
                                 onClick={() => handleActionBtn(act, item)}
-                                className={`${
-                                  act.action === "option"
-                                    ? ""
-                                    : "rounded shadow"
-                                } ${
-                                  act.btnLabel
-                                    ? "py-[3px] px-1.5"
-                                    : "py-1.5 px-2"
-                                } relative text-center flex text-nowrap items-center justify-center focus:outline-none`}
                                 title={act.hoverLabel}
-                                style={{
-                                  backgroundColor: act.btnColor
-                                    ? act.btnColor
-                                    : "#3ac9d6",
-                                  color: act?.textColor
-                                    ? act?.textColor
-                                    : "white"
-                                }}
+                                className={
+                                  act.action !== "option"
+                                    ? `${
+                                        act?.btnColor ? act.btnColor : ""
+                                      } op-btn op-btn-sm`
+                                    : "text-base-content text-lg mr-2 relative"
+                                }
                               >
                                 <i className={act.btnIcon}></i>
                                 {act.btnLabel && (
-                                  <span className="ml-[4px] uppercase font-medium">
+                                  <span className="uppercase font-medium">
                                     {act.btnLabel}
                                   </span>
                                 )}
@@ -1335,19 +1303,13 @@ const ReportTable = (props) => {
                               <div className="flex items-center mt-3 gap-2 text-white">
                                 <button
                                   onClick={() => handleDelete(item)}
-                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-                                  style={{
-                                    backgroundColor: modalSubmitBtnColor
-                                  }}
+                                  className="op-btn op-btn-primary"
                                 >
                                   Yes
                                 </button>
                                 <button
                                   onClick={handleClose}
-                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
-                                  style={{
-                                    backgroundColor: modalCancelBtnColor
-                                  }}
+                                  className="op-btn op-btn-secondary"
                                 >
                                   No
                                 </button>
@@ -1426,23 +1388,17 @@ const ReportTable = (props) => {
                               <div className="text-lg font-normal text-black">
                                 Are you sure you want to revoke this document?
                               </div>
-                              <hr className="bg-[#ccc] mt-4 " />
-                              <div className="flex items-center mt-3 gap-2 text-white">
+                              <hr className="bg-[#ccc] mt-4" />
+                              <div className="flex items-center mt-3 gap-2">
                                 <button
                                   onClick={() => handleRevoke(item)}
-                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-                                  style={{
-                                    backgroundColor: modalSubmitBtnColor
-                                  }}
+                                  className="op-btn op-btn-primary"
                                 >
                                   Yes
                                 </button>
                                 <button
                                   onClick={handleClose}
-                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
-                                  style={{
-                                    backgroundColor: modalCancelBtnColor
-                                  }}
+                                  className="op-btn op-btn-secondary"
                                 >
                                   No
                                 </button>
