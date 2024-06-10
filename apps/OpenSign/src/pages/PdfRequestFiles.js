@@ -170,7 +170,11 @@ function PdfRequestFiles() {
   const handleResend = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
-    await handleSendOTP(Parse.User.current().getEmail());
+    const localuser = localStorage.getItem(
+      `Parse/${appInfo.appId}/currentUser`
+    );
+    const currentUser = JSON.parse(JSON.stringify(localuser));
+    await handleSendOTP(currentUser?.email);
     setOtpLoader(false);
     alert("OTP sent on you email");
   };
@@ -178,10 +182,14 @@ function PdfRequestFiles() {
   const handleVerifyEmail = async (e) => {
     e.preventDefault();
     setOtpLoader(true);
+    const localuser = localStorage.getItem(
+      `Parse/${appInfo.appId}/currentUser`
+    );
+    const currentUser = JSON.parse(JSON.stringify(localuser));
     try {
       const resEmail = await Parse.Cloud.run("verifyemail", {
         otp: otp,
-        email: Parse.User.current().getEmail()
+        email: currentUser?.email
       });
       if (resEmail?.message === "Email is verified.") {
         setIsEmailVerified(true);
@@ -202,7 +210,11 @@ function PdfRequestFiles() {
   //`handleVerifyBtn` function is used to send otp on user mail
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
-    await handleSendOTP(Parse.User.current().getEmail());
+    const localuser = localStorage.getItem(
+      `Parse/${appInfo.appId}/currentUser`
+    );
+    const currentUser = JSON.parse(JSON.stringify(localuser));
+    await handleSendOTP(currentUser?.email);
   };
   async function checkIsSubscribed(extUserId, contactId) {
     const isGuestSign = location.pathname.includes("/load/") || false;
@@ -497,7 +509,6 @@ function PdfRequestFiles() {
             const objectId = res[0].objectId;
             setSignerUserId(objectId);
             const tourData = res[0].TourStatus && res[0].TourStatus;
-
             if (tourData && tourData.length > 0) {
               setTourStatus(tourData);
               setRequestSignTour(tourData[0]?.requestSign || false);
