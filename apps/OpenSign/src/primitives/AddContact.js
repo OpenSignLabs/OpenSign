@@ -195,23 +195,16 @@ const AddContact = (props) => {
   };
 
   return (
-    <div className="addusercontainer">
+    <div className="h-full px-[20px] py-[10px]">
       {isLoader && (
-        <div className="loaderdiv">
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-30 text-[45px] text-[#3dd3e0]">
+          <div className="loader-37"></div>
         </div>
       )}
-      <div className="form-wrapper">
-        <div style={{ fontSize: 14, fontWeight: "700" }}>Add User</div>
-
+      <div className="w-full mx-auto p-[8px]">
+        <div className="text-[14px] font-[700]">Add User</div>
         {isUserExist && (
-          <div className="form-section">
+          <div className="mb-[0.75rem]">
             <input
               type="checkbox"
               id="addYourself"
@@ -224,11 +217,11 @@ const AddContact = (props) => {
             </label>
           </div>
         )}
-        <form onSubmit={handleSubmit}>
-          <div className="form-section">
-            <label htmlFor="name" style={{ fontSize: 13 }}>
+        <form className="text-base-content" onSubmit={handleSubmit}>
+          <div className="mb-[0.75rem]">
+            <label htmlFor="name" className="text-[13px]">
               Name
-              <span style={{ color: "red", fontSize: 13 }}> *</span>
+              <span className="text-[13px] text-[red]"> *</span>
             </label>
             <input
               type="text"
@@ -237,13 +230,13 @@ const AddContact = (props) => {
               onChange={(e) => setName(e.target.value)}
               required
               disabled={addYourself}
-              className="addUserInput"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
-          <div className="form-section">
-            <label htmlFor="email" style={{ fontSize: 13 }}>
+          <div className="mb-[0.75rem]">
+            <label htmlFor="email" className="text-[13px]">
               Email
-              <span style={{ color: "red", fontSize: 13 }}> *</span>
+              <span className="text-[13px] text-[red]"> *</span>
             </label>
             <input
               type="email"
@@ -252,11 +245,11 @@ const AddContact = (props) => {
               onChange={(e) => setEmail(e.target.value?.toLowerCase())}
               required
               disabled={addYourself}
-              className="addUserInput lowercase"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs lowercase"
             />
           </div>
-          <div className="form-section">
-            <label htmlFor="phone" style={{ fontSize: 13 }}>
+          <div className="mb-[0.75rem]">
+            <label htmlFor="phone" className="text-[13px]">
               Phone
             </label>
             <input
@@ -265,18 +258,18 @@ const AddContact = (props) => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               disabled={addYourself}
-              className="addUserInput"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
 
-          <div className="buttoncontainer">
-            <button type="submit" className="submitbutton">
+          <div className="mt-[1rem] flex justify-start gap-2">
+            <button type="submit" className="op-btn op-btn-primary">
               Submit
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
-              className="resetbutton"
+              className="op-btn op-btn-secondary"
             >
               Reset
             </button>

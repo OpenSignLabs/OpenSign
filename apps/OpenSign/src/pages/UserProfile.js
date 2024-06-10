@@ -356,7 +356,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={name}
-                    className="op-input op-input-bordered op-input-sm text-sm"
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => SetName(e.target.value)}
                   />
                 ) : (
@@ -372,7 +372,7 @@ function UserProfile() {
                 {editmode ? (
                   <input
                     type="text"
-                    className="op-input op-input-bordered op-input-sm text-sm"
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => SetPhone(e.target.value)}
                     value={Phone}
                   />
@@ -394,7 +394,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={company}
-                    className="op-input op-input-bordered op-input-sm text-sm"
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => setCompany(e.target.value)}
                   />
                 ) : (
@@ -411,7 +411,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={jobTitle}
-                    className="op-input op-input-bordered op-input-sm text-sm"
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => setJobTitle(e.target.value)}
                   />
                 ) : (
@@ -455,7 +455,7 @@ function UserProfile() {
                         value={publicUserName}
                         disabled={!editmode}
                         placeholder="enter user name"
-                        className="op-input op-input-bordered op-input-xs"
+                        className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-xs"
                       />
                     ) : (
                       <input
@@ -525,7 +525,9 @@ function UserProfile() {
                 onClick={() =>
                   editmode ? handleCancel() : navigate("/changepassword")
                 }
-                className="op-btn op-btn-neutral"
+                className={`op-btn ${
+                  editmode ? "op-btn-ghost" : "op-btn-secondary"
+                }`}
               >
                 {editmode ? "Cancel" : "Change Password"}
               </button>

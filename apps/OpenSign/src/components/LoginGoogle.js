@@ -216,15 +216,12 @@ const GoogleSignInBtn = ({
       <ModalUi showClose={false} isOpen={isModal} title="Sign up form">
         <form className="px-4 py-3 text-base-content">
           <div className="mb-3">
-            <label
-              htmlFor="Phone"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+            <label htmlFor="Phone" className="block text-xs font-semibold">
               Phone <span className="text-[13px] text-[red]">*</span>
             </label>
             <input
               type="tel"
-              className="op-input op-input-bordered op-input-sm w-full"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
               id="Phone"
               value={userDetails.Phone}
               onChange={(e) =>
@@ -237,15 +234,12 @@ const GoogleSignInBtn = ({
             />
           </div>
           <div className="mb-3">
-            <label
-              htmlFor="Company"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+            <label htmlFor="Company" className="block text-xs font-semibold">
               Company <span className="text-[13px] text-[red]">*</span>
             </label>
             <input
               type="text"
-              className="op-input op-input-bordered op-input-sm w-full"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
               id="Company"
               value={userDetails.Company}
               onChange={(e) =>
@@ -258,15 +252,12 @@ const GoogleSignInBtn = ({
             />
           </div>
           <div className="mb-3">
-            <label
-              htmlFor="JobTitle"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+            <label htmlFor="JobTitle" className="block text-xs font-semibold">
               Job Title <span className="text-[13px] text-[red]">*</span>
             </label>
             <input
               type="text"
-              className="op-input op-input-bordered op-input-sm w-full"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
               id="JobTitle"
               value={userDetails.Destination}
               onChange={(e) =>
@@ -288,7 +279,7 @@ const GoogleSignInBtn = ({
             </button>
             <button
               type="button"
-              className="op-btn op-btn-neutral"
+              className="op-btn op-btn-ghost"
               onClick={handleCloseModal}
             >
               Cancel
