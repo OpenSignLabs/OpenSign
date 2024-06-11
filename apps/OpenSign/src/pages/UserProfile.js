@@ -12,7 +12,7 @@ import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
-import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, handleSendOTP } from "../constant/Utils";
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
@@ -549,25 +549,24 @@ function UserProfile() {
                 </div>
               ) : (
                 <form onSubmit={(e) => handleVerifyEmail(e)}>
-                  <div className="px-6 py-3">
+                  <div className="px-6 py-3 text-base-content">
                     <label className="mb-2">Enter OTP</label>
                     <input
                       required
                       type="tel"
                       pattern="[0-9]{4}"
-                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
                       placeholder="Enter OTP received over email"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                     />
                   </div>
-                  <hr />
-                  <div className="px-6 my-3">
-                    <button type="submit" className={submitBtn}>
+                  <div className="px-6 mb-3">
+                    <button type="submit" className="op-btn op-btn-primary">
                       Verify
                     </button>
                     <button
-                      className={`${rejectBtn} ml-2`}
+                      className="op-btn op-btn-secondary ml-2"
                       onClick={(e) => handleResend(e)}
                     >
                       Resend

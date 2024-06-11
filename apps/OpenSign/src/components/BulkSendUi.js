@@ -170,14 +170,8 @@ const BulkSendUi = (props) => {
   return (
     <>
       {isSubmit && (
-        <div className="absolute z-[999] h-full w-full flex justify-center items-center bg-black bg-opacity-40">
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37 "
-          ></div>
+        <div className="absolute z-[999] h-full w-full flex justify-center items-center bg-black bg-opacity-40 text-[45px] text-[#3dd3e0]">
+          <div className="loader-37"></div>
         </div>
       )}
       {props.Placeholders?.length > 0 ? (
@@ -185,14 +179,14 @@ const BulkSendUi = (props) => {
           <>
             {props.Placeholders?.some((x) => !x.signerObjId) ? (
               <form onSubmit={handleSubmit}>
-                <div className=" min-h-max max-h-[250px] overflow-y-auto">
+                <div className="min-h-max max-h-[250px] overflow-y-auto">
                   {forms?.map((form, index) => (
                     <div
                       key={form.Id}
-                      className="p-3 rounded-xl border-[1px] border-gray-400 m-4 bg-white text-black grid grid-cols-1 md:grid-cols-2 gap-2 relative"
+                      className="p-3 op-card border-[1px] border-gray-400 m-4 bg-base-200 text-base-content grid grid-cols-1 md:grid-cols-2 gap-2 relative"
                     >
                       {form?.fields?.map((field, fieldIndex) => (
-                        <div className="flex flex-col " key={field.fieldId}>
+                        <div className="flex flex-col" key={field.fieldId}>
                           <label>{field.label}</label>
                           <SuggestionInput
                             required
@@ -220,13 +214,13 @@ const BulkSendUi = (props) => {
                 <div className="flex flex-col mx-4 mb-4 gap-3">
                   <button
                     onClick={handleAddForm}
-                    className="bg-[#32a3ac] p-2 text-white w-full rounded-full focus:outline-none"
+                    className="op-btn op-btn-primary focus:outline-none"
                   >
                     <i className="fa-solid fa-plus"></i> <span>Add new</span>
                   </button>
                   <button
                     type="submit"
-                    className="bg-[#32a3ac] p-2 text-white w-full rounded-full focus:outline-none"
+                    className="op-btn op-btn-secondary focus:outline-none"
                   >
                     <i className="fa-solid fa-paper-plane"></i>{" "}
                     <span>Send</span>

@@ -13,30 +13,32 @@ const ModalUi = ({
   reduceWidth,
   showHeaderMessage
 }) => {
+  const headerColor = headColor ? `text-${headColor}` : "text-base-content";
   return (
     <>
       {isOpen && (
-        <div className="fixed z-[999] top-0 left-0 w-[100%] h-[100%] bg-black bg-opacity-[75%]">
+        <dialog className="op-modal op-modal-open">
           <div
             className={`${
               reduceWidth || "md:min-w-[500px]"
-            } fixed z-[1000] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-base-100 rounded-xl shadow-md max-h-90 min-w-[90%] overflow-y-auto hide-scrollbar `}
+            } op-modal-box p-0 max-h-90 min-w-[90%] overflow-y-auto hide-scrollbar text-sm`}
           >
             {showHeader && (
-              <div
-                className="flex justify-between rounded-t items-center py-[15px] px-[20px] text-white"
-                style={{ background: headColor ? headColor : "#32a3ac" }}
-              >
-                <div className="text-[1.2rem] font-normal">{title}</div>
+              <>
+                <h3
+                  className={`${headerColor} font-bold text-lg pt-[15px] px-[20px]`}
+                >
+                  {title}
+                </h3>
                 {showClose && (
-                  <div
-                    className="text-[1.5rem] cursor-pointer"
+                  <button
+                    className="op-btn op-btn-sm op-btn-circle op-btn-ghost absolute right-2 top-2"
                     onClick={() => handleClose && handleClose()}
                   >
-                    &times;
-                  </div>
+                    ✕
+                  </button>
                 )}
-              </div>
+              </>
             )}
             {!isEnableSubscription && showHeaderMessage && (
               <PremiumAlertHeader
@@ -47,7 +49,7 @@ const ModalUi = ({
             )}
             <div>{children}</div>
           </div>
-        </div>
+        </dialog>
       )}
     </>
   );

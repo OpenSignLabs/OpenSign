@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Alert from "../primitives/Alert";
 import ModalUi from "../primitives/ModalUi";
-import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, copytoData, openInNewTab } from "../constant/Utils";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
@@ -219,7 +219,7 @@ function GenerateToken() {
             handleClose={handleModal}
           >
             <div className="m-[20px]">
-              <div className="text-lg font-normal text-black">
+              <div className="text-lg font-normal text-base-content">
                 Are you sure you want to regenerate token it will expire old
                 token?
               </div>
@@ -227,11 +227,14 @@ function GenerateToken() {
               <div className="flex items-center mt-3 gap-2 text-white">
                 <button
                   onClick={handleSubmit}
-                  className={submitBtn + "ml-[2px]"}
+                  className="op-btn op-btn-primary ml-[2px]"
                 >
                   Yes
                 </button>
-                <button onClick={handleModal} className={rejectBtn}>
+                <button
+                  onClick={handleModal}
+                  className="op-btn op-btn-secondary"
+                >
                   No
                 </button>
               </div>
