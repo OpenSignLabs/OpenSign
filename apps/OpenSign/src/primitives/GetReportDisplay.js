@@ -54,7 +54,7 @@ const ReportTable = (props) => {
   const [isLoader, setIsLoader] = useState({});
   // const [selectedPublicRole, setSelectedPublicRole] = useState("");
   // const [isCelebration, setIsCelebration] = useState(false);
-  const [currentLists, setCurrentLists] = useState([]);
+  // const [currentLists, setCurrentLists] = useState([]);
   // const [isPublic, setIsPublic] = useState({});
   // const [isPublicProfile, setIsPublicProfile] = useState({});
   // const [publicUserName, setIsPublicUserName] = useState("");
@@ -250,19 +250,20 @@ const ReportTable = (props) => {
   // Get current list
   const indexOfLastDoc = currentPage * props.docPerPage;
   const indexOfFirstDoc = indexOfLastDoc - props.docPerPage;
-  useEffect(() => {
-    // `currentLists` is total record render on current page
-    const currentList = props.List?.slice(indexOfFirstDoc, indexOfLastDoc);
-    //check public template and save in a object to show public and private template
-    // setIsPublic(
-    //   currentList.reduce((acc, item) => {
-    //     acc[item.objectId] = item?.IsPublic || false;
-    //     return acc;
-    //   }, {})
-    // );
-    setCurrentLists(currentList);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [indexOfLastDoc, indexOfFirstDoc]);
+  const currentList = props.List?.slice(indexOfFirstDoc, indexOfLastDoc);
+  // useEffect(() => {
+  //   // `currentLists` is total record render on current page
+  //   const currentList = props.List?.slice(indexOfFirstDoc, indexOfLastDoc);
+  //   //check public template and save in a object to show public and private template
+  //   // setIsPublic(
+  //   //   currentList.reduce((acc, item) => {
+  //   //     acc[item.objectId] = item?.IsPublic || false;
+  //   //     return acc;
+  //   //   }, {})
+  //   // );
+  //   setCurrentLists(currentList);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [indexOfLastDoc, indexOfFirstDoc]);
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
@@ -928,7 +929,7 @@ const ReportTable = (props) => {
           <tbody className="text-[12px]">
             {props.List?.length > 0 && (
               <>
-                {currentLists.map((item, index) =>
+                {currentList.map((item, index) =>
                   props.ReportName === "Contactbook" ? (
                     <tr className="border-y-[1px]" key={index}>
                       {props.heading.includes("Sr.No") && (
