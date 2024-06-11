@@ -1,6 +1,5 @@
 import React from "react";
 import "../styles/signature.css";
-import { rejectBtn } from "../constant/const";
 
 function CustomModal({
   show,
@@ -12,12 +11,12 @@ function CustomModal({
 }) {
   return (
     show && (
-      <div className="bg-black bg-opacity-[75%] absolute z-[999] flex flex-col items-center justify-center w-full h-full rounded">
-        <div className="bg-white rounded outline-none md:w-[40%] w-[80%]">
-          <div className="bg-[#de4337] text-white p-[10px] rounded-t">
+      <dialog className="op-modal op-modal-open absolute z-[1999]">
+        <div className="w-[80%] md:w-[40%] op-modal-box p-0 overflow-y-auto hide-scrollbar text-sm">
+          <h3 className="text-[#de4337] font-bold text-lg pt-[15px] px-[20px]">
             {headMsg && headMsg}
-          </div>
-          <div className="p-[15px]">
+          </h3>
+          <div className="p-[10px] px-[20px]">
             <p className="text-[15px]">{bodyMssg && bodyMssg}</p>
           </div>
           {footerMessage && (
@@ -25,8 +24,7 @@ function CustomModal({
               <div className="h-[1px] bg-[#9f9f9f] w-full"></div>
               <div className="m-[15px] ">
                 <button
-                  className={`${rejectBtn} text-white mr-2`}
-                  style={{ background: "#de4337" }}
+                  className="op-btn op-btn-primary mr-2"
                   type="button"
                   onClick={() => declineDoc()}
                 >
@@ -34,7 +32,7 @@ function CustomModal({
                 </button>
                 <button
                   type="button"
-                  className={rejectBtn}
+                  className="op-btn op-btn-secondary"
                   onClick={() => setIsDecline({ isDeclined: false })}
                 >
                   Close
@@ -43,7 +41,7 @@ function CustomModal({
             </>
           )}
         </div>
-      </div>
+      </dialog>
     )
   );
 }

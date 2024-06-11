@@ -703,15 +703,17 @@ const ReportTable = (props) => {
 
     return (
       <div className="flex flex-row gap-2 justify-center items-center">
-        <div className="flex justify-center items-center bg-gray-200 text-xs text-black shadow rounded-full w-[65px] h-[23px] cursor-default">
+        <div className="flex justify-center items-center bg-base-300 text-base-content shadow-md op-card w-[65px] h-[32px] cursor-default">
           {audit?.Activity ? audit?.Activity : "Awaited"}
         </div>
 
         <button
           onClick={() => handleNextBtn(user, doc)}
-          className={`${
-            audit?.Activity !== "Signed" ? "bg-[#32a3ac] shadow-md" : ""
-          } flex justify-center items-center text-center text-white  rounded w-[60px] h-[30px]`}
+          className={
+            audit?.Activity !== "Signed"
+              ? "op-btn op-btn-primary op-btn-sm"
+              : " text-transparent cursor-default pointer-events-none"
+          }
           disabled={audit?.Activity === "Signed"}
         >
           {audit?.Activity !== "Signed" && "Resend"}
@@ -916,7 +918,7 @@ const ReportTable = (props) => {
           <div className="loader-37"></div>
         </div>
       )}
-      <div className="p-2 overflow-x-scroll w-full bg-base-100 text-base-content rounded-xl">
+      <div className="p-2 overflow-x-scroll w-full bg-base-100 text-base-content op-card shadow-lg">
         {/* {isCelebration && (
           <div className="relative z-[1000]">
             <Confetti width={window.innerWidth} height={window.innerHeight} />
@@ -945,7 +947,7 @@ const ReportTable = (props) => {
             <i
               data-tut="reactourFirst"
               onClick={() => navigate("/form/template")}
-              className="fa-solid fa-square-plus text-sky-400 text-[25px]"
+              className="fa-solid fa-square-plus text-accent text-[25px]"
             ></i>
           )}
           {props.form && (
@@ -953,7 +955,7 @@ const ReportTable = (props) => {
               className="cursor-pointer"
               onClick={() => handleContactFormModal()}
             >
-              <i className="fa-solid fa-square-plus text-sky-400 text-[25px]"></i>
+              <i className="fa-solid fa-square-plus text-accent text-[25px]"></i>
             </div>
           )}
         </div>
@@ -1048,7 +1050,7 @@ const ReportTable = (props) => {
                       <td className="px-4 py-2">
                         <button
                           onClick={() => handleDownload(item)}
-                          className="text-[blue] hover:text-[blue] hover:underline focus:outline-none"
+                          className="op-link op-link-primary"
                           title={"Download"}
                         >
                           {item?.URL ? "Download" : "-"}
@@ -1061,7 +1063,7 @@ const ReportTable = (props) => {
                         {item?.Placeholders ? (
                           <button
                             onClick={() => handleViewSigners(item)}
-                            className="text-[blue] hover:underline focus:outline-none"
+                            className="op-link op-link-primary"
                           >
                             View
                           </button>
@@ -1228,10 +1230,11 @@ const ReportTable = (props) => {
                           </td>
                         )} */}
                       <td className="px-2 py-2">
-                        <div className="text-white flex flex-row gap-x-2 gap-y-1 justify-start items-center">
+                        <div className="text-base-content flex flex-row gap-x-2 gap-y-1 justify-start items-center">
                           {props.actions?.length > 0 &&
                             props.actions.map((act, index) => (
-                              <button
+                              <div
+                                role="button"
                                 data-tut={act?.selector}
                                 key={index}
                                 onClick={() => handleActionBtn(act, item)}
@@ -1252,29 +1255,30 @@ const ReportTable = (props) => {
                                 )}
                                 {isOption[item.objectId] &&
                                   act.action === "option" && (
-                                    <div className="absolute -right-2 top-5 p-1.5 bg-white text-nowrap rounded shadow-md z-[20] overflow-hidden">
+                                    <ul className="absolute -right-2 top-6 z-[20] op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box ">
                                       {act.subaction?.map((subact) => (
-                                        <div
+                                        <li
                                           key={subact.btnId}
-                                          className="hover:bg-gray-300 rounded cursor-pointer px-2 py-1.5 flex justify-start items-center text-black"
                                           onClick={() =>
                                             handleActionBtn(subact, item)
                                           }
                                           title={subact.hoverLabel}
                                         >
-                                          <i
-                                            className={`${subact.btnIcon} mr-1.5`}
-                                          ></i>
-                                          {subact.btnLabel && (
-                                            <span className="ml-[4px] text-[13px] capitalize font-medium">
-                                              {subact.btnLabel}
-                                            </span>
-                                          )}
-                                        </div>
+                                          <span>
+                                            <i
+                                              className={`${subact.btnIcon} mr-1.5`}
+                                            ></i>
+                                            {subact.btnLabel && (
+                                              <span className="text-[13px] capitalize font-medium">
+                                                {subact.btnLabel}
+                                              </span>
+                                            )}
+                                          </span>
+                                        </li>
                                       ))}
-                                    </div>
+                                    </ul>
                                   )}
-                              </button>
+                              </div>
                             ))}
                         </div>
                         {isViewShare[item.objectId] && (
