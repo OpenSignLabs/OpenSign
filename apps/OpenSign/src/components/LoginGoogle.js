@@ -110,7 +110,7 @@ const GoogleSignInBtn = ({
     const extRes = await Parse.Cloud.run("getUserDetails", params);
     // console.log("extRes ", extRes);
     if (extRes) {
-      const params = { ...details, Phone: extRes?.get("Phone") || "" };
+      const params = { ...details, Phone: extRes.get("Phone") };
       const payload = await Parse.Cloud.run("googlesign", params);
       // console.log("payload ", payload);
       if (payload && payload.sessiontoken) {
@@ -121,7 +121,7 @@ const GoogleSignInBtn = ({
         const LocalUserDetails = {
           name: details.Name,
           email: details.Gmail,
-          phone: extRes?.get("Phone") || "",
+          phone: extRes.get("Phone"),
           company: extRes.get("Company")
         };
         localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
@@ -139,7 +139,7 @@ const GoogleSignInBtn = ({
       setThirdpartyLoader(true);
       // e.preventDefault()
       // console.log("handelSubmit", userDetails);
-      const params = { ...googleDetails, Phone: userDetails?.Phone };
+      const params = { ...googleDetails, Phone: userDetails.Phone };
       const payload = await Parse.Cloud.run("googlesign", params);
 
       // console.log("payload ", payload);
@@ -149,7 +149,7 @@ const GoogleSignInBtn = ({
             name: userDetails.Name,
             email: userDetails.Email,
             // "passsword":userDetails.Phone,
-            phone: userDetails?.Phone || "",
+            phone: userDetails.Phone,
             role: "contracts_User",
             company: userDetails.Company,
             jobTitle: userDetails.Destination
@@ -161,7 +161,7 @@ const GoogleSignInBtn = ({
           const LocalUserDetails = {
             name: userDetails.Name,
             email: userDetails.Email,
-            phone: userDetails?.Phone || "",
+            phone: userDetails.Phone,
             company: userDetails.Company
             // jobTitle: userDetails.JobTitle
           };

@@ -31,7 +31,7 @@ export default async function getContactList(request, response) {
           objectId: x.objectId,
           name: x.Name,
           email: x.Email,
-          phone: x?.Phone || '',
+          phone: x.Phone,
           createdAt: x.createdAt,
           updatedAt: x.updatedAt,
         }));

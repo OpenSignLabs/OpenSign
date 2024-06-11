@@ -10,11 +10,7 @@ const Menu = ({ item, isOpen, closeSidebar }) => {
             ? `/${item.pageType}/${item.objectId}`
             : `/${item.objectId}`
         }
-        className={({ isActive }) =>
-          `${
-            isActive ? "text-[#0056b3] bg-[#eef1f5]" : ""
-          } mx-auto flex items-center hover:bg-[#eef1f5] p-3 lg:p-4 cursor-pointer`
-        }
+        className="mx-auto flex items-center hover:bg-[#eef1f5] p-3 lg:p-4 cursor-pointer  focus:text-[#0056b3] focus:bg-[#eef1f5]"
         onClick={closeSidebar}
         tabIndex={isOpen ? 0 : -1}
         role="menuitem"

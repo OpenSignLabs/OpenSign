@@ -8,9 +8,7 @@ async function ContractUsersAftersave(request) {
     contactbook.set('Name', request.object.get('Name'));
     contactbook.set('Email', request.object.get('Email'));
     contactbook.set('ExtUserPtr', request.object.get('objectId'));
-    if (request.object?.get('Phone')) {
-      contactbook.set('Phone', request.object.get('Phone'));
-    }
+    contactbook.set('Phone', request.object.get('Phone'));
     contactbook.set('ExtUserPtr', {
       __type: 'Pointer',
       className: 'contracts_Users',

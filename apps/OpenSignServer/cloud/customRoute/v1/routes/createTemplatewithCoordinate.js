@@ -91,7 +91,7 @@ export default async function createTemplatewithCoordinate(request, response) {
           let createContactUrl = protocol + '/v1/createcontact';
 
           for (const [index, element] of parseSigners.entries()) {
-            if (element?.name && element?.email) {
+            if (element?.name && element.phone && element?.email) {
               const body = {
                 name: element?.name || '',
                 email: element?.email || '',

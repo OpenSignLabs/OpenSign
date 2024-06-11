@@ -37,7 +37,7 @@ export default async function getUser(request, response) {
           objectId: parseRes.objectId,
           name: parseRes.Name,
           email: parseRes.Email,
-          phone: parseRes?.Phone || '',
+          phone: parseRes.Phone,
           jobTitle: parseRes.JobTitle,
           company: parseRes.Company,
           createdAt: parseRes.createdAt,
