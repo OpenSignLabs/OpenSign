@@ -936,6 +936,7 @@ function PlaceHolderSign() {
           Placeholders: filterPrefill,
           SignedUrl: pdfUrl,
           Signers: signers,
+          SentToOthers: true,
           ExpiryDate: {
             iso: updateExpiryDate,
             __type: "Date"
@@ -945,7 +946,8 @@ function PlaceHolderSign() {
         data = {
           Placeholders: filterPrefill,
           SignedUrl: pdfUrl,
-          Signers: signers
+          Signers: signers,
+          SentToOthers: true
         };
       }
       await axios
@@ -1108,10 +1110,10 @@ function PlaceHolderSign() {
             document_title: documentName,
             sender_name: senderName,
             sender_mail: senderEmail,
-            sender_phone: senderPhone,
+            sender_phone: senderPhone || "",
             receiver_name: signerMail[i].Name,
             receiver_email: signerMail[i].Email,
-            receiver_phone: signerMail[i].Phone,
+            receiver_phone: signerMail[i]?.Phone || "",
             expiry_date: localExpireDate,
             company_name: orgName,
             signing_url: `<a href=${signPdf}>Sign here</a>`

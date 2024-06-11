@@ -204,34 +204,34 @@ function RenderPdf({
   };
   //function for render placeholder block over pdf document
   const checkSignedSignes = (data) => {
-    const checkSign = signedSigners.filter(
-      (sign) => sign.objectId === data.signerObjId
+    let checkSign = [];
+    //condition to handle quick send flow and using normal request sign flow
+    checkSign = signedSigners.filter(
+      (sign) => sign?.Id === data?.Id || sign?.objectId === data?.signerObjId
     );
     if (data.signerObjId === signerObjectId) {
       setCurrentSigner(true);
     }
     const handleAllUserName = (Id, Role, type) => {
-      return pdfDetails[0].Signers.map((signerData, key) => {
-        return (
-          signerData.objectId === data.signerObjId && (
-            <React.Fragment key={key}>
-              {signerData?.Name && (
-                <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
-                  {signerData.Name}
-                </div>
-              )}
-              {type && (
-                <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
-              )}
-              {Role && (
-                <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
-                  {`(${Role})`}
-                </div>
-              )}
-            </React.Fragment>
-          )
-        );
-      });
+      return (
+        <React.Fragment>
+          <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+            {
+              pdfDetails[0].Signers?.find(
+                (signer) => signer.objectId === data.signerObjId
+              )?.Name
+            }
+          </div>
+          {type && (
+            <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+          )}
+          {Role && (
+            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+              {`(${Role})`}
+            </div>
+          )}
+        </React.Fragment>
+      );
     };
 
     return (
