@@ -1192,7 +1192,7 @@ function SignYourSelf() {
               {/* this modal is used show this document is already sign */}
               <ModalUi
                 isOpen={showAlreadySignDoc.status}
-                title={"Document signed"}
+                title={"Sign Documents"}
                 handleClose={() => {
                   setShowAlreadySignDoc({ status: false });
                 }}

@@ -49,7 +49,7 @@ const LoginFacebook = ({
     const extRes = await Parse.Cloud.run("getUserDetails", params);
     // console.log("extRes ", extRes);
     if (extRes) {
-      const params = { ...details, Phone: extRes?.get("Phone") || "" };
+      const params = { ...details, Phone: extRes.get("Phone") };
       const payload = await Parse.Cloud.run("facebooksign", params);
       //   console.log("payload ", payload);
       if (payload && payload.sessiontoken) {
@@ -59,7 +59,7 @@ const LoginFacebook = ({
         const LocalUserDetails = {
           name: details.Name,
           email: details.Email,
-          phone: extRes?.get("Phone") || "",
+          phone: extRes.get("Phone"),
           company: extRes.get("Company")
         };
         localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
@@ -75,7 +75,7 @@ const LoginFacebook = ({
   const handleSubmitbtn = async () => {
     if (userDetails.Phone && userDetails.Company) {
       setThirdpartyLoader(true);
-      const params = { ...fBDetails, Phone: userDetails?.Phone || "" };
+      const params = { ...fBDetails, Phone: userDetails.Phone };
       const payload = await Parse.Cloud.run("facebooksign", params);
       // console.log("payload ", payload);
 
@@ -85,7 +85,7 @@ const LoginFacebook = ({
             name: userDetails.Name,
             email: userDetails.Email,
             // "passsword":userDetails.Phone,
-            phone: userDetails?.Phone || "",
+            phone: userDetails.Phone,
             role: "contracts_User",
             company: userDetails.Company
           }
@@ -96,7 +96,7 @@ const LoginFacebook = ({
           const LocalUserDetails = {
             name: userDetails.Name,
             email: userDetails.Email,
-            phone: userDetails?.Phone || "",
+            phone: userDetails.Phone,
             company: userDetails.Company
           };
           localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));

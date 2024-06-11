@@ -562,11 +562,9 @@ const Signup = () => {
                       <input
                         id="email"
                         type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs lowercase"
+                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                         value={email}
-                        onChange={(e) =>
-                          setEmail(e.target.value?.toLowerCase())
-                        }
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                       <hr className="my-2 border-none" />

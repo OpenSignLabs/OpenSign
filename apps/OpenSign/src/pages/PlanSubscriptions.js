@@ -16,17 +16,8 @@ const PlanSubscriptions = () => {
   const navigate = useNavigate();
   const [yearlyVisible, setYearlyVisible] = useState(false);
   const [isLoader, setIsLoader] = useState(true);
-  const extUser =
-    localStorage.getItem("Extand_Class") &&
-    JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-  const user = {
-    name: extUser?.Name,
-    email: extUser?.Email,
-    company: extUser?.Company,
-    phone: extUser?.Phone
-  };
-  const userDetails = JSON.parse(localStorage.getItem("userDetails")) || user;
-  // console.log("userDetails ", userDetails);
+
+  const userDetails = JSON.parse(localStorage.getItem("userDetails"));
   const name =
     userDetails && userDetails.name
       ? "first_name=" + encodeURIComponent(userDetails.name)
