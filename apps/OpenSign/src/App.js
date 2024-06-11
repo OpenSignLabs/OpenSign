@@ -75,7 +75,7 @@ function App() {
   };
 
   return (
-    <div className="bg-[#eef1f5]">
+    <div className="bg-base-200">
       {isloading ? (
         <Loader />
       ) : (

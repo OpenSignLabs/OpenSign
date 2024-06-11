@@ -18,51 +18,33 @@ const buttonList = [
 ];
 const GetDashboard = (props) => {
   const Button = ({ label, redirectId, redirectType, icon }) => (
-    <div className={"bg-white rounded-md shadow  w-full"}>
-      <Suspense
-        fallback={
-          <div style={{ height: "300px" }}>
-            <div
-              style={{
-                marginLeft: "45%",
-                marginTop: "150px",
-                fontSize: "45px",
-                color: "#3dd3e0"
-              }}
-              className="loader-37"
-            ></div>
-          </div>
-        }
-      >
-        <DashboardButton
-          Icon={icon}
-          Label={label}
-          Data={{ Redirect_type: redirectType, Redirect_id: redirectId }}
-        />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
+          <div className="loader-37"></div>
+        </div>
+      }
+    >
+      <DashboardButton
+        Icon={icon}
+        Label={label}
+        Data={{ Redirect_type: redirectType, Redirect_id: redirectId }}
+      />
+    </Suspense>
   );
   const renderSwitchWithTour = (col) => {
     switch (col.widget.type) {
       case "Card":
         return (
           <div
-            className={"bg-[#2ed8b6] rounded-md shadow mb-3 md:mb-0"}
+            className="op-card bg-[#2ed8b6] w-full h-[140px] px-3 pt-4 mb-3 shadow-md"
             data-tut={col.widget.data.tourSection}
             style={{ background: col.widget.bgColor }}
           >
             <Suspense
               fallback={
-                <div style={{ height: "300px" }}>
-                  <div
-                    style={{
-                      marginLeft: "45%",
-                      marginTop: "150px",
-                      fontSize: "45px",
-                      color: "#3dd3e0"
-                    }}
-                    className="loader-37"
-                  ></div>
+                <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
+                  <div className="loader-37"></div>
                 </div>
               }
             >
@@ -72,7 +54,6 @@ const GetDashboard = (props) => {
                 Format={col.widget.format && col.widget.format}
                 Data={col.widget.data}
                 FilterData={col.widget.filter}
-                DefaultQuery={props.DefaultQuery}
               />
             </Suspense>
           </div>
@@ -89,7 +70,7 @@ const GetDashboard = (props) => {
         );
       }
       default:
-        return null;
+        return <></>;
     }
   };
   const renderSwitch = (col) => {
@@ -97,7 +78,7 @@ const GetDashboard = (props) => {
       case "Card":
         return (
           <div
-            className={"bg-[#2ed8b6] rounded-md shadow mb-3 md:mb-0"}
+            className="op-card bg-[#2ed8b6] w-full h-[140px] px-3 pt-4 mb-3 shadow-md"
             style={{ background: col.widget.bgColor }}
           >
             <Suspense fallback={<div>please wait</div>}>
@@ -107,7 +88,6 @@ const GetDashboard = (props) => {
                 Format={col.widget.format && col.widget.format}
                 Data={col.widget.data}
                 FilterData={col.widget.filter}
-                DefaultQuery={props.DefaultQuery}
               />
             </Suspense>
           </div>
@@ -122,7 +102,7 @@ const GetDashboard = (props) => {
         );
       }
       default:
-        return null;
+        return <></>;
     }
   };
   return (
@@ -130,7 +110,7 @@ const GetDashboard = (props) => {
       <div className="mb-3">
         <div
           data-tut={"tourbutton"}
-          className="flex flex-col md:flex-row gap-6 md:gap-8"
+          className="flex flex-col md:flex-row gap-4"
         >
           {buttonList.map((btn) => (
             <Button
@@ -143,21 +123,19 @@ const GetDashboard = (props) => {
           ))}
         </div>
       </div>
-      {props.dashboard.map((val, key) => (
-        <div key={"a" + key} className="row">
-          {val.columns.map((col, i) =>
-            col.widget.data && col.widget.data.tourSection ? (
-              <div key={i} className={props.classnameArray[key][i]}>
-                {renderSwitchWithTour(col)}
-              </div>
-            ) : (
-              <div key={i} className={props.classnameArray[key][i]}>
-                {renderSwitch(col)}
-              </div>
-            )
-          )}
-        </div>
-      ))}
+      <div className="grid grid-cols-12 w-full gap-x-4">
+        {props?.dashboard?.columns?.map((col, i) =>
+          col.widget.data && col.widget.data.tourSection ? (
+            <div key={i} className={col?.colsize}>
+              {renderSwitchWithTour(col)}
+            </div>
+          ) : (
+            <div key={i} className={col?.colsize}>
+              {renderSwitch(col)}
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
 };

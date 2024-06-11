@@ -3,16 +3,6 @@ import Parse from "parse";
 import "../../../styles/AddUser.css";
 import AsyncSelect from "react-select/async";
 
-const customStyles = {
-  control: (provided) => ({
-    ...provided,
-    fontSize: "13px" // Font size for the control
-  }),
-  option: (provided) => ({
-    ...provided,
-    fontSize: "13px" // Font size for the options
-  })
-};
 const SelectSigners = (props) => {
   const [userList, setUserList] = useState([]);
   const [selected, setSelected] = useState();
@@ -79,10 +69,10 @@ const SelectSigners = (props) => {
   };
 
   return (
-    <div className="addusercontainer">
-      <div className="form-wrapper">
-        <div className="form-section" style={{ marginBottom: 0 }}>
-          <label style={{ fontSize: 14, fontWeight: "700" }}>Choose User</label>
+    <div className="h-full px-[20px] py-[10px] text-base-content">
+      <div className="w-full mx-auto p-[8px]">
+        <div className="mb-0">
+          <label className="text-[14px] font-bold">Choose from contacts</label>
           <AsyncSelect
             cacheOptions
             defaultOptions
@@ -91,20 +81,24 @@ const SelectSigners = (props) => {
             noOptionsMessage={() => "User not Found"}
             loadOptions={loadOptions}
             onChange={handleOptions}
-            styles={customStyles}
+            unstyled
+            classNames={{
+              control: () =>
+                "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs",
+              option: () =>
+                "bg-base-200 text-base-content hover:bg-base-300 p-2 shadow-md"
+            }}
           />
         </div>
-        {isError ? (
-          <p style={{ color: "red", fontSize: "12px", margin: "5px" }}>
-            Please select signer
-          </p>
-        ) : (
-          <p style={{ color: "transparent", fontSize: "12px", margin: "5px" }}>
-            .
-          </p>
-        )}
+        <p
+          className={`${
+            isError ? "text-[red]" : "text-transparent"
+          } text-[12px] m-[5px]`}
+        >
+          Please select signer
+        </p>
         <div>
-          <button className="submitbutton" onClick={() => handleAdd()}>
+          <button className="op-btn op-btn-primary" onClick={() => handleAdd()}>
             Submit
           </button>
         </div>

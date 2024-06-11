@@ -10,11 +10,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import ModalUi from "../primitives/ModalUi";
-import {
-  isEnableSubscription,
-  modalCancelBtnColor,
-  modalSubmitBtnColor
-} from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
@@ -1063,47 +1059,32 @@ function Login() {
     }
   };
   return (
-    <div className="bg-white">
+    <div>
       <Title title={"Login Page"} />
       {state.loading && (
         <div
           aria-live="assertive"
-          style={{
-            position: "fixed",
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            top: 0,
-            left: 0,
-            zIndex: 2
-          }}
+          className="fixed w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-20 text-[50px] text-[#3ac9d6]"
         >
-          <div
-            role="status"
-            style={{
-              position: "fixed",
-              fontSize: "50px",
-              color: "#3ac9d6",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)"
-            }}
-            className="loader-37"
-          >
+          <div role="status" className="loader-37">
             <span className="sr-only">Loading...</span>
           </div>
         </div>
       )}
       {appInfo && appInfo.appId ? (
         <>
-          <div aria-labelledby="loginHeading" role="region">
-            <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-4 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
+          <div
+            aria-labelledby="loginHeading"
+            role="region"
+            className="md:p-10 lg:p-16"
+          >
+            <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
               <div className="w-[250px] h-[66px] inline-block overflow-hidden">
                 {image && (
                   <img
                     src={image}
                     className="object-contain h-full"
-                    alt="The image displays the OpenSign logo with a stylized blue square with an open corner, accompanied by the tagline Seal the Deal, Openly."
+                    alt="applogo"
                   />
                 )}
               </div>
@@ -1115,20 +1096,20 @@ function Login() {
                       <legend className="text-[12px] text-[#878787]">
                         Login to your account
                       </legend>
-                      <div className="px-6 py-4 outline outline-1 outline-slate-300/50 my-2 rounded shadow-md">
+                      <div className="w-full px-6 py-3 my-1 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                         <label className="block text-xs" htmlFor="email">
                           Email
                         </label>
                         <input
                           id="email"
-                          type="text"
-                          className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
+                          type="email"
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                           name="email"
                           value={state.email}
                           onChange={handleChange}
                           required
                         />
-                        <hr className="my-2 border-none" />
+                        <hr className="my-1 border-none" />
                         {!isLoginSSO && (
                           <>
                             <label className="block text-xs" htmlFor="password">
@@ -1140,18 +1121,14 @@ function Login() {
                                 type={
                                   state.passwordVisible ? "text" : "password"
                                 }
-                                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
+                                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                                 name="password"
                                 value={state.password}
                                 onChange={handleChange}
                                 required
                               />
                               <span
-                                className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
-                                  state.passwordVisible
-                                    ? "text-[#007bff]"
-                                    : "text-black"
-                                }`}
+                                className="absolute cursor-pointer top-[50%] right-[10px] -translate-y-[50%] text-base-content"
                                 onClick={togglePasswordVisibility}
                               >
                                 {state.passwordVisible ? (
@@ -1166,23 +1143,23 @@ function Login() {
                         <div className="relative mt-1">
                           <NavLink
                             to="/forgetpassword"
-                            className="text-[13px] text-[#002864] hover:underline underline-offset-1 focus:outline-none cursor-pointer ml-1"
+                            className="text-[13px] op-link op-link-primary underline-offset-1 focus:outline-none ml-1"
                           >
                             Forgot Password?
                           </NavLink>
                         </div>
                       </div>
                     </fieldset>
-                    <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold mt-2">
                       <button
                         type="submit"
-                        className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow outline-none uppercase focus:ring-2 focus:ring-blue-600"
+                        className="op-btn op-btn-primary"
                         disabled={state.loading}
                       >
                         {state.loading ? "Loading..." : "Login"}
                       </button>
                       <NavLink
-                        className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
+                        className="op-btn op-btn-secondary hover:no-underline hover:text-base-content"
                         to={
                           location.search
                             ? "/signup" + location.search
@@ -1194,17 +1171,9 @@ function Login() {
                       </NavLink>
                     </div>
                   </form>
-                  <br />
-                  {appInfo.googleClietId && (
-                    <div className="text-sm flex justify-center items-center">
-                      <hr className="border-[1px] border-gray-300 w-full" />
-                      <span className="px-2 text-gray-500 cursor-default">
-                        OR
-                      </span>
-                      <hr className="border-[1px] border-gray-300 w-full" />
-                    </div>
+                  {(appInfo.googleClietId || isEnableSubscription) && (
+                    <div className="op-divider my-4 text-sm">OR</div>
                   )}
-                  <br />
                   <div className="flex flex-col justify-center items-center gap-y-3">
                     {/* {appInfo?.fbAppId && (
                       <LoginFacebook
@@ -1248,7 +1217,7 @@ function Login() {
             <Alert type={state.alertType}>{state.alertMsg}</Alert>
           </div>
           <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>
-            <form className="px-4 py-3">
+            <form className="px-4 py-3 text-base-content">
               <div className="mb-3">
                 <label
                   htmlFor="Company"
@@ -1259,7 +1228,7 @@ function Login() {
                 </label>
                 <input
                   type="text"
-                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                   id="Company"
                   value={userDetails.Company}
                   onChange={(e) =>
@@ -1282,7 +1251,7 @@ function Login() {
                 </label>
                 <input
                   type="text"
-                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                   id="JobTitle"
                   value={userDetails.Destination}
                   onChange={(e) =>
@@ -1294,23 +1263,18 @@ function Login() {
                   required
                 />
               </div>
-              <div className="mt-4">
+              <div className="mt-4 gap-2 flex flex-row">
                 <button
                   type="button"
-                  className="px-3 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                  className="op-btn op-btn-primary"
                   onClick={(e) => handleSubmitbtn(e)}
-                  style={{
-                    marginRight: 10,
-                    backgroundColor: modalSubmitBtnColor
-                  }}
                 >
                   Login
                 </button>
                 <button
                   type="button"
-                  className="py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                  className="op-btn op-btn-ghost"
                   onClick={handleCloseModal}
-                  style={{ width: 75, backgroundColor: modalCancelBtnColor }}
                 >
                   Cancel
                 </button>
@@ -1320,14 +1284,8 @@ function Login() {
         </>
       ) : (
         <div
-          style={{
-            position: "fixed",
-            fontSize: "50px",
-            color: "#3ac9d6",
-            top: "50%",
-            left: "45%"
-          }}
-          className="loader-37"
+          className="loader-37 fixed top-[50%] left-[45%] text-[50px] text-[#3ac9d6]"
+          style={{ color: "#3ac9d6" }}
         ></div>
       )}
     </div>

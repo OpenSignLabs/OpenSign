@@ -21,7 +21,7 @@ const AddRoleModal = (props) => {
                 ? "User " + (props.signersdata.length + 1)
                 : "User 1"
             }
-            className="addUserInput"
+            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs mt-1"
           />
           <p
             style={{

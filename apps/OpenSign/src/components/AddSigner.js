@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
-import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 
 const AddSigner = (props) => {
   const [name, setName] = useState("");
@@ -238,15 +237,15 @@ const AddSigner = (props) => {
       )}
       <div className="w-full mx-auto p-2">
         {isUserExist && (
-          <div className="mb-3">
+          <div className="mb-3 flex items-center">
             <input
               type="checkbox"
               id="addYourself"
               checked={addYourself}
               onChange={handleAddYourselfChange}
-              className="form-checkbox"
+              className="op-checkbox op-checkbox-sm"
             />
-            <label htmlFor="addYourself" className="ml-2 text-gray-700">
+            <label htmlFor="addYourself" className="ml-2 text-gray-700 mb-0">
               Add Yourself
             </label>
           </div>
@@ -267,7 +266,7 @@ const AddSigner = (props) => {
               onChange={(e) => setName(e.target.value)}
               required
               disabled={addYourself}
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="mb-3">
@@ -285,7 +284,7 @@ const AddSigner = (props) => {
               onChange={(e) => setEmail(e.target.value?.toLowerCase())}
               required
               disabled={addYourself}
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs lowercase"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="mb-3">
@@ -301,23 +300,18 @@ const AddSigner = (props) => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               disabled={addYourself}
-              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
 
-          <div className="mt-4 flex justify-start">
-            <button
-              type="submit"
-              style={{ backgroundColor: modalSubmitBtnColor }}
-              className="mr-2 px-[20px] py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-            >
+          <div className="mt-4 flex gap-x-2 justify-start">
+            <button type="submit" className="op-btn op-btn-primary">
               Submit
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
-              style={{ backgroundColor: modalCancelBtnColor }}
-              className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+              className="op-btn op-btn-secondary"
             >
               Reset
             </button>

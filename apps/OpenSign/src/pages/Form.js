@@ -484,6 +484,9 @@ const Forms = (props) => {
     setpercentage(0);
     setTimeout(() => setIsReset(false), 50);
   };
+  const handleCancel = () => {
+    navigate("/dashboard/35KBoSgoAK");
+  };
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setIsPassword(false);
@@ -561,7 +564,7 @@ const Forms = (props) => {
     setFormData((prev) => ({ ...prev, autoreminder: !formData.autoreminder }));
   };
   return (
-    <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
+    <div className="shadow-md rounded my-2 p-3 bg-base-100 text-base-content md:border-[1px] md:border-gray-600/50">
       <Title title={props?.title} />
       {isAlert && (
         <Alert type={isErr ? "danger" : "success"}>
@@ -571,16 +574,8 @@ const Forms = (props) => {
         </Alert>
       )}
       {isSubmit ? (
-        <div style={{ height: "300px" }}>
-          <div
-            style={{
-              marginLeft: "45%",
-              marginTop: "150px",
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
+          <div className="loader-37"></div>
         </div>
       ) : (
         <>
@@ -629,12 +624,12 @@ const Forms = (props) => {
                     style={{ width: `${percentage}%` }}
                   ></div>
                 </div>
-                <span className="text-black text-sm">{percentage}%</span>
+                <span className="text-base-content text-sm">{percentage}%</span>
               </div>
             )}
             {isDecrypting && (
               <div className="flex items-center gap-x-2">
-                <span className="text-black text-sm">
+                <span className="text-base-content text-sm">
                   Decrypting pdf please wait...
                 </span>
               </div>
@@ -648,13 +643,13 @@ const Forms = (props) => {
               </label>
               {fileupload.length > 0 ? (
                 <div className="flex gap-2 justify-center items-center">
-                  <div className="flex justify-between items-center px-2 py-2 w-full font-bold rounded border-[1px] border-[#ccc] text-gray-500 bg-white text-[13px]">
+                  <div className="flex justify-between items-center op-input op-input-bordered op-input-sm w-full text-x text-[13px]">
                     <div className="break-all">
                       file selected : {getFileName(fileupload)}
                     </div>
                     <div
                       onClick={() => setFileUpload("")}
-                      className="cursor-pointer px-[10px] text-[20px] font-bold bg-white text-red-500"
+                      className="cursor-pointer px-[10px] text-[20px] font-bold text-red-500"
                     >
                       <i className="fa-solid fa-xmark"></i>
                     </div>
@@ -667,10 +662,10 @@ const Forms = (props) => {
                   )}
                 </div>
               ) : (
-                <div className="flex gap-2 justify-center items-center">
+                <div className="flex gap-2 justify-center items-center ">
                   <input
                     type="file"
-                    className="bg-white px-2 py-1.5 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                    className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     onChange={(e) => handleFileInput(e)}
                     ref={inputFileRef}
                     accept={
@@ -698,7 +693,7 @@ const Forms = (props) => {
               </label>
               <input
                 name="Name"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Name}
                 onChange={(e) => handleStrInput(e)}
                 required
@@ -708,7 +703,7 @@ const Forms = (props) => {
               <label className="block">Description</label>
               <input
                 name="Description"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Description}
                 onChange={(e) => handleStrInput(e)}
               />
@@ -726,7 +721,7 @@ const Forms = (props) => {
               </label>
               <input
                 name="Note"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Note}
                 onChange={(e) => handleStrInput(e)}
                 required
@@ -748,7 +743,7 @@ const Forms = (props) => {
                 <input
                   type="number"
                   name="TimeToCompleteDays"
-                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                   value={formData.TimeToCompleteDays}
                   onChange={(e) => handleStrInput(e)}
                   required
@@ -786,7 +781,6 @@ const Forms = (props) => {
                             <li>
                               <span className="font-bold">Yes:</span>
                               <span>
-                                {" "}
                                 Selecting this option will send the signing
                                 request to the first signer initially. Once the
                                 first signer completes their part, the next
@@ -822,6 +816,7 @@ const Forms = (props) => {
                     <input
                       type="radio"
                       value={"true"}
+                      className="op-radio op-radio-xs"
                       name="SendinOrder"
                       checked={formData.SendinOrder === "true"}
                       onChange={handleStrInput}
@@ -833,6 +828,7 @@ const Forms = (props) => {
                       type="radio"
                       value={"false"}
                       name="SendinOrder"
+                      className="op-radio op-radio-xs"
                       checked={formData.SendinOrder === "false"}
                       onChange={handleStrInput}
                     />
@@ -865,13 +861,11 @@ const Forms = (props) => {
                     } relative block items-center mb-0`}
                   >
                     <input
+                      type="checkbox"
+                      className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
                       checked={formData.autoreminder}
                       onChange={handleAutoReminder}
-                      type="checkbox"
-                      value=""
-                      className="sr-only peer"
                     />
-                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600 mt-2"></div>
                   </label>
                 </div>
                 {formData?.autoreminder === true && (
@@ -884,7 +878,7 @@ const Forms = (props) => {
                       type="number"
                       value={formData.remindOnceInEvery}
                       name="remindOnceInEvery"
-                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       onChange={handleStrInput}
                       required
                     />
@@ -892,21 +886,21 @@ const Forms = (props) => {
                 )}
               </>
             )}
-            <div className="flex items-center mt-3 gap-2 text-white">
+            <div className="flex items-center mt-3 gap-2">
               <button
                 className={`${
-                  isSubmit && "cursor-progress"
-                } bg-[#1ab6ce] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none`}
+                  isSubmit ? "cursor-progress" : ""
+                } op-btn op-btn-primary`}
                 type="submit"
                 disabled={isSubmit}
               >
                 Next
               </button>
               <div
-                className="cursor-pointer bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
-                onClick={() => handleReset()}
+                className="op-btn op-btn-ghost"
+                onClick={() => handleCancel()}
               >
-                Reset
+                Cancel
               </div>
             </div>
           </form>
