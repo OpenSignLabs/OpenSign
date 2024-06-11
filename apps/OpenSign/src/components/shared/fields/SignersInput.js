@@ -108,15 +108,17 @@ const SignersInput = (props) => {
       <label className="block relative">
         Signers
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
-        <span className="absolute ml-1 text-xs z-50">
+        <span className="absolute ml-1 text-xs z-30">
           <Tooltip
             id={"signer-tooltip"}
-            message={"Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."}
+            message={
+              "Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."
+            }
           />
         </span>
       </label>
-      <div style={{ display: "flex", gap: 5 }}>
-        <div style={{ flexWrap: "wrap", width: "100%" }}>
+      <div className="flex gap-x-[5px]">
+        <div className="w-full">
           <Select
             onSortEnd={onSortEnd}
             distance={4}
@@ -126,6 +128,13 @@ const SignersInput = (props) => {
             onChange={onChange}
             closeMenuOnSelect={false}
             required={props.required}
+            unstyled
+            classNames={{
+              control: () =>
+                "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs",
+              option: () =>
+                "bg-base-200 text-base-content hover:bg-base-300 p-2 shadow-md"
+            }}
           />
         </div>
         <div
@@ -133,16 +142,7 @@ const SignersInput = (props) => {
             setIsModel(true);
             openModal();
           }}
-          style={{
-            cursor: "pointer",
-            borderRadius: 4,
-            border: "1px solid #ccc",
-            minHeight: 38,
-            minWidth: 48,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
+          className="cursor-pointer border-[1px] op-inut op-input-bordered min-h-[38px] min-w-[48px] flex justify-center items-center"
         >
           <i className="fas fa-plus"></i>
         </div>

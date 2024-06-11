@@ -501,47 +501,26 @@ const Signup = () => {
     setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>]/.test(newPassword));
   };
   return (
-    <div className="bg-white">
+    <div className="">
       {state.loading && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            top: 0,
-            left: 0,
-            zIndex: 2
-          }}
-        >
-          <div
-            style={{
-              position: "fixed",
-              fontSize: "50px",
-              color: "#3ac9d6",
-              top: "50%",
-              left: "45%"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="fixed w-[100vw] h-[100vh] flex justify-center items-center z-20 bg-black bg-opacity-25 text-[#3ac9d6] text-[50px]">
+          <div className="loader-37 "></div>
         </div>
       )}
-
       <Title title={"Signup page"} />
-
       {appInfo && appInfo.applogo ? (
-        <div>
-          <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
+        <div className="md:p-10 lg:p-16">
+          <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
             <div className="w-[250px] h-[66px] inline-block overflow-hidden">
               {image && (
                 <img src={image} className="object-contain h-full" alt="logo" />
               )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-              <div className="">
+              <div>
                 <form onSubmit={handleSubmit}>
                   <h2 className="text-[30px] mt-6">Create Account !</h2>
-                  <div className="outline outline-1 outline-slate-300/50 shadow-md rounded my-4">
+                  <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                     <div className="px-6 py-4 text-xs">
                       <label className="block ">
                         Name{" "}
@@ -549,7 +528,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
@@ -561,8 +540,8 @@ const Signup = () => {
                       </label>
                       <input
                         id="email"
-                        type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs lowercase"
+                        type="email"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={email}
                         onChange={(e) =>
                           setEmail(e.target.value?.toLowerCase())
@@ -576,7 +555,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="tel"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         required
@@ -588,7 +567,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         required
@@ -600,7 +579,7 @@ const Signup = () => {
                       </label>
                       <input
                         type="text"
-                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
                         required
@@ -613,16 +592,14 @@ const Signup = () => {
                       <div className="relative">
                         <input
                           type={showPassword ? "text" : "password"}
-                          className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                           name="password"
                           value={password}
                           onChange={(e) => handlePasswordChange(e)}
                           required
                         />
                         <span
-                          className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
-                            showPassword ? "text-[#007bff]" : "text-black"
-                          }`}
+                          className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer text-base-content`}
                           onClick={togglePasswordVisibility}
                         >
                           {showPassword ? (
@@ -690,18 +667,17 @@ const Signup = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold mt-2">
                     <button
                       type="submit"
-                      className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow uppercase"
+                      className="op-btn op-btn-primary"
                       disabled={state.loading}
                     >
                       {state.loading ? "Loading..." : "Register"}
                     </button>
                     <NavLink
-                      className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
+                      className={`op-btn op-btn-secondary hover:no-underline hover:text-base-content`}
                       to={location.search ? "/" + location.search : "/"}
-                      style={width < 768 ? { textAlign: "center" } : {}}
                     >
                       Login
                     </NavLink>

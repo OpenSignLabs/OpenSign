@@ -88,6 +88,7 @@
     "@babel/runtime-corejs2": "^7.24.7",
     "autoprefixer": "^10.4.19",
     "commitizen": "^4.3.0",
+    "daisyui": "^4.12.2",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.34.1",

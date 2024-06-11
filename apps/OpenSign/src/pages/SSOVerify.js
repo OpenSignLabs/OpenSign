@@ -3,11 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Parse from "parse";
 import axios from "axios";
 import { appInfo } from "../constant/appinfo";
-import {
-  isEnableSubscription,
-  modalCancelBtnColor,
-  modalSubmitBtnColor
-} from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import { fetchSubscription } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
@@ -294,33 +290,26 @@ const SSOVerify = () => {
         {message === "Verifying SSO..." && (
           <img alt="loader" src={loader} className="w-[80px] h-[80px]" />
         )}
-        <div className="text-[gray]">{message}</div>
+        <div className="text-base-content">{message}</div>
       </div>
       <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>
         <div className="relative">
           {isLoader && (
-            <div className="absolute w-full h-full bg-black bg-opacity-25 flex justify-center items-center">
-              <div
-                style={{
-                  fontSize: "45px",
-                  color: "#3dd3e0"
-                }}
-                className="loader-37"
-              ></div>
+            <div className="absolute w-full h-full bg-black bg-opacity-25 flex justify-center items-center text-[45px] text-[#3dd3e0]">
+              <div className="loader-37"></div>
             </div>
           )}
-          <form className="px-4 py-3" onSubmit={handleSubmitbtn}>
+          <form
+            className="px-4 py-3 text-base-content"
+            onSubmit={handleSubmitbtn}
+          >
             <div className="mb-3">
-              <label
-                htmlFor="Company"
-                style={{ display: "flex" }}
-                className="block text-xs text-gray-700 font-semibold"
-              >
-                Phone <span style={{ fontSize: 13, color: "red" }}>*</span>
+              <label htmlFor="Company" className="block text-xs font-semibold">
+                Phone <span className="text-[13px] text-[red]">*</span>
               </label>
               <input
                 type="tel"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 id="Phone"
                 value={userDetails.phone}
                 onChange={(e) =>
@@ -337,16 +326,12 @@ const SSOVerify = () => {
               </p>
             </div>
             <div className="mb-3">
-              <label
-                htmlFor="Company"
-                style={{ display: "flex" }}
-                className="block text-xs text-gray-700 font-semibold"
-              >
-                Company <span style={{ fontSize: 13, color: "red" }}>*</span>
+              <label htmlFor="Company" className="block text-xs font-semibold">
+                Company <span className="text-[13px] text-[red]">*</span>
               </label>
               <input
                 type="text"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 id="Company"
                 value={userDetails.Company}
                 onChange={(e) =>
@@ -360,17 +345,13 @@ const SSOVerify = () => {
               />
             </div>
             <div className="mb-3">
-              <label
-                htmlFor="JobTitle"
-                style={{ display: "flex" }}
-                className="block text-xs text-gray-700 font-semibold"
-              >
+              <label htmlFor="JobTitle" className="block text-xs font-semibold">
                 Job Title
-                <span style={{ fontSize: 13, color: "red" }}>*</span>
+                <span className="text-[13px] text-[red]">*</span>
               </label>
               <input
                 type="text"
-                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 id="JobTitle"
                 value={userDetails.Destination}
                 onChange={(e) =>
@@ -384,21 +365,13 @@ const SSOVerify = () => {
               />
             </div>
             <div className="mt-4">
-              <button
-                type="submit"
-                className="px-3 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
-                style={{
-                  marginRight: 10,
-                  backgroundColor: modalSubmitBtnColor
-                }}
-              >
+              <button type="submit" className="op-btn op-btn-primary">
                 Login
               </button>
               <button
                 type="button"
-                className="py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                className="op-btn op-btn-ghost ml-2"
                 onClick={handleCloseModal}
-                style={{ width: 75, backgroundColor: modalCancelBtnColor }}
               >
                 Cancel
               </button>
