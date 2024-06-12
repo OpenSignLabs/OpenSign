@@ -1224,7 +1224,7 @@ function Login() {
                   style={{ display: "flex" }}
                   className="block text-xs text-gray-700 font-semibold"
                 >
-                  Company <span style={{ fontSize: 13, color: "red" }}>*</span>
+                  Company <span className="text-[red] text-[13px]">*</span>
                 </label>
                 <input
                   type="text"
@@ -1247,7 +1247,7 @@ function Login() {
                   className="block text-xs text-gray-700 font-semibold"
                 >
                   Job Title
-                  <span style={{ fontSize: 13, color: "red" }}>*</span>
+                  <span className="text-[red] text-[13px]">*</span>
                 </label>
                 <input
                   type="text"

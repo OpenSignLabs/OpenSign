@@ -44,7 +44,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   };
   return (
     <aside
-      className={`absolute md:relative bg-base-100 h-screen overflow-y-auto transition-all z-40 hide-scrollbar
+      className={`absolute md:relative bg-base-100 h-screen overflow-y-auto transition-all z-[100] hide-scrollbar
      ${isOpen ? "w-full md:w-[300px]" : "w-0"}`}
     >
       <div className="flex px-2 py-3 gap-2 items-center shadow-md">

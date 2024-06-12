@@ -386,16 +386,23 @@ function WidgetComponent({
           className={
             isMailSend ? "disabled signerComponent " : "signerComponent"
           }
+          // className="bg-base-100"
         >
           <div
-            style={{
-              background: themeColor,
-              padding: "5px"
-            }}
+            // style={{
+            //   background: themeColor,
+            //   padding: "5px"
+            // }}
+            className="text-base-content px-3 py-2 text-[15px] border-y-[1px] border-base-content"
           >
-            <span className="signedStyle">Fields</span>
+            <span
+            // className="signedStyle"
+            >
+              Fields
+            </span>
           </div>
 
+          {/* <div className="flex flex-col w-full h-auto my-3 items-center"> */}
           <div className="signLayoutContainer1">
             <WidgetList
               updateWidgets={updateWidgets}

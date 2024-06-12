@@ -970,9 +970,11 @@ const ReportTable = (props) => {
               {/* {props.ReportName === "Templates" && isEnableSubscription && (
                 <th className="px-4 py-2">Public</th>
               )} */}
-              {/* {props.actions?.length > 0 && (
-                <th className="px-4 py-2">Action</th>
-              )} */}
+              {props.actions?.length > 0 && (
+                <th className="px-4 py-2 text-transparent pointer-events-none">
+                  Action
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="text-[12px]">

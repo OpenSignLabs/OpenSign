@@ -14,7 +14,7 @@ import { SaveFileSize } from "../constant/saveFileSize";
 import { checkIsSubscribed, getFileName, toDataUrl } from "../constant/Utils";
 import { PDFDocument } from "pdf-lib";
 import axios from "axios";
-import { isEnableSubscription, submitBtn } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import ModalUi from "../primitives/ModalUi";
 import { Tooltip } from "react-tooltip";
 import Upgrade from "../primitives/Upgrade";
@@ -586,29 +586,30 @@ const Forms = (props) => {
           >
             <form onSubmit={handlePasswordSubmit}>
               <div className="px-6 pt-3 pb-2">
-                <label className="mb-2 text-xs">Password</label>
+                <label className="mb-2 text-xs text-base-content">
+                  Password
+                </label>
                 <input
                   type="text"
                   name="password"
                   value={formData.password}
                   onChange={(e) => handleStrInput(e)}
-                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
                   placeholder="Enter pdf password"
                   required
                 />
-                {!isCorrectPass ? (
-                  <p className="ml-2 text-[11px] text-red-600">
-                    Please provide correct password
-                  </p>
-                ) : (
-                  <p className="ml-2 text-[11px] text-transparent text-red-600">
-                    .
-                  </p>
-                )}
+                <p
+                  className={`${
+                    !isCorrectPass
+                      ? "text-red-600"
+                      : "text-transparent pointer-events-none"
+                  } ml-2 text-[11px] `}
+                >
+                  Please provide correct password
+                </p>
               </div>
-              <hr />
-              <div className="px-6 my-3">
-                <button type="submit" className={submitBtn}>
+              <div className="px-6 mb-3">
+                <button type="submit" className="op-btn op-btn-primary">
                   Submit
                 </button>
               </div>
