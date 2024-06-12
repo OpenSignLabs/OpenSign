@@ -17,8 +17,8 @@ import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
-import { useLocal } from './Utils.js';
-
+import { smtpenable, smtpsecure, useLocal } from './Utils.js';
+import { SSOAuth } from './auth/authadapter.js';
 let fsAdapter;
 if (useLocal !== 'true') {
   try {
@@ -54,12 +54,12 @@ let transporterMail;
 let mailgunClient;
 let mailgunDomain;
 let isMailAdapter = false;
-if (process.env.SMTP_ENABLE) {
+if (smtpenable) {
   try {
     transporterMail = createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT || 465,
-      secure: process.env.SMTP_SECURE || true,
+      secure: smtpsecure,
       auth: {
         user: process.env.SMTP_USER_EMAIL,
         pass: process.env.SMTP_PASS,
@@ -85,9 +85,7 @@ if (process.env.SMTP_ENABLE) {
     console.log('Please provide valid Mailgun credentials');
   }
 }
-const mailsender = process.env.SMTP_ENABLE
-  ? process.env.SMTP_USER_EMAIL
-  : process.env.MAILGUN_SENDER;
+const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 export const config = {
   databaseURI:
     process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
@@ -101,7 +99,7 @@ export const config = {
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::/0'], // '::1'
   serverURL: 'http://localhost:8080/app', // Don't forget to change to https if needed
-  verifyUserEmails: isMailAdapter === true ? true : false,
+  verifyUserEmails: false,
   publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Opensign',
@@ -147,14 +145,7 @@ export const config = {
     google: {
       enabled: true,
     },
-    ldap: {
-      enabled: true,
-      url: 'ldap://ldap.forumsys.com:389',
-      suffix: 'dc=example,dc=com',
-      // dn: 'ou=mathematicians, dc=example, dc=com',
-      groupCn: 'mathematicians',
-      groupFilter: '(&(uniqueMember=uid=,dc=example,dc=com)(objectClass=groupOfUniqueNames))',
-    },
+    sso: SSOAuth,
   },
 };
 // Client-keys like the javascript key or the .NET key are not necessary with parse-server
