@@ -37,7 +37,7 @@ export default async function getContact(request, response) {
           objectId: parseRes.objectId,
           name: parseRes.Name,
           email: parseRes.Email,
-          phone: parseRes.Phone,
+          phone: parseRes?.Phone || '',
           createdAt: parseRes.createdAt,
           updatedAt: parseRes.updatedAt,
         });

@@ -27,6 +27,7 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'Placeholders',
         ],
       };
 
@@ -67,6 +68,7 @@ export default function reportJson(id, userId) {
           'Signers.Phone',
           'Signers.UserId',
           'AuditTrail',
+          'Placeholders',
         ],
       };
     // In progess report
@@ -75,7 +77,7 @@ export default function reportJson(id, userId) {
         reportName: 'In-progress documents',
         params: {
           Type: { $ne: 'Folder' },
-          Signers: { $exists: true, $ne: [] },
+          SignedUrl: { $ne: null },
           Placeholders: { $ne: null },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
@@ -101,6 +103,8 @@ export default function reportJson(id, userId) {
           'AuditTrail',
           'AuditTrail.UserPtr',
           'ExpiryDate',
+          'SendMail',
+          'Placeholders',
         ],
       };
     // completed documents report
@@ -129,6 +133,7 @@ export default function reportJson(id, userId) {
           'Signers.Email',
           'Signers.Phone',
           'TimeToCompleteDays',
+          'Placeholders',
         ],
       };
 
@@ -156,6 +161,7 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'Placeholders',
         ],
       };
     //  Expired Documents report
@@ -186,6 +192,7 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'Placeholders',
         ],
       };
     //  Recently sent for signatures report show on dashboard
@@ -194,7 +201,7 @@ export default function reportJson(id, userId) {
         reportName: 'Recently sent for signatures',
         params: {
           Type: { $ne: 'Folder' },
-          Signers: { $exists: true, $ne: [] },
+          SignedUrl: { $ne: null },
           Placeholders: { $ne: null },
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
@@ -216,6 +223,10 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'AuditTrail',
+          'AuditTrail.UserPtr',
+          'ExpiryDate',
+          'Placeholders',
         ],
       };
     //  Recent signature requests report show on dashboard
@@ -253,6 +264,7 @@ export default function reportJson(id, userId) {
           'AuditTrail',
           'Signers.Email',
           'Signers.Phone',
+          'Placeholders',
         ],
       };
     // Drafts report show on dashboard
@@ -280,6 +292,7 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'Placeholders',
         ],
       };
     // contact book report
@@ -320,6 +333,8 @@ export default function reportJson(id, userId) {
           'Signers.Name',
           'Signers.Email',
           'Signers.Phone',
+          'Placeholders',
+          'IsPublic',
         ],
       };
     default:

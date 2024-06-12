@@ -16,6 +16,7 @@ import PlaceHolderSign from "./pages/PlaceHolderSign";
 import PdfRequestFiles from "./pages/PdfRequestFiles";
 import LazyPage from "./primitives/LazyPage";
 import { isEnableSubscription } from "./constant/const";
+import SSOVerify from "./pages/SSOVerify";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
@@ -28,8 +29,7 @@ const Opensigndrive = lazy(() => import("./pages/Opensigndrive"));
 const ManageSign = lazy(() => import("./pages/Managesign"));
 const GenerateToken = lazy(() => import("./pages/GenerateToken"));
 const Webhook = lazy(() => import("./pages/Webhook"));
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 const Loader = () => {
   return (
     <div
@@ -181,6 +181,7 @@ function App() {
                 element={<PdfRequestFiles />}
               />
             </Route>
+            <Route path="/sso" element={<SSOVerify />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </BrowserRouter>

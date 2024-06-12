@@ -3,7 +3,7 @@ export default function reportJson(id) {
   const head = ["Sr.No", "Title", "Note", "Folder", "File", "Owner", "Signers"];
   const contactbook = ["Sr.No", "Title", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
-
+  const templateReport = ["Sr.No", "Title", "File", "Owner", "Signers"];
   switch (id) {
     // draft documents report
     case "ByHuevtCFY":
@@ -232,6 +232,14 @@ export default function reportJson(id) {
             action: "option",
             subaction: [
               {
+                btnId: "1631",
+                btnLabel: "Resend",
+                hoverLabel: "Resend",
+                btnIcon: "fa-solid fa-envelope",
+                redirectUrl: "",
+                action: "resend"
+              },
+              {
                 btnId: "6788",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",
@@ -318,7 +326,7 @@ export default function reportJson(id) {
     case "6TeaPr321t":
       return {
         reportName: "Templates",
-        heading: head,
+        heading: templateReport,
         actions: [
           {
             btnId: "2234",
@@ -332,6 +340,17 @@ export default function reportJson(id) {
             selector: "reactourSecond",
             message:
               "Click the 'Use' button to create a new document from an existing template. "
+          },
+          {
+            btnId: "1631",
+            btnLabel: "Quick send",
+            hoverLabel: "Quick send",
+            btnIcon: "fa-solid fa-envelope",
+            redirectUrl: "",
+            action: "bulksend",
+            selector: "tourbulksend",
+            message:
+              "To quickly create and send multiple documents using an existing template, click the 'Quick Send' button."
           },
           {
             btnId: "2234",

@@ -62,8 +62,10 @@ const AddUser = (props) => {
           _user.set("name", name);
           _user.set("username", email);
           _user.set("email", email);
-          _user.set("phone", phone);
-          _user.set("password", phone);
+          _user.set("password", email);
+          if (phone) {
+            _user.set("phone", phone);
+          }
 
           const user = await _user.save();
           if (user) {

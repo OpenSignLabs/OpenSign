@@ -26,7 +26,7 @@ export default async function GetTemplate(request) {
         if (res) {
           // console.log("res ",res)
           const acl = res.getACL();
-          console.log("acl", acl.getReadAccess(userId))
+          // console.log("acl", acl.getReadAccess(userId))
           if (acl && acl.getReadAccess(userId)) {
             return res;
           } else {

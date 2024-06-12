@@ -19,7 +19,7 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
-import { fetchSubscription, getAppLogo } from "../constant/Utils";
+import { fetchSubscription, getAppLogo, openInNewTab } from "../constant/Utils";
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,6 +45,7 @@ function Login() {
   });
   const [isModal, setIsModal] = useState(false);
   const [image, setImage] = useState();
+  const [isLoginSSO, setIsLoginSSO] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
@@ -263,7 +264,7 @@ function Login() {
                                         const LocalUserDetails = {
                                           name: results[0].get("Name"),
                                           email: results[0].get("Email"),
-                                          phone: results[0].get("Phone"),
+                                          phone: results[0]?.get("Phone") || "",
                                           company: results[0].get("Company")
                                         };
                                         localStorage.setItem(
@@ -317,7 +318,7 @@ function Login() {
                                       const LocalUserDetails = {
                                         name: _user.name,
                                         email: email,
-                                        phone: _user.phone
+                                        phone: _user?.phone || ""
                                         // company: results.get("Company"),
                                       };
                                       localStorage.setItem(
@@ -868,7 +869,7 @@ function Login() {
                               const LocalUserDetails = {
                                 name: results[0].get("Name"),
                                 email: results[0].get("Email"),
-                                phone: results[0].get("Phone"),
+                                phone: results[0]?.get("Phone") || "",
                                 company: results[0].get("Company")
                               };
                               localStorage.setItem(
@@ -905,7 +906,7 @@ function Login() {
                             const LocalUserDetails = {
                               name: results[0].get("Name"),
                               email: results[0].get("Email"),
-                              phone: results[0].get("Phone")
+                              phone: results[0]?.get("Phone") || ""
                               // company: results.get("Company"),
                             };
                             localStorage.setItem(
@@ -982,7 +983,7 @@ function Login() {
           userDetails: {
             name: userInformation.name,
             email: userInformation.email,
-            phone: userInformation.phone,
+            phone: userInformation?.phone || "",
             role: "contracts_User",
             company: userDetails.Company,
             jobTitle: userDetails.Destination
@@ -994,7 +995,7 @@ function Login() {
           const LocalUserDetails = {
             name: userInformation.name,
             email: userInformation.email,
-            phone: userInformation.phone,
+            phone: userInformation?.phone || "",
             company: userDetails.Company,
             jobTitle: userDetails.JobTitle
           };
@@ -1016,8 +1017,9 @@ function Login() {
 
   const handleCloseModal = () => {
     setIsModal(false);
-    Parse.User.logOut();
-
+    if (Parse?.User?.current()) {
+      Parse.User.logOut();
+    }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
     let appName = localStorage.getItem("appName");
@@ -1039,6 +1041,26 @@ function Login() {
     localStorage.setItem("userSettings", appdata);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
+  };
+
+  // `handleSignInWithSSO` is trigger when user click sign in with sso and open sso authorize endpoint
+  const handleSignInWithSSO = () => {
+    if (isLoginSSO === false) {
+      if (state?.email) {
+        setIsLoginSSO(true);
+        const encodedEmail = encodeURIComponent(state.email);
+        const clientUrl = window.location.origin;
+        const domain = state.email.split("@")?.pop();
+        const ssoApiUrl =
+          process.env.SSO_API_URL || "https://sso.opensignlabs.com/api";
+        openInNewTab(
+          `${ssoApiUrl}/oauth/authorize?response_type=code&provider=saml&tenant=${domain}&product=OpenSign&redirect_uri=${clientUrl}/sso&state=${encodedEmail}`,
+          "_self"
+        );
+      } else {
+        alert("Please provide email.");
+      }
+    }
   };
   return (
     <div className="bg-white">
@@ -1087,136 +1109,131 @@ function Login() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
                 <div>
-                  <div>
-                    <form onSubmit={handleSubmit} aria-label="Login Form">
-                      <h1 className="text-[30px] mt-6">Welcome Back!</h1>
-                      <fieldset>
-                        <legend className="text-[12px] text-[#878787]">
-                          Login to your account
-                        </legend>
-                        <div className="px-6 py-4 outline outline-1 outline-slate-300/50 my-2 rounded shadow-md">
-                          <label className="block text-xs" htmlFor="email">
-                            Username
-                          </label>
-                          <input
-                            id="email"
-                            type="text"
-                            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
-                            name="email"
-                            value={state.email}
-                            onChange={handleChange}
-                            required
-                          />
-                          <hr className="my-2 border-none" />
-                          <label className="block text-xs" htmlFor="password">
-                            Password
-                          </label>
-                          <div className="relative">
-                            <input
-                              id="password"
-                              type={state.passwordVisible ? "text" : "password"}
-                              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
-                              name="password"
-                              value={state.password}
-                              onChange={handleChange}
-                              required
-                            />
-                            <span
-                              className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
-                                state.passwordVisible
-                                  ? "text-[#007bff]"
-                                  : "text-black"
-                              }`}
-                              onClick={togglePasswordVisibility}
-                            >
-                              {state.passwordVisible ? (
-                                <i className="fa fa-eye-slash text-xs pb-1" /> // Close eye icon
-                              ) : (
-                                <i className="fa fa-eye text-xs pb-1 " /> // Open eye icon
-                              )}
-                            </span>
-                          </div>
-                          <div className="relative mt-1">
-                            <NavLink
-                              to="/forgetpassword"
-                              className="text-[13px] text-[#002864] hover:underline underline-offset-1 focus:outline-none cursor-pointer ml-1"
-                            >
-                              Forgot Password?
-                            </NavLink>
-                          </div>
+                  <form onSubmit={handleSubmit} aria-label="Login Form">
+                    <h1 className="text-[30px] mt-6">Welcome Back!</h1>
+                    <fieldset>
+                      <legend className="text-[12px] text-[#878787]">
+                        Login to your account
+                      </legend>
+                      <div className="px-6 py-4 outline outline-1 outline-slate-300/50 my-2 rounded shadow-md">
+                        <label className="block text-xs" htmlFor="email">
+                          Email
+                        </label>
+                        <input
+                          id="email"
+                          type="text"
+                          className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
+                          name="email"
+                          value={state.email}
+                          onChange={handleChange}
+                          required
+                        />
+                        <hr className="my-2 border-none" />
+                        {!isLoginSSO && (
+                          <>
+                            <label className="block text-xs" htmlFor="password">
+                              Password
+                            </label>
+                            <div className="relative">
+                              <input
+                                id="password"
+                                type={
+                                  state.passwordVisible ? "text" : "password"
+                                }
+                                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs"
+                                name="password"
+                                value={state.password}
+                                onChange={handleChange}
+                                required
+                              />
+                              <span
+                                className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
+                                  state.passwordVisible
+                                    ? "text-[#007bff]"
+                                    : "text-black"
+                                }`}
+                                onClick={togglePasswordVisibility}
+                              >
+                                {state.passwordVisible ? (
+                                  <i className="fa fa-eye-slash text-xs pb-1" /> // Close eye icon
+                                ) : (
+                                  <i className="fa fa-eye text-xs pb-1 " /> // Open eye icon
+                                )}
+                              </span>
+                            </div>
+                          </>
+                        )}
+                        <div className="relative mt-1">
+                          <NavLink
+                            to="/forgetpassword"
+                            className="text-[13px] text-[#002864] hover:underline underline-offset-1 focus:outline-none cursor-pointer ml-1"
+                          >
+                            Forgot Password?
+                          </NavLink>
                         </div>
-                      </fieldset>
-                      <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
-                        <button
-                          type="submit"
-                          className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow outline-none uppercase focus:ring-2 focus:ring-blue-600"
-                          disabled={state.loading}
-                        >
-                          {state.loading ? "Loading..." : "Login"}
-                        </button>
-                        <NavLink
-                          className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
-                          to={
-                            location.search
-                              ? "/signup" + location.search
-                              : "/signup"
-                          }
-                          style={width < 768 ? { textAlign: "center" } : {}}
-                        >
-                          Create Account
-                        </NavLink>
                       </div>
-                    </form>
-                    <br />
-                    {(appInfo.fbAppId || appInfo.googleClietId) && (
-                      <div className="text-sm flex justify-center items-center">
-                        <hr className="border-[1px] border-gray-300 w-full" />
-                        <span className="px-2 text-gray-500 cursor-default">
-                          OR
-                        </span>
-                        <hr className="border-[1px] border-gray-300 w-full" />
-                      </div>
-                    )}
-                    <br />
-                    <div
-                      style={{
-                        textAlign: "center",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center"
-                      }}
-                    >
-                      {/* {appInfo.fbAppId && appInfo.fbAppId !== "" ? (
+                    </fieldset>
+                    <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
+                      <button
+                        type="submit"
+                        className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow outline-none uppercase focus:ring-2 focus:ring-blue-600"
+                        disabled={state.loading}
+                      >
+                        {state.loading ? "Loading..." : "Login"}
+                      </button>
+                      <NavLink
+                        className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
+                        to={
+                          location.search
+                            ? "/signup" + location.search
+                            : "/signup"
+                        }
+                        style={width < 768 ? { textAlign: "center" } : {}}
+                      >
+                        Create Account
+                      </NavLink>
+                    </div>
+                  </form>
+                  <br />
+                  {appInfo.googleClietId && (
+                    <div className="text-sm flex justify-center items-center">
+                      <hr className="border-[1px] border-gray-300 w-full" />
+                      <span className="px-2 text-gray-500 cursor-default">
+                        OR
+                      </span>
+                      <hr className="border-[1px] border-gray-300 w-full" />
+                    </div>
+                  )}
+                  <br />
+                  <div className="flex flex-col justify-center items-center gap-y-3">
+                    {/* {appInfo?.fbAppId && (
                       <LoginFacebook
                         FBCred={appInfo.fbAppId}
                         thirdpartyLoginfn={thirdpartyLoginfn}
                         thirdpartyLoader={state.thirdpartyLoader}
                         setThirdpartyLoader={setThirdpartyLoader}
                       />
-                    ) : null} */}
-                    </div>
-                    <div style={{ margin: "10px 0" }}></div>
-                    <div
-                      style={{
-                        textAlign: "center",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center"
-                      }}
-                    >
-                      {appInfo.googleClietId && appInfo.googleClietId !== "" ? (
-                        <GoogleSignInBtn
-                          GoogleCred={appInfo.googleClietId}
-                          thirdpartyLoginfn={thirdpartyLoginfn}
-                          thirdpartyLoader={state.thirdpartyLoader}
-                          setThirdpartyLoader={setThirdpartyLoader}
-                        />
-                      ) : null}
-                    </div>
+                    )} */}
+                    {appInfo?.googleClietId && (
+                      <GoogleSignInBtn
+                        GoogleCred={appInfo.googleClietId}
+                        thirdpartyLoginfn={thirdpartyLoginfn}
+                        thirdpartyLoader={state.thirdpartyLoader}
+                        setThirdpartyLoader={setThirdpartyLoader}
+                      />
+                    )}
+                    {isEnableSubscription && (
+                      <div
+                        className="cursor-pointer border-[1px] border-gray-300 rounded px-[40px] py-2 font-semibold text-sm hover:border-[#d2e3fc] hover:bg-[#ecf3feb7]"
+                        onClick={() => handleSignInWithSSO()}
+                      >
+                        Sign in with SSO
+                      </div>
+                    )}
                   </div>
                 </div>
                 {width >= 768 && (
-                  <div className="self-center">
+                  <div className="place-self-center">
                     <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
                       <img
                         src={login_img}

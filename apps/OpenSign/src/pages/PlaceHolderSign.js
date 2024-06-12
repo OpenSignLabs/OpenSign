@@ -405,7 +405,7 @@ function PlaceHolderSign() {
       };
       setHandleError("Error: Something went wrong!");
       setIsLoading(loadObj);
-    } else if (res[0] && res.length) {
+    } else if (res.length && res[0]?.objectId) {
       setActiveMailAdapter(res[0]?.active_mail_adapter);
       setSignerUserId(res[0].objectId);
       const tourstatus = res[0].TourStatus && res[0].TourStatus;
@@ -936,6 +936,7 @@ function PlaceHolderSign() {
           Placeholders: filterPrefill,
           SignedUrl: pdfUrl,
           Signers: signers,
+          SentToOthers: true,
           ExpiryDate: {
             iso: updateExpiryDate,
             __type: "Date"
@@ -945,7 +946,8 @@ function PlaceHolderSign() {
         data = {
           Placeholders: filterPrefill,
           SignedUrl: pdfUrl,
-          Signers: signers
+          Signers: signers,
+          SentToOthers: true
         };
       }
       await axios
@@ -998,9 +1000,10 @@ function PlaceHolderSign() {
     for (let i = 0; i < signerMail.length; i++) {
       const objectId = signerMail[i].objectId;
       const hostUrl = window.location.origin;
+      const sendMail = false;
       //encode this url value `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
       const encodeBase64 = btoa(
-        `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}`
+        `${pdfDetails?.[0].objectId}/${signerMail[i].Email}/${objectId}/${sendMail}`
       );
       let signPdf = `${hostUrl}/login/${encodeBase64}`;
       shareLinkList.push({ signerEmail: signerMail[i].Email, url: signPdf });
@@ -1107,10 +1110,10 @@ function PlaceHolderSign() {
             document_title: documentName,
             sender_name: senderName,
             sender_mail: senderEmail,
-            sender_phone: senderPhone,
+            sender_phone: senderPhone || "",
             receiver_name: signerMail[i].Name,
             receiver_email: signerMail[i].Email,
-            receiver_phone: signerMail[i].Phone,
+            receiver_phone: signerMail[i]?.Phone || "",
             expiry_date: localExpireDate,
             company_name: orgName,
             signing_url: `<a href=${signPdf}>Sign here</a>`
@@ -1162,40 +1165,45 @@ function PlaceHolderSign() {
     }
     if (sendMail.data.result.status === "success") {
       setMailStatus("success");
-
-      if (
-        requestBody &&
-        requestSubject &&
-        isCustomize &&
-        (isSubscribe || !isEnableSubscription)
-      ) {
-        try {
-          const data = {
+      try {
+        let data;
+        if (
+          requestBody &&
+          requestSubject &&
+          isCustomize &&
+          (isSubscribe || !isEnableSubscription)
+        ) {
+          data = {
             RequestBody: htmlReqBody,
-            RequestSubject: requestSubject
+            RequestSubject: requestSubject,
+            SendMail: true
           };
-
-          await axios
-            .put(
-              `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-                "_appName"
-              )}_Document/${documentId}`,
-              data,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-                  "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-                }
-              }
-            )
-            .then(() => {})
-            .catch((err) => {
-              console.log("axois err ", err);
-            });
-        } catch (e) {
-          console.log("error", e);
+        } else {
+          data = {
+            SendMail: true
+          };
         }
+
+        await axios
+          .put(
+            `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
+              "_appName"
+            )}_Document/${documentId}`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+                "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+              }
+            }
+          )
+          .then(() => {})
+          .catch((err) => {
+            console.log("axois err ", err);
+          });
+      } catch (e) {
+        console.log("error", e);
       }
 
       setIsSend(true);
@@ -1798,10 +1806,7 @@ function PlaceHolderSign() {
 
                             {!isSubscribe && isEnableSubscription && (
                               <div className="mt-2">
-                                <Upgrade
-                                  message="Upgrade to customize Email"
-                                  newWindow={true}
-                                />
+                                <Upgrade message="Upgrade to customize Email" />
                               </div>
                             )}
                           </div>
