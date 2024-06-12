@@ -7,12 +7,13 @@ function SignerListPlace(props) {
   return (
     <div>
       <div
-        style={{
-          background: themeColor,
-          padding: "5px"
-        }}
+        className="pt-2 pb-1 px-3 font-semibold text-base-content "
+        // style={{
+        //   background: themeColor,
+        //   padding: "5px"
+        // }}
       >
-        <span className="signedStyle">
+        <span className=" relative">
           {props.title ? props.title : "Recipients"}
           <span className="absolute text-xs z-[30] mt-1 ml-0.5">
             {props?.title === "Roles" && (
@@ -68,7 +69,7 @@ function SignerListPlace(props) {
           </span>
         </span>
       </div>
-      <div className="signerList">
+      <div className="overflow-auto hide-scrollbar max-h-[180px]">
         <RecipientList {...props} />
       </div>
       {props.handleAddSigner ? (

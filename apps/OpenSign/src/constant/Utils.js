@@ -1,6 +1,6 @@
 import axios from "axios";
 import moment from "moment";
-import { isEnableSubscription, themeColor } from "./const";
+import { isEnableSubscription } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
 import Parse from "parse";
@@ -380,10 +380,9 @@ export const getWidgetType = (item, marginLeft) => {
   return (
     <>
       <div
-        className="signatureBtn widgets"
+        className="border-2 border-accent rounded-md flex justify-between w-fit md:w-[150px] ml-1 select-none"
+        // className="signatureBtn widgets"
         style={{
-          boxShadow:
-            "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
           marginLeft: marginLeft && `${marginLeft}px`
         }}
       >
@@ -391,25 +390,23 @@ export const getWidgetType = (item, marginLeft) => {
           {!isMobile && (
             <i
               className="fa-sharp fa-solid fa-grip-vertical"
-              style={{ color: "#908d8d", fontSize: "13px", marginLeft: 4 }}
+              style={{ fontSize: "13px", marginLeft: 4 }}
             ></i>
           )}
-          <span className=" font-[400] text-[15px] text-black ml-[5px]">
+          <span className=" font-[400] text-[15px] text-base-content ml-[5px]">
             {item.type}
           </span>
         </div>
         <div
-          style={{
-            backgroundColor: themeColor,
-            padding: "0 5px",
-            display: "flex",
-            alignItems: "center"
-          }}
+          className=" bg-accent flex items-center px-[5px]"
+          // style={{
+          //   backgroundColor: themeColor,
+          //   padding: "0 5px",
+          //   display: "flex",
+          //   alignItems: "center"
+          // }}
         >
-          <i
-            style={{ color: "white", fontSize: item.iconSize }}
-            className={item.icon}
-          ></i>
+          <i style={{ fontSize: item.iconSize }} className={item.icon}></i>
         </div>
       </div>
     </>

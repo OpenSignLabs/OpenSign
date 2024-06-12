@@ -127,7 +127,7 @@ const WidgetNameModal = (props) => {
         <div className="form-section">
           <label htmlFor="name" style={{ fontSize: 13 }}>
             Name
-            <span style={{ color: "red", fontSize: 13 }}> *</span>
+            <span className="text-[red] text-[13px]"> *</span>
           </label>
           <input
             className="addUserInput"

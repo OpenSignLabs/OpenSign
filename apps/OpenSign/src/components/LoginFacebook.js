@@ -112,29 +112,10 @@ const LoginFacebook = ({
     }
   };
   return (
-    <div style={{ position: "relative" }}>
+    <div className="relative">
       {thirdpartyLoader && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            top: 0,
-            left: 0,
-            zIndex: 2
-          }}
-        >
-          <div
-            style={{
-              position: "fixed",
-              fontSize: "50px",
-              color: "#3ac9d6",
-              top: "50%",
-              left: "45%"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="fixed w-[100vw] h-[100vh] bg-black bg-opacity-30 left-0 top-0 z-[20] text-[50px] text-[#3ac9d6]">
+          <div className="loader-37 fixed top-[45%] left-[45%]"></div>
         </div>
       )}
       {/* <FacebookLogin
@@ -168,8 +149,7 @@ const LoginFacebook = ({
                       style={{ display: "flex" }}
                       className="col-form-label"
                     >
-                      Phone{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
+                      Phone <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="tel"
@@ -191,8 +171,7 @@ const LoginFacebook = ({
                       style={{ display: "flex" }}
                       className="col-form-label"
                     >
-                      Company{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
+                      Company <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="text"

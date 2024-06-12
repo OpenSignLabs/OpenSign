@@ -1039,7 +1039,7 @@ function PlaceHolderSign() {
               }}
             >
               <i
-                className="fa-solid fa-share-from-square cursor-pointer "
+                className="fa-solid fa-share-from-square cursor-pointer"
                 style={{ color: themeColor }}
               ></i>
             </RWebShare>
@@ -1639,26 +1639,13 @@ function PlaceHolderSign() {
         ) : (
           <div className="signatureContainer" ref={divRef}>
             {isUiLoading && (
-              <div
-                style={{
-                  position: "absolute",
-                  height: "100vh",
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  zIndex: "999",
-                  backgroundColor: "#e6f2f2",
-                  opacity: 0.8
-                }}
-              >
+              <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                 <img
-                  alt="no img"
+                  alt="loader"
                   src={loader}
-                  style={{ width: "100px", height: "100px" }}
+                  className="w-[100px] h-[100px]"
                 />
-                <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                <span className="text-[13px] font-bold">
                   This might take some time
                 </span>
               </div>
@@ -1718,10 +1705,7 @@ function PlaceHolderSign() {
                 handleClose={() => setIsSendAlert({})}
                 showHeaderMessage={isSendAlert.mssg === "confirm"}
               >
-                <div
-                  className="max-h-96 overflow-y-scroll scroll-hide"
-                  style={{ padding: 20 }}
-                >
+                <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px]">
                   {isSendAlert.mssg === "sure" ? (
                     <span>
                       Please ensure there&apos;s at least one signature widget
@@ -1751,7 +1735,7 @@ function PlaceHolderSign() {
                                 />
                                 <div
                                   className={
-                                    "flex justify-end  items-center gap-1 mt-2 underline text-blue-700 focus:outline-none cursor-pointer "
+                                    "flex justify-end items-center gap-1 mt-2 underline text-blue-700 focus:outline-none cursor-pointer "
                                   }
                                   onClick={() => {
                                     setRequestBody(defaultBody);
@@ -1764,26 +1748,20 @@ function PlaceHolderSign() {
                             )}
                           <div
                             className={
-                              "flex flex-row md:items-center gap-2 md:gap-6 mt-2 "
+                              "flex flex-row md:items-center gap-2 md:gap-6 mt-2"
                             }
                           >
                             <div className="flex flex-row gap-2">
                               <button
                                 onClick={() => sendEmailToSigners()}
-                                className=" shadow rounded-[2px] py-[3px] px-[25px] font-[500] text-sm "
-                                style={{
-                                  background: themeColor,
-                                  color: "white"
-                                }}
+                                className="op-btn op-btn-primary font-[500] text-sm shadow"
                               >
                                 Send
                               </button>
                               {isCustomize && (
                                 <button
-                                  onClick={() => {
-                                    setIsCustomize(false);
-                                  }}
-                                  className=" shadow rounded-[2px] py-[3px] px-[25px] font-[500] text-sm border-[0.1px] border-gray-300"
+                                  onClick={() => setIsCustomize(false)}
+                                  className="op-btn op-btn-ghost font-[500] text-sm"
                                 >
                                   Close
                                 </button>
@@ -1793,12 +1771,8 @@ function PlaceHolderSign() {
                             {!isCustomize &&
                               (isSubscribe || !isEnableSubscription) && (
                                 <span
-                                  className={
-                                    "cursor-pointer underline text-blue-700 focus:outline-none"
-                                  }
-                                  onClick={() => {
-                                    setIsCustomize(!isCustomize);
-                                  }}
+                                  className="link link-primary text-sm"
+                                  onClick={() => setIsCustomize(!isCustomize)}
                                 >
                                   Cutomize Email
                                 </span>
@@ -1818,21 +1792,9 @@ function PlaceHolderSign() {
                   {isSendAlert.mssg === "confirm" && (
                     <>
                       <div className="flex justify-center items-center mt-3">
-                        <span
-                          style={{
-                            height: 1,
-                            width: "20%",
-                            backgroundColor: "#ccc"
-                          }}
-                        ></span>
+                        <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
                         <span className="ml-[5px] mr-[5px]">or</span>
-                        <span
-                          style={{
-                            height: 1,
-                            width: "20%",
-                            backgroundColor: "#ccc"
-                          }}
-                        ></span>
+                        <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
                       </div>
                       <div className="mt-3 mb-3">{handleShareList()}</div>
                     </>
@@ -1849,7 +1811,7 @@ function PlaceHolderSign() {
                   setSignerPos([]);
                 }}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="h-[100%] p-[20px]">
                   {mailStatus === "success" ? (
                     <p>You have successfully sent mails to all recipients!</p>
                   ) : (
@@ -1858,31 +1820,16 @@ function PlaceHolderSign() {
                   {isCurrUser && (
                     <p>Do you want to sign documents right now ?</p>
                   )}
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
+                  <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                   {isCurrUser && (
                     <button
-                      onClick={() => {
-                        handleRecipientSign();
-                      }}
-                      style={{
-                        background: themeColor,
-                        color: "white"
-                      }}
+                      onClick={() => handleRecipientSign()}
                       type="button"
-                      className="finishBtn"
+                      className="op-btn op-btn-primary"
                     >
                       Yes
                     </button>
                   )}
-
                   <button
                     onClick={() => {
                       setIsSend(false);
@@ -1903,17 +1850,9 @@ function PlaceHolderSign() {
                   setIsShowEmail(false);
                 }}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="h-[100%] p-[20px]">
                   <p>Please select signer for add placeholder!</p>
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
+                  <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                   <button
                     onClick={() => {
                       setIsShowEmail(false);
@@ -2129,18 +2068,9 @@ function PlaceHolderSign() {
           title={"Document Alert"}
           showClose={false}
         >
-          <div style={{ height: "100%", padding: 20 }}>
+          <div className="h-[100%] p-[20px]">
             <p>{isAlreadyPlace.message}</p>
-
-            <div
-              style={{
-                height: "1px",
-                backgroundColor: "#9f9f9f",
-                width: "100%",
-                marginTop: "15px",
-                marginBottom: "15px"
-              }}
-            ></div>
+            <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
             <button
               onClick={() => handleRecipientSign()}
               type="button"

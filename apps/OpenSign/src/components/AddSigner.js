@@ -225,14 +225,8 @@ const AddSigner = (props) => {
   return (
     <div className="h-full p-[20px]">
       {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30">
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 text-[45px] text-[#3dd3e0]">
+          <div className="loader-37"></div>
         </div>
       )}
       <div className="w-full mx-auto p-2">
@@ -257,7 +251,7 @@ const AddSigner = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Name
-              <span style={{ color: "red", fontSize: 13 }}> *</span>
+              <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
               type="text"
@@ -275,7 +269,7 @@ const AddSigner = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Email
-              <span style={{ color: "red", fontSize: 13 }}> *</span>
+              <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
               type="email"

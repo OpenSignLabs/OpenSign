@@ -523,8 +523,7 @@ const Signup = () => {
                   <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                     <div className="px-6 py-4 text-xs">
                       <label className="block ">
-                        Name{" "}
-                        <span style={{ color: "red", fontSize: 13 }}>*</span>
+                        Name <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         type="text"
@@ -535,8 +534,7 @@ const Signup = () => {
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Email{" "}
-                        <span style={{ color: "red", fontSize: 13 }}>*</span>
+                        Email <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         id="email"
@@ -550,8 +548,7 @@ const Signup = () => {
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Phone{" "}
-                        <span style={{ color: "red", fontSize: 13 }}>*</span>
+                        Phone <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         type="tel"
@@ -563,7 +560,7 @@ const Signup = () => {
                       <hr className="my-2 border-none" />
                       <label>
                         Company{" "}
-                        <span style={{ color: "red", fontSize: 13 }}>*</span>
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         type="text"
@@ -575,7 +572,7 @@ const Signup = () => {
                       <hr className="my-2 border-none" />
                       <label>
                         Job Title{" "}
-                        <span style={{ color: "red", fontSize: 13 }}>*</span>
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         type="text"
@@ -587,7 +584,7 @@ const Signup = () => {
                       <hr className="my-2 border-none" />
                       <label>
                         Password{" "}
-                        <span style={{ color: "red", fontSize: 13 }}>*</span>
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <div className="relative">
                         <input
@@ -670,7 +667,7 @@ const Signup = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold mt-2">
                     <button
                       type="submit"
-                      className="op-btn op-btn-primary"
+                      className="op-btn op-btn-accent"
                       disabled={state.loading}
                     >
                       {state.loading ? "Loading..." : "Register"}

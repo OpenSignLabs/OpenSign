@@ -7,7 +7,7 @@ const dashboardJson = [
         widget: {
           type: "Card",
           icon: "fas fa-signature",
-          bgColor: "#f0058e",
+          bgColor: "bg-[#f0058e]",
           label: "Need your Signature",
           description: null,
           data: {
@@ -30,7 +30,7 @@ const dashboardJson = [
         widget: {
           type: "Card",
           icon: "fas fa-sign-out-alt",
-          bgColor: "#g0058e",
+          bgColor: "bg-[#2ed8b6]",
           label: "Out for signatures",
           description: null,
           data: {

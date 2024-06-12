@@ -4,21 +4,8 @@ const LazyPage = ({ Page }) => {
   return (
     <Suspense
       fallback={
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="flex justify-center items-center h-[100vh] text-[45px] text-[#3dd3e0]">
+          <div className="loader-37"></div>
         </div>
       }
     >

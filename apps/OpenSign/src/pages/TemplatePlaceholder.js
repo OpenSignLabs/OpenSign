@@ -1211,7 +1211,10 @@ const TemplatePlaceholder = () => {
         ) : handleError ? (
           <HandleError handleError={handleError} />
         ) : (
-          <div className="signatureContainer" ref={divRef}>
+          <div
+            className="op-card overflow-hidden flex flex-row justify-between bg-base-300 relative"
+            ref={divRef}
+          >
             {/* this component used for UI interaction and show their functionality */}
             {!checkTourStatus && (
               //this tour component used in your html component where you want to put
@@ -1259,7 +1262,7 @@ const TemplatePlaceholder = () => {
                 title={"Fields required"}
                 handleClose={() => setIsSendAlert(false)}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="h-full p-[20px]">
                   <p>Please add at least one signature field for all roles.</p>
                 </div>
               </ModalUi>
@@ -1269,7 +1272,7 @@ const TemplatePlaceholder = () => {
                 title={"Roles"}
                 handleClose={() => setIsReceipent(true)}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="h-full p-[20px]">
                   <p>Please add a role</p>
                 </div>
               </ModalUi>
@@ -1279,20 +1282,12 @@ const TemplatePlaceholder = () => {
                 title={"Create Document"}
                 handleClose={() => setIsCreateDocModal(false)}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="h-full p-[20px]">
                   <p>
                     Do you want to create a document using the template you just
                     created ?
                   </p>
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
+                  <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                   {currentEmail.length > 0 && (
                     <>
                       <button
@@ -1330,17 +1325,9 @@ const TemplatePlaceholder = () => {
                   setIsShowEmail(false);
                 }}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="h-full p-[20px]">
                   <p>Please select signer for add placeholder!</p>
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
+                  <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                   <button
                     onClick={() => {
                       setIsShowEmail(false);
@@ -1396,7 +1383,7 @@ const TemplatePlaceholder = () => {
                 // signerObjId={signerObjId}
                 Id={uniqueId}
               />
-              {/* pdf header which contain funish back button */}
+              {/* pdf header which contain finish, back button */}
               <Header
                 completeBtnTitle={"Save"}
                 isPlaceholder={true}
@@ -1499,10 +1486,10 @@ const TemplatePlaceholder = () => {
               </div>
             ) : (
               <div>
-                <div className="signerComponent">
+                <div className="w-[180px] bg-base-100 h-full">
                   <div
                     style={{ maxHeight: window.innerHeight - 70 + "px" }}
-                    className="autoSignScroll"
+                    className="autoSignScroll hide-scrollbar"
                   >
                     <SignerListPlace
                       isMailSend={isMailSend}

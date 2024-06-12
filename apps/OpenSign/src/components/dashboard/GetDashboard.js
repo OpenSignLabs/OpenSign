@@ -37,9 +37,10 @@ const GetDashboard = (props) => {
       case "Card":
         return (
           <div
-            className="op-card bg-[#2ed8b6] w-full h-[140px] px-3 pt-4 mb-3 shadow-md"
+            className={`${
+              col?.widget?.bgColor ? col.widget.bgColor : "bg-[#2ed8b6]"
+            } op-card  w-full h-[140px] px-3 pt-4 mb-3 shadow-md"`}
             data-tut={col.widget.data.tourSection}
-            style={{ background: col.widget.bgColor }}
           >
             <Suspense
               fallback={
@@ -78,8 +79,9 @@ const GetDashboard = (props) => {
       case "Card":
         return (
           <div
-            className="op-card bg-[#2ed8b6] w-full h-[140px] px-3 pt-4 mb-3 shadow-md"
-            style={{ background: col.widget.bgColor }}
+            className={`${
+              col?.widget?.bgColor ? col.widget.bgColor : "bg-[#2ed8b6]"
+            } op-card  w-full h-[140px] px-3 pt-4 mb-3 shadow-md"`}
           >
             <Suspense fallback={<div>please wait</div>}>
               <DashboardCard

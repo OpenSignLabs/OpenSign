@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
-import { themeColor } from "../../constant/const";
+// import { themeColor } from "../../constant/const";
 
 function RenderAllPdfPage({
   signPdfUrl,
@@ -40,15 +40,7 @@ function RenderAllPdfPage({
     const ispageNumber = signPageNumber.includes(index + 1);
     return (
       ispageNumber && (
-        <div
-          style={{
-            position: "absolute",
-            zIndex: 2,
-            top: -12,
-            right: -7,
-            transform: "translate(50% -50%)"
-          }}
-        >
+        <div className="absolute z-20 top-[1px] -right-[13px] -translate-x-1/2 -translate-y-1/2">
           <i
             style={{ color: bookmarkColor || "red" }}
             className="fa-solid fa-bookmark"
@@ -58,23 +50,25 @@ function RenderAllPdfPage({
     );
   };
   return (
-    <div className="showPages">
+    <div>
       <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px",
-          backgroundColor: "white",
-          height: "100%"
-        }}
+        className=" hidden md:flex flex-row bg-base-100 h-full"
+        // style={{
+        //   display: "flex",
+        //   flexDirection: "row",
+        //   boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px",
+        //   backgroundColor: "white",
+        //   height: "100%"
+        // }}
       >
-        <div style={{ width: "140px" }}>
+        <div className="w-[140px]">
           <div
-            style={{
-              background: themeColor
-              //  color:"white"
-            }}
-            className="signedStyle"
+            className="px-3 pt-2 pb-1 text-[15px] text-base-content font-semibold "
+            // style={{
+            //   background: themeColor
+            //   //  color:"white"
+            // }}
+            // className="signedStyle"
           >
             Pages
           </div>
@@ -95,21 +89,11 @@ function RenderAllPdfPage({
                 {Array.from(new Array(allPages), (el, index) => (
                   <div
                     key={index}
-                    style={{
-                      width: "100px",
-                      border:
-                        pageNumber - 1 === index
-                          ? "2px solid red"
-                          : "2px solid #878787",
-                      // padding: "5px",
-                      margin: "10px",
-
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-
-                      position: "relative"
-                    }}
+                    className={`${
+                      pageNumber - 1 === index
+                        ? "border-[red]"
+                        : "border-[#878787]"
+                    } border-2 w-[100px] m-[10px] flex justify-center items-center relative`}
                     onClick={() => {
                       setPageNumber(index + 1);
                       if (setSignBtnPosition) {
@@ -119,13 +103,7 @@ function RenderAllPdfPage({
                   >
                     {signerPos && addSignatureBookmark(index)}
 
-                    <div
-                      style={{
-                        position: "relative",
-                        zIndex: 1,
-                        overflow: "hidden"
-                      }}
-                    >
+                    <div className="relative z-[1] overflow-hidden">
                       <Page
                         key={`page_${index + 1}`}
                         pageNumber={index + 1}

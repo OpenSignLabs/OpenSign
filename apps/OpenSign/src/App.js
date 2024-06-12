@@ -32,21 +32,8 @@ const Webhook = lazy(() => import("./pages/Webhook"));
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 const Loader = () => {
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
-      <div
-        style={{
-          fontSize: "45px",
-          color: "#3dd3e0"
-        }}
-        className="loader-37"
-      ></div>
+    <div className="flex justify-center items-center h-[100vh] text-[45px] text-[#3dd3e0]">
+      <div className="loader-37"></div>
     </div>
   );
 };
