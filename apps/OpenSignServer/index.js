@@ -17,7 +17,7 @@ import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
-import { smtpenable, useLocal } from './Utils.js';
+import { smtpenable, smtpsecure, useLocal } from './Utils.js';
 
 let fsAdapter;
 if (useLocal !== 'true') {
@@ -59,7 +59,7 @@ if (smtpenable) {
     transporterMail = createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT || 465,
-      secure: process.env.SMTP_SECURE || true,
+      secure: smtpsecure,
       auth: {
         user: process.env.SMTP_USER_EMAIL,
         pass: process.env.SMTP_PASS,
