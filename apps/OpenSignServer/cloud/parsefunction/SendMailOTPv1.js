@@ -1,4 +1,4 @@
-import { updateMailCount } from '../../Utils.js';
+import { smtpenable, updateMailCount } from '../../Utils.js';
 async function getDocument(docId) {
   try {
     const query = new Parse.Query('contracts_Document');
@@ -25,9 +25,7 @@ async function sendMailOTPv1(request) {
 
     if (email) {
       const recipient = request.params.email;
-      const mailsender = process.env.SMTP_ENABLE
-        ? process.env.SMTP_USER_EMAIL
-        : process.env.MAILGUN_SENDER;
+      const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
       try {
         await Parse.Cloud.sendEmail({
           from: 'Opensign™' + ' <' + mailsender + '>',
@@ -39,7 +37,7 @@ async function sendMailOTPv1(request) {
             code +
             '</p></div> </div> </div></body></html>',
         });
-        console.log('OTP sent');
+        console.log('OTP sent', code);
         if (request.params?.docId) {
           const extUserId = await getDocument(request.params?.docId);
           if (extUserId) {
