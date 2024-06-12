@@ -81,11 +81,16 @@ export default async function linkContactToDoc(req) {
           const updateDoc = new Parse.Object('contracts_Document');
           updateDoc.id = docId;
           const signers = _docRes?.Signers || [];
-          signers.push({
+          const signerobj = {
             __type: 'Pointer',
             className: 'contracts_Contactbook',
             objectId: existContact.id,
-          });
+          };
+          // The splice method is used to add a signer at the desired index
+          // index is the variable where the signer needs to be added
+          // 0 indicates that no elements should be deleted
+          // signerobj is the reference to the signer object
+          signers.splice(index, 0, signerobj);
           updateDoc.set('Signers', signers);
 
           Placeholders[index] = {
@@ -128,11 +133,16 @@ export default async function linkContactToDoc(req) {
             const updateDoc = new Parse.Object('contracts_Document');
             updateDoc.id = docId;
             const signers = _docRes?.Signers || [];
-            signers.push({
+            const signerobj = {
               __type: 'Pointer',
               className: 'contracts_Contactbook',
               objectId: contactRes.id,
-            });
+            };
+            // The splice method is used to add a signer at the desired index
+            // index is the variable where the signer needs to be added
+            // 0 indicates that no elements should be deleted
+            // signerobj is the reference to the signer object
+            signers.splice(index, 0, signerobj);
             updateDoc.set('Signers', signers);
 
             Placeholders[index] = {
@@ -175,11 +185,16 @@ export default async function linkContactToDoc(req) {
                 const updateDoc = new Parse.Object('contracts_Document');
                 updateDoc.id = docId;
                 const signers = _docRes?.Signers || [];
-                signers.push({
+                const signerobj = {
                   __type: 'Pointer',
                   className: 'contracts_Contactbook',
                   objectId: contactRes.id,
-                });
+                };
+                // The splice method is used to add a signer at the desired index
+                // index is the variable where the signer needs to be added
+                // 0 indicates that no elements should be deleted
+                // signerobj is the reference to the signer object
+                signers.splice(index, 0, signerobj);
                 updateDoc.set('Signers', signers);
 
                 Placeholders[index] = {
@@ -227,13 +242,17 @@ export default async function linkContactToDoc(req) {
                 const updateDoc = new Parse.Object('contracts_Document');
                 updateDoc.id = docId;
                 const signers = _docRes?.Signers || [];
-                signers.push({
+                const signerobj = {
                   __type: 'Pointer',
                   className: 'contracts_Contactbook',
                   objectId: contactRes.id,
-                });
+                };
+                // The splice method is used to add a signer at the desired index
+                // index is the variable where the signer needs to be added
+                // 0 indicates that no elements should be deleted
+                // signerobj is the reference to the signer object
+                signers.splice(index, 0, signerobj);
                 updateDoc.set('Signers', signers);
-
                 Placeholders[index] = {
                   ...Placeholders[index],
                   signerObjId: contactRes.id,
