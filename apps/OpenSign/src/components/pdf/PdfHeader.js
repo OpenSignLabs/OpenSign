@@ -57,7 +57,7 @@ function Header({
       {isMobile && isShowHeader ? (
         <div
           id="navbar"
-          className={isGuestSigner ? "stickySignerHead" : "stickyHead z-[1000]"}
+          className={isGuestSigner ? "stickySignerHead" : "stickyHead"}
           style={{
             width: isGuestSigner
               ? window.innerWidth
@@ -65,157 +65,126 @@ function Header({
           }}
         >
           <div className="flex justify-between items-center py-[5px] px-[10px] ">
+            <div onClick={() => navigate(-1)}>
+              <i
+                className="fa fa-arrow-left text-base-content"
+                aria-hidden="true"
+              ></i>
+            </div>
             <PrevNext
               pageNumber={pageNumber}
               allPages={allPages}
               changePage={changePage}
             />
             {pdfUrl && alreadySign ? (
-              <div className="op-dropdown op-dropdown-end">
-                <div tabIndex={0} role="button" className="op-btn op-btn-sm">
-                  <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
-                </div>
-                <ul
-                  tabIndex={0}
-                  className="op-dropdown-content z-[1] op-menu op-menu-sm p-1 shadow bg-base-100 rounded-box mt-1"
-                >
-                  <li
-                    onClick={() =>
-                      handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
-                    }
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <div
+                    style={{
+                      color: themeColor,
+                      border: "none",
+                      fontWeight: "650",
+                      fontSize: "16px",
+                      padding: "0px 3px 0px 5px"
+                    }}
                   >
-                    <span className="font-semibold text-[12px]">
-                      <i className="fa fa-arrow-down" aria-hidden="true"></i>{" "}
-                      Download
-                    </span>
-                  </li>
-                  {isCompleted && (
-                    <li
+                    <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
+                  </div>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content
+                    className="DropdownMenuContent"
+                    sideOffset={5}
+                  >
+                    <DropdownMenu.Item
+                      className="DropdownMenuItem"
                       onClick={() =>
-                        handleDownloadCertificate(pdfDetails, setIsDownloading)
+                        handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
                       }
                     >
-                      <span className="font-semibold text-[12px]">
-                        <i className="fa-solid fa-award" aria-hidden="true"></i>{" "}
-                        Certificate
-                      </span>
-                    </li>
-                  )}
-                  {isSignYourself && (
-                    <li onClick={() => setIsEmail(true)}>
-                      <span className="font-semibold text-[12px]">
-                        <i className="fa fa-envelope" aria-hidden="true"></i>{" "}
-                        Mail
-                      </span>
-                    </li>
-                  )}
-                  <li
-                    onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
-                  >
-                    <span className="font-semibold text-[12px]">
-                      <i className="fa fa-print" aria-hidden="true"></i> Print
-                    </span>
-                  </li>
-                </ul>
-              </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row"
+                        }}
+                      >
+                        <i
+                          className="fa fa-arrow-down"
+                          aria-hidden="true"
+                          style={{ marginRight: "2px" }}
+                        ></i>
+                        Download
+                      </div>
+                    </DropdownMenu.Item>
+                    {isCompleted && (
+                      <DropdownMenu.Item
+                        className="DropdownMenuItem"
+                        onClick={() =>
+                          handleDownloadCertificate(
+                            pdfDetails,
+                            setIsDownloading
+                          )
+                        }
+                      >
+                        <div
+                          style={{
+                            border: "none",
+                            backgroundColor: "#fff"
+                          }}
+                        >
+                          <i
+                            className="fa-solid fa-award"
+                            style={{ marginRight: "2px" }}
+                            aria-hidden="true"
+                          ></i>
+                          Certificate
+                        </div>
+                      </DropdownMenu.Item>
+                    )}
+                    {isSignYourself && (
+                      <DropdownMenu.Item
+                        className="DropdownMenuItem"
+                        onClick={() => setIsEmail(true)}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row"
+                          }}
+                        >
+                          <i
+                            className="fa fa-envelope"
+                            style={{ marginRight: "2px" }}
+                            aria-hidden="true"
+                          ></i>
+                          Mail
+                        </div>
+                      </DropdownMenu.Item>
+                    )}
+                    <DropdownMenu.Item
+                      className="DropdownMenuItem"
+                      onClick={(e) =>
+                        handleToPrint(e, pdfUrl, setIsDownloading)
+                      }
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row"
+                        }}
+                      >
+                        <i
+                          className="fa fa-print"
+                          aria-hidden="true"
+                          style={{ marginRight: "2px" }}
+                        ></i>
+                        Print
+                      </div>
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
             ) : (
-              // <DropdownMenu.Root>
-              //   <DropdownMenu.Trigger asChild>
-              //     <div
-              //       style={{
-              //         color: themeColor,
-              //         border: "none",
-              //         fontWeight: "650",
-              //         fontSize: "16px",
-              //         padding: "0px 3px 0px 5px"
-              //       }}
-              //     >
-              //       <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
-              //     </div>
-              //   </DropdownMenu.Trigger>
-              //   <DropdownMenu.Portal>
-              //     <DropdownMenu.Content
-              //       className="DropdownMenuContent"
-              //       sideOffset={5}
-              //     >
-              //       <DropdownMenu.Item
-              //         className="DropdownMenuItem"
-              //         onClick={() =>
-              //           handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
-              //         }
-              //       >
-              //         <div className="flex flex-row">
-              //           <i
-              //             className="fa fa-arrow-down"
-              //             aria-hidden="true"
-              //             style={{ marginRight: "2px" }}
-              //           ></i>
-              //           Download
-              //         </div>
-              //       </DropdownMenu.Item>
-              //       {isCompleted && (
-              //         <DropdownMenu.Item
-              //           className="DropdownMenuItem"
-              //           onClick={() =>
-              //             handleDownloadCertificate(
-              //               pdfDetails,
-              //               setIsDownloading
-              //             )
-              //           }
-              //         >
-              //           <div className="border-none bg-white">
-              //             <i
-              //               className="fa-solid fa-award"
-              //               style={{ marginRight: "2px" }}
-              //               aria-hidden="true"
-              //             ></i>
-              //             Certificate
-              //           </div>
-              //         </DropdownMenu.Item>
-              //       )}
-              //       {isSignYourself && (
-              //         <DropdownMenu.Item
-              //           className="DropdownMenuItem"
-              //           onClick={() => setIsEmail(true)}
-              //         >
-              //           <div
-              //             style={{
-              //               display: "flex",
-              //               flexDirection: "row"
-              //             }}
-              //           >
-              //             <i
-              //               className="fa fa-envelope"
-              //               style={{ marginRight: "2px" }}
-              //               aria-hidden="true"
-              //             ></i>
-              //             Mail
-              //           </div>
-              //         </DropdownMenu.Item>
-              //       )}
-              //       <DropdownMenu.Item
-              //         className="DropdownMenuItem"
-              //         onClick={(e) =>
-              //           handleToPrint(e, pdfUrl, setIsDownloading)
-              //         }
-              //       >
-              //         <div
-              //           style={{
-              //             display: "flex",
-              //             flexDirection: "row"
-              //           }}
-              //         >
-              //           <i
-              //             className="fa fa-print"
-              //             aria-hidden="true"
-              //             style={{ marginRight: "2px" }}
-              //           ></i>
-              //           Print
-              //         </div>
-              //       </DropdownMenu.Item>
-              //     </DropdownMenu.Content>
-              //   </DropdownMenu.Portal>
-              // </DropdownMenu.Root>
               <div className="flex justify-around items-center">
                 {/* current signer is checking user send request and check status of pdf sign than if current 
                 user exist than show finish button else no
@@ -259,37 +228,6 @@ function Header({
                         Finish
                       </div>
                     )}
-                    <div className="op-dropdown op-dropdown-end">
-                      <div
-                        tabIndex={0}
-                        role="button"
-                        className="op-btn op-btn-sm"
-                      >
-                        <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
-                      </div>
-                      <ul
-                        tabIndex={0}
-                        className="op-dropdown-content z-[1] op-menu op-menu-sm p-1 shadow bg-base-100 rounded-box mt-1"
-                      >
-                        <li
-                          onClick={() =>
-                            handleDownloadPdf(
-                              pdfDetails,
-                              pdfUrl,
-                              setIsDownloading
-                            )
-                          }
-                        >
-                          <span className="font-semibold text-[12px]">
-                            <i
-                              className="fa fa-arrow-down"
-                              aria-hidden="true"
-                            ></i>{" "}
-                            Download
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger asChild>
                         <div
