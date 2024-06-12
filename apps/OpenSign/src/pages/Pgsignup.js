@@ -127,7 +127,9 @@ const PgSignUp = () => {
       user.set("username", zohoRes.data.result.email);
       user.set("password", obj.password);
       user.set("email", zohoRes.data.result.email);
-      user.set("phone", zohoRes.data.result.phone);
+      if (zohoRes?.data?.result?.phone) {
+        user.set("phone", zohoRes.data.result.phone);
+      }
       user.set("name", zohoRes.data.result.name);
 
       const res = await user.signUp();
@@ -140,7 +142,7 @@ const PgSignUp = () => {
             company: zohoRes.data.result.company,
             name: zohoRes.data.result.name,
             email: zohoRes.data.result.email,
-            phone: zohoRes.data.result.phone,
+            phone: zohoRes?.data?.result?.phone || "",
             role: obj.role
           },
           subscription: zohoRes.data.result.subscription

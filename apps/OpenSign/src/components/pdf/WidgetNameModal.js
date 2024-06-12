@@ -6,6 +6,7 @@ import { textInputWidget } from "../../constant/Utils";
 import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 import Upgrade from "../../primitives/Upgrade";
 import { isEnableSubscription } from "../../constant/const";
+import Tooltip from "../../primitives/Tooltip";
 
 const WidgetNameModal = (props) => {
   const [formdata, setFormdata] = useState({
@@ -140,16 +141,21 @@ const WidgetNameModal = (props) => {
           props.widgetName === textInputWidget) && (
           <>
             <div className="form-section">
-              <label
-                htmlFor="textvalidate"
-                className={
-                  !props.isSubscribe && isEnableSubscription && "disabled"
-                }
-                style={{ fontSize: 13 }}
-              >
-                Validation
-              </label>
-              {!props.isSubscribe && isEnableSubscription && <Upgrade />}
+              <div className="flex items-center gap-1">
+                <label
+                  htmlFor="textvalidate"
+                  className={
+                    !props.isSubscribe && isEnableSubscription && "disabled"
+                  }
+                  style={{ fontSize: 13 }}
+                >
+                  Validation
+                </label>
+                <Tooltip
+                  url={"https://www.w3schools.com/jsref/jsref_obj_regexp.asp"}
+                />
+                {!props.isSubscribe && isEnableSubscription && <Upgrade />}
+              </div>
               <div
                 className={
                   !props.isSubscribe && isEnableSubscription && "disabled"
@@ -165,7 +171,7 @@ const WidgetNameModal = (props) => {
                   <input
                     className="relative z-20 w-[87%] md:w-[92%] p-2.5 border-[1px] border-[#d1d5db] rounded-l-md outline-none text-xs"
                     name="textvalidate"
-                    placeholder="Enter custom expression"
+                    placeholder="Enter custom regular expression"
                     value={formdata.textvalidate}
                     onChange={(e) => handleChange(e)}
                     // onBlur={() => handleBlurRegex()}

@@ -4,13 +4,20 @@ import { isEnableSubscription, themeColor } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
 import Parse from "parse";
+import { appInfo } from "./appinfo";
+import { saveAs } from "file-saver";
+import printModule from "print-js";
 
 export const isMobile = window.innerWidth < 767;
 export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
-export const openInNewTab = (url) => {
-  window.open(url, "_blank", "noopener,noreferrer");
+export const openInNewTab = (url, target) => {
+  if (target) {
+    window.open(url, target, "noopener,noreferrer");
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
 };
 
 export async function fetchSubscription(
@@ -19,11 +26,12 @@ export async function fetchSubscription(
   isGuestSign = false
 ) {
   try {
-    const extClass = localStorage.getItem("Extand_Class");
+    const Extand_Class = localStorage.getItem("Extand_Class");
+    const extClass = Extand_Class && JSON.parse(Extand_Class);
+    // console.log("extClass ", extClass);
     let extUser;
-    if (extClass) {
-      const jsonSender = JSON.parse(extClass);
-      extUser = jsonSender[0].objectId;
+    if (extClass && extClass.length > 0) {
+      extUser = extClass[0].objectId;
     } else {
       extUser = extUserId;
     }
@@ -171,11 +179,10 @@ export const contractUsers = async (email) => {
     .then((Listdata) => {
       const json = Listdata.data;
       let data = [];
-
       if (json && json.result) {
         data.push(json.result);
-        return data;
       }
+      return data;
     })
     .catch((err) => {
       console.log("Err ", err);
@@ -561,7 +568,7 @@ export const signPdfFun = async (
         isCustomCompletionMail = true;
       }
     }
-    
+
     // below for loop is used to get first signature of user to send if to signpdf
     // for adding it in completion certificate
     let getSignature;
@@ -662,6 +669,7 @@ export const createDocument = async (template, placeholders, signerData) => {
       Name: Doc.Name,
       URL: Doc.URL,
       SignedUrl: Doc.SignedUrl,
+      SentToOthers: Doc.SentToOthers,
       Description: Doc.Description,
       Note: Doc.Note,
       Placeholders: placeholdersArr,
@@ -676,7 +684,9 @@ export const createDocument = async (template, placeholders, signerData) => {
         objectId: Doc.CreatedBy.objectId
       },
       Signers: signers,
-      SendinOrder: Doc?.SendinOrder || false
+      SendinOrder: Doc?.SendinOrder || false,
+      AutomaticReminders: Doc?.AutomaticReminders || false,
+      RemindOnceInEvery: parseInt(Doc?.RemindOnceInEvery || 5)
     };
 
     try {
@@ -1349,8 +1359,8 @@ export const multiSignEmbed = async (
           position.type === radioButtonWidget
             ? 10
             : position.type === "checkbox"
-            ? 10
-            : newUpdateHeight;
+              ? 10
+              : newUpdateHeight;
         const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
 
         if (signyourself) {
@@ -2028,3 +2038,150 @@ export const handleSendOTP = async (email) => {
     alert(error.message);
   }
 };
+//handle download signed pdf
+export const handleDownloadPdf = async (
+  pdfDetails,
+  pdfUrl,
+  setIsDownloading
+) => {
+  const pdfName = pdfDetails[0] && pdfDetails[0].Name;
+  setIsDownloading("pdf");
+  try {
+    // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+    const axiosRes = await axios.post(
+      `${appInfo.baseUrl}/functions/getsignedurl`,
+      { url: pdfUrl },
+      {
+        headers: {
+          "content-type": "Application/json",
+          "X-Parse-Application-Id": appInfo.appId,
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
+      }
+    );
+    const url = axiosRes.data.result;
+    saveAs(url, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    setIsDownloading("");
+  } catch (err) {
+    console.log("err in getsignedurl", err);
+    setIsDownloading("");
+    alert("something went wrong, please try again later.");
+  }
+};
+
+export const sanitizeFileName = (pdfName) => {
+  // Replace spaces with underscore
+  return pdfName.replace(/ /g, "_");
+};
+//function for print digital sign pdf
+export const handleToPrint = async (event, pdfUrl, setIsDownloading) => {
+  event.preventDefault();
+  setIsDownloading("pdf");
+  try {
+    // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+    const axiosRes = await axios.post(
+      `${appInfo.baseUrl}/functions/getsignedurl`,
+      { url: pdfUrl },
+      {
+        headers: {
+          "content-type": "Application/json",
+          "X-Parse-Application-Id": appInfo.appId,
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
+      }
+    );
+    const url = axiosRes.data.result;
+    const pdf = await getBase64FromUrl(url);
+    const isAndroidDevice = navigator.userAgent.match(/Android/i);
+    const isAppleDevice =
+      (/iPad|iPhone|iPod/.test(navigator.platform) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) &&
+      !window.MSStream;
+    if (isAndroidDevice || isAppleDevice) {
+      const byteArray = Uint8Array.from(
+        atob(pdf)
+          .split("")
+          .map((char) => char.charCodeAt(0))
+      );
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
+      setIsDownloading("");
+    } else {
+      printModule({ printable: pdf, type: "pdf", base64: true });
+      setIsDownloading("");
+    }
+  } catch (err) {
+    setIsDownloading("");
+    console.log("err in getsignedurl", err);
+    alert("something went wrong, please try again later.");
+  }
+};
+
+//handle download signed pdf
+export const handleDownloadCertificate = async (
+  pdfDetails,
+  setIsDownloading
+) => {
+  if (pdfDetails?.length > 0 && pdfDetails[0]?.CertificateUrl) {
+    try {
+      await fetch(pdfDetails[0] && pdfDetails[0]?.CertificateUrl);
+      const certificateUrl = pdfDetails[0] && pdfDetails[0]?.CertificateUrl;
+      saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+    } catch (err) {
+      console.log("err in download in certificate", err);
+    }
+  } else {
+    setIsDownloading("certificate");
+    try {
+      const data = {
+        docId: pdfDetails[0]?.objectId
+      };
+      const docDetails = await axios.post(
+        `${localStorage.getItem("baseUrl")}functions/getDocument`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            sessionToken: localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      if (docDetails.data && docDetails.data.result) {
+        const doc = docDetails.data.result;
+        if (doc?.CertificateUrl) {
+          await fetch(doc?.CertificateUrl);
+          const certificateUrl = doc?.CertificateUrl;
+          saveAs(certificateUrl, `Certificate_signed_by_OpenSign™.pdf`);
+          setIsDownloading("");
+        } else {
+          setIsDownloading("certificate");
+        }
+      }
+    } catch (err) {
+      console.log("err in download in certificate", err);
+      alert("something went wrong, please try again later.");
+    }
+  }
+};
+export async function findContact(value) {
+  try {
+    const currentUser = Parse.User.current();
+    const contactbook = new Parse.Query("contracts_Contactbook");
+    contactbook.equalTo(
+      "CreatedBy",
+      Parse.User.createWithoutData(currentUser.id)
+    );
+    contactbook.notEqualTo("IsDeleted", true);
+    contactbook.matches("Email", new RegExp(value, "i"));
+
+    const contactRes = await contactbook.find();
+    if (contactRes) {
+      const res = JSON.parse(JSON.stringify(contactRes));
+      return res;
+    }
+  } catch (error) {
+    console.error("Error fetching suggestions:", error);
+  }
+}

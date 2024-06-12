@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
 import "../styles/AddUser.css";
-const AddUser = (props) => {
+const AddContact = (props) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -21,7 +21,7 @@ const AddUser = (props) => {
     );
     if (savedUserDetails && addYourself) {
       setName(savedUserDetails.name);
-      setPhone(savedUserDetails.phone);
+      setPhone(savedUserDetails?.phone || "");
       setEmail(savedUserDetails.email);
     }
   }, [addYourself]);
@@ -50,7 +50,9 @@ const AddUser = (props) => {
     try {
       const contactQuery = new Parse.Object("contracts_Contactbook");
       contactQuery.set("Name", name);
-      contactQuery.set("Phone", phone);
+      if (phone) {
+        contactQuery.set("Phone", phone);
+      }
       contactQuery.set("Email", email);
       contactQuery.set("UserRole", "contracts_Guest");
 
@@ -68,8 +70,10 @@ const AddUser = (props) => {
         _user.set("name", name);
         _user.set("username", email);
         _user.set("email", email);
-        _user.set("phone", phone);
-        _user.set("password", phone);
+        _user.set("password", email);
+        if (phone) {
+          _user.set("phone", phone);
+        }
 
         const user = await _user.save();
         if (user) {
@@ -245,23 +249,21 @@ const AddUser = (props) => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value?.toLowerCase())}
               required
               disabled={addYourself}
-              className="addUserInput"
+              className="addUserInput lowercase"
             />
           </div>
           <div className="form-section">
             <label htmlFor="phone" style={{ fontSize: 13 }}>
               Phone
-              <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               type="text"
               id="phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              required
               disabled={addYourself}
               className="addUserInput"
             />
@@ -285,4 +287,4 @@ const AddUser = (props) => {
   );
 };
 
-export default AddUser;
+export default AddContact;
