@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import https from 'https';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
-import { updateMailCount } from '../../Utils.js';
+import { smtpenable, smtpsecure, updateMailCount } from '../../Utils.js';
 import sendMailGmailProvider from './sendMailGmailProvider.js';
 import { createTransport } from 'nodemailer';
 async function sendMailProvider(req) {
@@ -10,11 +10,11 @@ async function sendMailProvider(req) {
     let transporterSMTP;
     let mailgunClient;
     let mailgunDomain;
-    if (process.env.SMTP_ENABLE) {
+    if (smtpenable) {
       transporterSMTP = createTransport({
         host: process.env.SMTP_HOST,
         port: process.env.SMTP_PORT || 465,
-        secure: process.env.SMTP_SECURE || true,
+        secure: smtpsecure,
         auth: {
           user: process.env.SMTP_USER_EMAIL,
           pass: process.env.SMTP_PASS,
@@ -54,8 +54,8 @@ async function sendMailProvider(req) {
         const pdfName = req.params.pdfName && `${req.params.pdfName}.pdf`;
         const file = {
           filename: pdfName || 'exported.pdf',
-          content: process.env.SMTP_ENABLE ? PdfBuffer : undefined, //fs.readFileSync('./exports/exported_file_1223.pdf'),
-          data: process.env.SMTP_ENABLE ? undefined : PdfBuffer,
+          content: smtpenable ? PdfBuffer : undefined, //fs.readFileSync('./exports/exported_file_1223.pdf'),
+          data: smtpenable ? undefined : PdfBuffer,
         };
 
         let attachment;
@@ -64,8 +64,8 @@ async function sendMailProvider(req) {
           const certificateBuffer = fs.readFileSync('./exports/certificate.pdf');
           const certificate = {
             filename: 'certificate.pdf',
-            content: process.env.SMTP_ENABLE ? certificateBuffer : undefined, //fs.readFileSync('./exports/exported_file_1223.pdf'),
-            data: process.env.SMTP_ENABLE ? undefined : certificateBuffer,
+            content: smtpenable ? certificateBuffer : undefined, //fs.readFileSync('./exports/exported_file_1223.pdf'),
+            data: smtpenable ? undefined : certificateBuffer,
           };
           attachment = [file, certificate];
         } catch (err) {
@@ -73,9 +73,7 @@ async function sendMailProvider(req) {
           console.log('Err in read certificate sendmailv3', err);
         }
         const from = req.params.from || '';
-        const mailsender = process.env.SMTP_ENABLE
-          ? process.env.SMTP_USER_EMAIL
-          : process.env.MAILGUN_SENDER;
+        const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 
         const messageParams = {
           from: from + ' <' + mailsender + '>',
@@ -83,8 +81,8 @@ async function sendMailProvider(req) {
           subject: req.params.subject,
           text: req.params.text || 'mail',
           html: req.params.html || '',
-          attachments: process.env.SMTP_ENABLE ? attachment : undefined,
-          attachment: process.env.SMTP_ENABLE ? undefined : attachment,
+          attachments: smtpenable ? attachment : undefined,
+          attachment: smtpenable ? undefined : attachment,
         };
         if (transporterSMTP) {
           const res = await transporterSMTP.sendMail(messageParams);
@@ -120,9 +118,7 @@ async function sendMailProvider(req) {
       }
     } else {
       const from = req.params.from || '';
-      const mailsender = process.env.SMTP_ENABLE
-        ? process.env.SMTP_USER_EMAIL
-        : process.env.MAILGUN_SENDER;
+      const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 
       const messageParams = {
         from: from + ' <' + mailsender + '>',

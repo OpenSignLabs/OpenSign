@@ -17,7 +17,7 @@ import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
-import { useLocal } from './Utils.js';
+import { smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
 let fsAdapter;
 if (useLocal !== 'true') {
@@ -54,12 +54,12 @@ let transporterMail;
 let mailgunClient;
 let mailgunDomain;
 let isMailAdapter = false;
-if (process.env.SMTP_ENABLE) {
+if (smtpenable) {
   try {
     transporterMail = createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT || 465,
-      secure: process.env.SMTP_SECURE || true,
+      secure: smtpsecure,
       auth: {
         user: process.env.SMTP_USER_EMAIL,
         pass: process.env.SMTP_PASS,
@@ -85,9 +85,7 @@ if (process.env.SMTP_ENABLE) {
     console.log('Please provide valid Mailgun credentials');
   }
 }
-const mailsender = process.env.SMTP_ENABLE
-  ? process.env.SMTP_USER_EMAIL
-  : process.env.MAILGUN_SENDER;
+const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 export const config = {
   databaseURI:
     process.env.DATABASE_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dev',
