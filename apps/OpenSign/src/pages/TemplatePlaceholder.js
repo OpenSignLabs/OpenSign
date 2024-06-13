@@ -1257,7 +1257,6 @@ const TemplatePlaceholder = () => {
             >
               {/* this modal is used show alert set placeholder for all signers before send mail */}
               <ModalUi
-                headerColor={"#dc3545"}
                 isOpen={isSendAlert}
                 title={"Fields required"}
                 handleClose={() => setIsSendAlert(false)}
@@ -1267,7 +1266,6 @@ const TemplatePlaceholder = () => {
                 </div>
               </ModalUi>
               <ModalUi
-                headerColor={"#dc3545"}
                 isOpen={!IsReceipent}
                 title={"Roles"}
                 handleClose={() => setIsReceipent(true)}
@@ -1312,7 +1310,6 @@ const TemplatePlaceholder = () => {
               </ModalUi>
               {isCreateDoc && <Loader isLoading={isLoading} />}
               <ModalUi
-                headerColor={"#dc3545"}
                 isOpen={isShowEmail}
                 title={"signers alert"}
                 handleClose={() => {
@@ -1323,11 +1320,9 @@ const TemplatePlaceholder = () => {
                   <p>Please select signer for add placeholder!</p>
                   <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                   <button
-                    onClick={() => {
-                      setIsShowEmail(false);
-                    }}
+                    onClick={() => setIsShowEmail(false)}
                     type="button"
-                    className="finishBtn cancelBtn"
+                    className="op-btn op-btn-primary"
                   >
                     Ok
                   </button>
@@ -1480,7 +1475,7 @@ const TemplatePlaceholder = () => {
               </div>
             ) : (
               <div>
-                <div className="w-[180px] h-full bg-base-100">
+                <div className="hidden md:block w-[180px] h-full bg-base-100">
                   <div
                     style={{ maxHeight: window.innerHeight - 70 + "px" }}
                     className="overflow-y-auto hide-scrollbar"

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
 import Title from "../components/Title";
-import { useNavigate, NavLink, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import Alert from "../primitives/Alert";
@@ -639,6 +639,7 @@ const Signup = () => {
                       <div className="mt-2.5 ml-1 flex flex-row items-center">
                         <input
                           type="checkbox"
+                          className="op-checkbox op-checkbox-sm"
                           id="termsandcondition"
                           checked={isAuthorize}
                           onChange={(e) => setIsAuthorize(e.target.checked)}
@@ -672,19 +673,23 @@ const Signup = () => {
                     >
                       {state.loading ? "Loading..." : "Register"}
                     </button>
-                    <NavLink
-                      className={`op-btn op-btn-secondary hover:no-underline hover:text-base-content`}
-                      to={location.search ? "/" + location.search : "/"}
+                    <button
+                      type="button"
+                      className="op-btn op-btn-secondary"
+                      disabled={state.loading}
+                      onClick={() =>
+                        navigate(location.search ? "/" + location.search : "/")
+                      }
                     >
                       Login
-                    </NavLink>
+                    </button>
                   </div>
                 </form>
               </div>
               {width >= 768 && (
                 <div className="self-center">
                   <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
-                    <img src={login_img} alt="bisec" width="100%" />
+                    <img src={login_img} alt="loader" width="100%" />
                   </div>
                 </div>
               )}
@@ -694,14 +699,8 @@ const Signup = () => {
         </div>
       ) : (
         <div
-          style={{
-            position: "fixed",
-            fontSize: "50px",
-            color: "#3ac9d6",
-            top: "50%",
-            left: "45%"
-          }}
-          className="loader-37"
+          className="loader-37 fixed text-[50px] top-[50%] left-[45%]"
+          style={{ color: "#3ac9d6" }}
         ></div>
       )}
     </div>

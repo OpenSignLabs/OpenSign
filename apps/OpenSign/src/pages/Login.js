@@ -1158,17 +1158,20 @@ function Login() {
                       >
                         {state.loading ? "Loading..." : "Login"}
                       </button>
-                      <NavLink
-                        className="op-btn op-btn-secondary hover:no-underline hover:text-base-content"
-                        to={
-                          location.search
-                            ? "/signup" + location.search
-                            : "/signup"
+                      <button
+                        type="button"
+                        className="op-btn op-btn-secondary"
+                        disabled={state.loading}
+                        onClick={() =>
+                          navigate(
+                            location.search
+                              ? "/signup" + location.search
+                              : "/signup"
+                          )
                         }
-                        style={width < 768 ? { textAlign: "center" } : {}}
                       >
                         Create Account
-                      </NavLink>
+                      </button>
                     </div>
                   </form>
                   {(appInfo.googleClietId || isEnableSubscription) && (

@@ -6,14 +6,12 @@ const ModalUi = ({
   children,
   title,
   isOpen,
-  headColor,
   handleClose,
   showHeader = true,
   showClose = true,
   reduceWidth,
   showHeaderMessage
 }) => {
-  const headerColor = headColor ? `text-${headColor}` : "text-base-content";
   return (
     <>
       {isOpen && (
@@ -25,14 +23,12 @@ const ModalUi = ({
           >
             {showHeader && (
               <>
-                <h3
-                  className={`${headerColor} font-bold text-lg pt-[15px] px-[20px]`}
-                >
+                <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
                   {title}
                 </h3>
                 {showClose && (
                   <button
-                    className="op-btn op-btn-sm op-btn-circle op-btn-ghost absolute right-2 top-2"
+                    className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2"
                     onClick={() => handleClose && handleClose()}
                   >
                     ✕

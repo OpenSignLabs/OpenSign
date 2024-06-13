@@ -9,7 +9,6 @@ import {
   textWidget,
   widgets
 } from "../../constant/Utils";
-import { themeColor } from "../../constant/const";
 function WidgetComponent({
   dragSignature,
   signRef,
@@ -259,36 +258,18 @@ function WidgetComponent({
             {isSigners && (
               <div
                 data-tut={dataTut}
+                className="py-[10px] flex justify-center items-center op-card"
                 style={{
                   background: blockColor
                     ? blockColor
                     : isSelectListId
                       ? color[isSelectListId % color.length]
-                      : color[0],
-                  padding: "10px 20px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
+                      : color[0]
                 }}
                 onClick={() => handleModal()}
               >
-                <span
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: "700",
-                    textAlign: "center"
-                  }}
-                >
+                <span className="text-[13px] font-bold flex items-center">
                   {title ? title : "Recipient"}
-                </span>
-                <span
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: "700",
-                    display: "flex",
-                    alignItems: "center"
-                  }}
-                >
                   {signersdata[isSelectListId]?.Role && (
                     <div>
                       {signersdata[isSelectListId]?.Name ? (
@@ -314,7 +295,7 @@ function WidgetComponent({
                       )}
                     </div>
                   )}
-                  <div style={{ marginLeft: 6, fontSize: 16 }}>
+                  <div className="ml-[6px] text-[16px]">
                     <i className="fa-solid fa-angle-down"></i>
                   </div>
                 </span>
@@ -333,25 +314,19 @@ function WidgetComponent({
               setIsAddSigner && (
                 <div
                   data-tut="reactourAddbtn"
-                  style={{
-                    margin: "5px 0 5px 0",
-                    backgroundColor: themeColor,
-                    color: "white"
-                  }}
-                  className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad] hover:text-white cursor-pointer"
+                  className="op-btn op-btn-primary w-full my-[2px]"
                   onClick={() => setIsAddSigner(true)}
                 >
                   <i className="fa-solid fa-plus"></i>
-                  <span style={{ marginLeft: 2 }}>Add recipients</span>
+                  <span>Add recipients</span>
                 </div>
               )
             )}
-
             <div
               ref={scrollContainerRef}
               className="bg-white border-[2px] border-t-primary"
             >
-              <div className="flex whitespace-nowrap overflow-x-scroll py-[10px] pr-[5px]">
+              <div className="flex whitespace-nowrap overflow-x-scroll pt-[10px] pb-[5px] pr-[5px]">
                 <WidgetList
                   updateWidgets={updateWidgets}
                   handleDivClick={handleDivClick}
@@ -368,26 +343,13 @@ function WidgetComponent({
       ) : (
         <div
           data-tut={dataTut}
-          className={
-            isMailSend ? "disabled signerComponent " : "signerComponent"
-          }
-          // className="bg-base-100"
+          className={`${
+            isMailSend ? "bg-opacity-50 pointer-events-none" : ""
+          } hidden md:block w-[180px] h-full bg-base-100`}
         >
-          <div
-            // style={{
-            //   background: themeColor,
-            //   padding: "5px"
-            // }}
-            className="text-base-content px-3 py-2 text-[15px] border-y-[1px] border-base-content"
-          >
-            <span
-            // className="signedStyle"
-            >
-              Fields
-            </span>
+          <div className="text-base-content px-3 py-2 text-[15px] border-b-[1px] border-base-content">
+            <span>Fields</span>
           </div>
-
-          {/* <div className="flex flex-col w-full h-auto my-3 items-center"> */}
           <div className="flex flex-col items-center my-3">
             <WidgetList
               updateWidgets={updateWidgets}
@@ -405,7 +367,7 @@ function WidgetComponent({
           handleClose={handleModal}
         >
           {signersdata.length > 0 ? (
-            <div style={{ maxHeight: "600px", overflow: "auto" }}>
+            <div className="max-h-[600px] overflow-auto pb-1">
               <RecipientList
                 signerPos={signerPos}
                 signersdata={signersdata}
@@ -425,14 +387,7 @@ function WidgetComponent({
               />
             </div>
           ) : (
-            <div
-              style={{
-                padding: 20,
-                fontSize: 15,
-                fontWeight: "500",
-                textAlign: "center"
-              }}
-            >
+            <div className=" p-[20px] text-[15px] font-medium text-center">
               Please add a {title ? title : "recipients"}
             </div>
           )}

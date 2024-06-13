@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
-// import { themeColor } from "../../constant/const";
 
 function RenderAllPdfPage({
   signPdfUrl,
@@ -51,25 +50,9 @@ function RenderAllPdfPage({
   };
   return (
     <div>
-      <div
-        className=" hidden md:flex flex-row bg-base-100 h-full"
-        // style={{
-        //   display: "flex",
-        //   flexDirection: "row",
-        //   boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px",
-        //   backgroundColor: "white",
-        //   height: "100%"
-        // }}
-      >
+      <div className=" hidden md:flex flex-row bg-base-100 h-full">
         <div className="w-[140px]">
-          <div
-            className="px-3 pt-2 pb-1 text-[15px] text-base-content font-semibold "
-            // style={{
-            //   background: themeColor
-            //   //  color:"white"
-            // }}
-            // className="signedStyle"
-          >
+          <div className="px-3 pt-2 pb-1 text-[15px] text-base-content font-semibold ">
             Pages
           </div>
 

@@ -1637,7 +1637,10 @@ function PlaceHolderSign() {
         ) : handleError ? (
           <HandleError handleError={handleError} />
         ) : (
-          <div className="signatureContainer" ref={divRef}>
+          <div
+            className="op-card overflow-hidden flex flex-row justify-between bg-base-300 relative"
+            ref={divRef}
+          >
             {isUiLoading && (
               <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                 <img
@@ -1691,11 +1694,6 @@ function PlaceHolderSign() {
               {/* this modal is used show alert set placeholder for all signers before send mail */}
 
               <ModalUi
-                headerColor={
-                  isSendAlert.mssg === "sure" || isSendAlert.mssg === textWidget
-                    ? "#dc3545"
-                    : isSendAlert.mssg === "confirm" && themeColor
-                }
                 isOpen={isSendAlert.alert}
                 title={
                   isSendAlert.mssg === "sure" || isSendAlert.mssg === textWidget
@@ -1705,7 +1703,7 @@ function PlaceHolderSign() {
                 handleClose={() => setIsSendAlert({})}
                 showHeaderMessage={isSendAlert.mssg === "confirm"}
               >
-                <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px]">
+                <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px] text-base-content">
                   {isSendAlert.mssg === "sure" ? (
                     <span>
                       Please ensure there&apos;s at least one signature widget
@@ -1716,75 +1714,69 @@ function PlaceHolderSign() {
                   ) : (
                     isSendAlert.mssg === "confirm" && (
                       <>
-                        <>
-                          {!isCustomize && (
-                            <span>
-                              Are you sure you want to send out this document
-                              for signatures?
-                            </span>
-                          )}
-                          {isCustomize &&
-                            (!isEnableSubscription || isSubscribe) && (
-                              <>
-                                <EmailBody
-                                  editorRef={editorRef}
-                                  requestBody={requestBody}
-                                  requestSubject={requestSubject}
-                                  handleOnchangeRequest={handleOnchangeRequest}
-                                  setRequestSubject={setRequestSubject}
-                                />
-                                <div
-                                  className={
-                                    "flex justify-end items-center gap-1 mt-2 underline text-blue-700 focus:outline-none cursor-pointer "
-                                  }
-                                  onClick={() => {
-                                    setRequestBody(defaultBody);
-                                    setRequestSubject(defaultSubject);
-                                  }}
-                                >
-                                  <span>Reset to default</span>
-                                </div>
-                              </>
-                            )}
-                          <div
-                            className={
-                              "flex flex-row md:items-center gap-2 md:gap-6 mt-2"
-                            }
-                          >
-                            <div className="flex flex-row gap-2">
-                              <button
-                                onClick={() => sendEmailToSigners()}
-                                className="op-btn op-btn-primary font-[500] text-sm shadow"
+                        {!isCustomize && (
+                          <span>
+                            Are you sure you want to send out this document for
+                            signatures?
+                          </span>
+                        )}
+                        {isCustomize &&
+                          (!isEnableSubscription || isSubscribe) && (
+                            <>
+                              <EmailBody
+                                editorRef={editorRef}
+                                requestBody={requestBody}
+                                requestSubject={requestSubject}
+                                handleOnchangeRequest={handleOnchangeRequest}
+                                setRequestSubject={setRequestSubject}
+                              />
+                              <div
+                                className={
+                                  "flex justify-end items-center gap-1 mt-2 underline text-blue-700 focus:outline-none cursor-pointer "
+                                }
+                                onClick={() => {
+                                  setRequestBody(defaultBody);
+                                  setRequestSubject(defaultSubject);
+                                }}
                               >
-                                Send
-                              </button>
-                              {isCustomize && (
-                                <button
-                                  onClick={() => setIsCustomize(false)}
-                                  className="op-btn op-btn-ghost font-[500] text-sm"
-                                >
-                                  Close
-                                </button>
-                              )}
-                            </div>
-
-                            {!isCustomize &&
-                              (isSubscribe || !isEnableSubscription) && (
-                                <span
-                                  className="link link-primary text-sm"
-                                  onClick={() => setIsCustomize(!isCustomize)}
-                                >
-                                  Cutomize Email
-                                </span>
-                              )}
-
-                            {!isSubscribe && isEnableSubscription && (
-                              <div className="mt-2">
-                                <Upgrade message="Upgrade to customize Email" />
+                                <span>Reset to default</span>
                               </div>
+                            </>
+                          )}
+                        <div className="flex flex-row md:items-center gap-2 md:gap-6 mt-2">
+                          <div className="flex flex-row gap-2">
+                            <button
+                              onClick={() => sendEmailToSigners()}
+                              className="op-btn op-btn-primary font-[500] text-sm shadow"
+                            >
+                              Send
+                            </button>
+                            {isCustomize && (
+                              <button
+                                onClick={() => setIsCustomize(false)}
+                                className="op-btn op-btn-ghost font-[500] text-sm"
+                              >
+                                Close
+                              </button>
                             )}
                           </div>
-                        </>
+
+                          {!isCustomize &&
+                            (isSubscribe || !isEnableSubscription) && (
+                              <span
+                                className="link link-primary text-sm"
+                                onClick={() => setIsCustomize(!isCustomize)}
+                              >
+                                Cutomize Email
+                              </span>
+                            )}
+
+                          {!isSubscribe && isEnableSubscription && (
+                            <div className="mt-2">
+                              <Upgrade message="Upgrade to customize Email" />
+                            </div>
+                          )}
+                        </div>
                       </>
                     )
                   )}
@@ -1843,7 +1835,6 @@ function PlaceHolderSign() {
                 </div>
               </ModalUi>
               <ModalUi
-                headerColor={"#dc3545"}
                 isOpen={isShowEmail}
                 title={"signers alert"}
                 handleClose={() => {
@@ -2012,12 +2003,15 @@ function PlaceHolderSign() {
               </div>
             ) : (
               <div>
-                <div className="signerComponent" aria-disabled>
+                <div
+                  className="hidden md:block w-[180px] h-full bg-base-100"
+                  aria-disabled
+                >
                   <div
                     style={{
                       maxHeight: window.innerHeight - 70 + "px"
                     }}
-                    className="autoSignScroll"
+                    className="overflow-y-auto hide-scrollbar"
                   >
                     <SignerListPlace
                       signerPos={signerPos}
@@ -2063,7 +2057,6 @@ function PlaceHolderSign() {
       </DndProvider>
       <div>
         <ModalUi
-          headerColor={"#dc3545"}
           isOpen={isAlreadyPlace.status}
           title={"Document Alert"}
           showClose={false}

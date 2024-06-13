@@ -425,7 +425,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap" }}
+          style={{ whiteSpace: "pre-wrap", color: "initial" }}
           cols="50"
         />
       ) : (
@@ -443,7 +443,7 @@ function PlaceholderType(props) {
         <select
           className="inputPlaceholder"
           id="myDropdown"
-          style={{ fontSize: "12px" }}
+          style={{ fontSize: "12px", color: "initial" }}
           value={selectOption}
           onChange={(e) => {
             setSelectOption(e.target.value);
@@ -528,7 +528,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap" }}
+          style={{ whiteSpace: "pre-wrap", color: "initial" }}
           cols="50"
         />
       ) : (
@@ -567,7 +567,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap" }}
+          style={{ whiteSpace: "pre-wrap", color: "initial" }}
           cols="50"
         />
       ) : (
@@ -606,7 +606,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap" }}
+          style={{ whiteSpace: "pre-wrap", color: "initial" }}
           cols="50"
         />
       ) : (
@@ -728,7 +728,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap" }}
+          style={{ whiteSpace: "pre-wrap", color: "initial" }}
           cols="50"
         />
       ) : (
@@ -800,7 +800,11 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap", overflow: "hidden" }}
+          style={{
+            whiteSpace: "pre-wrap",
+            overflow: "hidden",
+            color: "initial"
+          }}
           cols="50"
         />
       );
