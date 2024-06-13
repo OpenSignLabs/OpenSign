@@ -90,7 +90,6 @@
   background-size: 1rem auto;
 }
 
-
 @media (max-width: 375px) {
   .validationlist {
     background-position: right 0.5rem top 50%;

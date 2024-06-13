@@ -1413,7 +1413,6 @@ function PdfRequestFiles() {
                   />
                 </div>
               )}
-
               <div
                 className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"
                 style={{
@@ -1840,7 +1839,6 @@ function PdfRequestFiles() {
               </div>
             </div>
           )}
-
           <ModalUi
             isOpen={validateAlert}
             title={"Validation alert"}
@@ -1851,7 +1849,6 @@ function PdfRequestFiles() {
                 The input does not meet the criteria set by the regular
                 expression.
               </p>
-
               <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
               <button
                 onClick={() => setValidateAlert(false)}

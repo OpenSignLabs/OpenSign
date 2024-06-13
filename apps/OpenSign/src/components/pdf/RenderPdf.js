@@ -452,9 +452,7 @@ function RenderPdf({
           {/* this component for render pdf document is in middle of the component */}
           <div className="flex items-center justify-center">
             <Document
-              onLoadError={() => {
-                setPdfLoadFail(true);
-              }}
+              onLoadError={() => setPdfLoadFail(true)}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
               // ref={pdfRef}'
@@ -501,10 +499,7 @@ function RenderPdf({
         >
           <div
             data-tut="reactourForth"
-            style={{
-              border: "0.1px solid #ebe8e8",
-              width: pdfOriginalWidth
-            }}
+            style={{ border: "0.1px solid #ebe8e8", width: pdfOriginalWidth }}
             ref={drop}
             id="container"
           >

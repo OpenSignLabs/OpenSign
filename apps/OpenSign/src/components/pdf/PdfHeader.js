@@ -481,7 +481,7 @@ function Header({
         }
         handleClose={() => setIsDownloading("")}
       >
-        <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
+        <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
           {isDownloading === "certificate"}{" "}
           <p>
             Your completion certificate is being generated. Please wait
