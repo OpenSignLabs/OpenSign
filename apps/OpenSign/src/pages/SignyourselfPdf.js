@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
-import { isEnableSubscription, themeColor } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import Confetti from "react-confetti";
 import axios from "axios";
 import Loader from "../primitives/LoaderWithMsg";
@@ -1112,7 +1112,10 @@ function SignYourSelf() {
             </div>
           )}
 
-          <div className="signatureContainer" ref={divRef}>
+          <div
+            className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"
+            ref={divRef}
+          >
             {!isEmailVerified && (
               <VerifyEmail
                 isVerifyModal={isVerifyModal}
@@ -1157,7 +1160,6 @@ function SignYourSelf() {
               }}
             >
               <ModalUi
-                headerColor={"#dc3545"}
                 isOpen={isAlert.isShow}
                 title={isAlert?.header || "Alert"}
                 handleClose={() => {
@@ -1310,7 +1312,7 @@ function SignYourSelf() {
                 maxHeight: window.innerHeight - 70 + "px",
                 backgroundColor: "white"
               }}
-              className="autoSignScroll"
+              className="overflow-y-auto hide-scrollbar"
             >
               {!isCompleted ? (
                 <div>
@@ -1322,7 +1324,6 @@ function SignYourSelf() {
                     handleDivClick={handleDivClick}
                     handleMouseLeave={handleMouseLeave}
                     isDragSign={isDragSign}
-                    themeColor={themeColor}
                     dragStamp={dragStamp}
                     dragRef={dragRef}
                     isDragStamp={isDragStamp}
@@ -1343,7 +1344,6 @@ function SignYourSelf() {
         </div>
       )}
       <ModalUi
-        headerColor={"#dc3545"}
         isOpen={validateAlert}
         title={"Validation alert"}
         handleClose={() => {

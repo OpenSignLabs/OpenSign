@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import ModalUi from "../../primitives/ModalUi";
-import { themeColor } from "../../constant/const";
 import FolderModal from "../shared/fields/FolderModal";
 
 function DriveBody(props) {
@@ -567,11 +566,10 @@ function DriveBody(props) {
       )}
       <ModalUi
         isOpen={isDeleteDoc}
-        headerColor={themeColor}
         title={"Delete Document"}
         handleClose={() => setIsDeleteDoc(false)}
       >
-        <div className="h-full p-[20px]">
+        <div className="h-full p-[20px] text-base-content">
           <p>Are you sure you want to delete this document?</p>
           <div className="h-[1px] w-full bg-[#9f9f9f] my-[15px]"></div>
           <button

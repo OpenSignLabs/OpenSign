@@ -236,7 +236,7 @@ function DropdownWidgetOption(props) {
                       className={`${
                         props.isSubscribe || !isEnableSubscription
                           ? ""
-                          : "disabled "
+                          : "pointer-events-none bg-opacity-50"
                       } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
                     />
                     <label
@@ -257,7 +257,7 @@ function DropdownWidgetOption(props) {
                       className={`${
                         props.isSubscribe || !isEnableSubscription
                           ? ""
-                          : "disabled "
+                          : "pointer-events-none bg-opacity-50"
                       } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
                     />
                   </>

@@ -1,5 +1,4 @@
 import React from "react";
-// import { themeColor } from "../../constant/const";
 import RecipientList from "./RecipientList";
 import { Tooltip } from "react-tooltip";
 
@@ -57,27 +56,29 @@ function SignerListPlace(props) {
       <div className="overflow-auto hide-scrollbar max-h-[180px]">
         <RecipientList {...props} />
       </div>
-      {props.handleAddSigner ? (
-        <div
-          role="button"
-          data-tut="reactourAddbtn"
-          className="op-btn op-btn-primary op-btn-outline w-full my-[2px]"
-          disabled={props?.isMailSend ? true : false}
-          onClick={() => props.handleAddSigner()}
-        >
-          <i className="fa-solid fa-plus"></i> Add role
-        </div>
-      ) : (
-        <div
-          role="button"
-          data-tut="reactourAddbtn"
-          className="op-btn op-btn-primary op-btn-outline w-full my-[2px]"
-          disabled={props?.isMailSend ? true : false}
-          onClick={() => props.setIsAddSigner(true)}
-        >
-          <i className="fa-solid fa-plus"></i> Add recipients
-        </div>
-      )}
+      <div className="mx-1">
+        {props.handleAddSigner ? (
+          <div
+            role="button"
+            data-tut="reactourAddbtn"
+            className="op-btn op-btn-primary op-btn-outline w-full my-[2px]"
+            disabled={props?.isMailSend ? true : false}
+            onClick={() => props.handleAddSigner()}
+          >
+            <i className="fa-solid fa-plus"></i> Add role
+          </div>
+        ) : (
+          <div
+            role="button"
+            data-tut="reactourAddbtn"
+            className="op-btn op-btn-primary op-btn-outline w-full my-[2px]"
+            disabled={props?.isMailSend ? true : false}
+            onClick={() => props.setIsAddSigner(true)}
+          >
+            <i className="fa-solid fa-plus"></i> Add recipients
+          </div>
+        )}
+      </div>
     </div>
   );
 }

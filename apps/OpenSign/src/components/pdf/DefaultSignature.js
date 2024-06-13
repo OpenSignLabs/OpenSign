@@ -1,5 +1,4 @@
 import React from "react";
-import { themeColor } from "../../constant/const";
 function DefaultSignature({ defaultSignImg, xyPostion, setDefaultSignAlert }) {
   const confirmToaddDefaultSign = () => {
     if (xyPostion.length > 0) {
@@ -18,12 +17,7 @@ function DefaultSignature({ defaultSignImg, xyPostion, setDefaultSignAlert }) {
 
   return (
     <div data-tut="reactourThird">
-      <div
-        className="text-white p-[5px] mt-[5px]"
-        style={{
-          background: themeColor
-        }}
-      >
+      <div className="text-base-content font-semibold px-3 py-2 text-[15px] border-b-[1px] border-base-content">
         Signature
       </div>
       <div className="flex flex-col items-center mt-[10px] font-semibold">

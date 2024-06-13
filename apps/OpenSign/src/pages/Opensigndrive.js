@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
 import loader from "../assets/images/loader2.gif";
-import { themeColor, iconColor } from "../constant/const";
+import { iconColor } from "../constant/const";
 import { getDrive } from "../constant/Utils";
 import { useNavigate } from "react-router-dom";
 import Title from "../components/Title";
@@ -16,21 +16,8 @@ const DriveBody = React.lazy(
 );
 const Loader = () => {
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
-      <div
-        style={{
-          fontSize: "45px",
-          color: "#3dd3e0"
-        }}
-        className="loader-37"
-      ></div>
+    <div className="h-[100vh] flex justify-center items-center text-[45px] text-[#3dd3e0] ">
+      <div className="loader-37"></div>
     </div>
   );
 };
@@ -451,21 +438,10 @@ function Opensigndrive() {
         <React.Fragment key={id}>
           <span
             onClick={() => handleRoute(id, folderData)}
-            style={{
-              color: "#a64b4e",
-              fontWeight: "400",
-              cursor: "pointer"
-            }}
+            className="text-[#a64b4e] font-normal cursor-pointer"
           >
             {data.name}
-            <span
-              style={{
-                color: "#a64b4e",
-                fontWeight: "200",
-                cursor: "pointer",
-                margin: "0 4px"
-              }}
-            >
+            <span className="text-[#a64b4e] font-extralight cursor-pointer mx-[4px]">
               &gt;
             </span>
           </span>
@@ -549,7 +525,6 @@ function Opensigndrive() {
     <div className="bg-base-100 text-base-content rounded-xl w-full">
       <Title title={"OpenSign™ Drive"} drive={true} />
       <ModalUi
-        headerColor={"#dc3545"}
         isOpen={isAlert.isShow}
         title={"Alert"}
         handleClose={() => {
@@ -604,26 +579,14 @@ function Opensigndrive() {
                 onChange={(e) => handleFolderName(e)}
               />
               <span className="text-[red] text-[12px] mt-[6px]">{error}</span>
-              <div
-                style={{
-                  height: "1px",
-                  backgroundColor: "#9f9f9f",
-                  width: "100%",
-                  marginTop: "15px",
-                  marginBottom: "15px"
-                }}
-              ></div>
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <button
-                  style={{ background: themeColor }}
-                  type="submit"
-                  className="finishBtn"
-                >
+              <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
+              <div className="flex flex-row">
+                <button type="submit" className="op-btn op-btn-primary">
                   Add
                 </button>
                 <button
                   type="button"
-                  className="finishBtn cancelBtn"
+                  className="op-btn op-btn-ghost ml-1"
                   onClick={oncloseFolder}
                 >
                   Close
@@ -688,32 +651,22 @@ function Opensigndrive() {
                       className="dropdown-item itemColor"
                       onClick={() => setIsFolder(true)}
                     >
-                      <i
-                        style={{ marginRight: "5px" }}
-                        className="fa fa-plus"
-                        aria-hidden="true"
-                      ></i>
+                      <i className="fa fa-plus mr-[5px]" aria-hidden="true"></i>
                       Create folder
                     </span>
                     <span
                       className="dropdown-item itemColor"
                       onClick={() => navigate("/form/sHAnZphf69")}
                     >
-                      <i
-                        style={{ marginRight: "5px" }}
-                        className="fas fa-pen-nib"
-                      ></i>
+                      <i className="fas fa-pen-nib mr-[5px"></i>
                       Sign Yourself
                     </span>
                     <span
                       className="dropdown-item itemColor"
                       onClick={() => navigate("/form/8mZzFxbG1z")}
                     >
-                      <i
-                        style={{ marginRight: "5px" }}
-                        className="fa fa-file-signature"
-                      ></i>
-                      Request Signatures{" "}
+                      <i className="fa fa-file-signature mr-[5px"></i>
+                      Request Signatures
                     </span>
                   </div>
                 </div>
@@ -725,24 +678,15 @@ function Opensigndrive() {
               >
                 <div
                   data-tut="reactourThird"
-                  className=" sort  "
+                  className="sort "
                   data-toggle="dropdown"
                 >
                   <i
-                    className="fa fa-sort-amount-asc"
+                    className="fa fa-sort-amount-asc mr-[5px] text-[14px]"
                     aria-hidden="true"
-                    style={{
-                      marginRight: "5px",
-                      fontSize: "14px",
-                      color: `${iconColor}`
-                    }}
+                    style={{ color: `${iconColor}` }}
                   ></i>
-                  <span
-                    style={{
-                      fontSize: "15px",
-                      color: `${iconColor}`
-                    }}
-                  >
+                  <span style={{ fontSize: "15px", color: `${iconColor}` }}>
                     {selectedSort}
                   </span>
                 </div>
@@ -768,9 +712,8 @@ function Opensigndrive() {
                       >
                         {selectedSort === value && (
                           <i
-                            className="fa fa-check"
+                            className="fa fa-check mr-[5px"
                             aria-hidden="true"
-                            style={{ marginRight: "5px" }}
                           ></i>
                         )}
                         {value}
@@ -794,9 +737,8 @@ function Opensigndrive() {
                       >
                         {sortingOrder === order && (
                           <i
-                            className="fa fa-check"
+                            className="fa fa-check mr-[5px"
                             aria-hidden="true"
-                            style={{ marginRight: "5px" }}
                           ></i>
                         )}
                         {order}
@@ -834,16 +776,10 @@ function Opensigndrive() {
           </div>
 
           {pdfData && pdfData.length === 0 ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "50vh",
-                width: "100%"
-              }}
-            >
-              <span style={{ fontWeight: "bold" }}>No Data Found!</span>
+            <div className="flex justify-center items-center w-full h-[50vh]">
+              <span className="text-base-content font-bold">
+                No Data Found!
+              </span>
             </div>
           ) : (
             <div data-tut="reactourFifth">
