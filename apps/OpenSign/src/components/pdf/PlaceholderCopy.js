@@ -195,13 +195,13 @@ function PlaceholderCopy(props) {
         props.setIsPageCopy(false);
       }}
     >
-      <div style={{ height: "100%", padding: 20 }}>
+      <div className="h-full p-[20px] text-base-content">
         {copyType.map((data, key) => {
           return (
-            <div key={key} style={{ display: "flex", flexDirection: "column" }}>
-              <label key={key} style={{ fontSize: "16px", fontWeight: "500" }}>
+            <div key={key} className="flex flex-col">
+              <label className="text-[16px] font-medium">
                 <input
-                  style={{ accentColor: "red", marginRight: "10px" }}
+                  className="mr-[10px] accent-[red]"
                   type="radio"
                   value={data}
                   onChange={() => setSelectCopyType(data)}

@@ -122,15 +122,15 @@ const WidgetNameModal = (props) => {
           props.widgetName === textInputWidget
             ? "pt-0"
             : ""
-        } p-[20px]`}
+        } p-[20px] text-base-content`}
       >
-        <div className="form-section">
-          <label htmlFor="name" style={{ fontSize: 13 }}>
+        <div className="mb-[0.75rem] text-[13px]">
+          <label htmlFor="name">
             Name
-            <span className="text-[red] text-[13px]"> *</span>
+            <span className="text-[red]"> *</span>
           </label>
           <input
-            className="addUserInput"
+            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             name="name"
             value={formdata.name}
             onChange={(e) => handleChange(e)}
@@ -140,14 +140,15 @@ const WidgetNameModal = (props) => {
         {(props.defaultdata?.type === textInputWidget ||
           props.widgetName === textInputWidget) && (
           <>
-            <div className="form-section">
+            <div className="mb-[0.75rem]">
               <div className="flex items-center gap-1">
                 <label
                   htmlFor="textvalidate"
-                  className={
-                    !props.isSubscribe && isEnableSubscription && "disabled"
-                  }
-                  style={{ fontSize: 13 }}
+                  className={`${
+                    !props.isSubscribe && isEnableSubscription
+                      ? "bg-opacity-50 pointer-events-none"
+                      : ""
+                  } text-[13px]`}
                 >
                   Validation
                 </label>
@@ -157,19 +158,15 @@ const WidgetNameModal = (props) => {
                 {!props.isSubscribe && isEnableSubscription && <Upgrade />}
               </div>
               <div
-                className={
-                  !props.isSubscribe && isEnableSubscription && "disabled"
-                }
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: 10,
-                  marginBottom: "0.5rem"
-                }}
+                className={`${
+                  !props.isSubscribe && isEnableSubscription
+                    ? "bg-opacity-50 pointer-events-none"
+                    : ""
+                } flex flex-row gap-[10px] mb-[0.5rem]`}
               >
-                <div style={{ width: "100%", position: "relative" }}>
+                <div className="w-full relative group">
                   <input
-                    className="relative z-20 w-[87%] md:w-[92%] p-2.5 border-[1px] border-[#d1d5db] rounded-l-md outline-none text-xs"
+                    className="z-20 relative op-input op-input-bordered rounded-r-none op-input-sm focus:outline-none group-hover:border-base-content w-[87%] md:w-[92%] text-xs"
                     name="textvalidate"
                     placeholder="Enter custom regular expression"
                     value={formdata.textvalidate}
@@ -177,7 +174,7 @@ const WidgetNameModal = (props) => {
                     // onBlur={() => handleBlurRegex()}
                   />
                   <select
-                    className="validationlist addUserInput"
+                    className="validationlist op-input op-input-bordered op-input-sm focus:outline-none group-hover:border-base-content w-full text-xs"
                     name="textvalidate"
                     value={formdata.textvalidate}
                     onChange={(e) => handleChange(e)}
@@ -185,17 +182,13 @@ const WidgetNameModal = (props) => {
                   >
                     <option
                       disabled={formdata?.textvalidate}
-                      style={{ fontSize: "13px" }}
+                      className="text-[13px]"
                     >
                       Select...
                     </option>
                     {inputOpt.map((data, ind) => {
                       return (
-                        <option
-                          style={{ fontSize: "13px" }}
-                          key={ind}
-                          value={data}
-                        >
+                        <option className="text-[13px]" key={ind} value={data}>
                           {data}
                         </option>
                       );
@@ -205,12 +198,12 @@ const WidgetNameModal = (props) => {
               </div>
             </div>
 
-            <div className="form-section">
-              <label htmlFor="name" style={{ fontSize: 13 }}>
+            <div className="mb-[0.75rem]">
+              <label htmlFor="name" className="text-[13px]">
                 Default value
               </label>
               <input
-                className="addUserInput"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 name="defaultValue"
                 value={formdata.defaultValue}
                 onChange={(e) => handledefaultChange(e)}
@@ -228,37 +221,22 @@ const WidgetNameModal = (props) => {
                   style={{ fontSize: 12 }}
                 >
                   <i
-                    className="fas fa-exclamation-circle"
-                    style={{ color: "#fab005", fontSize: 15 }}
-                  ></i>{" "}
+                    className="fas fa-exclamation-circle text-[15px]"
+                    style={{ color: "#fab005" }}
+                  ></i>
                   invalid default value
                 </div>
               )}
             </div>
           </>
         )}
-        <div className="form-section">
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              gap: 10,
-              marginBottom: "0.5rem"
-            }}
-          >
+        <div className="mb-[0.75rem]">
+          <div className="flex flex-row gap-[10px] mb-[0.5rem]">
             {statusArr.map((data, ind) => {
               return (
-                <div
-                  key={ind}
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 5,
-                    alignItems: "center"
-                  }}
-                >
+                <div key={ind} className="flex flex-row gap-[5px] items-center">
                   <input
-                    style={{ accentColor: "red", marginRight: "10px" }}
+                    className="mr-[3px] accent-[red]"
                     type="radio"
                     name="status"
                     onChange={() =>
@@ -268,9 +246,7 @@ const WidgetNameModal = (props) => {
                       formdata.status.toLowerCase() === data.toLowerCase()
                     }
                   />
-                  <div style={{ fontSize: "13px", fontWeight: "500" }}>
-                    {data}
-                  </div>
+                  <div className="text-[13px] font-medium">{data}</div>
                 </div>
               );
             })}
@@ -278,35 +254,20 @@ const WidgetNameModal = (props) => {
         </div>
         {(props.defaultdata?.type === textInputWidget ||
           props?.widgetName === textInputWidget) && (
-          <div className="form-section">
-            <label htmlFor="hint" style={{ fontSize: 13 }}>
+          <div className="mb-[0.75rem]">
+            <label htmlFor="hint" className="text-[13px]">
               Hint
             </label>
             <input
-              className="addUserInput"
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
               name="hint"
               value={formdata.hint}
               onChange={(e) => handleChange(e)}
             />
           </div>
         )}
-        <div
-          style={{
-            height: 1,
-            backgroundColor: "#b7b3b3",
-            width: "100%",
-            marginBottom: "16px"
-          }}
-        ></div>
-        <button
-          style={{
-            color: "white",
-            padding: "5px 20px",
-            backgroundColor: "#32a3ac"
-          }}
-          type="submit"
-          className="finishBtn"
-        >
+        <div className="h-[1px] w-full mb-[16px] bg-[#b7b3b3]"></div>
+        <button type="submit" className="op-btn op-btn-primary">
           Save
         </button>
       </form>
