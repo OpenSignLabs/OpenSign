@@ -1099,32 +1099,15 @@ function SignYourSelf() {
       ) : (
         <div>
           {isUiLoading && (
-            <div
-              style={{
-                position: "absolute",
-                height: "100vh",
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-                alignItems: "center",
-                zIndex: "999",
-                backgroundColor: "#e6f2f2",
-                opacity: 0.8
-              }}
-            >
-              <img
-                alt="no img"
-                src={loader}
-                style={{ width: "100px", height: "100px" }}
-              />
-              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+            <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-start bg-[#e6f2f2] bg-opacity-80">
+              <img alt="loader" src={loader} className="w-[100px] h-[100px]" />
+              <span className="font-bold text-[13px]">
                 This might take some time
               </span>
             </div>
           )}
           {isCelebration && (
-            <div style={{ position: "relative", zIndex: "999" }}>
+            <div className="relative z-[999]">
               <Confetti width={window.innerWidth} height={window.innerHeight} />
             </div>
           )}
@@ -1184,7 +1167,7 @@ function SignYourSelf() {
                   });
                 }}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="p-[20px] h-full">
                   <p>{isAlert.alertMessage}</p>
                 </div>
               </ModalUi>
@@ -1197,20 +1180,11 @@ function SignYourSelf() {
                   setShowAlreadySignDoc({ status: false });
                 }}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="p-[20px] h-full">
                   <p>{showAlreadySignDoc.mssg}</p>
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
+                  <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                   <button
-                    className="finishBtn cancelBtn"
+                    className="op-btn op-btn-ghost shadow-md"
                     onClick={() => setShowAlreadySignDoc({ status: false })}
                   >
                     Close
@@ -1376,24 +1350,16 @@ function SignYourSelf() {
           setValidateAlert(false);
         }}
       >
-        <div style={{ height: "100%", padding: 20 }}>
+        <div className="p-[20px] h-full">
           <p>
             The input does not meet the criteria set by the regular expression.
           </p>
 
-          <div
-            style={{
-              height: "1px",
-              backgroundColor: "#9f9f9f",
-              width: "100%",
-              marginTop: "15px",
-              marginBottom: "15px"
-            }}
-          ></div>
+          <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
           <button
             onClick={() => setValidateAlert(false)}
             type="button"
-            className="finishBtn cancelBtn"
+            className="op-btn op-btn-ghost shadow-md"
           >
             Close
           </button>

@@ -127,11 +127,10 @@ const LoginFacebook = ({
       /> */}
       {isModal && (
         <div
-          className="modal fade show"
+          className="modal fade show block z-[1]"
           id="exampleModal"
           tabIndex="-1"
           role="dialog"
-          style={{ display: "block", zIndex: 1 }}
         >
           <div className="modal-dialog" role="document">
             <div className="modal-content">
@@ -144,11 +143,7 @@ const LoginFacebook = ({
               <div className="modal-body">
                 <form>
                   <div className="form-group">
-                    <label
-                      htmlFor="Phone"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
+                    <label htmlFor="Phone" className="col-form-label">
                       Phone <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
@@ -166,11 +161,7 @@ const LoginFacebook = ({
                     />
                   </div>
                   <div className="form-group">
-                    <label
-                      htmlFor="Company"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
+                    <label htmlFor="Company" className="col-form-label">
                       Company <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
@@ -191,16 +182,14 @@ const LoginFacebook = ({
                     <button
                       type="button"
                       onClick={() => handleSubmitbtn()}
-                      className="btn btn-info"
-                      style={{ marginRight: 10 }}
+                      className="btn btn-info mr-[10px]"
                     >
                       Sign up
                     </button>
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn btn-secondary w-[90px]"
                       onClick={() => setIsModal(false)}
-                      style={{ width: 90 }}
                     >
                       Cancel
                     </button>

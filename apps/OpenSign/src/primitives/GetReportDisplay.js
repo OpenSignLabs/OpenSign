@@ -959,7 +959,7 @@ const ReportTable = (props) => {
             </div>
           )}
         </div>
-        <table className="op-table op-table-zebra border-collapse">
+        <table className="op-table op-table-zebra border-collapse h-[317px]">
           <thead className="text-[14px]">
             <tr className="border-y-[1px]">
               {props.heading?.map((item, index) => (
@@ -1038,11 +1038,15 @@ const ReportTable = (props) => {
                       {props.heading.includes("Sr.No") && (
                         <th className="px-4 py-2">{startIndex + index + 1}</th>
                       )}
-                      <td className="px-4 py-2 font-semibold w-56">
+                      <td className="px-4 py-2 font-semibold min-w-56">
                         {item?.Name}{" "}
                       </td>
                       {props.heading.includes("Note") && (
-                        <td className="px-4 py-2">{item?.Note || "-"}</td>
+                        <td className="px-4 py-2">
+                          {item?.Note?.length > 25
+                            ? item?.Note?.slice(0, 25) + "..."
+                            : item?.Note || "-"}
+                        </td>
                       )}
                       {props.heading.includes("Folder") && (
                         <td className="px-4 py-2">
@@ -1245,7 +1249,7 @@ const ReportTable = (props) => {
                                   act.action !== "option"
                                     ? `${
                                         act?.btnColor ? act.btnColor : ""
-                                      } op-btn op-btn-sm`
+                                      } op-btn op-btn-sm mr-1`
                                     : "text-base-content focus:outline-none text-lg mr-2 relative"
                                 }
                               >

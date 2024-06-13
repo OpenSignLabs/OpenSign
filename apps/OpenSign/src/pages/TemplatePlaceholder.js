@@ -3,7 +3,7 @@ import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/signature.css";
-import { isEnableSubscription, themeColor } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
@@ -1291,15 +1291,9 @@ const TemplatePlaceholder = () => {
                   {currentEmail.length > 0 && (
                     <>
                       <button
-                        onClick={() => {
-                          handleCreateDocModal();
-                        }}
-                        style={{
-                          background: themeColor,
-                          color: "white"
-                        }}
+                        onClick={() => handleCreateDocModal()}
                         type="button"
-                        className="finishBtn"
+                        className="op-btn op-btn-primary"
                       >
                         Yes
                       </button>
@@ -1308,7 +1302,7 @@ const TemplatePlaceholder = () => {
                           setIsCreateDocModal(false);
                         }}
                         type="button"
-                        className="finishBtn cancelBtn"
+                        className="op-btn op-btn-secondary ml-2"
                       >
                         No
                       </button>
@@ -1486,10 +1480,10 @@ const TemplatePlaceholder = () => {
               </div>
             ) : (
               <div>
-                <div className="w-[180px] bg-base-100 h-full">
+                <div className="w-[180px] h-full bg-base-100">
                   <div
                     style={{ maxHeight: window.innerHeight - 70 + "px" }}
-                    className="autoSignScroll hide-scrollbar"
+                    className="overflow-y-auto hide-scrollbar"
                   >
                     <SignerListPlace
                       isMailSend={isMailSend}

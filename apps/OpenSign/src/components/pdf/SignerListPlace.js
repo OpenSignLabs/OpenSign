@@ -6,33 +6,18 @@ import { Tooltip } from "react-tooltip";
 function SignerListPlace(props) {
   return (
     <div>
-      <div
-        className="pt-2 pb-1 px-3 font-semibold text-base-content "
-        // style={{
-        //   background: themeColor,
-        //   padding: "5px"
-        // }}
-      >
-        <span className=" relative">
+      <div className="pt-2 pb-1 px-3 font-semibold text-base-content">
+        <span>
           {props.title ? props.title : "Recipients"}
-          <span className="absolute text-xs z-[30] mt-1 ml-0.5">
+          <span className="text-xs mt-1 ml-0.5">
             {props?.title === "Roles" && (
               <>
                 <a data-tooltip-id="my-tooltip">
                   <sup>
-                    <i
-                      className="fa-solid fa-question rounded-full"
-                      style={{
-                        borderColor: "white",
-                        color: "white",
-                        fontSize: 11,
-                        borderWidth: 1.5,
-                        padding: "1px 3px"
-                      }}
-                    ></i>
+                    <i className="fa-solid fa-question rounded-full border-[1.5px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
                   </sup>
                 </a>
-                <Tooltip id="my-tooltip">
+                <Tooltip id="my-tooltip" className="z-[100]">
                   <div className="max-w-[450px]">
                     <p className="font-bold">What are template roles?</p>
                     <p>
@@ -74,29 +59,23 @@ function SignerListPlace(props) {
       </div>
       {props.handleAddSigner ? (
         <div
+          role="button"
           data-tut="reactourAddbtn"
-          className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad]  hover:text-white cursor-pointer"
+          className="op-btn op-btn-primary op-btn-outline w-full my-[2px]"
+          disabled={props?.isMailSend ? true : false}
           onClick={() => props.handleAddSigner()}
-          style={{
-            opacity: props.isMailSend && "0.5",
-            pointerEvents: props.isMailSend && "none"
-          }}
         >
-          <i className="fa-solid fa-plus"></i>
-          <span style={{ marginLeft: 2 }}>Add role</span>
+          <i className="fa-solid fa-plus"></i> Add role
         </div>
       ) : (
         <div
+          role="button"
           data-tut="reactourAddbtn"
-          className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad]  hover:text-white cursor-pointer"
+          className="op-btn op-btn-primary op-btn-outline w-full my-[2px]"
+          disabled={props?.isMailSend ? true : false}
           onClick={() => props.setIsAddSigner(true)}
-          style={{
-            opacity: props.isMailSend && "0.5",
-            pointerEvents: props.isMailSend && "none"
-          }}
         >
-          <i className="fa-solid fa-plus"></i>
-          <span style={{ marginLeft: 2 }}>Add recipients</span>
+          <i className="fa-solid fa-plus"></i> Add recipients
         </div>
       )}
     </div>

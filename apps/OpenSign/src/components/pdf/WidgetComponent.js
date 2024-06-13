@@ -323,16 +323,11 @@ function WidgetComponent({
             {handleAddSigner ? (
               <div
                 data-tut="reactourAddbtn"
-                style={{
-                  margin: "5px 0 5px 0",
-                  backgroundColor: themeColor,
-                  color: "white"
-                }}
-                className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad] hover:text-white cursor-pointer"
+                className="op-btn op-btn-primary w-full my-[2px]"
                 onClick={() => handleAddSigner()}
               >
                 <i className="fa-solid fa-plus"></i>
-                <span style={{ marginLeft: 2 }}>Add role</span>
+                <span>Add role</span>
               </div>
             ) : (
               setIsAddSigner && (
@@ -354,19 +349,9 @@ function WidgetComponent({
 
             <div
               ref={scrollContainerRef}
-              style={{
-                background: "white",
-                borderTop: `2px solid ${themeColor}`
-              }}
+              className="bg-white border-[2px] border-t-primary"
             >
-              <div
-                style={{
-                  display: "flex",
-                  overflowX: "scroll",
-                  whiteSpace: "nowrap",
-                  padding: "10px 5px 10px 1px"
-                }}
-              >
+              <div className="flex whitespace-nowrap overflow-x-scroll py-[10px] pr-[5px]">
                 <WidgetList
                   updateWidgets={updateWidgets}
                   handleDivClick={handleDivClick}
@@ -403,7 +388,7 @@ function WidgetComponent({
           </div>
 
           {/* <div className="flex flex-col w-full h-auto my-3 items-center"> */}
-          <div className="signLayoutContainer1">
+          <div className="flex flex-col items-center my-3">
             <WidgetList
               updateWidgets={updateWidgets}
               handleDivClick={handleDivClick}
