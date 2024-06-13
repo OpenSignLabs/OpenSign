@@ -376,40 +376,21 @@ export const addWidgetOptions = (type) => {
       return {};
   }
 };
-export const getWidgetType = (item, marginLeft) => {
+export const getWidgetType = (item) => {
   return (
-    <>
-      <div
-        className="border-2 border-accent rounded-md flex justify-between w-fit md:w-[150px] ml-1 select-none"
-        // className="signatureBtn widgets"
-        style={{
-          marginLeft: marginLeft && `${marginLeft}px`
-        }}
-      >
-        <div className="flex items-center mr-1">
-          {!isMobile && (
-            <i
-              className="fa-sharp fa-solid fa-grip-vertical"
-              style={{ fontSize: "13px", marginLeft: 4 }}
-            ></i>
-          )}
-          <span className=" font-[400] text-[15px] text-base-content ml-[5px]">
+    <div className="op-btn op-btn-primary op-btn-outline op-btn-sm focus:outline-none outline outline-[1.5px] w-fit md:w-[150px] ml-[6px] md:ml-0 p-0 overflow-hidden">
+      <div className="w-full h-full flex md:justify-between items-center">
+        <div className="flex justify-start items-center text-[13px] ml-1">
+          {!isMobile && <i className="fa-sharp fa-solid fa-grip-vertical"></i>}
+          <span className="text-center text-[15px] ml-[5px] font-semibold">
             {item.type}
           </span>
         </div>
-        <div
-          className=" bg-accent flex items-center px-[5px]"
-          // style={{
-          //   backgroundColor: themeColor,
-          //   padding: "0 5px",
-          //   display: "flex",
-          //   alignItems: "center"
-          // }}
-        >
-          <i style={{ fontSize: item.iconSize }} className={item.icon}></i>
+        <div className="text-[20px] op-btn op-btn-primary w-[40px] h-full flex justify-center items-center">
+          <i className={item.icon}></i>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

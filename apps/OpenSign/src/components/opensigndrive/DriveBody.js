@@ -313,32 +313,21 @@ function DriveBody(props) {
 
     const signersName = () => {
       const getSignersName = signerExist.map((data) => data.Name);
-      const signerName = getSignersName.join(",");
+      const signerName = getSignersName.join(", ");
 
       return (
-        <span
-          className="statusSpan"
-          style={{ width: "90%", wordWrap: "break-word" }}
-        >
-          {signerName}{" "}
-        </span>
+        <span className="statusSpan w-[90%] break-words">{signerName}</span>
       );
     };
     return listType === "table" ? (
       data.Type === "Folder" ? (
         <tr onClick={() => handleOnclikFolder(data)}>
-          <td
-            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-          >
+          <td className="cursor-pointer flex items-center">
             <i
-              className="fa fa-folder"
+              className="fa fa-folder mr-[8px] text-[26px] text-[#f0ad26]"
               aria-hidden="true"
-              style={{ color: "#f0ad26", marginRight: "8px", fontSize: "26px" }}
             ></i>
-
-            <span style={{ fontSize: "12px", fontWeight: "500" }}>
-              {data.Name}
-            </span>
+            <span className="text-[12px] font-medium">{data.Name}</span>
           </td>
           <td>_</td>
           <td>Folder</td>
@@ -347,17 +336,9 @@ function DriveBody(props) {
         </tr>
       ) : (
         <tr onClick={() => checkPdfStatus(data)}>
-          <td
-            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-          >
-            <i
-              className="fa fa-file-pdf"
-              style={{ color: "#ed4d0e", marginRight: "8px", fontSize: "26px" }}
-            ></i>
-
-            <span style={{ fontSize: "12px", fontWeight: "500" }}>
-              {data.Name}
-            </span>
+          <td className="cursor-pointer flex items-center">
+            <i className="fa fa-file-pdf mr-[8px] text-[26px] text-[#ed4d0e]"></i>
+            <span className="text-[12px] font-medium">{data.Name}</span>
           </td>
           <td>{createddate}</td>
           <td>Pdf</td>
@@ -368,9 +349,8 @@ function DriveBody(props) {
                 e.stopPropagation();
                 handleMenuItemClick("Download", data);
               }}
-              className="fa fa-download"
+              className="fa fa-download mr-[8px] text-[#ed280e]"
               aria-hidden="true"
-              style={{ color: "#ed280e", marginRight: "8px" }}
             ></i>
           </td>
         </tr>
@@ -403,12 +383,7 @@ function DriveBody(props) {
                   defaultValue={renameValue}
                   // value={renameValue}
                   onChange={(e) => setRenameValue(e.target.value)}
-                  style={{
-                    width: "100px",
-                    border: "1.5px solid black",
-                    borderRadius: "2px",
-                    fontSize: "10px"
-                  }}
+                  className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
                 />
               ) : (
                 <span className="foldName">{data.Name}</span>
@@ -426,8 +401,8 @@ function DriveBody(props) {
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
               >
-                <i className="fa-solid fa-font"></i>
-                <span style={{ marginLeft: "8px" }}>Rename</span>
+                <i className="fa-solid fa-font mr-[8px]"></i>
+                <span>Rename</span>
               </ContextMenu.Item>
             </ContextMenu.Content>
           </ContextMenu.Portal>
@@ -464,12 +439,7 @@ function DriveBody(props) {
                       defaultValue={renameValue}
                       // value={renameValue}
                       onChange={(e) => setRenameValue(e.target.value)}
-                      style={{
-                        width: "100px",
-                        border: "1.5px solid black",
-                        borderRadius: "2px",
-                        fontSize: "10px"
-                      }}
+                      className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
                     />
                   ) : (
                     <span className="fileName">{data.Name}</span>
@@ -514,7 +484,7 @@ function DriveBody(props) {
                         className="ContextMenuItem"
                       >
                         <i className={menu.icon}></i>
-                        <span style={{ marginLeft: "8px" }}>{menu.type}</span>
+                        <span className="ml-[8px]">{menu.type}</span>
                       </ContextMenu.Item>
                     );
                   })}
@@ -525,21 +495,21 @@ function DriveBody(props) {
         </HoverCard.Trigger>
         <HoverCard.Portal>
           <HoverCard.Content className="HoverCardContent" sideOffset={5}>
-            <strong style={{ fontSize: "13px" }}>Title: </strong>
+            <strong className="text-[13px]">Title: </strong>
             <span className="statusSpan" style={{ marginBottom: "0px" }}>
               {" "}
               {data.Name}
             </span>
             <br />
-            <strong style={{ fontSize: "13px" }}>Status: </strong>
+            <strong className="text-[13px]">Status: </strong>
             <span className="statusSpan"> {status}</span>
             <br />
-            <strong style={{ fontSize: "13px" }}>Created Date: </strong>
+            <strong className="text-[13px]">Created Date: </strong>
             <span className="statusSpan">{createddate}</span>
             <br />
             {signerExist && (
               <>
-                <strong style={{ fontSize: "13px" }}>Signers: </strong>
+                <strong className="text-[13px]">Signers: </strong>
                 {/* <span className="statusSpan">kjefjjnejkfnkbjs bbfjkdsbjbfjkbjk kscbjkbjkb</span> */}
                 {signersName()}
               </>

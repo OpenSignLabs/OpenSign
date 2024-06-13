@@ -21,6 +21,7 @@ const RecipientList = (props) => {
       marginTop: "2px",
       display: "flex",
       flexDirection: "row",
+      borderRadius: 12,
       borderBottom: "1px solid #e3e1e1",
       alignItems: "center"
     };
@@ -141,14 +142,7 @@ const RecipientList = (props) => {
                 }
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: "100%"
-                }}
-              >
+              <div className="flex flex-row items-center w-full">
                 <div
                   style={{
                     background: obj?.blockColor

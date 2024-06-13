@@ -102,16 +102,10 @@ function Header({
                         handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
                       }
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row"
-                        }}
-                      >
+                      <div className="flex flex-row">
                         <i
-                          className="fa fa-arrow-down"
+                          className="fa fa-arrow-down mr-[2px]"
                           aria-hidden="true"
-                          style={{ marginRight: "2px" }}
                         ></i>
                         Download
                       </div>
@@ -126,15 +120,9 @@ function Header({
                           )
                         }
                       >
-                        <div
-                          style={{
-                            border: "none",
-                            backgroundColor: "#fff"
-                          }}
-                        >
+                        <div className="border-none bg-[#fff]">
                           <i
-                            className="fa-solid fa-award"
-                            style={{ marginRight: "2px" }}
+                            className="fa-solid fa-award mr-[2px]"
                             aria-hidden="true"
                           ></i>
                           Certificate
@@ -146,15 +134,9 @@ function Header({
                         className="DropdownMenuItem"
                         onClick={() => setIsEmail(true)}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "row"
-                          }}
-                        >
+                        <div className="flex flex-row">
                           <i
-                            className="fa fa-envelope"
-                            style={{ marginRight: "2px" }}
+                            className="fa fa-envelope mr-[2px]"
                             aria-hidden="true"
                           ></i>
                           Mail
@@ -167,16 +149,10 @@ function Header({
                         handleToPrint(e, pdfUrl, setIsDownloading)
                       }
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row"
-                        }}
-                      >
+                      <div className="flex flex-row">
                         <i
-                          className="fa fa-print"
+                          className="fa fa-print mr-[2px]"
                           aria-hidden="true"
-                          style={{ marginRight: "2px" }}
                         ></i>
                         Print
                       </div>
@@ -285,12 +261,12 @@ function Header({
                   signersdata.length !== filterPrefill.length && (
                     <div>
                       {filterPrefill.length === 0 ? (
-                        <span style={{ fontSize: "13px", color: "#f5405e" }}>
+                        <span className="text-[13px] text-[#f5405e]">
                           Add {signersdata.length - filterPrefill.length}{" "}
                           recipients signature
                         </span>
                       ) : (
-                        <span style={{ fontSize: "13px", color: "#f5405e" }}>
+                        <span className="text-[13px] text-[#f5405e]">
                           Add {signersdata.length - filterPrefill.length} more
                           recipients signature
                         </span>
@@ -310,18 +286,14 @@ function Header({
                 <button
                   onClick={() => navigate(-1)}
                   type="button"
-                  className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-black font-[500] text-sm mr-[5px] bg-white"
+                  className="op-btn op-btn-ghost op-btn-sm mr-[5px]"
                 >
                   Back
                 </button>
                 <button
                   disabled={isMailSend && true}
                   data-tut="reactourFour"
-                  className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] font-[500] text-sm mr-[5px]"
-                  style={{
-                    background: isMailSend ? "rgb(203, 203, 203)" : "#188ae2",
-                    color: isMailSend ? "rgb(77, 75, 75)" : "white"
-                  }}
+                  className="op-btn op-btn-primary op-btn-sm mr-[5px]"
                   onClick={() => alertSendEmail()}
                 >
                   {completeBtnTitle
@@ -438,40 +410,37 @@ function Header({
                   onClick={() =>
                     handleDownloadCertificate(pdfDetails, setIsDownloading)
                   }
-                  className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                  className="op-btn op-btn-secondary op-btn-sm font-medium text-[13px] mr-[5px] shadow"
                 >
-                  <i
-                    className="fa-solid fa-award py-[3px]"
-                    aria-hidden="true"
-                  ></i>
-                  <span className="hidden lg:block ml-1">Certificate</span>
+                  <i className="fa-solid fa-award" aria-hidden="true"></i>
+                  <span className="hidden lg:block">Certificate</span>
                 </button>
               )}
               <button
                 onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
                 type="button"
-                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
+                className="op-btn op-btn-neutral op-btn-sm font-medium text-[13px] mr-[5px] shadow"
               >
-                <i className="fa fa-print py-[3px]" aria-hidden="true"></i>
-                <span className="hidden lg:block ml-1">Print</span>
+                <i className="fa fa-print" aria-hidden="true"></i>
+                <span className="hidden lg:block">Print</span>
               </button>
               <button
                 type="button"
-                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
+                className="op-btn op-btn-primary op-btn-sm font-medium text-[13px] mr-[5px] shadow"
                 onClick={() =>
                   handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
                 }
               >
-                <i className="fa fa-download py-[3px]" aria-hidden="true"></i>
-                <span className="hidden lg:block ml-1">Download</span>
+                <i className="fa fa-download" aria-hidden="true"></i>
+                <span className="hidden lg:block">Download</span>
               </button>
               <button
                 type="button"
-                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#3ba7e5]"
+                className="op-btn op-btn-info op-btn-sm font-medium text-[13px] mr-[5px] shadow"
                 onClick={() => setIsEmail(true)}
               >
-                <i className="fa fa-envelope py-[3px]" aria-hidden="true"></i>
-                <span className="hidden lg:block ml-1">Mail</span>
+                <i className="fa fa-envelope" aria-hidden="true"></i>
+                <span className="hidden lg:block">Mail</span>
               </button>
             </div>
           ) : (
@@ -479,13 +448,13 @@ function Header({
               <button
                 onClick={() => navigate(-1)}
                 type="button"
-                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-black font-[500] text-sm mr-[5px] bg-white"
+                className="op-btn op-btn-ghost op-btn-sm mr-[5px]"
               >
                 Back
               </button>
               <button
                 type="button"
-                className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[18px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
+                className="op-btn op-btn-primary op-btn-sm mr-[5px]"
                 onClick={() => {
                   if (!pdfUrl) {
                     embedWidgetsData();
@@ -499,11 +468,8 @@ function Header({
         </div>
       )}
       {isDownloading === "pdf" && (
-        <div className="fixed z-[200] inset-0 flex justify-center items-center bg-black bg-opacity-30">
-          <div
-            style={{ fontSize: "45px", color: "#3dd3e0" }}
-            className="loader-37"
-          ></div>
+        <div className="fixed z-[200] inset-0 flex justify-center items-center bg-black bg-opacity-30 text-[45px] text-[#3dd3e0]">
+          <div className="loader-37"></div>
         </div>
       )}
       <ModalUi
