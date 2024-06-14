@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from "react";
+import Loader from "../../primitives/Loader";
 const DashboardButton = lazy(() => import("./DashboardButton"));
 const DashboardCard = lazy(() => import("./DashboardCard"));
 const DashboardReport = lazy(() => import("./DashboardReport"));
@@ -20,8 +21,8 @@ const GetDashboard = (props) => {
   const Button = ({ label, redirectId, redirectType, icon }) => (
     <Suspense
       fallback={
-        <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
-          <div className="loader-37"></div>
+        <div className="h-[300px] w-full flex justify-center items-center">
+          <Loader />
         </div>
       }
     >
@@ -44,8 +45,8 @@ const GetDashboard = (props) => {
           >
             <Suspense
               fallback={
-                <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
-                  <div className="loader-37"></div>
+                <div className="h-[300px] w-full flex justify-center items-center">
+                  <Loader />
                 </div>
               }
             >

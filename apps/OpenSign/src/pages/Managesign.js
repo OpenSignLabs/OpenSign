@@ -7,6 +7,7 @@ import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
 import { SaveFileSize } from "../constant/saveFileSize";
 import Alert from "../primitives/Alert";
+import Loader from "../primitives/Loader";
 const ManageSign = () => {
   const appName = appInfo.appname;
   const [penColor, setPenColor] = useState("blue");
@@ -243,8 +244,8 @@ const ManageSign = () => {
   return (
     <div className="relative h-full bg-base-100 text-base-content flex shadow rounded overflow-auto">
       {isLoader && (
-        <div className="absolute bg-black text-[45px] text-[#3dd3e0] bg-opacity-75 z-50 w-full h-full flex justify-center items-center">
-          <div className="loader-37 "></div>
+        <div className="absolute bg-black bg-opacity-30 z-50 w-full h-full flex justify-center items-center">
+          <Loader />
         </div>
       )}
       {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}

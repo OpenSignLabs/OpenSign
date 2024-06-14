@@ -8,6 +8,7 @@ import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, copytoData, openInNewTab } from "../constant/Utils";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
+import Loader from "../primitives/Loader";
 
 function GenerateToken() {
   const navigation = useNavigate();
@@ -109,21 +110,8 @@ function GenerateToken() {
       {copied && <Alert type="success">Copied</Alert>}
       {isErr && <Alert type="danger">Something went wrong!</Alert>}
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="flex justify-center items-center h-screen">
+          <Loader />
         </div>
       ) : (
         <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded">
@@ -155,7 +143,7 @@ function GenerateToken() {
                     {apiToken ? apiToken : "_____"}
                   </span>
                   <button
-                    className="op-btn op-btn-primary op-btn-sm ml-2"
+                    className="op-btn op-btn-accent op-btn-sm ml-2"
                     onClick={() => copytoclipboard(apiToken)}
                   >
                     <i className="fa-solid fa-copy"></i>
@@ -178,7 +166,7 @@ function GenerateToken() {
                   "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                 )
               }
-              className="op-btn op-btn-primary my-2"
+              className="op-btn op-btn-secondary my-2"
             >
               View Docs
             </button>

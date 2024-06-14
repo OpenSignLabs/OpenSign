@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Parse from "parse";
+import Loader from "../primitives/Loader";
 // import FacebookLogin from "react-facebook-login";
 
 const LoginFacebook = ({
@@ -114,8 +115,8 @@ const LoginFacebook = ({
   return (
     <div className="relative">
       {thirdpartyLoader && (
-        <div className="fixed w-[100vw] h-[100vh] bg-black bg-opacity-30 left-0 top-0 z-[20] text-[50px] text-[#3ac9d6]">
-          <div className="loader-37 fixed top-[45%] left-[45%]"></div>
+        <div className="fixed flex justify-center items-center inset-0 bg-black bg-opacity-25 z-20 ">
+          <Loader />
         </div>
       )}
       {/* <FacebookLogin

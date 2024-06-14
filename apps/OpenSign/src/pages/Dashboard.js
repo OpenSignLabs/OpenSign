@@ -6,6 +6,7 @@ import Title from "../components/Title";
 import { useDispatch } from "react-redux";
 import { saveTourSteps } from "../redux/reducers/TourStepsReducer";
 import dashboardJson from "../json/dashboardJson";
+import Loader from "../primitives/Loader";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -57,8 +58,8 @@ const Dashboard = () => {
     <React.Fragment>
       <Title title="Dashboard" />
       {loading ? (
-        <div className="h-[300px] text-[45px] text-[#3dd3e0] w-full bg-white flex justify-center items-center rounded-md">
-          <div className="loader-37"></div>
+        <div className="h-[300px] w-full bg-white flex justify-center items-center rounded-md">
+          <Loader />
         </div>
       ) : (
         <GetDashboard dashboard={dashboard} />

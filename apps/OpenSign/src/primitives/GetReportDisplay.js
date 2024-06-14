@@ -23,6 +23,7 @@ import EditorToolbar, {
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import BulkSendUi from "../components/BulkSendUi";
+import Loader from "./Loader";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
@@ -914,11 +915,11 @@ const ReportTable = (props) => {
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
-        <div className="absolute w-full h-full text-[45px] text-[#3dd3e0] rounded-md flex justify-center items-center bg-black bg-opacity-30 z-30">
-          <div className="loader-37"></div>
+        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
+          <Loader />
         </div>
       )}
-      <div className="p-2 overflow-x-scroll w-full bg-base-100 text-base-content op-card shadow-lg">
+      <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
         {/* {isCelebration && (
           <div className="relative z-[1000]">
             <Confetti width={window.innerWidth} height={window.innerHeight} />
@@ -959,125 +960,132 @@ const ReportTable = (props) => {
             </div>
           )}
         </div>
-        <table className="op-table op-table-zebra border-collapse h-[317px]">
-          <thead className="text-[14px]">
-            <tr className="border-y-[1px]">
-              {props.heading?.map((item, index) => (
-                <React.Fragment key={index}>
-                  <th className="px-4 py-2">{item}</th>
-                </React.Fragment>
-              ))}
-              {/* {props.ReportName === "Templates" && isEnableSubscription && (
+        <div className="overflow-x-auto w-full">
+          <table className="op-table border-collapse h-[317px] w-full">
+            <thead className="text-[14px]">
+              <tr className="border-y-[1px]">
+                {props.heading?.map((item, index) => (
+                  <React.Fragment key={index}>
+                    <th className="px-4 py-2">{item}</th>
+                  </React.Fragment>
+                ))}
+                {/* {props.ReportName === "Templates" && isEnableSubscription && (
                 <th className="px-4 py-2">Public</th>
               )} */}
-              {props.actions?.length > 0 && (
-                <th className="px-4 py-2 text-transparent pointer-events-none">
-                  Action
-                </th>
-              )}
-            </tr>
-          </thead>
-          <tbody className="text-[12px]">
-            {props.List?.length > 0 && (
-              <>
-                {currentList.map((item, index) =>
-                  props.ReportName === "Contactbook" ? (
-                    <tr className="border-y-[1px]" key={index}>
-                      {props.heading.includes("Sr.No") && (
-                        <th className="px-4 py-2">{startIndex + index + 1}</th>
-                      )}
-                      <td className="px-4 py-2 font-semibold">{item?.Name} </td>
-                      <td className="px-4 py-2">{item?.Email || "-"}</td>
-                      <td className="px-4 py-2">{item?.Phone || "-"}</td>
-                      <td className="px-3 py-2 text-white grid grid-cols-2">
-                        {props.actions?.length > 0 &&
-                          props.actions.map((act, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleActionBtn(act, item)}
-                              title={act.hoverLabel}
-                              className={`${
-                                act?.btnColor ? act.btnColor : ""
-                              } op-btn op-btn-sm`}
+                {props.actions?.length > 0 && (
+                  <th className="px-4 py-2 text-transparent pointer-events-none">
+                    Action
+                  </th>
+                )}
+              </tr>
+            </thead>
+            <tbody className="text-[12px]">
+              {props.List?.length > 0 && (
+                <>
+                  {currentList.map((item, index) =>
+                    props.ReportName === "Contactbook" ? (
+                      <tr className="border-y-[1px]" key={index}>
+                        {props.heading.includes("Sr.No") && (
+                          <th className="px-4 py-2">
+                            {startIndex + index + 1}
+                          </th>
+                        )}
+                        <td className="px-4 py-2 font-semibold">
+                          {item?.Name}{" "}
+                        </td>
+                        <td className="px-4 py-2">{item?.Email || "-"}</td>
+                        <td className="px-4 py-2">{item?.Phone || "-"}</td>
+                        <td className="px-3 py-2 text-white grid grid-cols-2">
+                          {props.actions?.length > 0 &&
+                            props.actions.map((act, index) => (
+                              <button
+                                key={index}
+                                onClick={() => handleActionBtn(act, item)}
+                                title={act.hoverLabel}
+                                className={`${
+                                  act?.btnColor ? act.btnColor : ""
+                                } op-btn op-btn-sm`}
+                              >
+                                <i className={act.btnIcon}></i>
+                              </button>
+                            ))}
+                          {isDeleteModal[item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={"Delete Contact"}
+                              handleClose={handleClose}
                             >
-                              <i className={act.btnIcon}></i>
-                            </button>
-                          ))}
-                        {isDeleteModal[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={"Delete Contact"}
-                            handleClose={handleClose}
-                          >
-                            <div className="m-[20px]">
-                              <div className="text-lg font-normal text-black">
-                                Are you sure you want to delete this contact?
+                              <div className="m-[20px]">
+                                <div className="text-lg font-normal text-black">
+                                  Are you sure you want to delete this contact?
+                                </div>
+                                <hr className="bg-[#ccc] mt-4 " />
+                                <div className="flex items-center mt-3 gap-2 text-white">
+                                  <button
+                                    onClick={() => handleDelete(item)}
+                                    className="op-btn op-btn-primary"
+                                  >
+                                    Yes
+                                  </button>
+                                  <button
+                                    onClick={handleClose}
+                                    className="op-btn op-btn-secondary"
+                                  >
+                                    No
+                                  </button>
+                                </div>
                               </div>
-                              <hr className="bg-[#ccc] mt-4 " />
-                              <div className="flex items-center mt-3 gap-2 text-white">
-                                <button
-                                  onClick={() => handleDelete(item)}
-                                  className="op-btn op-btn-primary"
-                                >
-                                  Yes
-                                </button>
-                                <button
-                                  onClick={handleClose}
-                                  className="op-btn op-btn-secondary"
-                                >
-                                  No
-                                </button>
-                              </div>
-                            </div>
-                          </ModalUi>
+                            </ModalUi>
+                          )}
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr className="border-y-[1px]" key={index}>
+                        {props.heading.includes("Sr.No") && (
+                          <th className="px-4 py-2">
+                            {startIndex + index + 1}
+                          </th>
                         )}
-                      </td>
-                    </tr>
-                  ) : (
-                    <tr className="border-y-[1px]" key={index}>
-                      {props.heading.includes("Sr.No") && (
-                        <th className="px-4 py-2">{startIndex + index + 1}</th>
-                      )}
-                      <td className="px-4 py-2 font-semibold min-w-56">
-                        {item?.Name}{" "}
-                      </td>
-                      {props.heading.includes("Note") && (
-                        <td className="px-4 py-2">
-                          {item?.Note?.length > 25
-                            ? item?.Note?.slice(0, 25) + "..."
-                            : item?.Note || "-"}
+                        <td className="px-4 py-2 font-semibold min-w-56">
+                          {item?.Name}{" "}
                         </td>
-                      )}
-                      {props.heading.includes("Folder") && (
+                        {props.heading.includes("Note") && (
+                          <td className="px-4 py-2">
+                            {item?.Note?.length > 25
+                              ? item?.Note?.slice(0, 25) + "..."
+                              : item?.Note || "-"}
+                          </td>
+                        )}
+                        {props.heading.includes("Folder") && (
+                          <td className="px-4 py-2">
+                            {item?.Folder?.Name || "OpenSign™ Drive"}
+                          </td>
+                        )}
                         <td className="px-4 py-2">
-                          {item?.Folder?.Name || "OpenSign™ Drive"}
-                        </td>
-                      )}
-                      <td className="px-4 py-2">
-                        <button
-                          onClick={() => handleDownload(item)}
-                          className="op-link op-link-primary"
-                          title={"Download"}
-                        >
-                          {item?.URL ? "Download" : "-"}
-                        </button>
-                      </td>
-                      <td className="px-4 py-2">
-                        {formatRow(item?.ExtUserPtr)}
-                      </td>
-                      <td className="px-4 py-2">
-                        {item?.Placeholders ? (
                           <button
-                            onClick={() => handleViewSigners(item)}
+                            onClick={() => handleDownload(item)}
                             className="op-link op-link-primary"
+                            title={"Download"}
                           >
-                            View
+                            {item?.URL ? "Download" : "-"}
                           </button>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      {/* {props.ReportName === "Templates" &&
+                        </td>
+                        <td className="px-4 py-2">
+                          {formatRow(item?.ExtUserPtr)}
+                        </td>
+                        <td className="px-4 py-2">
+                          {item?.Placeholders ? (
+                            <button
+                              onClick={() => handleViewSigners(item)}
+                              className="op-link op-link-primary"
+                            >
+                              View
+                            </button>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                        {/* {props.ReportName === "Templates" &&
                         isEnableSubscription && (
                           <td className=" pl-[20px] py-2">
                             {props.ReportName === "Templates" && (
@@ -1235,326 +1243,329 @@ const ReportTable = (props) => {
                             )}
                           </td>
                         )} */}
-                      <td className="px-2 py-2">
-                        <div className="text-base-content flex flex-row gap-x-2 gap-y-1 justify-start items-center">
-                          {props.actions?.length > 0 &&
-                            props.actions.map((act, index) => (
-                              <div
-                                role="button"
-                                data-tut={act?.selector}
-                                key={index}
-                                onClick={() => handleActionBtn(act, item)}
-                                title={act.hoverLabel}
-                                className={
-                                  act.action !== "option"
-                                    ? `${
-                                        act?.btnColor ? act.btnColor : ""
-                                      } op-btn op-btn-sm mr-1`
-                                    : "text-base-content focus:outline-none text-lg mr-2 relative"
-                                }
-                              >
-                                <i className={act.btnIcon}></i>
-                                {act.btnLabel && (
-                                  <span className="uppercase font-medium">
-                                    {act.btnLabel}
-                                  </span>
-                                )}
-                                {isOption[item.objectId] &&
-                                  act.action === "option" && (
-                                    <ul className="absolute -right-2 top-6 z-[20] op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box ">
-                                      {act.subaction?.map((subact) => (
-                                        <li
-                                          key={subact.btnId}
-                                          onClick={() =>
-                                            handleActionBtn(subact, item)
-                                          }
-                                          title={subact.hoverLabel}
-                                        >
-                                          <span>
-                                            <i
-                                              className={`${subact.btnIcon} mr-1.5`}
-                                            ></i>
-                                            {subact.btnLabel && (
-                                              <span className="text-[13px] capitalize font-medium">
-                                                {subact.btnLabel}
-                                              </span>
-                                            )}
-                                          </span>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  )}
-                              </div>
-                            ))}
-                        </div>
-                        {isViewShare[item.objectId] && (
-                          <div className="fixed z-[999] inset-0 w-full h-full bg-black bg-opacity-[75%]">
-                            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[400px] overflow-y-auto max-h-[340px] md:max-h-[400px] hide-scrollbar">
-                              <div
-                                className="cursor-pointer absolute text-white text-[22px] font-medium rounded-full z-50 top-1 right-3"
-                                onClick={() => setIsViewShare({})}
-                              >
-                                &times;
-                              </div>
-
-                              <table className="table-auto w-full">
-                                <thead className="text-white h-[38px] sticky top-0 bg-[#32a3ac]">
-                                  <tr>
-                                    {props.ReportName === "Templates" && (
-                                      <th className="p-2 pl-3">Roles</th>
-                                    )}
-                                    <th className="p-2">Signers</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {item.Placeholders.map((x, i) => (
-                                    <tr
-                                      key={i}
-                                      className="text-sm font-normal text-black odd:bg-white even:bg-gray-200"
-                                    >
-                                      {props.ReportName === "Templates" && (
-                                        <td className="text-[12px] p-2 pl-3">
-                                          {x.Role && x.Role}
-                                        </td>
-                                      )}
-                                      <td className="text-[12px] p-2 break-all">
-                                        {x.email
-                                          ? x.email
-                                          : x?.signerPtr?.Email || "-"}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        )}
-                        {isDeleteModal[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={"Delete Document"}
-                            handleClose={handleClose}
-                          >
-                            <div className="m-[20px]">
-                              <div className="text-lg font-normal text-black">
-                                Are you sure you want to delete this document?
-                              </div>
-                              <hr className="bg-[#ccc] mt-4" />
-                              <div className="flex items-center mt-3 gap-2 text-white">
-                                <button
-                                  onClick={() => handleDelete(item)}
-                                  className="op-btn op-btn-primary"
-                                >
-                                  Yes
-                                </button>
-                                <button
-                                  onClick={handleClose}
-                                  className="op-btn op-btn-secondary"
-                                >
-                                  No
-                                </button>
-                              </div>
-                            </div>
-                          </ModalUi>
-                        )}
-                        {isBulkSend[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={"Quick send"}
-                            handleClose={() => setIsBulkSend({})}
-                          >
-                            {isLoader[item.objectId] ? (
-                              <div className="w-full h-[100px] text-[45px] text-[#3dd3e0] rounded-b-md flex justify-center items-center bg-black bg-opacity-30 z-30">
-                                <div className="loader-37"></div>
-                              </div>
-                            ) : (
-                              <BulkSendUi
-                                Placeholders={placeholders}
-                                item={templateDeatils}
-                                handleClose={handleQuickSendClose}
-                              />
-                            )}
-                          </ModalUi>
-                        )}
-                        {isShare[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={"Copy link"}
-                            handleClose={() => {
-                              setIsShare({});
-                              setActLoader({});
-                            }}
-                          >
-                            <div className="m-[20px]">
-                              {shareUrls.map((share, i) => (
+                        <td className="px-2 py-2">
+                          <div className="text-base-content flex flex-row gap-x-2 gap-y-1 justify-start items-center">
+                            {props.actions?.length > 0 &&
+                              props.actions.map((act, index) => (
                                 <div
-                                  key={i}
-                                  className="text-sm font-normal text-black flex my-2 justify-between items-center"
+                                  role="button"
+                                  data-tut={act?.selector}
+                                  key={index}
+                                  onClick={() => handleActionBtn(act, item)}
+                                  title={act.hoverLabel}
+                                  className={
+                                    act.action !== "option"
+                                      ? `${
+                                          act?.btnColor ? act.btnColor : ""
+                                        } op-btn op-btn-sm mr-1`
+                                      : "text-base-content focus:outline-none text-lg mr-2 relative"
+                                  }
                                 >
-                                  <span className="text-sm font-semibold">
-                                    {share.email}
-                                  </span>
-                                  <div>
-                                    <RWebShare
-                                      data={{
-                                        url: share.url,
-                                        title: "Sign url"
-                                      }}
-                                    >
-                                      <button className="bg-[#002864] text-white rounded w-[32px] h-[30px] focus:outline-none">
-                                        <i className="fa-solid fa-share-from-square"></i>{" "}
-                                      </button>
-                                    </RWebShare>
-                                    <button
-                                      className="ml-2 bg-[#002864] text-white rounded w-[100px] h-[30px] focus:outline-none"
-                                      onClick={() => copytoclipboard(share)}
-                                    >
-                                      <i className="fa-solid fa-link"></i>{" "}
-                                      {copied[share.email] ? "Copied" : "Copy"}
-                                    </button>
-                                  </div>
+                                  <i className={act.btnIcon}></i>
+                                  {act.btnLabel && (
+                                    <span className="uppercase font-medium">
+                                      {act.btnLabel}
+                                    </span>
+                                  )}
+                                  {isOption[item.objectId] &&
+                                    act.action === "option" && (
+                                      <ul className="absolute -right-2 top-6 z-[20] op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box ">
+                                        {act.subaction?.map((subact) => (
+                                          <li
+                                            key={subact.btnId}
+                                            onClick={() =>
+                                              handleActionBtn(subact, item)
+                                            }
+                                            title={subact.hoverLabel}
+                                          >
+                                            <span>
+                                              <i
+                                                className={`${subact.btnIcon} mr-1.5`}
+                                              ></i>
+                                              {subact.btnLabel && (
+                                                <span className="text-[13px] capitalize font-medium">
+                                                  {subact.btnLabel}
+                                                </span>
+                                              )}
+                                            </span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    )}
                                 </div>
                               ))}
-                            </div>
-                          </ModalUi>
-                        )}
-                        {isRevoke[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={"Revoke document"}
-                            handleClose={handleClose}
-                          >
-                            <div className="m-[20px]">
-                              <div className="text-lg font-normal text-black">
-                                Are you sure you want to revoke this document?
-                              </div>
-                              <hr className="bg-[#ccc] mt-4" />
-                              <div className="flex items-center mt-3 gap-2">
-                                <button
-                                  onClick={() => handleRevoke(item)}
-                                  className="op-btn op-btn-primary"
+                          </div>
+                          {isViewShare[item.objectId] && (
+                            <div className="fixed z-[999] inset-0 w-full h-full bg-black bg-opacity-[75%]">
+                              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[400px] overflow-y-auto max-h-[340px] md:max-h-[400px] hide-scrollbar">
+                                <div
+                                  className="cursor-pointer absolute text-white text-[22px] font-medium rounded-full z-50 top-1 right-3"
+                                  onClick={() => setIsViewShare({})}
                                 >
-                                  Yes
-                                </button>
-                                <button
-                                  onClick={handleClose}
-                                  className="op-btn op-btn-secondary"
-                                >
-                                  No
-                                </button>
-                              </div>
-                            </div>
-                          </ModalUi>
-                        )}
-                        {isResendMail[item.objectId] && (
-                          <ModalUi
-                            isOpen
-                            title={"Resend Mail"}
-                            handleClose={() => {
-                              setIsResendMail({});
-                              setIsNextStep({});
-                              setUserDetails({});
-                            }}
-                          >
-                            <div className=" overflow-y-auto max-h-[340px] md:max-h-[400px]">
-                              {item?.Placeholders?.map((user) => (
-                                <React.Fragment key={user.Id}>
-                                  {isNextStep[user.Id] && (
-                                    <div className="relative ">
-                                      {actLoader[user.Id] && (
-                                        <div className="absolute text-[45px] text-[#3dd3e0] w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
-                                          <div className="loader-37"></div>
-                                        </div>
+                                  &times;
+                                </div>
+
+                                <table className="table-auto w-full">
+                                  <thead className="text-white h-[38px] sticky top-0 bg-[#32a3ac]">
+                                    <tr>
+                                      {props.ReportName === "Templates" && (
+                                        <th className="p-2 pl-3">Roles</th>
                                       )}
-                                      <form
-                                        onSubmit={(e) =>
-                                          handleResendMail(e, item, user)
-                                        }
-                                        className="w-full flex flex-col gap-2 p-3 text-base-content relative"
+                                      <th className="p-2">Signers</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {item.Placeholders.map((x, i) => (
+                                      <tr
+                                        key={i}
+                                        className="text-sm font-normal text-black odd:bg-white even:bg-gray-200"
                                       >
-                                        <div className="absolute right-5 text-xs z-40">
-                                          <Tooltip
-                                            id={`${user.Id}_help`}
-                                            message={
-                                              "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
-                                            }
-                                          />
-                                        </div>
-                                        <div>
-                                          <label
-                                            className="text-xs ml-1"
-                                            htmlFor="mailsubject"
-                                          >
-                                            Subject{" "}
-                                          </label>
-                                          <input
-                                            id="mailsubject"
-                                            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                                            value={mail.subject}
-                                            onChange={(e) =>
-                                              handleSubjectChange(
-                                                e.target.value,
-                                                item
-                                              )
-                                            }
-                                            required
-                                          />
-                                        </div>
-                                        <div>
-                                          <label
-                                            className="text-xs ml-1"
-                                            htmlFor="mailbody"
-                                          >
-                                            Body{" "}
-                                          </label>
-                                          <EditorToolbar containerId="toolbar1" />
-                                          <ReactQuill
-                                            id="mailbody"
-                                            theme="snow"
-                                            value={mail.body || ""}
-                                            placeholder="add body of email "
-                                            modules={module1}
-                                            formats={formats}
-                                            onChange={(value) =>
-                                              handlebodyChange(value, item)
-                                            }
-                                          />
-                                        </div>
-                                        <button
-                                          type="submit"
-                                          className="op-btn op-btn-primary"
-                                        >
-                                          Resend
-                                        </button>
-                                      </form>
-                                    </div>
-                                  )}
-                                  {Object?.keys(isNextStep) <= 0 && (
-                                    <div className="flex justify-between items-center gap-2 my-2 px-3">
-                                      <div className="text-black">
-                                        {user?.signerPtr?.Name || "-"}{" "}
-                                        {`<${
-                                          user?.email
-                                            ? user.email
-                                            : user.signerPtr.Email
-                                        }>`}
-                                      </div>
-                                      <>{fetchUserStatus(user, item)}</>
-                                    </div>
-                                  )}
-                                </React.Fragment>
-                              ))}
+                                        {props.ReportName === "Templates" && (
+                                          <td className="text-[12px] p-2 pl-3">
+                                            {x.Role && x.Role}
+                                          </td>
+                                        )}
+                                        <td className="text-[12px] p-2 break-all">
+                                          {x.email
+                                            ? x.email
+                                            : x?.signerPtr?.Email || "-"}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
                             </div>
-                          </ModalUi>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                )}
-              </>
-            )}
-          </tbody>
-        </table>
+                          )}
+                          {isDeleteModal[item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={"Delete Document"}
+                              handleClose={handleClose}
+                            >
+                              <div className="m-[20px]">
+                                <div className="text-lg font-normal text-black">
+                                  Are you sure you want to delete this document?
+                                </div>
+                                <hr className="bg-[#ccc] mt-4" />
+                                <div className="flex items-center mt-3 gap-2 text-white">
+                                  <button
+                                    onClick={() => handleDelete(item)}
+                                    className="op-btn op-btn-primary"
+                                  >
+                                    Yes
+                                  </button>
+                                  <button
+                                    onClick={handleClose}
+                                    className="op-btn op-btn-secondary"
+                                  >
+                                    No
+                                  </button>
+                                </div>
+                              </div>
+                            </ModalUi>
+                          )}
+                          {isBulkSend[item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={"Quick send"}
+                              handleClose={() => setIsBulkSend({})}
+                            >
+                              {isLoader[item.objectId] ? (
+                                <div className="w-full h-[100px] flex justify-center items-center bg-opacity-30 z-30">
+                                  <Loader />
+                                </div>
+                              ) : (
+                                <BulkSendUi
+                                  Placeholders={placeholders}
+                                  item={templateDeatils}
+                                  handleClose={handleQuickSendClose}
+                                />
+                              )}
+                            </ModalUi>
+                          )}
+                          {isShare[item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={"Copy link"}
+                              handleClose={() => {
+                                setIsShare({});
+                                setActLoader({});
+                              }}
+                            >
+                              <div className="m-[20px]">
+                                {shareUrls.map((share, i) => (
+                                  <div
+                                    key={i}
+                                    className="text-sm font-normal text-black flex my-2 justify-between items-center"
+                                  >
+                                    <span className="text-sm font-semibold">
+                                      {share.email}
+                                    </span>
+                                    <div>
+                                      <RWebShare
+                                        data={{
+                                          url: share.url,
+                                          title: "Sign url"
+                                        }}
+                                      >
+                                        <button className="bg-[#002864] text-white rounded w-[32px] h-[30px] focus:outline-none">
+                                          <i className="fa-solid fa-share-from-square"></i>{" "}
+                                        </button>
+                                      </RWebShare>
+                                      <button
+                                        className="ml-2 bg-[#002864] text-white rounded w-[100px] h-[30px] focus:outline-none"
+                                        onClick={() => copytoclipboard(share)}
+                                      >
+                                        <i className="fa-solid fa-link"></i>{" "}
+                                        {copied[share.email]
+                                          ? "Copied"
+                                          : "Copy"}
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </ModalUi>
+                          )}
+                          {isRevoke[item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={"Revoke document"}
+                              handleClose={handleClose}
+                            >
+                              <div className="m-[20px]">
+                                <div className="text-lg font-normal text-black">
+                                  Are you sure you want to revoke this document?
+                                </div>
+                                <hr className="bg-[#ccc] mt-4" />
+                                <div className="flex items-center mt-3 gap-2">
+                                  <button
+                                    onClick={() => handleRevoke(item)}
+                                    className="op-btn op-btn-primary"
+                                  >
+                                    Yes
+                                  </button>
+                                  <button
+                                    onClick={handleClose}
+                                    className="op-btn op-btn-secondary"
+                                  >
+                                    No
+                                  </button>
+                                </div>
+                              </div>
+                            </ModalUi>
+                          )}
+                          {isResendMail[item.objectId] && (
+                            <ModalUi
+                              isOpen
+                              title={"Resend Mail"}
+                              handleClose={() => {
+                                setIsResendMail({});
+                                setIsNextStep({});
+                                setUserDetails({});
+                              }}
+                            >
+                              <div className=" overflow-y-auto max-h-[340px] md:max-h-[400px]">
+                                {item?.Placeholders?.map((user) => (
+                                  <React.Fragment key={user.Id}>
+                                    {isNextStep[user.Id] && (
+                                      <div className="relative ">
+                                        {actLoader[user.Id] && (
+                                          <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
+                                            <Loader />
+                                          </div>
+                                        )}
+                                        <form
+                                          onSubmit={(e) =>
+                                            handleResendMail(e, item, user)
+                                          }
+                                          className="w-full flex flex-col gap-2 p-3 text-base-content relative"
+                                        >
+                                          <div className="absolute right-5 text-xs z-40">
+                                            <Tooltip
+                                              id={`${user.Id}_help`}
+                                              message={
+                                                "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+                                              }
+                                            />
+                                          </div>
+                                          <div>
+                                            <label
+                                              className="text-xs ml-1"
+                                              htmlFor="mailsubject"
+                                            >
+                                              Subject{" "}
+                                            </label>
+                                            <input
+                                              id="mailsubject"
+                                              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                                              value={mail.subject}
+                                              onChange={(e) =>
+                                                handleSubjectChange(
+                                                  e.target.value,
+                                                  item
+                                                )
+                                              }
+                                              required
+                                            />
+                                          </div>
+                                          <div>
+                                            <label
+                                              className="text-xs ml-1"
+                                              htmlFor="mailbody"
+                                            >
+                                              Body{" "}
+                                            </label>
+                                            <EditorToolbar containerId="toolbar1" />
+                                            <ReactQuill
+                                              id="mailbody"
+                                              theme="snow"
+                                              value={mail.body || ""}
+                                              placeholder="add body of email "
+                                              modules={module1}
+                                              formats={formats}
+                                              onChange={(value) =>
+                                                handlebodyChange(value, item)
+                                              }
+                                            />
+                                          </div>
+                                          <button
+                                            type="submit"
+                                            className="op-btn op-btn-primary"
+                                          >
+                                            Resend
+                                          </button>
+                                        </form>
+                                      </div>
+                                    )}
+                                    {Object?.keys(isNextStep) <= 0 && (
+                                      <div className="flex justify-between items-center gap-2 my-2 px-3">
+                                        <div className="text-black">
+                                          {user?.signerPtr?.Name || "-"}{" "}
+                                          {`<${
+                                            user?.email
+                                              ? user.email
+                                              : user.signerPtr.Email
+                                          }>`}
+                                        </div>
+                                        <>{fetchUserStatus(user, item)}</>
+                                      </div>
+                                    )}
+                                  </React.Fragment>
+                                ))}
+                              </div>
+                            </ModalUi>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </>
+              )}
+            </tbody>
+          </table>
+        </div>
         <div className="op-join flex flex-wrap items-center p-2 ">
           {props.List.length > props.docPerPage && (
             <button

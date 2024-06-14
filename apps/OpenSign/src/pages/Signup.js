@@ -12,6 +12,7 @@ import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { isEnableSubscription } from "../constant/const";
 import { getAppLogo, openInNewTab } from "../constant/Utils";
+import Loader from "../primitives/Loader";
 const Signup = () => {
   const { width } = useWindowSize();
   const navigate = useNavigate();
@@ -503,8 +504,8 @@ const Signup = () => {
   return (
     <div className="">
       {state.loading && (
-        <div className="fixed w-[100vw] h-[100vh] flex justify-center items-center z-20 bg-black bg-opacity-25 text-[#3ac9d6] text-[50px]">
-          <div className="loader-37 "></div>
+        <div className="fixed w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-50">
+          <Loader />
         </div>
       )}
       <Title title={"Signup page"} />
@@ -668,7 +669,7 @@ const Signup = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold mt-2">
                     <button
                       type="submit"
-                      className="op-btn op-btn-accent"
+                      className="op-btn op-btn-primary"
                       disabled={state.loading}
                     >
                       {state.loading ? "Loading..." : "Register"}
@@ -698,10 +699,9 @@ const Signup = () => {
           <Alert type={state.alertType}>{state.alertMsg}</Alert>
         </div>
       ) : (
-        <div
-          className="loader-37 fixed text-[50px] top-[50%] left-[45%]"
-          style={{ color: "#3ac9d6" }}
-        ></div>
+        <div className="fixed w-full h-full flex justify-center items-center z-50">
+          <Loader />
+        </div>
       )}
     </div>
   );

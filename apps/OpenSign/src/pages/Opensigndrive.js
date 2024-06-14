@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
-import loader from "../assets/images/loader2.gif";
 import { iconColor } from "../constant/const";
 import { getDrive } from "../constant/Utils";
 import { useNavigate } from "react-router-dom";
@@ -10,14 +9,15 @@ import ModalUi from "../primitives/ModalUi";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Tour from "reactour";
 import axios from "axios";
+import Loader from "../primitives/Loader";
 
 const DriveBody = React.lazy(
   () => import("../components/opensigndrive/DriveBody")
 );
-const Loader = () => {
+const AppLoader = () => {
   return (
-    <div className="h-[100vh] flex justify-center items-center text-[45px] text-[#3dd3e0] ">
-      <div className="loader-37"></div>
+    <div className="h-[100vh] flex justify-center items-center">
+      <Loader />
     </div>
   );
 };
@@ -558,9 +558,8 @@ function Opensigndrive() {
       >
         <div className="h-full p-[20px] pt-[10px] pb-[15px]">
           {folderLoader ? (
-            <div className="h-[200px] flex flex-col justify-center items-center">
-              <img alt="loader" src={loader} className="w-[50px] h-[50px]" />
-              <span className="text-[13px] text-[gray]">Loading...</span>
+            <div className="h-[200px] flex justify-center items-center">
+              <Loader />
             </div>
           ) : (
             <form
@@ -598,7 +597,7 @@ function Opensigndrive() {
       </ModalUi>
       {isLoading.isLoad ? (
         <div className="flex flex-col justify-center items-center h-[100vh] w-full">
-          <img alt="loader" src={loader} className="w-[80px] h-[80px]" />
+          <Loader />
           <span className="text-[13px] text-[gray]">{isLoading.message}</span>
         </div>
       ) : handleError ? (
@@ -783,7 +782,7 @@ function Opensigndrive() {
             </div>
           ) : (
             <div data-tut="reactourFifth">
-              <React.Suspense fallback={<Loader />}>
+              <React.Suspense fallback={<AppLoader />}>
                 <DriveBody
                   dataTutSixth="reactourSixth"
                   dataTutSeventh="reactourSeventh"

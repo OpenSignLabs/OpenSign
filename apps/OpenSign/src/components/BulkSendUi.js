@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import SuggestionInput from "./shared/fields/SuggestionInput";
+import Loader from "../primitives/Loader";
 
 const BulkSendUi = (props) => {
   const [forms, setForms] = useState([]);
@@ -170,8 +171,8 @@ const BulkSendUi = (props) => {
   return (
     <>
       {isSubmit && (
-        <div className="absolute z-[999] h-full w-full flex justify-center items-center bg-black bg-opacity-40 text-[45px] text-[#3dd3e0]">
-          <div className="loader-37"></div>
+        <div className="absolute z-[999] h-full w-full flex justify-center items-center bg-black bg-opacity-30">
+          <Loader />
         </div>
       )}
       {props.Placeholders?.length > 0 ? (
@@ -183,7 +184,7 @@ const BulkSendUi = (props) => {
                   {forms?.map((form, index) => (
                     <div
                       key={form.Id}
-                      className="p-3 op-card border-[1px] border-gray-400 m-4 bg-base-200 text-base-content grid grid-cols-1 md:grid-cols-2 gap-2 relative"
+                      className="p-3 op-card border-[1px] border-gray-400 mt-3 mx-4 mb-4 bg-base-200 text-base-content grid grid-cols-1 md:grid-cols-2 gap-2 relative"
                     >
                       {form?.fields?.map((field, fieldIndex) => (
                         <div className="flex flex-col" key={field.fieldId}>
@@ -202,7 +203,7 @@ const BulkSendUi = (props) => {
                       {forms?.length > 1 && (
                         <button
                           onClick={() => handleRemoveForm(index)}
-                          className="absolute right-3 top-1 border border-gray-300 rounded-lg px-2 py-1"
+                          className="absolute right-3 top-1 text-[red] border-[1px] border-[red] rounded-lg w-[1.7rem] h-[1.7rem]"
                         >
                           <i className="fa-solid fa-trash"></i>
                         </button>

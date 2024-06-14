@@ -9,6 +9,7 @@ import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
 import Parse from "parse";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
+import Loader from "../primitives/Loader";
 
 function Webhook() {
   const navigation = useNavigate();
@@ -101,8 +102,8 @@ function Webhook() {
       {isErr && <Alert type="danger">Something went wrong.</Alert>}
 
       {isLoader ? (
-        <div className="h-[100vh] flex justify-center items-center text-[45px] text-[#3dd3e0]">
-          <div className="loader-37"></div>
+        <div className="h-[100vh] flex justify-center items-center">
+          <Loader />
         </div>
       ) : (
         <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded">
@@ -148,7 +149,7 @@ function Webhook() {
                   "https://docs.opensignlabs.com/docs/API-docs/save-update-webhook"
                 )
               }
-              className="op-btn op-btn-primary my-2"
+              className="op-btn op-btn-secondary my-2"
             >
               View Docs
             </button>

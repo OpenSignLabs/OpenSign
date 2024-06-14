@@ -201,7 +201,7 @@ function PlaceholderCopy(props) {
             <div key={key} className="flex flex-col">
               <label className="text-[16px] font-medium">
                 <input
-                  className="mr-[10px] accent-[red]"
+                  className="mr-[8px] op-radio op-radio-xs"
                   type="radio"
                   value={data}
                   onChange={() => setSelectCopyType(data)}

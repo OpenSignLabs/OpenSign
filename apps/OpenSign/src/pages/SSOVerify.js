@@ -8,7 +8,7 @@ import { fetchSubscription } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import ModalUi from "../primitives/ModalUi";
-import loader from "../assets/images/loader2.gif";
+import Loader from "../primitives/Loader";
 
 const SSOVerify = () => {
   const location = useLocation();
@@ -287,16 +287,14 @@ const SSOVerify = () => {
   return (
     <div>
       <div className="w-full h-screen flex flex-col justify-center items-center text-sm md:text-xl ">
-        {message === "Verifying SSO..." && (
-          <img alt="loader" src={loader} className="w-[80px] h-[80px]" />
-        )}
+        {message === "Verifying SSO..." && <Loader />}
         <div className="text-base-content">{message}</div>
       </div>
       <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>
         <div className="relative">
           {isLoader && (
-            <div className="absolute w-full h-full bg-black bg-opacity-25 flex justify-center items-center text-[45px] text-[#3dd3e0]">
-              <div className="loader-37"></div>
+            <div className="absolute w-full h-full bg-black bg-opacity-25 flex justify-center items-center">
+              <Loader />
             </div>
           )}
           <form

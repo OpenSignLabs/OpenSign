@@ -13,12 +13,12 @@ function PrevNext({ pageNumber, allPages, changePage }) {
   return (
     <div className="flex items-center">
       <button
-        className="op-btn op-btn-primary op-btn-xs md:op-btn-sm font-semibold text-xs"
+        className="op-btn op-btn-secondary op-btn-xs md:op-btn-sm font-semibold text-xs"
         disabled={pageNumber <= 1}
         onClick={previousPage}
       >
         <span className="block lg:hidden">
-          <i className="fa fa-backward cursor-pointer" aria-hidden="true"></i>
+          <i className="fa fa-backward" aria-hidden="true"></i>
         </span>
         <span className="lg:block hidden">Prev</span>
       </button>
@@ -26,12 +26,12 @@ function PrevNext({ pageNumber, allPages, changePage }) {
         {pageNumber || (allPages ? 1 : "--")} of {allPages || "--"}
       </span>
       <button
-        className="op-btn op-btn-primary op-btn-xs md:op-btn-sm font-semibold text-xs"
+        className="op-btn op-btn-secondary op-btn-xs md:op-btn-sm font-semibold text-xs"
         disabled={pageNumber >= allPages}
         onClick={nextPage}
       >
         <span className="block lg:hidden">
-          <i className="fa fa-forward cursor-pointer" aria-hidden="true"></i>
+          <i className="fa fa-forward" aria-hidden="true"></i>
         </span>
         <span className="lg:block hidden">Next</span>
       </button>

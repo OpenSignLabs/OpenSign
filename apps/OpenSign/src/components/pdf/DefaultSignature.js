@@ -17,7 +17,7 @@ function DefaultSignature({ defaultSignImg, xyPostion, setDefaultSignAlert }) {
 
   return (
     <div data-tut="reactourThird">
-      <div className="text-base-content font-semibold px-3 py-2 text-[15px] border-b-[1px] border-base-content">
+      <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
         Signature
       </div>
       <div className="flex flex-col items-center mt-[10px] font-semibold">

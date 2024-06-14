@@ -1,4 +1,5 @@
 import React from "react";
+import Loader from "../../primitives/Loader";
 
 function VerifyEmail(props) {
   return (
@@ -39,8 +40,8 @@ function VerifyEmail(props) {
             </div>
           </form>
         ) : props.otpLoader ? (
-          <div className="h-[150px] flex items-center justify-center text-[45px] text-[#3dd3e0]">
-            <div className="loader-37"></div>
+          <div className="h-[150px] flex items-center justify-center">
+            <Loader />
           </div>
         ) : (
           <div className="px-6 py-3 text-base-content">

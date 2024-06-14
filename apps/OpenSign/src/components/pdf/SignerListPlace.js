@@ -5,7 +5,7 @@ import { Tooltip } from "react-tooltip";
 function SignerListPlace(props) {
   return (
     <div>
-      <div className="pt-2 pb-1 px-3 font-semibold text-base-content">
+      <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
         <span>
           {props.title ? props.title : "Recipients"}
           <span className="text-xs mt-1 ml-0.5">
@@ -61,7 +61,7 @@ function SignerListPlace(props) {
           <div
             role="button"
             data-tut="reactourAddbtn"
-            className="op-btn op-btn-primary op-btn-outline w-full my-[2px]"
+            className="op-btn op-btn-accent op-btn-outline w-full my-[2px]"
             disabled={props?.isMailSend ? true : false}
             onClick={() => props.handleAddSigner()}
           >
@@ -71,7 +71,7 @@ function SignerListPlace(props) {
           <div
             role="button"
             data-tut="reactourAddbtn"
-            className="op-btn op-btn-primary op-btn-outline w-full my-[2px]"
+            className="op-btn op-btn-accent op-btn-outline w-full my-[2px]"
             disabled={props?.isMailSend ? true : false}
             onClick={() => props.setIsAddSigner(true)}
           >

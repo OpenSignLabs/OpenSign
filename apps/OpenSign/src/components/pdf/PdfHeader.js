@@ -10,6 +10,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
+import Loader from "../../primitives/Loader";
 
 function Header({
   isPdfRequestFiles,
@@ -468,8 +469,8 @@ function Header({
         </div>
       )}
       {isDownloading === "pdf" && (
-        <div className="fixed z-[200] inset-0 flex justify-center items-center bg-black bg-opacity-30 text-[45px] text-[#3dd3e0]">
-          <div className="loader-37"></div>
+        <div className="fixed z-[200] inset-0 flex justify-center items-center bg-black bg-opacity-30">
+          <Loader />
         </div>
       )}
       <ModalUi
