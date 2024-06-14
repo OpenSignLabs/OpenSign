@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { randomId, textWidget } from "../../constant/Utils";
 
@@ -214,33 +213,22 @@ function PlaceholderCopy(props) {
           );
         })}
 
-        <div
-          style={{
-            height: "1px",
-            backgroundColor: "#9f9f9f",
-            width: "100%",
-            marginTop: "15px",
-            marginBottom: "15px"
-          }}
-        ></div>
+        <div className="flex bg-[#9f9f9f] w-full my-[15px]"></div>
         <button
           onClick={() => {
             handleApplyCopy();
             handleUniqueId();
           }}
-          style={{ background: themeColor }}
           type="button"
           disabled={!selectCopyType}
-          className="finishBtn"
+          className="op-btn op-btn-primary"
         >
           Apply
         </button>
         <button
           type="button"
-          className="finishBtn cancelBtn"
-          onClick={() => {
-            handleUniqueId();
-          }}
+          className="op-btn op-btn-ghost"
+          onClick={() => handleUniqueId()}
         >
           Cancel
         </button>

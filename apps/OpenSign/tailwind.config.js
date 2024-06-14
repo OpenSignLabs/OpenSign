@@ -61,7 +61,10 @@ module.exports = {
           warning: "#ffbe00",
           "warning-content": "#ccd9e8",
           error: "#ff0000",
-          "error-content": "#f3f4f6"
+          "error-content": "#f3f4f6",
+          "--rounded-btn": "1.9rem",
+          "--tab-border": "2px",
+          "--tab-radius": "0.7rem"
         }
       }
     ],
