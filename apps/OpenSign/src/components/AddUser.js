@@ -3,6 +3,7 @@ import Parse from "parse";
 import axios from "axios";
 import Title from "./Title";
 import Alert from "../primitives/Alert";
+import Loader from "../primitives/Loader";
 
 const AddUser = (props) => {
   const [name, setName] = useState("");
@@ -194,8 +195,8 @@ const AddUser = (props) => {
       <Title title={"Add User"} />
       {isUserExist && <Alert type="danger">User already exists!</Alert>}
       {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50 text-[45px] text-[#3dd3e0]">
-          <div className="loader-37"></div>
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
+          <Loader />
         </div>
       )}
       <div className="w-full mx-auto">

@@ -255,76 +255,80 @@ function WidgetComponent({
             className="stickyfooter"
             style={{ width: window.innerWidth + "px" }}
           >
-            {isSigners && (
-              <div
-                data-tut={dataTut}
-                className="py-[10px] flex justify-center items-center op-card"
-                style={{
-                  background: blockColor
-                    ? blockColor
-                    : isSelectListId
-                      ? color[isSelectListId % color.length]
-                      : color[0]
-                }}
-                onClick={() => handleModal()}
-              >
-                <span className="text-[13px] font-bold flex items-center">
-                  {title ? title : "Recipient"}
-                  {signersdata[isSelectListId]?.Role && (
-                    <div>
-                      {signersdata[isSelectListId]?.Name ? (
-                        <>
-                          :{" "}
-                          {signersdata[isSelectListId]?.Name?.length > 12
-                            ? `${signersdata[isSelectListId].Name.slice(
-                                0,
-                                12
-                              )}...`
-                            : signersdata[isSelectListId]?.Name}
-                        </>
-                      ) : (
-                        <>
-                          :{" "}
-                          {signersdata[isSelectListId]?.Role?.length > 12
-                            ? `${signersdata[isSelectListId].Role.slice(
-                                0,
-                                12
-                              )}...`
-                            : signersdata[isSelectListId]?.Role}
-                        </>
-                      )}
+            <div className="mx-1">
+              {isSigners && (
+                <div
+                  data-tut={dataTut}
+                  className="py-[10px] flex justify-center items-center op-card"
+                  style={{
+                    background: blockColor
+                      ? blockColor
+                      : isSelectListId
+                        ? color[isSelectListId % color.length]
+                        : color[0]
+                  }}
+                  onClick={() => handleModal()}
+                >
+                  <span className="text-[13px] font-bold flex items-center">
+                    {title ? title : "Recipient"}
+                    {signersdata[isSelectListId]?.Role && (
+                      <div>
+                        {signersdata[isSelectListId]?.Name ? (
+                          <>
+                            :{" "}
+                            {signersdata[isSelectListId]?.Name?.length > 12
+                              ? `${signersdata[isSelectListId].Name.slice(
+                                  0,
+                                  12
+                                )}...`
+                              : signersdata[isSelectListId]?.Name}
+                          </>
+                        ) : (
+                          <>
+                            :{" "}
+                            {signersdata[isSelectListId]?.Role?.length > 12
+                              ? `${signersdata[isSelectListId].Role.slice(
+                                  0,
+                                  12
+                                )}...`
+                              : signersdata[isSelectListId]?.Role}
+                          </>
+                        )}
+                      </div>
+                    )}
+                    <div className="ml-[6px] text-[16px]">
+                      <i className="fa-solid fa-angle-down"></i>
                     </div>
-                  )}
-                  <div className="ml-[6px] text-[16px]">
-                    <i className="fa-solid fa-angle-down"></i>
-                  </div>
-                </span>
-              </div>
-            )}
-            {handleAddSigner ? (
-              <div
-                data-tut="reactourAddbtn"
-                className="op-btn op-btn-primary w-full my-[2px]"
-                onClick={() => handleAddSigner()}
-              >
-                <i className="fa-solid fa-plus"></i>
-                <span>Add role</span>
-              </div>
-            ) : (
-              setIsAddSigner && (
+                  </span>
+                </div>
+              )}
+            </div>
+            <div className="mx-1">
+              {handleAddSigner ? (
                 <div
                   data-tut="reactourAddbtn"
-                  className="op-btn op-btn-primary w-full my-[2px]"
-                  onClick={() => setIsAddSigner(true)}
+                  className="op-btn op-btn-accent w-full my-[2px]"
+                  onClick={() => handleAddSigner()}
                 >
                   <i className="fa-solid fa-plus"></i>
-                  <span>Add recipients</span>
+                  <span>Add role</span>
                 </div>
-              )
-            )}
+              ) : (
+                setIsAddSigner && (
+                  <div
+                    data-tut="reactourAddbtn"
+                    className="op-btn op-btn-accent w-full my-[2px]"
+                    onClick={() => setIsAddSigner(true)}
+                  >
+                    <i className="fa-solid fa-plus"></i>
+                    <span>Add recipients</span>
+                  </div>
+                )
+              )}
+            </div>
             <div
               ref={scrollContainerRef}
-              className="bg-white border-[2px] border-t-primary"
+              className="bg-base-100 border-[2px] border-t-primary"
             >
               <div className="flex whitespace-nowrap overflow-x-scroll pt-[10px] pb-[5px] pr-[5px]">
                 <WidgetList
@@ -347,7 +351,7 @@ function WidgetComponent({
             isMailSend ? "bg-opacity-50 pointer-events-none" : ""
           } hidden md:block w-[180px] h-full bg-base-100`}
         >
-          <div className="text-base-content px-3 py-2 text-[15px] border-b-[1px] border-base-content">
+          <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
             <span>Fields</span>
           </div>
           <div className="flex flex-col items-center my-3">

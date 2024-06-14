@@ -5,6 +5,7 @@ import plansArr from "../json/plansArr";
 import Title from "../components/Title";
 import Parse from "parse";
 import { openInNewTab } from "../constant/Utils";
+import Loader from "../primitives/Loader";
 const listItemStyle = {
   paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -85,8 +86,8 @@ const PlanSubscriptions = () => {
     <>
       <Title title={"Subscriptions"} />
       {isLoader ? (
-        <div className="flex items-center justify-center h-[full] text-[45px] text-[#3dd3e0]">
-          <div className="loader-37"></div>
+        <div className="flex items-center justify-center h-screen">
+          <Loader />
         </div>
       ) : (
         <div className="overflow-y-auto max-h-full">

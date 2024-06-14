@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
+import Loader from "../primitives/Loader";
 
 const AddSigner = (props) => {
   const [name, setName] = useState("");
@@ -225,11 +226,11 @@ const AddSigner = (props) => {
   return (
     <div className="h-full p-[20px]">
       {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 text-[45px] text-[#3dd3e0]">
-          <div className="loader-37"></div>
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30">
+          <Loader />
         </div>
       )}
-      <div className="w-full mx-auto p-2">
+      <div className="w-full mx-auto p-2 text-base-content">
         {isUserExist && (
           <div className="mb-3 flex items-center">
             <input
@@ -239,17 +240,14 @@ const AddSigner = (props) => {
               onChange={handleAddYourselfChange}
               className="op-checkbox op-checkbox-sm"
             />
-            <label htmlFor="addYourself" className="ml-2 text-gray-700 mb-0">
+            <label htmlFor="addYourself" className="ml-2 mb-0">
               Add Yourself
             </label>
           </div>
         )}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label
-              htmlFor="name"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+            <label htmlFor="name" className="block text-xs font-semibold">
               Name
               <span className="text-[red] text-[13px]"> *</span>
             </label>
@@ -264,10 +262,7 @@ const AddSigner = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label
-              htmlFor="email"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+            <label htmlFor="email" className="block text-xs font-semibold">
               Email
               <span className="text-[red] text-[13px]"> *</span>
             </label>
@@ -282,10 +277,7 @@ const AddSigner = (props) => {
             />
           </div>
           <div className="mb-3">
-            <label
-              htmlFor="phone"
-              className="block text-xs text-gray-700 font-semibold"
-            >
+            <label htmlFor="phone" className="block text-xs font-semibold">
               Phone
             </label>
             <input
@@ -297,7 +289,6 @@ const AddSigner = (props) => {
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
-
           <div className="mt-4 flex gap-x-2 justify-start">
             <button type="submit" className="op-btn op-btn-primary">
               Submit

@@ -352,12 +352,9 @@ function PlaceholderType(props) {
             return (
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  style={{
-                    // width: props.pos.Width,
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: ind === 0 ? 0 : "5px"
-                  }}
+                  className={`${
+                    ind === 0 ? "mt-0" : "mt-[5px]"
+                  } flex justify-center op-checkbox op-checkbox-xs rounded-[0.350rem]`}
                   onBlur={handleInputBlur}
                   disabled={
                     props.isNeedSign &&
@@ -748,12 +745,11 @@ function PlaceholderType(props) {
             return (
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  style={{
-                    width: props.pos.Width,
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: ind === 0 ? 0 : "5px"
-                  }}
+                  className={`${ind === 0 ? "mt-0" : "mt-[5px]"} ${
+                    props?.pos?.Width
+                      ? `w-[${props?.pos?.Width}px] h-[${props?.pos?.Width}px]`
+                      : "w-[15px] h-[15px]"
+                  } flex justify-center op-radio`}
                   type="radio"
                   disabled={
                     props.isNeedSign &&

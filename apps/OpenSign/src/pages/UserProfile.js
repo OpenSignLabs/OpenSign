@@ -16,6 +16,7 @@ import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, handleSendOTP } from "../constant/Utils";
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
+import Loader from "../primitives/Loader";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -302,8 +303,8 @@ function UserProfile() {
     <React.Fragment>
       <Title title={"Profile"} />
       {isLoader ? (
-        <div className="h-[100vh] flex justify-center items-center text-[45px] text-[#3dd3e0]">
-          <div className="loader-37"></div>
+        <div className="h-[100vh] flex justify-center items-center">
+          <Loader />
         </div>
       ) : (
         <div className="flex justify-center items-center w-full relative">
@@ -544,8 +545,8 @@ function UserProfile() {
               handleClose={handleCloseVerifyModal}
             >
               {otpLoader ? (
-                <div className="h-[150px] flex justify-center items-center text-[45px] text-[#3dd3e0]">
-                  <div className="loader-37"></div>
+                <div className="h-[150px] flex justify-center items-center">
+                  <Loader />
                 </div>
               ) : (
                 <form onSubmit={(e) => handleVerifyEmail(e)}>

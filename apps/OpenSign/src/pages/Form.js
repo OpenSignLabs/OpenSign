@@ -19,6 +19,7 @@ import ModalUi from "../primitives/ModalUi";
 import { Tooltip } from "react-tooltip";
 import Upgrade from "../primitives/Upgrade";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
+import Loader from "../primitives/Loader";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -574,8 +575,8 @@ const Forms = (props) => {
         </Alert>
       )}
       {isSubmit ? (
-        <div className="h-[300px] text-[45px] text-[#3dd3e0] flex justify-center items-center">
-          <div className="loader-37"></div>
+        <div className="h-[300px] flex justify-center items-center">
+          <Loader />
         </div>
       ) : (
         <>

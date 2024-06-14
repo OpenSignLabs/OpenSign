@@ -8,7 +8,7 @@ function Signedby({ pdfDetails }) {
 
   return (
     <div className="hidden md:block w-[180px] h-full bg-base-100">
-      <div className="px-3 pt-2 pb-1 text-[15px] text-base-content font-semibold">
+      <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
         Signed By
       </div>
       <div className="mt-[2px] bg-base-100">

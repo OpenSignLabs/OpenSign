@@ -3,6 +3,7 @@ import Parse from "parse";
 import { jwtDecode } from "jwt-decode";
 import { useScript } from "../hook/useScript";
 import ModalUi from "../primitives/ModalUi";
+import Loader from "../primitives/Loader";
 
 /*
  * `GoogleSignInBtn`as it's name indicates it render google sign in button
@@ -208,8 +209,8 @@ const GoogleSignInBtn = ({
   return (
     <div className="relative">
       {thirdpartyLoader && (
-        <div className="fixed w-[100vw] h-[100vh] bg-black bg-opacity-25 top-0 left-0 z-20 text-[50px] text-[#3ac9d6]">
-          <div className="fixed top-[50%] left-[45%] loader-37"></div>
+        <div className="fixed flex justify-center items-center inset-0 bg-black bg-opacity-25 z-20 ">
+          <Loader />
         </div>
       )}
       <div ref={googleBtn} className="text-sm"></div>

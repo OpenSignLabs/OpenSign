@@ -78,15 +78,23 @@ const SelectSigners = (props) => {
             defaultOptions
             value={selected}
             loadingMessage={() => "Loading..."}
-            noOptionsMessage={() => "User not Found"}
+            noOptionsMessage={() => "Contact not found"}
             loadOptions={loadOptions}
             onChange={handleOptions}
             unstyled
             classNames={{
               control: () =>
-                "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs",
+                "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full h-full text-[11px]",
+              valueContainer: () =>
+                "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
+              multiValue: () => "op-badge op-badge-primary h-full text-[11px]",
+              multiValueLabel: () => "mb-[2px]",
+              menu: () =>
+                "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
+              menuList: () => "shadow-md rounded-lg overflow-hidden",
               option: () =>
-                "bg-base-200 text-base-content hover:bg-base-300 p-2 shadow-md"
+                "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
+              noOptionsMessage: () => "p-2 bg-base-200 rounded-lg m-1 p-2"
             }}
           />
         </div>

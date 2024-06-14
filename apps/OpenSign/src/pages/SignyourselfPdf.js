@@ -6,7 +6,6 @@ import { isEnableSubscription } from "../constant/const";
 import Confetti from "react-confetti";
 import axios from "axios";
 import Loader from "../primitives/LoaderWithMsg";
-import loader from "../assets/images/loader2.gif";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -1100,7 +1099,7 @@ function SignYourSelf() {
         <div>
           {isUiLoading && (
             <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-start bg-[#e6f2f2] bg-opacity-80">
-              <img alt="loader" src={loader} className="w-[100px] h-[100px]" />
+              <Loader />
               <span className="font-bold text-[13px]">
                 This might take some time
               </span>

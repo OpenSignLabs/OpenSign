@@ -16,6 +16,7 @@ import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { fetchSubscription, getAppLogo, openInNewTab } from "../constant/Utils";
+import Loader from "../primitives/Loader";
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -1064,11 +1065,9 @@ function Login() {
       {state.loading && (
         <div
           aria-live="assertive"
-          className="fixed w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-20 text-[50px] text-[#3ac9d6]"
+          className="fixed w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-50"
         >
-          <div role="status" className="loader-37">
-            <span className="sr-only">Loading...</span>
-          </div>
+          <Loader />
         </div>
       )}
       {appInfo && appInfo.appId ? (
@@ -1160,7 +1159,7 @@ function Login() {
                       </button>
                       <button
                         type="button"
-                        className="op-btn op-btn-secondary"
+                        className="op-btn op-btn-accent"
                         disabled={state.loading}
                         onClick={() =>
                           navigate(
@@ -1287,9 +1286,11 @@ function Login() {
         </>
       ) : (
         <div
-          className="loader-37 fixed top-[50%] left-[45%] text-[50px] text-[#3ac9d6]"
-          style={{ color: "#3ac9d6" }}
-        ></div>
+          aria-live="assertive"
+          className="fixed w-full h-full flex justify-center items-center z-50"
+        >
+          <Loader />
+        </div>
       )}
     </div>
   );

@@ -4,7 +4,6 @@ import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
 import axios from "axios";
-import loader from "../assets/images/loader2.gif";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -35,7 +34,7 @@ import {
   handleDownloadCertificate,
   darkenColor
 } from "../constant/Utils";
-import Loader from "../primitives/LoaderWithMsg";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -46,6 +45,7 @@ import ModalUi from "../primitives/ModalUi";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import { appInfo } from "../constant/appinfo";
+import Loader from "../primitives/Loader";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -1388,18 +1388,14 @@ function PdfRequestFiles() {
       ) : (
         <>
           {isLoading.isLoad ? (
-            <Loader isLoading={isLoading} />
+            <LoaderWithMsg isLoading={isLoading} />
           ) : handleError ? (
             <HandleError handleError={handleError} />
           ) : (
             <div>
               {isUiLoading && (
                 <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
-                  <img
-                    alt="loader"
-                    src={loader}
-                    className="w-[100px] h-[100px]"
-                  />
+                  <Loader />
                   <span className="text-[13px] font-bold">
                     This might take some time
                   </span>
@@ -1635,8 +1631,8 @@ function PdfRequestFiles() {
                     </div>
                   </ModalUi>
                   {isDownloading === "pdf" && (
-                    <div className="fixed z-[1000] inset-0 flex justify-center items-center bg-black bg-opacity-30 text-[45px] text-[#3dd3e0]">
-                      <div className="loader-37"></div>
+                    <div className="fixed z-[1000] inset-0 flex justify-center items-center bg-black bg-opacity-30">
+                      <Loader />
                     </div>
                   )}
                   <ModalUi
@@ -1739,14 +1735,14 @@ function PdfRequestFiles() {
                     >
                       {signedSigners.length > 0 && (
                         <div data-tut="reactourSecond">
-                          <div className="px-3 pt-2 pb-1 text-[15px] text-base-content font-semibold">
+                          <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
                             Signed by
                           </div>
                           <div className="mt-[2px]">
                             {signedSigners.map((obj, ind) => {
                               return (
                                 <div
-                                  className="rounded-xl mx-1 flex flex-row items-center py-[10px]"
+                                  className="rounded-xl mx-1 flex flex-row items-center py-[10px] mt-1"
                                   style={{
                                     background: checkSignerBackColor(obj)
                                   }}
@@ -1779,20 +1775,14 @@ function PdfRequestFiles() {
 
                       {unsignedSigners.length > 0 && (
                         <div data-tut="reactourFirst">
-                          <div
-                            className={`${
-                              signedSigners?.length > 0
-                                ? "border-b-[1px] border-base-content"
-                                : ""
-                            } px-3 pt-2 pb-1 text-[15px] text-base-content font-semibold`}
-                          >
+                          <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
                             Yet to sign
                           </div>
                           <div className="mt-[5px]">
                             {unsignedSigners.map((obj, ind) => {
                               return (
                                 <div
-                                  className="rounded-xl mx-1 flex flex-row items-center py-[10px]"
+                                  className="rounded-xl mx-1 flex flex-row items-center py-[10px] mt-1"
                                   style={{
                                     background: checkSignerBackColor(obj)
                                   }}

@@ -5,7 +5,7 @@ import axios from "axios";
 import { getBase64FromUrl } from "../../constant/Utils";
 import { themeColor } from "../../constant/const";
 import printModule from "print-js";
-import loader from "../../assets/images/loader2.gif";
+import Loader from "../../primitives/Loader";
 
 function EmailComponent({
   isEmail,
@@ -174,7 +174,7 @@ function EmailComponent({
           <div className="modalcontainer">
             {isLoading && (
               <div className="absolute w-full h-full flex flex-col justify-center items-center z-[20] bg-[#e6f2f2] bg-opacity-80">
-                <img alt="loader" src={loader} className="w-[70px] h-[70px]" />
+                <Loader />
                 <span className="text-[12px] font-bold">
                   This might take some time
                 </span>

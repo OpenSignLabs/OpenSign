@@ -12,6 +12,7 @@ import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { isEnableSubscription } from "../constant/const";
 import { useCookies } from "react-cookie";
 import { fetchSubscription } from "../constant/Utils";
+import Loader from "../primitives/Loader";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
@@ -253,8 +254,8 @@ const HomeLayout = () => {
       {isUserValid ? (
         <>
           {isLoader ? (
-            <div className="flex h-[100vh] justify-center items-center text-[45px] text-[#3dd3e0]">
-              <div className="loader-37"></div>
+            <div className="flex h-[100vh] justify-center items-center">
+              <Loader />
             </div>
           ) : (
             <>

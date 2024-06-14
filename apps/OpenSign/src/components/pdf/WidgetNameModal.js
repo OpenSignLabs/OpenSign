@@ -236,7 +236,7 @@ const WidgetNameModal = (props) => {
               return (
                 <div key={ind} className="flex flex-row gap-[5px] items-center">
                   <input
-                    className="mr-[3px] accent-[red]"
+                    className="mr-[2px] op-radio op-radio-xs"
                     type="radio"
                     name="status"
                     onChange={() =>

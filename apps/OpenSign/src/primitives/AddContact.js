@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
 import "../styles/AddUser.css";
+import Loader from "./Loader";
 const AddContact = (props) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -197,22 +198,25 @@ const AddContact = (props) => {
   return (
     <div className="h-full px-[20px] py-[10px]">
       {isLoader && (
-        <div className="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-30 text-[45px] text-[#3dd3e0]">
-          <div className="loader-37"></div>
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30">
+          <Loader />
         </div>
       )}
       <div className="w-full mx-auto p-[8px]">
         <div className="text-[14px] font-[700]">Add User</div>
         {isUserExist && (
-          <div className="mb-[0.75rem]">
+          <div className="mb-[0.75rem] flex items-center mt-1">
             <input
               type="checkbox"
               id="addYourself"
               checked={addYourself}
               onChange={handleAddYourselfChange}
-              className="form-checkbox"
+              className="op-checkbox op-checkbox-sm"
             />
-            <label htmlFor="addYourself" className="checkbox-label ">
+            <label
+              htmlFor="addYourself"
+              className="ml-[0.5rem] text-base-content mb-0"
+            >
               Add Yourself
             </label>
           </div>

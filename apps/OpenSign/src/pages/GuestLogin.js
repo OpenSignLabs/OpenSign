@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import loader from "../assets/images/loader2.gif";
 import axios from "axios";
 import { isEnableSubscription } from "../constant/const";
 import { contractUsers, getAppLogo } from "../constant/Utils";
 import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 import Parse from "parse";
+import Loader from "../primitives/Loader";
 
 function GuestLogin() {
   const { id, userMail, contactBookId, base64url } = useParams();
@@ -184,7 +184,7 @@ function GuestLogin() {
     <div className="p-[2rem]">
       {isLoading ? (
         <div className="flex flex-col justify-center items-center h-[100vh]">
-          <img className="w-[80px] h-[80px]" alt="loader" src={loader} />
+          <Loader />
           <span className="text-[13px] text-[gray]">{isLoading.message}</span>
         </div>
       ) : (

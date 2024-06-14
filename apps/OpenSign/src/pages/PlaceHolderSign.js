@@ -10,7 +10,6 @@ import { useDrag, useDrop } from "react-dnd";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
-import loader from "../assets/images/loader2.gif";
 import { useLocation, useParams } from "react-router-dom";
 import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -1643,11 +1642,7 @@ function PlaceHolderSign() {
           >
             {isUiLoading && (
               <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
-                <img
-                  alt="loader"
-                  src={loader}
-                  className="w-[100px] h-[100px]"
-                />
+                <Loader />
                 <span className="text-[13px] font-bold">
                   This might take some time
                 </span>
