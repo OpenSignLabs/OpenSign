@@ -31,7 +31,7 @@ const AddRoleModal = (props) => {
             <button
               onClick={props.handleCloseRoleModal}
               type="button"
-              className="op-btn op-btn-secondary ml-2"
+              className="op-btn op-btn-ghost ml-2"
             >
               Close
             </button>

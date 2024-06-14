@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
-import { themeColor } from "../../constant/const";
 
 function SignPad({
   isSignPad,
@@ -291,7 +290,7 @@ function SignPad({
                 <div className="flex flex-row justify-between mt-[3px]">
                   <div className="flex flex-row justify-between gap-[5px] md:gap-[8px] text-[11px] md:text-base">
                     {isStamp ? (
-                      <span style={{ color: themeColor }} className="signTab">
+                      <span className="op-link-primary op-link">
                         {widgetType === "image"
                           ? "Upload image"
                           : "Upload stamp image"}
@@ -306,22 +305,14 @@ function SignPad({
                               setIsTab("draw");
                               setImage();
                             }}
-                            style={{
-                              color: isTab === "draw" ? themeColor : "#515252",
-                              marginLeft: "2px"
-                            }}
-                            className="signTab"
+                            className={`${
+                              isTab === "draw"
+                                ? "op-link-primary"
+                                : "no-underline"
+                            } op-link underline-offset-8 ml-[2px]`}
                           >
                             Draw
                           </span>
-
-                          <div
-                            className={
-                              isTab === "draw"
-                                ? "border-[1.5px] border-[#108783]"
-                                : "border-[1.5px] border-[#ffffff]"
-                            }
-                          ></div>
                         </div>
                         <div>
                           <span
@@ -331,21 +322,14 @@ function SignPad({
                               setIsTab("uploadImage");
                               setSignatureType("");
                             }}
-                            style={{
-                              color:
-                                isTab === "uploadImage" ? themeColor : "#515252"
-                            }}
-                            className="signTab"
+                            className={`${
+                              isTab === "uploadImage"
+                                ? "op-link-primary"
+                                : "no-underline"
+                            } op-link underline-offset-8 ml-[2px]`}
                           >
                             Upload Image
                           </span>
-                          <div
-                            className={
-                              isTab === "uploadImage"
-                                ? "border-[1.5px] border-[#108783]"
-                                : "border-[1.5px] border-[#ffffff]"
-                            }
-                          ></div>
                         </div>
                         <div>
                           <span
@@ -356,22 +340,14 @@ function SignPad({
                               setSignatureType("");
                               setImage();
                             }}
-                            style={{
-                              color: isTab === "type" ? themeColor : "#515252",
-                              marginLeft: "2px"
-                            }}
-                            className="signTab"
+                            className={`${
+                              isTab === "type"
+                                ? "op-link-primary"
+                                : "no-underline"
+                            } op-link underline-offset-8 ml-[2px]`}
                           >
                             Type
                           </span>
-
-                          <div
-                            className={
-                              isTab === "type"
-                                ? "border-[1.5px] border-[#108783]"
-                                : "border-[1.5px] border-[#ffffff]"
-                            }
-                          ></div>
                         </div>
                         {!isInitial && defaultSign ? (
                           <div>
@@ -383,23 +359,14 @@ function SignPad({
                                 setSignatureType("");
                                 setImage();
                               }}
-                              style={{
-                                color:
-                                  isTab === "mysignature"
-                                    ? themeColor
-                                    : "#515252"
-                              }}
-                              className="signTab"
+                              className={`${
+                                isTab === "mysignature"
+                                  ? "op-link-primary"
+                                  : "no-underline"
+                              } op-link underline-offset-8 ml-[2px]`}
                             >
                               My Signature
                             </span>
-                            <div
-                              className={
-                                isTab === "mysignature"
-                                  ? "border-[1.5px] border-[#108783]"
-                                  : "border-[1.5px] border-[#ffffff]"
-                              }
-                            ></div>
                           </div>
                         ) : (
                           isInitial &&
@@ -413,23 +380,14 @@ function SignPad({
                                   setSignatureType("");
                                   setImage();
                                 }}
-                                style={{
-                                  color:
-                                    isTab === "mysignature"
-                                      ? themeColor
-                                      : "#515252"
-                                }}
-                                className="signTab"
+                                className={`${
+                                  isTab === "mysignature"
+                                    ? "op-link-primary"
+                                    : "no-underline"
+                                } op-link underline-offset-8 ml-[2px]`}
                               >
                                 My Initials
                               </span>
-                              <div
-                                className={
-                                  isTab === "mysignature"
-                                    ? "border-[1.5px] border-[#108783]"
-                                    : "border-[1.5px] border-[#ffffff]"
-                                }
-                              ></div>
                             </div>
                           )
                         )}

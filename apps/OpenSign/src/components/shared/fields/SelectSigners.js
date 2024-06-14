@@ -101,7 +101,7 @@ const SelectSigners = (props) => {
         <p
           className={`${
             isError ? "text-[red]" : "text-transparent"
-          } text-[12px] m-[5px]`}
+          } text-[11px] ml-[6px] my-[2px]`}
         >
           Please select signer
         </p>
