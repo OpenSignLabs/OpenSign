@@ -1,5 +1,4 @@
 import React, { Suspense, lazy } from "react";
-import Loader from "../../primitives/Loader";
 const DashboardButton = lazy(() => import("./DashboardButton"));
 const DashboardCard = lazy(() => import("./DashboardCard"));
 const DashboardReport = lazy(() => import("./DashboardReport"));
@@ -19,19 +18,11 @@ const buttonList = [
 ];
 const GetDashboard = (props) => {
   const Button = ({ label, redirectId, redirectType, icon }) => (
-    <Suspense
-      fallback={
-        <div className="h-[300px] w-full flex justify-center items-center">
-          <Loader />
-        </div>
-      }
-    >
-      <DashboardButton
-        Icon={icon}
-        Label={label}
-        Data={{ Redirect_type: redirectType, Redirect_id: redirectId }}
-      />
-    </Suspense>
+    <DashboardButton
+      Icon={icon}
+      Label={label}
+      Data={{ Redirect_type: redirectType, Redirect_id: redirectId }}
+    />
   );
   const renderSwitchWithTour = (col) => {
     switch (col.widget.type) {
@@ -45,8 +36,8 @@ const GetDashboard = (props) => {
           >
             <Suspense
               fallback={
-                <div className="h-[300px] w-full flex justify-center items-center">
-                  <Loader />
+                <div className="h-[150px] w-full flex justify-center items-center">
+                  loading...
                 </div>
               }
             >

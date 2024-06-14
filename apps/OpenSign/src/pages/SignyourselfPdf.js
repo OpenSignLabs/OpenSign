@@ -5,7 +5,7 @@ import Parse from "parse";
 import { isEnableSubscription } from "../constant/const";
 import Confetti from "react-confetti";
 import axios from "axios";
-import Loader from "../primitives/LoaderWithMsg";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -47,7 +47,7 @@ import Title from "../components/Title";
 import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import VerifyEmail from "../components/pdf/VerifyEmail";
-
+import Loader from "../primitives/Loader";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const [pdfDetails, setPdfDetails] = useState([]);
@@ -1092,7 +1092,7 @@ function SignYourSelf() {
     <DndProvider backend={HTML5Backend}>
       <Title title={"Self Sign"} />
       {isLoading.isLoad ? (
-        <Loader isLoading={isLoading} />
+        <LoaderWithMsg isLoading={isLoading} />
       ) : handleError ? (
         <HandleError handleError={handleError} />
       ) : (

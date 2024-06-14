@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import pad from "../assets/images/pad.svg";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
@@ -27,6 +27,9 @@ import Loader from "./Loader";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isDashboard =
+    location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
@@ -960,8 +963,12 @@ const ReportTable = (props) => {
             </div>
           )}
         </div>
-        <div className="overflow-x-auto w-full">
-          <table className="op-table border-collapse h-[317px] w-full">
+        <div
+          className={`${
+            isDashboard ? "h-[317px]" : "h-full"
+          } overflow-x-auto w-full`}
+        >
+          <table className="op-table border-collapse w-full">
             <thead className="text-[14px]">
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (

@@ -9,7 +9,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
-import Loader from "../primitives/LoaderWithMsg";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
@@ -1207,7 +1207,7 @@ const TemplatePlaceholder = () => {
       <Title title={"Template"} />
       <DndProvider backend={HTML5Backend}>
         {isLoading.isLoad ? (
-          <Loader isLoading={isLoading} />
+          <LoaderWithMsg isLoading={isLoading} />
         ) : handleError ? (
           <HandleError handleError={handleError} />
         ) : (
@@ -1308,7 +1308,7 @@ const TemplatePlaceholder = () => {
                   )}
                 </div>
               </ModalUi>
-              {isCreateDoc && <Loader isLoading={isLoading} />}
+              {isCreateDoc && <LoaderWithMsg isLoading={isLoading} />}
               <ModalUi
                 isOpen={isShowEmail}
                 title={"signers alert"}
