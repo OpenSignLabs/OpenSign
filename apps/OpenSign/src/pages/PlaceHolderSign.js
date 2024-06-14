@@ -11,7 +11,7 @@ import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
 import { useLocation, useParams } from "react-router-dom";
-import Loader from "../primitives/LoaderWithMsg";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
@@ -48,6 +48,7 @@ import { SaveFileSize } from "../constant/saveFileSize";
 import { EmailBody } from "../components/pdf/EmailBody";
 import Upgrade from "../primitives/Upgrade";
 import Alert from "../primitives/Alert";
+import Loader from "../primitives/Loader";
 
 function PlaceHolderSign() {
   const editorRef = useRef();
@@ -1013,7 +1014,11 @@ function PlaceHolderSign() {
           className="flex flex-row justify-between items-center mb-1"
           key={ind}
         >
-          {copied && <Alert type="success">Copied</Alert>}
+          {copied && (
+            <Alert type="success">
+              <div className="ml-3">Copied</div>
+            </Alert>
+          )}
           <span className="w-[220px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis  ">
             {data.signerEmail}
           </span>
@@ -1021,26 +1026,13 @@ function PlaceHolderSign() {
             <button
               onClick={() => copytoclipboard(data.url)}
               type="button"
-              className="flex flex-row items-center text-white font-[500]"
+              className="flex flex-row items-center op-link op-link-primary"
             >
-              <i
-                className="fa-solid fa-link underline text-blue-700"
-                aria-hidden="true"
-              ></i>
-              <span className=" hidden md:block ml-1 underline text-blue-700">
-                Copy link
-              </span>
+              <i className="fa-solid fa-link" aria-hidden="true"></i>
+              <span className=" hidden md:block ml-1 ">Copy link</span>
             </button>
-            <RWebShare
-              data={{
-                url: data.url,
-                title: "Sign url"
-              }}
-            >
-              <i
-                className="fa-solid fa-share-from-square cursor-pointer"
-                style={{ color: themeColor }}
-              ></i>
+            <RWebShare data={{ url: data.url, title: "Sign url" }}>
+              <i className="fa-solid fa-share-from-square op-link op-link-secondary no-underline"></i>
             </RWebShare>
           </div>
         </div>
@@ -1632,7 +1624,7 @@ function PlaceHolderSign() {
       <Title title={state?.title ? state.title : "New Document"} />
       <DndProvider backend={HTML5Backend}>
         {isLoading.isLoad ? (
-          <Loader isLoading={isLoading} />
+          <LoaderWithMsg isLoading={isLoading} />
         ) : handleError ? (
           <HandleError handleError={handleError} />
         ) : (
@@ -1726,9 +1718,7 @@ function PlaceHolderSign() {
                                 setRequestSubject={setRequestSubject}
                               />
                               <div
-                                className={
-                                  "flex justify-end items-center gap-1 mt-2 underline text-blue-700 focus:outline-none cursor-pointer "
-                                }
+                                className="flex justify-end items-center gap-1 mt-2 op-link op-link-primary"
                                 onClick={() => {
                                   setRequestBody(defaultBody);
                                   setRequestSubject(defaultSubject);
@@ -1759,7 +1749,7 @@ function PlaceHolderSign() {
                           {!isCustomize &&
                             (isSubscribe || !isEnableSubscription) && (
                               <span
-                                className="link link-primary text-sm"
+                                className="op-link op-link-accent text-sm"
                                 onClick={() => setIsCustomize(!isCustomize)}
                               >
                                 Cutomize Email
@@ -1788,7 +1778,6 @@ function PlaceHolderSign() {
                   )}
                 </div>
               </ModalUi>
-
               {/* this modal is used show send mail  message and after send mail success message */}
               <ModalUi
                 isOpen={isSend}
@@ -2062,7 +2051,7 @@ function PlaceHolderSign() {
             <button
               onClick={() => handleRecipientSign()}
               type="button"
-              className="finishBtn cancelBtn"
+              className="op-btn op-btn-primary"
             >
               View
             </button>
