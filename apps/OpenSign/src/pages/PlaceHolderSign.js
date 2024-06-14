@@ -49,7 +49,7 @@ import { EmailBody } from "../components/pdf/EmailBody";
 import Upgrade from "../primitives/Upgrade";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
-
+import mail_sent_gif from "../assets/gif/mail_sent.gif";
 function PlaceHolderSign() {
   const editorRef = useRef();
   const navigate = useNavigate();
@@ -1789,19 +1789,27 @@ function PlaceHolderSign() {
               >
                 <div className="h-[100%] p-[20px]">
                   {mailStatus === "success" ? (
-                    <p>You have successfully sent mails to all recipients!</p>
+                    <div className="text-center mb-[10px]">
+                      <img
+                        src={mail_sent_gif}
+                        className="w-[120px] h-[120px] mx-auto"
+                      />
+                      <p>You have successfully sent mails to all recipients!</p>
+                      {isCurrUser && (
+                        <p>Do you want to sign documents right now ?</p>
+                      )}
+                    </div>
                   ) : (
                     <p>Please setup mail adapter to send mail!</p>
                   )}
-                  {isCurrUser && (
-                    <p>Do you want to sign documents right now ?</p>
+                  {!mailStatus && (
+                    <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                   )}
-                  <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                   {isCurrUser && (
                     <button
                       onClick={() => handleRecipientSign()}
                       type="button"
-                      className="op-btn op-btn-primary"
+                      className="op-btn op-btn-primary mr-1"
                     >
                       Yes
                     </button>
@@ -1812,7 +1820,7 @@ function PlaceHolderSign() {
                       setSignerPos([]);
                     }}
                     type="button"
-                    className="finishBtn cancelBtn"
+                    className="op-btn op-btn-ghost"
                   >
                     {isCurrUser ? "No" : "Close"}
                   </button>
@@ -1833,7 +1841,7 @@ function PlaceHolderSign() {
                       setIsShowEmail(false);
                     }}
                     type="button"
-                    className="finishBtn cancelBtn"
+                    className="op-btn op-btn-primary"
                   >
                     Ok
                   </button>
@@ -1992,9 +2000,7 @@ function PlaceHolderSign() {
                   aria-disabled
                 >
                   <div
-                    style={{
-                      maxHeight: window.innerHeight - 70 + "px"
-                    }}
+                    style={{ maxHeight: window.innerHeight - 70 + "px" }}
                     className="overflow-y-auto hide-scrollbar"
                   >
                     <SignerListPlace
@@ -2057,7 +2063,6 @@ function PlaceHolderSign() {
             </button>
           </div>
         </ModalUi>
-
         <LinkUserModal
           handleAddUser={handleAddUser}
           isAddUser={isAddUser}
