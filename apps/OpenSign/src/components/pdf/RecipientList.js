@@ -7,37 +7,15 @@ import {
   isMobile,
   nameColor
 } from "../../constant/Utils";
-
+const cursor =
+  "cursor-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAASElEQVR4nGNgwAMkJSUbpKSkOvCpIaT5PxSTbogUQjMYMwxeIIXmVFIxA8UGDDyQGg0DnIDi6JKUlCxHMqCeZAOghjSAMD5FAKfeaURdUFxCAAAAAElFTkSuQmCC'),_pointer]";
 const RecipientList = (props) => {
   const [animationParent] = useAutoAnimate();
   const [isHover, setIsHover] = useState();
   const [isEdit, setIsEdit] = useState(false);
   //function for onhover signer name change background color
   const inputRef = useRef(null);
-  const onHoverStyle = (ind, blockColor) => {
-    const style = {
-      background: blockColor ? blockColor : color[ind % color.length],
-      padding: "10px",
-      marginTop: "2px",
-      display: "flex",
-      flexDirection: "row",
-      borderBottom: "1px solid #e3e1e1",
-      alignItems: "center"
-    };
-    return style;
-  };
-  //function for onhover signer name remove background color
-  const nonHoverStyle = () => {
-    const style = {
-      padding: "10px",
-      marginTop: "2px",
-      display: "flex",
-      flexDirection: "row",
-      borderBottom: "1px solid #e3e1e1",
-      alignItems: "center"
-    };
-    return style;
-  };
+
   const isWidgetExist = (Id) => {
     return props.signerPos.some((x) => x.Id === Id);
   };
@@ -116,18 +94,21 @@ const RecipientList = (props) => {
               data-tut="reactourFirst"
               onMouseEnter={() => setIsHover(ind)}
               onMouseLeave={() => setIsHover(null)}
-              className={
+              className={`${
                 props.sendInOrder
                   ? props.isMailSend
-                    ? "disabled"
-                    : "dragCursor"
-                  : props.isMailSend && "disabled"
-              }
-              style={
-                (!isMobile && isHover === ind) || props.isSelectListId === ind
-                  ? onHoverStyle(ind, obj?.blockColor)
-                  : nonHoverStyle(ind)
-              }
+                    ? "pointer-events-none bg-opacity-80"
+                    : `text-[12px] font-bold ${cursor}`
+                  : props.isMailSend && "pointer-events-none bg-opacity-80"
+              } flex flex-row rounded-xl px-2 py-[10px] mt-1 mx-1 items-center last:mb-0.5`}
+              style={{
+                background:
+                  (!isMobile && isHover === ind) || props.isSelectListId === ind
+                    ? obj?.blockColor
+                      ? obj?.blockColor
+                      : color[ind % color.length]
+                    : "transparent"
+              }}
               onClick={(e) => {
                 e.preventDefault();
                 props.setSignerObjId(obj?.objectId || "");
@@ -141,38 +122,16 @@ const RecipientList = (props) => {
                 }
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: "100%"
-                }}
-              >
+              <div className="flex flex-row items-center w-full">
                 <div
+                  className="flex w-[30px] h-[30px] rounded-full items-center justify-center mr-2"
                   style={{
                     background: obj?.blockColor
                       ? darkenColor(obj?.blockColor, 0.4)
-                      : nameColor[ind % nameColor.length],
-                    width: 30,
-                    height: 30,
-                    display: "flex",
-                    borderRadius: 30 / 2,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginRight: "12px"
+                      : nameColor[ind % nameColor.length]
                   }}
                 >
-                  <span
-                    className={props.sendInOrder && "dragCursor"}
-                    style={{
-                      fontSize: "12px",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "white",
-                      textTransform: "uppercase"
-                    }}
-                  >
+                  <span className="text-white uppercase font-bold text-center text-[12px]">
                     {isWidgetExist(obj.Id) ? (
                       <i className="fa-solid fa-check"></i>
                     ) : (
@@ -185,67 +144,72 @@ const RecipientList = (props) => {
                   </span>
                 </div>
                 <div
-                  style={{
-                    display: "flex",
-                    flexDirection: obj.Name ? "column" : "row",
-                    alignItems: "center"
-                  }}
+                  className={`${
+                    obj?.Name ? "flex-col" : "flex-row"
+                  } flex items-center`}
                 >
                   {obj.Name ? (
-                    <span className={"userName"}>{obj.Name}</span>
+                    <span
+                      className={`${
+                        (!isMobile && isHover === ind) ||
+                        props.isSelectListId === ind
+                          ? "text-[#424242]"
+                          : "text-base-content"
+                      } text-[12px] font-bold w-[100px] whitespace-nowrap overflow-hidden text-ellipsis`}
+                    >
+                      {obj.Name}
+                    </span>
                   ) : (
-                    <>
-                      <span
-                        className="userName"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          setIsEdit({ [obj.Id]: true });
-                          props.setRoleName(obj.Role);
-                        }}
-                      >
-                        {isEdit?.[obj.Id] && props.handleRoleChange ? (
-                          <input
-                            ref={inputRef}
-                            style={{
-                              backgroundColor: "transparent",
-                              width: "inherit",
-                              padding: "3px"
-                            }}
-                            value={obj.Role}
-                            onChange={(e) => props.handleRoleChange(e, obj.Id)}
-                            onBlur={() => {
-                              setIsEdit({});
-                              props.handleOnBlur(obj.Role, obj.Id);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                inputRef.current.blur();
-                              }
-                            }}
-                          />
-                        ) : (
-                          <span style={{ padding: "3px" }}>{obj.Role}</span>
-                        )}
-                      </span>
-                    </>
+                    <span
+                      className={`${
+                        (!isMobile && isHover === ind) ||
+                        props.isSelectListId === ind
+                          ? "text-[#424242]"
+                          : "text-base-content"
+                      } text-[12px] font-bold w-[100px] whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer`}
+                      onClick={() => {
+                        setIsEdit({ [obj.Id]: true });
+                        props.setRoleName(obj.Role);
+                      }}
+                    >
+                      {isEdit?.[obj.Id] && props.handleRoleChange ? (
+                        <input
+                          ref={inputRef}
+                          className="bg-transparent p-[3px"
+                          value={obj.Role}
+                          onChange={(e) => props.handleRoleChange(e, obj.Id)}
+                          onBlur={() => {
+                            setIsEdit({});
+                            props.handleOnBlur(obj.Role, obj.Id);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              inputRef.current.blur();
+                            }
+                          }}
+                        />
+                      ) : (
+                        <span className="p-[3px]">{obj.Role}</span>
+                      )}
+                    </span>
                   )}
                   {obj.Name && (
-                    <span className={"useEmail"}>
+                    <span
+                      className={` ${
+                        (!isMobile && isHover === ind) ||
+                        props.isSelectListId === ind
+                          ? "text-[#424242]"
+                          : "text-base-content"
+                      } text-[10px] font-medium w-[100px] whitespace-nowrap overflow-hidden text-ellipsis`}
+                    >
                       {obj?.Role || obj?.Email}
                     </span>
                   )}
                 </div>
               </div>
               {isMobile && props.sendInOrder && (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 5
-                  }}
-                >
+                <div className="flex flex-row items-center gap-[5px]">
                   <div
                     onClick={(e) => {
                       if (ind !== 0) {
@@ -253,7 +217,7 @@ const RecipientList = (props) => {
                         handleChangeSequence(e, ind, "up");
                       }
                     }}
-                    style={{ color: ind === 0 ? "gray" : "black" }}
+                    className={ind === 0 ? "text-[gray]" : "text-black"}
                   >
                     ▲
                   </div>
@@ -264,10 +228,11 @@ const RecipientList = (props) => {
                         handleChangeSequence(e, ind, null, "down");
                       }
                     }}
-                    style={{
-                      color:
-                        ind === props.signersdata.length - 1 ? "gray" : "black"
-                    }}
+                    className={
+                      ind === props.signersdata.length - 1
+                        ? "text-[gray]"
+                        : "text-black"
+                    }
                   >
                     ▼
                   </div>
@@ -279,7 +244,12 @@ const RecipientList = (props) => {
                     e.stopPropagation();
                     props.handleDeleteUser(obj.Id);
                   }}
-                  style={{ cursor: "pointer", marginLeft: "5px" }}
+                  className={`${
+                    (!isMobile && isHover === ind) ||
+                    props.isSelectListId === ind
+                      ? "text-[#424242]"
+                      : "text-base-content"
+                  } cursor-pointer ml-[5px]`}
                 >
                   <i className="fa-regular fa-trash-can"></i>
                 </div>

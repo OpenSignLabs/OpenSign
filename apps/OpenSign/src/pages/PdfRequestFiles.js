@@ -4,7 +4,6 @@ import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
 import axios from "axios";
-import loader from "../assets/images/loader2.gif";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -35,7 +34,7 @@ import {
   handleDownloadCertificate,
   darkenColor
 } from "../constant/Utils";
-import Loader from "../primitives/LoaderWithMsg";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
 import Header from "../components/pdf/PdfHeader";
 import RenderPdf from "../components/pdf/RenderPdf";
@@ -46,6 +45,7 @@ import ModalUi from "../primitives/ModalUi";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import { appInfo } from "../constant/appinfo";
+import Loader from "../primitives/Loader";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -1161,9 +1161,9 @@ function PdfRequestFiles() {
 
     await axios
       .put(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document/${documentId}`,
+        `${localStorage.getItem(
+          "baseUrl"
+        )}classes/contracts_Document/${documentId}`,
         data,
         {
           headers: {
@@ -1388,47 +1388,29 @@ function PdfRequestFiles() {
       ) : (
         <>
           {isLoading.isLoad ? (
-            <Loader isLoading={isLoading} />
+            <LoaderWithMsg isLoading={isLoading} />
           ) : handleError ? (
             <HandleError handleError={handleError} />
           ) : (
             <div>
               {isUiLoading && (
-                <div
-                  style={{
-                    position: "absolute",
-                    height: "100vh",
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    zIndex: "999",
-                    backgroundColor: "#e6f2f2",
-                    opacity: 0.8
-                  }}
-                >
-                  <img
-                    alt="no img"
-                    src={loader}
-                    style={{ width: "100px", height: "100px" }}
-                  />
-                  <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
+                  <Loader />
+                  <span className="text-[13px] font-bold">
                     This might take some time
                   </span>
                 </div>
               )}
               {isCelebration && (
-                <div style={{ position: "relative", zIndex: "1000" }}>
+                <div className="relative z-[1000]">
                   <Confetti
                     width={window.innerWidth}
                     height={window.innerHeight}
                   />
                 </div>
               )}
-
               <div
-                className="relative flex flex-col md:flex-row justify-between bg-[#ebebeb]"
+                className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"
                 style={{
                   pointerEvents:
                     isExpired ||
@@ -1440,7 +1422,6 @@ function PdfRequestFiles() {
               >
                 {!requestSignTour && requestSignTourFunction()}
                 <ModalUi
-                  headerColor={"#dc3545"}
                   isOpen={isAlert.isShow}
                   title={"Alert message"}
                   handleClose={() => {
@@ -1450,28 +1431,15 @@ function PdfRequestFiles() {
                     });
                   }}
                 >
-                  <div style={{ height: "100%", padding: 20 }}>
+                  <div className="h-full p-[20px]">
                     <p>{isAlert.alertMessage}</p>
-
-                    <div
-                      style={{
-                        height: "1px",
-                        backgroundColor: "#9f9f9f",
-                        width: "100%",
-                        marginTop: "15px",
-                        marginBottom: "15px"
-                      }}
-                    ></div>
-
+                    <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                     <button
-                      onClick={() => {
-                        setIsAlert({
-                          isShow: false,
-                          alertMessage: ""
-                        });
-                      }}
+                      onClick={() =>
+                        setIsAlert({ isShow: false, alertMessage: "" })
+                      }
                       type="button"
-                      className="finishBtn cancelBtn"
+                      className="op-btn op-btn-primary"
                     >
                       Ok
                     </button>
@@ -1525,63 +1493,44 @@ function PdfRequestFiles() {
                 )}
 
                 <ModalUi
-                  headerColor={defaultSignImg ? themeColor : "#dc3545"}
                   isOpen={defaultSignAlert.isShow}
                   title={"Auto sign"}
-                  handleClose={() => {
-                    setDefaultSignAlert({
-                      isShow: false,
-                      alertMessage: ""
-                    });
-                  }}
+                  handleClose={() =>
+                    setDefaultSignAlert({ isShow: false, alertMessage: "" })
+                  }
                 >
-                  <div style={{ height: "100%", padding: 20 }}>
+                  <div className="h-full p-[20px]">
                     <p>{defaultSignAlert.alertMessage}</p>
-
-                    <div
-                      style={{
-                        height: "1px",
-                        backgroundColor: "#9f9f9f",
-                        width: "100%",
-                        marginTop: "15px",
-                        marginBottom: "15px"
-                      }}
-                    ></div>
+                    <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                     {defaultSignImg ? (
                       <>
                         <button
                           onClick={() => addDefaultSignature()}
-                          style={{
-                            background: themeColor
-                          }}
                           type="button"
-                          className="finishBtn"
+                          className="op-btn op-btn-primary"
                         >
                           Yes
                         </button>
                         <button
-                          onClick={() => {
+                          onClick={() =>
                             setDefaultSignAlert({
                               isShow: false,
                               alertMessage: ""
-                            });
-                          }}
+                            })
+                          }
                           type="button"
-                          className="finishBtn cancelBtn"
+                          className="op-btn op-btn-secondary"
                         >
                           Close
                         </button>
                       </>
                     ) : (
                       <button
-                        onClick={() => {
-                          setIsAlert({
-                            isShow: false,
-                            alertMessage: ""
-                          });
-                        }}
+                        onClick={() =>
+                          setIsAlert({ isShow: false, alertMessage: "" })
+                        }
                         type="button"
-                        className="finishBtn cancelBtn"
+                        className="op-btn op-btn-primary"
                       >
                         Ok
                       </button>
@@ -1621,7 +1570,7 @@ function PdfRequestFiles() {
                       "md:min-w-[440px] md:max-w-[400px]"
                     }
                   >
-                    <div style={{ height: "100%", padding: 20 }}>
+                    <div className="h-full p-[20px] text-base-content">
                       {isCompleted?.message ? (
                         <p>{isCompleted?.message}</p>
                       ) : (
@@ -1642,32 +1591,27 @@ function PdfRequestFiles() {
                                 setIsDownloading
                               )
                             }
-                            className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#08bc66]"
+                            className="font-[500] text-[13px] mr-[5px] op-btn op-btn-secondary"
                           >
                             <i
-                              className="fa-solid fa-award py-[3px]"
+                              className="fa-solid fa-award"
                               aria-hidden="true"
                             ></i>
-                            <span className="hidden lg:block ml-1">
-                              Certificate
-                            </span>
+                            <span className="hidden lg:block">Certificate</span>
                           </button>
                           <button
                             onClick={(e) =>
                               handleToPrint(e, pdfUrl, setIsDownloading)
                             }
                             type="button"
-                            className="flex flex-row items-center  shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#188ae2]"
+                            className="font-[500] text-[13px] mr-[5px] op-btn op-btn-neutral"
                           >
-                            <i
-                              className="fa fa-print py-[3px]"
-                              aria-hidden="true"
-                            ></i>
-                            <span className="hidden lg:block ml-1">Print</span>
+                            <i className="fa fa-print" aria-hidden="true"></i>
+                            <span className="hidden lg:block">Print</span>
                           </button>
                           <button
                             type="button"
-                            className="flex flex-row items-center shadow rounded-[3px] py-[3px] px-[11px] text-white font-[500] text-[13px] mr-[5px] bg-[#f14343]"
+                            className="font-[500] text-[13px] mr-[5px] op-btn op-btn-primary"
                             onClick={() =>
                               handleDownloadPdf(
                                 pdfDetails,
@@ -1677,12 +1621,10 @@ function PdfRequestFiles() {
                             }
                           >
                             <i
-                              className="fa fa-download py-[3px]"
+                              className="fa fa-download"
                               aria-hidden="true"
                             ></i>
-                            <span className="hidden lg:block ml-1">
-                              Download
-                            </span>
+                            <span className="hidden lg:block">Download</span>
                           </button>
                         </div>
                       )}
@@ -1690,10 +1632,7 @@ function PdfRequestFiles() {
                   </ModalUi>
                   {isDownloading === "pdf" && (
                     <div className="fixed z-[1000] inset-0 flex justify-center items-center bg-black bg-opacity-30">
-                      <div
-                        style={{ fontSize: "45px", color: "#3dd3e0" }}
-                        className="loader-37"
-                      ></div>
+                      <Loader />
                     </div>
                   )}
                   <ModalUi
@@ -1789,63 +1728,37 @@ function PdfRequestFiles() {
                   )}
                 </div>
                 <div>
-                  <div className="signerComponent">
+                  <div className="hidden md:block w-[180px] h-full bg-base-100">
                     <div
                       style={{ maxHeight: window.innerHeight - 70 + "px" }}
-                      className="autoSignScroll"
+                      className="overflow-y-auto hide-scrollbar"
                     >
                       {signedSigners.length > 0 && (
                         <div data-tut="reactourSecond">
-                          <div
-                            style={{ background: themeColor }}
-                            className="signedStyle"
-                          >
+                          <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
                             Signed by
                           </div>
-                          <div style={{ marginTop: "2px" }}>
+                          <div className="mt-[2px]">
                             {signedSigners.map((obj, ind) => {
                               return (
                                 <div
+                                  className="rounded-xl mx-1 flex flex-row items-center py-[10px] mt-1"
                                   style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    padding: "10px 0",
                                     background: checkSignerBackColor(obj)
                                   }}
                                   key={ind}
                                 >
                                   <div
-                                    className="signerStyle"
+                                    className="flex w-[30px] h-[30px] rounded-full justify-center items-center mx-1"
                                     style={{
-                                      background: checkUserNameColor(obj),
-                                      width: 30,
-                                      height: 30,
-                                      display: "flex",
-                                      borderRadius: 30 / 2,
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      margin: "0 10px 0 5px"
+                                      background: checkUserNameColor(obj)
                                     }}
                                   >
-                                    <span
-                                      style={{
-                                        fontSize: "12px",
-                                        textAlign: "center",
-                                        fontWeight: "bold",
-                                        color: "black",
-                                        textTransform: "uppercase"
-                                      }}
-                                    >
+                                    <span className="text-[12px] text-center font-bold text-white uppercase">
                                       {getFirstLetter(obj?.Name || obj?.Role)}
                                     </span>
                                   </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "column"
-                                    }}
-                                  >
+                                  <div className="flex flex-col">
                                     <span className="userName">
                                       {obj?.Name || obj?.Role}
                                     </span>
@@ -1862,61 +1775,30 @@ function PdfRequestFiles() {
 
                       {unsignedSigners.length > 0 && (
                         <div data-tut="reactourFirst">
-                          <div
-                            style={{
-                              background: themeColor,
-                              color: "white",
-                              padding: "5px",
-                              fontFamily: "sans-serif",
-                              marginTop: signedSigners.length > 0 && "20px"
-                            }}
-                          >
+                          <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
                             Yet to sign
                           </div>
-                          <div style={{ marginTop: "5px" }}>
+                          <div className="mt-[5px]">
                             {unsignedSigners.map((obj, ind) => {
                               return (
                                 <div
+                                  className="rounded-xl mx-1 flex flex-row items-center py-[10px] mt-1"
                                   style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    padding: "10px 0",
                                     background: checkSignerBackColor(obj)
                                   }}
                                   key={ind}
                                 >
                                   <div
-                                    className="signerStyle"
+                                    className="flex w-[30px] h-[30px] rounded-full justify-center items-center mx-1"
                                     style={{
-                                      background: checkUserNameColor(obj),
-                                      width: 30,
-                                      height: 30,
-                                      display: "flex",
-                                      borderRadius: 30 / 2,
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      margin: "0 10px 0 5px"
+                                      background: checkUserNameColor(obj)
                                     }}
                                   >
-                                    <span
-                                      style={{
-                                        fontSize: "12px",
-                                        textAlign: "center",
-                                        fontWeight: "bold",
-                                        color: "black",
-                                        textTransform: "uppercase"
-                                      }}
-                                    >
+                                    <span className="text-[12px] text-center font-bold text-black uppercase">
                                       {getFirstLetter(obj?.Name || obj?.email)}
                                     </span>
                                   </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "column"
-                                    }}
-                                  >
+                                  <div className="flex flex-col">
                                     <span className="userName">
                                       {obj?.Name || obj?.Role}
                                     </span>
@@ -1947,34 +1829,21 @@ function PdfRequestFiles() {
               </div>
             </div>
           )}
-
           <ModalUi
-            headerColor={"#dc3545"}
             isOpen={validateAlert}
             title={"Validation alert"}
-            handleClose={() => {
-              setValidateAlert(false);
-            }}
+            handleClose={() => setValidateAlert(false)}
           >
-            <div style={{ height: "100%", padding: 20 }}>
+            <div className="h-[100%] p-[20px]">
               <p>
                 The input does not meet the criteria set by the regular
                 expression.
               </p>
-
-              <div
-                style={{
-                  height: "1px",
-                  backgroundColor: "#9f9f9f",
-                  width: "100%",
-                  marginTop: "15px",
-                  marginBottom: "15px"
-                }}
-              ></div>
+              <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
               <button
                 onClick={() => setValidateAlert(false)}
                 type="button"
-                className="finishBtn cancelBtn"
+                className="op-btn op-btn-ghost"
               >
                 Close
               </button>

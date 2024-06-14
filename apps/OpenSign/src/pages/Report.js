@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
+import Loader from "../primitives/Loader";
 
 const Report = () => {
   const { id } = useParams();
@@ -173,21 +174,8 @@ const Report = () => {
     <>
       <Title title={reportName} />
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[100vh] flex justify-center items-center">
+          <Loader />
         </div>
       ) : (
         <>

@@ -4,11 +4,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Alert from "../primitives/Alert";
 import ModalUi from "../primitives/ModalUi";
-import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
 import Parse from "parse";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
+import Loader from "../primitives/Loader";
 
 function Webhook() {
   const navigation = useNavigate();
@@ -97,28 +98,15 @@ function Webhook() {
   return (
     <React.Fragment>
       <Title title={"Webhook"} />
-      {isGenerate && <Alert type="success">Webhook added successfully!</Alert>}
-      {isErr && <Alert type="danger">Something went wrong!</Alert>}
+      {isGenerate && <Alert type="success">Webhook added successfully.</Alert>}
+      {isErr && <Alert type="danger">Something went wrong.</Alert>}
 
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[100vh] flex justify-center items-center">
+          <Loader />
         </div>
       ) : (
-        <div className="bg-white flex flex-col justify-center shadow rounded">
+        <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded">
           {!isEnableSubscription && <PremiumAlertHeader />}
           <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
             OpenSign™ Webhook{" "}
@@ -146,14 +134,14 @@ function Webhook() {
               <button
                 type="button"
                 onClick={handleModal}
-                className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-4 py-2 text-xs md:text-base focus:outline-none"
+                className="op-btn op-btn-primary "
               >
                 {webhook ? "Update Webhook" : "Add Webhook"}
               </button>
             </li>
           </ul>
 
-          <div className="flex   items-center justify-center ">
+          <div className="flex items-center justify-center ">
             <button
               type="button"
               onClick={() =>
@@ -161,7 +149,7 @@ function Webhook() {
                   "https://docs.opensignlabs.com/docs/API-docs/save-update-webhook"
                 )
               }
-              className="rounded hover:bg-[#15b4e9] border-[1px] my-2 border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
+              className="op-btn op-btn-secondary my-2"
             >
               View Docs
             </button>
@@ -203,24 +191,27 @@ function Webhook() {
           >
             {error && <Alert type="danger">{error}</Alert>}
             <div className="m-[20px]">
-              <div className="text-lg font-normal text-black">
+              <div className="text-lg font-normal text-base-content">
                 <label className="text-sm ml-2">Webhook</label>
                 <input
                   value={webhook}
                   onChange={(e) => setWebhook(e.target.value)}
                   placeholder="Enter webhook url"
-                  className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 />
               </div>
-              <hr className="bg-[#ccc] mt-4 " />
-              <div className="flex items-center mt-3 gap-2 text-white">
+              <hr className="bg-[#ccc] mt-3" />
+              <div className="flex items-center mt-3 gap-2">
                 <button
                   onClick={handleSubmit}
-                  className={submitBtn + "ml-[2px]"}
+                  className="op-btn op-btn-primary ml-[2px]"
                 >
                   Yes
                 </button>
-                <button onClick={handleModal} className={rejectBtn}>
+                <button
+                  onClick={handleModal}
+                  className="op-btn op-btn-secondary"
+                >
                   No
                 </button>
               </div>

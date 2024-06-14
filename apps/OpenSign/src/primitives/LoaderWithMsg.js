@@ -1,27 +1,14 @@
 import React from "react";
-import loader from "../assets/images/loader2.gif";
+import Loader from "./Loader";
 
-function Loader({ isLoading }) {
+function LoaderWithMsg({ isLoading }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        flexDirection: "column"
-      }}
-    >
-      <img
-        alt="no img"
-        src={loader}
-        style={{ width: "80px", height: "80px" }}
-      />
-      <span style={{ fontSize: "13px", color: "gray" }}>
-        {isLoading.message}
-      </span>
+    <div className="flex flex-col justify-center items-center h-[100vh]">
+      {/* <img alt="loader" src={loader} className="w-[80px] h-[80px]" /> */}
+      <Loader />
+      <span className="text-[13px] text-base-cotent">{isLoading.message}</span>
     </div>
   );
 }
 
-export default Loader;
+export default LoaderWithMsg;
