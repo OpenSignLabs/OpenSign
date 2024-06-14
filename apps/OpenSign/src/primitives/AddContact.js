@@ -266,7 +266,7 @@ const AddContact = (props) => {
             />
           </div>
 
-          <div className="mt-[1rem] flex justify-start gap-2">
+          <div className="mt-6 flex justify-start gap-2">
             <button type="submit" className="op-btn op-btn-primary">
               Submit
             </button>

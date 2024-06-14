@@ -8,7 +8,6 @@ import {
 import "../../styles/signature.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useNavigate } from "react-router-dom";
-import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import Loader from "../../primitives/Loader";
 
@@ -80,15 +79,7 @@ function Header({
             {pdfUrl && alreadySign ? (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
-                  <div
-                    style={{
-                      color: themeColor,
-                      border: "none",
-                      fontWeight: "650",
-                      fontSize: "16px",
-                      padding: "0px 3px 0px 5px"
-                    }}
-                  >
+                  <div className="op-link op-link-primary no-underline text-[16px] font-semibold pr-[3px] pl-[5px]">
                     <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
                   </div>
                 </DropdownMenu.Trigger>
@@ -183,8 +174,9 @@ function Header({
                             alertSendEmail();
                           }
                         }}
-                        className="border-none font-[650] text-[14px]"
-                        style={{ color: isMailSend ? "gray" : themeColor }}
+                        className={`${
+                          isMailSend ? "" : "op-link-primary"
+                        } op-link no-underline font-[650] text-[14px]`}
                         data-tut={dataTut4}
                       >
                         {completeBtnTitle ? completeBtnTitle : "Send"}
@@ -199,18 +191,14 @@ function Header({
                             embedWidgetsData();
                           }
                         }}
-                        style={{ color: themeColor }}
-                        className="border-none font-[650] text-[14px]"
+                        className="border-none font-[650] text-[14px] op-link op-link-primary no-underline"
                       >
                         Finish
                       </div>
                     )}
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger asChild>
-                        <div
-                          className="border-none font-[650] text-[18px] px-2 ml-[4px]"
-                          style={{ color: themeColor }}
-                        >
+                        <div className="font-[650] text-[18px] px-2 ml-[4px] op-link op-link-info no-underline">
                           <i
                             className="fa fa-ellipsis-v"
                             aria-hidden="true"
