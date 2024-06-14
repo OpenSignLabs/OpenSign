@@ -1,5 +1,4 @@
 import React from "react";
-import { themeColor } from "../../constant/const";
 function DefaultSignature({ defaultSignImg, xyPostion, setDefaultSignAlert }) {
   const confirmToaddDefaultSign = () => {
     if (xyPostion.length > 0) {
@@ -18,54 +17,25 @@ function DefaultSignature({ defaultSignImg, xyPostion, setDefaultSignAlert }) {
 
   return (
     <div data-tut="reactourThird">
-      <div
-        style={{
-          background: themeColor,
-          color: "white",
-          padding: "5px",
-          fontFamily: "sans-serif",
-          marginTop: "5px"
-        }}
-      >
+      <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
         Signature
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "10px",
-          fontWeight: "600"
-        }}
-      >
-        <>
-          <p>Your Signature</p>
-          <div className="defaultSignBox">
-            <img
-              alt="default img"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain"
-              }}
-              src={defaultSignImg}
-            />
-          </div>
-          <button
-            style={{
-              background: themeColor,
-              color: "white",
-              marginTop: "20px",
-              cursor: "pointer",
-              marginBottom: "10px"
-            }}
-            type="button"
-            className="finishBtn finishnHover"
-            onClick={() => confirmToaddDefaultSign()}
-          >
-            Auto Sign All
-          </button>
-        </>
+      <div className="flex flex-col items-center mt-[10px] font-semibold">
+        <p className="text-base-content">Your Signature</p>
+        <div className="op-card shadow-md h-[111px] w-[90%] p-2">
+          <img
+            alt="signature"
+            className="w-full h-full object-contain"
+            src={defaultSignImg}
+          />
+        </div>
+        <button
+          type="button"
+          className="op-btn op-btn-primary op-btn-sm mt-[10px]"
+          onClick={() => confirmToaddDefaultSign()}
+        >
+          Auto Sign All
+        </button>
       </div>
     </div>
   );
