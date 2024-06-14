@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Loader from "../../primitives/LoaderWithMsg";
+import LoaderWithMsg from "../../primitives/LoaderWithMsg";
 import { contractDocument } from "../../constant/Utils";
 import HandleError from "../../primitives/HandleError";
 function DraftDocument() {
@@ -86,7 +86,7 @@ function DraftDocument() {
   return (
     <div>
       {isLoading.isLoader ? (
-        <Loader isLoading={isLoading} />
+        <LoaderWithMsg isLoading={isLoading} />
       ) : (
         <HandleError handleError={isLoading.message} />
       )}
