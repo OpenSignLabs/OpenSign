@@ -174,7 +174,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
       <div className="relative max-w-sm">
         <div
           onClick={() => SetIsOpen(true)}
-          className=" cursor-pointer rounded px-[20px] py-[20px] bg-base-100 border-[1px] border-base-200 shadow flex max-w-sm gap-8 items-center"
+          className=" cursor-pointer rounded px-[20px] py-[20px] bg-white border border-gray-200 shadow flex max-w-sm gap-8 items-center"
         >
           <div>
             <i

@@ -9,7 +9,6 @@ import dp from "../../assets/images/dp.png";
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
   const [menuList, setmenuList] = useState([]);
-  const [submenuOpen, setSubmenuOpen] = useState(false);
   let username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
   const tenantname = localStorage.getItem("TenantName");
@@ -34,18 +33,10 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     }
   };
 
-  const toggleSubmenu = (title) => {
-    setSubmenuOpen({ [title]: !submenuOpen[title] });
-  };
-
-  const handleMenuItem = () => {
-    closeSidebar();
-    setSubmenuOpen({});
-  };
   return (
     <aside
-      className={`absolute md:relative bg-base-100 h-screen overflow-y-auto transition-all z-[100] hide-scrollbar
-     ${isOpen ? "w-full md:w-[300px]" : "w-0"}`}
+      className={`bg-white text-[#444] h-screen w-full md:w-[300px] overflow-y-auto transform transition-transform z-40 md:translate-x-0
+      ${isOpen ? "translate-x-0 block" : "-translate-x-full hidden"}`}
     >
       <div className="flex px-2 py-3 gap-2 items-center shadow-md">
         <div className="w-[75px] h-[75px] rounded-full ring-[2px] ring-offset-2 ring-gray-400 overflow-hidden">
@@ -56,20 +47,13 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           />
         </div>
         <div>
-          <p className="text-[14px] font-bold text-base-content">{username}</p>
-          <p
-            className={`text-[12px] text-base-content ${
-              tenantname ? "mt-2" : ""
-            }`}
-          >
+          <p className="text-[14px] font-bold">{username}</p>
+          <p className={`text-[12px] ${tenantname ? "mt-2" : ""}`}>
             {tenantname}
           </p>
         </div>
       </div>
-      <nav
-        className="op-menu op-menu-sm"
-        aria-label="OpenSign Sidebar Navigation"
-      >
+      <nav aria-label="OpenSign Sidebar Navigation">
         <ul
           className="text-sm"
           role="menubar"
@@ -81,21 +65,19 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                 key={item.title}
                 item={item}
                 isOpen={isOpen}
-                closeSidebar={handleMenuItem}
+                closeSidebar={closeSidebar}
               />
             ) : (
               <Submenu
                 key={item.title}
                 item={item}
                 closeSidebar={closeSidebar}
-                toggleSubmenu={toggleSubmenu}
-                submenuOpen={submenuOpen}
               />
             )
           )}
         </ul>
       </nav>
-      <footer className="mt-4 flex justify-center items-center text-[25px] text-base-content gap-3">
+      <footer className="mt-4 flex justify-center items-center text-[25px] text-black gap-3">
         <SocialMedia />
       </footer>
     </aside>

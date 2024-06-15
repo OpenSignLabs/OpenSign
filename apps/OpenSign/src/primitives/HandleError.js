@@ -2,8 +2,15 @@ import React from "react";
 
 function HandleError({ handleError }) {
   return (
-    <div className="flex justify-center items-center h-[100vh]">
-      <span className="text-[20px] text-[gray]">{handleError}</span>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh"
+      }}
+    >
+      <span style={{ fontSize: "20px", color: "gray" }}>{handleError}</span>
     </div>
   );
 }

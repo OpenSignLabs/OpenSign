@@ -352,9 +352,12 @@ function PlaceholderType(props) {
             return (
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  className={`${
-                    ind === 0 ? "mt-0" : "mt-[5px]"
-                  } flex justify-center op-checkbox op-checkbox-xs rounded-[0.350rem]`}
+                  style={{
+                    // width: props.pos.Width,
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: ind === 0 ? 0 : "5px"
+                  }}
                   onBlur={handleInputBlur}
                   disabled={
                     props.isNeedSign &&
@@ -422,7 +425,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          style={{ whiteSpace: "pre-wrap" }}
           cols="50"
         />
       ) : (
@@ -440,7 +443,7 @@ function PlaceholderType(props) {
         <select
           className="inputPlaceholder"
           id="myDropdown"
-          style={{ fontSize: "12px", color: "initial" }}
+          style={{ fontSize: "12px" }}
           value={selectOption}
           onChange={(e) => {
             setSelectOption(e.target.value);
@@ -525,7 +528,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          style={{ whiteSpace: "pre-wrap" }}
           cols="50"
         />
       ) : (
@@ -564,7 +567,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          style={{ whiteSpace: "pre-wrap" }}
           cols="50"
         />
       ) : (
@@ -603,7 +606,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          style={{ whiteSpace: "pre-wrap" }}
           cols="50"
         />
       ) : (
@@ -725,7 +728,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          style={{ whiteSpace: "pre-wrap" }}
           cols="50"
         />
       ) : (
@@ -745,11 +748,12 @@ function PlaceholderType(props) {
             return (
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  className={`${ind === 0 ? "mt-0" : "mt-[5px]"} ${
-                    props?.pos?.Width
-                      ? `w-[${props?.pos?.Width}px] h-[${props?.pos?.Width}px]`
-                      : "w-[15px] h-[15px]"
-                  } flex justify-center op-radio`}
+                  style={{
+                    width: props.pos.Width,
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: ind === 0 ? 0 : "5px"
+                  }}
                   type="radio"
                   disabled={
                     props.isNeedSign &&
@@ -796,11 +800,7 @@ function PlaceholderType(props) {
               ? "labelTextArea labelWidthMobile"
               : "labelTextArea labelWidthDesktop"
           }
-          style={{
-            whiteSpace: "pre-wrap",
-            overflow: "hidden",
-            color: "initial"
-          }}
+          style={{ whiteSpace: "pre-wrap", overflow: "hidden" }}
           cols="50"
         />
       );

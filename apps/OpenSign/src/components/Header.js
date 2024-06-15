@@ -45,11 +45,7 @@ const Header = ({ showSidebar }) => {
   const closeDropdown = () => {
     setIsOpen(false);
     if (Parse?.User?.current()) {
-      try {
-        Parse.User.logOut();
-      } catch (err) {
-        console.log("Err", err);
-      }
+      Parse.User.logOut();
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
@@ -93,16 +89,14 @@ const Header = ({ showSidebar }) => {
   }, [isOpen]);
 
   return (
-    <div className="op-navbar bg-base-100 shadow">
-      <div className="flex-none">
-        <button
-          className="op-btn op-btn-square op-btn-ghost focus:outline-none"
-          onClick={showSidebar}
-        >
-          <i className="fa-solid fa-bars text-xl text-base-content"></i>
-        </button>
-      </div>
-      <div className="flex-1 ml-2">
+    <div className="flex flex-row justify-between items-center gap-x-3 md:gap-x-4 bg-white md:px-4 px-2 shadow h-[50px] md:w-full ">
+      <button
+        className="cursor-pointer focus:outline-none"
+        onClick={showSidebar}
+      >
+        <i className={`fa-solid fa-bars text-xl `}></i>
+      </button>
+      <div className="flex-1">
         <div className="h-[25px] md:h-[40px] w-auto overflow-hidden">
           <img
             className="object-contain h-full w-auto"
@@ -111,7 +105,10 @@ const Header = ({ showSidebar }) => {
           />
         </div>
       </div>
-      <div id="profile-menu" className="flex-none gap-2">
+      <div
+        id="profile-menu"
+        className="flex justify-between items-center gap-x-3"
+      >
         {!isSubscribe && (
           <div>
             <button
@@ -123,7 +120,7 @@ const Header = ({ showSidebar }) => {
           </div>
         )}
         {isPro && (
-          <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
+          <div className="w-[35px] h-[35px] rounded-full ring-[1px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
             PRO
           </div>
         )}
@@ -143,66 +140,60 @@ const Header = ({ showSidebar }) => {
           </div>
         )}
         {width >= 768 && (
-          <div
-            onClick={toggleDropdown}
-            className="cursor-pointer text-base-content text-sm"
-          >
+          <div onClick={toggleDropdown} className="cursor-pointer text-sm">
             {username && username}
           </div>
         )}
-        <div className="op-dropdown op-dropdown-end" id="profile-menu">
-          <div tabIndex={0} role="button" className="op-btn op-btn-ghost">
-            <i
-              tabIndex={0}
-              role="button"
-              onClick={toggleDropdown}
-              className="fa-solid fa-angle-down text-base-content"
-            ></i>
+        <div className="relative">
+          <div className="cursor-pointer">
+            <i onClick={toggleDropdown} className="fa-solid fa-angle-down"></i>
           </div>
-          <ul
-            tabIndex={0}
-            className="mt-3 z-[1] p-2 shadow op-menu op-menu-sm op-dropdown-content text-base-content bg-base-100 rounded-box w-52"
+          <div
+            className={`dropdown absolute text-sm text-gray-700 font-light right-0 mt-4 p-1 w-48 bg-white border rounded-lg shadow-lg z-10 ${
+              isOpen ? "block" : "hidden"
+            }`}
           >
-            <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
-              <span>
+            <ul>
+              <li
+                className="hover:bg-gray-100 rounded-t-lg py-1 px-2 cursor-pointer font-normal"
+                onClick={() => openInNewTab("https://docs.opensignlabs.com")}
+              >
                 <i className="fa-solid fa-book"></i> Docs
-              </span>
-            </li>
-            <li
-              onClick={() => {
-                setIsOpen(false);
-                navigate("/profile");
-              }}
-            >
-              <span>
+              </li>
+              <li
+                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/profile");
+                }}
+              >
                 <i className="fa-regular fa-user"></i> Profile
-              </span>
-            </li>
-            <li
-              onClick={() => {
-                setIsOpen(false);
-                navigate("/changepassword");
-              }}
-            >
-              <span>
+              </li>
+              <li
+                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/changepassword");
+                }}
+              >
                 <i className="fa-solid fa-lock"></i> Change Password
-              </span>
-            </li>
-            <li
-              onClick={() => {
-                window.open("https://console.opensignlabs.com/");
-              }}
-            >
-              <span>
+              </li>
+              <li
+                className="hover:bg-gray-100 py-1 px-2 cursor-pointer font-normal"
+                onClick={() => {
+                  window.open("https://console.opensignlabs.com/");
+                }}
+              >
                 <i className="fa-regular fa-id-card"></i> Console
-              </span>
-            </li>
-            <li onClick={closeDropdown}>
-              <span>
+              </li>
+              <li
+                className="hover:bg-gray-100 rounded-b-lg py-1 px-2 cursor-pointer font-normal"
+                onClick={closeDropdown}
+              >
                 <i className="fa-solid fa-arrow-right-from-bracket"></i> Log Out
-              </span>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

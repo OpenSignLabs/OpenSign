@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
-import Loader from "../primitives/Loader";
+import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 
 const AddSigner = (props) => {
   const [name, setName] = useState("");
@@ -227,29 +227,38 @@ const AddSigner = (props) => {
     <div className="h-full p-[20px]">
       {isLoader && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30">
-          <Loader />
+          <div
+            style={{
+              fontSize: "45px",
+              color: "#3dd3e0"
+            }}
+            className="loader-37"
+          ></div>
         </div>
       )}
-      <div className="w-full mx-auto p-2 text-base-content">
+      <div className="w-full mx-auto p-2">
         {isUserExist && (
-          <div className="mb-3 flex items-center">
+          <div className="mb-3">
             <input
               type="checkbox"
               id="addYourself"
               checked={addYourself}
               onChange={handleAddYourselfChange}
-              className="op-checkbox op-checkbox-sm"
+              className="form-checkbox"
             />
-            <label htmlFor="addYourself" className="ml-2 mb-0">
+            <label htmlFor="addYourself" className="ml-2 text-gray-700">
               Add Yourself
             </label>
           </div>
         )}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="name" className="block text-xs font-semibold">
+            <label
+              htmlFor="name"
+              className="block text-xs text-gray-700 font-semibold"
+            >
               Name
-              <span className="text-[red] text-[13px]"> *</span>
+              <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               type="text"
@@ -258,13 +267,16 @@ const AddSigner = (props) => {
               onChange={(e) => setName(e.target.value)}
               required
               disabled={addYourself}
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="email" className="block text-xs font-semibold">
+            <label
+              htmlFor="email"
+              className="block text-xs text-gray-700 font-semibold"
+            >
               Email
-              <span className="text-[red] text-[13px]"> *</span>
+              <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               type="email"
@@ -273,11 +285,14 @@ const AddSigner = (props) => {
               onChange={(e) => setEmail(e.target.value?.toLowerCase())}
               required
               disabled={addYourself}
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs lowercase"
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="phone" className="block text-xs font-semibold">
+            <label
+              htmlFor="phone"
+              className="block text-xs text-gray-700 font-semibold"
+            >
               Phone
             </label>
             <input
@@ -286,17 +301,23 @@ const AddSigner = (props) => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               disabled={addYourself}
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
             />
           </div>
-          <div className="mt-4 flex gap-x-2 justify-start">
-            <button type="submit" className="op-btn op-btn-primary">
+
+          <div className="mt-4 flex justify-start">
+            <button
+              type="submit"
+              style={{ backgroundColor: modalSubmitBtnColor }}
+              className="mr-2 px-[20px] py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+            >
               Submit
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
-              className="op-btn op-btn-secondary"
+              style={{ backgroundColor: modalCancelBtnColor }}
+              className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
             >
               Reset
             </button>

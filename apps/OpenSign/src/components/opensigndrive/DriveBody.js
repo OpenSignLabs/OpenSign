@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import ModalUi from "../../primitives/ModalUi";
+import { themeColor } from "../../constant/const";
 import FolderModal from "../shared/fields/FolderModal";
 
 function DriveBody(props) {
@@ -312,21 +313,32 @@ function DriveBody(props) {
 
     const signersName = () => {
       const getSignersName = signerExist.map((data) => data.Name);
-      const signerName = getSignersName.join(", ");
+      const signerName = getSignersName.join(",");
 
       return (
-        <span className="statusSpan w-[90%] break-words">{signerName}</span>
+        <span
+          className="statusSpan"
+          style={{ width: "90%", wordWrap: "break-word" }}
+        >
+          {signerName}{" "}
+        </span>
       );
     };
     return listType === "table" ? (
       data.Type === "Folder" ? (
         <tr onClick={() => handleOnclikFolder(data)}>
-          <td className="cursor-pointer flex items-center">
+          <td
+            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+          >
             <i
-              className="fa fa-folder mr-[8px] text-[26px] text-[#f0ad26]"
+              className="fa fa-folder"
               aria-hidden="true"
+              style={{ color: "#f0ad26", marginRight: "8px", fontSize: "26px" }}
             ></i>
-            <span className="text-[12px] font-medium">{data.Name}</span>
+
+            <span style={{ fontSize: "12px", fontWeight: "500" }}>
+              {data.Name}
+            </span>
           </td>
           <td>_</td>
           <td>Folder</td>
@@ -335,9 +347,17 @@ function DriveBody(props) {
         </tr>
       ) : (
         <tr onClick={() => checkPdfStatus(data)}>
-          <td className="cursor-pointer flex items-center">
-            <i className="fa fa-file-pdf mr-[8px] text-[26px] text-[#ed4d0e]"></i>
-            <span className="text-[12px] font-medium">{data.Name}</span>
+          <td
+            style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+          >
+            <i
+              className="fa fa-file-pdf"
+              style={{ color: "#ed4d0e", marginRight: "8px", fontSize: "26px" }}
+            ></i>
+
+            <span style={{ fontSize: "12px", fontWeight: "500" }}>
+              {data.Name}
+            </span>
           </td>
           <td>{createddate}</td>
           <td>Pdf</td>
@@ -348,22 +368,31 @@ function DriveBody(props) {
                 e.stopPropagation();
                 handleMenuItemClick("Download", data);
               }}
-              className="fa fa-download mr-[8px] text-[#ed280e]"
+              className="fa fa-download"
               aria-hidden="true"
+              style={{ color: "#ed280e", marginRight: "8px" }}
             ></i>
           </td>
         </tr>
       )
     ) : listType === "list" && data.Type === "Folder" ? (
-      <div key={ind} className="icon-container">
+      <div key={ind} className="folderBox">
         <ContextMenu.Root>
           <ContextMenu.Trigger className="ContextMenuTrigger">
-            <div data-tut={props.dataTutSeventh}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                cursor: "pointer"
+              }}
+              data-tut={props.dataTutSeventh}
+            >
               <img
-                alt="folder"
+                alt="no img"
                 onClick={() => handleOnclikFolder(data)}
                 src={folder}
-                className="w-full h-full"
+                width={100}
+                height={103}
               />
               {rename === data.objectId ? (
                 <input
@@ -382,7 +411,12 @@ function DriveBody(props) {
                   defaultValue={renameValue}
                   // value={renameValue}
                   onChange={(e) => setRenameValue(e.target.value)}
-                  className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
+                  style={{
+                    width: "100px",
+                    border: "1.5px solid black",
+                    borderRadius: "2px",
+                    fontSize: "10px"
+                  }}
                 />
               ) : (
                 <span className="foldName">{data.Name}</span>
@@ -400,8 +434,8 @@ function DriveBody(props) {
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
               >
-                <i className="fa-solid fa-font mr-[8px]"></i>
-                <span>Rename</span>
+                <i className="fa-solid fa-font"></i>
+                <span style={{ marginLeft: "8px" }}>Rename</span>
               </ContextMenu.Item>
             </ContextMenu.Content>
           </ContextMenu.Portal>
@@ -416,7 +450,7 @@ function DriveBody(props) {
                 <ContextMenu.Trigger className="ContextMenuTrigger">
                   <img
                     alt="PDF"
-                    className="w-full h-full"
+                    className="pdf-icon"
                     src={pdfLogo}
                     onClick={() => checkPdfStatus(data)}
                     data-tut={props.dataTutSixth}
@@ -438,7 +472,12 @@ function DriveBody(props) {
                       defaultValue={renameValue}
                       // value={renameValue}
                       onChange={(e) => setRenameValue(e.target.value)}
-                      className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
+                      style={{
+                        width: "100px",
+                        border: "1.5px solid black",
+                        borderRadius: "2px",
+                        fontSize: "10px"
+                      }}
                     />
                   ) : (
                     <span className="fileName">{data.Name}</span>
@@ -483,7 +522,7 @@ function DriveBody(props) {
                         className="ContextMenuItem"
                       >
                         <i className={menu.icon}></i>
-                        <span className="ml-[8px]">{menu.type}</span>
+                        <span style={{ marginLeft: "8px" }}>{menu.type}</span>
                       </ContextMenu.Item>
                     );
                   })}
@@ -494,21 +533,21 @@ function DriveBody(props) {
         </HoverCard.Trigger>
         <HoverCard.Portal>
           <HoverCard.Content className="HoverCardContent" sideOffset={5}>
-            <strong className="text-[13px]">Title: </strong>
+            <strong style={{ fontSize: "13px" }}>Title: </strong>
             <span className="statusSpan" style={{ marginBottom: "0px" }}>
               {" "}
               {data.Name}
             </span>
             <br />
-            <strong className="text-[13px]">Status: </strong>
+            <strong style={{ fontSize: "13px" }}>Status: </strong>
             <span className="statusSpan"> {status}</span>
             <br />
-            <strong className="text-[13px]">Created Date: </strong>
+            <strong style={{ fontSize: "13px" }}>Created Date: </strong>
             <span className="statusSpan">{createddate}</span>
             <br />
             {signerExist && (
               <>
-                <strong className="text-[13px]">Signers: </strong>
+                <strong style={{ fontSize: "13px" }}>Signers: </strong>
                 {/* <span className="statusSpan">kjefjjnejkfnkbjs bbfjkdsbjbfjkbjk kscbjkbjkb</span> */}
                 {signersName()}
               </>
@@ -548,9 +587,13 @@ function DriveBody(props) {
           </Table>
         </div>
       ) : (
-        <div className="flex flex-row flex-wrap items-center mt-1 pb-[20px] mx-[5px]">
+        <div className="pdfContainer">
           {props.pdfData.map((data, ind) => {
-            return <div key={ind}>{handleFolderData(data, ind, "list")}</div>;
+            return (
+              <div className="box" key={ind}>
+                {handleFolderData(data, ind, "list")}
+              </div>
+            );
           })}
         </div>
       )}
@@ -566,23 +609,44 @@ function DriveBody(props) {
       )}
       <ModalUi
         isOpen={isDeleteDoc}
+        headerColor={themeColor}
         title={"Delete Document"}
-        handleClose={() => setIsDeleteDoc(false)}
+        handleClose={() => {
+          setIsDeleteDoc(false);
+        }}
       >
-        <div className="h-full p-[20px] text-base-content">
+        <div style={{ height: "100%", padding: 20 }}>
           <p>Are you sure you want to delete this document?</p>
-          <div className="h-[1px] w-full bg-[#9f9f9f] my-[15px]"></div>
+
+          <div
+            style={{
+              height: "1px",
+              backgroundColor: "#9f9f9f",
+              width: "100%",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          ></div>
+
           <button
-            onClick={() => handleDeleteDocument(selectDoc)}
+            onClick={() => {
+              handleDeleteDocument(selectDoc);
+            }}
+            style={{
+              background: themeColor,
+              color: "white"
+            }}
             type="button"
-            className="op-btn op-btn-primary mr-2"
+            className="finishBtn"
           >
             Yes
           </button>
           <button
-            onClick={() => setIsDeleteDoc(false)}
+            onClick={() => {
+              setIsDeleteDoc(false);
+            }}
             type="button"
-            className="op-btn op-btn-neutral"
+            className="finishBtn cancelBtn"
           >
             No
           </button>

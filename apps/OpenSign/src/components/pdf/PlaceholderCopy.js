@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { randomId, textWidget } from "../../constant/Utils";
 
@@ -194,13 +195,13 @@ function PlaceholderCopy(props) {
         props.setIsPageCopy(false);
       }}
     >
-      <div className="h-full p-[20px] text-base-content">
+      <div style={{ height: "100%", padding: 20 }}>
         {copyType.map((data, key) => {
           return (
-            <div key={key} className="flex flex-col">
-              <label className="text-[16px] font-medium">
+            <div key={key} style={{ display: "flex", flexDirection: "column" }}>
+              <label key={key} style={{ fontSize: "16px", fontWeight: "500" }}>
                 <input
-                  className="mr-[8px] op-radio op-radio-xs"
+                  style={{ accentColor: "red", marginRight: "10px" }}
                   type="radio"
                   value={data}
                   onChange={() => setSelectCopyType(data)}
@@ -213,22 +214,33 @@ function PlaceholderCopy(props) {
           );
         })}
 
-        <div className="flex bg-[#9f9f9f] w-full my-[15px]"></div>
+        <div
+          style={{
+            height: "1px",
+            backgroundColor: "#9f9f9f",
+            width: "100%",
+            marginTop: "15px",
+            marginBottom: "15px"
+          }}
+        ></div>
         <button
           onClick={() => {
             handleApplyCopy();
             handleUniqueId();
           }}
+          style={{ background: themeColor }}
           type="button"
           disabled={!selectCopyType}
-          className="op-btn op-btn-primary"
+          className="finishBtn"
         >
           Apply
         </button>
         <button
           type="button"
-          className="op-btn op-btn-ghost"
-          onClick={() => handleUniqueId()}
+          className="finishBtn cancelBtn"
+          onClick={() => {
+            handleUniqueId();
+          }}
         >
           Cancel
         </button>

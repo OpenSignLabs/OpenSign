@@ -215,16 +215,18 @@ function RenderPdf({
     const handleAllUserName = (Id, Role, type) => {
       return (
         <React.Fragment>
-          <div className="text-black text-[8px] font-medium">
+          <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
             {
               pdfDetails[0].Signers?.find(
                 (signer) => signer.objectId === data.signerObjId
               )?.Name
             }
           </div>
-          {type && <div className="text-[11px] font-bold">{type}</div>}
+          {type && (
+            <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+          )}
           {Role && (
-            <div className="text-black text-[8px] font-medium">
+            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
               {`(${Role})`}
             </div>
           )}
@@ -288,12 +290,14 @@ function RenderPdf({
       if (checkSign?.Name) {
         return (
           <>
-            <div className="text-black text-[8px] font-medium">
+            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
               {checkSign?.Name}
             </div>
-            {type && <div className="text-[11px] font-bold">{type}</div>}
+            {type && (
+              <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+            )}
             {Role && (
-              <div className="text-black text-[8px] font-medium">
+              <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
                 {`(${Role})`}
               </div>
             )}
@@ -302,16 +306,24 @@ function RenderPdf({
       } else {
         return (
           <>
-            {type && <div className="text-[11px] font-bold">{type}</div>}
-            <div className="text-black text-[8px] font-medium">{Role}</div>
+            {type && (
+              <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+            )}
+            <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+              {Role}
+            </div>
           </>
         );
       }
     } else {
       return (
         <>
-          {type && <div className="text-[11px] font-bold">{type}</div>}
-          <div className="text-black text-[8px] font-medium">{Role}</div>
+          {type && (
+            <div style={{ fontWeight: "700", fontSize: 11 }}>{type}</div>
+          )}
+          <div style={{ color: "black", fontSize: 8, fontWeight: "500" }}>
+            {Role}
+          </div>
         </>
       );
     }
@@ -450,9 +462,17 @@ function RenderPdf({
                   }))}
 
           {/* this component for render pdf document is in middle of the component */}
-          <div className="flex items-center justify-center">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
             <Document
-              onLoadError={() => setPdfLoadFail(true)}
+              onLoadError={() => {
+                setPdfLoadFail(true);
+              }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
               // ref={pdfRef}'
@@ -499,7 +519,10 @@ function RenderPdf({
         >
           <div
             data-tut="reactourForth"
-            style={{ border: "0.1px solid #ebe8e8", width: pdfOriginalWidth }}
+            style={{
+              border: "0.1px solid #ebe8e8",
+              width: pdfOriginalWidth
+            }}
             ref={drop}
             id="container"
           >

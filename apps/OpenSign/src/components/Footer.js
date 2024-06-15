@@ -45,16 +45,12 @@ const Footer = () => {
   };
   return (
     <>
-      <footer className="op-footer op-footer-center py-3 bg-base-300 text-base-content text-center text-[13px]">
-        <aside>
-          <p>
-            All Rights Reserved &copy; {new Date().getFullYear()} &nbsp;
-            <span onClick={openUrl} className="hover:underline cursor-pointer">
-              {appName} ( version: {version ? version : `${Package.version} `})
-            </span>
-          </p>
-        </aside>
-      </footer>
+      <div className="bg-[#222c3c] text-[#98a6ba] text-center text-[13px] py-3">
+        All Rights Reserved &copy; {new Date().getFullYear()} &nbsp;
+        <span onClick={openUrl} className="hover:underline cursor-pointer">
+          {appName} ( version: {version ? version : `${Package.version} `})
+        </span>
+      </div>
       <button
         className={`${
           showButton ? "block" : "hidden"

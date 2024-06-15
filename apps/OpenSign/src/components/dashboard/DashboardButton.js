@@ -26,18 +26,18 @@ const DashboardButton = (props) => {
         props.Data && props.Data.Redirect_type
           ? "cursor-pointer"
           : "cursor-default"
-      } w-full shadow-md px-3 py-2 op-card bg-base-100`}
+      } w-full px-3 py-2 flex text-white rounded-md shadow overflow-hidden`}
     >
-      <div className="flex flex-row items-center">
-        <span className="rounded-full bg-base-content bg-opacity-20 w-[60px] h-[60px] self-start flex justify-center items-center">
+      <div className="flex items-center justify-start gap-5">
+        <span className="rounded-full bg-black bg-opacity-20 w-[60px] h-[60px]  self-start flex justify-center items-center">
           <i
             className={`${
               props.Icon ? props.Icon : "fa fa-solid fa-info"
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
-        <div className="op-card-title text-lg ml-3 text-base-content">
-          {props.Label}
+        <div className="">
+          <div className="text-base lg:text-lg text-black"> {props.Label}</div>
         </div>
       </div>
     </div>

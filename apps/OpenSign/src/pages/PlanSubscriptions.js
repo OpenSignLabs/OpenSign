@@ -4,8 +4,6 @@ import checkmark from "../assets/images/checkmark.png";
 import plansArr from "../json/plansArr";
 import Title from "../components/Title";
 import Parse from "parse";
-import { openInNewTab } from "../constant/Utils";
-import Loader from "../primitives/Loader";
 const listItemStyle = {
   paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -86,33 +84,55 @@ const PlanSubscriptions = () => {
     <>
       <Title title={"Subscriptions"} />
       {isLoader ? (
-        <div className="flex items-center justify-center h-screen">
-          <Loader />
+        <div
+          style={{
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          <div
+            style={{
+              fontSize: "45px",
+              color: "#3dd3e0"
+            }}
+            className="loader-37"
+          ></div>
         </div>
       ) : (
-        <div className="overflow-y-auto max-h-full">
+        <div
+          style={{
+            backgroundColor: "white",
+            overflowY: "auto",
+            maxHeight: "100%"
+          }}
+        >
           <div className="block my-2">
             <div className="flex flex-col justify-center items-center w-full">
-              <div
-                role="tablist"
-                className="op-tabs op-tabs-boxed bg-base-100 my-2 shadow-lg transition-all"
-              >
-                <a
+              <div className="mb-6 mt-2 flex flex-row border-[1px] p-2 border-gray-300 rounded text-sm">
+                <span
                   onClick={() => setYearlyVisible(false)}
-                  role="tab"
-                  className={`${!yearlyVisible ? "op-tab-active" : ""} op-tab`}
+                  className={`${
+                    !yearlyVisible
+                      ? "bg-[#002862] text-white"
+                      : "bg-white text-black"
+                  } px-4 py-1 rounded cursor-pointer`}
                 >
                   Monthly
-                </a>
-                <a
+                </span>
+                <span
                   onClick={() => setYearlyVisible(true)}
-                  role="tab"
-                  className={`${yearlyVisible ? "op-tab-active" : ""} op-tab`}
+                  className={`${
+                    yearlyVisible
+                      ? "bg-[#002862] text-white"
+                      : "bg-white text-black"
+                  } px-4 py-1 rounded cursor-pointer`}
                 >
                   Yearly (10% off)
-                </a>
+                </span>
               </div>
-              <ul className="op-card flex flex-col md:flex-row h-full bg-base-100 justify-center shadow-lg">
+              <ul className="flex flex-col md:flex-row h-full bg-white justify-center">
                 {plansArr.map((item) => (
                   <li
                     className="flex flex-col text-center border-collapse border-[1px] border-gray-300 max-w-[250px]"
@@ -187,7 +207,9 @@ const PlanSubscriptions = () => {
                     <ul className="mx-1 p-3 text-left break-words text-sm list-none">
                       {item.benefits.map((subitem, index) => (
                         <li style={listItemStyle} key={index} className="m-1">
-                          <span className="relative">{subitem}</span>
+                          <span style={{ position: "relative" }}>
+                            {subitem}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -195,23 +217,22 @@ const PlanSubscriptions = () => {
                 ))}
               </ul>
             </div>
-            <div className="text-sm flex justify-center items-center mt-3 mb-2">
-              <hr className="border-[2px] border-gray-350 w-[20%]" />
-              <span className="px-2 text-base-content cursor-default">or</span>
-              <hr className="border-[2px] border-gray-350 w-[20%]" />
+            <div className="text-sm flex justify-center items-center">
+              <hr className="border-[1px] border-gray-300 w-[20%]" />
+              <span className="px-2 text-gray-500 cursor-default">or</span>
+              <hr className="border-[1px] border-gray-300 w-[20%]" />
             </div>
-            <div className="flex flex-col justify-center items-center">
+            <div className="flex flex-col justify-center w-full items-center">
               <h3 className="text-[#002862] mt-1 mb-2">
                 Host it yourself for free
               </h3>
-              <div
-                className="op-btn op-btn-primary w-[200px]"
-                onClick={() =>
-                  openInNewTab("https://github.com/OpenSignLabs/OpenSign")
-                }
+              <NavLink
+                to={"https://github.com/OpenSignLabs/OpenSign"}
+                className="bg-[#002862] w-[200px] text-center text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
+                target={"_blank"}
               >
                 Visit Github
-              </div>
+              </NavLink>
             </div>
           </div>
         </div>

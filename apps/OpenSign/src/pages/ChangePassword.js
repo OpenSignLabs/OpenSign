@@ -49,13 +49,13 @@ function ChangePassword() {
     return <Navigate to="/" />;
   }
   return (
-    <div className="w-full bg-base-100 text-base-content shadow rounded p-2">
+    <div className="w-full bg-white shadow rounded p-2">
       <Title title={"Change Password"} />
       <div className="text-xl font-bold border-b-[1px] border-gray-300">
         Change Password
       </div>
       <div className="m-2">
-        <form onSubmit={handleSubmit} className=" flex flex-col gap-y-2">
+        <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="currentpassword" className="block text-xs ml-1">
               Current Password
@@ -65,7 +65,7 @@ function ChangePassword() {
               name="currentpassword"
               value={currentpassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="op-input op-input-bordered op-input-sm text-xs w-full"
+              className="px-3 py-2 mb-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
               placeholder="Current Password"
               required
             />
@@ -79,7 +79,7 @@ function ChangePassword() {
               name="newpassword"
               value={newpassword}
               onChange={(e) => setnewpassword(e.target.value)}
-              className="op-input op-input-bordered op-input-sm text-xs w-full"
+              className="px-3 py-2 mb-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
               placeholder="New Password"
               required
             />
@@ -91,14 +91,17 @@ function ChangePassword() {
             <input
               type="password"
               name="confirmpassword"
-              className="op-input op-input-bordered op-input-sm text-xs w-full"
+              className="px-3 py-2 mb-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
               value={confirmpassword}
               onChange={(e) => setconfirmpassword(e.target.value)}
               placeholder="Confirm Password"
               required
             />
           </div>
-          <button type="submit" className="op-btn op-btn-primary shadow-md m-2">
+          <button
+            type="submit"
+            className="bg-[#188ae2] m-2 px-4 py-3 rounded-sm shadow-md text-white text-xs font-semibold uppercase"
+          >
             Change Password
           </button>
         </form>

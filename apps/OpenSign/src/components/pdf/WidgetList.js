@@ -4,9 +4,9 @@ import { getWidgetType } from "../../constant/Utils";
 function WidgetList(props) {
   return props.updateWidgets.map((item, ind) => {
     return (
-      <div key={ind} className="mb-[5px]">
+      <div key={ind} style={{ marginBottom: "5px" }}>
         <div
-          className="select-none"
+          className="widgets"
           onClick={() => {
             props.addPositionOfSignature &&
               props.addPositionOfSignature("onclick", item);

@@ -1,4 +1,5 @@
 import React from "react";
+import { themeColor } from "../../constant/const";
 import "../../styles/signature.css";
 function Signedby({ pdfDetails }) {
   const getFirstLetter = (name) => {
@@ -7,18 +8,50 @@ function Signedby({ pdfDetails }) {
   };
 
   return (
-    <div className="hidden md:block w-[180px] h-full bg-base-100">
-      <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
+    <div className="signerComponent">
+      <div
+        style={{
+          background: themeColor,
+          color: "white"
+        }}
+        className="signedStyle"
+      >
         Signed By
       </div>
-      <div className="mt-[2px] bg-base-100">
-        <div className="bg-[#93a3db] rounded-xl mx-1 flex flex-row items-center py-[10px]">
-          <div className="bg-[#576081] flex w-[30px] h-[30px] rounded-full justify-center items-center mx-1">
-            <span className="text-[12px] text-center font-bold text-white uppercase">
+      <div style={{ marginTop: "2px", background: "white" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            padding: "10px",
+            background: "#93a3db"
+          }}
+        >
+          <div
+            className="signerStyle"
+            style={{
+              background: "#abd1d0",
+              width: 20,
+              height: 20,
+              display: "flex",
+              borderRadius: 30 / 2,
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: "20px",
+              marginTop: "5px"
+            }}
+          >
+            <span
+              style={{
+                fontSize: "8px",
+                textAlign: "center",
+                fontWeight: "bold"
+              }}
+            >
               {getFirstLetter(pdfDetails.ExtUserPtr.Name)}
             </span>
           </div>
-          <div className="flex flex-col">
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <span className="userName">{pdfDetails.ExtUserPtr.Name}</span>
             <span className="useEmail">{pdfDetails.ExtUserPtr.Email}</span>
           </div>

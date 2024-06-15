@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import pad from "../assets/images/pad.svg";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
-// import { isEnableSubscription } from "../constant/const";
+import {
+  modalSubmitBtnColor,
+  modalCancelBtnColor
+  // isEnableSubscription
+} from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
@@ -23,13 +27,9 @@ import EditorToolbar, {
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import BulkSendUi from "../components/BulkSendUi";
-import Loader from "./Loader";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const isDashboard =
-    location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
   const [currentPage, setCurrentPage] = useState(1);
   const [actLoader, setActLoader] = useState({});
   const [isAlert, setIsAlert] = useState(false);
@@ -63,65 +63,13 @@ const ReportTable = (props) => {
   const { isMoreDocs, setIsNextRecord } = props;
   // For loop is used to calculate page numbers visible below table
   // Initialize pageNumbers using useMemo to avoid unnecessary re-creation
-  // const pageNumbers = useMemo(() => {
-  //   const calculatedPageNumbers = [];
-  //   for (let i = 1; i <= Math.ceil(props.List.length / props.docPerPage); i++) {
-  //     calculatedPageNumbers.push(i);
-  //   }
-  //   return calculatedPageNumbers;
-  // }, [props.List, props.docPerPage]);
-  const getPaginationRange = () => {
-    const totalPageNumbers = 7; // Adjust this value to show more/less page numbers
-    const pages = [];
-    const totalPages = Math.ceil(props.List.length / props.docPerPage);
-    if (totalPages <= totalPageNumbers) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      const leftSiblingIndex = Math.max(currentPage - 1, 1);
-      const rightSiblingIndex = Math.min(currentPage + 1, totalPages);
-
-      const showLeftDots = leftSiblingIndex > 2;
-      const showRightDots = rightSiblingIndex < totalPages - 2;
-
-      const firstPageIndex = 1;
-      const lastPageIndex = totalPages;
-
-      if (!showLeftDots && showRightDots) {
-        let leftItemCount = 3;
-        let leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
-
-        pages.push(...leftRange);
-        pages.push("...");
-        pages.push(totalPages);
-      } else if (showLeftDots && !showRightDots) {
-        let rightItemCount = 3;
-        let rightRange = Array.from(
-          { length: rightItemCount },
-          (_, i) => totalPages - rightItemCount + i + 1
-        );
-
-        pages.push(firstPageIndex);
-        pages.push("...");
-        pages.push(...rightRange);
-      } else if (showLeftDots && showRightDots) {
-        let middleRange = Array.from(
-          { length: 3 },
-          (_, i) => leftSiblingIndex + i
-        );
-
-        pages.push(firstPageIndex);
-        pages.push("...");
-        pages.push(...middleRange);
-        pages.push("...");
-        pages.push(lastPageIndex);
-      }
+  const pageNumbers = useMemo(() => {
+    const calculatedPageNumbers = [];
+    for (let i = 1; i <= Math.ceil(props.List.length / props.docPerPage); i++) {
+      calculatedPageNumbers.push(i);
     }
-
-    return pages;
-  };
-  const pageNumbers = getPaginationRange();
+    return calculatedPageNumbers;
+  }, [props.List, props.docPerPage]);
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
     checkTourStatus();
@@ -382,13 +330,11 @@ const ReportTable = (props) => {
     setIsDeleteModal({});
     // setIsMakePublic({});
     // setSelectedPublicRole("");
+    // setIsPublic((prevStates) => ({
+    //   ...prevStates,
+    //   [item.objectId]: !prevStates[item.objectId]
+    // }));
     // setIsPublicProfile({});
-    // if (item?.objectId) {
-    //   setIsPublic((prevStates) => ({
-    //     ...prevStates,
-    //     [item.objectId]: !prevStates[item.objectId]
-    //   }));
-    // }
   };
 
   const handleShare = (item) => {
@@ -707,17 +653,15 @@ const ReportTable = (props) => {
 
     return (
       <div className="flex flex-row gap-2 justify-center items-center">
-        <div className="flex justify-center items-center bg-base-300 text-base-content shadow-md op-card w-[65px] h-[32px] cursor-default">
+        <div className="flex justify-center items-center bg-gray-200 text-xs text-black shadow rounded-full w-[65px] h-[23px] cursor-default">
           {audit?.Activity ? audit?.Activity : "Awaited"}
         </div>
 
         <button
           onClick={() => handleNextBtn(user, doc)}
-          className={
-            audit?.Activity !== "Signed"
-              ? "op-btn op-btn-primary op-btn-sm"
-              : " text-transparent cursor-default pointer-events-none"
-          }
+          className={`${
+            audit?.Activity !== "Signed" ? "bg-[#32a3ac] shadow-md" : ""
+          } flex justify-center items-center text-center text-white  rounded w-[60px] h-[30px]`}
           disabled={audit?.Activity === "Signed"}
         >
           {audit?.Activity !== "Signed" && "Resend"}
@@ -918,13 +862,16 @@ const ReportTable = (props) => {
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
-        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
-          <Loader />
+        <div className="absolute w-full h-full rounded-md flex justify-center items-center bg-black bg-opacity-30 z-30">
+          <div
+            style={{ fontSize: "45px", color: "#3dd3e0" }}
+            className="loader-37"
+          ></div>
         </div>
       )}
-      <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
+      <div className="p-2 overflow-x-scroll w-full bg-white rounded-md">
         {/* {isCelebration && (
-          <div className="relative z-[1000]">
+          <div style={{ position: "relative", zIndex: "1000" }}>
             <Confetti width={window.innerWidth} height={window.innerHeight} />
           </div>
         )} */}
@@ -951,7 +898,7 @@ const ReportTable = (props) => {
             <i
               data-tut="reactourFirst"
               onClick={() => navigate("/form/template")}
-              className="fa-solid fa-square-plus text-accent text-[25px]"
+              className="fa-solid fa-square-plus text-sky-400 text-[25px]"
             ></i>
           )}
           {props.form && (
@@ -959,412 +906,576 @@ const ReportTable = (props) => {
               className="cursor-pointer"
               onClick={() => handleContactFormModal()}
             >
-              <i className="fa-solid fa-square-plus text-accent text-[25px]"></i>
+              <i className="fa-solid fa-square-plus text-sky-400 text-[25px]"></i>
             </div>
           )}
         </div>
-        <div
-          className={`${
-            isDashboard ? "h-[317px]" : "h-full"
-          } overflow-x-auto w-full`}
-        >
-          <table className="op-table border-collapse w-full">
-            <thead className="text-[14px]">
-              <tr className="border-y-[1px]">
-                {props.heading?.map((item, index) => (
-                  <React.Fragment key={index}>
-                    <th className="px-4 py-2">{item}</th>
-                  </React.Fragment>
-                ))}
-                {/* {props.ReportName === "Templates" && isEnableSubscription && (
-                <th className="px-4 py-2">Public</th>
+        <table className="table-auto w-full border-collapse">
+          <thead className="text-[14px]">
+            <tr className="border-y-[1px]">
+              {props.heading?.map((item, index) => (
+                <React.Fragment key={index}>
+                  <th className="px-4 py-2 font-thin">{item}</th>
+                </React.Fragment>
+              ))}
+              {props.actions?.length > 0 && (
+                <th className="px-4 py-2 font-thin">Action</th>
+              )}
+              {/* {props.ReportName === "Templates" && isEnableSubscription && (
+                <th className="px-4 py-2 font-thin">Public</th>
               )} */}
-                {props.actions?.length > 0 && (
-                  <th className="px-4 py-2 text-transparent pointer-events-none">
-                    Action
-                  </th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="text-[12px]">
-              {props.List?.length > 0 && (
-                <>
-                  {currentList.map((item, index) =>
-                    props.ReportName === "Contactbook" ? (
-                      <tr className="border-y-[1px]" key={index}>
-                        {props.heading.includes("Sr.No") && (
-                          <th className="px-4 py-2">
-                            {startIndex + index + 1}
-                          </th>
-                        )}
-                        <td className="px-4 py-2 font-semibold">
-                          {item?.Name}{" "}
-                        </td>
-                        <td className="px-4 py-2">{item?.Email || "-"}</td>
-                        <td className="px-4 py-2">{item?.Phone || "-"}</td>
-                        <td className="px-3 py-2 text-white grid grid-cols-2">
-                          {props.actions?.length > 0 &&
-                            props.actions.map((act, index) => (
-                              <button
-                                key={index}
-                                onClick={() => handleActionBtn(act, item)}
-                                title={act.hoverLabel}
-                                className={`${
-                                  act?.btnColor ? act.btnColor : ""
-                                } op-btn op-btn-sm`}
-                              >
-                                <i className={act.btnIcon}></i>
-                              </button>
-                            ))}
-                          {isDeleteModal[item.objectId] && (
-                            <ModalUi
-                              isOpen
-                              title={"Delete Contact"}
-                              handleClose={handleClose}
-                            >
-                              <div className="m-[20px]">
-                                <div className="text-lg font-normal text-black">
-                                  Are you sure you want to delete this contact?
-                                </div>
-                                <hr className="bg-[#ccc] mt-4 " />
-                                <div className="flex items-center mt-3 gap-2 text-white">
-                                  <button
-                                    onClick={() => handleDelete(item)}
-                                    className="op-btn op-btn-primary"
-                                  >
-                                    Yes
-                                  </button>
-                                  <button
-                                    onClick={handleClose}
-                                    className="op-btn op-btn-secondary"
-                                  >
-                                    No
-                                  </button>
-                                </div>
-                              </div>
-                            </ModalUi>
-                          )}
-                        </td>
-                      </tr>
-                    ) : (
-                      <tr className="border-y-[1px]" key={index}>
-                        {props.heading.includes("Sr.No") && (
-                          <th className="px-4 py-2">
-                            {startIndex + index + 1}
-                          </th>
-                        )}
-                        <td className="px-4 py-2 font-semibold min-w-56">
-                          {item?.Name}{" "}
-                        </td>
-                        {props.heading.includes("Note") && (
-                          <td className="px-4 py-2">
-                            {item?.Note?.length > 25
-                              ? item?.Note?.slice(0, 25) + "..."
-                              : item?.Note || "-"}
-                          </td>
-                        )}
-                        {props.heading.includes("Folder") && (
-                          <td className="px-4 py-2">
-                            {item?.Folder?.Name || "OpenSign™ Drive"}
-                          </td>
-                        )}
-                        <td className="px-4 py-2">
-                          <button
-                            onClick={() => handleDownload(item)}
-                            className="op-link op-link-primary"
-                            title={"Download"}
-                          >
-                            {item?.URL ? "Download" : "-"}
-                          </button>
-                        </td>
-                        <td className="px-4 py-2">
-                          {formatRow(item?.ExtUserPtr)}
-                        </td>
-                        <td className="px-4 py-2">
-                          {item?.Placeholders ? (
+            </tr>
+          </thead>
+          <tbody className="text-[12px]">
+            {props.List?.length > 0 && (
+              <>
+                {currentList.map((item, index) =>
+                  props.ReportName === "Contactbook" ? (
+                    <tr className="border-y-[1px]" key={index}>
+                      {props.heading.includes("Sr.No") && (
+                        <td className="px-4 py-2">{startIndex + index + 1}</td>
+                      )}
+                      <td className="px-4 py-2 font-semibold">{item?.Name} </td>
+                      <td className="px-4 py-2">{item?.Email || "-"}</td>
+                      <td className="px-4 py-2">{item?.Phone || "-"}</td>
+                      <td className="px-3 py-2 text-white grid grid-cols-2">
+                        {props.actions?.length > 0 &&
+                          props.actions.map((act, index) => (
                             <button
-                              onClick={() => handleViewSigners(item)}
-                              className="op-link op-link-primary"
+                              key={index}
+                              onClick={() => handleActionBtn(act, item)}
+                              className={`mb-1 flex justify-center items-center gap-1 px-2 py-1 rounded shadow`}
+                              title={act.hoverLabel}
+                              style={{
+                                backgroundColor: act.btnColor
+                                  ? act.btnColor
+                                  : "#3ac9d6",
+                                color: act?.textColor ? act?.textColor : "white"
+                              }}
                             >
-                              View
+                              <i className={act.btnIcon}></i>
                             </button>
-                          ) : (
-                            "-"
-                          )}
-                        </td>
-                        {/* {props.ReportName === "Templates" &&
-                        isEnableSubscription && (
-                          <td className=" pl-[20px] py-2">
-                            {props.ReportName === "Templates" && (
-                              <div className="flex flex-row">
-                                <label
-                                  className={
-                                    "cursor-pointer relative inline-flex items-center mb-0"
-                                  }
-                                >
-                                  <input
-                                    checked={isPublic?.[item.objectId]}
-                                    onChange={(e) =>
-                                      handlePublicChange(e, item)
-                                    }
-                                    type="checkbox"
-                                    value=""
-                                    className="sr-only peer"
-                                  />
-                                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
-                                </label>
+                          ))}
+                        {isDeleteModal[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Delete Contact"}
+                            handleClose={handleClose}
+                          >
+                            <div className="m-[20px]">
+                              <div className="text-lg font-normal text-black">
+                                Are you sure you want to delete this contact?
                               </div>
-                            )}
-                            {isMakePublic[item.objectId] && (
-                              <ModalUi
-                                isOpen
-                                title={
-                                  isPublic[item.objectId]
-                                    ? "Make template public"
-                                    : "Make template private"
-                                }
-                                handleClose={() => {
-                                  setIsMakePublic({});
-                                  setSelectedPublicRole("");
-                                  setIsPublic((prevStates) => ({
-                                    ...prevStates,
-                                    [item.objectId]: !prevStates[item.objectId]
-                                  }));
-                                }}
-                              >
-                                <div className="m-[20px]">
-                                  <div className="font-normal text-black">
-                                    <p className="text-lg">
-                                      {isPublic[item.objectId]
-                                        ? `Are you sure you want to make this template public ?`
-                                        : `Are you sure you want to make this template private ? This will remove it from your public profile ?`}
-                                    </p>
-                                    {isPublic[item.objectId] && (
-                                      <div className="flex mt-2 gap-2 md:items-center">
-                                        <p className="text-[15px]">
-                                          Public role :{" "}
-                                        </p>
-                                        {item?.Placeholders?.length > 1 ? (
-                                          <select
-                                            className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]"
-                                            name="textvalidate"
-                                            value={selectedPublicRole}
-                                            onChange={(e) =>
-                                              setSelectedPublicRole(
-                                                e.target.value
-                                              )
-                                            }
-                                          >
-                                            <option
-                                              disabled
-                                              style={{ fontSize: "13px" }}
-                                              value=""
-                                            >
-                                              Select...
-                                            </option>
-                                            {item?.Placeholders.map(
-                                              (data, ind) => {
-                                                return (
-                                                  <option
-                                                    style={{ fontSize: "13px" }}
-                                                    key={ind}
-                                                    value={data?.Role}
-                                                  >
-                                                    {data?.Role}
-                                                  </option>
-                                                );
-                                              }
-                                            )}
-                                          </select>
-                                        ) : (
-                                          <div className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]">
-                                            {item?.Placeholders[0]?.Role}
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <hr className="bg-[#ccc] mt-2 " />
-                                  <div className="flex items-center mt-3 gap-2 text-white">
-                                    <button
-                                      onClick={() => handlePublicTemplate(item)}
-                                      className="op-btn op-btn-primary"
-                                    >
-                                      Submit
-                                    </button>
-                                    <button
-                                      onClick={() => handleClose(item)}
-                                      className="op-btn op-btn-secondary"
-                                    >
-                                      No
-                                    </button>
-                                  </div>
-                                </div>
-                              </ModalUi>
-                            )}
-                            {isPublicProfile[item.objectId] && (
-                              <ModalUi
-                                isOpen
-                                title={"Public URL"}
-                                handleClose={() => {
-                                  setIsPublicProfile({});
-                                }}
-                                reduceWidth={
-                                  "md:min-w-[440px] md:max-w-[400px]"
-                                }
-                              >
-                                <div className="m-[20px]">
-                                  {publicUserName ? (
-                                    <div className="font-normal text-black">
-                                      <p>
-                                        Here’s your public URL. Copy or share it
-                                        with the signer, and you will be able to
-                                        see all your publicly set templates.
-                                      </p>
-                                      <div className=" flex items-center gap-5 mt-2  p-[2px] w-[75%]">
-                                        <span className="font-bold">
-                                          Public URL :{" "}
-                                        </span>
-                                        <span
-                                          onClick={() => copytoProfileLink()}
-                                          className="underline underline-offset-2 cursor-pointer"
-                                        >{`https://opensign.me/${publicUserName}`}</span>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="font-normal text-black">
-                                      <p>
-                                        Please add your public URL, and you will
-                                        be able to make a public template.
-                                      </p>
-                                      <button
-                                        className="mt-3 op-btn op-btn-primary"
-                                        onClick={() => navigate("/profile")}
-                                      >
-                                        Add
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              </ModalUi>
-                            )}
-                          </td>
-                        )} */}
-                        <td className="px-2 py-2">
-                          <div className="text-base-content flex flex-row gap-x-2 gap-y-1 justify-start items-center">
-                            {props.actions?.length > 0 &&
-                              props.actions.map((act, index) => (
-                                <div
-                                  role="button"
-                                  data-tut={act?.selector}
-                                  key={index}
-                                  onClick={() => handleActionBtn(act, item)}
-                                  title={act.hoverLabel}
-                                  className={
-                                    act.action !== "option"
-                                      ? `${
-                                          act?.btnColor ? act.btnColor : ""
-                                        } op-btn op-btn-sm mr-1`
-                                      : "text-base-content focus:outline-none text-lg mr-2 relative"
-                                  }
+                              <hr className="bg-[#ccc] mt-4 " />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handleDelete(item)}
+                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                  style={{
+                                    backgroundColor: modalSubmitBtnColor
+                                  }}
                                 >
-                                  <i className={act.btnIcon}></i>
-                                  {act.btnLabel && (
-                                    <span className="uppercase font-medium">
-                                      {act.btnLabel}
-                                    </span>
-                                  )}
-                                  {isOption[item.objectId] &&
-                                    act.action === "option" && (
-                                      <ul className="absolute -right-2 top-6 z-[20] op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box ">
-                                        {act.subaction?.map((subact) => (
-                                          <li
-                                            key={subact.btnId}
-                                            onClick={() =>
-                                              handleActionBtn(subact, item)
-                                            }
-                                            title={subact.hoverLabel}
-                                          >
-                                            <span>
-                                              <i
-                                                className={`${subact.btnIcon} mr-1.5`}
-                                              ></i>
-                                              {subact.btnLabel && (
-                                                <span className="text-[13px] capitalize font-medium">
-                                                  {subact.btnLabel}
-                                                </span>
-                                              )}
-                                            </span>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    )}
-                                </div>
-                              ))}
-                          </div>
-                          {isViewShare[item.objectId] && (
-                            <div className="fixed z-[999] inset-0 w-full h-full bg-black bg-opacity-[75%]">
-                              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[400px] overflow-y-auto max-h-[340px] md:max-h-[400px] hide-scrollbar">
-                                <div
-                                  className="cursor-pointer absolute text-white text-[22px] font-medium rounded-full z-50 top-1 right-3"
-                                  onClick={() => setIsViewShare({})}
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={handleClose}
+                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                  style={{
+                                    backgroundColor: modalCancelBtnColor
+                                  }}
                                 >
-                                  &times;
-                                </div>
-
-                                <table className="table-auto w-full">
-                                  <thead className="text-white h-[38px] sticky top-0 bg-[#32a3ac]">
-                                    <tr>
-                                      {props.ReportName === "Templates" && (
-                                        <th className="p-2 pl-3">Roles</th>
-                                      )}
-                                      <th className="p-2">Signers</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {item.Placeholders.map((x, i) => (
-                                      <tr
-                                        key={i}
-                                        className="text-sm font-normal text-black odd:bg-white even:bg-gray-200"
-                                      >
-                                        {props.ReportName === "Templates" && (
-                                          <td className="text-[12px] p-2 pl-3">
-                                            {x.Role && x.Role}
-                                          </td>
-                                        )}
-                                        <td className="text-[12px] p-2 break-all">
-                                          {x.email
-                                            ? x.email
-                                            : x?.signerPtr?.Email || "-"}
-                                        </td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
+                                  No
+                                </button>
                               </div>
                             </div>
+                          </ModalUi>
+                        )}
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr className="border-y-[1px]" key={index}>
+                      {props.heading.includes("Sr.No") && (
+                        <td className="px-4 py-2">{startIndex + index + 1}</td>
+                      )}
+                      <td className="px-4 py-2 font-semibold w-56">
+                        {item?.Name}{" "}
+                      </td>
+                      {props.heading.includes("Note") && (
+                        <td className="px-4 py-2">{item?.Note || "-"}</td>
+                      )}
+                      {props.heading.includes("Folder") && (
+                        <td className="px-4 py-2">
+                          {item?.Folder?.Name || "OpenSign™ Drive"}
+                        </td>
+                      )}
+                      <td className="px-4 py-2">
+                        <button
+                          onClick={() => handleDownload(item)}
+                          className="text-[blue] hover:text-[blue] hover:underline focus:outline-none"
+                          title={"Download"}
+                        >
+                          {item?.URL ? "Download" : "-"}
+                        </button>
+                      </td>
+                      <td className="px-4 py-2">
+                        {formatRow(item?.ExtUserPtr)}
+                      </td>
+                      <td className="px-4 py-2">
+                        {/* {item?.Signers ? formatRow(item?.Signers) : "-"} */}
+                        {item?.Placeholders ? (
+                          <button
+                            onClick={() => handleViewSigners(item)}
+                            className="text-[blue] hover:underline focus:outline-none"
+                          >
+                            View
+                          </button>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td className="px-2 py-2 text-white flex flex-row gap-x-2 gap-y-1 justify-center items-center">
+                        {props.actions?.length > 0 &&
+                          props.actions.map((act, index) => (
+                            <button
+                              data-tut={act?.selector}
+                              key={index}
+                              onClick={() => handleActionBtn(act, item)}
+                              className={`${
+                                act.action === "option" ? "" : "rounded shadow"
+                              } ${
+                                act.btnLabel ? "py-[3px] px-1.5" : "py-1.5 px-2"
+                              } relative text-center flex items-center justify-center focus:outline-none`}
+                              title={act.hoverLabel}
+                              style={{
+                                backgroundColor: act.btnColor
+                                  ? act.btnColor
+                                  : "#3ac9d6",
+                                color: act?.textColor ? act?.textColor : "white"
+                              }}
+                            >
+                              <i className={act.btnIcon}></i>
+                              {act.btnLabel && (
+                                <span className="ml-[4px] uppercase font-medium">
+                                  {act.btnLabel}
+                                </span>
+                              )}
+                              {isOption[item.objectId] &&
+                                act.action === "option" && (
+                                  <div className="absolute -right-2 top-5 p-1.5 bg-white text-nowrap rounded shadow-md z-[20] overflow-hidden">
+                                    {act.subaction?.map((subact) => (
+                                      <div
+                                        key={subact.btnId}
+                                        className="hover:bg-gray-300 rounded cursor-pointer px-2 py-1.5 flex justify-start items-center text-black"
+                                        onClick={() =>
+                                          handleActionBtn(subact, item)
+                                        }
+                                        title={subact.hoverLabel}
+                                      >
+                                        <i
+                                          className={`${subact.btnIcon} mr-1.5`}
+                                        ></i>
+                                        {subact.btnLabel && (
+                                          <span className="ml-[4px] text-[13px] capitalize font-medium">
+                                            {subact.btnLabel}
+                                          </span>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                            </button>
+                          ))}
+                        {isViewShare[item.objectId] && (
+                          <div className="fixed z-[999] inset-0 w-full h-full bg-black bg-opacity-[75%]">
+                            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[400px] overflow-y-auto max-h-[340px] md:max-h-[400px] hide-scrollbar">
+                              <div
+                                className="cursor-pointer absolute text-white text-[22px] font-medium rounded-full z-50 top-1 right-3"
+                                onClick={() => setIsViewShare({})}
+                              >
+                                &times;
+                              </div>
+
+                              <table className="table-auto w-full">
+                                <thead className="text-white h-[38px] sticky top-0 bg-[#32a3ac]">
+                                  <tr>
+                                    {props.ReportName === "Templates" && (
+                                      <th className="p-2 pl-3">Roles</th>
+                                    )}
+                                    <th className="p-2">Signers</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {item.Placeholders.map((x, i) => (
+                                    <tr
+                                      key={i}
+                                      className="text-sm font-normal text-black odd:bg-white even:bg-gray-200"
+                                    >
+                                      {props.ReportName === "Templates" && (
+                                        <td className="text-[12px] p-2 pl-3">
+                                          {x.Role && x.Role}
+                                        </td>
+                                      )}
+                                      <td className="text-[12px] p-2 break-all">
+                                        {x.email
+                                          ? x.email
+                                          : x?.signerPtr?.Email || "-"}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        )}
+                        {isDeleteModal[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Delete Document"}
+                            handleClose={handleClose}
+                          >
+                            <div className="m-[20px]">
+                              <div className="text-lg font-normal text-black">
+                                Are you sure you want to delete this document?
+                              </div>
+                              <hr className="bg-[#ccc] mt-4" />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handleDelete(item)}
+                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                  style={{
+                                    backgroundColor: modalSubmitBtnColor
+                                  }}
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={handleClose}
+                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                  style={{
+                                    backgroundColor: modalCancelBtnColor
+                                  }}
+                                >
+                                  No
+                                </button>
+                              </div>
+                            </div>
+                          </ModalUi>
+                        )}
+                        {isBulkSend[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Quick send"}
+                            handleClose={() => setIsBulkSend({})}
+                          >
+                            {isLoader[item.objectId] ? (
+                              <div className="w-full h-[100px] md:h-[100px] rounded-b-md flex justify-center items-center bg-black bg-opacity-30 z-30">
+                                <div
+                                  style={{ fontSize: "45px", color: "#3dd3e0" }}
+                                  className="loader-37"
+                                ></div>
+                              </div>
+                            ) : (
+                              <BulkSendUi
+                                Placeholders={placeholders}
+                                item={templateDeatils}
+                                handleClose={handleQuickSendClose}
+                              />
+                            )}
+                          </ModalUi>
+                        )}
+                        {isShare[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Copy link"}
+                            handleClose={() => {
+                              setIsShare({});
+                              setActLoader({});
+                            }}
+                          >
+                            <div className="m-[20px]">
+                              {shareUrls.map((share, i) => (
+                                <div
+                                  key={i}
+                                  className="text-sm font-normal text-black flex my-2 justify-between items-center"
+                                >
+                                  <span className="text-sm font-semibold">
+                                    {share.email}
+                                  </span>
+                                  <div>
+                                    <RWebShare
+                                      data={{
+                                        url: share.url,
+                                        title: "Sign url"
+                                      }}
+                                    >
+                                      <button className="bg-[#002864] text-white rounded w-[32px] h-[30px] focus:outline-none">
+                                        <i className="fa-solid fa-share-from-square"></i>{" "}
+                                      </button>
+                                    </RWebShare>
+                                    <button
+                                      className="ml-2 bg-[#002864] text-white rounded w-[100px] h-[30px] focus:outline-none"
+                                      onClick={() => copytoclipboard(share)}
+                                    >
+                                      <i className="fa-solid fa-link"></i>{" "}
+                                      {copied[share.email] ? "Copied" : "Copy"}
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </ModalUi>
+                        )}
+                        {isRevoke[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Revoke document"}
+                            handleClose={handleClose}
+                          >
+                            <div className="m-[20px]">
+                              <div className="text-lg font-normal text-black">
+                                Are you sure you want to revoke this document?
+                              </div>
+                              <hr className="bg-[#ccc] mt-4 " />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handleRevoke(item)}
+                                  className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                  style={{
+                                    backgroundColor: modalSubmitBtnColor
+                                  }}
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={handleClose}
+                                  className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                  style={{
+                                    backgroundColor: modalCancelBtnColor
+                                  }}
+                                >
+                                  No
+                                </button>
+                              </div>
+                            </div>
+                          </ModalUi>
+                        )}
+                        {isResendMail[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"Resend Mail"}
+                            handleClose={() => {
+                              setIsResendMail({});
+                              setIsNextStep({});
+                              setUserDetails({});
+                            }}
+                          >
+                            <div className=" overflow-y-auto max-h-[340px] md:max-h-[400px]">
+                              {item?.Placeholders?.map((user) => (
+                                <React.Fragment key={user.Id}>
+                                  {isNextStep[user.Id] && (
+                                    <div className="relative ">
+                                      {actLoader[user.Id] && (
+                                        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
+                                          <div
+                                            style={{
+                                              fontSize: "45px",
+                                              color: "#3dd3e0"
+                                            }}
+                                            className="loader-37"
+                                          ></div>
+                                        </div>
+                                      )}
+
+                                      <form
+                                        onSubmit={(e) =>
+                                          handleResendMail(e, item, user)
+                                        }
+                                        className="w-full flex flex-col gap-2 p-3 text-black relative"
+                                      >
+                                        <div className="absolute right-5 text-xs z-40">
+                                          <Tooltip
+                                            id={`${user.Id}_help`}
+                                            message={
+                                              "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
+                                            }
+                                          />
+                                        </div>
+                                        <div>
+                                          <label
+                                            className="text-xs ml-1"
+                                            htmlFor="mailsubject"
+                                          >
+                                            Subject{" "}
+                                          </label>
+                                          <input
+                                            id="mailsubject"
+                                            className="w-full py-1.5 px-2 border-[1px] border-gray-300 rounded"
+                                            value={mail.subject}
+                                            onChange={(e) =>
+                                              handleSubjectChange(
+                                                e.target.value,
+                                                item
+                                              )
+                                            }
+                                            required
+                                          />
+                                        </div>
+                                        <div>
+                                          <label
+                                            className="text-xs ml-1"
+                                            htmlFor="mailbody"
+                                          >
+                                            Body{" "}
+                                          </label>
+                                          <EditorToolbar containerId="toolbar1" />
+                                          <ReactQuill
+                                            id="mailbody"
+                                            theme="snow"
+                                            value={mail.body || ""}
+                                            placeholder="add body of email "
+                                            modules={module1}
+                                            formats={formats}
+                                            onChange={(value) =>
+                                              handlebodyChange(value, item)
+                                            }
+                                          />
+                                        </div>
+                                        <button
+                                          type="submit"
+                                          className="bg-[#32a3ac] w-[70px] font-semibold text-white py-2 rounded"
+                                        >
+                                          Resend
+                                        </button>
+                                      </form>
+                                    </div>
+                                  )}
+                                  {Object?.keys(isNextStep) <= 0 && (
+                                    <div className="flex justify-between items-center gap-2 my-2 px-3">
+                                      <div className="text-black">
+                                        {user?.signerPtr?.Name || "-"}{" "}
+                                        {`<${
+                                          user?.email
+                                            ? user.email
+                                            : user.signerPtr.Email
+                                        }>`}
+                                      </div>
+                                      <>{fetchUserStatus(user, item)}</>
+                                    </div>
+                                  )}
+                                </React.Fragment>
+                              ))}
+                            </div>
+                          </ModalUi>
+                        )}
+                      </td>
+                      {/* {isEnableSubscription && (
+                        <td className=" pl-[20px] py-2    ">
+                          {props.ReportName === "Templates" && (
+                            <div className="  flex flex-row-">
+                              <label
+                                className={
+                                  "cursor-pointer relative inline-flex items-center mb-0"
+                                }
+                              >
+                                <input
+                                  checked={isPublic?.[item.objectId]}
+                                  onChange={(e) => handlePublicChange(e, item)}
+                                  type="checkbox"
+                                  value=""
+                                  className="sr-only peer"
+                                />
+                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
+                              </label>
+                            </div>
                           )}
-                          {isDeleteModal[item.objectId] && (
+                          {isMakePublic[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={"Delete Document"}
-                              handleClose={handleClose}
+                              title={
+                                isPublic[item.objectId]
+                                  ? "Make template public"
+                                  : "Make template private"
+                              }
+                              handleClose={() => {
+                                setIsMakePublic({});
+                                setSelectedPublicRole("");
+                                setIsPublic((prevStates) => ({
+                                  ...prevStates,
+                                  [item.objectId]: !prevStates[item.objectId]
+                                }));
+                              }}
                             >
                               <div className="m-[20px]">
-                                <div className="text-lg font-normal text-black">
-                                  Are you sure you want to delete this document?
+                                <div className="font-normal text-black">
+                                  <p className="text-lg">
+                                    {" "}
+                                    {isPublic[item.objectId]
+                                      ? `Are you sure you want tof make this templat public ?`
+                                      : `Are you sure you want to make this template private? This will remove it from your public profile ?`}
+                                  </p>
+                                  {isPublic[item.objectId] && (
+                                    <div className="flex mt-2 gap-2 md:items-center">
+                                      <p className="text-[15px]">
+                                        Public role :{" "}
+                                      </p>
+                                      {item?.Placeholders?.length > 1 ? (
+                                        <select
+                                          className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]"
+                                          name="textvalidate"
+                                          value={selectedPublicRole}
+                                          onChange={(e) =>
+                                            setSelectedPublicRole(
+                                              e.target.value
+                                            )
+                                          }
+                                        >
+                                          <option
+                                            disabled
+                                            style={{ fontSize: "13px" }}
+                                            value=""
+                                          >
+                                            Select...
+                                          </option>
+                                          {item?.Placeholders.map(
+                                            (data, ind) => {
+                                              return (
+                                                <option
+                                                  style={{ fontSize: "13px" }}
+                                                  key={ind}
+                                                  value={data?.Role}
+                                                >
+                                                  {data?.Role}
+                                                </option>
+                                              );
+                                            }
+                                          )}
+                                        </select>
+                                      ) : (
+                                        <div className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]">
+                                          {item?.Placeholders[0]?.Role}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
-                                <hr className="bg-[#ccc] mt-4" />
+
+                                <hr className="bg-[#ccc] mt-2 " />
                                 <div className="flex items-center mt-3 gap-2 text-white">
                                   <button
-                                    onClick={() => handleDelete(item)}
-                                    className="op-btn op-btn-primary"
+                                    onClick={() => handlePublicTemplate(item)}
+                                    className="px-4 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
+                                    style={{
+                                      backgroundColor: modalSubmitBtnColor
+                                    }}
                                   >
-                                    Yes
+                                    Submit
                                   </button>
                                   <button
-                                    onClick={handleClose}
-                                    className="op-btn op-btn-secondary"
+                                    onClick={() => handleClose(item)}
+                                    className="px-4 py-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
+                                    style={{
+                                      backgroundColor: modalCancelBtnColor
+                                    }}
                                   >
                                     No
                                   </button>
@@ -1372,239 +1483,102 @@ const ReportTable = (props) => {
                               </div>
                             </ModalUi>
                           )}
-                          {isBulkSend[item.objectId] && (
+                          {isPublicProfile[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={"Quick send"}
-                              handleClose={() => setIsBulkSend({})}
-                            >
-                              {isLoader[item.objectId] ? (
-                                <div className="w-full h-[100px] flex justify-center items-center bg-opacity-30 z-30">
-                                  <Loader />
-                                </div>
-                              ) : (
-                                <BulkSendUi
-                                  Placeholders={placeholders}
-                                  item={templateDeatils}
-                                  handleClose={handleQuickSendClose}
-                                />
-                              )}
-                            </ModalUi>
-                          )}
-                          {isShare[item.objectId] && (
-                            <ModalUi
-                              isOpen
-                              title={"Copy link"}
+                              title={"Public URL"}
                               handleClose={() => {
-                                setIsShare({});
-                                setActLoader({});
+                                setIsPublicProfile({});
                               }}
+                              reduceWidth={"md:min-w-[440px] md:max-w-[400px]"}
                             >
                               <div className="m-[20px]">
-                                {shareUrls.map((share, i) => (
-                                  <div
-                                    key={i}
-                                    className="text-sm font-normal text-black flex my-2 justify-between items-center"
-                                  >
-                                    <span className="text-sm font-semibold">
-                                      {share.email}
-                                    </span>
-                                    <div>
-                                      <RWebShare
-                                        data={{
-                                          url: share.url,
-                                          title: "Sign url"
-                                        }}
-                                      >
-                                        <button className="bg-[#002864] text-white rounded w-[32px] h-[30px] focus:outline-none">
-                                          <i className="fa-solid fa-share-from-square"></i>{" "}
-                                        </button>
-                                      </RWebShare>
-                                      <button
-                                        className="ml-2 bg-[#002864] text-white rounded w-[100px] h-[30px] focus:outline-none"
-                                        onClick={() => copytoclipboard(share)}
-                                      >
-                                        <i className="fa-solid fa-link"></i>{" "}
-                                        {copied[share.email]
-                                          ? "Copied"
-                                          : "Copy"}
-                                      </button>
+                                {publicUserName ? (
+                                  <div className="font-normal text-black">
+                                    <p>
+                                      Here’s your public URL. Copy or share it
+                                      with the signer, and you will be able to
+                                      see all your publicly set templates.
+                                    </p>
+                                    <div className=" flex items-center gap-5 mt-2  p-[2px] w-[75%]">
+                                      <span className="font-bold">
+                                        Public URL :{" "}
+                                      </span>
+                                      <span
+                                        onClick={() => copytoProfileLink()}
+                                        className="underline underline-offset-2 cursor-pointer"
+                                      >{`https://opensign.me/${publicUserName}`}</span>
                                     </div>
                                   </div>
-                                ))}
-                              </div>
-                            </ModalUi>
-                          )}
-                          {isRevoke[item.objectId] && (
-                            <ModalUi
-                              isOpen
-                              title={"Revoke document"}
-                              handleClose={handleClose}
-                            >
-                              <div className="m-[20px]">
-                                <div className="text-lg font-normal text-black">
-                                  Are you sure you want to revoke this document?
-                                </div>
-                                <hr className="bg-[#ccc] mt-4" />
-                                <div className="flex items-center mt-3 gap-2">
-                                  <button
-                                    onClick={() => handleRevoke(item)}
-                                    className="op-btn op-btn-primary"
-                                  >
-                                    Yes
-                                  </button>
-                                  <button
-                                    onClick={handleClose}
-                                    className="op-btn op-btn-secondary"
-                                  >
-                                    No
-                                  </button>
-                                </div>
-                              </div>
-                            </ModalUi>
-                          )}
-                          {isResendMail[item.objectId] && (
-                            <ModalUi
-                              isOpen
-                              title={"Resend Mail"}
-                              handleClose={() => {
-                                setIsResendMail({});
-                                setIsNextStep({});
-                                setUserDetails({});
-                              }}
-                            >
-                              <div className=" overflow-y-auto max-h-[340px] md:max-h-[400px]">
-                                {item?.Placeholders?.map((user) => (
-                                  <React.Fragment key={user.Id}>
-                                    {isNextStep[user.Id] && (
-                                      <div className="relative ">
-                                        {actLoader[user.Id] && (
-                                          <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
-                                            <Loader />
-                                          </div>
-                                        )}
-                                        <form
-                                          onSubmit={(e) =>
-                                            handleResendMail(e, item, user)
-                                          }
-                                          className="w-full flex flex-col gap-2 p-3 text-base-content relative"
-                                        >
-                                          <div className="absolute right-5 text-xs z-40">
-                                            <Tooltip
-                                              id={`${user.Id}_help`}
-                                              message={
-                                                "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
-                                              }
-                                            />
-                                          </div>
-                                          <div>
-                                            <label
-                                              className="text-xs ml-1"
-                                              htmlFor="mailsubject"
-                                            >
-                                              Subject{" "}
-                                            </label>
-                                            <input
-                                              id="mailsubject"
-                                              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                                              value={mail.subject}
-                                              onChange={(e) =>
-                                                handleSubjectChange(
-                                                  e.target.value,
-                                                  item
-                                                )
-                                              }
-                                              required
-                                            />
-                                          </div>
-                                          <div>
-                                            <label
-                                              className="text-xs ml-1"
-                                              htmlFor="mailbody"
-                                            >
-                                              Body{" "}
-                                            </label>
-                                            <EditorToolbar containerId="toolbar1" />
-                                            <ReactQuill
-                                              id="mailbody"
-                                              theme="snow"
-                                              value={mail.body || ""}
-                                              placeholder="add body of email "
-                                              modules={module1}
-                                              formats={formats}
-                                              onChange={(value) =>
-                                                handlebodyChange(value, item)
-                                              }
-                                            />
-                                          </div>
-                                          <button
-                                            type="submit"
-                                            className="op-btn op-btn-primary"
-                                          >
-                                            Resend
-                                          </button>
-                                        </form>
-                                      </div>
-                                    )}
-                                    {Object?.keys(isNextStep) <= 0 && (
-                                      <div className="flex justify-between items-center gap-2 my-2 px-3">
-                                        <div className="text-black">
-                                          {user?.signerPtr?.Name || "-"}{" "}
-                                          {`<${
-                                            user?.email
-                                              ? user.email
-                                              : user.signerPtr.Email
-                                          }>`}
-                                        </div>
-                                        <>{fetchUserStatus(user, item)}</>
-                                      </div>
-                                    )}
-                                  </React.Fragment>
-                                ))}
+                                ) : (
+                                  <div className="font-normal text-black">
+                                    <p>
+                                      Please add your public URL, and you will
+                                      be able to make a public template.
+                                    </p>
+                                    <button
+                                      className="px-4 py-1.5 mt-3 text-white rounded shadow-md text-center focus:outline-none "
+                                      style={{
+                                        backgroundColor: modalSubmitBtnColor
+                                      }}
+                                      onClick={() => navigate("/profile")}
+                                    >
+                                      Add
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             </ModalUi>
                           )}
                         </td>
-                      </tr>
-                    )
-                  )}
-                </>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="op-join flex flex-wrap items-center p-2 ">
+                      )} */}
+                    </tr>
+                  )
+                )}
+              </>
+            )}
+          </tbody>
+        </table>
+        <div className="flex flex-wrap items-center gap-2 p-2 ">
           {props.List.length > props.docPerPage && (
-            <button
-              onClick={() => paginateBack()}
-              className="op-join-item op-btn "
-            >
-              Prev
-            </button>
+            <>
+              {currentPage > 1 && (
+                <button
+                  onClick={() => paginateBack()}
+                  className="bg-blue-400 text-white rounded px-3 py-2 focus:outline-none"
+                >
+                  Prev
+                </button>
+              )}
+            </>
           )}
-          {pageNumbers.map((x, i) => (
+          {pageNumbers.map((x) => (
             <button
-              key={i}
+              key={x}
               onClick={() => setCurrentPage(x)}
-              disabled={x === "..."}
-              className={`${
-                x === currentPage ? "op-btn-active" : ""
-              } op-join-item op-btn`}
+              className=" bg-sky-400 text-white rounded px-3 py-2 focus:outline-none"
             >
               {x}
             </button>
           ))}
+          {isMoreDocs && (
+            <button className="text-black rounded px-1 py-2">...</button>
+          )}
           {props.List.length > props.docPerPage && (
-            <button
-              onClick={() => paginateFront()}
-              className="op-join-item op-btn"
-            >
-              Next
-            </button>
+            <>
+              {pageNumbers.includes(currentPage + 1) && (
+                <button
+                  onClick={() => paginateFront()}
+                  className="bg-blue-400 text-white rounded px-3 py-2 focus:outline-none"
+                >
+                  Next
+                </button>
+              )}
+            </>
           )}
         </div>
         {props.List?.length <= 0 && (
-          <div className="flex flex-col items-center justify-center w-full bg-base-100 text-base-content rounded-xl py-4">
+          <div className="flex flex-col items-center justify-center w-full bg-white rounded py-4">
             <div className="w-[60px] h-[60px] overflow-hidden">
               <img
                 className="w-full h-full object-contain"

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
+import { themeColor } from "../../constant/const";
 
 function SignPad({
   isSignPad,
@@ -77,16 +78,21 @@ function SignPad({
   //save button component
   const SaveBtn = () => {
     return (
-      <div>
+      <div style={{ marginTop: "2px" }}>
         {(isTab === "draw" || isTab === "uploadImage") && (
           <button
+            style={{
+              color: "black",
+              border: "1px solid #ccc"
+            }}
             type="button"
-            className="op-btn op-btn-ghost mr-1 mt-[2px]"
+            className="finishBtn saveBtn"
             onClick={() => handleClear()}
           >
             Clear
           </button>
         )}
+
         <button
           onClick={() => {
             setCurrWidgetsDetails({});
@@ -121,12 +127,19 @@ function SignPad({
             setSignValue("");
             setIsStamp(false);
           }}
+          style={{
+            background: themeColor,
+            color: "white"
+          }}
+          disabled={
+            isSignImg || image || isDefaultSign || textWidth ? false : true
+          }
           type="button"
-          className={`${
+          className={
             isSignImg || image || isDefaultSign || textWidth
-              ? ""
-              : "pointer-events-none"
-          } op-btn op-btn-primary shadow-lg`}
+              ? "finishBtn saveBtn"
+              : "disabledFinish saveBtn"
+          }
         >
           Save
         </button>
@@ -201,8 +214,8 @@ function SignPad({
     const fontfamily = fontStyle
       ? fontStyle
       : fontSelect
-        ? fontSelect
-        : "Fasthand";
+      ? fontSelect
+      : "Fasthand";
 
     //creating span for getting text content width
     const span = document.createElement("span");
@@ -243,7 +256,7 @@ function SignPad({
 
   const PenColorComponent = (props) => {
     return (
-      <div className="flex flex-row items-start">
+      <div style={{ display: "flex", flexDirection: "row" }}>
         {allColor.map((data, key) => {
           return (
             <i
@@ -254,10 +267,10 @@ function SignPad({
                   key === 0 && penColor === "blue"
                     ? "2px solid blue"
                     : key === 1 && penColor === "red"
-                      ? "2px solid red"
-                      : key === 2 && penColor === "black"
-                        ? "2px solid black"
-                        : "2px solid white"
+                    ? "2px solid red"
+                    : key === 2 && penColor === "black"
+                    ? "2px solid black"
+                    : "2px solid white"
               }}
               onClick={() => {
                 props?.convertToImg &&
@@ -283,14 +296,33 @@ function SignPad({
   return (
     <div>
       {isSignPad && (
-        <div className="op-modal op-modal-open">
-          <div className="op-modal-box px-[13px] pt-2 pb-0">
-            <div className="flex justify-between text-base-content items-center">
-              <div className="text-[1.2rem]">
-                <div className="flex flex-row justify-between mt-[3px]">
-                  <div className="flex flex-row justify-between gap-[5px] md:gap-[8px] text-[11px] md:text-base">
+        <div className="modaloverlay">
+          <div className="modalcontainer">
+            <div
+              className="modalheader"
+              style={{ padding: "0 13px", marginTop: "5px" }}
+            >
+              <div className="modaltitle">
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    background: "white",
+                    marginTop: "3px"
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-around",
+                      alignItems: "end",
+                      gap: 10
+                    }}
+                  >
                     {isStamp ? (
-                      <span className="op-link-primary op-link">
+                      <span style={{ color: themeColor }} className="signTab">
                         {widgetType === "image"
                           ? "Upload image"
                           : "Upload stamp image"}
@@ -305,14 +337,23 @@ function SignPad({
                               setIsTab("draw");
                               setImage();
                             }}
-                            className={`${
-                              isTab === "draw"
-                                ? "op-link-primary"
-                                : "no-underline"
-                            } op-link underline-offset-8 ml-[2px]`}
+                            style={{
+                              color: isTab === "draw" ? themeColor : "#515252",
+                              marginLeft: "2px"
+                            }}
+                            className="signTab"
                           >
                             Draw
                           </span>
+
+                          <div
+                            style={{
+                              border:
+                                isTab === "draw"
+                                  ? "1.5px solid #108783"
+                                  : "1.5px solid #ffffff"
+                            }}
+                          ></div>
                         </div>
                         <div>
                           <span
@@ -322,14 +363,22 @@ function SignPad({
                               setIsTab("uploadImage");
                               setSignatureType("");
                             }}
-                            className={`${
-                              isTab === "uploadImage"
-                                ? "op-link-primary"
-                                : "no-underline"
-                            } op-link underline-offset-8 ml-[2px]`}
+                            style={{
+                              color:
+                                isTab === "uploadImage" ? themeColor : "#515252"
+                            }}
+                            className="signTab"
                           >
                             Upload Image
                           </span>
+                          <div
+                            style={{
+                              border:
+                                isTab === "uploadImage"
+                                  ? "1.5px solid #108783"
+                                  : "1.5px solid #ffffff"
+                            }}
+                          ></div>
                         </div>
                         <div>
                           <span
@@ -340,14 +389,23 @@ function SignPad({
                               setSignatureType("");
                               setImage();
                             }}
-                            className={`${
-                              isTab === "type"
-                                ? "op-link-primary"
-                                : "no-underline"
-                            } op-link underline-offset-8 ml-[2px]`}
+                            style={{
+                              color: isTab === "type" ? themeColor : "#515252",
+                              marginLeft: "2px"
+                            }}
+                            className="signTab"
                           >
                             Type
                           </span>
+
+                          <div
+                            style={{
+                              border:
+                                isTab === "type"
+                                  ? "1.5px solid #108783"
+                                  : "1.5px solid #ffffff"
+                            }}
+                          ></div>
                         </div>
                         {!isInitial && defaultSign ? (
                           <div>
@@ -359,14 +417,24 @@ function SignPad({
                                 setSignatureType("");
                                 setImage();
                               }}
-                              className={`${
-                                isTab === "mysignature"
-                                  ? "op-link-primary"
-                                  : "no-underline"
-                              } op-link underline-offset-8 ml-[2px]`}
+                              style={{
+                                color:
+                                  isTab === "mysignature"
+                                    ? themeColor
+                                    : "#515252"
+                              }}
+                              className="signTab"
                             >
                               My Signature
                             </span>
+                            <div
+                              style={{
+                                border:
+                                  isTab === "mysignature"
+                                    ? "1.5px solid #108783"
+                                    : "1.5px solid #ffffff"
+                              }}
+                            ></div>
                           </div>
                         ) : (
                           isInitial &&
@@ -380,14 +448,24 @@ function SignPad({
                                   setSignatureType("");
                                   setImage();
                                 }}
-                                className={`${
-                                  isTab === "mysignature"
-                                    ? "op-link-primary"
-                                    : "no-underline"
-                                } op-link underline-offset-8 ml-[2px]`}
+                                style={{
+                                  color:
+                                    isTab === "mysignature"
+                                      ? themeColor
+                                      : "#515252"
+                                }}
+                                className="signTab"
                               >
                                 My Initials
                               </span>
+                              <div
+                                style={{
+                                  border:
+                                    isTab === "mysignature"
+                                      ? "1.5px solid #108783"
+                                      : "1.5px solid #ffffff"
+                                }}
+                              ></div>
                             </div>
                           )
                         )}
@@ -397,7 +475,8 @@ function SignPad({
                 </div>
               </div>
               <div
-                className="text-[1.5rem] cursor-pointer"
+                className="closebtn"
+                style={{ color: "black" }}
                 onClick={() => {
                   setPenColor("blue");
                   setIsSignPad(false);
@@ -414,10 +493,10 @@ function SignPad({
                 &times;
               </div>
             </div>
-            <div className="p-[20px] h-full">
+            <div style={{ height: "100%", padding: 20 }}>
               {isDefaultSign ? (
                 <>
-                  <div className="flex justify-center">
+                  <div style={{ display: "flex", justifyContent: "center" }}>
                     <div
                       style={{
                         border: "1.3px solid #007bff",
@@ -435,19 +514,24 @@ function SignPad({
                     >
                       <img
                         alt="stamp img"
-                        className="w-full h-full object-contain bg-white"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          background: "rgb(255, 255, 255)",
+                          objectFit: "contain"
+                        }}
                         draggable="false"
                         src={isInitial ? myInitial : defaultSign}
                       />
                     </div>
                   </div>
-                  <div className="flex justify-end">
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
                     <SaveBtn />
                   </div>
                 </>
               ) : isImageSelect || isStamp ? (
                 !image ? (
-                  <div className="flex justify-center">
+                  <div style={{ display: "flex", justifyContent: "center" }}>
                     <div
                       style={{
                         border: "1.3px solid #007bff",
@@ -478,7 +562,7 @@ function SignPad({
                   </div>
                 ) : (
                   <>
-                    <div className="flex justify-center">
+                    <div style={{ display: "flex", justifyContent: "center" }}>
                       <div
                         style={{
                           border: "1.3px solid #007bff",
@@ -497,26 +581,39 @@ function SignPad({
                           ref={imageRef}
                           src={image.src}
                           draggable="false"
-                          className=" object-contain h-full w-full"
+                          style={{
+                            objectFit: "contain",
+                            height: "100%",
+                            width: "100%"
+                          }}
                         />
                       </div>
                     </div>
-                    <div className="flex justify-end">
+                    <div
+                      style={{ display: "flex", justifyContent: "flex-end" }}
+                    >
                       <SaveBtn />
                     </div>
                   </>
                 )
               ) : isTab === "type" ? (
                 <div>
-                  <div className="flex justify-between items-center">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}
+                  >
                     <span className="signatureText">
                       {isInitial ? "Initials" : "Signature"}:
                     </span>
+
                     <input
                       maxLength={isInitial ? 3 : 30}
                       style={{ fontFamily: fontSelect, color: penColor }}
                       type="text"
-                      className="ml-1 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-[20px]"
+                      className="signatureInput"
                       placeholder="Your signature"
                       value={signValue}
                       onChange={(e) => {
@@ -525,6 +622,7 @@ function SignPad({
                       }}
                     />
                   </div>
+
                   <div className="fontOptionContainer">
                     {fontOptions.map((font, ind) => {
                       return (
@@ -555,14 +653,21 @@ function SignPad({
                     })}
                   </div>
 
-                  <div className="flex flex-row justify-between mt-[10px]">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: "10px"
+                    }}
+                  >
                     <PenColorComponent convertToImg={convertToImg} />
                     <SaveBtn />
                   </div>
                 </div>
               ) : (
                 <>
-                  <div className="flex justify-center">
+                  <div style={{ display: "flex", justifyContent: "center" }}>
                     <SignatureCanvas
                       ref={canvasRef}
                       penColor={penColor}
@@ -582,7 +687,14 @@ function SignPad({
                       dotSize={1}
                     />
                   </div>
-                  <div className="flex flex-row justify-between mt-[10px]">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: "10px"
+                    }}
+                  >
                     <PenColorComponent />
                     <SaveBtn />
                   </div>
