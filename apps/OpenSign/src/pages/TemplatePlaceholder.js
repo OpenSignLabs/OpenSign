@@ -1270,8 +1270,8 @@ const TemplatePlaceholder = () => {
                 title={"Roles"}
                 handleClose={() => setIsReceipent(true)}
               >
-                <div className="h-full p-[20px]">
-                  <p>Please add a role</p>
+                <div className="h-full p-[20px] text-center font-medium">
+                  <p>Please add roles first</p>
                 </div>
               </ModalUi>
               {/* this modal is used show send mail  message and after send mail success message */}
