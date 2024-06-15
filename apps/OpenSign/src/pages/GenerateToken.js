@@ -143,7 +143,7 @@ function GenerateToken() {
                     {apiToken ? apiToken : "_____"}
                   </span>
                   <button
-                    className="op-btn op-btn-accent op-btn-sm ml-2"
+                    className="op-btn op-btn-accent op-btn-outline op-btn-sm ml-2"
                     onClick={() => copytoclipboard(apiToken)}
                   >
                     <i className="fa-solid fa-copy"></i>
