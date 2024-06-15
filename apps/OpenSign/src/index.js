@@ -16,7 +16,6 @@ import {
 import DragElement from "./components/pdf/DragElement";
 import TagManager from "react-gtm-module";
 import Parse from "parse";
-import './polyfills'
 const appId = process.env.REACT_APP_APPID
   ? process.env.REACT_APP_APPID
   : "opensign";
