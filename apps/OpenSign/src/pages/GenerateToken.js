@@ -4,10 +4,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Alert from "../primitives/Alert";
 import ModalUi from "../primitives/ModalUi";
-import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, copytoData, openInNewTab } from "../constant/Utils";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
+import Loader from "../primitives/Loader";
 
 function GenerateToken() {
   const navigation = useNavigate();
@@ -109,24 +110,11 @@ function GenerateToken() {
       {copied && <Alert type="success">Copied</Alert>}
       {isErr && <Alert type="danger">Something went wrong!</Alert>}
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="flex justify-center items-center h-screen">
+          <Loader />
         </div>
       ) : (
-        <div className="bg-white flex flex-col justify-center shadow rounded">
+        <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded">
           {!isEnableSubscription && <PremiumAlertHeader />}
           <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
             OpenSign™ API{" "}
@@ -155,7 +143,7 @@ function GenerateToken() {
                     {apiToken ? apiToken : "_____"}
                   </span>
                   <button
-                    className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-2.5 py-2 focus:outline-none ml-2"
+                    className="op-btn op-btn-accent op-btn-sm ml-2"
                     onClick={() => copytoclipboard(apiToken)}
                   >
                     <i className="fa-solid fa-copy"></i>
@@ -164,7 +152,7 @@ function GenerateToken() {
               </div>
               <button
                 onClick={apiToken ? handleModal : handleSubmit}
-                className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white text-xs md:text-sm lg:text-base px-2 py-2 focus:outline-none"
+                className="op-btn op-btn-primary"
               >
                 {apiToken ? "Regenerate Token" : "Generate Token"}
               </button>
@@ -178,7 +166,7 @@ function GenerateToken() {
                   "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                 )
               }
-              className="rounded hover:bg-[#15b4e9] border-[1px] my-2 border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
+              className="op-btn op-btn-secondary my-2"
             >
               View Docs
             </button>
@@ -219,7 +207,7 @@ function GenerateToken() {
             handleClose={handleModal}
           >
             <div className="m-[20px]">
-              <div className="text-lg font-normal text-black">
+              <div className="text-lg font-normal text-base-content">
                 Are you sure you want to regenerate token it will expire old
                 token?
               </div>
@@ -227,11 +215,14 @@ function GenerateToken() {
               <div className="flex items-center mt-3 gap-2 text-white">
                 <button
                   onClick={handleSubmit}
-                  className={submitBtn + "ml-[2px]"}
+                  className="op-btn op-btn-primary ml-[2px]"
                 >
                   Yes
                 </button>
-                <button onClick={handleModal} className={rejectBtn}>
+                <button
+                  onClick={handleModal}
+                  className="op-btn op-btn-secondary"
+                >
                   No
                 </button>
               </div>

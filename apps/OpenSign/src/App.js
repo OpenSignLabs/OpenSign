@@ -17,6 +17,7 @@ import PdfRequestFiles from "./pages/PdfRequestFiles";
 import LazyPage from "./primitives/LazyPage";
 import { isEnableSubscription } from "./constant/const";
 import SSOVerify from "./pages/SSOVerify";
+import Loader from "./primitives/Loader";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
@@ -34,23 +35,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
   import.meta.url
 ).toString();
-const Loader = () => {
+const AppLoader = () => {
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
-      <div
-        style={{
-          fontSize: "45px",
-          color: "#3dd3e0"
-        }}
-        className="loader-37"
-      ></div>
+    <div className="flex justify-center items-center h-[100vh]">
+      <Loader />
     </div>
   );
 };
@@ -79,9 +67,9 @@ function App() {
   };
 
   return (
-    <div className="bg-[#eef1f5]">
+    <div className="bg-base-200">
       {isloading ? (
-        <Loader />
+        <AppLoader />
       ) : (
         <BrowserRouter>
           <Routes>

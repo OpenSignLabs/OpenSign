@@ -1,6 +1,6 @@
 import axios from "axios";
 import moment from "moment";
-import { isEnableSubscription, themeColor } from "./const";
+import { isEnableSubscription } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
 import Parse from "parse";
@@ -376,43 +376,21 @@ export const addWidgetOptions = (type) => {
       return {};
   }
 };
-export const getWidgetType = (item, marginLeft) => {
+export const getWidgetType = (item) => {
   return (
-    <>
-      <div
-        className="signatureBtn widgets"
-        style={{
-          boxShadow:
-            "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18)",
-          marginLeft: marginLeft && `${marginLeft}px`
-        }}
-      >
-        <div className="flex items-center mr-1">
-          {!isMobile && (
-            <i
-              className="fa-sharp fa-solid fa-grip-vertical"
-              style={{ color: "#908d8d", fontSize: "13px", marginLeft: 4 }}
-            ></i>
-          )}
-          <span className=" font-[400] text-[15px] text-black ml-[5px]">
+    <div className="op-btn op-btn-primary op-btn-outline op-btn-sm focus:outline-none outline outline-[1.5px] w-fit md:w-[150px] ml-[6px] md:ml-0 p-0 overflow-hidden">
+      <div className="w-full h-full flex md:justify-between items-center">
+        <div className="flex justify-start items-center text-[13px] ml-1">
+          {!isMobile && <i className="fa-sharp fa-solid fa-grip-vertical"></i>}
+          <span className="text-center text-[15px] ml-[5px] font-semibold">
             {item.type}
           </span>
         </div>
-        <div
-          style={{
-            backgroundColor: themeColor,
-            padding: "0 5px",
-            display: "flex",
-            alignItems: "center"
-          }}
-        >
-          <i
-            style={{ color: "white", fontSize: item.iconSize }}
-            className={item.icon}
-          ></i>
+        <div className="text-[20px] op-btn op-btn-primary w-[40px] h-full flex justify-center items-center">
+          <i className={item.icon}></i>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Parse from "parse";
+import Loader from "../primitives/Loader";
 // import FacebookLogin from "react-facebook-login";
 
 const LoginFacebook = ({
@@ -112,29 +113,10 @@ const LoginFacebook = ({
     }
   };
   return (
-    <div style={{ position: "relative" }}>
+    <div className="relative">
       {thirdpartyLoader && (
-        <div
-          style={{
-            position: "fixed",
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            top: 0,
-            left: 0,
-            zIndex: 2
-          }}
-        >
-          <div
-            style={{
-              position: "fixed",
-              fontSize: "50px",
-              color: "#3ac9d6",
-              top: "50%",
-              left: "45%"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="fixed flex justify-center items-center inset-0 bg-black bg-opacity-25 z-20 ">
+          <Loader />
         </div>
       )}
       {/* <FacebookLogin
@@ -146,11 +128,10 @@ const LoginFacebook = ({
       /> */}
       {isModal && (
         <div
-          className="modal fade show"
+          className="modal fade show block z-[1]"
           id="exampleModal"
           tabIndex="-1"
           role="dialog"
-          style={{ display: "block", zIndex: 1 }}
         >
           <div className="modal-dialog" role="document">
             <div className="modal-content">
@@ -163,13 +144,8 @@ const LoginFacebook = ({
               <div className="modal-body">
                 <form>
                   <div className="form-group">
-                    <label
-                      htmlFor="Phone"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
-                      Phone{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
+                    <label htmlFor="Phone" className="col-form-label">
+                      Phone <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="tel"
@@ -186,13 +162,8 @@ const LoginFacebook = ({
                     />
                   </div>
                   <div className="form-group">
-                    <label
-                      htmlFor="Company"
-                      style={{ display: "flex" }}
-                      className="col-form-label"
-                    >
-                      Company{" "}
-                      <span style={{ fontSize: 13, color: "red" }}>*</span>
+                    <label htmlFor="Company" className="col-form-label">
+                      Company <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="text"
@@ -212,16 +183,14 @@ const LoginFacebook = ({
                     <button
                       type="button"
                       onClick={() => handleSubmitbtn()}
-                      className="btn btn-info"
-                      style={{ marginRight: 10 }}
+                      className="btn btn-info mr-[10px]"
                     >
                       Sign up
                     </button>
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn btn-secondary w-[90px]"
                       onClick={() => setIsModal(false)}
-                      style={{ width: 90 }}
                     >
                       Cancel
                     </button>

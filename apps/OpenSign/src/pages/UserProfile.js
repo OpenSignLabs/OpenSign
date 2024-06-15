@@ -12,10 +12,11 @@ import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
-import { isEnableSubscription, rejectBtn, submitBtn } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, handleSendOTP } from "../constant/Utils";
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
+import Loader from "../primitives/Loader";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -296,37 +297,25 @@ function UserProfile() {
     // setPublicUserName(extendUser && extendUser?.[0]?.UserName);
     setCompany(extendUser && extendUser?.[0]?.Company);
     setJobTitle(extendUser?.[0]?.JobTitle);
+    setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
   };
   return (
     <React.Fragment>
       <Title title={"Profile"} />
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[100vh] flex justify-center items-center">
+          <Loader />
         </div>
       ) : (
         <div className="flex justify-center items-center w-full relative">
           {/* {userNameError && (
             <div
-              className={`z-[1000] fixed top-[50%]  transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]`}
+              className={`z-[1000] fixed top-[50%] transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]`}
             >
               {userNameError}
             </div>
           )} */}
-          <div className="bg-white flex flex-col justify-center shadow rounded w-[450px]">
+          <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded-xl w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
               <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
                 <img
@@ -338,7 +327,7 @@ function UserProfile() {
               {editmode && (
                 <input
                   type="file"
-                  className="max-w-[270px] text-sm py-1 px-2 mt-4 border-[1px] border-[#15b4e9] text-black rounded"
+                  className="op-file-input op-file-input-bordered op-file-input-sm max-w-[270px] mt-4 text-sm"
                   accept="image/png, image/gif, image/jpeg"
                   onChange={(e) => {
                     let files = e.target.files;
@@ -364,7 +353,7 @@ function UserProfile() {
             <ul className="w-full flex flex-col p-2 text-sm">
               <li
                 className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
-                  editmode ? "py-1" : "py-2"
+                  editmode ? "py-1.5" : "py-2"
                 }`}
               >
                 <span className="font-semibold">Name:</span>{" "}
@@ -372,7 +361,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={name}
-                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => SetName(e.target.value)}
                   />
                 ) : (
@@ -381,14 +370,14 @@ function UserProfile() {
               </li>
               <li
                 className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
-                  editmode ? "py-1" : "py-2"
+                  editmode ? "py-1.5" : "py-2"
                 }`}
               >
                 <span className="font-semibold">Phone:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
-                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => SetPhone(e.target.value)}
                     value={Phone}
                   />
@@ -402,7 +391,7 @@ function UserProfile() {
               </li>
               <li
                 className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
-                  editmode ? "py-1" : "py-2"
+                  editmode ? "py-1.5" : "py-2"
                 }`}
               >
                 <span className="font-semibold">Company:</span>{" "}
@@ -410,7 +399,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={company}
-                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => setCompany(e.target.value)}
                   />
                 ) : (
@@ -419,7 +408,7 @@ function UserProfile() {
               </li>
               <li
                 className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
-                  editmode ? "py-1" : "py-2"
+                  editmode ? "py-1.5" : "py-2"
                 }`}
               >
                 <span className="font-semibold">Job title:</span>{" "}
@@ -427,7 +416,7 @@ function UserProfile() {
                   <input
                     type="text"
                     value={jobTitle}
-                    className="py-1 px-2 text-sm border-[1px] border-[#15b4e9] text-black rounded"
+                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-sm"
                     onChange={(e) => setJobTitle(e.target.value)}
                   />
                 ) : (
@@ -463,7 +452,7 @@ function UserProfile() {
                    all your publicly set templates.`}
                     />
                   </span>
-                  <div className="flex items-center">
+                  <div className="flex text-xs items-center">
                     <span>opensign-me.vercel.app/</span>
                     {editmode ? (
                       <input
@@ -471,14 +460,14 @@ function UserProfile() {
                         value={publicUserName}
                         disabled={!editmode}
                         placeholder="enter user name"
-                        className="border-[1px] border-gray-200 rounded-[3px]"
+                        className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-xs"
                       />
                     ) : (
                       <input
                         value={extendUser?.[0]?.UserName}
                         disabled
                         placeholder="enter user name"
-                        className="border-[1px] border-gray-200 rounded-[3px]"
+                        className="op-input op-input-bordered op-input-xs"
                       />
                     )}
                   </div>
@@ -498,27 +487,23 @@ function UserProfile() {
                       url={
                         "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
                       }
-                    />{" "}
+                    />
                     {!isSubscribe && isEnableSubscription && <Upgrade />}
-                  </span>{" "}
+                  </span>
                   <label
-                    className={
+                    className={`${
                       isSubscribe || !isEnableSubscription
-                        ? `${
-                            editmode ? "cursor-pointer" : ""
-                          } relative inline-flex items-center mb-0`
-                        : "relative inline-flex items-center mb-0 pointer-events-none opacity-50"
-                    }
+                        ? `${editmode ? "cursor-pointer" : ""}`
+                        : "pointer-events-none opacity-50"
+                    } relative block items-center mb-0`}
                   >
                     <input
                       disabled={editmode ? false : true}
+                      type="checkbox"
+                      className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
                       checked={isDisableDocId}
                       onChange={handleDisableDocId}
-                      type="checkbox"
-                      value=""
-                      className="sr-only peer"
                     />
-                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-black peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
                 {!isEnableSubscription && (
@@ -530,44 +515,29 @@ function UserProfile() {
                 )}
               </li>
             </ul>
-            <div className="flex justify-center pt-2 pb-3 md:pt-3 md:pb-4">
-              {editmode ? (
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="rounded shadow focus:outline-none border-[2px] border-[#15b4e9] bg-white text-[#15b4e9] px-4 py-2 mr-4"
-                >
-                  Save
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditMode(true);
-                  }}
-                  className="rounded shadow focus:outline-none text-white bg-[#e7505a] px-4 py-2 mr-4"
-                >
-                  Edit
-                </button>
-              )}
+            <div className="flex justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4">
               <button
                 type="button"
-                onClick={() => {
-                  if (editmode) {
-                    handleCancel();
-                  } else {
-                    navigate("/changepassword");
-                  }
-                }}
-                className={`rounded shadow focus:outline-none text-white bg-[#3598dc]  ${
-                  editmode ? "px-4 py-2 " : "p-2"
+                onClick={(e) =>
+                  editmode ? handleSubmit(e) : setEditMode(true)
+                }
+                className="op-btn op-btn-primary"
+              >
+                {editmode ? "Save" : "Edit"}
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  editmode ? handleCancel() : navigate("/changepassword")
+                }
+                className={`op-btn ${
+                  editmode ? "op-btn-ghost" : "op-btn-secondary"
                 }`}
               >
                 {editmode ? "Cancel" : "Change Password"}
               </button>
             </div>
           </div>
-
           {isVerifyModal && (
             <ModalUi
               isOpen
@@ -575,43 +545,29 @@ function UserProfile() {
               handleClose={handleCloseVerifyModal}
             >
               {otpLoader ? (
-                <div
-                  style={{
-                    height: "150px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "45px",
-                      color: "#3dd3e0"
-                    }}
-                    className="loader-37"
-                  ></div>
+                <div className="h-[150px] flex justify-center items-center">
+                  <Loader />
                 </div>
               ) : (
                 <form onSubmit={(e) => handleVerifyEmail(e)}>
-                  <div className="px-6 py-3">
+                  <div className="px-6 py-3 text-base-content">
                     <label className="mb-2">Enter OTP</label>
                     <input
                       required
                       type="tel"
                       pattern="[0-9]{4}"
-                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
                       placeholder="Enter OTP received over email"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                     />
                   </div>
-                  <hr />
-                  <div className="px-6 my-3">
-                    <button type="submit" className={submitBtn}>
+                  <div className="px-6 mb-3">
+                    <button type="submit" className="op-btn op-btn-primary">
                       Verify
                     </button>
                     <button
-                      className={`${rejectBtn} ml-2`}
+                      className="op-btn op-btn-secondary ml-2"
                       onClick={(e) => handleResend(e)}
                     >
                       Resend

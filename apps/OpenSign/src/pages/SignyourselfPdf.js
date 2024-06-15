@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
-import { isEnableSubscription, themeColor } from "../constant/const";
+import { isEnableSubscription } from "../constant/const";
 import Confetti from "react-confetti";
 import axios from "axios";
-import Loader from "../primitives/LoaderWithMsg";
-import loader from "../assets/images/loader2.gif";
+import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -48,7 +47,7 @@ import Title from "../components/Title";
 import ModalUi from "../primitives/ModalUi";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import VerifyEmail from "../components/pdf/VerifyEmail";
-
+import Loader from "../primitives/Loader";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const [pdfDetails, setPdfDetails] = useState([]);
@@ -1093,43 +1092,29 @@ function SignYourSelf() {
     <DndProvider backend={HTML5Backend}>
       <Title title={"Self Sign"} />
       {isLoading.isLoad ? (
-        <Loader isLoading={isLoading} />
+        <LoaderWithMsg isLoading={isLoading} />
       ) : handleError ? (
         <HandleError handleError={handleError} />
       ) : (
         <div>
           {isUiLoading && (
-            <div
-              style={{
-                position: "absolute",
-                height: "100vh",
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-                alignItems: "center",
-                zIndex: "999",
-                backgroundColor: "#e6f2f2",
-                opacity: 0.8
-              }}
-            >
-              <img
-                alt="no img"
-                src={loader}
-                style={{ width: "100px", height: "100px" }}
-              />
-              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+            <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-start bg-[#e6f2f2] bg-opacity-80">
+              <Loader />
+              <span className="font-bold text-[13px]">
                 This might take some time
               </span>
             </div>
           )}
           {isCelebration && (
-            <div style={{ position: "relative", zIndex: "999" }}>
+            <div className="relative z-[999]">
               <Confetti width={window.innerWidth} height={window.innerHeight} />
             </div>
           )}
 
-          <div className="signatureContainer" ref={divRef}>
+          <div
+            className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"
+            ref={divRef}
+          >
             {!isEmailVerified && (
               <VerifyEmail
                 isVerifyModal={isVerifyModal}
@@ -1174,7 +1159,6 @@ function SignYourSelf() {
               }}
             >
               <ModalUi
-                headerColor={"#dc3545"}
                 isOpen={isAlert.isShow}
                 title={isAlert?.header || "Alert"}
                 handleClose={() => {
@@ -1184,7 +1168,7 @@ function SignYourSelf() {
                   });
                 }}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="p-[20px] h-full">
                   <p>{isAlert.alertMessage}</p>
                 </div>
               </ModalUi>
@@ -1197,20 +1181,11 @@ function SignYourSelf() {
                   setShowAlreadySignDoc({ status: false });
                 }}
               >
-                <div style={{ height: "100%", padding: 20 }}>
+                <div className="p-[20px] h-full">
                   <p>{showAlreadySignDoc.mssg}</p>
-
-                  <div
-                    style={{
-                      height: "1px",
-                      backgroundColor: "#9f9f9f",
-                      width: "100%",
-                      marginTop: "15px",
-                      marginBottom: "15px"
-                    }}
-                  ></div>
+                  <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                   <button
-                    className="finishBtn cancelBtn"
+                    className="op-btn op-btn-ghost shadow-md"
                     onClick={() => setShowAlreadySignDoc({ status: false })}
                   >
                     Close
@@ -1336,7 +1311,7 @@ function SignYourSelf() {
                 maxHeight: window.innerHeight - 70 + "px",
                 backgroundColor: "white"
               }}
-              className="autoSignScroll"
+              className="overflow-y-auto hide-scrollbar"
             >
               {!isCompleted ? (
                 <div>
@@ -1348,7 +1323,6 @@ function SignYourSelf() {
                     handleDivClick={handleDivClick}
                     handleMouseLeave={handleMouseLeave}
                     isDragSign={isDragSign}
-                    themeColor={themeColor}
                     dragStamp={dragStamp}
                     dragRef={dragRef}
                     isDragStamp={isDragStamp}
@@ -1369,31 +1343,22 @@ function SignYourSelf() {
         </div>
       )}
       <ModalUi
-        headerColor={"#dc3545"}
         isOpen={validateAlert}
         title={"Validation alert"}
         handleClose={() => {
           setValidateAlert(false);
         }}
       >
-        <div style={{ height: "100%", padding: 20 }}>
+        <div className="p-[20px] h-full">
           <p>
             The input does not meet the criteria set by the regular expression.
           </p>
 
-          <div
-            style={{
-              height: "1px",
-              backgroundColor: "#9f9f9f",
-              width: "100%",
-              marginTop: "15px",
-              marginBottom: "15px"
-            }}
-          ></div>
+          <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
           <button
             onClick={() => setValidateAlert(false)}
             type="button"
-            className="finishBtn cancelBtn"
+            className="op-btn op-btn-ghost shadow-md"
           >
             Close
           </button>
