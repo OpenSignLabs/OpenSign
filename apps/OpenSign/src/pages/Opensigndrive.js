@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/opensigndrive.css";
-import { iconColor } from "../constant/const";
+import loader from "../assets/images/loader2.gif";
+import { themeColor, iconColor } from "../constant/const";
 import { getDrive } from "../constant/Utils";
 import { useNavigate } from "react-router-dom";
 import Title from "../components/Title";
@@ -9,15 +10,27 @@ import ModalUi from "../primitives/ModalUi";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Tour from "reactour";
 import axios from "axios";
-import Loader from "../primitives/Loader";
 
-const DriveBody = React.lazy(
-  () => import("../components/opensigndrive/DriveBody")
+const DriveBody = React.lazy(() =>
+  import("../components/opensigndrive/DriveBody")
 );
-const AppLoader = () => {
+const Loader = () => {
   return (
-    <div className="h-[100vh] flex justify-center items-center">
-      <Loader />
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <div
+        style={{
+          fontSize: "45px",
+          color: "#3dd3e0"
+        }}
+        className="loader-37"
+      ></div>
     </div>
   );
 };
@@ -266,8 +279,7 @@ function Opensigndrive() {
     setNewFolderName(value);
   };
   //function for create folder
-  const handleAddFolder = async (e) => {
-    e.preventDefault();
+  const handleAddFolder = async () => {
     if (newFolderName) {
       setIsFolderLoader(true);
       const getParentObjId = folderName[folderName.length - 1];
@@ -438,10 +450,21 @@ function Opensigndrive() {
         <React.Fragment key={id}>
           <span
             onClick={() => handleRoute(id, folderData)}
-            className="text-[#a64b4e] font-normal cursor-pointer"
+            style={{
+              color: "#a64b4e",
+              fontWeight: "400",
+              cursor: "pointer"
+            }}
           >
             {data.name}
-            <span className="text-[#a64b4e] font-extralight cursor-pointer mx-[4px]">
+            <span
+              style={{
+                color: "#a64b4e",
+                fontWeight: "200",
+                cursor: "pointer",
+                margin: "0 4px"
+              }}
+            >
               &gt;
             </span>
           </span>
@@ -522,290 +545,411 @@ function Opensigndrive() {
     }
   }
   return (
-    <div className="bg-base-100 text-base-content rounded-xl w-full">
+    <div style={{ backgroundColor: "white" }} className="folderComponent">
       <Title title={"OpenSign™ Drive"} drive={true} />
-      <ModalUi
-        isOpen={isAlert.isShow}
-        title={"Alert"}
-        handleClose={() => {
-          setIsAlert({
-            isShow: false,
-            alertMessage: ""
-          });
-        }}
-      >
-        <div className="h-full p-[20px] pb-[15px]">
-          <p>{isAlert.alertMessage}</p>
-          <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
-          <button
-            onClick={() =>
-              setIsAlert({
-                isShow: false,
-                alertMessage: ""
-              })
-            }
-            type="button"
-            className="op-btn op-btn-neutral op-btn-sm"
-          >
-            Close
-          </button>
-        </div>
-      </ModalUi>
-      <ModalUi
-        isOpen={isFolder}
-        title={"Add New Folder"}
-        handleClose={oncloseFolder}
-      >
-        <div className="h-full p-[20px] pt-[10px] pb-[15px]">
-          {folderLoader ? (
-            <div className="h-[200px] flex justify-center items-center">
-              <Loader />
-            </div>
-          ) : (
-            <form
-              onSubmit={handleAddFolder}
-              className="flex flex-col text-base-content"
-            >
-              <label className="py-[8px] text-[15px] font-[400] mb-0">
-                Name
-                <span className="text-[red]">*</span>
-              </label>
-              <input
-                required
-                className="op-input op-input-bordered op-input-sm"
-                type="text"
-                value={newFolderName}
-                onChange={(e) => handleFolderName(e)}
-              />
-              <span className="text-[red] text-[12px] mt-[6px]">{error}</span>
-              <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
-              <div className="flex flex-row">
-                <button type="submit" className="op-btn op-btn-primary">
-                  Add
-                </button>
-                <button
-                  type="button"
-                  className="op-btn op-btn-ghost ml-1"
-                  onClick={oncloseFolder}
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-      </ModalUi>
-      {isLoading.isLoad ? (
-        <div className="flex flex-col justify-center items-center h-[100vh] w-full">
-          <Loader />
-          <span className="text-[13px] text-[gray]">{isLoading.message}</span>
-        </div>
-      ) : handleError ? (
-        <div className="flex justify-center items-center h-[100vh] w-full">
-          <span className="text-[20px] text-[gray]">{handleError}</span>
-        </div>
-      ) : (
-        <>
-          <div className="flex flex-row justify-between items-center px-[25px] pt-[20px]">
-            {tourData && (
-              <Tour
-                onRequestClose={closeTour}
-                steps={tourData}
-                isOpen={isTour}
-                closeWithMask={false}
-                scrollOffset={-100}
-                rounded={5}
-              />
-            )}
+
+      <div>
+        <ModalUi
+          headerColor={"#dc3545"}
+          isOpen={isAlert.isShow}
+          title={"Alert"}
+          handleClose={() => {
+            setIsAlert({
+              isShow: false,
+              alertMessage: ""
+            });
+          }}
+        >
+          <div style={{ height: "100%", padding: 20 }}>
+            <p>{isAlert.alertMessage}</p>
+
             <div
-              data-tut="reactourFirst"
-              onMouseEnter={(e) => handleMouseEnter(e)}
-              ref={scrollRef}
-              className="w-full whitespace-nowrap cursor-pointer select-none overflow-x-auto"
+              style={{
+                height: "1px",
+                backgroundColor: "#9f9f9f",
+                width: "100%",
+                marginTop: "15px",
+                marginBottom: "15px"
+              }}
+            ></div>
+            <button
+              onClick={() =>
+                setIsAlert({
+                  isShow: false,
+                  alertMessage: ""
+                })
+              }
+              type="button"
+              className="finishBtn cancelBtn"
             >
-              {handleFolderTab(folderName)}
-            </div>
-            <div className="dropMenuBD">
+              Close
+            </button>
+          </div>
+        </ModalUi>
+        <ModalUi
+          isOpen={isFolder}
+          title={"Add New Folder"}
+          handleClose={oncloseFolder}
+        >
+          <div style={{ height: "100%", padding: 20 }}>
+            {folderLoader ? (
               <div
-                id="folder-menu"
-                className={
-                  isNewFol ? "dropdown show dropDownStyle" : "dropdown"
-                }
-                onClick={() => setIsNewFol(!isNewFol)}
+                style={{
+                  height: "200px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
               >
-                <div className="sort" data-tut="reactourSecond">
-                  <i
-                    className="fa fa-plus-square"
-                    aria-hidden="true"
-                    style={{ fontSize: "25px", color: `${iconColor}` }}
-                  ></i>
-                </div>
-                <div
-                  className={isNewFol ? "dropdown-menu show" : "dropdown-menu"}
-                  aria-labelledby="dropdownMenuButton"
-                  aria-expanded={isNewFol ? "true" : "false"}
-                >
-                  <div className="flex flex-col">
-                    <span
-                      className="dropdown-item itemColor"
-                      onClick={() => setIsFolder(true)}
-                    >
-                      <i className="fa fa-plus mr-[5px]" aria-hidden="true"></i>
-                      Create folder
-                    </span>
-                    <span
-                      className="dropdown-item itemColor"
-                      onClick={() => navigate("/form/sHAnZphf69")}
-                    >
-                      <i className="fas fa-pen-nib mr-[5px"></i>
-                      Sign Yourself
-                    </span>
-                    <span
-                      className="dropdown-item itemColor"
-                      onClick={() => navigate("/form/8mZzFxbG1z")}
-                    >
-                      <i className="fa fa-file-signature mr-[5px"></i>
-                      Request Signatures
-                    </span>
-                  </div>
-                </div>
+                <img
+                  alt="loader img"
+                  src={loader}
+                  style={{ width: "50px", height: "50px" }}
+                />
+                <span style={{ fontSize: "13px", color: "gray" }}>
+                  Loading...
+                </span>
               </div>
-              <div
-                id="menu-container"
-                className={isShowSort ? "dropdown show" : "dropdown"}
-                onClick={() => setIsShowSort(!isShowSort)}
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAddFolder();
+                }}
+                style={{ display: "flex", flexDirection: "column" }}
               >
-                <div
-                  data-tut="reactourThird"
-                  className="sort "
-                  data-toggle="dropdown"
+                <label
+                  style={{
+                    margin: "10px 0px 10px 0px",
+                    fontSize: "15px",
+                    fontWeight: "400"
+                  }}
                 >
-                  <i
-                    className="fa fa-sort-amount-asc mr-[5px] text-[14px]"
-                    aria-hidden="true"
-                    style={{ color: `${iconColor}` }}
-                  ></i>
-                  <span style={{ fontSize: "15px", color: `${iconColor}` }}>
-                    {selectedSort}
-                  </span>
-                </div>
+                  Name
+                  <span style={{ color: "red" }}>*</span>
+                </label>
+
+                <input
+                  required
+                  className="form-control inputStyle"
+                  type="text"
+                  value={newFolderName}
+                  onChange={(e) => handleFolderName(e)}
+                  // className="addFolderInput"
+                />
+                <span
+                  style={{ color: "red", fontSize: "12px", marginTop: "6px" }}
+                >
+                  {error}
+                </span>
                 <div
+                  style={{
+                    height: "1px",
+                    backgroundColor: "#9f9f9f",
+                    width: "100%",
+                    marginTop: "15px",
+                    marginBottom: "15px"
+                  }}
+                ></div>
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                  <button
+                    style={{ background: themeColor }}
+                    type="submit"
+                    className="finishBtn"
+                  >
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    className="finishBtn cancelBtn"
+                    onClick={oncloseFolder}
+                  >
+                    Close
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </ModalUi>
+
+        {isLoading.isLoad ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+              width: "100%",
+              flexDirection: "column"
+            }}
+          >
+            <img
+              alt="loader img"
+              src={loader}
+              style={{ width: "80px", height: "80px" }}
+            />
+            <span style={{ fontSize: "13px", color: "gray" }}>
+              {isLoading.message}
+            </span>
+          </div>
+        ) : handleError ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+              width: "100%"
+            }}
+          >
+            <span style={{ fontSize: "20px", color: "gray" }}>
+              {handleError}
+            </span>
+          </div>
+        ) : (
+          <>
+            <div className="folderContainer">
+              {tourData && (
+                <Tour
+                  onRequestClose={closeTour}
+                  steps={tourData}
+                  isOpen={isTour}
+                  closeWithMask={false}
+                  scrollOffset={-100}
+                  rounded={5}
+                />
+              )}
+
+              <div
+                data-tut="reactourFirst"
+                onMouseEnter={(e) => handleMouseEnter(e)}
+                ref={scrollRef}
+                style={{
+                  width: "100%"
+                }}
+                className="folderPath"
+              >
+                {handleFolderTab(folderName)}
+              </div>
+              <div className="dropMenuBD">
+                <div
+                  id="folder-menu"
                   className={
-                    isShowSort ? "dropdown-menu show" : "dropdown-menu"
+                    isNewFol ? "dropdown show dropDownStyle" : "dropdown"
                   }
-                  aria-labelledby="dropdownMenuButton"
-                  aria-expanded={isShowSort ? "true" : "false"}
+                  onClick={() => setIsNewFol(!isNewFol)}
                 >
-                  {sortingValue.map((value, ind) => {
-                    return (
-                      <span
-                        key={ind}
-                        onClick={() => {
-                          setSelectedSort(value);
-                          sortingData(value, null, pdfData);
-                        }}
-                        className="dropdown-item itemColor"
-                        style={{
-                          paddingLeft: selectedSort !== value && "33px"
-                        }}
-                      >
-                        {selectedSort === value && (
-                          <i
-                            className="fa fa-check mr-[5px"
-                            aria-hidden="true"
-                          ></i>
-                        )}
-                        {value}
-                      </span>
-                    );
-                  })}
-
-                  <hr className="hrStyle" />
-                  {sortOrder.map((order, ind) => {
-                    return (
-                      <span
-                        key={ind}
-                        onClick={() => {
-                          setSortingOrder(order);
-                          sortingData(null, order, pdfData);
-                        }}
-                        className="dropdown-item itemColor"
-                        style={{
-                          paddingLeft: sortingOrder !== order && "33px"
-                        }}
-                      >
-                        {sortingOrder === order && (
-                          <i
-                            className="fa fa-check mr-[5px"
-                            aria-hidden="true"
-                          ></i>
-                        )}
-                        {order}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                {isList ? (
-                  <div className="sort" onClick={() => setIsList(!isList)}>
+                  <div className="sort" data-tut="reactourSecond">
                     <i
-                      onClick={() => setIsList(!isList)}
-                      className="fa fa-th-large"
-                      style={{ fontSize: "24px", color: `${iconColor}` }}
+                      className="fa fa-plus-square"
                       aria-hidden="true"
+                      style={{ fontSize: "25px", color: `${iconColor}` }}
                     ></i>
                   </div>
-                ) : (
                   <div
-                    data-tut="reactourForth"
-                    className="sort"
-                    onClick={() => setIsList(!isList)}
+                    className={
+                      isNewFol ? "dropdown-menu show" : "dropdown-menu"
+                    }
+                    aria-labelledby="dropdownMenuButton"
+                    aria-expanded={isNewFol ? "true" : "false"}
+                  >
+                    {" "}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column"
+                      }}
+                    >
+                      <span
+                        className="dropdown-item itemColor"
+                        onClick={() => setIsFolder(true)}
+                      >
+                        <i
+                          style={{ marginRight: "5px" }}
+                          className="fa fa-plus"
+                          aria-hidden="true"
+                        ></i>
+                        Create folder
+                      </span>
+                      <span
+                        className="dropdown-item itemColor"
+                        onClick={() => navigate("/form/sHAnZphf69")}
+                      >
+                        <i
+                          style={{ marginRight: "5px" }}
+                          className="fas fa-pen-nib"
+                        ></i>
+                        Sign Yourself
+                      </span>
+                      <span
+                        className="dropdown-item itemColor"
+                        onClick={() => navigate("/form/8mZzFxbG1z")}
+                      >
+                        {" "}
+                        <i
+                          style={{ marginRight: "5px" }}
+                          className="fa fa-file-signature"
+                        ></i>
+                        Request Signatures{" "}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  id="menu-container"
+                  className={isShowSort ? "dropdown show" : "dropdown"}
+                  onClick={() => setIsShowSort(!isShowSort)}
+                >
+                  <div
+                    data-tut="reactourThird"
+                    className=" sort  "
+                    data-toggle="dropdown"
                   >
                     <i
-                      className="fa fa-list"
+                      className="fa fa-sort-amount-asc"
                       aria-hidden="true"
-                      style={{ fontSize: "23px", color: `${iconColor}` }}
+                      style={{
+                        marginRight: "5px",
+                        fontSize: "14px",
+                        color: `${iconColor}`
+                      }}
                     ></i>
+                    <span
+                      style={{
+                        fontSize: "15px",
+                        color: `${iconColor}`
+                      }}
+                    >
+                      {selectedSort}
+                    </span>
                   </div>
-                )}
+                  <div
+                    className={
+                      isShowSort ? "dropdown-menu show" : "dropdown-menu"
+                    }
+                    aria-labelledby="dropdownMenuButton"
+                    aria-expanded={isShowSort ? "true" : "false"}
+                  >
+                    {sortingValue.map((value, ind) => {
+                      return (
+                        <span
+                          key={ind}
+                          onClick={() => {
+                            setSelectedSort(value);
+                            sortingData(value, null, pdfData);
+                          }}
+                          className="dropdown-item itemColor"
+                          style={{
+                            paddingLeft: selectedSort !== value && "33px"
+                          }}
+                        >
+                          {selectedSort === value && (
+                            <i
+                              className="fa fa-check"
+                              aria-hidden="true"
+                              style={{ marginRight: "5px" }}
+                            ></i>
+                          )}
+                          {value}
+                        </span>
+                      );
+                    })}
+
+                    <hr className="hrStyle" />
+                    {sortOrder.map((order, ind) => {
+                      return (
+                        <span
+                          key={ind}
+                          onClick={() => {
+                            setSortingOrder(order);
+                            sortingData(null, order, pdfData);
+                          }}
+                          className="dropdown-item itemColor"
+                          style={{
+                            paddingLeft: sortingOrder !== order && "33px"
+                          }}
+                        >
+                          {sortingOrder === order && (
+                            <i
+                              className="fa fa-check"
+                              aria-hidden="true"
+                              style={{ marginRight: "5px" }}
+                            ></i>
+                          )}
+                          {order}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  {isList ? (
+                    <div className="sort" onClick={() => setIsList(!isList)}>
+                      <i
+                        onClick={() => setIsList(!isList)}
+                        className="fa fa-th-large"
+                        style={{ fontSize: "24px", color: `${iconColor}` }}
+                        aria-hidden="true"
+                      ></i>
+                    </div>
+                  ) : (
+                    <div
+                      data-tut="reactourForth"
+                      className="sort"
+                      onClick={() => setIsList(!isList)}
+                    >
+                      <i
+                        className="fa fa-list"
+                        aria-hidden="true"
+                        style={{ fontSize: "23px", color: `${iconColor}` }}
+                      ></i>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {pdfData && pdfData.length === 0 ? (
-            <div className="flex justify-center items-center w-full h-[50vh]">
-              <span className="text-base-content font-bold">
-                No Data Found!
-              </span>
-            </div>
-          ) : (
-            <div data-tut="reactourFifth">
-              <React.Suspense fallback={<AppLoader />}>
-                <DriveBody
-                  dataTutSixth="reactourSixth"
-                  dataTutSeventh="reactourSeventh"
-                  pdfData={pdfData}
-                  setFolderName={setFolderName}
-                  setIsLoading={setIsLoading}
-                  setDocId={setDocId}
-                  getPdfDocumentList={getPdfDocumentList}
-                  isDocId={docId}
-                  setPdfData={setPdfData}
-                  isList={isList}
-                  setIsAlert={setIsAlert}
-                  setSkip={setSkip}
-                  sortingData={sortingData}
-                />
-                {loading && (
-                  <div className="text-center pb-[20px]">Loading...</div>
-                )}
-              </React.Suspense>
-            </div>
-          )}
-        </>
-      )}
+            {pdfData && pdfData.length === 0 ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "50vh",
+                  width: "100%"
+                }}
+              >
+                <span style={{ fontWeight: "bold" }}>No Data Found!</span>
+              </div>
+            ) : (
+              <div data-tut="reactourFifth">
+                <React.Suspense fallback={<Loader />}>
+                  <DriveBody
+                    dataTutSixth="reactourSixth"
+                    dataTutSeventh="reactourSeventh"
+                    pdfData={pdfData}
+                    setFolderName={setFolderName}
+                    setIsLoading={setIsLoading}
+                    setDocId={setDocId}
+                    getPdfDocumentList={getPdfDocumentList}
+                    isDocId={docId}
+                    setPdfData={setPdfData}
+                    isList={isList}
+                    setIsAlert={setIsAlert}
+                    setSkip={setSkip}
+                    sortingData={sortingData}
+                  />
+                  {loading && (
+                    <div style={{ textAlign: "center" }}>Loading...</div>
+                  )}
+                </React.Suspense>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

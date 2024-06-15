@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 
-const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
+const Submenu = ({ item, closeSidebar }) => {
+  const [submenuOpen, setSubmenuOpen] = useState(false);
   const { title, icon, children } = item;
+
+  const toggleSubmenu = () => {
+    setSubmenuOpen(!submenuOpen);
+  };
+
   return (
-    <li role="none" className="my-0.5">
+    <li role="none">
       <button
-        onClick={() => toggleSubmenu(item.title)}
-        className="flex items-center text-left p-3 lg:p-4 text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none "
+        onClick={toggleSubmenu}
+        className="w-full flex items-center text-left text-[#444] p-3 lg:p-4 hover:bg-[#eef1f5] focus:outline-none focus:text-[#0056b3] focus:bg-[#eef1f5]"
         aria-expanded={submenuOpen}
         aria-haspopup="true"
         aria-controls={`submenu-${title}`}
@@ -17,29 +23,23 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
           <span className="ml-3 lg:ml-4">{title}</span>
           <i
             className={`${
-              submenuOpen[item.title]
-                ? "fa-solid fa-angle-down"
-                : "fa-solid fa-angle-right"
+              submenuOpen ? "fa-solid fa-angle-down" : "fa-solid fa-angle-right"
             }`}
             aria-hidden="true"
           ></i>
         </div>
       </button>
-      {submenuOpen[item.title] && (
+      {submenuOpen && (
         <ul id={`submenu-${title}`} role="menu" aria-label={`${title} submenu`}>
           {children.map((childItem) => (
-            <li key={childItem.title} role="none" className="my-0.5">
+            <li key={childItem.title} role="none">
               <NavLink
                 to={
                   childItem.pageType
                     ? `/${childItem.pageType}/${childItem.objectId}`
                     : `/${childItem.objectId}`
                 }
-                className={({ isActive }) =>
-                  `${
-                    isActive ? "bg-base-300 text-base-content" : ""
-                  } flex items-center text-left pl-6 md:pl-8 py-2 text-sm cursor-pointer text-base-content hover:text-base-content focus:bg-base-300 hover:bg-base-300 hover:no-underline focus:outline-none`
-                }
+                className="block pl-6 md:pl-8 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white focus:text-[#0056b3] focus:bg-[#eef1f5] cursor-pointer"
                 onClick={closeSidebar}
                 role="menuitem"
                 tabIndex={submenuOpen ? 0 : -1}

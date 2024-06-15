@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isEnableSubscription } from "../../constant/const";
+import { isEnableSubscription, themeColor } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
 import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
@@ -147,7 +147,7 @@ function DropdownWidgetOption(props) {
 
   return (
     <ModalUi isOpen={props.showDropdown} title={props.title} showClose={false}>
-      <div className="h-full p-[15px] text-base-content">
+      <div className="h-full p-[15px]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -155,25 +155,38 @@ function DropdownWidgetOption(props) {
           }}
         >
           <div>
-            <label className="text-[13px] font-semibold">
-              Name<span className="text-[red] text-[13px]"> *</span>
+            <label style={{ fontSize: "13px", fontWeight: "600" }}>
+              Name<span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               required
               defaultValue={dropdownName}
               value={dropdownName}
               onChange={(e) => setDropdownName(e.target.value)}
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="drodown-input"
             />
 
-            <label className="text-[13px] font-semibold mt-[5px]">
+            <label
+              style={{ fontSize: "13px", fontWeight: "600", marginTop: "5px" }}
+            >
               Options
             </label>
-            <div className="flex flex-col">
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column"
+              }}
+            >
               {dropdownOptionList.map((option, index) => (
                 <div
                   key={index}
-                  className="flex flex-row mb-[5px] items-center"
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    marginBottom: "5px",
+                    alignItems: "center"
+                  }}
                 >
                   {props.type === "checkbox" && !props.isSignYourself && (
                     <input
@@ -193,34 +206,51 @@ function DropdownWidgetOption(props) {
                           setDefaultCheckbox(removeOption);
                         }
                       }}
-                      className="op-checkbox focus:outline-none hover:border-base-content mr-[5px]"
+                      style={{
+                        width: "23px",
+                        height: "19px",
+                        marginRight: "5px"
+                      }}
                     />
                   )}
                   <input
                     required
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    className="drodown-input"
                     type="text"
                     value={option}
                     onChange={(e) => handleInputChange(index, e.target.value)}
                   />
 
                   <i
-                    className="fa-solid fa-rectangle-xmark text-[25px] ml-[10px] text-error"
+                    className="fa-solid fa-rectangle-xmark"
                     onClick={() => handleDeleteInput(index)}
+                    style={{
+                      color: "red",
+                      fontSize: "25px",
+                      marginLeft: "10px"
+                    }}
                   ></i>
                 </div>
               ))}
               <i
                 onClick={handleAddInput}
-                className="fa-solid fa-square-plus text-[25px] ml-[10px] text-primary"
+                style={{
+                  cursor: "pointer",
+                  color: themeColor,
+                  fontSize: "25px",
+                  marginLeft: "10px"
+                }}
+                className="fa-solid fa-square-plus"
               ></i>
               <div>
                 {props.type === "checkbox" && !props.isSignYourself && (
                   <>
                     <label
-                      className={`${
-                        !props.isSubscribe ? "text-[gray]" : ""
-                      } text-[13px] font-semibold`}
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: "600",
+                        color: !props.isSubscribe && "gray"
+                      }}
                     >
                       Minimun check
                     </label>
@@ -233,16 +263,18 @@ function DropdownWidgetOption(props) {
                         const count = handleSetMinMax(e);
                         setMinCount(count);
                       }}
-                      className={`${
+                      className={
                         props.isSubscribe || !isEnableSubscription
-                          ? ""
-                          : "pointer-events-none bg-opacity-50"
-                      } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
+                          ? "drodown-input"
+                          : "disabled drodown-input"
+                      }
                     />
                     <label
-                      className={`${
-                        !props.isSubscribe ? "text-[gray]" : ""
-                      } text-[13px] font-semibold`}
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: "600",
+                        color: !props.isSubscribe && "gray"
+                      }}
                     >
                       Maximum check
                     </label>
@@ -254,11 +286,11 @@ function DropdownWidgetOption(props) {
                         const count = handleSetMinMax(e);
                         setMaxCount(count);
                       }}
-                      className={`${
+                      className={
                         props.isSubscribe || !isEnableSubscription
-                          ? ""
-                          : "pointer-events-none bg-opacity-50"
-                      } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
+                          ? "drodown-input"
+                          : "disabled drodown-input"
+                      }
                     />
                   </>
                 )}
@@ -266,22 +298,32 @@ function DropdownWidgetOption(props) {
             </div>
             {["dropdown", radioButtonWidget].includes(props.type) && (
               <>
-                <label className="text-[13px] font-semibold mt-[5px]">
+                <label
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    marginTop: "5px"
+                  }}
+                >
                   Default value
                 </label>
                 <select
                   onChange={(e) => setDefaultValue(e.target.value)}
-                  className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  className="drodown-input"
                   name="defaultvalue"
                   value={defaultValue}
                   placeholder="select default value"
                 >
-                  <option value="" disabled hidden className="text-[13px]">
+                  <option value="" disabled hidden style={{ fontSize: "13px" }}>
                     Select...
                   </option>
                   {dropdownOptionList.map((data, ind) => {
                     return (
-                      <option className="text-[13px]" key={ind} value={data}>
+                      <option
+                        style={{ fontSize: "13px" }}
+                        key={ind}
+                        value={data}
+                      >
                         {data}
                       </option>
                     );
@@ -291,21 +333,35 @@ function DropdownWidgetOption(props) {
             )}
             {props.type !== "checkbox" && props.type !== radioButtonWidget && (
               <>
-                <div className="flex flex-row gap-[10px] mt-[0.5rem]">
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 10,
+                    marginTop: "0.5rem"
+                  }}
+                >
                   {statusArr.map((data, ind) => {
                     return (
                       <div
                         key={ind}
-                        className="flex flex-row gap-[5px] items-center"
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: 5,
+                          alignItems: "center"
+                        }}
                       >
                         <input
-                          className="op-radio op-radio-xs my-1"
+                          style={{ accentColor: "red" }}
                           type="radio"
                           name="status"
                           onChange={() => setStatus(data.toLowerCase())}
                           checked={status.toLowerCase() === data.toLowerCase()}
                         />
-                        <div className="text-[13px] font-500">{data}</div>
+                        <div style={{ fontSize: "13px", fontWeight: "500" }}>
+                          {data}
+                        </div>
                       </div>
                     );
                   })}
@@ -313,31 +369,33 @@ function DropdownWidgetOption(props) {
               </>
             )}
             {["checkbox", radioButtonWidget].includes(props.type) && (
-              <div className="flex flex-row gap-5 my-2 items-center text-center">
+              <div className="flex flex-row gap-5 mt-2 items-center text-center">
                 {!props.isSignYourself && (
-                  <div className="flex items-center">
+                  <div>
                     <input
                       id="isreadonly"
                       type="checkbox"
                       checked={isReadOnly}
-                      className="op-checkbox op-checkbox-sm"
-                      onChange={(e) => setIsReadOnly(e.target.checked)}
+                      onChange={(e) => {
+                        setIsReadOnly(e.target.checked);
+                      }}
                     />
-                    <label className="ml-1 mb-0" htmlFor="isreadonly">
+                    <label className="ml-1" htmlFor="isreadonly">
                       Is read only
                     </label>
                   </div>
                 )}
-                <div className="flex items-center">
+                <div>
                   <input
                     id="ishidelabel"
                     type="checkbox"
                     checked={isHideLabel}
-                    className="op-checkbox op-checkbox-sm"
-                    onChange={(e) => setIsHideLabel(e.target.checked)}
+                    onChange={(e) => {
+                      setIsHideLabel(e.target.checked);
+                    }}
                   />
 
-                  <label className="ml-1 mb-0" htmlFor="ishidelabel">
+                  <label className="ml-1" htmlFor="ishidelabel">
                     Hide labels
                   </label>
                 </div>
@@ -363,15 +421,19 @@ function DropdownWidgetOption(props) {
 
           <button
             disabled={dropdownOptionList.length === 0 && true}
+            style={{
+              background: themeColor,
+              color: "white"
+            }}
             type="submit"
-            className="op-btn op-btn-primary"
+            className={"finishBtn"}
           >
             Save
           </button>
           {props.currWidgetsDetails?.options?.values?.length > 0 && (
             <button
               type="submit"
-              className="op-btn op-btn-ghost ml-1"
+              className="finishBtn cancelBtn"
               onClick={() => {
                 props.handleClose && props.handleClose();
                 resetState();

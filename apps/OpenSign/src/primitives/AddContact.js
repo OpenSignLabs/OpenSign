@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
 import "../styles/AddUser.css";
-import Loader from "./Loader";
 const AddContact = (props) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -196,36 +195,40 @@ const AddContact = (props) => {
   };
 
   return (
-    <div className="h-full px-[20px] py-[10px]">
+    <div className="addusercontainer">
       {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30">
-          <Loader />
+        <div className="loaderdiv">
+          <div
+            style={{
+              fontSize: "45px",
+              color: "#3dd3e0"
+            }}
+            className="loader-37"
+          ></div>
         </div>
       )}
-      <div className="w-full mx-auto p-[8px]">
-        <div className="text-[14px] font-[700]">Add User</div>
+      <div className="form-wrapper">
+        <div style={{ fontSize: 14, fontWeight: "700" }}>Add User</div>
+
         {isUserExist && (
-          <div className="mb-[0.75rem] flex items-center mt-1">
+          <div className="form-section">
             <input
               type="checkbox"
               id="addYourself"
               checked={addYourself}
               onChange={handleAddYourselfChange}
-              className="op-checkbox op-checkbox-sm"
+              className="form-checkbox"
             />
-            <label
-              htmlFor="addYourself"
-              className="ml-[0.5rem] text-base-content mb-0"
-            >
+            <label htmlFor="addYourself" className="checkbox-label ">
               Add Yourself
             </label>
           </div>
         )}
-        <form className="text-base-content" onSubmit={handleSubmit}>
-          <div className="mb-[0.75rem]">
-            <label htmlFor="name" className="text-[13px]">
+        <form onSubmit={handleSubmit}>
+          <div className="form-section">
+            <label htmlFor="name" style={{ fontSize: 13 }}>
               Name
-              <span className="text-[13px] text-[red]"> *</span>
+              <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               type="text"
@@ -234,13 +237,13 @@ const AddContact = (props) => {
               onChange={(e) => setName(e.target.value)}
               required
               disabled={addYourself}
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="addUserInput"
             />
           </div>
-          <div className="mb-[0.75rem]">
-            <label htmlFor="email" className="text-[13px]">
+          <div className="form-section">
+            <label htmlFor="email" style={{ fontSize: 13 }}>
               Email
-              <span className="text-[13px] text-[red]"> *</span>
+              <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               type="email"
@@ -249,11 +252,11 @@ const AddContact = (props) => {
               onChange={(e) => setEmail(e.target.value?.toLowerCase())}
               required
               disabled={addYourself}
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs lowercase"
+              className="addUserInput lowercase"
             />
           </div>
-          <div className="mb-[0.75rem]">
-            <label htmlFor="phone" className="text-[13px]">
+          <div className="form-section">
+            <label htmlFor="phone" style={{ fontSize: 13 }}>
               Phone
             </label>
             <input
@@ -262,18 +265,18 @@ const AddContact = (props) => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               disabled={addYourself}
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="addUserInput"
             />
           </div>
 
-          <div className="mt-6 flex justify-start gap-2">
-            <button type="submit" className="op-btn op-btn-primary">
+          <div className="buttoncontainer">
+            <button type="submit" className="submitbutton">
               Submit
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
-              className="op-btn op-btn-secondary"
+              className="resetbutton"
             >
               Reset
             </button>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
 import Title from "../components/Title";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import { useWindowSize } from "../hook/useWindowSize";
 import Alert from "../primitives/Alert";
@@ -12,7 +12,6 @@ import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { isEnableSubscription } from "../constant/const";
 import { getAppLogo, openInNewTab } from "../constant/Utils";
-import Loader from "../primitives/Loader";
 const Signup = () => {
   const { width } = useWindowSize();
   const navigate = useNavigate();
@@ -502,45 +501,68 @@ const Signup = () => {
     setSpecialCharValid(/[!@#$%^&*()\-_=+{};:,<.>]/.test(newPassword));
   };
   return (
-    <div className="">
+    <div className="bg-white">
       {state.loading && (
-        <div className="fixed w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-50">
-          <Loader />
+        <div
+          style={{
+            position: "fixed",
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.2)",
+            top: 0,
+            left: 0,
+            zIndex: 2
+          }}
+        >
+          <div
+            style={{
+              position: "fixed",
+              fontSize: "50px",
+              color: "#3ac9d6",
+              top: "50%",
+              left: "45%"
+            }}
+            className="loader-37"
+          ></div>
         </div>
       )}
+
       <Title title={"Signup page"} />
+
       {appInfo && appInfo.applogo ? (
-        <div className="md:p-10 lg:p-16">
-          <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
+        <div>
+          <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
             <div className="w-[250px] h-[66px] inline-block overflow-hidden">
               {image && (
                 <img src={image} className="object-contain h-full" alt="logo" />
               )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-              <div>
+              <div className="">
                 <form onSubmit={handleSubmit}>
                   <h2 className="text-[30px] mt-6">Create Account !</h2>
-                  <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
+                  <div className="outline outline-1 outline-slate-300/50 shadow-md rounded my-4">
                     <div className="px-6 py-4 text-xs">
                       <label className="block ">
-                        Name <span className="text-[red] text-[13px]">*</span>
+                        Name{" "}
+                        <span style={{ color: "red", fontSize: 13 }}>*</span>
                       </label>
                       <input
                         type="text"
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Email <span className="text-[red] text-[13px]">*</span>
+                        Email{" "}
+                        <span style={{ color: "red", fontSize: 13 }}>*</span>
                       </label>
                       <input
                         id="email"
-                        type="email"
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        type="text"
+                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs lowercase"
                         value={email}
                         onChange={(e) =>
                           setEmail(e.target.value?.toLowerCase())
@@ -549,11 +571,12 @@ const Signup = () => {
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Phone <span className="text-[red] text-[13px]">*</span>
+                        Phone{" "}
+                        <span style={{ color: "red", fontSize: 13 }}>*</span>
                       </label>
                       <input
                         type="tel"
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         required
@@ -561,11 +584,11 @@ const Signup = () => {
                       <hr className="my-2 border-none" />
                       <label>
                         Company{" "}
-                        <span className="text-[red] text-[13px]">*</span>
+                        <span style={{ color: "red", fontSize: 13 }}>*</span>
                       </label>
                       <input
                         type="text"
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
                         required
@@ -573,11 +596,11 @@ const Signup = () => {
                       <hr className="my-2 border-none" />
                       <label>
                         Job Title{" "}
-                        <span className="text-[red] text-[13px]">*</span>
+                        <span style={{ color: "red", fontSize: 13 }}>*</span>
                       </label>
                       <input
                         type="text"
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
                         required
@@ -585,19 +608,21 @@ const Signup = () => {
                       <hr className="my-2 border-none" />
                       <label>
                         Password{" "}
-                        <span className="text-[red] text-[13px]">*</span>
+                        <span style={{ color: "red", fontSize: 13 }}>*</span>
                       </label>
                       <div className="relative">
                         <input
                           type={showPassword ? "text" : "password"}
-                          className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                           name="password"
                           value={password}
                           onChange={(e) => handlePasswordChange(e)}
                           required
                         />
                         <span
-                          className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer text-base-content`}
+                          className={`absolute top-[50%] right-[10px] -translate-y-[50%] cursor-pointer ${
+                            showPassword ? "text-[#007bff]" : "text-black"
+                          }`}
                           onClick={togglePasswordVisibility}
                         >
                           {showPassword ? (
@@ -640,7 +665,6 @@ const Signup = () => {
                       <div className="mt-2.5 ml-1 flex flex-row items-center">
                         <input
                           type="checkbox"
-                          className="op-checkbox op-checkbox-sm"
                           id="termsandcondition"
                           checked={isAuthorize}
                           onChange={(e) => setIsAuthorize(e.target.checked)}
@@ -666,31 +690,28 @@ const Signup = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold mt-2">
+                  <div className="flex flex-col md:flex-row justify-between items-stretch gap-8 text-center text-xs font-bold mt-2">
                     <button
                       type="submit"
-                      className="op-btn op-btn-primary"
+                      className="rounded-sm bg-[#3ac9d6] text-white w-full py-3 shadow uppercase"
                       disabled={state.loading}
                     >
                       {state.loading ? "Loading..." : "Register"}
                     </button>
-                    <button
-                      type="button"
-                      className="op-btn op-btn-secondary"
-                      disabled={state.loading}
-                      onClick={() =>
-                        navigate(location.search ? "/" + location.search : "/")
-                      }
+                    <NavLink
+                      className="rounded-sm cursor-pointer bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] w-full py-3 shadow uppercase"
+                      to={location.search ? "/" + location.search : "/"}
+                      style={width < 768 ? { textAlign: "center" } : {}}
                     >
                       Login
-                    </button>
+                    </NavLink>
                   </div>
                 </form>
               </div>
               {width >= 768 && (
                 <div className="self-center">
                   <div className="mx-auto md:w-[300px] lg:w-[400px] xl:w-[500px]">
-                    <img src={login_img} alt="loader" width="100%" />
+                    <img src={login_img} alt="bisec" width="100%" />
                   </div>
                 </div>
               )}
@@ -699,9 +720,16 @@ const Signup = () => {
           <Alert type={state.alertType}>{state.alertMsg}</Alert>
         </div>
       ) : (
-        <div className="fixed w-full h-full flex justify-center items-center z-50">
-          <Loader />
-        </div>
+        <div
+          style={{
+            position: "fixed",
+            fontSize: "50px",
+            color: "#3ac9d6",
+            top: "50%",
+            left: "45%"
+          }}
+          className="loader-37"
+        ></div>
       )}
     </div>
   );

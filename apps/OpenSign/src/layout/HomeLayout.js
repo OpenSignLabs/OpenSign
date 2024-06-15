@@ -12,7 +12,6 @@ import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { isEnableSubscription } from "../constant/const";
 import { useCookies } from "react-cookie";
 import { fetchSubscription } from "../constant/Utils";
-import Loader from "../primitives/Loader";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
@@ -248,14 +247,27 @@ const HomeLayout = () => {
   };
   return (
     <div>
-      <div className="sticky top-0 z-[101]">
+      <div className="sticky top-0 z-50">
         {!isLoader && <Header showSidebar={showSidebar} />}
       </div>
       {isUserValid ? (
         <>
           {isLoader ? (
-            <div className="flex h-[100vh] justify-center items-center">
-              <Loader />
+            <div
+              style={{
+                height: "100vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "45px",
+                  color: "#3dd3e0"
+                }}
+                className="loader-37"
+              ></div>
             </div>
           ) : (
             <>
@@ -265,7 +277,7 @@ const HomeLayout = () => {
                   id="renderList"
                   className="relative h-screen flex flex-col justify-between w-full overflow-y-auto"
                 >
-                  <div className="bg-base-200 p-3">{<Outlet />}</div>
+                  <div className="bg-[#eef1f5] p-3">{<Outlet />}</div>
                   <div className="z-30">
                     <Footer />
                   </div>

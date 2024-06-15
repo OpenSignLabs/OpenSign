@@ -1,13 +1,16 @@
 import React from "react";
-import Loader from "../../primitives/Loader";
+import { rejectBtn, submitBtn, themeColor } from "../../constant/const";
 
 function VerifyEmail(props) {
   return (
-    <dialog className="op-modal op-modal-open absolute z-[1999]">
-      <div className="md:w-[40%] w-[80%] op-modal-box p-0 overflow-y-auto hide-scrollbar text-sm">
-        <h3 className="font-bold text-lg pt-[15px] px-[20px] text-base-content">
+    <div className="bg-black bg-opacity-[75%] absolute z-[999] flex flex-col items-center justify-center w-full h-full rounded">
+      <div className="bg-white rounded outline-none md:w-[40%] w-[80%]">
+        <div
+          style={{ backgroundColor: themeColor }}
+          className=" text-white p-[10px] rounded-t"
+        >
           OTP verification
-        </h3>
+        </div>
         {props.isVerifyModal ? (
           <form
             onSubmit={(e) => {
@@ -15,24 +18,25 @@ function VerifyEmail(props) {
               props.handleVerifyEmail(e);
             }}
           >
-            <div className="px-6 py-3 text-base-content">
+            <div className="px-6 py-3">
               <label className="mb-2">Enter OTP</label>
               <input
                 required
                 type="tel"
                 pattern="[0-9]{4}"
-                className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
+                className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                 placeholder="Enter OTP received over email"
                 value={props.otp}
                 onChange={(e) => props.setOtp(e.target.value)}
               />
             </div>
+            <hr />
             <div className="px-6 my-3">
-              <button type="submit" className="op-btn op-btn-primary">
+              <button type="submit" className={submitBtn}>
                 Verify
               </button>
               <button
-                className="op-btn op-btn-secondary ml-2"
+                className={`${rejectBtn} ml-2`}
                 onClick={(e) => props.handleResend(e)}
               >
                 Resend
@@ -40,15 +44,29 @@ function VerifyEmail(props) {
             </div>
           </form>
         ) : props.otpLoader ? (
-          <div className="h-[150px] flex items-center justify-center">
-            <Loader />
+          <div
+            style={{
+              height: "150px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <div
+              style={{
+                fontSize: "45px",
+                color: "#3dd3e0"
+              }}
+              className="loader-37"
+            ></div>
           </div>
         ) : (
-          <div className="px-6 py-3 text-base-content">
-            <p className="mb-2 text-sm">Please verify your email !</p>
+          <div className="px-6 py-3">
+            <p className="mb-2">Please verify your email !</p>
+            <hr />
             <div className="px-0 mt-3">
               <button
-                className="op-btn op-btn-primary"
+                className={submitBtn}
                 type="submit"
                 onClick={() => {
                   props.handleVerifyBtn();
@@ -60,7 +78,7 @@ function VerifyEmail(props) {
           </div>
         )}
       </div>
-    </dialog>
+    </div>
   );
 }
 

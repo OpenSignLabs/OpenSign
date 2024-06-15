@@ -8,7 +8,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { appInfo } from "../constant/appinfo";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
-import Loader from "../primitives/Loader";
 
 const PgSignUp = () => {
   const navigate = useNavigate();
@@ -412,8 +411,21 @@ const PgSignUp = () => {
     <div className="bg-white">
       <Title title={"Pgsignup page"} />
       {isLoader ? (
-        <div className="flex justify-center items-center h-[100vh]">
-          <Loader />
+        <div
+          style={{
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          <div
+            style={{
+              fontSize: "45px",
+              color: "#3dd3e0"
+            }}
+            className="loader-37"
+          ></div>
         </div>
       ) : (
         <form id="signup" className="pgsignup-content" onSubmit={handleSubmit}>

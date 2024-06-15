@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import loader from "../assets/images/loader2.gif";
 import axios from "axios";
-import { isEnableSubscription } from "../constant/const";
+import {
+  isEnableSubscription,
+  modalSubmitBtnColor,
+  themeColor
+} from "../constant/const";
 import { contractUsers, getAppLogo } from "../constant/Utils";
 import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 import Parse from "parse";
-import Loader from "../primitives/Loader";
 
 function GuestLogin() {
   const { id, userMail, contactBookId, base64url } = useParams();
@@ -181,14 +185,16 @@ function GuestLogin() {
     setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   return (
-    <div className="p-[2rem]">
+    <div style={{ padding: "2rem", background: "white" }}>
       {isLoading ? (
         <div className="flex flex-col justify-center items-center h-[100vh]">
-          <Loader />
-          <span className="text-[13px] text-[gray]">{isLoading.message}</span>
+          <img className="w-[80px] h-[80px]" alt="loader" src={loader} />
+          <span style={{ fontSize: "13px", color: "gray" }}>
+            {isLoading.message}
+          </span>
         </div>
       ) : (
-        <div className="m-1 md:m-2 p-[30px] text-base-content bg-base-100 op-card shadow-md">
+        <div className="m-1 md:m-2 border-[0.5px] border-[#c5c7c9] p-[30px] shadow-md">
           <div className="md:w-[250px] md:h-[66px] inline-block overflow-hidden mt-2 mb-11">
             {appLogo && (
               <img src={appLogo} className="object-contain h-full" alt="logo" />
@@ -197,23 +203,24 @@ function GuestLogin() {
           {contactId ? (
             <>
               {!EnterOTP ? (
-                <div className="w-full md:w-[50%] text-base-content">
+                <div className="w-full md:w-[50%]">
                   <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
                   <legend className="text-[12px] text-[#878787] mt-2">
                     Verification code is sent to your email
                   </legend>
-                  <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
+                  <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 rounded shadow-md">
                     <input
                       type="email"
                       name="mobile"
                       value={email}
-                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      className="outline-none px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs disabled:bg-[#e0e5f5]"
                       disabled
                     />
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-4">
                     <button
-                      className="op-btn op-btn-primary"
+                      className="w-[100px] text-white text-sm font-medium py-1 rounded-sm shadow-md hover:shadow-lg focus:outline-none"
+                      style={{ background: themeColor }}
                       onClick={(e) => handleSendOTPBtn(e)}
                       disabled={loading}
                     >
@@ -222,27 +229,25 @@ function GuestLogin() {
                   </div>
                 </div>
               ) : (
-                <form
-                  className="w-full md:w-[50%] text-base-content"
-                  onSubmit={VerifyOTP}
-                >
+                <form className="w-full md:w-[50%]" onSubmit={VerifyOTP}>
                   <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
                   <legend className="text-[12px] text-[#878787] mt-2">
                     You will get a OTP via Email
                   </legend>
-                  <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
-                    <p className="text-sm">Enter Verification Code</p>
+                  <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 my-2 rounded shadow-md">
+                    <p>Enter Verification Code</p>
                     <input
                       type="number"
-                      className="mt-2 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      className="mt-1 outline-none px-3 py-2 w-full border-[1px] border-gray-300 rounded text-xs bg-[#e0e5f5]"
                       name="OTP"
                       value={OTP}
                       onChange={(e) => setOTP(e.target.value)}
                     />
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-4">
                     <button
-                      className="op-btn op-btn-primary"
+                      style={{ background: themeColor }}
+                      className="w-[100px] text-white text-sm font-medium py-1 rounded-sm shadow-md hover:shadow-lg focus:outline-none"
                       type="submit"
                       disabled={loading}
                     >
@@ -253,16 +258,16 @@ function GuestLogin() {
               )}
             </>
           ) : (
-            <div className="w-full md:w-[50%] text-base-content">
+            <div className="w-full md:w-[50%]">
               <h1 className="text-2xl md:text-[30px]">Welcome</h1>
               <legend className="text-[12px] text-[#878787] mt-2">
                 Provide your details
               </legend>
               <form
-                className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md"
+                className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 my-2 rounded shadow-md"
                 onSubmit={handleUserData}
               >
-                <div className="mb-2">
+                <div className="mb-3">
                   <label
                     htmlFor="name"
                     className="block text-xs text-gray-700 font-semibold"
@@ -275,12 +280,12 @@ function GuestLogin() {
                     name="name"
                     value={contact.name}
                     onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    className="px-3 py-2 w-full border-[1px] border-gray-300 rounded disabled:bg-[#e0e5f5] focus:outline-none text-xs"
                     disabled={loading}
                     required
                   />
                 </div>
-                <div className="mb-2">
+                <div className="mb-3">
                   <label
                     htmlFor="email"
                     className="block text-xs text-gray-700 font-semibold"
@@ -293,12 +298,12 @@ function GuestLogin() {
                     name="email"
                     value={contact.email}
                     onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    className="px-3 py-2 w-full border-[1px] border-gray-300 disabled:bg-[#e0e5f5] rounded focus:outline-none text-xs"
                     required
                     disabled
                   />
                 </div>
-                <div className="mb-2">
+                <div className="mb-3">
                   <label
                     htmlFor="phone"
                     className="block text-xs text-gray-700 font-semibold"
@@ -310,14 +315,15 @@ function GuestLogin() {
                     name="phone"
                     value={contact.phone}
                     onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
                     disabled={loading}
                   />
                 </div>
-                <div className="mt-2 flex justify-start">
+                <div className="mt-4 flex justify-start">
                   <button
                     type="submit"
-                    className="op-btn op-btn-primary"
+                    style={{ backgroundColor: modalSubmitBtnColor }}
+                    className="mr-2 px-[20px] py-1.5 text-white rounded shadow-md text-center focus:outline-none "
                     disabled={loading}
                   >
                     {loading ? "Loading..." : "Next"}

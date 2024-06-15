@@ -67,7 +67,7 @@ const FullScreenButton = () => {
     <div className="flex items-center">
       <button
         onClick={toggleFullScreen}
-        className="text-base-content p-2 text-sm focus:outline-none"
+        className="text-black p-2 text-sm focus:outline-none"
       >
         {isFullScreen ? (
           <i className="fa-solid fa-compress"></i>

@@ -3,13 +3,13 @@ import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/signature.css";
-import { isEnableSubscription } from "../constant/const";
+import { isEnableSubscription, themeColor } from "../constant/const";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrag, useDrop } from "react-dnd";
 import WidgetComponent from "../components/pdf/WidgetComponent";
 import Tour from "reactour";
-import LoaderWithMsg from "../primitives/LoaderWithMsg";
+import Loader from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
 import SignerListPlace from "../components/pdf/SignerListPlace";
 import Header from "../components/pdf/PdfHeader";
@@ -1207,14 +1207,11 @@ const TemplatePlaceholder = () => {
       <Title title={"Template"} />
       <DndProvider backend={HTML5Backend}>
         {isLoading.isLoad ? (
-          <LoaderWithMsg isLoading={isLoading} />
+          <Loader isLoading={isLoading} />
         ) : handleError ? (
           <HandleError handleError={handleError} />
         ) : (
-          <div
-            className="op-card overflow-hidden flex flex-row justify-between bg-base-300 relative"
-            ref={divRef}
-          >
+          <div className="signatureContainer" ref={divRef}>
             {/* this component used for UI interaction and show their functionality */}
             {!checkTourStatus && (
               //this tour component used in your html component where you want to put
@@ -1257,20 +1254,22 @@ const TemplatePlaceholder = () => {
             >
               {/* this modal is used show alert set placeholder for all signers before send mail */}
               <ModalUi
+                headerColor={"#dc3545"}
                 isOpen={isSendAlert}
                 title={"Fields required"}
                 handleClose={() => setIsSendAlert(false)}
               >
-                <div className="h-full p-[20px]">
+                <div style={{ height: "100%", padding: 20 }}>
                   <p>Please add at least one signature field for all roles.</p>
                 </div>
               </ModalUi>
               <ModalUi
+                headerColor={"#dc3545"}
                 isOpen={!IsReceipent}
                 title={"Roles"}
                 handleClose={() => setIsReceipent(true)}
               >
-                <div className="h-full p-[20px]">
+                <div style={{ height: "100%", padding: 20 }}>
                   <p>Please add a role</p>
                 </div>
               </ModalUi>
@@ -1280,18 +1279,32 @@ const TemplatePlaceholder = () => {
                 title={"Create Document"}
                 handleClose={() => setIsCreateDocModal(false)}
               >
-                <div className="h-full p-[20px]">
+                <div style={{ height: "100%", padding: 20 }}>
                   <p>
                     Do you want to create a document using the template you just
                     created ?
                   </p>
-                  <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
                   {currentEmail.length > 0 && (
                     <>
                       <button
-                        onClick={() => handleCreateDocModal()}
+                        onClick={() => {
+                          handleCreateDocModal();
+                        }}
+                        style={{
+                          background: themeColor,
+                          color: "white"
+                        }}
                         type="button"
-                        className="op-btn op-btn-primary"
+                        className="finishBtn"
                       >
                         Yes
                       </button>
@@ -1300,7 +1313,7 @@ const TemplatePlaceholder = () => {
                           setIsCreateDocModal(false);
                         }}
                         type="button"
-                        className="op-btn op-btn-secondary ml-2"
+                        className="finishBtn cancelBtn"
                       >
                         No
                       </button>
@@ -1308,21 +1321,32 @@ const TemplatePlaceholder = () => {
                   )}
                 </div>
               </ModalUi>
-              {isCreateDoc && <LoaderWithMsg isLoading={isLoading} />}
+              {isCreateDoc && <Loader isLoading={isLoading} />}
               <ModalUi
+                headerColor={"#dc3545"}
                 isOpen={isShowEmail}
                 title={"signers alert"}
                 handleClose={() => {
                   setIsShowEmail(false);
                 }}
               >
-                <div className="h-full p-[20px]">
+                <div style={{ height: "100%", padding: 20 }}>
                   <p>Please select signer for add placeholder!</p>
-                  <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
+                  <div
+                    style={{
+                      height: "1px",
+                      backgroundColor: "#9f9f9f",
+                      width: "100%",
+                      marginTop: "15px",
+                      marginBottom: "15px"
+                    }}
+                  ></div>
                   <button
-                    onClick={() => setIsShowEmail(false)}
+                    onClick={() => {
+                      setIsShowEmail(false);
+                    }}
                     type="button"
-                    className="op-btn op-btn-primary"
+                    className="finishBtn cancelBtn"
                   >
                     Ok
                   </button>
@@ -1372,7 +1396,7 @@ const TemplatePlaceholder = () => {
                 // signerObjId={signerObjId}
                 Id={uniqueId}
               />
-              {/* pdf header which contain finish, back button */}
+              {/* pdf header which contain funish back button */}
               <Header
                 completeBtnTitle={"Save"}
                 isPlaceholder={true}
@@ -1475,10 +1499,10 @@ const TemplatePlaceholder = () => {
               </div>
             ) : (
               <div>
-                <div className="hidden md:block w-[180px] h-full bg-base-100">
+                <div className="signerComponent">
                   <div
                     style={{ maxHeight: window.innerHeight - 70 + "px" }}
-                    className="overflow-y-auto hide-scrollbar"
+                    className="autoSignScroll"
                   >
                     <SignerListPlace
                       isMailSend={isMailSend}

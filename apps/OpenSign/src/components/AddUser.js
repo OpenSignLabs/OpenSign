@@ -3,7 +3,6 @@ import Parse from "parse";
 import axios from "axios";
 import Title from "./Title";
 import Alert from "../primitives/Alert";
-import Loader from "../primitives/Loader";
 
 const AddUser = (props) => {
   const [name, setName] = useState("");
@@ -196,7 +195,13 @@ const AddUser = (props) => {
       {isUserExist && <Alert type="danger">User already exists!</Alert>}
       {isLoader && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
-          <Loader />
+          <div
+            style={{
+              fontSize: "45px",
+              color: "#3dd3e0"
+            }}
+            className="loader-37"
+          ></div>
         </div>
       )}
       <div className="w-full mx-auto">
@@ -208,7 +213,7 @@ const AddUser = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Name
-              <span className="text-[red] text-[13px]"> *</span>
+              <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               type="text"
@@ -216,7 +221,7 @@ const AddUser = (props) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
             />
           </div>
           <div className="mb-3">
@@ -225,7 +230,7 @@ const AddUser = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Email
-              <span className="text-[red] text-[13px]"> *</span>
+              <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               type="email"
@@ -233,7 +238,7 @@ const AddUser = (props) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
             />
           </div>
           <div className="mb-3">
@@ -242,7 +247,7 @@ const AddUser = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Phone
-              <span className="text-[red] text-[13px]"> *</span>
+              <span style={{ color: "red", fontSize: 13 }}> *</span>
             </label>
             <input
               type="text"
@@ -250,7 +255,7 @@ const AddUser = (props) => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
             />
           </div>
 

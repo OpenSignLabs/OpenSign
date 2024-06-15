@@ -12,14 +12,22 @@ export default function TourContentWithBtn({ message, isChecked }) {
   return (
     <div>
       <p>{message}</p>
-      <label className="flex items-center justify-center mb-0">
+      <label
+        style={{
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center"
+        }}
+      >
         <input
           type="checkbox"
-          className="op-checkbox op-checkbox-xs mr-1"
+          style={{ marginRight: 3 }}
           checked={isCheck}
           onChange={handleCheck}
-        />
-        <span className="#787878 text-[12px]">Don&apos;t show this again</span>
+        />{" "}
+        <span style={{ color: "#787878", fontSize: 12 }}>
+          Don&apos;t show this again
+        </span>
       </label>
     </div>
   );

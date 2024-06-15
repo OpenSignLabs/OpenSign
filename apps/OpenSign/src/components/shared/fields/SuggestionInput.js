@@ -61,24 +61,24 @@ const SuggestionInput = (props) => {
     }
   };
   return (
-    <div className="flex flex-col items-center relative text-base-content">
+    <div className="flex flex-col items-center relative">
       <input
         type={props?.type || "text"}
         value={inputValue}
         onChange={handleInputChange}
         placeholder="Enter Email..."
-        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs lowercase"
+        className="w-full border-[1px] border-gray-400 p-2 text-black rounded lowercase"
         required={props.required}
       />
       {showSuggestions && (
         <ul
           ref={ref}
-          className="absolute z-50 left-0 top-[2.55rem] w-full max-h-[100px] overflow-auto bg-base-200 border border-gray-300 rounded shadow-md"
+          className="absolute z-50 left-0 top-[2.55rem] w-full max-h-[100px] overflow-auto bg-white border border-gray-300 rounded shadow-md"
         >
           {suggestions.map((suggestion, index) => (
             <li
               key={index}
-              className="py-2 px-2 w-full text-sm cursor-pointer hover:bg-base-300"
+              className="py-2 px-2 w-full text-sm cursor-pointer hover:bg-gray-100"
               onClick={() => handleSuggestionClick(suggestion)}
             >
               {suggestion.Email}

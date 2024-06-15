@@ -18,7 +18,31 @@ const LinkUserModal = (props) => {
         closePopup={props.closePopup}
         signersData={props?.signersData}
       />
-      <div className="op-divider text-base-content mx-[25%] my-1">or</div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 5,
+          margin: "0 30%",
+          color: "#808080"
+        }}
+      >
+        <span
+          style={{
+            height: 1,
+            width: "100%",
+            backgroundColor: "#ccc"
+          }}
+        ></span>
+        <span>or</span>
+        <span
+          style={{
+            height: 1,
+            width: "100%",
+            backgroundColor: "#ccc"
+          }}
+        ></span>
+      </div>
       <AddContact details={props.handleAddUser} closePopup={props.closePopup} />
     </ModalUi>
   );

@@ -3,6 +3,16 @@ import Parse from "parse";
 import "../../../styles/AddUser.css";
 import AsyncSelect from "react-select/async";
 
+const customStyles = {
+  control: (provided) => ({
+    ...provided,
+    fontSize: "13px" // Font size for the control
+  }),
+  option: (provided) => ({
+    ...provided,
+    fontSize: "13px" // Font size for the options
+  })
+};
 const SelectSigners = (props) => {
   const [userList, setUserList] = useState([]);
   const [selected, setSelected] = useState();
@@ -69,44 +79,32 @@ const SelectSigners = (props) => {
   };
 
   return (
-    <div className="h-full px-[20px] py-[10px] text-base-content">
-      <div className="w-full mx-auto p-[8px]">
-        <div className="mb-0">
-          <label className="text-[14px] font-bold">Choose from contacts</label>
+    <div className="addusercontainer">
+      <div className="form-wrapper">
+        <div className="form-section" style={{ marginBottom: 0 }}>
+          <label style={{ fontSize: 14, fontWeight: "700" }}>Choose User</label>
           <AsyncSelect
             cacheOptions
             defaultOptions
             value={selected}
             loadingMessage={() => "Loading..."}
-            noOptionsMessage={() => "Contact not found"}
+            noOptionsMessage={() => "User not Found"}
             loadOptions={loadOptions}
             onChange={handleOptions}
-            unstyled
-            classNames={{
-              control: () =>
-                "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full h-full text-[11px]",
-              valueContainer: () =>
-                "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
-              multiValue: () => "op-badge op-badge-primary h-full text-[11px]",
-              multiValueLabel: () => "mb-[2px]",
-              menu: () =>
-                "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
-              menuList: () => "shadow-md rounded-lg overflow-hidden",
-              option: () =>
-                "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
-              noOptionsMessage: () => "p-2 bg-base-200 rounded-lg m-1 p-2"
-            }}
+            styles={customStyles}
           />
         </div>
-        <p
-          className={`${
-            isError ? "text-[red]" : "text-transparent"
-          } text-[11px] ml-[6px] my-[2px]`}
-        >
-          Please select signer
-        </p>
+        {isError ? (
+          <p style={{ color: "red", fontSize: "12px", margin: "5px" }}>
+            Please select signer
+          </p>
+        ) : (
+          <p style={{ color: "transparent", fontSize: "12px", margin: "5px" }}>
+            .
+          </p>
+        )}
         <div>
-          <button className="op-btn op-btn-primary" onClick={() => handleAdd()}>
+          <button className="submitbutton" onClick={() => handleAdd()}>
             Submit
           </button>
         </div>

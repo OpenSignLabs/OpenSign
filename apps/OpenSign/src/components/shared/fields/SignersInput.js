@@ -1,29 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import AddSigner from "../../AddSigner";
+import Modal from "react-modal";
 import Parse from "parse";
 import Tooltip from "../../../primitives/Tooltip";
-import { createPortal } from "react-dom";
 function arrayMove(array, from, to) {
   array = array.slice();
   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
   return array;
 }
-
-const AddSignerModal = ({ isOpen, children }) => {
-  if (!isOpen) {
-    return null;
-  }
-
-  return createPortal(
-    <div className="op-modal op-modal-open">
-      <div className="op-modal-box p-0 min-w-[90%] md:min-w-[500px] max-h-90 overflow-y-auto hide-scrollbar text-sm">
-        {children}
-      </div>
-    </div>,
-    document.body
-  );
-};
 
 /**
  * react-sortable-hoc is depcreated not usable from react 18.x.x
@@ -32,6 +17,7 @@ const AddSignerModal = ({ isOpen, children }) => {
  */
 
 const SignersInput = (props) => {
+  Modal.setAppElement("body");
   const [state, setState] = useState(undefined);
   // const [editFormData, setEditFormData] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -122,17 +108,15 @@ const SignersInput = (props) => {
       <label className="block relative">
         Signers
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
-        <span className="absolute ml-1 text-xs z-30">
+        <span className="absolute ml-1 text-xs z-50">
           <Tooltip
             id={"signer-tooltip"}
-            message={
-              "Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."
-            }
+            message={"Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."}
           />
         </span>
       </label>
-      <div className="flex gap-x-[5px]">
-        <div className="w-full">
+      <div style={{ display: "flex", gap: 5 }}>
+        <div style={{ flexWrap: "wrap", width: "100%" }}>
           <Select
             onSortEnd={onSortEnd}
             distance={4}
@@ -142,22 +126,6 @@ const SignersInput = (props) => {
             onChange={onChange}
             closeMenuOnSelect={false}
             required={props.required}
-            noOptionsMessage={() => "Contact not found"}
-            unstyled
-            classNames={{
-              control: () =>
-                "op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full h-full text-[11px]",
-              valueContainer: () =>
-                "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
-              multiValue: () => "op-badge op-badge-primary h-full text-[11px]",
-              multiValueLabel: () => "mb-[2px]",
-              menu: () =>
-                "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
-              menuList: () => "shadow-md rounded-lg overflow-hidden",
-              option: () =>
-                "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
-              noOptionsMessage: () => "p-2 bg-base-200 rounded-lg m-1 p-2"
-            }}
           />
         </div>
         <div
@@ -165,29 +133,66 @@ const SignersInput = (props) => {
             setIsModel(true);
             openModal();
           }}
-          className="cursor-pointer op-input op-input-bordered focus:outline-none hover:border-base-content max-h-[38px] min-w-[48px] flex justify-center items-center"
+          style={{
+            cursor: "pointer",
+            borderRadius: 4,
+            border: "1px solid #ccc",
+            minHeight: 38,
+            minWidth: 48,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
         >
           <i className="fas fa-plus"></i>
         </div>
-        <AddSignerModal isOpen={modalIsOpen}>
-          <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-            Add Signer
-          </h3>
-          <button
-            onClick={handleModalCloseClick}
-            className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2"
-          >
-            ✕
-          </button>
-          {isModal && (
-            <AddSigner
-              valueKey={"objectId"}
-              displayKey={"Name"}
-              details={handleNewDetails}
-              closePopup={handleModalCloseClick}
-            />
-          )}
-        </AddSignerModal>
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={handleModalCloseClick}
+          shouldCloseOnOverlayClick={false}
+          id="modal1"
+          contentLabel="Modal"
+          style={{
+            content: {
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              bottom: "auto",
+              transform: "translate(-50%, -50%)",
+              border: "1px transparent",
+              padding: 0
+            },
+            overlay: {
+              width: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.75)",
+              zIndex: 50
+            }
+          }}
+        >
+          <div className="min-w-full md:min-w-[500px]">
+            <div
+              className="flex justify-between rounded-t items-center py-[10px] px-[20px] text-white"
+              style={{ background: "#32a3ac" }}
+            >
+              <div className="text-[1.2rem] font-normal">Add Signer</div>
+              <button
+                onClick={handleModalCloseClick}
+                className="text-[1.5rem] cursor-pointer focus:outline-none"
+              >
+                &times;
+              </button>
+            </div>
+
+            {isModal && (
+              <AddSigner
+                valueKey={"objectId"}
+                displayKey={"Name"}
+                details={handleNewDetails}
+                closePopup={handleModalCloseClick}
+              />
+            )}
+          </div>
+        </Modal>
       </div>
     </div>
   );

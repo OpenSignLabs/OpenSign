@@ -4,11 +4,27 @@ import { Stage, Layer, Rect } from "react-konva";
 const RenderDebugPdf = (props) => {
   return (
     <div>
-      <div className="sticky top-0 p-[10px] z-10 bg-white border-[1px] border-[gray] my-[5px]">
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          padding: 10,
+          zIndex: 1,
+          backgroundColor: "white",
+          border: "1px solid grey",
+          margin: "5px 0"
+        }}
+      >
         {`Co-ordinates: X - ${props.hoverCoordinates.x}, Y - ${props.hoverCoordinates.y}`}
       </div>
       <div
-        className="relative flex-1 cursor-crosshair border-[1px] border-[gray] overflow-auto"
+        style={{
+          flex: 1,
+          position: "relative",
+          border: "1px solid grey",
+          overflow: "auto",
+          cursor: "crosshair"
+        }}
         onMouseMove={props.handleMouseMoveDiv}
       >
         <Document
@@ -41,7 +57,7 @@ const RenderDebugPdf = (props) => {
           onMouseUp={props.handleMouseUp}
           width={props.pdfDimension.width}
           height={props.pdfDimension.height}
-          className="absolute top-0 right-0"
+          style={{ position: "absolute", top: 0, left: 0 }}
         >
           <Layer>
             {props.annotations

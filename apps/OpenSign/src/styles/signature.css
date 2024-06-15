@@ -858,6 +858,7 @@ option {
 
   #navbar {
     overflow: hidden;
+    z-index: 49;
   }
 
   /* Navbar links */

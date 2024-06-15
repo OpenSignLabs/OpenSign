@@ -3,7 +3,7 @@ import Parse from "parse";
 import { jwtDecode } from "jwt-decode";
 import { useScript } from "../hook/useScript";
 import ModalUi from "../primitives/ModalUi";
-import Loader from "../primitives/Loader";
+import { modalCancelBtnColor, modalSubmitBtnColor } from "../constant/const";
 
 /*
  * `GoogleSignInBtn`as it's name indicates it render google sign in button
@@ -207,22 +207,45 @@ const GoogleSignInBtn = ({
     localStorage.setItem("parseAppId", appid);
   };
   return (
-    <div className="relative">
+    <div style={{ position: "relative" }}>
       {thirdpartyLoader && (
-        <div className="fixed flex justify-center items-center inset-0 bg-black bg-opacity-25 z-20 ">
-          <Loader />
+        <div
+          style={{
+            position: "fixed",
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.2)",
+            top: 0,
+            left: 0,
+            zIndex: 2
+          }}
+        >
+          <div
+            style={{
+              position: "fixed",
+              fontSize: "50px",
+              color: "#3ac9d6",
+              top: "50%",
+              left: "45%"
+            }}
+            className="loader-37"
+          ></div>
         </div>
       )}
       <div ref={googleBtn} className="text-sm"></div>
       <ModalUi showClose={false} isOpen={isModal} title="Sign up form">
-        <form className="px-4 py-3 text-base-content">
+        <form className="px-4 py-3">
           <div className="mb-3">
-            <label htmlFor="Phone" className="block text-xs font-semibold">
-              Phone <span className="text-[13px] text-[red]">*</span>
+            <label
+              htmlFor="Phone"
+              style={{ display: "flex" }}
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              Phone <span style={{ fontSize: 13, color: "red" }}>*</span>
             </label>
             <input
               type="tel"
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
               id="Phone"
               value={userDetails.Phone}
               onChange={(e) =>
@@ -235,12 +258,16 @@ const GoogleSignInBtn = ({
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="Company" className="block text-xs font-semibold">
-              Company <span className="text-[13px] text-[red]">*</span>
+            <label
+              htmlFor="Company"
+              style={{ display: "flex" }}
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              Company <span style={{ fontSize: 13, color: "red" }}>*</span>
             </label>
             <input
               type="text"
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
               id="Company"
               value={userDetails.Company}
               onChange={(e) =>
@@ -253,12 +280,16 @@ const GoogleSignInBtn = ({
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="JobTitle" className="block text-xs font-semibold">
-              Job Title <span className="text-[13px] text-[red]">*</span>
+            <label
+              htmlFor="JobTitle"
+              style={{ display: "flex" }}
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              Job Title <span style={{ fontSize: 13, color: "red" }}>*</span>
             </label>
             <input
               type="text"
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+              className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
               id="JobTitle"
               value={userDetails.Destination}
               onChange={(e) =>
@@ -270,18 +301,20 @@ const GoogleSignInBtn = ({
               required
             />
           </div>
-          <div className="flex flex-row gap-2">
+          <div>
             <button
               type="button"
-              className="op-btn op-btn-primary"
+              className="px-3 py-1.5 text-white rounded shadow-md text-center focus:outline-none "
               onClick={() => handleSubmitbtn()}
+              style={{ marginRight: 10, backgroundColor: modalSubmitBtnColor }}
             >
               Sign up
             </button>
             <button
               type="button"
-              className="op-btn op-btn-ghost"
+              className="p-1.5 text-black border-[1px] border-[#ccc] shadow-md rounded focus:outline-none"
               onClick={handleCloseModal}
+              style={{ width: 90, backgroundColor: modalCancelBtnColor }}
             >
               Cancel
             </button>

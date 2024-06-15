@@ -8,8 +8,11 @@ const AddRoleModal = (props) => {
       isOpen={props.isModalRole}
       handleClose={props.handleCloseRoleModal}
     >
-      <div className="h-full py-[10px] px-[20px]">
-        <form className="flex flex-col" onSubmit={props.handleAddRole}>
+      <div className="addusercontainer">
+        <form
+          style={{ display: "flex", flexDirection: "column" }}
+          onSubmit={props.handleAddRole}
+        >
           <input
             value={props.roleName}
             onChange={(e) => props.setRoleName(e.target.value)}
@@ -18,20 +21,39 @@ const AddRoleModal = (props) => {
                 ? "User " + (props.signersdata.length + 1)
                 : "User 1"
             }
-            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs mt-1"
+            className="addUserInput"
           />
-          <p className="text-[gray] text-[11px] mt-[5px] mb-[10px] ml-[10px]">
+          <p
+            style={{
+              color: "grey",
+              fontSize: 11,
+              margin: "10px 0 10px 5px"
+            }}
+          >
             e.g: Customer, Hr, Director, Manager, Student, etc...
           </p>
           <div>
-            <div className="h-[1px] w-full bg-[#9f9f9f] mb-[10px]"></div>
-            <button type="submit" className="op-btn op-btn-primary">
+            <div
+              style={{
+                height: "1px",
+                backgroundColor: "#9f9f9f",
+                width: "100%",
+                marginBottom: "15px"
+              }}
+            ></div>
+            <button
+              type="submit"
+              style={{
+                background: "#00a2b7"
+              }}
+              className="finishBtn"
+            >
               Add
             </button>
             <button
               onClick={props.handleCloseRoleModal}
               type="button"
-              className="op-btn op-btn-ghost ml-2"
+              className="finishBtn cancelBtn"
             >
               Close
             </button>
