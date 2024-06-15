@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import Alert from "../../../primitives/Alert";
+import Loader from "../../../primitives/Loader";
 
 const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   const folderPtr = {
@@ -113,11 +114,8 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       {isAlert && <Alert type={alert.type}>{alert.message}</Alert>}
       <div id="createFolder" className="relative">
         {isLoader && (
-          <div className="absolute h-full w-full flex justify-center items-center ">
-            <div
-              style={{ fontSize: "45px", color: "#3dd3e0" }}
-              className="loader-37"
-            ></div>
+          <div className="absolute h-full w-full flex justify-center items-center">
+            <Loader />
           </div>
         )}
         <h1 className="text-base font-semibold">Create Folder</h1>

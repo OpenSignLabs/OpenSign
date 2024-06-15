@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import login_img from "../assets/images/login_img.svg";
 import Parse from "parse";
 import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
+import { isEnableSubscription } from "../constant/const";
+import { getAppLogo } from "../constant/Utils";
 
 function ForgotPassword() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     email: "",
     password: "",
     hideNav: ""
   });
   const [sentStatus, setSentStatus] = useState("");
+  const [image, setImage] = useState();
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setState({ ...state, [name]: value });
@@ -51,15 +56,26 @@ function ForgotPassword() {
 
   useEffect(() => {
     dispatch(fetchAppInfo());
+    saveLogo();
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
     // eslint-disable-next-line
   }, []);
-
-  let image = appInfo.applogo;
+  const saveLogo = async () => {
+    if (isEnableSubscription) {
+      const logo = await getAppLogo();
+      if (logo) {
+        setImage(logo);
+      } else {
+        setImage(appInfo?.applogo || undefined);
+      }
+    } else {
+      setImage(appInfo?.applogo || undefined);
+    }
+  };
   return (
-    <div className="bg-white">
+    <div>
       <Title title="Forgot password page" />
       {sentStatus === "success" && (
         <Alert type="success">
@@ -69,29 +85,31 @@ function ForgotPassword() {
       {sentStatus === "failed" && (
         <Alert type={"danger"}>Please setup email adapter </Alert>
       )}
-      <div>
-        <div className="md:m-10 lg:m-16 md:p-4 lg:p-10 p-5 bg-[#ffffff] md:border-[1px] md:border-gray-400 ">
-          <div className="w-[250px] h-[66px] inline-block">
-            {state.hideNav ? (
-              <img src={image} width="100%" alt="" />
-            ) : (
-              <img src={image} width="100%" alt="" />
+      <div className="md:p-10 lg:p-16">
+        <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
+          <div className="w-[250px] h-[66px] inline-block overflow-hidden">
+            {image && (
+              <img
+                src={image}
+                className="object-contain h-full"
+                alt="applogo"
+              />
             )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
-            <div className="">
+            <div>
               <form onSubmit={handleSubmit}>
                 <h2 className="text-[30px] mt-6">Welcome Back !</h2>
                 <span className="text-[12px] text-[#878787]">
                   Reset Your Password
                 </span>
-                <div className="shadow-md rounded my-4">
+                <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                   <div className="px-6 py-4">
                     <label className="block text-xs">Email</label>
                     <input
-                      type="text"
-                      className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+                      type="email"
                       name="email"
+                      className="op-input op-input-bordered op-input-sm w-full"
                       value={state.email}
                       onChange={handleChange}
                       required
@@ -99,19 +117,16 @@ function ForgotPassword() {
                     <hr className="my-2 border-none" />
                   </div>
                 </div>
-                <div className="flex justify-between items-center px-4">
-                  <button
-                    type="submit"
-                    className="rounded-sm bg-[#3ac9d6] text-white px-4 py-3 text-xs font-semibold shadow uppercase"
-                  >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-center text-xs font-bold">
+                  <button type="submit" className="op-btn op-btn-primary">
                     Submit
                   </button>
-                  <NavLink
-                    to="/"
-                    className="rounded-sm bg-white border-[1px] border-[#15b4e9] text-[#15b4e9] px-4 py-3 text-xs font-semibold shadow uppercase cursor-pointer"
+                  <button
+                    onClick={() => navigate("/", { replace: true })}
+                    className="op-btn op-btn-secondary"
                   >
                     Login
-                  </NavLink>
+                  </button>
                 </div>
               </form>
             </div>

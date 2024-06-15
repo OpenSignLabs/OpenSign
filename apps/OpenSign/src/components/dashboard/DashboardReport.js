@@ -3,6 +3,7 @@ import Parse from "parse";
 import ReportTable from "../../primitives/GetReportDisplay";
 import reportJson from "../../json/ReportJson";
 import axios from "axios";
+import Loader from "../../primitives/Loader";
 function DashboardReport(props) {
   // console.log("props ", props)
   const [List, setList] = useState([]);
@@ -121,21 +122,8 @@ function DashboardReport(props) {
   return (
     <>
       {isLoader ? (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "45px",
-              color: "#3dd3e0"
-            }}
-            className="loader-37"
-          ></div>
+        <div className="h-[250px] flex justify-center items-center">
+          <Loader />
         </div>
       ) : (
         <>

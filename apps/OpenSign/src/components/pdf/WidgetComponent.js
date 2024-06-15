@@ -9,7 +9,6 @@ import {
   textWidget,
   widgets
 } from "../../constant/Utils";
-import { themeColor } from "../../constant/const";
 function WidgetComponent({
   dragSignature,
   signRef,
@@ -256,117 +255,82 @@ function WidgetComponent({
             className="stickyfooter"
             style={{ width: window.innerWidth + "px" }}
           >
-            {isSigners && (
-              <div
-                data-tut={dataTut}
-                style={{
-                  background: blockColor
-                    ? blockColor
-                    : isSelectListId
-                      ? color[isSelectListId % color.length]
-                      : color[0],
-                  padding: "10px 20px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-                onClick={() => handleModal()}
-              >
-                <span
+            <div className="mx-1">
+              {isSigners && (
+                <div
+                  data-tut={dataTut}
+                  className="py-[10px] flex justify-center items-center op-card"
                   style={{
-                    fontSize: "13px",
-                    fontWeight: "700",
-                    textAlign: "center"
+                    background: blockColor
+                      ? blockColor
+                      : isSelectListId
+                        ? color[isSelectListId % color.length]
+                        : color[0]
                   }}
+                  onClick={() => handleModal()}
                 >
-                  {title ? title : "Recipient"}
-                </span>
-                <span
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: "700",
-                    display: "flex",
-                    alignItems: "center"
-                  }}
-                >
-                  {signersdata[isSelectListId]?.Role && (
-                    <div>
-                      {signersdata[isSelectListId]?.Name ? (
-                        <>
-                          :{" "}
-                          {signersdata[isSelectListId]?.Name?.length > 12
-                            ? `${signersdata[isSelectListId].Name.slice(
-                                0,
-                                12
-                              )}...`
-                            : signersdata[isSelectListId]?.Name}
-                        </>
-                      ) : (
-                        <>
-                          :{" "}
-                          {signersdata[isSelectListId]?.Role?.length > 12
-                            ? `${signersdata[isSelectListId].Role.slice(
-                                0,
-                                12
-                              )}...`
-                            : signersdata[isSelectListId]?.Role}
-                        </>
-                      )}
+                  <span className="text-[13px] font-bold flex items-center">
+                    {title ? title : "Recipient"}
+                    {signersdata[isSelectListId]?.Role && (
+                      <div>
+                        {signersdata[isSelectListId]?.Name ? (
+                          <>
+                            :{" "}
+                            {signersdata[isSelectListId]?.Name?.length > 12
+                              ? `${signersdata[isSelectListId].Name.slice(
+                                  0,
+                                  12
+                                )}...`
+                              : signersdata[isSelectListId]?.Name}
+                          </>
+                        ) : (
+                          <>
+                            :{" "}
+                            {signersdata[isSelectListId]?.Role?.length > 12
+                              ? `${signersdata[isSelectListId].Role.slice(
+                                  0,
+                                  12
+                                )}...`
+                              : signersdata[isSelectListId]?.Role}
+                          </>
+                        )}
+                      </div>
+                    )}
+                    <div className="ml-[6px] text-[16px]">
+                      <i className="fa-solid fa-angle-down"></i>
                     </div>
-                  )}
-                  <div style={{ marginLeft: 6, fontSize: 16 }}>
-                    <i className="fa-solid fa-angle-down"></i>
-                  </div>
-                </span>
-              </div>
-            )}
-            {handleAddSigner ? (
-              <div
-                data-tut="reactourAddbtn"
-                style={{
-                  margin: "5px 0 5px 0",
-                  backgroundColor: themeColor,
-                  color: "white"
-                }}
-                className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad] hover:text-white cursor-pointer"
-                onClick={() => handleAddSigner()}
-              >
-                <i className="fa-solid fa-plus"></i>
-                <span style={{ marginLeft: 2 }}>Add role</span>
-              </div>
-            ) : (
-              setIsAddSigner && (
+                  </span>
+                </div>
+              )}
+            </div>
+            <div className="mx-1">
+              {handleAddSigner ? (
                 <div
                   data-tut="reactourAddbtn"
-                  style={{
-                    margin: "5px 0 5px 0",
-                    backgroundColor: themeColor,
-                    color: "white"
-                  }}
-                  className="p-[10px] my-[2px] flex flex-row items-center justify-center border-[1px] border-[#47a3ad] hover:bg-[#47a3ad] text-[#47a3ad] hover:text-white cursor-pointer"
-                  onClick={() => setIsAddSigner(true)}
+                  className="op-btn op-btn-accent w-full my-[2px]"
+                  onClick={() => handleAddSigner()}
                 >
                   <i className="fa-solid fa-plus"></i>
-                  <span style={{ marginLeft: 2 }}>Add recipients</span>
+                  <span>Add role</span>
                 </div>
-              )
-            )}
-
+              ) : (
+                setIsAddSigner && (
+                  <div
+                    data-tut="reactourAddbtn"
+                    className="op-btn op-btn-accent w-full my-[2px]"
+                    onClick={() => setIsAddSigner(true)}
+                  >
+                    <i className="fa-solid fa-plus"></i>
+                    <span>Add recipients</span>
+                  </div>
+                )
+              )}
+            </div>
             <div
               ref={scrollContainerRef}
-              style={{
-                background: "white",
-                borderTop: `2px solid ${themeColor}`
-              }}
+              className="bg-base-100 border-[2px] border-t-primary"
             >
-              <div
-                style={{
-                  display: "flex",
-                  overflowX: "scroll",
-                  whiteSpace: "nowrap",
-                  padding: "10px 5px 10px 1px"
-                }}
-              >
+              <div className="flex whitespace-nowrap overflow-x-scroll pt-[10px] pb-[5px] pr-[5px]">
                 <WidgetList
                   updateWidgets={updateWidgets}
                   handleDivClick={handleDivClick}
@@ -383,20 +347,14 @@ function WidgetComponent({
       ) : (
         <div
           data-tut={dataTut}
-          className={
-            isMailSend ? "disabled signerComponent " : "signerComponent"
-          }
+          className={`${
+            isMailSend ? "bg-opacity-50 pointer-events-none" : ""
+          } hidden md:block w-[180px] h-full bg-base-100`}
         >
-          <div
-            style={{
-              background: themeColor,
-              padding: "5px"
-            }}
-          >
-            <span className="signedStyle">Fields</span>
+          <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
+            <span>Fields</span>
           </div>
-
-          <div className="signLayoutContainer1">
+          <div className="flex flex-col items-center my-3">
             <WidgetList
               updateWidgets={updateWidgets}
               handleDivClick={handleDivClick}
@@ -413,7 +371,7 @@ function WidgetComponent({
           handleClose={handleModal}
         >
           {signersdata.length > 0 ? (
-            <div style={{ maxHeight: "600px", overflow: "auto" }}>
+            <div className="max-h-[600px] overflow-auto pb-1">
               <RecipientList
                 signerPos={signerPos}
                 signersdata={signersdata}
@@ -433,14 +391,7 @@ function WidgetComponent({
               />
             </div>
           ) : (
-            <div
-              style={{
-                padding: 20,
-                fontSize: 15,
-                fontWeight: "500",
-                textAlign: "center"
-              }}
-            >
+            <div className=" p-[20px] text-[15px] font-medium text-center">
               Please add a {title ? title : "recipients"}
             </div>
           )}
