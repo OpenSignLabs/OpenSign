@@ -1098,7 +1098,7 @@ function SignYourSelf() {
       ) : (
         <div>
           {isUiLoading && (
-            <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-start bg-[#e6f2f2] bg-opacity-80">
+            <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-center bg-[#e6f2f2] bg-opacity-80">
               <Loader />
               <span className="font-bold text-[13px]">
                 This might take some time

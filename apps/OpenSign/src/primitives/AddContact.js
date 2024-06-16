@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import axios from "axios";
-import "../styles/AddUser.css";
 import Loader from "./Loader";
 const AddContact = (props) => {
   const [name, setName] = useState("");
@@ -203,7 +202,7 @@ const AddContact = (props) => {
         </div>
       )}
       <div className="w-full mx-auto p-[8px]">
-        <div className="text-[14px] font-[700]">Add User</div>
+        <div className="text-[14px] font-[700]">Add Contact</div>
         {isUserExist && (
           <div className="mb-[0.75rem] flex items-center mt-1">
             <input

@@ -61,7 +61,7 @@ const EditTemplate = ({ template, onSuccess }) => {
     <div className="max-h-[300px] md:max-h-[400px] overflow-y-scroll p-[10px]">
       <div className="text-base-content">
         <form onSubmit={handleSubmit}>
-          <div>
+          <div className="mb-[0.35rem]">
             <label htmlFor="name" className="text-[13px]">
               File
             </label>
@@ -69,7 +69,7 @@ const EditTemplate = ({ template, onSuccess }) => {
               {getFileName(template.URL)}
             </div>
           </div>
-          <div className="form-section">
+          <div className="mb-[0.35rem]">
             <label htmlFor="name" className="text-[13px]">
               Name
               <span className="text-[13px] text-[red]"> *</span>
@@ -83,7 +83,7 @@ const EditTemplate = ({ template, onSuccess }) => {
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
-          <div className="form-section">
+          <div className="mb-[0.35rem]">
             <label htmlFor="Note" className="text-[13px]">
               Note
             </label>
@@ -96,7 +96,7 @@ const EditTemplate = ({ template, onSuccess }) => {
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
-          <div className="form-section">
+          <div className="mb-[0.35rem]">
             <label htmlFor="Description" className="text-[13px]">
               Description
             </label>
@@ -109,7 +109,7 @@ const EditTemplate = ({ template, onSuccess }) => {
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
-          <div className="form-section">
+          <div className="mb-[0.35rem]">
             <label className="text-[13px]">Send In Order</label>
             <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
               <input

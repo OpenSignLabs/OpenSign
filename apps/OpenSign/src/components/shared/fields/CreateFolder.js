@@ -124,7 +124,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             Name<span className="text-red-500 text-[13px]">*</span>
           </label>
           <input
-            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+            className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -135,7 +135,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
           <select
             value={selectedParent}
             onChange={handleOptions}
-            className="px-3 py-2 w-full border-[1px] border-gray-300 rounded focus:outline-none text-xs"
+            className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
           >
             <option>select</option>
             {folderList.length > 0 &&
@@ -150,9 +150,9 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
           <button
             onClick={handleCreateFolder}
             disabled={isLoader}
-            className="flex items-center rounded p-2 bg-[#32a3ac] text-white mt-3"
+            className="op-btn op-btn-primary op-btn-sm mt-3"
           >
-            <i className="fa-solid fa-plus mr-1"></i>
+            <i className="fa-solid fa-plus"></i>
             <span>Create</span>
           </button>
         </div>

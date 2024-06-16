@@ -386,7 +386,7 @@ export const getWidgetType = (item) => {
             {item.type}
           </span>
         </div>
-        <div className="text-[20px] op-btn op-btn-primary w-[40px] h-full flex justify-center items-center">
+        <div className="text-[20px] op-btn op-btn-primary rounded-none w-[40px] h-full flex justify-center items-center">
           <i className={item.icon}></i>
         </div>
       </div>
