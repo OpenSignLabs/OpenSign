@@ -31,20 +31,7 @@ const ManageSign = lazy(() => import("./pages/Managesign"));
 const GenerateToken = lazy(() => import("./pages/GenerateToken"));
 const Webhook = lazy(() => import("./pages/Webhook"));
 
-const path = new URL(
-  "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
-fetch(path)
-  .then((fetchResponse) => {
-    return fetchResponse.text();
-  })
-  .then((code) => {
-    const codeBlob = new Blob([code], { type: "text/javascript" });
-    const workerURL = URL.createObjectURL(codeBlob);
-    pdfjs.GlobalWorkerOptions.workerSrc = workerURL;
-  })
-  .catch((err) => console.log("err in load pdf worker", err));
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 
 const AppLoader = () => {
   return (
