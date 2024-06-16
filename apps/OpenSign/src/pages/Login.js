@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
-import "../styles/loader.css";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import Title from "../components/Title";
