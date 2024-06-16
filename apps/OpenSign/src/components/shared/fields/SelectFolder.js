@@ -178,7 +178,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
         >
           <div>
             <i
-              className="far fa-folder-open text-[40px] text-[#33bbff]"
+              className="far fa-folder-open text-[40px] text-neutral"
               style={{ fontSize: "40px" }}
               aria-hidden="true"
             ></i>
@@ -250,12 +250,12 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
                 folderList.map((folder) => (
                   <div
                     key={folder.Name}
-                    className="border-[1px] border-[#8a8a8a] px-2 py-2 mb-2 cursor-pointer "
+                    className="border-b-[1px] border-[#8a8a8a] px-2 py-2 mb-2 cursor-pointer "
                     onClick={() => handleSelect(folder)}
                   >
                     <div className="flex items-center gap-2">
                       <i
-                        className="fa fa-folder text-[#33bbff] text-[1.4rem]"
+                        className="fa fa-folder text-neutral text-[1.4rem]"
                         aria-hidden="true"
                       ></i>
                       <span className="font-semibold">{folder.Name}</span>
@@ -280,22 +280,28 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
         <hr />
         <div className="flex justify-between items-center py-[.75rem] px-[1.25rem]">
           <div
-            className="text-[30px] cursor-pointer text-[#32a3ac]"
+            className="op-btn op-btn-seconday op-btn-sm"
             title="Save Here"
             onClick={handleCreate}
           >
             {isAdd ? (
-              <i className="fa-solid fa-arrow-left" aria-hidden="true"></i>
+              <>
+                <i className="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                <span className="text-xs">Back</span>
+              </>
             ) : (
-              <i className="fa-solid fa-square-plus" aria-hidden="true"></i>
+              <>
+                <i className="fa-solid fa-square-plus" aria-hidden="true"></i>
+                <span className="">Add folder</span>
+              </>
             )}
           </div>
           <div
-            className="text-[30px] cursor-pointer"
+            className="op-btn op-btn-primary op-btn-sm"
             title="Save Here"
             onClick={handleSubmit}
           >
-            <i className="fas fa-save" aria-hidden="true"></i>
+            <i className="fas fa-save" aria-hidden="true"></i>Save here
           </div>
         </div>
       </ModalUi>

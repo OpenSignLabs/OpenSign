@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Parse from "parse";
-import "../../../styles/AddUser.css";
 import AsyncSelect from "react-select/async";
 
 const SelectSigners = (props) => {

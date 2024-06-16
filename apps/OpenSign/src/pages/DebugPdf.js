@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
-import "../styles/signature.css";
-import "../styles/AddUser.css";
 import Title from "../components/Title";
 import RenderDebugPdf from "../components/RenderDebugPdf";
 import { pdfjs } from "react-pdf";
@@ -217,14 +215,18 @@ const DebugPdf = () => {
   };
   return (
     <div>
-      {copied && <Alert type="success">Copied</Alert>}
+      {copied && (
+        <Alert type="success">
+          <span className="ml-3">Copied</span>
+        </Alert>
+      )}
       <Title title={"Debug Pdf"} />
       {width < 800 ? (
         <HandleError handleError={"Debug PDF only availble for PC"} />
       ) : (
         <>
           {!isModal && (
-            <div className="signatureContainer">
+            <div className="flex flex-row justify-between">
               {/* this component used to render all pdf pages in left side */}
               <RenderAllPdfPage
                 signPdfUrl={pdf}
@@ -253,106 +255,55 @@ const DebugPdf = () => {
                   />
                 </div>
               </div>
-              <div style={{ backgroundColor: "white", width: 220 }}>
-                <div
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 500,
-                    padding: "10px 12px",
-                    borderBottom: "1px solid grey"
-                  }}
-                >
+              <div className="w-[220px] bg-base-100">
+                <div className="text-[18px] font-medium py-[10px] px-[12px] border-b-[1px] border-[gray]">
                   PDF details
                 </div>
-                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                <div className="text-[14px] py-[5px] px-[12px]">
                   Name: {pdfDetails?.name}
                 </div>
-                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                <div className="text-[14px] py-[5px] px-[12px]">
                   Pdf type: {pdfDetails?.pdftype}
                 </div>
-                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                <div className="text-[14px] py-[5px] px-[12px]">
                   Total Pages: {pdfDetails?.totalPages}
                 </div>
-                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                <div className="text-[14px] py-[5px] px-[12px]">
                   Current Page: {pdfDetails?.currentPage}
                 </div>
-                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                <div className="text-[14px] py-[5px] px-[12px]">
                   Base64 : {pdfDetails?.base64.slice(0, 10)}...
                   <span
-                    style={{
-                      borderRadius: 4,
-                      padding: "3px 5px",
-                      border: "1px solid gray",
-                      fontSize: 12,
-                      margin: 2,
-                      cursor: "pointer"
-                    }}
+                    className="op-btn op-btn-outline op-btn-primary op-btn-xs rounded-md w-[25px] h-[25px] text-[12px] m-[2px] "
                     onClick={() => copytoclipboard(pdfDetails?.base64)}
                   >
                     <i className="fa-solid fa-copy"></i>
                   </span>
                 </div>
-                <div
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 500,
-                    padding: "10px 12px",
-                    borderBottom: "1px solid grey"
-                  }}
-                >
+                <div className="text-[18px] font-medium py-[10px] px-[12px] border-b-[1px] border-[gray]">
                   Last click
                 </div>
-                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                <div className="text-[14px] py-[5px] px-[12px]">
                   x co-ordinate: {pdfDetails?.x}
                 </div>
-                <div style={{ fontSize: 14, padding: "5px 12px" }}>
+                <div className="text-[14px] py-[5px] px-[12px]">
                   y co-ordinate: {pdfDetails?.y}
                 </div>
-
-                <div
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 500,
-                    padding: "10px 12px",
-                    borderBottom: "1px solid grey",
-                    borderTop: "1px solid grey"
-                  }}
-                >
+                <div className="text-[18px] font-medium py-[10px] px-[12px] border-y-[1px] border-[gray]">
                   Annotation
                 </div>
-                <ul
-                  style={{
-                    listStyle: "none",
-                    padding: 10,
-                    height: 500,
-                    overflowY: "auto",
-                    scrollbarWidth: 5
-                  }}
-                >
+                <ul className=" list-none p-[10px] h-[500px] overflow-y-auto">
                   {annotations.map((coord, index) => (
                     <li key={index}>
-                      <span style={{ fontSize: 13, fontWeight: 500 }}>{`Box ${
+                      <span className="text-[13px] font-medium">{`Box ${
                         index + 1
                       }:`}</span>
-                      <code
-                        style={{
-                          fontSize: 12,
-                          color: "black",
-                          cursor: "pointer"
-                        }}
-                      >
+                      <code className="text-[12px] text-base-content select-none">
                         {` ["page":${coord?.page}, "x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}]`}
                       </code>
                       <div>
                         <span
-                          style={{
-                            borderRadius: 4,
-                            padding: "3px 5px",
-                            border: "1px solid gray",
-                            fontSize: 12,
-                            margin: 2,
-                            cursor: "pointer"
-                          }}
+                          className="op-btn op-btn-outline op-btn-primary op-btn-xs rounded-md w-[23px] h-[20px] text-[12px] m-[2px] "
                           onClick={() =>
                             copytoclipboard(
                               `"page":${coord?.page}, "x": ${coord.x}, "y": ${coord.y}, "w": ${coord.width}, "h": ${coord.height}`
@@ -362,14 +313,7 @@ const DebugPdf = () => {
                           <i className="fa-solid fa-copy"></i>
                         </span>
                         <span
-                          style={{
-                            borderRadius: 4,
-                            padding: "3px 5px",
-                            border: "1px solid gray",
-                            fontSize: 12,
-                            margin: 2,
-                            cursor: "pointer"
-                          }}
+                          className="op-btn op-btn-outline op-btn-error op-btn-xs rounded-md w-[23px] h-[20px] text-[12px] m-[2px] "
                           onClick={() => handleDelete(coord.key)}
                         >
                           <i className="fa-solid fa-trash-can"></i>
@@ -382,38 +326,16 @@ const DebugPdf = () => {
             </div>
           )}
           <ModalUi title={"Select PDF"} isOpen={isModal}>
-            <form onSubmit={handleSubmit} style={{ margin: "10px" }}>
+            <form onSubmit={handleSubmit} className="m-[10px]">
               <input
                 type="file"
                 onChange={(e) => handleFileChange(e.target.files)}
-                style={{
-                  width: "100%",
-                  border: "1px solid grey",
-                  borderRadius: "4px",
-                  padding: "5px",
-                  fontSize: 12
-                }}
+                className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full h-[40px] text-xs"
                 accept=".pdf"
                 required
               />
-              <div
-                style={{ borderTop: "1px solid grey", margin: "10px 0" }}
-              ></div>
               <button
-                style={{
-                  background: "#32a3ac",
-                  borderRadius: "2px",
-                  boxShadow:
-                    "0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18)",
-                  border: "none",
-                  textTransform: "uppercase",
-                  fontSize: "13px",
-                  fontWeight: "600",
-                  padding: "0.375rem 0.75rem",
-                  textAlign: "center",
-                  color: "#ffffff",
-                  outline: "none"
-                }}
+                className="op-btn op-btn-primary w-full mt-3 mb-1"
                 type="submit"
               >
                 Submit
