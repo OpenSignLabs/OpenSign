@@ -1,5 +1,4 @@
 import React from "react";
-import "../../styles/loader.css";
 import { useNavigate } from "react-router-dom";
 import { openInNewTab } from "../../constant/Utils";
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Parse from "parse";
 import getReplacedHashQuery from "../../constant/getReplacedHashQuery";
-import "../../styles/loader.css";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../../primitives/Tooltip";
 

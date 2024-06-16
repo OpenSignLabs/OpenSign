@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../styles/pgsignup.css";
 import Parse from "parse";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -409,95 +408,101 @@ const PgSignUp = () => {
     }
   };
   return (
-    <div className="bg-white">
+    <div className="w-full h-screen">
       <Title title={"Pgsignup page"} />
       {isLoader ? (
         <div className="flex justify-center items-center h-[100vh]">
           <Loader />
         </div>
       ) : (
-        <form id="signup" className="pgsignup-content" onSubmit={handleSubmit}>
-          <div className="pgsignup-container">
-            <h1 className="text-2xl md:text-3xl font-bold">Choose Password</h1>
-            <hr className="hrt" />
-            <label htmlFor="password">
-              <b className="text-[13px]">Password</b>
-            </label>
-            <input
-              type="password"
-              placeholder="Enter Password"
-              name="password"
-              className="inputt"
-              value={formData.password}
-              onChange={handlePassowordChange}
-              required
-            />
-
-            <label htmlFor="confirmPassword">
-              <b className="text-[13px]">Confirm Password</b>
-            </label>
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              name="confirmPassword"
-              className="confirmInputt"
-              style={{
-                border: validationMessage
-                  ? validationMessage === "Passwords match!"
-                    ? "2px solid green"
-                    : "2px solid red"
-                  : "2px solid transparent",
-                outline: "none"
-              }}
-              value={formData.confirmPassword}
-              onChange={handleConFirmPassowordChange}
-              required
-            />
-            <div
-              className="icon"
-              style={{
-                margin: validationMessage ? "0 2px 0 2px" : "0 2px 22px 2px",
-                color:
-                  validationMessage === "Passwords match!" ? "green" : "red",
-                fontSize: 11
-              }}
-            >
-              {validationMessage}
-            </div>
-            {formData.password.length > 0 && (
-              <div className="mt-1 text-[11px]">
-                <p
-                  className={`${
-                    lengthValid ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {lengthValid ? "✓" : "✗"} Password should be 8 characters long
-                </p>
-                <p
-                  className={`${
-                    caseDigitValid ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {caseDigitValid ? "✓" : "✗"} Password should contain uppercase
-                  letter, lowercase letter, digit
-                </p>
-                <p
-                  className={`${
-                    specialCharValid ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {specialCharValid ? "✓" : "✗"} Password should contain special
-                  character
-                </p>
+        <div className="py-10 lg:p-16 flex justify-center">
+          <form
+            id="signup"
+            className="w-[90%] md:w-[55%] bg-base-100 text-base-content op-card shadow-md"
+            onSubmit={handleSubmit}
+          >
+            <div className="p-[16px]">
+              <h1 className="text-2xl md:text-3xl font-bold">
+                Choose Password
+              </h1>
+              <hr className="border-[1px] border-[#cecece] mb-[5px]" />
+              <label htmlFor="password">
+                <b className="text-[13px]">Password</b>
+              </label>
+              <input
+                type="password"
+                placeholder="Enter Password"
+                name="password"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                value={formData.password}
+                onChange={handlePassowordChange}
+                required
+              />
+              <label htmlFor="confirmPassword">
+                <b className="text-[13px]">Confirm Password</b>
+              </label>
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                name="confirmPassword"
+                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                style={{
+                  border: validationMessage
+                    ? validationMessage === "Passwords match!"
+                      ? "1px solid green"
+                      : "1px solid red"
+                    : ""
+                }}
+                value={formData.confirmPassword}
+                onChange={handleConFirmPassowordChange}
+                required
+              />
+              <div
+                className={`${
+                  validationMessage === "Passwords match!"
+                    ? "text-[green]"
+                    : "text-[red]"
+                } ml-[13px] text-[11px]`}
+              >
+                {validationMessage}
               </div>
-            )}
-            <div className="clearfix">
-              <button type="submit" className="signupbtn">
+              {formData.password.length > 0 && (
+                <div className="mt-1 text-[11px]">
+                  <p
+                    className={`${
+                      lengthValid ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {lengthValid ? "✓" : "✗"} Password should be 8 characters
+                    long
+                  </p>
+                  <p
+                    className={`${
+                      caseDigitValid ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {caseDigitValid ? "✓" : "✗"} Password should contain
+                    uppercase letter, lowercase letter, digit
+                  </p>
+                  <p
+                    className={`${
+                      specialCharValid ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {specialCharValid ? "✓" : "✗"} Password should contain
+                    special character
+                  </p>
+                </div>
+              )}
+              <button
+                type="submit"
+                className="op-btn op-btn-primary w-full mt-[8px]"
+              >
                 Submit
               </button>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       )}
     </div>
   );

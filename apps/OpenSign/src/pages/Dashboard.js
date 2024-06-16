@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../styles/loader.css";
 import GetDashboard from "../components/dashboard/GetDashboard";
 import { useNavigate, useParams } from "react-router-dom";
 import Title from "../components/Title";
