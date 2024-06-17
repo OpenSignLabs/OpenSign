@@ -15,3 +15,38 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* below css class replace bootstrap background color with daisy */
+.op-bg-primary {
+  @apply bg-primary;
+}
+.op-bg-secondary {
+  @apply bg-secondary;
+}
+.op-bg-info {
+  @apply bg-info;
+}
+.op-bg-success{
+  @apply bg-success;
+}
+.op-bg-warning {
+  @apply bg-warning;
+}
+
+/* below css class replace bootstrap text color with daisy */
+.op-text-primary {
+  @apply text-primary;
+}
+.op-text-secondary {
+  @apply text-secondary;
+}
+.op-text-info {
+  @apply text-info;
+}
+.op-text-success{
+  @apply text-success;
+}
+.op-text-warning {
+  @apply text-warning;
+}
+

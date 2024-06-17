@@ -951,7 +951,7 @@ const ReportTable = (props) => {
             <i
               data-tut="reactourFirst"
               onClick={() => navigate("/form/template")}
-              className="fa-solid fa-square-plus text-accent text-[25px]"
+              className="fa-solid fa-square-plus text-accent text-[40px]"
             ></i>
           )}
           {props.form && (
@@ -959,7 +959,7 @@ const ReportTable = (props) => {
               className="cursor-pointer"
               onClick={() => handleContactFormModal()}
             >
-              <i className="fa-solid fa-square-plus text-accent text-[25px]"></i>
+              <i className="fa-solid fa-square-plus text-accent text-[40px]"></i>
             </div>
           )}
         </div>
@@ -1000,7 +1000,7 @@ const ReportTable = (props) => {
                         <td className="px-4 py-2 font-semibold">
                           {item?.Name}{" "}
                         </td>
-                        <td className="px-4 py-2">{item?.Email || "-"}</td>
+                        <td className="px-4 py-2 ">{item?.Email || "-"}</td>
                         <td className="px-4 py-2">{item?.Phone || "-"}</td>
                         <td className="px-3 py-2 text-white grid grid-cols-2">
                           {props.actions?.length > 0 &&
@@ -1053,7 +1053,7 @@ const ReportTable = (props) => {
                             {startIndex + index + 1}
                           </th>
                         )}
-                        <td className="px-4 py-2 font-semibold min-w-56">
+                        <td className="px-4 py-2 font-semibold min-w-56 max-w-56">
                           {item?.Name}{" "}
                         </td>
                         {props.heading.includes("Note") && (
