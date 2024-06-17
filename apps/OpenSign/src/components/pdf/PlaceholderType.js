@@ -2,7 +2,6 @@ import React, { useEffect, useState, forwardRef, useRef } from "react";
 import {
   getMonth,
   getYear,
-  isMobile,
   onChangeHeightOfTextArea,
   onChangeInput,
   radioButtonWidget,
@@ -14,7 +13,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import RegexParser from "regex-parser";
-
+const textWidgetCls =
+  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content bg-base-100 whitespace-pre-wrap";
+const selectWidgetCls =
+  "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none bg-base-100 text-base-content";
 function PlaceholderType(props) {
   const type = props?.pos?.type;
   const [selectOption, setSelectOption] = useState("");
@@ -137,13 +139,13 @@ function PlaceholderType(props) {
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
-      className="inputPlaceholder"
-      style={{ overflow: "hidden", fontSize: calculateFontSize() }}
+      className={`${selectWidgetCls} overflow-hidden`}
+      style={{ fontSize: calculateFontSize() }}
       onClick={onClick}
       ref={ref}
     >
       {value}
-      <i className="fa-regular fa-calendar" style={{ marginLeft: "5px" }}></i>
+      <i className="fa-regular fa-calendar ml-[5px]"></i>
     </div>
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";
@@ -304,17 +306,13 @@ function PlaceholderType(props) {
     case "signature":
       return props.pos.SignUrl ? (
         <img
-          alt="signimg"
+          alt="signature"
           draggable="false"
           src={props.pos.SignUrl}
-          style={{
-            width: "99%",
-            height: "100%",
-            objectFit: "contain"
-          }}
+          className="w-[99%] h-full object-contain"
         />
       ) : (
-        <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
+        <div className="text-[11px] text-black justify-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
@@ -326,17 +324,13 @@ function PlaceholderType(props) {
     case "stamp":
       return props.pos.SignUrl ? (
         <img
-          alt="signimg"
+          alt="stamp"
           draggable="false"
           src={props.pos.SignUrl}
-          style={{
-            width: "99%",
-            height: "100%",
-            objectFit: "contain"
-          }}
+          className="w-[99%] h-full object-contain"
         />
       ) : (
-        <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
+        <div className="text-[11px] text-black justify-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
@@ -417,12 +411,7 @@ function PlaceholderType(props) {
               false
             );
           }}
-          className={
-            isMobile
-              ? "labelTextArea labelWidthMobile"
-              : "labelTextArea labelWidthDesktop"
-          }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          className={textWidgetCls}
           cols="50"
         />
       ) : (
@@ -438,9 +427,8 @@ function PlaceholderType(props) {
     case "dropdown":
       return props.data?.signerObjId === props.signerObjId ? (
         <select
-          className="inputPlaceholder"
+          className={`${selectWidgetCls} text-[12px]`}
           id="myDropdown"
-          style={{ fontSize: "12px", color: "initial" }}
           value={selectOption}
           onChange={(e) => {
             setSelectOption(e.target.value);
@@ -470,7 +458,7 @@ function PlaceholderType(props) {
         </select>
       ) : (
         <div
-          className="inputPlaceholder"
+          className={selectWidgetCls}
           style={{ fontSize: calculateFontSize() }}
         >
           {props.pos?.options?.name ? props.pos.options.name : type}
@@ -479,17 +467,13 @@ function PlaceholderType(props) {
     case "initials":
       return props.pos.SignUrl ? (
         <img
-          alt="signimg"
+          alt="initials"
           draggable="false"
           src={props.pos.SignUrl}
-          style={{
-            width: "99%",
-            height: "100%",
-            objectFit: "contain"
-          }}
+          className="w-[99%] h-full object-contain"
         />
       ) : (
-        <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
+        <div className="text-[11px] text-black justify-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
@@ -520,12 +504,7 @@ function PlaceholderType(props) {
               isDefault
             );
           }}
-          className={
-            isMobile
-              ? "labelTextArea labelWidthMobile"
-              : "labelTextArea labelWidthDesktop"
-          }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          className={textWidgetCls}
           cols="50"
         />
       ) : (
@@ -559,12 +538,7 @@ function PlaceholderType(props) {
               false
             );
           }}
-          className={
-            isMobile
-              ? "labelTextArea labelWidthMobile"
-              : "labelTextArea labelWidthDesktop"
-          }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          className={textWidgetCls}
           cols="50"
         />
       ) : (
@@ -598,12 +572,7 @@ function PlaceholderType(props) {
               false
             );
           }}
-          className={
-            isMobile
-              ? "labelTextArea labelWidthMobile"
-              : "labelTextArea labelWidthDesktop"
-          }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          className={textWidgetCls}
           cols="50"
         />
       ) : (
@@ -655,8 +624,7 @@ function PlaceholderType(props) {
             }
             onBlur={handleInputBlur}
             closeOnScroll={true}
-            className="inputPlaceholder"
-            style={{ outlineColor: "#007bff" }}
+            className={`${selectWidgetCls} outline-[#007bff]`}
             selected={
               props?.startDate
                 ? props?.startDate
@@ -679,17 +647,13 @@ function PlaceholderType(props) {
     case "image":
       return props.pos.SignUrl ? (
         <img
-          alt="signimg"
+          alt="image"
           draggable="false"
           src={props.pos.SignUrl}
-          style={{
-            width: "99%",
-            height: "100%",
-            objectFit: "contain"
-          }}
+          className="w-[99%] h-full object-contain"
         />
       ) : (
-        <div style={{ fontSize: 11, color: "black", justifyContent: "center" }}>
+        <div className="text-[11px] text-black justify-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
@@ -720,12 +684,7 @@ function PlaceholderType(props) {
               false
             );
           }}
-          className={
-            isMobile
-              ? "labelTextArea labelWidthMobile"
-              : "labelTextArea labelWidthDesktop"
-          }
-          style={{ whiteSpace: "pre-wrap", color: "initial" }}
+          className={textWidgetCls}
           cols="50"
         />
       ) : (
@@ -791,31 +750,18 @@ function PlaceholderType(props) {
               false
             );
           }}
-          className={
-            isMobile
-              ? "labelTextArea labelWidthMobile"
-              : "labelTextArea labelWidthDesktop"
-          }
-          style={{
-            whiteSpace: "pre-wrap",
-            overflow: "hidden",
-            color: "initial"
-          }}
+          className={textWidgetCls}
           cols="50"
         />
       );
     default:
       return props.pos.SignUrl ? (
-        <div style={{ pointerEvents: "none" }}>
+        <div className="pointer-events-none">
           <img
-            alt="signimg"
+            alt="image"
             draggable="false"
             src={props.pos.SignUrl}
-            style={{
-              width: "99%",
-              height: "100%",
-              objectFit: "contain"
-            }}
+            className="w-[99%] h-full object-contain"
           />
         </div>
       ) : (

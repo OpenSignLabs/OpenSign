@@ -293,7 +293,7 @@ const ManageSign = () => {
                     {image ? (
                       <div className="signatureCanvas relative border-[2px] border-[#888]">
                         <img
-                          alt="preview image"
+                          alt="signature"
                           src={image}
                           className="w-full h-full object-contain"
                         />
@@ -401,7 +401,7 @@ const ManageSign = () => {
                     className="intialSignature"
                   >
                     <img
-                      alt="preview image"
+                      alt="inititals"
                       src={Initials}
                       style={{
                         width: "100%",
@@ -424,17 +424,10 @@ const ManageSign = () => {
                     dotSize={1}
                   />
                 )}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between"
-                  }}
-                  className="penContainerInitial"
-                >
+                <div className="flex flex-row justify-between w-[183px]">
                   <div>
                     {!isInitials && (
-                      <div style={{ display: "flex", flexDirection: "row" }}>
+                      <div className="flex flex-row">
                         {allColor.map((data, key) => {
                           return (
                             <i
