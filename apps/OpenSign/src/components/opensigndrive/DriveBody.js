@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import folder from "../../assets/images/folder.png";
 import "../../styles/opensigndrive.css";
-import pdfLogo from "../../assets/images/pdf3.png";
 import axios from "axios";
 import * as ContextMenu from "@radix-ui/react-context-menu";
 import { saveAs } from "file-saver";
@@ -336,7 +334,7 @@ function DriveBody(props) {
       ) : (
         <tr onClick={() => checkPdfStatus(data)}>
           <td className="cursor-pointer flex items-center">
-            <i className="fa fa-file-pdf mr-[8px] text-[26px] text-[#ed4d0e]"></i>
+            <i className="fa-solid fa-file-lines mr-[8px] text-[26px] text-neutral"></i>
             <span className="text-[12px] font-medium">{data.Name}</span>
           </td>
           <td>{createddate}</td>
@@ -348,23 +346,27 @@ function DriveBody(props) {
                 e.stopPropagation();
                 handleMenuItemClick("Download", data);
               }}
-              className="fa fa-download mr-[8px] text-[#ed280e]"
+              className="fa fa-download mr-[8px] op-text-primary"
               aria-hidden="true"
             ></i>
           </td>
         </tr>
       )
     ) : listType === "list" && data.Type === "Folder" ? (
-      <div key={ind} className="icon-container">
+      <div key={ind} className="relative w-[100px] h-[100px] mx-2 my-3">
         <ContextMenu.Root>
-          <ContextMenu.Trigger className="ContextMenuTrigger">
+          <ContextMenu.Trigger className="flex flex-col justify-center items-center">
             <div data-tut={props.dataTutSeventh}>
-              <img
+              {/* <img
                 alt="folder"
                 onClick={() => handleOnclikFolder(data)}
                 src={folder}
                 className="w-full h-full"
-              />
+              /> */}
+              <i
+                className="fa-solid fa-folder text-[100px] mx-auto text-secondary"
+                onClick={() => handleOnclikFolder(data)}
+              ></i>
               {rename === data.objectId ? (
                 <input
                   onFocus={() => {
@@ -412,15 +414,20 @@ function DriveBody(props) {
         <HoverCard.Trigger asChild>
           <div>
             <ContextMenu.Root>
-              <div className="icon-container">
-                <ContextMenu.Trigger className="ContextMenuTrigger">
-                  <img
+              <div className="relative w-[100px] h-[100px] mx-2 my-3">
+                <ContextMenu.Trigger className="flex flex-col justify-center items-center">
+                  {/* <img
                     alt="PDF"
                     className="w-full h-full"
                     src={pdfLogo}
                     onClick={() => checkPdfStatus(data)}
+                  /> */}
+                  <i
+                    className="fa-solid fa-file-lines text-[100px] text-neutral"
+                    onClick={() => checkPdfStatus(data)}
                     data-tut={props.dataTutSixth}
-                  />
+                  ></i>
+
                   {rename === data.objectId ? (
                     <input
                       autoFocus={true}
