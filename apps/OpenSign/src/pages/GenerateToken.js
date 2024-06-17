@@ -203,7 +203,7 @@ function GenerateToken() {
 
           <ModalUi
             isOpen={isModal}
-            title={"Regenerate Token"}
+            title={apiToken ? "Regenerate Token" : "Generate Token"}
             handleClose={handleModal}
           >
             <div className="m-[20px]">
