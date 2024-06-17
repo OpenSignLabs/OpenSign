@@ -49,7 +49,7 @@ import { EmailBody } from "../components/pdf/EmailBody";
 import Upgrade from "../primitives/Upgrade";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
-import mail_sent_gif from "../assets/gif/mail_sent.gif";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 function PlaceHolderSign() {
   const editorRef = useRef();
   const navigate = useNavigate();
@@ -1790,8 +1790,11 @@ function PlaceHolderSign() {
                 <div className="h-[100%] p-[20px]">
                   {mailStatus === "success" ? (
                     <div className="text-center mb-[10px]">
-                      <img
-                        src={mail_sent_gif}
+                      <DotLottieReact
+                        dotLottieRefCallback={null}
+                        src="https://lottie.host/00a72a09-f2d4-493a-9b2d-2843bf067638/Ic7jJ44wLJ.json"
+                        autoplay
+                        loop={false}
                         className="w-[120px] h-[120px] mx-auto"
                       />
                       <p>You have successfully sent mails to all recipients!</p>
