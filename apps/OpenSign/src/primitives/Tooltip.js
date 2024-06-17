@@ -6,13 +6,10 @@ const Tooltip = ({ id, message, url, iconColor }) =>
     <button onClick={() => openInNewTab(url)} className={"text-center"}>
       <sup>
         <i
-          className="fa-solid fa-question rounded-full"
+          className="fa-solid fa-question rounded-full border-[1.5px] py-[1.5px] px-[4px] text-[13px]"
           style={{
             borderColor: iconColor ? iconColor : "#33bbff",
-            color: iconColor ? iconColor : "#33bbff",
-            fontSize: 13,
-            borderWidth: 1.5,
-            padding: "1.5px 4px"
+            color: iconColor ? iconColor : "#33bbff"
           }}
         ></i>
       </sup>
@@ -26,18 +23,18 @@ const Tooltip = ({ id, message, url, iconColor }) =>
       >
         <sup>
           <i
-            className="fa-solid fa-question rounded-full"
+            className="fa-solid fa-question rounded-full border-[1.5px] py-[1.5px] px-[4px] text-[13px]"
             style={{
               borderColor: iconColor ? iconColor : "#33bbff",
-              color: iconColor ? iconColor : "#33bbff",
-              fontSize: 13,
-              borderWidth: 1.5,
-              padding: "1.5px 4px"
+              color: iconColor ? iconColor : "#33bbff"
             }}
           ></i>
         </sup>
       </a>
-      <ReactTooltip id={id ? id : "my-tooltip"} className="max-w-[200px]" />
+      <ReactTooltip
+        id={id ? id : "my-tooltip"}
+        className="max-w-[200px]  z-[200]"
+      />
     </>
   );
 
