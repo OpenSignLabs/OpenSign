@@ -5,7 +5,7 @@ import Sidebar from "../components/sidebar/Sidebar";
 import { useWindowSize } from "../hook/useWindowSize";
 import Tour from "reactour";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Parse from "parse";
 import ModalUi from "../primitives/ModalUi";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
@@ -13,10 +13,12 @@ import { isEnableSubscription } from "../constant/const";
 import { useCookies } from "react-cookie";
 import { fetchSubscription } from "../constant/Utils";
 import Loader from "../primitives/Loader";
+import { showHeader } from "../redux/reducers/showHeader";
 
 const HomeLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const { width } = useWindowSize();
   const [isOpen, setIsOpen] = useState(true);
   const arr = useSelector((state) => state.TourSteps);
@@ -98,6 +100,7 @@ const HomeLayout = () => {
   }
   const showSidebar = () => {
     setIsOpen((value) => !value);
+    dispatch(showHeader(!isOpen));
   };
   useEffect(() => {
     if (width && width <= 768) {

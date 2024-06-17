@@ -13,8 +13,12 @@ function Signedby({ pdfDetails }) {
       </div>
       <div className="mt-[2px] bg-base-100">
         <div className="bg-[#93a3db] rounded-xl mx-1 flex flex-row items-center py-[10px]">
-          <div className="bg-[#576081] flex w-[30px] h-[30px] rounded-full justify-center items-center mx-1">
-            <span className="text-[12px] text-center font-bold text-white uppercase">
+          <div
+            className="  bg-[#abd1d0] w-[15px] h-[15px] 2xl:w-[30px] 2xl:h-[30px] flex rounded-full ring-[1px] ring-offset-1 justify-center items-center
+            mr-[0px] mt-[7px] 2xl:mt-[12px]
+            "
+          >
+            <span className="text-[12px] text-center font-bold text-white 2xl:text-[20px] uppercase">
               {getFirstLetter(pdfDetails.ExtUserPtr.Name)}
             </span>
           </div>

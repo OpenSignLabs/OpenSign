@@ -1,12 +1,14 @@
 import React from "react";
 import { getWidgetType } from "../../constant/Utils";
+import { useSelector } from "react-redux";
 
 function WidgetList(props) {
+  const isHeader = useSelector((state) => state.showHeader);
   return props.updateWidgets.map((item, ind) => {
     return (
-      <div key={ind} className="mb-[5px]">
+      <div className="2xl:p-3 mb-[5px]" key={ind}>
         <div
-          className="select-none"
+          className="select-none mx-[2px] md:mx-0 cursor-all-scroll"
           onClick={() => {
             props.addPositionOfSignature &&
               props.addPositionOfSignature("onclick", item);
@@ -26,7 +28,7 @@ function WidgetList(props) {
             props?.handleMouseLeave();
           }}
         >
-          {item.ref && getWidgetType(item, props?.marginLeft)}
+          {item.ref && getWidgetType(item, isHeader)}
         </div>
       </div>
     );
