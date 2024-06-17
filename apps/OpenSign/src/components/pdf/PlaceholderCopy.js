@@ -5,7 +5,6 @@ import { randomId, textWidget } from "../../constant/Utils";
 function PlaceholderCopy(props) {
   const copyType = ["All pages", "All pages but last", "All pages but first"];
   const [selectCopyType, setSelectCopyType] = useState("");
-
   //function for get copy placeholder position
   const getCopyPlaceholderPosition = (
     type,
