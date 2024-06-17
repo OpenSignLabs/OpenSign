@@ -11,23 +11,34 @@ function PlaceholderBorder(props) {
   const getResizeBorderExtraWidth = resizeBorderExtraWidth();
   const defaultWidth = defaultWidthHeight(props.pos.type).width;
   const defaultHeight = defaultWidthHeight(props.pos.type).height;
+  const width = () => {
+    const getWidth =
+      props.placeholderBorder.w || props.pos.Width || defaultWidth;
+    return (
+      getWidth * props.scale * props.containerScale + getResizeBorderExtraWidth
+    );
+  };
+  const height = () => {
+    const getHeight =
+      props.placeholderBorder.h || props.pos.Height || defaultHeight;
+
+    return (
+      getHeight * props.scale * props.containerScale + getResizeBorderExtraWidth
+    );
+  };
 
   const handleMinWidth = () => {
     if (props.pos.type === "checkbox" || props.pos.type === radioButtonWidget) {
       return props.getCheckboxRenderWidth.width + getResizeBorderExtraWidth;
     } else {
-      return props.pos.Width
-        ? props.pos.Width + getResizeBorderExtraWidth
-        : defaultWidth + getResizeBorderExtraWidth;
+      return width();
     }
   };
   const handleMinHeight = () => {
     if (props.pos.type === "checkbox" || props.pos.type === radioButtonWidget) {
       return props.getCheckboxRenderWidth.height + getResizeBorderExtraWidth;
     } else {
-      return props.pos.Height
-        ? props.pos.Height + getResizeBorderExtraWidth
-        : defaultHeight + getResizeBorderExtraWidth;
+      return height();
     }
   };
   return (

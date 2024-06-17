@@ -15,7 +15,6 @@ const RecipientList = (props) => {
   const [isEdit, setIsEdit] = useState(false);
   //function for onhover signer name change background color
   const inputRef = useRef(null);
-
   const isWidgetExist = (Id) => {
     return props.signerPos.some((x) => x.Id === Id);
   };
@@ -72,7 +71,6 @@ const RecipientList = (props) => {
     props.setRoleName(remainingItems[index]?.Role);
     props.setBlockColor(remainingItems[index]?.blockColor);
   };
-
   return (
     <>
       {props.signersdata.length > 0 &&
@@ -145,7 +143,7 @@ const RecipientList = (props) => {
                 </div>
                 <div
                   className={`${
-                    obj?.Name ? "flex-col" : "flex-row"
+                    obj.Name ? "flex-col" : "flex-row"
                   } flex items-center`}
                 >
                   {obj.Name ? (
@@ -175,7 +173,7 @@ const RecipientList = (props) => {
                       {isEdit?.[obj.Id] && props.handleRoleChange ? (
                         <input
                           ref={inputRef}
-                          className="bg-transparent p-[3px"
+                          className="bg-transparent p-[3px]"
                           value={obj.Role}
                           onChange={(e) => props.handleRoleChange(e, obj.Id)}
                           onBlur={() => {
@@ -190,7 +188,9 @@ const RecipientList = (props) => {
                           }}
                         />
                       ) : (
-                        <span className="p-[3px]">{obj.Role}</span>
+                        <span className="text-[13px] 2xl:text-[25px]">
+                          {obj.Role}
+                        </span>
                       )}
                     </span>
                   )}
@@ -251,7 +251,7 @@ const RecipientList = (props) => {
                       : "text-base-content"
                   } cursor-pointer ml-[5px]`}
                 >
-                  <i className="fa-regular fa-trash-can"></i>
+                  <i className="fa-regular fa-trash-can 2xl:text-[30px]"></i>
                 </div>
               )}
               <hr />

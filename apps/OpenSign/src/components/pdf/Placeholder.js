@@ -88,6 +88,7 @@ const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
 
 function Placeholder(props) {
+  const [placeholderBorder, setPlaceholderBorder] = useState({ w: 0, h: 0 });
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
   const [selectDate, setSelectDate] = useState({
@@ -119,6 +120,7 @@ function Placeholder(props) {
     width: null,
     height: null
   });
+  const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
   const dateFormatArr = [
     "L",
     "DD-MM-YYYY",
@@ -293,12 +295,27 @@ function Placeholder(props) {
       props?.setShowDropdown(true);
     } else if (props.pos.type === "checkbox") {
       props?.setIsCheckbox(true);
+    } else if (
+      [
+        textInputWidget,
+        textWidget,
+        "name",
+        "company",
+        "job title",
+        "email"
+      ].includes(props.pos.type)
+    ) {
+      props.handleTextSettingModal(true);
     } else {
-      props?.handleNameModal(true);
+      props?.handleNameModal && props?.handleNameModal(true);
     }
 
-    if (props.isPlaceholder && props.type !== textWidget) {
-      props.setUniqueId(props.data.Id);
+    if (props.data && props?.pos?.type !== textWidget) {
+      props.setSignerObjId(props?.data?.signerObjId);
+      props.setUniqueId(props?.data?.Id);
+    } else if (props.data && props.pos.type === textWidget) {
+      props.setTempSignerId(props.uniqueId);
+      props.setUniqueId(props?.data?.Id);
     }
     props.setSignKey(props.pos.key);
     props.setWidgetType(props.pos.type);
@@ -375,7 +392,15 @@ function Placeholder(props) {
         <>
           {(props.isPlaceholder || props.isSignYourself) && (
             <>
-              {props.pos.type === "checkbox" && props.isSignYourself ? (
+              {[
+                "checkbox",
+                textInputWidget,
+                textWidget,
+                "name",
+                "company",
+                "job title",
+                "email"
+              ].includes(props.pos.type) && props.isSignYourself ? (
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
@@ -395,9 +420,7 @@ function Placeholder(props) {
               ) : (
                 ((!props?.pos?.type && props.pos.isStamp) ||
                   (props?.pos?.type &&
-                    !["date", textWidget, "signature"].includes(
-                      props.pos.type
-                    ) &&
+                    !["date", "signature"].includes(props.pos.type) &&
                     !props.isSignYourself)) && (
                   <i
                     onClick={(e) => {
@@ -409,7 +432,11 @@ function Placeholder(props) {
                       handleOnClickSettingIcon();
                     }}
                     className="fa-solid fa-gear settingIcon"
-                    style={{ color: "#188ae2", right: "47px", top: "-19px" }}
+                    style={{
+                      color: "#188ae2",
+                      right: props?.pos?.type === textWidget ? "32px" : "47px",
+                      top: "-19px"
+                    }}
                   ></i>
                 )
               )}
@@ -620,8 +647,20 @@ function Placeholder(props) {
         setDraggingEnabled(true);
         props.setIsResize && props.setIsResize(true);
       }}
-      onResizeStop={() => {
+      onResizeStop={(e, direction, ref) => {
         props.setIsResize && props.setIsResize(false);
+        props.handleSignYourselfImageResize &&
+          props.handleSignYourselfImageResize(
+            ref,
+            props.pos.key,
+            props.xyPostion,
+            props.setXyPostion,
+            props.index,
+            containerScale,
+            props.scale,
+            props.data && props.data.Id,
+            props.isResize
+          );
       }}
       disableDragging={
         props.isNeedSign
@@ -634,21 +673,15 @@ function Placeholder(props) {
         props.handleStop &&
         props.handleStop(event, dragElement, props.data?.Id, props.pos?.key)
       }
-      default={{
+      position={{
         x: props.xPos(props.pos, props.isSignYourself),
         y: props.yPos(props.pos, props.isSignYourself)
       }}
       onResize={(e, direction, ref) => {
-        props.handleSignYourselfImageResize &&
-          props.handleSignYourselfImageResize(
-            ref,
-            props.pos.key,
-            props.xyPostion,
-            props.setXyPostion,
-            props.index,
-            props.data && props.data.Id,
-            false
-          );
+        setPlaceholderBorder({
+          w: ref.offsetWidth / (props.scale * containerScale),
+          h: ref.offsetHeight / (props.scale * containerScale)
+        });
       }}
       onClick={() => handleOnClickPlaceholder()}
     >
@@ -677,10 +710,14 @@ function Placeholder(props) {
           pos={props.pos}
           isPlaceholder={props.isPlaceholder}
           getCheckboxRenderWidth={getCheckboxRenderWidth}
+          scale={props.scale}
+          containerScale={containerScale}
+          placeholderBorder={placeholderBorder}
         />
       )}
       {isMobile ? (
         <div
+          // className="sm:inline-block md:inline-block lg:hidden "
           style={{
             left: props.xPos(props.pos, props.isSignYourself),
             top: props.yPos(props.pos, props.isSignYourself),
@@ -689,8 +726,6 @@ function Placeholder(props) {
               props.pos.type === "checkbox"
                 ? "auto"
                 : props.posWidth(props.pos, props.isSignYourself),
-            //  "auto", //props.posWidth(props.pos, props.isSignYourself),
-            // height: props.posHeight(props.pos, props.isSignYourself),
             height:
               props.pos.type === radioButtonWidget ||
               props.pos.type === "checkbox"
@@ -723,6 +758,7 @@ function Placeholder(props) {
             setStartDate={setStartDate}
             startDate={startDate}
             handleSaveDate={handleSaveDate}
+            xPos={props.xPos}
           />
         </div>
       ) : (
@@ -749,6 +785,7 @@ function Placeholder(props) {
             setStartDate={setStartDate}
             startDate={startDate}
             handleSaveDate={handleSaveDate}
+            xPos={props.xPos}
           />
         </>
       )}
