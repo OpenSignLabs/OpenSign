@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
+    "@lottiefiles/dotlottie-react": "^0.6.4",
     "@radix-ui/themes": "^3.0.5",
     "@react-pdf/renderer": "^3.4.4",
     "@reduxjs/toolkit": "^2.2.5",
