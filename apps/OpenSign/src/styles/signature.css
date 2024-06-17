@@ -15,9 +15,6 @@
   border-width: 0.2px;
 }
 
-.dragCursor {
-  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAASElEQVR4nGNgwAMkJSUbpKSkOvCpIaT5PxSTbogUQjMYMwxeIIXmVFIxA8UGDDyQGg0DnIDi6JKUlCxHMqCeZAOghjSAMD5FAKfeaURdUFxCAAAAAElFTkSuQmCC"), auto;
-}
 
 .react-datepicker__input-container {
   position: initial !important;
@@ -30,16 +27,6 @@
   user-select: none;
 }
 
-.inputPlaceholder {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  /* font-size: 12px; */
-  border: 1px solid #007bff;
-  border-radius: 2px;
-}
 
 .radioButton {
   width: 100%;
@@ -52,10 +39,6 @@
   border-radius: 50px;
 }
 
-.inputPlaceholder:focus {
-  outline: none;
-  border: 1px solid #188ae2;
-}
 
 .drodown-input {
   padding: 5px;
@@ -79,7 +62,6 @@
 
 .dropdownAdd {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-
   color: white;
   font-weight: 600;
   font-size: 13px;

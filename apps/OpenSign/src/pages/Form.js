@@ -701,15 +701,17 @@ const Forms = (props) => {
                 required
               />
             </div>
-            <div className="text-xs mt-2">
-              <label className="block">Description</label>
-              <input
-                name="Description"
-                className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                value={formData.Description}
-                onChange={(e) => handleStrInput(e)}
-              />
-            </div>
+            {props.title === "New Template" && (
+              <div className="text-xs mt-2">
+                <label className="block">Description</label>
+                <input
+                  name="Description"
+                  className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                  value={formData.Description}
+                  onChange={(e) => handleStrInput(e)}
+                />
+              </div>
+            )}
             {props.signers && (
               <SignersInput
                 onChange={handleSigners}
