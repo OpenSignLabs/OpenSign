@@ -965,7 +965,7 @@ const ReportTable = (props) => {
         </div>
         <div
           className={`${
-            isDashboard ? "h-[317px]" : "h-full"
+            isDashboard && props.List?.length > 0 ? "h-[317px]" : "h-full"
           } overflow-x-auto w-full`}
         >
           <table className="op-table border-collapse w-full">
@@ -1604,7 +1604,11 @@ const ReportTable = (props) => {
           )}
         </div>
         {props.List?.length <= 0 && (
-          <div className="flex flex-col items-center justify-center w-full bg-base-100 text-base-content rounded-xl py-4">
+          <div
+            className={`${
+              isDashboard ? "h-[330px]" : ""
+            } flex flex-col items-center justify-center w-ful bg-base-100 text-base-content rounded-xl py-4`}
+          >
             <div className="w-[60px] h-[60px] overflow-hidden">
               <img
                 className="w-full h-full object-contain"
