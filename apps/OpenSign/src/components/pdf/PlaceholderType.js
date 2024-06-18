@@ -150,27 +150,27 @@ function PlaceholderType(props) {
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";
 
-  // useEffect(() => {
-  //   if (
-  //     ["name", "email", "job title", "company"].includes(type) &&
-  //     props.isNeedSign &&
-  //     props.data?.signerObjId === props.signerObjId
-  //   ) {
-  //     const isDefault = true;
-  //     const senderUser = localStorage.getItem(`Extand_Class`);
-  //     const jsonSender = JSON.parse(senderUser);
-  //     onChangeInput(
-  //       jsonSender && jsonSender[0],
-  //       null,
-  //       props.xyPostion,
-  //       null,
-  //       props.setXyPostion,
-  //       props.data.Id,
-  //       isDefault
-  //     );
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [type]);
+  useEffect(() => {
+    if (
+      ["name", "email", "job title", "company"].includes(type) &&
+      props.isNeedSign &&
+      props.data?.signerObjId === props.signerObjId
+    ) {
+      const isDefault = true;
+      const senderUser = localStorage.getItem(`Extand_Class`);
+      const jsonSender = JSON.parse(senderUser);
+      onChangeInput(
+        jsonSender && jsonSender[0],
+        null,
+        props.xyPostion,
+        null,
+        props.setXyPostion,
+        props.data.Id,
+        isDefault
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
 
   const calculateFontSize = () => {
     const fontSize = 10 + Math.min(props.pos.Width, props.pos.Height) * 0.1;
@@ -319,7 +319,6 @@ function PlaceholderType(props) {
               props?.data?.Role,
               props?.pos?.type
             )}
-          {/* {props.xPos(props.pos, props.isSignYourself)} */}
         </div>
       );
     case "stamp":
