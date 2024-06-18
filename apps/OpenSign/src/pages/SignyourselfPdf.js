@@ -1181,7 +1181,7 @@ function SignYourSelf() {
             </div>
           )}
           {/* <div className="min-h-screen relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"> */}
-          <div className="flex min-h-screen flex-row justify-center   bg-[#EBEBEB]">
+          <div className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
             {!isEmailVerified && (
               <VerifyEmail
                 isVerifyModal={isVerifyModal}
@@ -1218,7 +1218,7 @@ function SignYourSelf() {
               pageNumber={pageNumber}
               containerWH={containerWH}
             />
-            <div className="min-h-screen w-full md:w-[57%] flex mr-4">
+            <div className=" w-full  md:w-[57%] flex mr-4">
               <PdfZoom
                 setScale={setScale}
                 scale={scale}
@@ -1227,7 +1227,7 @@ function SignYourSelf() {
                 setZoomPercent={setZoomPercent}
                 zoomPercent={zoomPercent}
               />
-              <div className="min-h-screen w-full md:w-[95%] ">
+              <div className=" w-full md:w-[95%] ">
                 <ModalUi
                   isOpen={isAlert.isShow}
                   title={isAlert?.header || "Alert"}
@@ -1333,7 +1333,11 @@ function SignYourSelf() {
                   setIsEmail={setIsEmail}
                   isCompleted={isCompleted}
                 />
-                <div ref={divRef} data-tut="reactourSecond" className="h-[95%]">
+                <div
+                  ref={divRef}
+                  data-tut="reactourSecond"
+                  className="h-full md:h-[95%]"
+                >
                   {containerWH?.width && containerWH?.height && (
                     <RenderPdf
                       pageNumber={pageNumber}
@@ -1381,7 +1385,7 @@ function SignYourSelf() {
             </div>
 
             <div
-              className={` md:w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar`}
+              className={`w-full md:w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar`}
             >
               <div className={`max-h-screen`}>
                 {!isCompleted ? (

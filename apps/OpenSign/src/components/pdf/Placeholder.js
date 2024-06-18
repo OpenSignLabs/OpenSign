@@ -562,6 +562,55 @@ function Placeholder(props) {
       )
     );
   };
+  const xPos = (pos, signYourself) => {
+    const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+    const resizePos = pos.xPosition;
+    if (signYourself) {
+      return resizePos * containerScale * props.scale;
+    } else {
+      //checking both condition mobile and desktop view
+      // if (pos.isMobile && pos.scale) {
+      //   if (props.scale > 1) {
+      //     return resizePos * pos.scale * containerScale * props.scale;
+      //   } else {
+      //     return resizePos * pos.scale * containerScale;
+      //   }
+      // } else {
+      //   if (pos.scale === containerScale) {
+      //     return resizePos * pos.scale * props.scale;
+      //   } else {
+      //     return resizePos * pos.scale * containerScale * props.scale;
+      //   }
+      // }
+      return resizePos * containerScale * props.scale;
+    }
+  };
+  const yPos = (pos, signYourself) => {
+    const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+    const resizePos = pos.yPosition;
+
+    if (signYourself) {
+      return resizePos * containerScale * props.scale;
+    } else {
+      // checking both condition mobile and desktop view
+      // if (pos.isMobile && pos.scale) {
+      //   if (props.scale > 1) {
+      //     return resizePos * pos.scale * containerScale * props.scale;
+      //   } else {
+      //     return resizePos * pos.scale * containerScale;
+      //   }
+      // } else if (pos.scale === containerScale) {
+      //   if (props.scale > 1) {
+      //     return resizePos * pos.scale * props.scale;
+      //   } else {
+      //     return resizePos * pos.scale;
+      //   }
+      // } else {
+      //   return resizePos * containerScale;
+      // }
+      return resizePos * containerScale * props.scale;
+    }
+  };
 
   return (
     <Rnd
@@ -674,8 +723,8 @@ function Placeholder(props) {
         props.handleStop(event, dragElement, props.data?.Id, props.pos?.key)
       }
       position={{
-        x: props.xPos(props.pos, props.isSignYourself),
-        y: props.yPos(props.pos, props.isSignYourself)
+        x: xPos(props.pos, props.isSignYourself),
+        y: yPos(props.pos, props.isSignYourself)
       }}
       onResize={(e, direction, ref) => {
         setPlaceholderBorder({
@@ -719,8 +768,8 @@ function Placeholder(props) {
         <div
           // className="sm:inline-block md:inline-block lg:hidden "
           style={{
-            left: props.xPos(props.pos, props.isSignYourself),
-            top: props.yPos(props.pos, props.isSignYourself),
+            left: xPos(props.pos, props.isSignYourself),
+            top: yPos(props.pos, props.isSignYourself),
             width:
               props.pos.type === radioButtonWidget ||
               props.pos.type === "checkbox"
