@@ -49,7 +49,9 @@ body {
 .op-text-warning {
   @apply text-warning;
 }
-
+.op-border-primary{
+  @apply border-primary
+}
 /* CSS for scrollbar customization */
 * {
   scrollbar-width: thin; /* For Firefox */
