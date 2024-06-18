@@ -13,7 +13,7 @@ function PrevNext({ pageNumber, allPages, changePage }) {
   return (
     <div className="flex items-center">
       <button
-        className="op-btn op-btn-secondary op-btn-xs md:op-btn-sm font-semibold text-xs"
+        className="op-btn op-btn-neutral op-btn-xs md:op-btn-sm font-semibold text-xs"
         disabled={pageNumber <= 1}
         onClick={previousPage}
       >
@@ -26,7 +26,7 @@ function PrevNext({ pageNumber, allPages, changePage }) {
         {pageNumber || (allPages ? 1 : "--")} of {allPages || "--"}
       </span>
       <button
-        className="op-btn op-btn-secondary op-btn-xs md:op-btn-sm font-semibold text-xs"
+        className="op-btn op-btn-neutral op-btn-xs md:op-btn-sm font-semibold text-xs"
         disabled={pageNumber >= allPages}
         onClick={nextPage}
       >
