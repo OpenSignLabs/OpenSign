@@ -6,6 +6,7 @@ import { getBase64FromUrl } from "../../constant/Utils";
 import { themeColor } from "../../constant/const";
 import printModule from "print-js";
 import Loader from "../../primitives/Loader";
+import ModalUi from "../../primitives/ModalUi";
 
 function EmailComponent({
   isEmail,
@@ -170,146 +171,146 @@ function EmailComponent({
     <div>
       {/* isEmail */}
       {isEmail && (
-        <div className="modaloverlay">
-          <div className="modalcontainer">
-            {isLoading && (
-              <div className="absolute w-full h-full flex flex-col justify-center items-center z-[20] bg-[#e6f2f2] bg-opacity-80">
-                <Loader />
-                <span className="text-[12px] font-bold">
-                  This might take some time
-                </span>
-              </div>
-            )}
-            <div style={{ background: "#32a3ac" }} className="modalheader">
-              <span className="text-white">Successfully signed!</span>
-              <div className="flex flex-row">
-                <div></div>
-                {!isAndroid && (
-                  <button
-                    onClick={handleToPrint}
-                    className="op-btn op-btn-neutral op-btn-sm text-[15px]"
-                  >
-                    <i className="fa fa-print" aria-hidden="true"></i>
-                    Print
-                  </button>
-                )}
-                <button
-                  className="op-btn op-btn-primary op-btn-sm text-[15px] ml-2"
-                  onClick={() => handleDownloadPdf()}
-                >
-                  <i className="fa fa-download" aria-hidden="true"></i>
-                  Download
-                </button>
-              </div>
+        <ModalUi isOpen showHeader={false}>
+          {isLoading && (
+            <div className="absolute w-full h-full flex flex-col justify-center items-center z-[20] bg-[#e6f2f2]/70">
+              <Loader />
+              <span className="text-[12px] font-bold">
+                This might take some time
+              </span>
             </div>
-            <div className="h-full p-[20px]">
-              {isEmailCelebration && (
-                <div className="absolute w-[100%] flex justify-center items-center">
-                  <img alt="celeb" width={300} height={250} src={celebration} />
-                </div>
-              )}
-              <p className="font-medium text-[15px] mb-[5px] text-base-content align-baseline">
-                Recipients added here will get a copy of the signed document.
-              </p>
-              {emailList.length > 0 ? (
-                <>
-                  <div className="addEmail">
-                    <div className="flex flex-row flex-wrap">
-                      {emailList.map((data, ind) => {
-                        return (
-                          <div
-                            className="flex flex-row items-center bg-[#47a3ad] m-[4px] rounded-md py-[5px] px-[10px]"
-                            key={ind}
-                          >
-                            <span className="text-white text-[13px]">
-                              {data}
-                            </span>
-                            <span
-                              className="text-white text-[13px] font-semibold ml-[7px] cursor-pointer"
-                              onClick={() => removeChip(ind)}
-                            >
-                              <i className="fa-solid fa-xmark"></i>
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    {emailList.length <= 9 && (
-                      <input
-                        type="text"
-                        value={emailValue}
-                        className="p-[10px] pb-[20px] rounded w-full text-[15px] bg-white outline-none"
-                        onChange={handleEmailValue}
-                        onKeyDown={handleEnterPress}
-                        onBlur={() => {
-                          if (emailValue) {
-                            handleEnterPress("add");
-                          }
-                        }}
-                        required
-                      />
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div>
-                  <input
-                    type="text"
-                    value={emailValue}
-                    className="p-[10px] pb-[20px] rounded w-full text-[15px] outline-none bg-white border-2 border-[#47a3ad]"
-                    onChange={handleEmailValue}
-                    onKeyDown={handleEnterPress}
-                    placeholder="Add the email addresses"
-                    onBlur={() => {
-                      if (emailValue) {
-                        handleEnterPress("add");
-                      }
-                    }}
-                    required
-                  />
-                </div>
+          )}
+          <div className="flex justify-between items-center py-[10px] px-[20px] border-b-[1px] border-base-content">
+            <span className="text-base-content font-semibold">
+              Successfully signed!
+            </span>
+            <div className="flex flex-row">
+              <div></div>
+              {!isAndroid && (
+                <button
+                  onClick={handleToPrint}
+                  className="op-btn op-btn-neutral op-btn-sm text-[15px]"
+                >
+                  <i className="fa fa-print" aria-hidden="true"></i>
+                  Print
+                </button>
               )}
               <button
-                className={`${
-                  emailValue ? "cursor-pointer" : "cursor-default"
-                } op-btn op-btn-primary op-btn-sm m-2 shadow-md`}
-                onClick={() => {
-                  if (emailValue) {
-                    handleEnterPress("add");
-                  }
-                }}
+                className="op-btn op-btn-primary op-btn-sm text-[15px] ml-2"
+                onClick={() => handleDownloadPdf()}
               >
-                <i className="fa fa-plus" aria-hidden="true"></i>
-              </button>
-
-              <div className="bg-[#e3e2e1] mt-[10px] p-[5px] rounded">
-                <span className="font-bold">Note: </span>
-                <span className="text-[15px]">
-                  You can only send to ten recipients at a time.
-                </span>
-              </div>
-              <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
-              <button
-                type="button"
-                className="op-btn op-btn-primary"
-                onClick={() => emailList.length > 0 && sendEmail()}
-              >
-                Send
-              </button>
-              <button
-                type="button"
-                className="op-btn op-btn-ghost ml-2"
-                onClick={() => {
-                  setIsEmail(false);
-                  setEmailValue("");
-                  setEmailList([]);
-                }}
-              >
-                Close
+                <i className="fa fa-download" aria-hidden="true"></i>
+                Download
               </button>
             </div>
           </div>
-        </div>
+          <div className="h-full p-[20px]">
+            {isEmailCelebration && (
+              <div className="absolute w-[100%] flex justify-center items-center">
+                <img alt="celeb" width={300} height={250} src={celebration} />
+              </div>
+            )}
+            <p className="font-medium text-[15px] mb-[5px] text-base-content align-baseline">
+              Recipients added here will get a copy of the signed document.
+            </p>
+            {emailList.length > 0 ? (
+              <>
+                <div className="p-0 border-[1.5px] op-border-primary rounded w-full text-[15px]">
+                  <div className="flex flex-row flex-wrap">
+                    {emailList.map((data, ind) => {
+                      return (
+                        <div
+                          className="flex flex-row items-center op-bg-primary m-[4px] rounded-md py-[5px] px-[10px]"
+                          key={ind}
+                        >
+                          <span className="text-base-100 text-[13px]">
+                            {data}
+                          </span>
+                          <span
+                            className="text-base-100 text-[13px] font-semibold ml-[7px] cursor-pointer"
+                            onClick={() => removeChip(ind)}
+                          >
+                            <i className="fa-solid fa-xmark"></i>
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {emailList.length <= 9 && (
+                    <input
+                      type="text"
+                      value={emailValue}
+                      className="p-[10px] pb-[20px] rounded w-full text-[15px] bg-transparent outline-none"
+                      onChange={handleEmailValue}
+                      onKeyDown={handleEnterPress}
+                      onBlur={() => {
+                        if (emailValue) {
+                          handleEnterPress("add");
+                        }
+                      }}
+                      required
+                    />
+                  )}
+                </div>
+              </>
+            ) : (
+              <div>
+                <input
+                  type="text"
+                  value={emailValue}
+                  className="p-[10px] pb-[20px] rounded w-full text-[15px] outline-none bg-transparent border-[1.5px] op-border-primary"
+                  onChange={handleEmailValue}
+                  onKeyDown={handleEnterPress}
+                  placeholder="Add the email addresses"
+                  onBlur={() => {
+                    if (emailValue) {
+                      handleEnterPress("add");
+                    }
+                  }}
+                  required
+                />
+              </div>
+            )}
+            <button
+              className={`${
+                emailValue ? "cursor-pointer" : "cursor-default"
+              } op-btn op-btn-primary op-btn-sm m-2 shadow-md`}
+              onClick={() => {
+                if (emailValue) {
+                  handleEnterPress("add");
+                }
+              }}
+            >
+              <i className="fa fa-plus" aria-hidden="true"></i>
+            </button>
+
+            <div className="bg-[#e3e2e1] mt-[10px] p-[5px] rounded">
+              <span className="font-bold">Note: </span>
+              <span className="text-[15px]">
+                You can only send to ten recipients at a time.
+              </span>
+            </div>
+            <hr className="w-full my-[15px] bg-base-content" />
+            <button
+              type="button"
+              className="op-btn op-btn-primary"
+              onClick={() => emailList.length > 0 && sendEmail()}
+            >
+              Send
+            </button>
+            <button
+              type="button"
+              className="op-btn op-btn-ghost ml-2"
+              onClick={() => {
+                setIsEmail(false);
+                setEmailValue("");
+                setEmailList([]);
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </ModalUi>
       )}
     </div>
   );
