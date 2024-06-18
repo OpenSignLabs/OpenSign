@@ -12,14 +12,15 @@ const ModalUi = ({
   reduceWidth,
   showHeaderMessage
 }) => {
+  const width = reduceWidth;
   return (
     <>
       {isOpen && (
         <dialog className="op-modal op-modal-open">
           <div
             className={`${
-              reduceWidth || "md:min-w-[500px]"
-            } op-modal-box p-0 max-h-90 min-w-[90%] overflow-y-auto hide-scrollbar text-sm`}
+              width || "md:min-w-[500px]"
+            } op-modal-box p-0 max-h-90 overflow-y-auto hide-scrollbar text-sm`}
           >
             {showHeader && (
               <>

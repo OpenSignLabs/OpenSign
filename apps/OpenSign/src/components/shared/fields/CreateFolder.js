@@ -118,7 +118,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             <Loader />
           </div>
         )}
-        <h1 className="text-base font-semibold">Create Folder</h1>
+        <h1 className="text-base font-semibold mt-[0.4rem]">Create Folder</h1>
         <div className="text-xs mt-2">
           <label className="block">
             Name<span className="text-red-500 text-[13px]">*</span>
