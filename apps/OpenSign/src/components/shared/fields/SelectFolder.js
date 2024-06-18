@@ -44,12 +44,12 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
       const FolderQuery = new Parse.Query(folderCls);
       if (folderPtr) {
         FolderQuery.equalTo("Folder", folderPtr);
-        FolderQuery.equalTo("Type", "Folder");
         FolderQuery.notEqualTo("IsArchive", true);
+        FolderQuery.descending("Type");
       } else {
         FolderQuery.doesNotExist("Folder");
-        FolderQuery.equalTo("Type", "Folder");
         FolderQuery.notEqualTo("IsArchive", true);
+        FolderQuery.descending("Type");
       }
 
       const res = await FolderQuery.find();
@@ -220,7 +220,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
         handleClose={handleCancel}
       >
         <div className="w-full min-w-[300px] md:min-w-[500px] max-w-[500px] px-3">
-          <div className="py-2 text-[#ac4848] text-[14px] font-[500]">
+          <div className="pt-1 text-[#ac4848] text-[14px] font-[500]">
             <span
               className="cursor-pointer"
               title="OpenSign™ Drive"
@@ -241,21 +241,31 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
                   {" / "}
                 </React.Fragment>
               ))}
-            <hr />
+            <hr className="bg-[#8a8a8a] mt-[0.750rem]" />
           </div>
-          <div className="mt-2 mb-3">
+          <div className="mb-2">
             <div className="max-h-[210px] overflow-auto">
               {!isAdd &&
                 folderList.length > 0 &&
                 folderList.map((folder) => (
                   <div
-                    key={folder.Name}
-                    className="border-b-[1px] border-[#8a8a8a] px-2 py-2 mb-2 cursor-pointer "
-                    onClick={() => handleSelect(folder)}
+                    key={folder.objectId}
+                    className={`${
+                      folder.Type === "Folder"
+                        ? "cursor-pointer"
+                        : "cursor-default"
+                    } border-b-[1px] border-[#8a8a8a] py-2 mb-0.5"`}
+                    onClick={() =>
+                      folder.Type === "Folder" && handleSelect(folder)
+                    }
                   >
                     <div className="flex items-center gap-2">
                       <i
-                        className="fa fa-folder text-neutral text-[1.4rem]"
+                        className={`${
+                          folder.Type === "Folder"
+                            ? "fa fa-folder op-text-secondary"
+                            : "fa fa-file op-text-primary"
+                        } text-[1.4rem]`}
                         aria-hidden="true"
                       ></i>
                       <span className="font-semibold">{folder.Name}</span>

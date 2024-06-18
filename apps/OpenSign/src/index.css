@@ -50,3 +50,22 @@ body {
   @apply text-warning;
 }
 
+/* CSS for scrollbar customization */
+* {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: gray; /* For Firefox */
+}
+
+/* For webkit-based browsers like Chrome, Safari */
+*::-webkit-scrollbar {
+  width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 10px;
+}
