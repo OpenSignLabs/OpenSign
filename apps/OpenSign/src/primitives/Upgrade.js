@@ -9,7 +9,7 @@ function Upgrade({ message }) {
           const url = window.location.origin + "/subscription";
           openInNewTab(url);
         }}
-        className="text-blue-800 text-sm cursor-pointer underline"
+        className="op-link op-link-accent text-sm"
       >
         {message ? message : "Upgrade now"}
       </span>
