@@ -115,7 +115,7 @@ const Header = ({ showSidebar }) => {
         {!isSubscribe && (
           <div>
             <button
-              className="text-xs bg-[#002864] p-2 text-white rounded shadow"
+              className="text-xs md:text-sm shadow op-btn op-btn-outline op-btn-sm md:op-btn-md op-btn-accent"
               onClick={() => navigate("/subscription")}
             >
               Upgrade Now
