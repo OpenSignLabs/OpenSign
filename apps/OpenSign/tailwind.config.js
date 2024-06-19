@@ -42,14 +42,14 @@ module.exports = {
       "sunset",
       {
         opensigncss: {
-          primary: "#034687",
+          primary: "#002864",
           "primary-content": "#ccd9e8",
           secondary: "#151B25",
           "secondary-content": "#cacccf",
           accent: "#E10032",
           "accent-content": "#ffd8d5",
-          neutral: "#F0D7D9",
-          "neutral-content": "#141111",
+          neutral: "#99c2ff",
+          "neutral-content": "#f1f1f1",
           "base-100": "#ffffff",
           "base-200": "#dedede",
           "base-300": "#bebebe",

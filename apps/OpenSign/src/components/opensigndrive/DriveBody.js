@@ -321,7 +321,7 @@ function DriveBody(props) {
         <tr onClick={() => handleOnclikFolder(data)}>
           <td className="cursor-pointer flex items-center">
             <i
-              className="fa fa-folder mr-[8px] text-[26px] text-[#f0ad26]"
+              className="fa fa-folder mr-[8px] text-[26px] op-text-secondary"
               aria-hidden="true"
             ></i>
             <span className="text-[12px] font-medium">{data.Name}</span>
@@ -334,7 +334,7 @@ function DriveBody(props) {
       ) : (
         <tr onClick={() => checkPdfStatus(data)}>
           <td className="cursor-pointer flex items-center">
-            <i className="fa-solid fa-file-lines mr-[8px] text-[26px] text-neutral"></i>
+            <i className="fa-solid fa-file-lines mr-[8px] text-[26px] op-text-primary"></i>
             <span className="text-[12px] font-medium">{data.Name}</span>
           </td>
           <td>{createddate}</td>
@@ -364,7 +364,7 @@ function DriveBody(props) {
                 className="w-full h-full"
               /> */}
               <i
-                className="fa-solid fa-folder text-[100px] mx-auto text-secondary"
+                className="fa-solid fa-folder text-[100px] mx-auto op-text-secondary"
                 onClick={() => handleOnclikFolder(data)}
               ></i>
               {rename === data.objectId ? (

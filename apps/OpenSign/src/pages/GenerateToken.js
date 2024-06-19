@@ -191,7 +191,7 @@ function GenerateToken() {
                     <button
                       type="button"
                       onClick={() => navigation("/subscription")}
-                      className="rounded hover:bg-[#15b4e9] border-[1px] border-[#15b4e9] text-[#15b4e9] hover:text-white px-11 py-2 text-xs md:text-base focus:outline-none"
+                      className="text-xs md:text-sm shadow op-btn op-btn-outline op-btn-accent"
                     >
                       Upgrade Now
                     </button>
