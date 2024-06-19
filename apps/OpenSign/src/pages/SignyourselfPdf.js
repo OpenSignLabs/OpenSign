@@ -456,13 +456,10 @@ function SignYourSelf() {
     );
     const dragTypeValue = item?.text ? item.text : monitor.type;
     const widgetValue = getWidgetValue(dragTypeValue);
-    const widgetWidth = defaultWidthHeight(dragTypeValue).width;
-    const widgetHeight = defaultWidthHeight(dragTypeValue).height;
     const widgetTypeExist = ["name", "company", "job title", "email"].includes(
       dragTypeValue
     );
-    // const scale = pdfOriginalWH.width / containerWH.width;
-    const containerScale = containerWH.width / pdfOriginalWH.width;
+    const containerScale = containerWH?.width / pdfOriginalWH?.width || 1;
 
     if (item === "onclick") {
       const getWidth = widgetTypeExist
@@ -476,17 +473,12 @@ function SignYourSelf() {
           ? defaultWidthHeight(dragTypeValue).height
           : "";
       dropObj = {
-        xPosition:
-          (containerWH.width / 2 - widgetWidth / 2) / (containerScale * scale),
-        yPosition:
-          (containerWH.height / 2 - widgetHeight / 2) /
-          (containerScale * scale),
-        isDrag: false,
+        xPosition: containerWH.width / 2,
+        yPosition: containerWH.height / 2,
         isStamp:
           (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
         key: key,
         type: dragTypeValue,
-        yBottom: window.innerHeight / 2 - 60,
         scale: containerScale,
         Width: getWidth / (containerScale * scale),
         Height: getHeight / (containerScale * scale),
@@ -535,16 +527,12 @@ function SignYourSelf() {
         return object.pageNumber === pageNumber;
       });
       const updateData = filterDropPos[0].pos;
-
-      // if (updateData.length > dropData.length) {
       const newSignPos = updateData.concat(dropData);
       let xyPos = {
         pageNumber: pageNumber,
         pos: newSignPos
       };
       xyPostion.splice(index, 1, xyPos);
-
-      // }
     } else {
       const xyPos = {
         pageNumber: pageNumber,
@@ -1385,7 +1373,7 @@ function SignYourSelf() {
             </div>
 
             <div
-              className={`w-full md:w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar`}
+              className={`w-full md:w-[23%] bg-[#FFFFFF]  overflow-y-auto hide-scrollbar`}
             >
               <div className={`max-h-screen`}>
                 {!isCompleted ? (

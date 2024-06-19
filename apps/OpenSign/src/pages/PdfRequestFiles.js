@@ -1405,9 +1405,7 @@ function PdfRequestFiles() {
                       ? "none"
                       : "auto"
                 }}
-                className="  min-h-screen   
-                relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300
-                "
+                className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"
               >
                 {!requestSignTour && requestSignTourFunction()}
                 <ModalUi
@@ -1549,7 +1547,7 @@ function PdfRequestFiles() {
                   pageNumber={pageNumber}
                 />
                 {/* pdf render view */}
-                <div className="min-h-screen w-full md:w-[57%] md:flex md:mr-4">
+                <div className=" w-full  md:w-[57%] flex mr-4">
                   <PdfZoom
                     setScale={setScale}
                     scale={scale}
@@ -1558,7 +1556,7 @@ function PdfRequestFiles() {
                     setZoomPercent={setZoomPercent}
                     zoomPercent={zoomPercent}
                   />
-                  <div className="min-h-screen w-full md:w-[97%] ">
+                  <div className=" w-full md:w-[95%] ">
                     {/* this modal is used show this document is already sign */}
                     <ModalUi
                       isOpen={isCompleted.isModal}
@@ -1707,10 +1705,11 @@ function PdfRequestFiles() {
                       setZoomPercent={setZoomPercent}
                       zoomPercent={zoomPercent}
                     />
+
                     <div
                       ref={divRef}
                       data-tut="reactourSecond"
-                      className="h-[95%] 2xl:mt-[6px] mt-[3px]"
+                      className="h-[95%]"
                     >
                       {containerWH && (
                         <RenderPdf
@@ -1754,9 +1753,8 @@ function PdfRequestFiles() {
                   </div>
                 </div>
 
-                {/* <div className="signerComponent"> */}
                 <div
-                  className={`w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar hidden md:inline-block`}
+                  className={`w-full md:w-[23%] bg-[#FFFFFF]  overflow-y-auto hide-scrollbar  hidden md:inline-block`}
                 >
                   <div className={`max-h-screen`}>
                     {signedSigners.length > 0 && (

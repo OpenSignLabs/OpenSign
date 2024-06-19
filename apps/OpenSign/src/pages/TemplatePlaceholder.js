@@ -1284,7 +1284,7 @@ const TemplatePlaceholder = () => {
     setIsTextSetting(value);
   };
   return (
-    <div>
+    <>
       <Title title={"Template"} />
       <DndProvider backend={HTML5Backend}>
         {isLoading.isLoad ? (
@@ -1292,378 +1292,385 @@ const TemplatePlaceholder = () => {
         ) : handleError ? (
           <HandleError handleError={handleError} />
         ) : (
-          <div className="flex min-h-screen flex-row justify-center op-card overflow-hidden  bg-base-300 relative">
-            {/* this component used for UI interaction and show their functionality */}
-            {!checkTourStatus && (
-              //this tour component used in your html component where you want to put
-              //onRequestClose function to close tour
-              //steps is defined what will be your messages and style also
-              //isOpen is takes boolean value to open
-              <Tour
-                onRequestClose={closeTour}
-                steps={tourConfig}
-                isOpen={templateTour}
-                rounded={5}
-                closeWithMask={false}
+          <div>
+            <div className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
+              {/* this component used for UI interaction and show their functionality */}
+              {!checkTourStatus && (
+                //this tour component used in your html component where you want to put
+                //onRequestClose function to close tour
+                //steps is defined what will be your messages and style also
+                //isOpen is takes boolean value to open
+                <Tour
+                  onRequestClose={closeTour}
+                  steps={tourConfig}
+                  isOpen={templateTour}
+                  rounded={5}
+                  closeWithMask={false}
+                />
+              )}
+              {isAddRole && (
+                <Tour
+                  onRequestClose={() => setIsAddRole(false)}
+                  steps={tourAddRole}
+                  isOpen={isAddRole}
+                  rounded={5}
+                  closeWithMask={false}
+                />
+              )}
+              {/* this component used to render all pdf pages in left side */}
+              <RenderAllPdfPage
+                signPdfUrl={pdfDetails[0].URL}
+                allPages={allPages}
+                setAllPages={setAllPages}
+                setPageNumber={setPageNumber}
+                setSignBtnPosition={setSignBtnPosition}
+                pageNumber={pageNumber}
               />
-            )}
-            {isAddRole && (
-              <Tour
-                onRequestClose={() => setIsAddRole(false)}
-                steps={tourAddRole}
-                isOpen={isAddRole}
-                rounded={5}
-                closeWithMask={false}
-              />
-            )}
-            {/* this component used to render all pdf pages in left side */}
-            <RenderAllPdfPage
-              signPdfUrl={pdfDetails[0].URL}
-              allPages={allPages}
-              setAllPages={setAllPages}
-              setPageNumber={setPageNumber}
-              setSignBtnPosition={setSignBtnPosition}
-              pageNumber={pageNumber}
-            />
 
-            {/* pdf render view */}
-            <div className="min-h-screen w-full md:w-[57%] flex md:mr-4">
-              <PdfZoom
-                setScale={setScale}
-                scale={scale}
-                pdfOriginalWH={pdfOriginalWH}
-                containerWH={containerWH}
-                setZoomPercent={setZoomPercent}
-                zoomPercent={zoomPercent}
-              />
-              <div className="min-h-screen w-full md:w-[97%] ">
-                {/* this modal is used show alert set placeholder for all signers before send mail */}
-                <ModalUi
-                  isOpen={isSendAlert}
-                  title={"Fields required"}
-                  handleClose={() => setIsSendAlert(false)}
-                >
-                  <div className="h-full p-[20px]">
-                    <p>
-                      Please add at least one signature field for all roles.
-                    </p>
-                  </div>
-                </ModalUi>
-                <ModalUi
-                  isOpen={!IsReceipent}
-                  title={"Roles"}
-                  handleClose={() => setIsReceipent(true)}
-                >
-                  <div className="h-full p-[20px] text-center font-medium">
-                    <p>Please add roles first</p>
-                  </div>
-                </ModalUi>
-                {/* this modal is used show send mail  message and after send mail success message */}
-                <ModalUi
-                  isOpen={isCreateDocModal}
-                  title={"Create Document"}
-                  handleClose={() => setIsCreateDocModal(false)}
-                >
-                  <div className="h-full p-[20px]">
-                    <p>
-                      Do you want to create a document using the template you
-                      just created ?
-                    </p>
-                    <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
-                    {currentEmail.length > 0 && (
-                      <>
-                        <button
-                          onClick={() => {
-                            handleCreateDocModal();
-                          }}
-                          type="button"
-                          className="op-btn op-btn-primary"
-                        >
-                          Yes
-                        </button>
-                        <button
-                          onClick={() => {
-                            setIsCreateDocModal(false);
-                          }}
-                          type="button"
-                          className="op-btn op-btn-secondary ml-2"
-                        >
-                          No
-                        </button>
-                      </>
+              {/* pdf render view */}
+              <div className=" w-full  md:w-[57%] flex mr-4">
+                <PdfZoom
+                  setScale={setScale}
+                  scale={scale}
+                  pdfOriginalWH={pdfOriginalWH}
+                  containerWH={containerWH}
+                  setZoomPercent={setZoomPercent}
+                  zoomPercent={zoomPercent}
+                />
+                <div className=" w-full md:w-[95%] ">
+                  {/* this modal is used show alert set placeholder for all signers before send mail */}
+                  <ModalUi
+                    isOpen={isSendAlert}
+                    title={"Fields required"}
+                    handleClose={() => setIsSendAlert(false)}
+                  >
+                    <div className="h-full p-[20px]">
+                      <p>
+                        Please add at least one signature field for all roles.
+                      </p>
+                    </div>
+                  </ModalUi>
+                  <ModalUi
+                    isOpen={!IsReceipent}
+                    title={"Roles"}
+                    handleClose={() => setIsReceipent(true)}
+                  >
+                    <div className="h-full p-[20px] text-center font-medium">
+                      <p>Please add roles first</p>
+                    </div>
+                  </ModalUi>
+                  {/* this modal is used show send mail  message and after send mail success message */}
+                  <ModalUi
+                    isOpen={isCreateDocModal}
+                    title={"Create Document"}
+                    handleClose={() => setIsCreateDocModal(false)}
+                  >
+                    <div className="h-full p-[20px]">
+                      <p>
+                        Do you want to create a document using the template you
+                        just created ?
+                      </p>
+                      <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
+                      {currentEmail.length > 0 && (
+                        <>
+                          <button
+                            onClick={() => {
+                              handleCreateDocModal();
+                            }}
+                            type="button"
+                            className="op-btn op-btn-primary"
+                          >
+                            Yes
+                          </button>
+                          <button
+                            onClick={() => {
+                              setIsCreateDocModal(false);
+                            }}
+                            type="button"
+                            className="op-btn op-btn-secondary ml-2"
+                          >
+                            No
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </ModalUi>
+                  {isCreateDoc && <LoaderWithMsg isLoading={isLoading} />}
+                  <ModalUi
+                    isOpen={isShowEmail}
+                    title={"signers alert"}
+                    handleClose={() => {
+                      setIsShowEmail(false);
+                    }}
+                  >
+                    <div className="h-full p-[20px]">
+                      <p>Please select signer for add placeholder!</p>
+                      <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
+                      <button
+                        onClick={() => {
+                          setIsShowEmail(false);
+                        }}
+                        type="button"
+                        className="op-btn op-btn-primary"
+                      >
+                        Ok
+                      </button>
+                    </div>
+                  </ModalUi>
+                  <DropdownWidgetOption
+                    type={radioButtonWidget}
+                    title="Radio group"
+                    showDropdown={isRadio}
+                    setShowDropdown={setIsRadio}
+                    handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                    currWidgetsDetails={currWidgetsDetails}
+                    setCurrWidgetsDetails={setCurrWidgetsDetails}
+                    handleClose={handleNameModal}
+                    isSubscribe={isSubscribe}
+                  />
+                  <DropdownWidgetOption
+                    type="checkbox"
+                    title="Checkbox"
+                    showDropdown={isCheckbox}
+                    setShowDropdown={setIsCheckbox}
+                    handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                    currWidgetsDetails={currWidgetsDetails}
+                    setCurrWidgetsDetails={setCurrWidgetsDetails}
+                    handleClose={handleNameModal}
+                    isSubscribe={isSubscribe}
+                  />
+                  <DropdownWidgetOption
+                    type="dropdown"
+                    title="Dropdown options"
+                    showDropdown={showDropdown}
+                    setShowDropdown={setShowDropdown}
+                    handleSaveWidgetsOptions={handleSaveWidgetsOptions}
+                    currWidgetsDetails={currWidgetsDetails}
+                    setCurrWidgetsDetails={setCurrWidgetsDetails}
+                    handleClose={handleNameModal}
+                    isSubscribe={isSubscribe}
+                  />
+                  <PlaceholderCopy
+                    isPageCopy={isPageCopy}
+                    setIsPageCopy={setIsPageCopy}
+                    xyPostion={signerPos}
+                    setXyPostion={setSignerPos}
+                    allPages={allPages}
+                    pageNumber={pageNumber}
+                    signKey={signKey}
+                    // signerObjId={signerObjId}
+                    Id={uniqueId}
+                  />
+                  {/* pdf header which contain funish back button */}
+                  <Header
+                    completeBtnTitle={"Save"}
+                    isPlaceholder={true}
+                    pageNumber={pageNumber}
+                    allPages={allPages}
+                    changePage={changePage}
+                    pdfDetails={pdfDetails}
+                    signerPos={signerPos}
+                    signersdata={signersdata}
+                    isMailSend={isMailSend}
+                    alertSendEmail={alertSendEmail}
+                    isShowHeader={true}
+                    currentSigner={true}
+                    setIsEditTemplate={handleEditTemplateModal}
+                    dataTut4="reactourFour"
+                  />
+                  <div
+                    ref={divRef}
+                    data-tut="reactourThird"
+                    className="h-[95%]"
+                  >
+                    {containerWH && (
+                      <RenderPdf
+                        pageNumber={pageNumber}
+                        pdfNewWidth={pdfNewWidth}
+                        pdfDetails={pdfDetails}
+                        signerPos={signerPos}
+                        successEmail={false}
+                        numPages={numPages}
+                        pageDetails={pageDetails}
+                        placeholder={true}
+                        drop={drop}
+                        handleDeleteSign={handleDeleteSign}
+                        handleTabDrag={handleTabDrag}
+                        handleStop={handleStop}
+                        setPdfLoadFail={setPdfLoadFail}
+                        pdfLoadFail={pdfLoadFail}
+                        setSignerPos={setSignerPos}
+                        containerWH={containerWH}
+                        setIsResize={setIsResize}
+                        setZIndex={setZIndex}
+                        handleLinkUser={handleLinkUser}
+                        setUniqueId={setUniqueId}
+                        signersdata={signersdata}
+                        setIsPageCopy={setIsPageCopy}
+                        setSignKey={setSignKey}
+                        setSignerObjId={setSignerObjId}
+                        isDragging={isDragging}
+                        setShowDropdown={setShowDropdown}
+                        setCurrWidgetsDetails={setCurrWidgetsDetails}
+                        setWidgetType={setWidgetType}
+                        setIsRadio={setIsRadio}
+                        setSelectWidgetId={setSelectWidgetId}
+                        selectWidgetId={selectWidgetId}
+                        setIsCheckbox={setIsCheckbox}
+                        handleNameModal={setIsNameModal}
+                        setPdfRenderHeight={setPdfRenderHeight}
+                        pdfRenderHeight={pdfRenderHeight}
+                        handleTextSettingModal={handleTextSettingModal}
+                        pdfOriginalWH={pdfOriginalWH}
+                        setScale={setScale}
+                        scale={scale}
+                      />
                     )}
                   </div>
-                </ModalUi>
-                {isCreateDoc && <LoaderWithMsg isLoading={isLoading} />}
-                <ModalUi
-                  isOpen={isShowEmail}
-                  title={"signers alert"}
-                  handleClose={() => {
-                    setIsShowEmail(false);
-                  }}
-                >
-                  <div className="h-full p-[20px]">
-                    <p>Please select signer for add placeholder!</p>
-                    <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
-                    <button
-                      onClick={() => {
-                        setIsShowEmail(false);
-                      }}
-                      type="button"
-                      className="op-btn op-btn-primary"
-                    >
-                      Ok
-                    </button>
-                  </div>
-                </ModalUi>
-                <DropdownWidgetOption
-                  type={radioButtonWidget}
-                  title="Radio group"
-                  showDropdown={isRadio}
-                  setShowDropdown={setIsRadio}
-                  handleSaveWidgetsOptions={handleSaveWidgetsOptions}
-                  currWidgetsDetails={currWidgetsDetails}
-                  setCurrWidgetsDetails={setCurrWidgetsDetails}
-                  handleClose={handleNameModal}
-                  isSubscribe={isSubscribe}
-                />
-                <DropdownWidgetOption
-                  type="checkbox"
-                  title="Checkbox"
-                  showDropdown={isCheckbox}
-                  setShowDropdown={setIsCheckbox}
-                  handleSaveWidgetsOptions={handleSaveWidgetsOptions}
-                  currWidgetsDetails={currWidgetsDetails}
-                  setCurrWidgetsDetails={setCurrWidgetsDetails}
-                  handleClose={handleNameModal}
-                  isSubscribe={isSubscribe}
-                />
-                <DropdownWidgetOption
-                  type="dropdown"
-                  title="Dropdown options"
-                  showDropdown={showDropdown}
-                  setShowDropdown={setShowDropdown}
-                  handleSaveWidgetsOptions={handleSaveWidgetsOptions}
-                  currWidgetsDetails={currWidgetsDetails}
-                  setCurrWidgetsDetails={setCurrWidgetsDetails}
-                  handleClose={handleNameModal}
-                  isSubscribe={isSubscribe}
-                />
-                <PlaceholderCopy
-                  isPageCopy={isPageCopy}
-                  setIsPageCopy={setIsPageCopy}
-                  xyPostion={signerPos}
-                  setXyPostion={setSignerPos}
-                  allPages={allPages}
-                  pageNumber={pageNumber}
-                  signKey={signKey}
-                  // signerObjId={signerObjId}
-                  Id={uniqueId}
-                />
-                {/* pdf header which contain funish back button */}
-                <Header
-                  completeBtnTitle={"Save"}
-                  isPlaceholder={true}
-                  pageNumber={pageNumber}
-                  allPages={allPages}
-                  changePage={changePage}
-                  pdfDetails={pdfDetails}
-                  signerPos={signerPos}
-                  signersdata={signersdata}
-                  isMailSend={isMailSend}
-                  alertSendEmail={alertSendEmail}
-                  isShowHeader={true}
-                  currentSigner={true}
-                  setIsEditTemplate={handleEditTemplateModal}
-                  dataTut4="reactourFour"
-                />
-                <div ref={divRef} data-tut="reactourThird" className="h-[95%]">
-                  {containerWH && (
-                    <RenderPdf
-                      pageNumber={pageNumber}
-                      pdfNewWidth={pdfNewWidth}
-                      pdfDetails={pdfDetails}
-                      signerPos={signerPos}
-                      successEmail={false}
-                      numPages={numPages}
-                      pageDetails={pageDetails}
-                      placeholder={true}
-                      drop={drop}
-                      handleDeleteSign={handleDeleteSign}
-                      handleTabDrag={handleTabDrag}
-                      handleStop={handleStop}
-                      setPdfLoadFail={setPdfLoadFail}
-                      pdfLoadFail={pdfLoadFail}
-                      setSignerPos={setSignerPos}
-                      containerWH={containerWH}
-                      setIsResize={setIsResize}
-                      setZIndex={setZIndex}
-                      handleLinkUser={handleLinkUser}
-                      setUniqueId={setUniqueId}
-                      signersdata={signersdata}
-                      setIsPageCopy={setIsPageCopy}
-                      setSignKey={setSignKey}
-                      setSignerObjId={setSignerObjId}
-                      isDragging={isDragging}
-                      setShowDropdown={setShowDropdown}
-                      setCurrWidgetsDetails={setCurrWidgetsDetails}
-                      setWidgetType={setWidgetType}
-                      setIsRadio={setIsRadio}
-                      setSelectWidgetId={setSelectWidgetId}
-                      selectWidgetId={selectWidgetId}
-                      setIsCheckbox={setIsCheckbox}
-                      handleNameModal={setIsNameModal}
-                      setPdfRenderHeight={setPdfRenderHeight}
-                      pdfRenderHeight={pdfRenderHeight}
-                      handleTextSettingModal={handleTextSettingModal}
-                      pdfOriginalWH={pdfOriginalWH}
-                      setScale={setScale}
-                      scale={scale}
-                    />
-                  )}
                 </div>
               </div>
-            </div>
-            {/* signature button */}
-            {isMobile ? (
-              <div>
-                <WidgetComponent
-                  dataTut="reactourFirst"
-                  dataTut2="reactourSecond"
-                  pdfUrl={isMailSend}
-                  dragSignature={dragSignature}
-                  signRef={signRef}
-                  handleDivClick={handleDivClick}
-                  handleMouseLeave={handleMouseLeave}
-                  isDragSign={isDragSign}
-                  dragStamp={dragStamp}
-                  dragRef={dragRef}
-                  isDragStamp={isDragStamp}
-                  isSignYourself={false}
-                  addPositionOfSignature={addPositionOfSignature}
-                  signerPos={signerPos}
-                  signersdata={signersdata}
-                  isSelectListId={isSelectListId}
-                  setSignerObjId={setSignerObjId}
-                  setIsSelectId={setIsSelectId}
-                  setContractName={setContractName}
-                  isSigners={isSigners}
-                  setIsShowEmail={setIsShowEmail}
-                  isMailSend={isMailSend}
-                  setSelectedEmail={setSelectedEmail}
-                  selectedEmail={selectedEmail}
-                  handleAddSigner={handleAddSigner}
-                  setUniqueId={setUniqueId}
-                  setRoleName={setRoleName}
-                  handleDeleteUser={handleDeleteUser}
-                  handleRoleChange={handleRoleChange}
-                  handleOnBlur={handleOnBlur}
-                  title={"Roles"}
-                  initial={true}
-                  isTemplateFlow={true}
-                  sendInOrder={pdfDetails[0].SendinOrder}
-                  setSignersData={setSignersData}
-                  blockColor={blockColor}
-                  setBlockColor={setBlockColor}
-                />
-              </div>
-            ) : (
-              <div
-                className={`w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar`}
-              >
-                <div className={`max-h-screen`}>
-                  <SignerListPlace
-                    isMailSend={isMailSend}
+              {/* signature button */}
+              {isMobile ? (
+                <div>
+                  <WidgetComponent
+                    dataTut="reactourFirst"
+                    dataTut2="reactourSecond"
+                    pdfUrl={isMailSend}
+                    dragSignature={dragSignature}
+                    signRef={signRef}
+                    handleDivClick={handleDivClick}
+                    handleMouseLeave={handleMouseLeave}
+                    isDragSign={isDragSign}
+                    dragStamp={dragStamp}
+                    dragRef={dragRef}
+                    isDragStamp={isDragStamp}
+                    isSignYourself={false}
+                    addPositionOfSignature={addPositionOfSignature}
                     signerPos={signerPos}
                     signersdata={signersdata}
                     isSelectListId={isSelectListId}
                     setSignerObjId={setSignerObjId}
-                    setRoleName={setRoleName}
                     setIsSelectId={setIsSelectId}
                     setContractName={setContractName}
+                    isSigners={isSigners}
+                    setIsShowEmail={setIsShowEmail}
+                    isMailSend={isMailSend}
+                    setSelectedEmail={setSelectedEmail}
+                    selectedEmail={selectedEmail}
                     handleAddSigner={handleAddSigner}
                     setUniqueId={setUniqueId}
+                    setRoleName={setRoleName}
                     handleDeleteUser={handleDeleteUser}
                     handleRoleChange={handleRoleChange}
                     handleOnBlur={handleOnBlur}
                     title={"Roles"}
-                    sendInOrder={pdfDetails[0]?.SendinOrder}
+                    initial={true}
+                    isTemplateFlow={true}
+                    sendInOrder={pdfDetails[0].SendinOrder}
                     setSignersData={setSignersData}
                     blockColor={blockColor}
                     setBlockColor={setBlockColor}
                   />
-                  <div data-tut="reactourSecond">
-                    <WidgetComponent
+                </div>
+              ) : (
+                <div
+                  className={`w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar`}
+                >
+                  <div className={`max-h-screen`}>
+                    <SignerListPlace
                       isMailSend={isMailSend}
-                      dragSignature={dragSignature}
-                      signRef={signRef}
-                      handleDivClick={handleDivClick}
-                      handleMouseLeave={handleMouseLeave}
-                      isDragSign={isDragSign}
-                      dragStamp={dragStamp}
-                      dragRef={dragRef}
-                      isDragStamp={isDragStamp}
-                      isSignYourself={false}
-                      addPositionOfSignature={addPositionOfSignature}
+                      signerPos={signerPos}
+                      signersdata={signersdata}
+                      isSelectListId={isSelectListId}
+                      setSignerObjId={setSignerObjId}
+                      setRoleName={setRoleName}
+                      setIsSelectId={setIsSelectId}
+                      setContractName={setContractName}
+                      handleAddSigner={handleAddSigner}
+                      setUniqueId={setUniqueId}
+                      handleDeleteUser={handleDeleteUser}
+                      handleRoleChange={handleRoleChange}
+                      handleOnBlur={handleOnBlur}
                       title={"Roles"}
-                      initial={true}
-                      isTemplateFlow={true}
+                      sendInOrder={pdfDetails[0]?.SendinOrder}
+                      setSignersData={setSignersData}
+                      blockColor={blockColor}
+                      setBlockColor={setBlockColor}
                     />
+                    <div data-tut="reactourSecond">
+                      <WidgetComponent
+                        isMailSend={isMailSend}
+                        dragSignature={dragSignature}
+                        signRef={signRef}
+                        handleDivClick={handleDivClick}
+                        handleMouseLeave={handleMouseLeave}
+                        isDragSign={isDragSign}
+                        dragStamp={dragStamp}
+                        dragRef={dragRef}
+                        isDragStamp={isDragStamp}
+                        isSignYourself={false}
+                        addPositionOfSignature={addPositionOfSignature}
+                        title={"Roles"}
+                        initial={true}
+                        isTemplateFlow={true}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
+
+        <div data-tut="reactourAddbtn--observe">
+          <AddRoleModal
+            isModalRole={isModalRole}
+            roleName={roleName}
+            signersdata={signersdata}
+            setRoleName={setRoleName}
+            handleAddRole={handleAddRole}
+            handleCloseRoleModal={handleCloseRoleModal}
+          />
+        </div>
+        <div>
+          <LinkUserModal
+            handleAddUser={handleAddUser}
+            isAddUser={isAddUser}
+            uniqueId={uniqueId}
+            closePopup={closePopup}
+            signersData={signersdata}
+          />
+        </div>
+        <ModalUi
+          title={"Edit Template"}
+          isOpen={isEditTemplate}
+          handleClose={handleEditTemplateModal}
+        >
+          <EditTemplate
+            template={pdfDetails?.[0]}
+            onSuccess={handleEditTemplateForm}
+          />
+        </ModalUi>
+        <WidgetNameModal
+          widgetName={widgetName}
+          defaultdata={currWidgetsDetails}
+          isOpen={isNameModal}
+          handleClose={handleNameModal}
+          handleData={handleWidgetdefaultdata}
+          isSubscribe={isSubscribe}
+        />
+        <TextFontSetting
+          isTextSetting={isTextSetting}
+          setIsTextSetting={setIsTextSetting}
+          fontSize={fontSize}
+          setFontSize={setFontSize}
+          fontColor={fontColor}
+          setFontColor={setFontColor}
+          handleSaveFontSize={handleSaveFontSize}
+          currWidgetsDetails={currWidgetsDetails}
+        />
       </DndProvider>
-      <div data-tut="reactourAddbtn--observe">
-        <AddRoleModal
-          isModalRole={isModalRole}
-          roleName={roleName}
-          signersdata={signersdata}
-          setRoleName={setRoleName}
-          handleAddRole={handleAddRole}
-          handleCloseRoleModal={handleCloseRoleModal}
-        />
-      </div>
-      <div>
-        <LinkUserModal
-          handleAddUser={handleAddUser}
-          isAddUser={isAddUser}
-          uniqueId={uniqueId}
-          closePopup={closePopup}
-          signersData={signersdata}
-        />
-      </div>
-      <ModalUi
-        title={"Edit Template"}
-        isOpen={isEditTemplate}
-        handleClose={handleEditTemplateModal}
-      >
-        <EditTemplate
-          template={pdfDetails?.[0]}
-          onSuccess={handleEditTemplateForm}
-        />
-      </ModalUi>
-      <WidgetNameModal
-        widgetName={widgetName}
-        defaultdata={currWidgetsDetails}
-        isOpen={isNameModal}
-        handleClose={handleNameModal}
-        handleData={handleWidgetdefaultdata}
-        isSubscribe={isSubscribe}
-      />
-      <TextFontSetting
-        isTextSetting={isTextSetting}
-        setIsTextSetting={setIsTextSetting}
-        fontSize={fontSize}
-        setFontSize={setFontSize}
-        fontColor={fontColor}
-        setFontColor={setFontColor}
-        handleSaveFontSize={handleSaveFontSize}
-        currWidgetsDetails={currWidgetsDetails}
-      />
-    </div>
+    </>
   );
 };
 
