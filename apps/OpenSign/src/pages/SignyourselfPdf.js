@@ -923,7 +923,6 @@ function SignYourSelf() {
     const divRect = e.currentTarget.getBoundingClientRect();
     const mouseX = e.clientX - divRect.left;
     const mouseY = e.clientY - divRect.top;
-
     const xyPosition = {
       xPos: mouseX,
       yPos: mouseY
