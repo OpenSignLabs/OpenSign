@@ -5,7 +5,7 @@ import { Rnd } from "react-rnd";
 import {
   defaultWidthHeight,
   handleCopyNextToWidget,
-  isMobile,
+  isTabAndMobile,
   onChangeInput,
   radioButtonWidget,
   textInputWidget,
@@ -764,7 +764,7 @@ function Placeholder(props) {
           placeholderBorder={placeholderBorder}
         />
       )}
-      {isMobile ? (
+      {isTabAndMobile ? (
         <div
           // className="sm:inline-block md:inline-block lg:hidden "
           style={{
@@ -783,6 +783,7 @@ function Placeholder(props) {
             zIndex: "10"
           }}
           onTouchEnd={() => handleOnClickPlaceholder()}
+          onClick={() => handleOnClickPlaceholder()}
         >
           {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
 

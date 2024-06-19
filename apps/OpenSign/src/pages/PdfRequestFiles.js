@@ -332,6 +332,13 @@ function PdfRequestFiles() {
           message:
             "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
         });
+      } else {
+        const checkCurrentUser = documentData[0].Placeholders.find(
+          (data) => data.signerObjId === currUserId
+        );
+        if (checkCurrentUser) {
+          setCurrentSigner(true);
+        }
       }
 
       const isGuestSign = location.pathname.includes("/load/");
@@ -1728,7 +1735,6 @@ function PdfRequestFiles() {
                           pdfRequest={true}
                           signerObjectId={signerObjectId}
                           signedSigners={signedSigners}
-                          setCurrentSigner={setCurrentSigner}
                           setPdfLoadFail={setPdfLoadFail}
                           pdfLoadFail={pdfLoadFail}
                           setSignerPos={setSignerPos}
