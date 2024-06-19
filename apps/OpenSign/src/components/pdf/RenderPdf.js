@@ -600,6 +600,7 @@ function RenderPdf({
                   key={index}
                   width={containerWH.width}
                   scale={scale || 1}
+                  className="z-0"
                   pageNumber={pageNumber}
                   renderAnnotationLayer={false}
                   renderTextLayer={false}
