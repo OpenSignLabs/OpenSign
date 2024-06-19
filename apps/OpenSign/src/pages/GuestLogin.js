@@ -191,7 +191,7 @@ function GuestLogin() {
         <div className="m-1 md:m-2 p-[30px] text-base-content bg-base-100 op-card shadow-md">
           <div className="md:w-[250px] md:h-[66px] inline-block overflow-hidden mt-2 mb-11">
             {appLogo && (
-              <img src={appLogo} className="object-contain h-full" alt="logo" />
+              <img src={appLogo} className="object-contain" alt="logo" />
             )}
           </div>
           {contactId ? (
@@ -199,7 +199,7 @@ function GuestLogin() {
               {!EnterOTP ? (
                 <div className="w-full md:w-[50%] text-base-content">
                   <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
-                  <legend className="text-[12px] text-[#878787] mt-2">
+                  <legend className="text-[12px] text-[#878787] mt-2 mb-1">
                     Verification code is sent to your email
                   </legend>
                   <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
@@ -207,17 +207,17 @@ function GuestLogin() {
                       type="email"
                       name="mobile"
                       value={email}
-                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full disabled:text-[#5c5c5c] text-xs"
                       disabled
                     />
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-3">
                     <button
                       className="op-btn op-btn-primary"
                       onClick={(e) => handleSendOTPBtn(e)}
                       disabled={loading}
                     >
-                      {loading ? "Loading..." : "Send OTP"}
+                      {loading ? "Loading..." : "Get verification code"}
                     </button>
                   </div>
                 </div>
@@ -228,7 +228,7 @@ function GuestLogin() {
                 >
                   <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
                   <legend className="text-[12px] text-[#878787] mt-2">
-                    You will get a OTP via Email
+                    You will get a verification code via Email
                   </legend>
                   <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
                     <p className="text-sm">Enter Verification Code</p>
@@ -240,7 +240,7 @@ function GuestLogin() {
                       onChange={(e) => setOTP(e.target.value)}
                     />
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-2.5">
                     <button
                       className="op-btn op-btn-primary"
                       type="submit"
@@ -298,7 +298,7 @@ function GuestLogin() {
                     disabled
                   />
                 </div>
-                <div className="mb-2">
+                <div className="mt-2.5">
                   <label
                     htmlFor="phone"
                     className="block text-xs text-gray-700 font-semibold"

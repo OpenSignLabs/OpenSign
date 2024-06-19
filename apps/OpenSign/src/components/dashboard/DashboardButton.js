@@ -35,9 +35,7 @@ const DashboardButton = (props) => {
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
-        <div className="op-card-title text-lg ml-3 text-base-content">
-          {props.Label}
-        </div>
+        <div className=" text-lg ml-3 text-base-content">{props.Label}</div>
       </div>
     </div>
   );

@@ -96,7 +96,7 @@ const Header = ({ showSidebar }) => {
     <div className="op-navbar bg-base-100 shadow">
       <div className="flex-none">
         <button
-          className="op-btn op-btn-square op-btn-ghost focus:outline-none"
+          className="op-btn op-btn-square op-btn-ghost focus:outline-none hover:bg-transparent op-btn-sm no-animation"
           onClick={showSidebar}
         >
           <i className="fa-solid fa-bars text-xl text-base-content"></i>
@@ -151,7 +151,11 @@ const Header = ({ showSidebar }) => {
           </div>
         )}
         <div className="op-dropdown op-dropdown-end" id="profile-menu">
-          <div tabIndex={0} role="button" className="op-btn op-btn-ghost">
+          <div
+            tabIndex={0}
+            role="button"
+            className="op-btn op-btn-ghost op-btn-xs w-[10px] h-[20px] hover:bg-transparent"
+          >
             <i
               tabIndex={0}
               role="button"

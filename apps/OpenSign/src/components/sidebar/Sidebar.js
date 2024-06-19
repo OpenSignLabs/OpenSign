@@ -12,7 +12,9 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   const [submenuOpen, setSubmenuOpen] = useState(false);
   let username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
-  const tenantname = localStorage.getItem("TenantName");
+  const tenantname = localStorage.getItem("Extand_Class")
+    ? JSON.parse(localStorage.getItem("Extand_Class"))?.[0]?.Company
+    : "";
 
   useEffect(() => {
     if (localStorage.getItem("accesstoken")) {
