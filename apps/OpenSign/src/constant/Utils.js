@@ -382,14 +382,16 @@ export const getWidgetType = (item, isHeader) => {
           {!isMobile && <i className="fa-sharp fa-solid fa-grip-vertical"></i>}
           <span
             className={`${
-              isHeader && "md:hidden lg:inline-block"
+              isHeader && "md:text-[8px]  lg:text-[15px]"
             } md:inline-block text-center text-[15px] ml-[5px] font-semibold`}
           >
             {item.type}
           </span>
         </div>
         <div
-          className={` text-[20px] op-btn op-btn-primary rounded-none w-[40px] h-full flex justify-center items-center`}
+          className={`${
+            isHeader && "md:text-[8px] md:w-[20px] lg:text-[20px] lg:w-[40px] "
+          } text-[20px] op-btn op-btn-primary rounded-none w-[40px] h-full flex justify-center items-center`}
         >
           <i className={item.icon}></i>
         </div>

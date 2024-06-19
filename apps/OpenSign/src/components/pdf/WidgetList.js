@@ -27,6 +27,7 @@ function WidgetList(props) {
           onMouseDown={() => {
             props?.handleMouseLeave();
           }}
+          onTouchStart={props?.handleDivClick}
         >
           {item.ref && getWidgetType(item, isHeader)}
         </div>
