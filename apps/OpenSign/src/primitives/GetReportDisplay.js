@@ -1303,46 +1303,56 @@ const ReportTable = (props) => {
                               ))}
                           </div>
                           {isViewShare[item.objectId] && (
-                            <div className="fixed z-[999] inset-0 w-full h-full bg-black bg-opacity-[75%]">
-                              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-sm bg-white rounded shadow-md max-h-90 min-w-[90%] md:min-w-[400px] overflow-y-auto max-h-[340px] md:max-h-[400px] hide-scrollbar">
+                            <ModalUi
+                              isOpen
+                              showHeader={
+                                props.ReportName === "Templates" && true
+                              }
+                              title={"Signers"}
+                              reduceWidth={"md:max-w-[450px]"}
+                              handleClose={() => setIsViewShare({})}
+                            >
+                              {props.ReportName !== "Templates" && (
                                 <div
-                                  className="cursor-pointer absolute text-white text-[22px] font-medium rounded-full z-50 top-1 right-3"
+                                  className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-1 z-40"
                                   onClick={() => setIsViewShare({})}
                                 >
-                                  &times;
+                                  ✕
                                 </div>
-
-                                <table className="table-auto w-full">
-                                  <thead className="text-white h-[38px] sticky top-0 bg-[#32a3ac]">
-                                    <tr>
+                              )}
+                              <table className="op-table w-full overflow-auto">
+                                <thead className="h-[38px] sticky top-0 text-base-content text-sm pt-[15px] px-[20px]">
+                                  <tr>
+                                    {props.ReportName === "Templates" && (
+                                      <th className="p-2 pl-3 w-[30%]">
+                                        Roles
+                                      </th>
+                                    )}
+                                    <th className="pl-3 py-2">
+                                      {props.ReportName === "Templates"
+                                        ? "Email"
+                                        : "Signers"}
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {item.Placeholders.map((x, i) => (
+                                    <tr key={i} className="text-sm font-medium">
                                       {props.ReportName === "Templates" && (
-                                        <th className="p-2 pl-3">Roles</th>
-                                      )}
-                                      <th className="p-2">Signers</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {item.Placeholders.map((x, i) => (
-                                      <tr
-                                        key={i}
-                                        className="text-sm font-normal text-black odd:bg-white even:bg-gray-200"
-                                      >
-                                        {props.ReportName === "Templates" && (
-                                          <td className="text-[12px] p-2 pl-3">
-                                            {x.Role && x.Role}
-                                          </td>
-                                        )}
-                                        <td className="text-[12px] p-2 break-all">
-                                          {x.email
-                                            ? x.email
-                                            : x?.signerPtr?.Email || "-"}
+                                        <td className="text-[12px] p-2 pl-3 w-[30%]">
+                                          {x.Role && x.Role}
                                         </td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
+                                      )}
+                                      <td className="pl-3 text-[12px] py-2 break-all">
+                                        {x.email
+                                          ? x.email
+                                          : x?.signerPtr?.Email || "-"}
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </ModalUi>
                           )}
                           {isDeleteModal[item.objectId] && (
                             <ModalUi
