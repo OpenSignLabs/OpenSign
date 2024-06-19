@@ -918,17 +918,30 @@ function SignYourSelf() {
 
     setXyPostion(getUpdatePosition);
   };
-  //function for capture position on hover signature button
+  //function for capture position on hover or touch widgets button
   const handleDivClick = (e) => {
+    const isTouchEvent = e.type.startsWith("touch");
     const divRect = e.currentTarget.getBoundingClientRect();
-    const mouseX = e.clientX - divRect.left;
-    const mouseY = e.clientY - divRect.top;
-    const xyPosition = {
-      xPos: mouseX,
-      yPos: mouseY
-    };
-
-    setXYSignature(xyPosition);
+    let mouseX, mouseY;
+    if (isTouchEvent) {
+      const touch = e.touches[0]; // Get the first touch point
+      mouseX = touch.clientX - divRect.left;
+      mouseY = touch.clientY - divRect.top;
+      setSignBtnPosition([
+        {
+          xPos: mouseX,
+          yPos: mouseY
+        }
+      ]);
+    } else {
+      mouseX = e.clientX - divRect.left;
+      mouseY = e.clientY - divRect.top;
+      const xyPosition = {
+        xPos: mouseX,
+        yPos: mouseY
+      };
+      setXYSignature(xyPosition);
+    }
   };
 
   //function for capture position of x and y on hover signature button last position
