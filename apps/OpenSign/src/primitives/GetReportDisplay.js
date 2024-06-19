@@ -1583,11 +1583,11 @@ const ReportTable = (props) => {
             </tbody>
           </table>
         </div>
-        <div className="op-join flex flex-wrap items-center p-2 ">
+        <div className="op-join flex flex-wrap items-center p-2">
           {props.List.length > props.docPerPage && (
             <button
               onClick={() => paginateBack()}
-              className="op-join-item op-btn "
+              className="op-join-item op-btn op-btn-sm"
             >
               Prev
             </button>
@@ -1599,7 +1599,7 @@ const ReportTable = (props) => {
               disabled={x === "..."}
               className={`${
                 x === currentPage ? "op-btn-active" : ""
-              } op-join-item op-btn`}
+              } op-join-item op-btn op-btn-sm`}
             >
               {x}
             </button>
@@ -1607,7 +1607,7 @@ const ReportTable = (props) => {
           {props.List.length > props.docPerPage && (
             <button
               onClick={() => paginateFront()}
-              className="op-join-item op-btn"
+              className="op-join-item op-btn op-btn-sm"
             >
               Next
             </button>
@@ -1616,7 +1616,7 @@ const ReportTable = (props) => {
         {props.List?.length <= 0 && (
           <div
             className={`${
-              isDashboard ? "h-[330px]" : ""
+              isDashboard ? "h-[317px]" : ""
             } flex flex-col items-center justify-center w-ful bg-base-100 text-base-content rounded-xl py-4`}
           >
             <div className="w-[60px] h-[60px] overflow-hidden">

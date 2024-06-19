@@ -198,7 +198,7 @@ function Header({
                     )}
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger asChild>
-                        <div className="font-[650] text-[18px] px-2 ml-[4px] op-link op-link-info no-underline">
+                        <div className="font-[650] text-[18px] px-2 ml-[4px] text-base-content no-underline">
                           <i
                             className="fa fa-ellipsis-v"
                             aria-hidden="true"

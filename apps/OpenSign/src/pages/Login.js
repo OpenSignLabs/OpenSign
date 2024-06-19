@@ -1103,6 +1103,7 @@ function Login() {
                           type="email"
                           className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                           name="email"
+                          autoComplete="username"
                           value={state.email}
                           onChange={handleChange}
                           required
@@ -1122,6 +1123,7 @@ function Login() {
                                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                                 name="password"
                                 value={state.password}
+                                autoComplete="current-password"
                                 onChange={handleChange}
                                 required
                               />
