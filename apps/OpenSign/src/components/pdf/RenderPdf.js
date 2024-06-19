@@ -411,7 +411,6 @@ function RenderPdf({
                   key={index}
                   pageNumber={pageNumber}
                   width={containerWH.width}
-                  height={containerWH.height}
                   renderAnnotationLayer={false}
                   renderTextLayer={false}
                   onGetAnnotationsError={(error) => {
