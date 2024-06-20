@@ -1554,12 +1554,14 @@ export const multiSignEmbed = async (
 
         radioGroup.enableReadOnly();
       } else {
-        page.drawImage(img, {
-          x: xPos(position),
-          y: yPos(position),
+        const signature = {
+          x: position.xPosition,
+          y: position.yPosition,
           width: scaleWidth,
           height: scaleHeight
-        });
+        };
+        const imageOptions = getImagePosition(page, signature, 1);
+        page.drawImage(img, imageOptions);
       }
     });
   }
@@ -2072,4 +2074,93 @@ export async function findContact(value) {
   } catch (error) {
     console.error("Error fetching suggestions:", error);
   }
+}
+
+// `compensateRotation` is used to calculate x and y position of widget on portait, landscape pdf for pdf-lib
+function compensateRotation(pageRotation, x, y, scale, dimensions, fontSize) {
+  //fontsize = imagewidth
+  let rotationRads = (pageRotation * Math.PI) / 180;
+
+  //These coords are now from bottom/left
+  let coordsFromBottomLeft = { x: x / scale };
+  if (pageRotation === 90 || pageRotation === 270) {
+    coordsFromBottomLeft.y = dimensions.width - (y + fontSize) / scale;
+  } else {
+    coordsFromBottomLeft.y = dimensions.height - (y + fontSize) / scale;
+  }
+
+  let drawX = null;
+  let drawY = null;
+  if (pageRotation === 90) {
+    drawX =
+      coordsFromBottomLeft.x * Math.cos(rotationRads) -
+      coordsFromBottomLeft.y * Math.sin(rotationRads) +
+      dimensions.width;
+    drawY =
+      coordsFromBottomLeft.x * Math.sin(rotationRads) +
+      coordsFromBottomLeft.y * Math.cos(rotationRads);
+  } else if (pageRotation === 180) {
+    drawX =
+      coordsFromBottomLeft.x * Math.cos(rotationRads) -
+      coordsFromBottomLeft.y * Math.sin(rotationRads) +
+      dimensions.width;
+    drawY =
+      coordsFromBottomLeft.x * Math.sin(rotationRads) +
+      coordsFromBottomLeft.y * Math.cos(rotationRads) +
+      dimensions.height;
+  } else if (pageRotation === 270) {
+    drawX =
+      coordsFromBottomLeft.x * Math.cos(rotationRads) -
+      coordsFromBottomLeft.y * Math.sin(rotationRads);
+    drawY =
+      coordsFromBottomLeft.x * Math.sin(rotationRads) +
+      coordsFromBottomLeft.y * Math.cos(rotationRads) +
+      dimensions.height;
+  } else {
+    //no rotation
+    drawX = coordsFromBottomLeft.x;
+    drawY = coordsFromBottomLeft.y;
+  }
+  return { x: drawX, y: drawY };
+}
+
+// `getImagePosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
+function getImagePosition(page, image, sizeRatio) {
+  let pageWidth;
+  // pageHeight;
+  if ([90, 270].includes(page.getRotation().angle)) {
+    pageWidth = page.getHeight();
+    // pageHeight = page.getWidth();
+  } else {
+    pageWidth = page.getWidth();
+    // pageHeight = page.getHeight();
+  }
+
+  // eslint-disable-next-line
+  if (!image?.hasOwnProperty("vpWidth")) {
+    image["vpWidth"] = pageWidth;
+  }
+
+  const pageRatio = pageWidth / (image.vpWidth * sizeRatio);
+  const imageWidth = image.width * sizeRatio * pageRatio;
+  const imageHeight = image.height * sizeRatio * pageRatio;
+  const imageX = image.x * sizeRatio * pageRatio;
+  const imageYFromTop = image.y * sizeRatio * pageRatio;
+
+  const correction = compensateRotation(
+    page.getRotation().angle,
+    imageX,
+    imageYFromTop,
+    1,
+    page.getSize(),
+    imageHeight
+  );
+
+  return {
+    width: imageWidth,
+    height: imageHeight,
+    x: correction.x,
+    y: correction.y,
+    rotate: page.getRotation()
+  };
 }
