@@ -234,7 +234,7 @@ const HomeLayout = () => {
   }
 
   const closeSidebar = () => {
-    if (width <= 768) {
+    if (width <= 1023) {
       setIsOpen(false);
     }
   };
