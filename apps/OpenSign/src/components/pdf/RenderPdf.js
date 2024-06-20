@@ -422,7 +422,8 @@ function RenderPdf({
           style={{
             position: "relative",
             boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px",
-            height: window.innerHeight + "px"
+            height: window.innerHeight + "px",
+            zIndex: 0
           }}
           noScrollY={false}
           noScrollX={scale === 1 ? true : false}
@@ -600,7 +601,7 @@ function RenderPdf({
                   key={index}
                   width={containerWH.width}
                   scale={scale || 1}
-                  className="z-0"
+                  className={"-z-[1]"} // when user zoom-in in tablet widgets move backward that's why pass -z-[1]
                   pageNumber={pageNumber}
                   renderAnnotationLayer={false}
                   renderTextLayer={false}

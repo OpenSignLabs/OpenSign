@@ -309,7 +309,7 @@ function PlaceholderType(props) {
           alt="signature"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-[99%] h-full object-contain"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="text-[11px] text-black justify-center">
@@ -327,7 +327,7 @@ function PlaceholderType(props) {
           alt="stamp"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-[99%] h-full object-contain"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="text-[11px] text-black justify-center">
@@ -470,7 +470,7 @@ function PlaceholderType(props) {
           alt="initials"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-[99%] h-full object-contain"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="text-[11px] text-black justify-center">
@@ -650,7 +650,7 @@ function PlaceholderType(props) {
           alt="image"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-[99%] h-full object-contain"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="text-[11px] text-black justify-center">
@@ -761,7 +761,7 @@ function PlaceholderType(props) {
             alt="image"
             draggable="false"
             src={props.pos.SignUrl}
-            className="w-[99%] h-full object-contain"
+            className="w-full h-full object-contain"
           />
         </div>
       ) : (

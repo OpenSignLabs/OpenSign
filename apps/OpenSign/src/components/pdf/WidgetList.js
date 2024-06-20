@@ -1,9 +1,7 @@
 import React from "react";
 import { getWidgetType } from "../../constant/Utils";
-import { useSelector } from "react-redux";
 
 function WidgetList(props) {
-  const isHeader = useSelector((state) => state.showHeader);
   return props.updateWidgets.map((item, ind) => {
     return (
       <div className="2xl:p-3 mb-[5px]" key={ind}>
@@ -24,12 +22,10 @@ function WidgetList(props) {
             }
           }}
           onMouseMove={props?.handleDivClick}
-          onMouseDown={() => {
-            props?.handleMouseLeave();
-          }}
+          onMouseDown={() => props?.handleMouseLeave()}
           onTouchStart={props?.handleDivClick}
         >
-          {item.ref && getWidgetType(item, isHeader)}
+          {item.ref && getWidgetType(item)}
         </div>
       </div>
     );
