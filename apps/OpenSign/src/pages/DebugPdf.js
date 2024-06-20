@@ -56,7 +56,7 @@ const DebugPdf = () => {
       const fetchPdfMetadata = async () => {
         try {
           const pdfDataURL = URL.createObjectURL(pdf); // Convert File to data URL
-          console.log("pdfDataURL ", pdfDataURL);
+          // console.log("pdfDataURL ", pdfDataURL);
           const pdfInfo = await pdfjs.getDocument({ url: pdfDataURL }).promise;
           const pdfType = await inferPdfType(pdfInfo);
           setPdfDetails((prevDetails) => ({
