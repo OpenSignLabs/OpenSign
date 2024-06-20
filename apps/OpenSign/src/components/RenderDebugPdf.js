@@ -1,6 +1,6 @@
 import React from "react";
 import { Document, Page } from "react-pdf";
-import { Stage, Layer, Rect } from "react-konva";
+import { Stage, Layer, Rect, Text } from "react-konva";
 const RenderDebugPdf = (props) => {
   return (
     <div>
@@ -47,16 +47,30 @@ const RenderDebugPdf = (props) => {
             {props.annotations
               .filter((value) => value.page === props.pageNumber)
               .map((value) => {
+                const textX = value.x + value.width / 3;
+                const textY = value.y + value.height / 2.5;
                 return (
-                  <Rect
-                    key={value.key}
-                    x={value.x}
-                    y={value.y}
-                    width={value.width}
-                    height={value.height}
-                    fill="transparent"
-                    stroke="black"
-                  />
+                  <React.Fragment key={value.key}>
+                    <Rect
+                      x={value.x}
+                      y={value.y}
+                      width={value.width}
+                      height={value.height}
+                      fill="#cbe9ed"
+                      stroke="black"
+                    />
+                    <Text
+                      x={textX}
+                      y={textY}
+                      text={
+                        value?.key > 0 ? "box " + value.key.toString() : "box"
+                      }
+                      fontSize={16}
+                      fill="black"
+                      align="center"
+                      verticalAlign="middle"
+                    />
+                  </React.Fragment>
                 );
               })}
           </Layer>
