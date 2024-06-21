@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
 import {
@@ -28,7 +28,8 @@ function RenderPdf({
   pdfRequest,
   signerObjectId,
   signedSigners,
-  setPdfLoadFail,
+  pdfLoad,
+  setPdfLoad,
   placeholder,
   setSignerPos,
   setXyPostion,
@@ -55,19 +56,19 @@ function RenderPdf({
   handleTextSettingModal,
   setTempSignerId,
   uniqueId,
-  setPdfRenderHeight,
   pdfOriginalWH,
   scale
 }) {
-  const [isLoadPdf, setIsLoadPdf] = useState(false);
-
   const isMobile = window.innerWidth < 767;
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
 
   // handle signature block width and height according to screen
   const posWidth = (pos, signYourself) => {
-    const containerScale = containerWH.width / pdfOriginalWH.width;
+    const getPdfPageWidth = pdfOriginalWH.find(
+      (data) => data.pageNumber === pageNumber
+    );
+    const containerScale = containerWH.width / getPdfPageWidth.width || 1;
     const defaultWidth = defaultWidthHeight(pos.type).width;
     const posWidth = pos.Width ? pos.Width : defaultWidth;
     if (signYourself) {
@@ -93,7 +94,10 @@ function RenderPdf({
     }
   };
   const posHeight = (pos, signYourself) => {
-    const containerScale = containerWH.width / pdfOriginalWH.width;
+    const getPdfPageWidth = pdfOriginalWH.find(
+      (data) => data.pageNumber === pageNumber
+    );
+    const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
 
     const posHeight = pos.Height || defaultWidthHeight(pos.type).height;
     if (signYourself) {
@@ -189,6 +193,7 @@ function RenderPdf({
                         scale={scale}
                         containerWH={containerWH}
                         pdfOriginalWH={pdfOriginalWH}
+                        pageNumber={pageNumber}
                       />
                     </React.Fragment>
                   )
@@ -248,9 +253,8 @@ function RenderPdf({
           ref={drop}
           id="container"
         >
-          {isLoadPdf &&
-            containerWH?.width &&
-            pdfOriginalWH?.width &&
+          {containerWH?.width &&
+            pdfOriginalWH.length > 0 &&
             (pdfRequest
               ? signerPos.map((data, key) => {
                   return (
@@ -315,6 +319,7 @@ function RenderPdf({
                                         scale={scale}
                                         containerWH={containerWH}
                                         pdfOriginalWH={pdfOriginalWH}
+                                        pageNumber={pageNumber}
                                       />
                                     </React.Fragment>
                                   );
@@ -367,6 +372,7 @@ function RenderPdf({
                                   }
                                   scale={scale}
                                   pdfOriginalWH={pdfOriginalWH}
+                                  pageNumber={pageNumber}
                                 />
                               )
                             );
@@ -379,7 +385,7 @@ function RenderPdf({
           <div className="flex items-center justify-center">
             <Document
               onLoadError={() => {
-                setPdfLoadFail(true);
+                setPdfLoad(false);
               }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
@@ -398,10 +404,6 @@ function RenderPdf({
               }
             >
               <Page
-                onLoadSuccess={({ height }) => {
-                  setPdfRenderHeight && setPdfRenderHeight(height);
-                  setIsLoadPdf(true);
-                }}
                 key={index}
                 pageNumber={pageNumber}
                 width={containerWH.width}
@@ -432,9 +434,9 @@ function RenderPdf({
             ref={drop}
             id="container"
           >
-            {isLoadPdf &&
+            {pdfLoad &&
               containerWH?.width &&
-              pdfOriginalWH?.width &&
+              pdfOriginalWH.length > 0 &&
               (pdfRequest //pdf request sign flow
                 ? signerPos?.map((data, key) => {
                     return (
@@ -499,6 +501,7 @@ function RenderPdf({
                                           scale={scale}
                                           containerWH={containerWH}
                                           pdfOriginalWH={pdfOriginalWH}
+                                          pageNumber={pageNumber}
                                         />
                                       </React.Fragment>
                                     );
@@ -556,6 +559,7 @@ function RenderPdf({
                                     scale={scale}
                                     containerWH={containerWH}
                                     pdfOriginalWH={pdfOriginalWH}
+                                    pageNumber={pageNumber}
                                   />
                                 </React.Fragment>
                               );
@@ -567,11 +571,7 @@ function RenderPdf({
             {/* this component for render pdf document is in middle of the component */}
             <Document
               onLoadError={() => {
-                const load = {
-                  status: false,
-                  type: "failed"
-                };
-                setPdfLoadFail(load);
+                pdfLoad(false);
               }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
@@ -590,10 +590,6 @@ function RenderPdf({
               }
             >
               <Page
-                onLoadSuccess={({ height }) => {
-                  setPdfRenderHeight && setPdfRenderHeight(height);
-                  setIsLoadPdf(true);
-                }}
                 key={index}
                 width={containerWH.width}
                 scale={scale || 1}

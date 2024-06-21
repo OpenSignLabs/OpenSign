@@ -70,7 +70,7 @@ const TemplatePlaceholder = () => {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
-  const [pdfOriginalWH, setPdfOriginalWH] = useState();
+  const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const signRef = useRef(null);
@@ -87,12 +87,8 @@ const TemplatePlaceholder = () => {
   const [blockColor, setBlockColor] = useState("");
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isNameModal, setIsNameModal] = useState(false);
-  const [pdfRenderHeight, setPdfRenderHeight] = useState();
   const [isTextSetting, setIsTextSetting] = useState(false);
-  const [pdfLoadFail, setPdfLoadFail] = useState({
-    status: false,
-    type: "load"
-  });
+  const [pdfLoad, setPdfLoad] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -369,7 +365,10 @@ const TemplatePlaceholder = () => {
       if (signer) {
         const posZIndex = zIndex + 1;
         setZIndex(posZIndex);
-        const containerScale = containerWH.width / pdfOriginalWH.width;
+        const getPdfPageWidth = pdfOriginalWH.find(
+          (data) => data.pageNumber === pageNumber
+        );
+        const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
         const key = randomId();
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
         const dragTypeValue = item?.text ? item.text : monitor.type;
@@ -537,14 +536,16 @@ const TemplatePlaceholder = () => {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
-    const scale = 1;
-    const { width, height } = firstPage.getViewport({ scale });
-    // console.log("width height", width, height);
-    setPdfOriginalWH({ width: width, height: height });
-    setPdfLoadFail({
-      status: true
-    });
+    let pdfWHObj = [];
+    const totalPages = pdf?.numPages;
+    for (let index = 0; index < totalPages; index++) {
+      const getPage = await pdf.getPage(index + 1);
+      const scale = 1;
+      const { width, height } = getPage.getViewport({ scale });
+      pdfWHObj.push({ pageNumber: index + 1, width, height });
+    }
+    setPdfOriginalWH(pdfWHObj);
+    setPdfLoad(true);
   };
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key) => {
@@ -560,7 +561,10 @@ const TemplatePlaceholder = () => {
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
       const signId = signerId; //? signerId : signerObjId;
       const keyValue = key ? key : dragKey;
-      const containerScale = containerWH.width / pdfOriginalWH.width;
+      const getPdfPageWidth = pdfOriginalWH.find(
+        (data) => data.pageNumber === pageNumber
+      );
+      const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
       if (keyValue >= 0) {
         const filterSignerPos = updateSignPos.filter(
           (data) => data.Id === signId
@@ -1343,7 +1347,6 @@ const TemplatePlaceholder = () => {
                 <PdfZoom
                   setScale={setScale}
                   scale={scale}
-                  pdfOriginalWH={pdfOriginalWH}
                   containerWH={containerWH}
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}
@@ -1508,8 +1511,8 @@ const TemplatePlaceholder = () => {
                         handleDeleteSign={handleDeleteSign}
                         handleTabDrag={handleTabDrag}
                         handleStop={handleStop}
-                        setPdfLoadFail={setPdfLoadFail}
-                        pdfLoadFail={pdfLoadFail}
+                        setPdfLoad={setPdfLoad}
+                        pdfLoad={pdfLoad}
                         setSignerPos={setSignerPos}
                         containerWH={containerWH}
                         setIsResize={setIsResize}
@@ -1529,8 +1532,6 @@ const TemplatePlaceholder = () => {
                         selectWidgetId={selectWidgetId}
                         setIsCheckbox={setIsCheckbox}
                         handleNameModal={setIsNameModal}
-                        setPdfRenderHeight={setPdfRenderHeight}
-                        pdfRenderHeight={pdfRenderHeight}
                         handleTextSettingModal={handleTextSettingModal}
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}
