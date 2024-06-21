@@ -175,7 +175,7 @@ function EmailComponent({
           {isLoading && (
             <div className="absolute w-full h-full flex flex-col justify-center items-center z-[20] bg-[#e6f2f2]/70">
               <Loader />
-              <span className="text-[12px] font-bold">
+              <span className="text-[12px] text-base-content">
                 This might take some time
               </span>
             </div>

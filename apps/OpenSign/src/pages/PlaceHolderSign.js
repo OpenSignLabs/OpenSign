@@ -87,7 +87,7 @@ function PlaceHolderSign() {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
-  const [pdfOriginalWH, setPdfOriginalWH] = useState();
+  const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const { docId } = useParams();
@@ -104,10 +104,7 @@ function PlaceHolderSign() {
   const [defaultBody, setDefaultBody] = useState("");
   const [defaultSubject, setDefaultSubject] = useState("");
   const [isTextSetting, setIsTextSetting] = useState(false);
-  const [pdfLoadFail, setPdfLoadFail] = useState({
-    status: false,
-    type: "load"
-  });
+  const [pdfLoad, setPdfLoad] = useState(false);
   const [isPageCopy, setIsPageCopy] = useState(false);
   const [uniqueId, setUniqueId] = useState("");
   const [roleName, setRoleName] = useState("");
@@ -131,7 +128,6 @@ function PlaceHolderSign() {
   const [requestBody, setRequestBody] = useState("");
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
-  const [pdfRenderHeight, setPdfRenderHeight] = useState();
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
@@ -467,7 +463,10 @@ function PlaceHolderSign() {
       setZIndex(posZIndex);
       const signer = signersdata.find((x) => x.Id === uniqueId);
       const key = randomId();
-      const containerScale = containerWH?.width / pdfOriginalWH?.width || 1;
+      const getPdfPageWidth = pdfOriginalWH.find(
+        (data) => data.pageNumber === pageNumber
+      );
+      const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
@@ -660,14 +659,16 @@ function PlaceHolderSign() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
-    const scale = 1;
-    const { width, height } = firstPage.getViewport({ scale });
-    // console.log("width height", width, height);
-    setPdfOriginalWH({ width: width, height: height });
-    setPdfLoadFail({
-      status: true
-    });
+    let pdfWHObj = [];
+    const totalPages = pdf?.numPages;
+    for (let index = 0; index < totalPages; index++) {
+      const getPage = await pdf.getPage(index + 1);
+      const scale = 1;
+      const { width, height } = getPage.getViewport({ scale });
+      pdfWHObj.push({ pageNumber: index + 1, width, height });
+    }
+    setPdfOriginalWH(pdfWHObj);
+    setPdfLoad(true);
   };
 
   //function for save x and y position and show signature  tab on that position
@@ -684,7 +685,10 @@ function PlaceHolderSign() {
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
       const signId = signerId ? signerId : uniqueId; //? signerId : signerObjId;
       const keyValue = key ? key : dragKey;
-      const containerScale = containerWH.width / pdfOriginalWH.width;
+      const getPdfPageWidth = pdfOriginalWH.find(
+        (data) => data.pageNumber === pageNumber
+      );
+      const containerScale = containerWH.width / getPdfPageWidth?.width;
 
       if (keyValue >= 0) {
         let filterSignerPos;
@@ -863,7 +867,6 @@ function PlaceHolderSign() {
         const pdfBytes = await multiSignEmbed(
           placeholder,
           pdfDoc,
-          pdfOriginalWH,
           isSignYourSelfFlow,
           containerWH
         );
@@ -1742,7 +1745,7 @@ function PlaceHolderSign() {
             {isUiLoading && (
               <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                 <Loader />
-                <span className="text-[13px] font-bold">
+                <span className="text-[13px] text-base-content">
                   This might take some time
                 </span>
               </div>
@@ -1779,11 +1782,10 @@ function PlaceHolderSign() {
                 pageNumber={pageNumber}
               />
               {/* pdf render view */}
-              <div className=" w-full  md:w-[57%] flex mr-4">
+              <div className=" w-full md:w-[57%] flex mr-4">
                 <PdfZoom
                   setScale={setScale}
                   scale={scale}
-                  pdfOriginalWH={pdfOriginalWH}
                   containerWH={containerWH}
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}
@@ -2068,8 +2070,8 @@ function PlaceHolderSign() {
                         handleDeleteSign={handleDeleteSign}
                         handleTabDrag={handleTabDrag}
                         handleStop={handleStop}
-                        setPdfLoadFail={setPdfLoadFail}
-                        pdfLoadFail={pdfLoadFail}
+                        setPdfLoad={setPdfLoad}
+                        pdfLoad={pdfLoad}
                         setSignerPos={setSignerPos}
                         containerWH={containerWH}
                         setIsResize={setIsResize}
@@ -2091,8 +2093,6 @@ function PlaceHolderSign() {
                         handleNameModal={setIsNameModal}
                         setTempSignerId={setTempSignerId}
                         uniqueId={uniqueId}
-                        setPdfRenderHeight={setPdfRenderHeight}
-                        pdfRenderHeight={pdfRenderHeight}
                         handleTextSettingModal={handleTextSettingModal}
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}

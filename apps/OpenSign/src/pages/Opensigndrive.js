@@ -598,11 +598,13 @@ function Opensigndrive() {
       {isLoading.isLoad ? (
         <div className="flex flex-col justify-center items-center h-[100vh] w-full">
           <Loader />
-          <span className="text-[13px] text-[gray]">{isLoading.message}</span>
+          <span className="text-[13px] text-base-content">
+            {isLoading.message}
+          </span>
         </div>
       ) : handleError ? (
         <div className="flex justify-center items-center h-[100vh] w-full">
-          <span className="text-[20px] text-[gray]">{handleError}</span>
+          <span className="text-[20px] text-base-content">{handleError}</span>
         </div>
       ) : (
         <>
@@ -625,7 +627,7 @@ function Opensigndrive() {
             >
               {handleFolderTab(folderName)}
             </div>
-            <div className="dropMenuBD">
+            <div className="flex flex-row items-center">
               <div
                 id="folder-menu"
                 className={
@@ -647,7 +649,7 @@ function Opensigndrive() {
                 >
                   <div className="flex flex-col">
                     <span
-                      className="dropdown-item itemColor"
+                      className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => setIsFolder(true)}
                     >
                       <i
@@ -657,14 +659,14 @@ function Opensigndrive() {
                       Create folder
                     </span>
                     <span
-                      className="dropdown-item itemColor"
+                      className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => navigate("/form/sHAnZphf69")}
                     >
                       <i className="fa-light fa-pen-nib mr-[5px]"></i>
                       Sign Yourself
                     </span>
                     <span
-                      className="dropdown-item itemColor"
+                      className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => navigate("/form/8mZzFxbG1z")}
                     >
                       <i className="fa-light fa-file-signature mr-[5px]"></i>
@@ -707,7 +709,7 @@ function Opensigndrive() {
                           setSelectedSort(value);
                           sortingData(value, null, pdfData);
                         }}
-                        className="dropdown-item itemColor"
+                        className="dropdown-item text-[10px] md:text-[13px]"
                         style={{
                           paddingLeft: selectedSort !== value && "31px"
                         }}
@@ -732,7 +734,7 @@ function Opensigndrive() {
                           setSortingOrder(order);
                           sortingData(null, order, pdfData);
                         }}
-                        className="dropdown-item itemColor"
+                        className="dropdown-item text-[10px] md:text-[13px]"
                         style={{
                           paddingLeft: sortingOrder !== order && "31px"
                         }}

@@ -27,10 +27,12 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
         FolderQuery.equalTo("Folder", folderPtr);
         FolderQuery.equalTo("Type", "Folder");
         FolderQuery.notEqualTo("IsArchive", true);
+        FolderQuery.equalTo("CreatedBy", Parse.User.current());
       } else {
         FolderQuery.doesNotExist("Folder");
         FolderQuery.equalTo("Type", "Folder");
         FolderQuery.notEqualTo("IsArchive", true);
+        FolderQuery.equalTo("CreatedBy", Parse.User.current());
       }
 
       const res = await FolderQuery.find();

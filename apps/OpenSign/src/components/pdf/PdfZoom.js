@@ -21,7 +21,7 @@ function PdfZoom(props) {
   };
   return (
     // md:mt-[41px] xl:mt-[63px]mt=[]
-    <span className=" hidden  md:flex flex-col gap-1 text-center md:w-[5%] mt-[50px] 2xl:mt-[63px]">
+    <span className="hidden md:flex flex-col gap-1 text-center md:w-[5%] mt-[50px] 2xl:mt-[63px]">
       <span
         className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px] cursor-pointer"
         onClick={onClickZoomIn}
@@ -30,11 +30,11 @@ function PdfZoom(props) {
         <i className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[30px]"></i>
       </span>
       <span
-        className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px] cursor-pointer "
+        className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px] cursor-pointer"
         onClick={handleReset}
         title="Reset"
       >
-        <i className="fa-light fa-arrows-rotate text-gray-500  2xl:text-[30px]"></i>
+        <i className="fa-light fa-magnifying-glass-arrows-rotate text-gray-500 2xl:text-[30px]"></i>
       </span>
       <span
         className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px]"
