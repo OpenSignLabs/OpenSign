@@ -18,7 +18,7 @@ function PrevNext({ pageNumber, allPages, changePage }) {
         onClick={previousPage}
       >
         <span className="block lg:hidden">
-          <i className="fa fa-backward" aria-hidden="true"></i>
+          <i className="fa-light fa-backward" aria-hidden="true"></i>
         </span>
         <span className="lg:block hidden 2xl:text-[30px]">Prev</span>
       </button>
@@ -31,7 +31,7 @@ function PrevNext({ pageNumber, allPages, changePage }) {
         onClick={nextPage}
       >
         <span className="block lg:hidden">
-          <i className="fa fa-forward" aria-hidden="true"></i>
+          <i className="fa-light fa-forward" aria-hidden="true"></i>
         </span>
         <span className="lg:block hidden 2xl:text-[30px]">Next</span>
       </button>

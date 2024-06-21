@@ -635,7 +635,7 @@ function Opensigndrive() {
               >
                 <div className="sort" data-tut="reactourSecond">
                   <i
-                    className="fa fa-plus-square"
+                    className="fa-light fa-plus-square"
                     aria-hidden="true"
                     style={{ fontSize: "25px", color: `${iconColor}` }}
                   ></i>
@@ -650,21 +650,24 @@ function Opensigndrive() {
                       className="dropdown-item itemColor"
                       onClick={() => setIsFolder(true)}
                     >
-                      <i className="fa fa-plus mr-[5px]" aria-hidden="true"></i>
+                      <i
+                        className="fa-light fa-plus mr-[5px]"
+                        aria-hidden="true"
+                      ></i>
                       Create folder
                     </span>
                     <span
                       className="dropdown-item itemColor"
                       onClick={() => navigate("/form/sHAnZphf69")}
                     >
-                      <i className="fas fa-pen-nib mr-[5px"></i>
+                      <i className="fa-light fa-pen-nib mr-[5px]"></i>
                       Sign Yourself
                     </span>
                     <span
                       className="dropdown-item itemColor"
                       onClick={() => navigate("/form/8mZzFxbG1z")}
                     >
-                      <i className="fa fa-file-signature mr-[5px"></i>
+                      <i className="fa-light fa-file-signature mr-[5px]"></i>
                       Request Signatures
                     </span>
                   </div>
@@ -681,7 +684,7 @@ function Opensigndrive() {
                   data-toggle="dropdown"
                 >
                   <i
-                    className="fa fa-sort-amount-asc mr-[5px] text-[14px]"
+                    className="fa-light fa-sort-amount-asc mr-[5px] text-[14px]"
                     aria-hidden="true"
                     style={{ color: `${iconColor}` }}
                   ></i>
@@ -706,16 +709,16 @@ function Opensigndrive() {
                         }}
                         className="dropdown-item itemColor"
                         style={{
-                          paddingLeft: selectedSort !== value && "33px"
+                          paddingLeft: selectedSort !== value && "31px"
                         }}
                       >
                         {selectedSort === value && (
                           <i
-                            className="fa fa-check mr-[5px"
+                            className="fa-light fa-check"
                             aria-hidden="true"
                           ></i>
                         )}
-                        {value}
+                        <span className="ml-[5px]">{value}</span>
                       </span>
                     );
                   })}
@@ -731,16 +734,16 @@ function Opensigndrive() {
                         }}
                         className="dropdown-item itemColor"
                         style={{
-                          paddingLeft: sortingOrder !== order && "33px"
+                          paddingLeft: sortingOrder !== order && "31px"
                         }}
                       >
                         {sortingOrder === order && (
                           <i
-                            className="fa fa-check mr-[5px"
+                            className="fa-light fa-check"
                             aria-hidden="true"
                           ></i>
                         )}
-                        {order}
+                        <span className="ml-[5px]">{order}</span>
                       </span>
                     );
                   })}
@@ -752,7 +755,7 @@ function Opensigndrive() {
                   <div className="sort" onClick={() => setIsList(!isList)}>
                     <i
                       onClick={() => setIsList(!isList)}
-                      className="fa fa-th-large"
+                      className="fa-light fa-th-large"
                       style={{ fontSize: "24px", color: `${iconColor}` }}
                       aria-hidden="true"
                     ></i>
@@ -764,7 +767,7 @@ function Opensigndrive() {
                     onClick={() => setIsList(!isList)}
                   >
                     <i
-                      className="fa fa-list"
+                      className="fa-light fa-list"
                       aria-hidden="true"
                       style={{ fontSize: "23px", color: `${iconColor}` }}
                     ></i>

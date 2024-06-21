@@ -951,7 +951,7 @@ const ReportTable = (props) => {
             <i
               data-tut="reactourFirst"
               onClick={() => navigate("/form/template")}
-              className="fa-solid fa-square-plus text-accent text-[40px]"
+              className="fa-light fa-square-plus text-accent text-[40px]"
             ></i>
           )}
           {props.form && (
@@ -959,7 +959,7 @@ const ReportTable = (props) => {
               className="cursor-pointer"
               onClick={() => handleContactFormModal()}
             >
-              <i className="fa-solid fa-square-plus text-accent text-[40px]"></i>
+              <i className="fa-light fa-square-plus text-accent text-[40px]"></i>
             </div>
           )}
         </div>
@@ -1427,14 +1427,14 @@ const ReportTable = (props) => {
                                         }}
                                       >
                                         <button className="bg-[#002864] text-white rounded w-[32px] h-[30px] focus:outline-none">
-                                          <i className="fa-solid fa-share-from-square"></i>{" "}
+                                          <i className="fa-light fa-share-from-square"></i>{" "}
                                         </button>
                                       </RWebShare>
                                       <button
                                         className="ml-2 bg-[#002864] text-white rounded w-[100px] h-[30px] focus:outline-none"
                                         onClick={() => copytoclipboard(share)}
                                       >
-                                        <i className="fa-solid fa-link"></i>{" "}
+                                        <i className="fa-light fa-link"></i>{" "}
                                         {copied[share.email]
                                           ? "Copied"
                                           : "Copy"}

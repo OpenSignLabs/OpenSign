@@ -6,7 +6,7 @@ const Tooltip = ({ id, message, url, iconColor }) =>
     <button onClick={() => openInNewTab(url)} className={"text-center"}>
       <sup>
         <i
-          className="fa-solid fa-question rounded-full border-[1.5px] py-[1.5px] px-[4px] text-[13px]"
+          className="fa-light fa-question rounded-full border-[1.5px] py-[1.5px] px-[4px] text-[13px]"
           style={{
             borderColor: iconColor ? iconColor : "#33bbff",
             color: iconColor ? iconColor : "#33bbff"
@@ -23,7 +23,7 @@ const Tooltip = ({ id, message, url, iconColor }) =>
       >
         <sup>
           <i
-            className="fa-solid fa-question rounded-full border-[1.5px] py-[1.5px] px-[4px] text-[13px]"
+            className="fa-light fa-question rounded-full border-[1.5px] py-[1.5px] px-[4px] text-[13px]"
             style={{
               borderColor: iconColor ? iconColor : "#33bbff",
               color: iconColor ? iconColor : "#33bbff"

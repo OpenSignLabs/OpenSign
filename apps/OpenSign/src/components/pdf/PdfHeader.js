@@ -67,7 +67,7 @@ function Header({
           <div className="flex justify-between items-center py-[5px] px-[10px] ">
             <div onClick={() => navigate(-1)}>
               <i
-                className="fa fa-arrow-left text-base-content"
+                className="fa-light fa-arrow-left text-base-content"
                 aria-hidden="true"
               ></i>
             </div>
@@ -80,7 +80,10 @@ function Header({
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <div className="op-link op-link-primary no-underline text-[16px] font-semibold pr-[3px] pl-[5px]">
-                    <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
+                    <i
+                      className="fa-light fa-ellipsis-v"
+                      aria-hidden="true"
+                    ></i>
                   </div>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Portal>
@@ -96,7 +99,7 @@ function Header({
                     >
                       <div className="flex flex-row">
                         <i
-                          className="fa fa-arrow-down mr-[2px]"
+                          className="fa-light fa-arrow-down mr-[2px]"
                           aria-hidden="true"
                         ></i>
                         Download
@@ -114,7 +117,7 @@ function Header({
                       >
                         <div className="border-none bg-[#fff]">
                           <i
-                            className="fa-solid fa-award mr-[2px]"
+                            className="fa-light fa-award mr-[2px]"
                             aria-hidden="true"
                           ></i>
                           Certificate
@@ -128,7 +131,7 @@ function Header({
                       >
                         <div className="flex flex-row">
                           <i
-                            className="fa fa-envelope mr-[2px]"
+                            className="fa-light fa-envelope mr-[2px]"
                             aria-hidden="true"
                           ></i>
                           Mail
@@ -143,7 +146,7 @@ function Header({
                     >
                       <div className="flex flex-row">
                         <i
-                          className="fa fa-print mr-[2px]"
+                          className="fa-light fa-print mr-[2px]"
                           aria-hidden="true"
                         ></i>
                         Print
@@ -200,7 +203,7 @@ function Header({
                       <DropdownMenu.Trigger asChild>
                         <div className="font-[650] text-[18px] px-2 ml-[4px] text-base-content no-underline">
                           <i
-                            className="fa fa-ellipsis-v"
+                            className="fa-light fa-ellipsis-v"
                             aria-hidden="true"
                           ></i>
                         </div>
@@ -221,7 +224,7 @@ function Header({
                             }
                           >
                             <i
-                              className="fa fa-arrow-down mr-[5px]"
+                              className="fa-light fa-arrow-down mr-[5px]"
                               aria-hidden="true"
                             ></i>
                             <span className="font-[500]">Download</span>
@@ -269,7 +272,7 @@ function Header({
                     onClick={() => setIsEditTemplate(true)}
                     className="outline-none border-none text-center mr-[5px]"
                   >
-                    <i className="fa-solid fa-gear fa-lg"></i>
+                    <i className="fa-light fa-gear fa-lg"></i>
                   </button>
                 )}
                 <button
@@ -305,7 +308,7 @@ function Header({
                     className="op-btn op-btn-secondary op-btn-sm mr-[5px] shadow"
                   >
                     <i
-                      className="fa-solid fa-award py-[3px]"
+                      className="fa-light fa-award py-[3px]"
                       aria-hidden="true"
                     ></i>
                     <span className="hidden lg:block">Certificate</span>
@@ -317,7 +320,10 @@ function Header({
                   type="button"
                   className="op-btn op-btn-neutral op-btn-sm mr-[5px] shadow"
                 >
-                  <i className="fa fa-print py-[3px]" aria-hidden="true"></i>
+                  <i
+                    className="fa-light fa-print py-[3px]"
+                    aria-hidden="true"
+                  ></i>
                   <span className="hidden lg:block">Print</span>
                 </button>
 
@@ -328,7 +334,10 @@ function Header({
                     handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
                   }
                 >
-                  <i className="fa fa-download py-[3px]" aria-hidden="true"></i>
+                  <i
+                    className="fa-light fa-download py-[3px]"
+                    aria-hidden="true"
+                  ></i>
                   <span className="hidden lg:block">Download</span>
                 </button>
               </div>
@@ -362,7 +371,10 @@ function Header({
                         role="button"
                         className="op-btn op-btn-info op-btn-sm shadow"
                       >
-                        <i className="fa fa-ellipsis-v" aria-hidden="true"></i>
+                        <i
+                          className="fa-light fa-ellipsis-v"
+                          aria-hidden="true"
+                        ></i>
                       </div>
                       <ul
                         tabIndex={0}
@@ -379,7 +391,7 @@ function Header({
                         >
                           <span className="font-semibold text-[12px]">
                             <i
-                              className="fa fa-arrow-down"
+                              className="fa-light fa-arrow-down"
                               aria-hidden="true"
                             ></i>{" "}
                             Download
@@ -401,7 +413,7 @@ function Header({
                   }
                   className="op-btn op-btn-secondary op-btn-sm font-medium text-[13px] mr-[5px] shadow"
                 >
-                  <i className="fa-solid fa-award" aria-hidden="true"></i>
+                  <i className="fa-light fa-award" aria-hidden="true"></i>
                   <span className="hidden lg:block">Certificate</span>
                 </button>
               )}
@@ -410,7 +422,7 @@ function Header({
                 type="button"
                 className="op-btn op-btn-neutral op-btn-sm font-medium text-[13px] mr-[5px] shadow"
               >
-                <i className="fa fa-print" aria-hidden="true"></i>
+                <i className="fa-light fa-print" aria-hidden="true"></i>
                 <span className="hidden lg:block">Print</span>
               </button>
               <button
@@ -420,7 +432,7 @@ function Header({
                   handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
                 }
               >
-                <i className="fa fa-download" aria-hidden="true"></i>
+                <i className="fa-light fa-download" aria-hidden="true"></i>
                 <span className="hidden lg:block">Download</span>
               </button>
               <button
@@ -428,7 +440,7 @@ function Header({
                 className="op-btn op-btn-info op-btn-sm font-medium text-[13px] mr-[5px] shadow"
                 onClick={() => setIsEmail(true)}
               >
-                <i className="fa fa-envelope" aria-hidden="true"></i>
+                <i className="fa-light fa-envelope" aria-hidden="true"></i>
                 <span className="hidden lg:block">Mail</span>
               </button>
             </div>
@@ -474,10 +486,8 @@ function Header({
           {isDownloading === "certificate"}{" "}
           <p>
             Your completion certificate is being generated. Please wait
-            momentarily.
-          </p>
-          <p>
-            If the download doesn&apos;t start shortly, click the button again.
+            momentarily. If the download doesn&apos;t start shortly, click the
+            button again.
           </p>
         </div>
       </ModalUi>

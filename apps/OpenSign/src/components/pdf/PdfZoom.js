@@ -27,14 +27,14 @@ function PdfZoom(props) {
         onClick={onClickZoomIn}
         title="Zoom in"
       >
-        <i className="fa-solid fa-magnifying-glass-plus text-gray-500 2xl:text-[30px]"></i>
+        <i className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[30px]"></i>
       </span>
       <span
         className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px] cursor-pointer "
         onClick={handleReset}
         title="Reset"
       >
-        <i className="fa-solid fa-arrows-rotate text-gray-500  2xl:text-[30px]"></i>
+        <i className="fa-light fa-arrows-rotate text-gray-500  2xl:text-[30px]"></i>
       </span>
       <span
         className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px]"
@@ -44,7 +44,7 @@ function PdfZoom(props) {
         }}
         title="Zoom out"
       >
-        <i className="fa-solid fa-magnifying-glass-minus text-gray-500 2xl:text-[30px]"></i>
+        <i className="fa-light fa-magnifying-glass-minus text-gray-500 2xl:text-[30px]"></i>
       </span>
     </span>
   );

@@ -131,7 +131,7 @@ const RecipientList = (props) => {
                 >
                   <span className="text-white uppercase font-bold text-center text-[12px]">
                     {isWidgetExist(obj.Id) ? (
-                      <i className="fa-solid fa-check"></i>
+                      <i className="fa-light fa-check"></i>
                     ) : (
                       <>
                         {obj.Name
@@ -251,7 +251,7 @@ const RecipientList = (props) => {
                       : "text-base-content"
                   } cursor-pointer ml-[5px]`}
                 >
-                  <i className="fa-regular fa-trash-can 2xl:text-[30px]"></i>
+                  <i className="fa-light fa-trash-can 2xl:text-[30px]"></i>
                 </div>
               )}
               <hr />

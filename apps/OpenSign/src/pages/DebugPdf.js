@@ -277,7 +277,7 @@ const DebugPdf = () => {
                     className="op-btn op-btn-outline op-btn-primary op-btn-xs rounded-md w-[25px] h-[25px] text-[12px] m-[2px] "
                     onClick={() => copytoclipboard(pdfDetails?.base64)}
                   >
-                    <i className="fa-solid fa-copy"></i>
+                    <i className="fa-light fa-copy"></i>
                   </span>
                 </div>
                 <div className="text-[18px] font-medium py-[10px] px-[12px] border-b-[1px] border-[gray]">
@@ -310,13 +310,13 @@ const DebugPdf = () => {
                             )
                           }
                         >
-                          <i className="fa-solid fa-copy"></i>
+                          <i className="fa-light fa-copy"></i>
                         </span>
                         <span
                           className="op-btn op-btn-outline op-btn-error op-btn-xs rounded-md w-[23px] h-[20px] text-[12px] m-[2px] "
                           onClick={() => handleDelete(coord.key)}
                         >
-                          <i className="fa-solid fa-trash-can"></i>
+                          <i className="fa-light fa-trash-can"></i>
                         </span>
                       </div>
                     </li>

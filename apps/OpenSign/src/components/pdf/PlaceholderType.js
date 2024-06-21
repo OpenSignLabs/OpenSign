@@ -145,7 +145,7 @@ function PlaceholderType(props) {
       ref={ref}
     >
       {value}
-      <i className="fa-regular fa-calendar  ml-[5px]"></i>
+      <i className="fa-light fa-calendar  ml-[5px]"></i>
     </div>
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";

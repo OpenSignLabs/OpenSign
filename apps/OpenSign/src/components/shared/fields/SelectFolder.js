@@ -177,11 +177,13 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
           className=" cursor-pointer rounded px-[20px] py-[20px] bg-base-100 border-[1px] border-base-200 shadow flex max-w-sm gap-8 items-center"
         >
           <div>
-            <i
-              className="far fa-folder-open text-[40px] text-neutral"
-              style={{ fontSize: "40px" }}
-              aria-hidden="true"
-            ></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+              className="w-[40px] h-[40px] fill-current text-neutral"
+            >
+              <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
+            </svg>
           </div>
           <div className="font-semibold ">
             <div className="flex items-center gap-2">
@@ -195,7 +197,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
                 // onClick={() => SetIsOpen(true)}
               >
                 <i
-                  className="fa fa-pencil cursor-pointer"
+                  className="fa-light fa-pencil cursor-pointer"
                   title="Select Folder"
                   aria-hidden="true"
                 ></i>
@@ -245,33 +247,46 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
           </div>
           <div className="mb-2">
             <div className="max-h-[210px] overflow-auto">
-              {!isAdd &&
-                folderList.length > 0 &&
-                folderList.map((folder) => (
-                  <div
-                    key={folder.objectId}
-                    className={`${
-                      folder.Type === "Folder"
-                        ? "cursor-pointer"
-                        : "cursor-default"
-                    } border-b-[1px] border-[#8a8a8a] py-2 mb-0.5"`}
-                    onClick={() =>
-                      folder.Type === "Folder" && handleSelect(folder)
-                    }
-                  >
-                    <div className="flex items-center gap-2">
-                      <i
-                        className={`${
-                          folder.Type === "Folder"
-                            ? "fa fa-folder op-text-secondary"
-                            : "fa fa-file op-text-primary"
-                        } text-[1.4rem]`}
-                        aria-hidden="true"
-                      ></i>
-                      <span className="font-semibold">{folder.Name}</span>
+              {!isAdd && folderList.length > 0
+                ? folderList.map((folder) => (
+                    <div
+                      key={folder.objectId}
+                      className={`${
+                        folder.Type === "Folder"
+                          ? "cursor-pointer"
+                          : "cursor-default"
+                      } border-b-[1px] border-[#8a8a8a] py-2 mb-0.5"`}
+                      onClick={() =>
+                        folder.Type === "Folder" && handleSelect(folder)
+                      }
+                    >
+                      <div className="flex items-center gap-2">
+                        {folder.Type === "Folder" ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            className="w-[1.4rem] h-[1.4rem] fill-current op-text-secondary"
+                          >
+                            <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            className="w-[1.4rem] h-[1.4rem] fill-current op-text-primary"
+                          >
+                            <path d="M374.629 150.627L233.371 9.373C227.371 3.371 219.23 0 210.746 0H64C28.652 0 0 28.652 0 64V448C0 483.345 28.652 512 64 512H320C355.348 512 384 483.345 384 448V173.254C384 164.767 380.629 156.629 374.629 150.627ZM224 22.629L361.375 160H248C234.781 160 224 149.234 224 136V22.629ZM368 448C368 474.467 346.469 496 320 496H64C37.531 496 16 474.467 16 448V64C16 37.533 37.531 16 64 16H208V136C208 158.062 225.938 176 248 176H368V448ZM96 264C96 268.406 99.594 272 104 272H280C284.406 272 288 268.406 288 264S284.406 256 280 256H104C99.594 256 96 259.594 96 264ZM280 320H104C99.594 320 96 323.594 96 328S99.594 336 104 336H280C284.406 336 288 332.406 288 328S284.406 320 280 320ZM280 384H104C99.594 384 96 387.594 96 392S99.594 400 104 400H280C284.406 400 288 396.406 288 392S284.406 384 280 384Z" />
+                          </svg>
+                        )}
+                        <span className="font-semibold">{folder.Name}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                : !isLoader && (
+                    <div className="text-base-content text-center my-2">
+                      No data found
+                    </div>
+                  )}
             </div>
             {isAdd && (
               <CreateFolder
@@ -281,8 +296,8 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
               />
             )}
             {isLoader && (
-              <div className="flex justify-center">
-                <i className="fa-solid fa-spinner fa-spin-pulse text-[30px]"></i>
+              <div className="flex justify-center my-4">
+                <i className="fa-light fa-spinner fa-spin-pulse text-[30px]"></i>
               </div>
             )}
           </div>
@@ -296,12 +311,12 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
           >
             {isAdd ? (
               <>
-                <i className="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                <i className="fa-light fa-arrow-left" aria-hidden="true"></i>
                 <span className="text-xs">Back</span>
               </>
             ) : (
               <>
-                <i className="fa-solid fa-square-plus" aria-hidden="true"></i>
+                <i className="fa-light fa-square-plus" aria-hidden="true"></i>
                 <span className="">Add folder</span>
               </>
             )}
@@ -311,7 +326,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
             title="Save Here"
             onClick={handleSubmit}
           >
-            <i className="fas fa-save" aria-hidden="true"></i>Save here
+            <i className="fa-light fa-save" aria-hidden="true"></i>Save here
           </div>
         </div>
       </ModalUi>

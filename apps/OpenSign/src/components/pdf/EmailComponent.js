@@ -191,7 +191,7 @@ function EmailComponent({
                   onClick={handleToPrint}
                   className="op-btn op-btn-neutral op-btn-sm text-[15px]"
                 >
-                  <i className="fa fa-print" aria-hidden="true"></i>
+                  <i className="fa-light fa-print" aria-hidden="true"></i>
                   Print
                 </button>
               )}
@@ -199,7 +199,7 @@ function EmailComponent({
                 className="op-btn op-btn-primary op-btn-sm text-[15px] ml-2"
                 onClick={() => handleDownloadPdf()}
               >
-                <i className="fa fa-download" aria-hidden="true"></i>
+                <i className="fa-light fa-download" aria-hidden="true"></i>
                 Download
               </button>
             </div>
@@ -230,7 +230,7 @@ function EmailComponent({
                             className="text-base-100 text-[13px] font-semibold ml-[7px] cursor-pointer"
                             onClick={() => removeChip(ind)}
                           >
-                            <i className="fa-solid fa-xmark"></i>
+                            <i className="fa-light fa-xmark"></i>
                           </span>
                         </div>
                       );
@@ -281,7 +281,7 @@ function EmailComponent({
                 }
               }}
             >
-              <i className="fa fa-plus" aria-hidden="true"></i>
+              <i className="fa-light fa-plus" aria-hidden="true"></i>
             </button>
 
             <div className="bg-[#e3e2e1] mt-[10px] p-[5px] rounded">

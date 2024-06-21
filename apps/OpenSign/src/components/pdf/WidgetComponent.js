@@ -297,7 +297,7 @@ function WidgetComponent({
                       </div>
                     )}
                     <div className="ml-[6px] text-[16px]">
-                      <i className="fa-solid fa-angle-down"></i>
+                      <i className="fa-light fa-angle-down"></i>
                     </div>
                   </span>
                 </div>
@@ -310,7 +310,7 @@ function WidgetComponent({
                   className="op-btn op-btn-accent w-full my-[2px]"
                   onClick={() => handleAddSigner()}
                 >
-                  <i className="fa-solid fa-plus"></i>
+                  <i className="fa-light fa-plus"></i>
                   <span>Add role</span>
                 </div>
               ) : (
@@ -320,7 +320,7 @@ function WidgetComponent({
                     className="op-btn op-btn-accent w-full my-[2px]"
                     onClick={() => setIsAddSigner(true)}
                   >
-                    <i className="fa-solid fa-plus"></i>
+                    <i className="fa-light fa-plus"></i>
                     <span>Add recipients</span>
                   </div>
                 )

@@ -248,72 +248,72 @@ export const handleImageResize = (
 export const widgets = [
   {
     type: "signature",
-    icon: "fa-solid fa-pen-nib",
+    icon: "fa-light fa-pen-nib",
     iconSize: "20px"
   },
   {
     type: "stamp",
-    icon: "fa-solid fa-stamp",
+    icon: "fa-light fa-stamp",
     iconSize: "19px"
   },
   {
     type: "initials",
-    icon: "fa-solid fa-signature",
+    icon: "fa-light fa-signature",
     iconSize: "15px"
   },
   {
     type: "name",
-    icon: "fa-solid fa-user",
+    icon: "fa-light fa-user",
     iconSize: "21px"
   },
   {
     type: "job title",
-    icon: "fa-solid fa-address-card",
+    icon: "fa-light fa-address-card",
     iconSize: "17px"
   },
   {
     type: "company",
-    icon: "fa-solid fa-building",
+    icon: "fa-light fa-building",
     iconSize: "25px"
   },
   {
     type: "date",
-    icon: "fa-solid fa-calendar-days",
+    icon: "fa-light fa-calendar-days",
     iconSize: "20px"
   },
   {
     type: textWidget,
-    icon: "fa-solid fa-text-width",
+    icon: "fa-light fa-text-width",
     iconSize: "20px"
   },
   {
     type: textInputWidget,
-    icon: "fa-solid fa-font",
+    icon: "fa-light fa-font",
     iconSize: "21px"
   },
   {
     type: "checkbox",
-    icon: "fa-solid fa-square-check",
+    icon: "fa-light fa-square-check",
     iconSize: "22px"
   },
   {
     type: "dropdown",
-    icon: "fa-solid fa-circle-chevron-down",
+    icon: "fa-light fa-circle-chevron-down",
     iconSize: "19px"
   },
   {
     type: radioButtonWidget,
-    icon: "fa-regular fa-circle-dot",
+    icon: "fa-light fa-circle-dot",
     iconSize: "20px"
   },
   {
     type: "image",
-    icon: "fa-solid fa-image",
+    icon: "fa-light fa-image",
     iconSize: "20px"
   },
   {
     type: "email",
-    icon: "fa-solid fa-envelope",
+    icon: "fa-light fa-envelope",
     iconSize: "20px"
   }
 ];
@@ -379,7 +379,7 @@ export const getWidgetType = (item) => {
     <div className="op-btn w-fit md:w-[100%] op-btn-primary op-btn-outline op-btn-sm focus:outline-none outline outline-[1.5px] ml-[6px] md:ml-0 p-0 overflow-hidden">
       <div className="w-full h-full flex md:justify-between items-center">
         <div className="flex justify-start items-center text-[13px] ml-1">
-          {!isMobile && <i className="fa-sharp fa-solid fa-grip-vertical"></i>}
+          {!isMobile && <i className="fa-light fa-grip-vertical"></i>}
           <span className="md:inline-block text-center text-[15px] ml-[5px] font-semibold pr-1 md:pr-0">
             {item.type}
           </span>

@@ -17,10 +17,10 @@ function DriveBody(props) {
   const [selectDoc, setSelectDoc] = useState();
   const [isDeleteDoc, setIsDeleteDoc] = useState(false);
   const contextMenu = [
-    { type: "Download", icon: "fa-solid fa-arrow-down" },
-    { type: "Rename", icon: "fa-solid fa-font" },
-    { type: "Move", icon: "fa-solid fa-file-export" },
-    { type: "Delete", icon: "fa-solid fa-trash" }
+    { type: "Download", icon: "fa-light fa-arrow-down" },
+    { type: "Rename", icon: "fa-light fa-font" },
+    { type: "Move", icon: "fa-light fa-file-export" },
+    { type: "Delete", icon: "fa-light fa-trash" }
   ];
   const navigate = useNavigate();
 
@@ -320,10 +320,13 @@ function DriveBody(props) {
       data.Type === "Folder" ? (
         <tr onClick={() => handleOnclikFolder(data)}>
           <td className="cursor-pointer flex items-center">
-            <i
-              className="fa fa-folder mr-[8px] text-[26px] op-text-secondary"
-              aria-hidden="true"
-            ></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+              className="w-[26px] h-[26px] fill-current op-text-secondary"
+            >
+              <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
+            </svg>
             <span className="text-[12px] font-medium">{data.Name}</span>
           </td>
           <td>_</td>
@@ -334,7 +337,13 @@ function DriveBody(props) {
       ) : (
         <tr onClick={() => checkPdfStatus(data)}>
           <td className="cursor-pointer flex items-center">
-            <i className="fa-solid fa-file-lines mr-[8px] text-[26px] op-text-primary"></i>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 384 512"
+              className="w-[26px] h-[26px] fill-current op-text-primary"
+            >
+              <path d="M374.629 150.627L233.371 9.373C227.371 3.371 219.23 0 210.746 0H64C28.652 0 0 28.652 0 64V448C0 483.345 28.652 512 64 512H320C355.348 512 384 483.345 384 448V173.254C384 164.767 380.629 156.629 374.629 150.627ZM224 22.629L361.375 160H248C234.781 160 224 149.234 224 136V22.629ZM368 448C368 474.467 346.469 496 320 496H64C37.531 496 16 474.467 16 448V64C16 37.533 37.531 16 64 16H208V136C208 158.062 225.938 176 248 176H368V448ZM96 264C96 268.406 99.594 272 104 272H280C284.406 272 288 268.406 288 264S284.406 256 280 256H104C99.594 256 96 259.594 96 264ZM280 320H104C99.594 320 96 323.594 96 328S99.594 336 104 336H280C284.406 336 288 332.406 288 328S284.406 320 280 320ZM280 384H104C99.594 384 96 387.594 96 392S99.594 400 104 400H280C284.406 400 288 396.406 288 392S284.406 384 280 384Z" />
+            </svg>
             <span className="text-[12px] font-medium">{data.Name}</span>
           </td>
           <td>{createddate}</td>
@@ -346,7 +355,7 @@ function DriveBody(props) {
                 e.stopPropagation();
                 handleMenuItemClick("Download", data);
               }}
-              className="fa fa-download mr-[8px] op-text-primary"
+              className="fa-light fa-download mr-[8px] op-text-primary"
               aria-hidden="true"
             ></i>
           </td>
@@ -356,17 +365,19 @@ function DriveBody(props) {
       <div key={ind} className="relative w-[100px] h-[100px] mx-2 my-3">
         <ContextMenu.Root>
           <ContextMenu.Trigger className="flex flex-col justify-center items-center">
-            <div data-tut={props.dataTutSeventh}>
-              {/* <img
-                alt="folder"
-                onClick={() => handleOnclikFolder(data)}
-                src={folder}
-                className="w-full h-full"
-              /> */}
-              <i
-                className="fa-solid fa-folder text-[100px] mx-auto op-text-secondary"
-                onClick={() => handleOnclikFolder(data)}
-              ></i>
+            {/* folder */}
+            <div
+              data-tut={props.dataTutSeventh}
+              onClick={() => handleOnclikFolder(data)}
+              className="cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                className="w-[100px] h-[100px] fill-current op-text-secondary"
+              >
+                <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
+              </svg>
               {rename === data.objectId ? (
                 <input
                   onFocus={() => {
@@ -402,7 +413,7 @@ function DriveBody(props) {
                 onClick={() => handleMenuItemClick("Rename", data)}
                 className="ContextMenuItem"
               >
-                <i className="fa-solid fa-font mr-[8px]"></i>
+                <i className="fa-light fa-font mr-[8px]"></i>
                 <span>Rename</span>
               </ContextMenu.Item>
             </ContextMenu.Content>
@@ -416,61 +427,63 @@ function DriveBody(props) {
             <ContextMenu.Root>
               <div className="relative w-[100px] h-[100px] mx-2 my-3">
                 <ContextMenu.Trigger className="flex flex-col justify-center items-center">
-                  {/* <img
-                    alt="PDF"
-                    className="w-full h-full"
-                    src={pdfLogo}
-                    onClick={() => checkPdfStatus(data)}
-                  /> */}
-                  <i
-                    className="fa-solid fa-file-lines text-[100px] text-neutral"
-                    onClick={() => checkPdfStatus(data)}
+                  {/* pdf */}
+                  <div
                     data-tut={props.dataTutSixth}
-                  ></i>
-
-                  {rename === data.objectId ? (
-                    <input
-                      autoFocus={true}
-                      type="text"
-                      onFocus={() => {
-                        inputRef.current.setSelectionRange(0, 0);
-                        const input = inputRef.current;
-                        if (input) {
-                          input.select();
-                        }
-                      }}
-                      onBlur={() => handledRenameDoc(data)}
-                      onKeyDown={(e) => handleEnterPress(e, data)}
-                      ref={inputRef}
-                      defaultValue={renameValue}
-                      // value={renameValue}
-                      onChange={(e) => setRenameValue(e.target.value)}
-                      className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
-                    />
-                  ) : (
-                    <span className="fileName">{data.Name}</span>
-                  )}
+                    onClick={() => checkPdfStatus(data)}
+                    className="cursor-pointer"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 384 512"
+                      className="w-[100px] h-[100px] fill-current op-text-primary"
+                    >
+                      <path d="M374.629 150.627L233.371 9.373C227.371 3.371 219.23 0 210.746 0H64C28.652 0 0 28.652 0 64V448C0 483.345 28.652 512 64 512H320C355.348 512 384 483.345 384 448V173.254C384 164.767 380.629 156.629 374.629 150.627ZM224 22.629L361.375 160H248C234.781 160 224 149.234 224 136V22.629ZM368 448C368 474.467 346.469 496 320 496H64C37.531 496 16 474.467 16 448V64C16 37.533 37.531 16 64 16H208V136C208 158.062 225.938 176 248 176H368V448ZM96 264C96 268.406 99.594 272 104 272H280C284.406 272 288 268.406 288 264S284.406 256 280 256H104C99.594 256 96 259.594 96 264ZM280 320H104C99.594 320 96 323.594 96 328S99.594 336 104 336H280C284.406 336 288 332.406 288 328S284.406 320 280 320ZM280 384H104C99.594 384 96 387.594 96 392S99.594 400 104 400H280C284.406 400 288 396.406 288 392S284.406 384 280 384Z" />
+                    </svg>
+                    {rename === data.objectId ? (
+                      <input
+                        autoFocus={true}
+                        type="text"
+                        onFocus={() => {
+                          inputRef.current.setSelectionRange(0, 0);
+                          const input = inputRef.current;
+                          if (input) {
+                            input.select();
+                          }
+                        }}
+                        onBlur={() => handledRenameDoc(data)}
+                        onKeyDown={(e) => handleEnterPress(e, data)}
+                        ref={inputRef}
+                        defaultValue={renameValue}
+                        // value={renameValue}
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
+                      />
+                    ) : (
+                      <span className="fileName">{data.Name}</span>
+                    )}
+                  </div>
                 </ContextMenu.Trigger>
                 {status === "Completed" ? (
                   <div className="status-badge completed">
-                    <i className="fas fa-check-circle"></i>
+                    <i className="fa-light fa-check-circle"></i>
                   </div>
                 ) : status === "Declined" ? (
                   <div className="status-badge declined">
-                    <i className="fa fa-thumbs-down"></i>
+                    <i className="fa-light fa-thumbs-down"></i>
                   </div>
                 ) : status === "Expired" ? (
                   <div className="status-badge expired">
-                    <i className="fa fa-hourglass-end"></i>
+                    <i className="fa-light fa-hourglass-end"></i>
                   </div>
                 ) : status === "Draft" ? (
                   <div className="status-badge draft">
-                    <i className="fa fa-file"></i>
+                    <i className="fa-light fa-file"></i>
                   </div>
                 ) : (
                   status === "In Progress" && (
                     <div className="status-badge in-progress">
-                      <i className="fa fa-paper-plane"></i>
+                      <i className="fa-light fa-paper-plane"></i>
                     </div>
                   )
                 )}

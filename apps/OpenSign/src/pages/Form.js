@@ -653,7 +653,7 @@ const Forms = (props) => {
                       onClick={() => setFileUpload("")}
                       className="cursor-pointer px-[10px] text-[20px] font-bold text-red-500"
                     >
-                      <i className="fa-solid fa-xmark"></i>
+                      <i className="fa-light fa-xmark"></i>
                     </div>
                   </div>
                   {process.env.REACT_APP_DROPBOX_API_KEY && (
@@ -761,16 +761,7 @@ const Forms = (props) => {
                     Send In Order
                     <a data-tooltip-id="sendInOrder-tooltip" className="ml-1">
                       <sup>
-                        <i
-                          className="fa-solid fa-question rounded-full"
-                          style={{
-                            borderColor: "#33bbff",
-                            color: "#33bbff",
-                            fontSize: 13,
-                            borderWidth: 1.5,
-                            padding: "1.5px 4px"
-                          }}
-                        ></i>
+                        <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1.5px] py-[1.5px] px-[4px]"></i>
                       </sup>
                     </a>
                     <Tooltip id="sendInOrder-tooltip" className="z-50">

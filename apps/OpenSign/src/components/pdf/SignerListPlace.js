@@ -13,7 +13,7 @@ function SignerListPlace(props) {
               <>
                 <a data-tooltip-id="my-tooltip">
                   <sup>
-                    <i className="fa-solid fa-question rounded-full border-[1.5px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
+                    <i className="fa-light fa-question rounded-full border-[1.5px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
                   </sup>
                 </a>
                 <Tooltip id="my-tooltip" className="z-[100]">
@@ -67,7 +67,7 @@ function SignerListPlace(props) {
             className="op-btn op-btn-accent op-btn-outline w-full mt-[14px]"
             onClick={() => props.handleAddSigner()}
           >
-            <i className="fa-solid fa-plus"></i> Add role
+            <i className="fa-light fa-plus"></i> Add role
           </div>
         ) : (
           <div
@@ -77,7 +77,7 @@ function SignerListPlace(props) {
             disabled={props?.isMailSend ? true : false}
             onClick={() => props.setIsAddSigner(true)}
           >
-            <i className="fa-solid fa-plus"></i> Add recipients
+            <i className="fa-light fa-plus"></i> Add recipients
           </div>
         )}
       </div>

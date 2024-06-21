@@ -410,7 +410,7 @@ function Placeholder(props) {
                     e.stopPropagation();
                     handleOnClickSettingIcon();
                   }}
-                  className="fa-solid fa-gear settingIcon"
+                  className="fa-light fa-gear settingIcon"
                   style={{
                     color: "#188ae2",
                     right: "29px",
@@ -431,7 +431,7 @@ function Placeholder(props) {
                       e.stopPropagation();
                       handleOnClickSettingIcon();
                     }}
-                    className="fa-solid fa-gear settingIcon"
+                    className="fa-light fa-gear settingIcon"
                     style={{
                       color: "#188ae2",
                       right: props?.pos?.type === textWidget ? "32px" : "47px",
@@ -444,7 +444,7 @@ function Placeholder(props) {
               {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
                   data-tut="assignSigner"
-                  className="fa-regular fa-user signUserIcon"
+                  className="fa-light fa-user signUserIcon"
                   onClick={(e) => {
                     e.stopPropagation();
                     props.handleLinkUser(props.data.Id);
@@ -491,7 +491,7 @@ function Placeholder(props) {
               }}
             >
               <i
-                className="fa-solid fa-gear settingIcon"
+                className="fa-light fa-gear settingIcon"
                 style={{
                   color: "#188ae2",
                   fontSize: "14px"
@@ -530,13 +530,13 @@ function Placeholder(props) {
             </div>
           )}
           <i
-            className="fa-regular fa-copy signCopy"
+            className="fa-light fa-copy signCopy"
             onClick={(e) => handleCopyPlaceholder(e)}
             onTouchEnd={(e) => handleCopyPlaceholder(e)}
             style={{ color: "#188ae2", right: "12px", top: "-18px" }}
           ></i>
           <i
-            className="fa-regular fa-circle-xmark signCloseBtn"
+            className="fa-light fa-circle-xmark signCloseBtn"
             onClick={(e) => {
               e.stopPropagation();
 
