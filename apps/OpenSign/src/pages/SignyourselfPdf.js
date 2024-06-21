@@ -851,7 +851,7 @@ function SignYourSelf() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(2);
+    const firstPage = await pdf.getPage(1);
     const scale = 1;
     const { width, height } = firstPage.getViewport({ scale });
     setPdfOriginalWH({ width: width, height: height });
