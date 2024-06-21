@@ -704,11 +704,9 @@ function PlaceholderType(props) {
             return (
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  className={`${ind === 0 ? "mt-0" : "mt-[5px]"} ${
-                    props?.pos?.Width
-                      ? `w-[${props?.pos?.Width}px] h-[${props?.pos?.Width}px]`
-                      : "w-[15px] h-[15px]"
-                  } flex justify-center op-radio`}
+                  className={`${
+                    ind === 0 ? "mt-0" : "mt-[5px]"
+                  } ${"w-[15px] h-[15px]"} flex justify-center op-radio`}
                   type="radio"
                   disabled={
                     props.isNeedSign &&

@@ -468,17 +468,12 @@ function PlaceHolderSign() {
       const signer = signersdata.find((x) => x.Id === uniqueId);
       const key = randomId();
       const containerScale = containerWH?.width / pdfOriginalWH?.width || 1;
-      console.log(
-        "pdfwh",
-        containerScale,
-        containerWH?.width / pdfOriginalWH?.width
-      );
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
       const widgetWidth = defaultWidthHeight(dragTypeValue).width;
       const widgetHeight = defaultWidthHeight(dragTypeValue).height;
-      console.log("containerscale", containerScale, scale);
+      //adding and updating drop position in array when user drop signature button in div
       if (item === "onclick") {
         const dropObj = {
           //onclick put placeholder center on pdf
@@ -488,13 +483,10 @@ function PlaceHolderSign() {
           yPosition:
             (containerWH.height / 2 - widgetHeight / 2) /
             (containerScale * scale),
-
           isStamp:
             (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
           key: key,
-          isDrag: false,
           scale: containerScale,
-          // isMobile: isMobile,
           zIndex: posZIndex,
           type: dragTypeValue,
           options: addWidgetOptions(dragTypeValue),
@@ -508,10 +500,12 @@ function PlaceHolderSign() {
         };
       } else {
         const offset = monitor.getClientOffset();
-        //adding and updating drop position in array when user drop signature button in div
+        //This method returns the offset of the current pointer (mouse) position relative to the client viewport.
         const containerRect = document
           .getElementById("container")
           .getBoundingClientRect();
+        //`containerRect.left`,  The distance from the left of the viewport to the left side of the element.
+        //`containerRect.top` The distance from the top of the viewport to the top of the element.
         const x = offset.x - containerRect.left;
         const y = offset.y - containerRect.top;
         const getXPosition = signBtnPosition[0]
@@ -520,7 +514,6 @@ function PlaceHolderSign() {
         const getYPosition = signBtnPosition[0]
           ? y - signBtnPosition[0].yPos
           : y;
-        console.log("getxyPos", getXPosition, getYPosition);
         const dropObj = {
           xPosition: getXPosition / (containerScale * scale),
           yPosition: getYPosition / (containerScale * scale),
