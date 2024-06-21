@@ -87,12 +87,8 @@ const TemplatePlaceholder = () => {
   const [blockColor, setBlockColor] = useState("");
   const [selectWidgetId, setSelectWidgetId] = useState("");
   const [isNameModal, setIsNameModal] = useState(false);
-  const [pdfRenderHeight, setPdfRenderHeight] = useState();
   const [isTextSetting, setIsTextSetting] = useState(false);
-  const [pdfLoadFail, setPdfLoadFail] = useState({
-    status: false,
-    type: "load"
-  });
+  const [pdfLoad, setPdfLoad] = useState(false);
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -541,16 +537,15 @@ const TemplatePlaceholder = () => {
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     let pdfWHObj = [];
-    for (let index = 0; index < allPages; index++) {
-      const firstPage = await pdf.getPage(index + 1);
+    const totalPages = pdf?.numPages;
+    for (let index = 0; index < totalPages; index++) {
+      const getPage = await pdf.getPage(index + 1);
       const scale = 1;
-      const { width, height } = firstPage.getViewport({ scale });
+      const { width, height } = getPage.getViewport({ scale });
       pdfWHObj.push({ pageNumber: index + 1, width, height });
     }
     setPdfOriginalWH(pdfWHObj);
-    setPdfLoadFail({
-      status: true
-    });
+    setPdfLoad(true);
   };
   //function for save x and y position and show signature  tab on that position
   const handleTabDrag = (key) => {
@@ -1516,8 +1511,8 @@ const TemplatePlaceholder = () => {
                         handleDeleteSign={handleDeleteSign}
                         handleTabDrag={handleTabDrag}
                         handleStop={handleStop}
-                        setPdfLoadFail={setPdfLoadFail}
-                        pdfLoadFail={pdfLoadFail}
+                        setPdfLoad={setPdfLoad}
+                        pdfLoad={pdfLoad}
                         setSignerPos={setSignerPos}
                         containerWH={containerWH}
                         setIsResize={setIsResize}
@@ -1537,8 +1532,6 @@ const TemplatePlaceholder = () => {
                         selectWidgetId={selectWidgetId}
                         setIsCheckbox={setIsCheckbox}
                         handleNameModal={setIsNameModal}
-                        setPdfRenderHeight={setPdfRenderHeight}
-                        pdfRenderHeight={pdfRenderHeight}
                         handleTextSettingModal={handleTextSettingModal}
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}

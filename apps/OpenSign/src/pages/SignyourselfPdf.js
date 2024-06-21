@@ -106,10 +106,7 @@ function SignYourSelf() {
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [widgetType, setWidgetType] = useState("");
-  const [pdfLoadFail, setPdfLoadFail] = useState({
-    status: false,
-    type: "load"
-  });
+  const [pdfLoad, setPdfLoad] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
   const [extUserId, setExtUserId] = useState("");
@@ -120,7 +117,6 @@ function SignYourSelf() {
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [isVerifyModal, setIsVerifyModal] = useState(false);
   const [otp, setOtp] = useState("");
-  const [pdfRenderHeight, setPdfRenderHeight] = useState();
   const [zoomPercent, setZoomPercent] = useState(0);
   const isHeader = useSelector((state) => state.showHeader);
   const [scale, setScale] = useState(1);
@@ -854,16 +850,15 @@ function SignYourSelf() {
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     let pdfWHObj = [];
-    for (let index = 0; index < allPages; index++) {
-      const firstPage = await pdf.getPage(index + 1);
+    const totalPages = pdf?.numPages;
+    for (let index = 0; index < totalPages; index++) {
+      const getPage = await pdf.getPage(index + 1);
       const scale = 1;
-      const { width, height } = firstPage.getViewport({ scale });
+      const { width, height } = getPage.getViewport({ scale });
       pdfWHObj.push({ pageNumber: index + 1, width, height });
     }
     setPdfOriginalWH(pdfWHObj);
-    setPdfLoadFail({
-      status: true
-    });
+    setPdfLoad(true);
   };
   //function for change page numver of pdf
   function changePage(offset) {
@@ -1197,7 +1192,7 @@ function SignYourSelf() {
               />
             )}
             {/* this component used for UI interaction and show their functionality */}
-            {pdfLoadFail && !checkTourStatus && (
+            {pdfLoad && !checkTourStatus && (
               <Tour
                 onRequestClose={closeTour}
                 steps={tourConfig}
@@ -1361,8 +1356,8 @@ function SignYourSelf() {
                       pdfUrl={pdfUrl}
                       numPages={numPages}
                       pageDetails={pageDetails}
-                      setPdfLoadFail={setPdfLoadFail}
-                      pdfLoadFail={pdfLoadFail}
+                      pdfLoad={pdfLoad}
+                      setPdfLoad={setPdfLoad}
                       setXyPostion={setXyPostion}
                       index={index}
                       containerWH={containerWH}
@@ -1375,8 +1370,6 @@ function SignYourSelf() {
                       setCurrWidgetsDetails={setCurrWidgetsDetails}
                       setValidateAlert={setValidateAlert}
                       handleTextSettingModal={handleTextSettingModal}
-                      pdfRenderHeight={pdfRenderHeight}
-                      setPdfRenderHeight={setPdfRenderHeight}
                       setScale={setScale}
                       scale={scale}
                     />

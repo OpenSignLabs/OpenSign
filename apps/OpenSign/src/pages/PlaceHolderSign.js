@@ -104,10 +104,7 @@ function PlaceHolderSign() {
   const [defaultBody, setDefaultBody] = useState("");
   const [defaultSubject, setDefaultSubject] = useState("");
   const [isTextSetting, setIsTextSetting] = useState(false);
-  const [pdfLoadFail, setPdfLoadFail] = useState({
-    status: false,
-    type: "load"
-  });
+  const [pdfLoad, setPdfLoad] = useState(false);
   const [isPageCopy, setIsPageCopy] = useState(false);
   const [uniqueId, setUniqueId] = useState("");
   const [roleName, setRoleName] = useState("");
@@ -131,7 +128,6 @@ function PlaceHolderSign() {
   const [requestBody, setRequestBody] = useState("");
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
-  const [pdfRenderHeight, setPdfRenderHeight] = useState();
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
@@ -664,16 +660,15 @@ function PlaceHolderSign() {
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     let pdfWHObj = [];
-    for (let index = 0; index < allPages; index++) {
-      const firstPage = await pdf.getPage(index + 1);
+    const totalPages = pdf?.numPages;
+    for (let index = 0; index < totalPages; index++) {
+      const getPage = await pdf.getPage(index + 1);
       const scale = 1;
-      const { width, height } = firstPage.getViewport({ scale });
+      const { width, height } = getPage.getViewport({ scale });
       pdfWHObj.push({ pageNumber: index + 1, width, height });
     }
     setPdfOriginalWH(pdfWHObj);
-    setPdfLoadFail({
-      status: true
-    });
+    setPdfLoad(true);
   };
 
   //function for save x and y position and show signature  tab on that position
@@ -2075,8 +2070,8 @@ function PlaceHolderSign() {
                         handleDeleteSign={handleDeleteSign}
                         handleTabDrag={handleTabDrag}
                         handleStop={handleStop}
-                        setPdfLoadFail={setPdfLoadFail}
-                        pdfLoadFail={pdfLoadFail}
+                        setPdfLoad={setPdfLoad}
+                        pdfLoad={pdfLoad}
                         setSignerPos={setSignerPos}
                         containerWH={containerWH}
                         setIsResize={setIsResize}
@@ -2098,8 +2093,6 @@ function PlaceHolderSign() {
                         handleNameModal={setIsNameModal}
                         setTempSignerId={setTempSignerId}
                         uniqueId={uniqueId}
-                        setPdfRenderHeight={setPdfRenderHeight}
-                        pdfRenderHeight={pdfRenderHeight}
                         handleTextSettingModal={handleTextSettingModal}
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}
