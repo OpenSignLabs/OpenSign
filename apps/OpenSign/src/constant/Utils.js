@@ -1248,6 +1248,7 @@ export const multiSignEmbed = async (
     const newWidth = containerWH.width;
     const scale = newWidth / pdfOriginalWH.width;
     const pageNo = item.pageNumber;
+    console.log("page number", pageNo);
     const imgUrlList = updateItem;
     const pages = pdfDoc.getPages();
     const form = pdfDoc.getForm();
@@ -1261,10 +1262,6 @@ export const multiSignEmbed = async (
             const newUrl = await convertPNGtoJPEG(signUrl);
             signUrl = newUrl;
           }
-          // const checkUrl = urlValidator(signUrl);
-          // if (checkUrl) {
-          //   signUrl = signUrl + "?get";
-          // }
           const res = await fetch(signUrl);
           return res.arrayBuffer();
         }
@@ -1480,21 +1477,23 @@ export const multiSignEmbed = async (
           ? breakTextIntoLines(textContent, fixedWidth)
           : NewbreakTextIntoLines(textContent, fixedWidth);
         // Set initial y-coordinate for the first line
-        const labelDefaultHeight = defaultWidthHeight(position.type).height;
-
-        let y = yPos(position, null, labelDefaultHeight);
         let x = xPos(position);
-        //xPos(position)
+        let y = position.yPosition;
         // Embed each line on the page
         for (const line of lines) {
-          page.drawText(line, {
-            x: x,
+          const correction = compensateRotation(
+            page.getRotation().angle,
+            x,
             y,
+            1,
+            page.getSize(),
+            fontSize,
+            updateColorInRgb,
             font,
-            color: updateColorInRgb,
-            size: fontSize
-          });
-          y -= 18; // Adjust the line height as needed
+            page
+          );
+          page.drawText(line, correction);
+          y += 18; // Adjust the line height as needed
         }
       } else if (position.type === "dropdown") {
         const dropdownRandomId = "dropdown" + randomId();
@@ -1506,13 +1505,23 @@ export const multiSignEmbed = async (
           dropdown.select(position?.options?.defaultValue);
         }
 
-        dropdown.addToPage(page, {
-          x: xPos(position),
-          y: yPos(position),
+        // dropdown.addToPage(page, {
+        //   x: xPos(position),
+        //   y: yPos(position),
+        //   width: scaleWidth,
+        //   height: scaleHeight,
+        //   borderWidth: 0
+        // });
+        const dropdownObj = {
+          x: position.xPosition,
+          y: position.yPosition,
           width: scaleWidth,
-          height: scaleHeight,
-          borderWidth: 0
-        });
+          height: scaleHeight
+        };
+
+        const dropdownOption = getImagePosition(page, dropdownObj, 1);
+        // page.drawImage(img, imageOptions);
+        dropdown.addToPage(page, dropdownOption);
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
         const radioRandomId = "radio" + randomId();
@@ -1535,7 +1544,37 @@ export const multiSignEmbed = async (
               y: yPosition + 2,
               size: 11
             });
+            // const text = {
+            //   x: position.xPosition + 15,
+            //   y: position.yPosition + 2,
+            //   size: 11
+            // };
+            // const correction = compensateRotationRadioFont(
+            //   page.getRotation().angle,
+            //   position.xPosition,
+            //   position.yPosition,
+            //   1,
+            //   page.getSize(),
+            //   11,
+            //   addYPosition,
+            //   i
+            // );
+
+            // // const imageOptions = getImagePosition(page, text, 1);
+            // console.log("correction", correction);
+
+            // page.drawText(data, correction);
           }
+          // const radio = {
+          //   x: position.xPosition,
+          //   y: position.yPosition,
+          //   width: 11,
+          //   height: 11
+          // };
+
+          // const imageOptions = getImagePosition(page, radio, 1);
+          // console.log("imageOptions", imageOptions);
+          // radioGroup.addOptionToPage(data, page, imageOptions);
           radioGroup.addOptionToPage(data, page, {
             x: xPos(position),
             y: yPosition,
@@ -1560,12 +1599,14 @@ export const multiSignEmbed = async (
           width: scaleWidth,
           height: scaleHeight
         };
+
         const imageOptions = getImagePosition(page, signature, 1);
         page.drawImage(img, imageOptions);
       }
     });
   }
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+  // console.log("pdf", pdfBytes);
   return pdfBytes;
 };
 
@@ -2077,8 +2118,76 @@ export async function findContact(value) {
 }
 
 // `compensateRotation` is used to calculate x and y position of widget on portait, landscape pdf for pdf-lib
-function compensateRotation(pageRotation, x, y, scale, dimensions, fontSize) {
-  //fontsize = imagewidth
+// function compensateRotationRadioFont(
+//   pageRotation,
+//   x,
+//   y,
+//   scale,
+//   dimensions,
+//   fontSize,
+//   addYPosition,
+//   i
+// ) {
+//   //fontsize = imagewidth
+//   let rotationRads = (pageRotation * Math.PI) / 180;
+
+//   //These coords are now from bottom/left
+//   let coordsFromBottomLeft = { x: x / scale };
+//   if (pageRotation === 90 || pageRotation === 270) {
+//     coordsFromBottomLeft.y = dimensions.width - (y + fontSize) / scale;
+//     if (i > 1) {
+//       coordsFromBottomLeft.y = coordsFromBottomLeft.y - addYPosition;
+//     }
+//   } else {
+//     coordsFromBottomLeft.y = dimensions.height - (y + fontSize) / scale;
+//   }
+
+//   let drawX = null;
+//   let drawY = null;
+//   if (pageRotation === 90) {
+//     drawX =
+//       coordsFromBottomLeft.x * Math.cos(rotationRads) -
+//       coordsFromBottomLeft.y * Math.sin(rotationRads) +
+//       dimensions.width;
+//     drawY =
+//       coordsFromBottomLeft.x * Math.sin(rotationRads) +
+//       coordsFromBottomLeft.y * Math.cos(rotationRads);
+//   } else if (pageRotation === 180) {
+//     drawX =
+//       coordsFromBottomLeft.x * Math.cos(rotationRads) -
+//       coordsFromBottomLeft.y * Math.sin(rotationRads) +
+//       dimensions.width;
+//     drawY =
+//       coordsFromBottomLeft.x * Math.sin(rotationRads) +
+//       coordsFromBottomLeft.y * Math.cos(rotationRads) +
+//       dimensions.height;
+//   } else if (pageRotation === 270) {
+//     drawX =
+//       coordsFromBottomLeft.x * Math.cos(rotationRads) -
+//       coordsFromBottomLeft.y * Math.sin(rotationRads);
+//     drawY =
+//       coordsFromBottomLeft.x * Math.sin(rotationRads) +
+//       coordsFromBottomLeft.y * Math.cos(rotationRads) +
+//       dimensions.height;
+//   } else {
+//     //no rotation
+//     drawX = coordsFromBottomLeft.x;
+//     drawY = coordsFromBottomLeft.y;
+//   }
+//   return { x: drawX + 15, y: drawY + 2, size: fontSize };
+// }
+// `compensateRotation` is used to calculate x and y position of widget on portait, landscape pdf for pdf-lib
+function compensateRotation(
+  pageRotation,
+  x,
+  y,
+  scale,
+  dimensions,
+  fontSize,
+  updateColorInRgb,
+  font,
+  page
+) {
   let rotationRads = (pageRotation * Math.PI) / 180;
 
   //These coords are now from bottom/left
@@ -2121,7 +2230,18 @@ function compensateRotation(pageRotation, x, y, scale, dimensions, fontSize) {
     drawX = coordsFromBottomLeft.x;
     drawY = coordsFromBottomLeft.y;
   }
-  return { x: drawX, y: drawY };
+  if (font) {
+    return {
+      x: drawX,
+      y: drawY,
+      font,
+      color: updateColorInRgb,
+      size: fontSize,
+      rotate: page.getRotation()
+    };
+  } else {
+    return { x: drawX, y: drawY };
+  }
 }
 
 // `getImagePosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
@@ -2129,9 +2249,11 @@ function getImagePosition(page, image, sizeRatio) {
   let pageWidth;
   // pageHeight;
   if ([90, 270].includes(page.getRotation().angle)) {
+    console.log("go in 90 degree");
     pageWidth = page.getHeight();
     // pageHeight = page.getWidth();
   } else {
+    console.log("go in 180 degree");
     pageWidth = page.getWidth();
     // pageHeight = page.getHeight();
   }

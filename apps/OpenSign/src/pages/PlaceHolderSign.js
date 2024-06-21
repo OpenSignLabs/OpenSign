@@ -458,7 +458,7 @@ function PlaceHolderSign() {
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
   };
-
+  // console.log("signerpos", signerPos);
   const getSignerPos = (item, monitor) => {
     //  setSignerObjId("");
     // setContractName("");
@@ -467,12 +467,18 @@ function PlaceHolderSign() {
       setZIndex(posZIndex);
       const signer = signersdata.find((x) => x.Id === uniqueId);
       const key = randomId();
-      const containerScale = containerWH.width / pdfOriginalWH.width;
+      const containerScale = containerWH?.width / pdfOriginalWH?.width || 1;
+      console.log(
+        "pdfwh",
+        containerScale,
+        containerWH?.width / pdfOriginalWH?.width
+      );
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
       const widgetWidth = defaultWidthHeight(dragTypeValue).width;
       const widgetHeight = defaultWidthHeight(dragTypeValue).height;
+      console.log("containerscale", containerScale, scale);
       if (item === "onclick") {
         const dropObj = {
           //onclick put placeholder center on pdf
@@ -514,6 +520,7 @@ function PlaceHolderSign() {
         const getYPosition = signBtnPosition[0]
           ? y - signBtnPosition[0].yPos
           : y;
+        console.log("getxyPos", getXPosition, getYPosition);
         const dropObj = {
           xPosition: getXPosition / (containerScale * scale),
           yPosition: getYPosition / (containerScale * scale),
@@ -521,7 +528,6 @@ function PlaceHolderSign() {
             (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
           key: key,
           scale: containerScale,
-          // isMobile: isMobile,
           zIndex: posZIndex,
           type: dragTypeValue,
           options: addWidgetOptions(dragTypeValue),
@@ -661,14 +667,13 @@ function PlaceHolderSign() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    pdf.getPage(1).then((pdfPage) => {
-      const pageWidth = pdfPage.view[2];
-      const pageHeight = pdfPage.view[3];
-      setPdfOriginalWH({ width: pageWidth, height: pageHeight });
-      const load = {
-        status: true
-      };
-      setPdfLoadFail(load);
+    const firstPage = await pdf.getPage(1);
+    const scale = 1;
+    const { width, height } = firstPage.getViewport({ scale });
+    // console.log("width height", width, height);
+    setPdfOriginalWH({ width: width, height: height });
+    setPdfLoadFail({
+      status: true
     });
   };
 
