@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import RSC from "react-scrollbars-custom";
+import React, { useEffect, useRef, useState } from "react";
 import { Document, Page } from "react-pdf";
+import { useSelector } from "react-redux";
 
 function RenderAllPdfPage({
   signPdfUrl,
@@ -33,7 +33,22 @@ function RenderAllPdfPage({
       }
     }
   }
+  const pageContainer = useRef();
+  const isHeader = useSelector((state) => state.showHeader);
+  const [pageWidth, setPageWidth] = useState("");
 
+  useEffect(() => {
+    const updateSize = () => {
+      if (pageContainer.current) {
+        setPageWidth(pageContainer.current.offsetWidth);
+      }
+    };
+
+    // Use setTimeout to wait for the transition to complete
+    const timer = setTimeout(updateSize, 100); // match the transition duration
+
+    return () => clearTimeout(timer);
+  }, [isHeader, pageContainer]);
   //'function `addSignatureBookmark` is used to display the page where the user's signature is located.
   const addSignatureBookmark = (index) => {
     const ispageNumber = signPageNumber.includes(index + 1);
@@ -42,68 +57,58 @@ function RenderAllPdfPage({
         <div className="absolute z-20 top-[1px] -right-[13px] -translate-x-1/2 -translate-y-1/2">
           <i
             style={{ color: bookmarkColor || "red" }}
-            className="fa-solid fa-bookmark"
+            className="fa-light fa-bookmark"
           ></i>
         </div>
       )
     );
   };
-  return (
-    <div>
-      <div className=" hidden md:flex flex-row bg-base-100 h-full">
-        <div className="w-[140px]">
-          <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
-            Pages
-          </div>
 
-          <div>
-            <RSC
-              id="RSC-Example"
-              style={{
-                width: "135px",
-                height: window.innerHeight - 130 + "px"
+  return (
+    <div
+      ref={pageContainer}
+      className="hidden min-h-screen w-[20%] bg-base-100 h-full md:block"
+    >
+      <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
+        Pages
+      </div>
+      <div
+        className={`flex h-[90%] flex-col items-center m-2  
+         autoSignScroll hide-scrollbar max-h-[100vh] `}
+      >
+        <Document
+          loading={"Loading Document.."}
+          onLoadSuccess={onDocumentLoad}
+          file={signPdfUrl}
+        >
+          {Array.from(new Array(allPages), (el, index) => (
+            <div
+              key={index}
+              className={`${
+                pageNumber - 1 === index ? "border-[red]" : "border-[#878787]"
+              } border-2   m-[10px] flex justify-center items-center relative`}
+              onClick={() => {
+                setPageNumber(index + 1);
+                if (setSignBtnPosition) {
+                  setSignBtnPosition([]);
+                }
               }}
             >
-              <Document
-                loading={"Loading Document.."}
-                onLoadSuccess={onDocumentLoad}
-                file={signPdfUrl}
-              >
-                {Array.from(new Array(allPages), (el, index) => (
-                  <div
-                    key={index}
-                    className={`${
-                      pageNumber - 1 === index
-                        ? "border-[red]"
-                        : "border-[#878787]"
-                    } border-2 w-[100px] m-[10px] flex justify-center items-center relative`}
-                    onClick={() => {
-                      setPageNumber(index + 1);
-                      if (setSignBtnPosition) {
-                        setSignBtnPosition([]);
-                      }
-                    }}
-                  >
-                    {signerPos && addSignatureBookmark(index)}
+              {signerPos && addSignatureBookmark(index)}
 
-                    <div className="relative z-[1] overflow-hidden">
-                      <Page
-                        key={`page_${index + 1}`}
-                        pageNumber={index + 1}
-                        width={100}
-                        height={100}
-                        scale={1}
-                        renderAnnotationLayer={false}
-                        renderTextLayer={false}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </Document>
-            </RSC>
-          </div>
-          <hr />
-        </div>
+              <div className="relative z-[1] overflow-hidden">
+                <Page
+                  key={`page_${index + 1}`}
+                  pageNumber={index + 1}
+                  width={pageWidth - 60}
+                  scale={1}
+                  renderAnnotationLayer={false}
+                  renderTextLayer={false}
+                />
+              </div>
+            </div>
+          ))}
+        </Document>
       </div>
     </div>
   );

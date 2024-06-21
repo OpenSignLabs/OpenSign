@@ -14,7 +14,7 @@ const Modal = ({ children, Title }) => {
               onClick={() => SetIsOpen()}
               className="px-2 py-1 bg-gray-400 rounded cursor-pointer"
             >
-              <i className="fa-solid fa-xmark"></i>
+              <i className="fa-light fa-xmark"></i>
             </div>
           </div>
           <hr />

@@ -31,13 +31,11 @@ const DashboardButton = (props) => {
         <span className="rounded-full bg-base-content bg-opacity-20 w-[60px] h-[60px] self-start flex justify-center items-center">
           <i
             className={`${
-              props.Icon ? props.Icon : "fa fa-solid fa-info"
+              props.Icon ? props.Icon : "fa-light fa-info"
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
-        <div className="op-card-title text-lg ml-3 text-base-content">
-          {props.Label}
-        </div>
+        <div className=" text-lg ml-3 text-base-content">{props.Label}</div>
       </div>
     </div>
   );

@@ -152,7 +152,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             disabled={isLoader}
             className="op-btn op-btn-primary op-btn-sm mt-3"
           >
-            <i className="fa-solid fa-plus"></i>
+            <i className="fa-light fa-plus"></i>
             <span>Create</span>
           </button>
         </div>

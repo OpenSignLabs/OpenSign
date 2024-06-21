@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
 import {
@@ -11,8 +11,6 @@ import Alert from "../../primitives/Alert";
 
 function RenderPdf({
   pageNumber,
-  pdfOriginalWidth,
-  pdfNewWidth,
   drop,
   signerPos,
   successEmail,
@@ -26,15 +24,12 @@ function RenderPdf({
   pdfDetails,
   xyPostion,
   pdfUrl,
-  numPages,
   pageDetails,
   pdfRequest,
-  setCurrentSigner,
   signerObjectId,
   signedSigners,
   setPdfLoadFail,
   placeholder,
-  pdfLoadFail,
   setSignerPos,
   setXyPostion,
   index,
@@ -57,165 +52,87 @@ function RenderPdf({
   unSignedWidgetId,
   setIsCheckbox,
   handleNameModal,
+  handleTextSettingModal,
   setTempSignerId,
-  uniqueId
+  uniqueId,
+  setPdfRenderHeight,
+  pdfOriginalWH,
+  scale
 }) {
+  const [isLoadPdf, setIsLoadPdf] = useState(false);
+
   const isMobile = window.innerWidth < 767;
-  const newWidth = containerWH.width;
-  const scale = isMobile ? pdfOriginalWidth / newWidth : 1;
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
 
   // handle signature block width and height according to screen
   const posWidth = (pos, signYourself) => {
+    const containerScale = containerWH.width / pdfOriginalWH.width;
     const defaultWidth = defaultWidthHeight(pos.type).width;
     const posWidth = pos.Width ? pos.Width : defaultWidth;
-    let width;
     if (signYourself) {
-      width = posWidth;
-      return width;
+      return posWidth * scale * containerScale;
     } else {
-      if (isMobile) {
-        if (!pos.isMobile) {
-          if (pos.IsResize) {
-            width = posWidth ? posWidth : defaultWidth;
-            return width;
+      if (pos.isMobile && pos.scale) {
+        if (pos.IsResize) {
+          if (scale > 1) {
+            return posWidth * pos.scale * containerScale * scale;
           } else {
-            width = (posWidth || defaultWidth) / scale;
-
-            return width;
+            return posWidth * containerScale;
           }
         } else {
-          width = posWidth;
-          return width;
+          if (scale > 1) {
+            return posWidth * pos.scale * containerScale * scale;
+          } else {
+            return posWidth * pos.scale * containerScale;
+          }
         }
       } else {
-        if (pos.isMobile) {
-          if (pos.IsResize) {
-            width = posWidth ? posWidth : defaultWidth;
-            return width;
-          } else {
-            width = (posWidth || defaultWidth) * pos.scale;
-            return width;
-          }
-        } else {
-          width = posWidth ? posWidth : defaultWidth;
-          return width;
-        }
+        return posWidth * scale * containerScale;
       }
     }
   };
   const posHeight = (pos, signYourself) => {
-    let height;
-    const posHeight = pos.Height;
-    const defaultHeight = defaultWidthHeight(pos.type).height;
+    const containerScale = containerWH.width / pdfOriginalWH.width;
 
+    const posHeight = pos.Height || defaultWidthHeight(pos.type).height;
     if (signYourself) {
-      height = posHeight ? posHeight : defaultHeight;
-
-      return height;
+      return posHeight * scale * containerScale;
     } else {
-      if (isMobile) {
-        if (!pos.isMobile) {
-          if (pos.IsResize) {
-            height = posHeight ? posHeight : defaultHeight;
-            return height;
+      if (pos.isMobile && pos.scale) {
+        if (pos.IsResize) {
+          if (scale > 1) {
+            return posHeight * pos.scale * containerScale * scale;
           } else {
-            height = (posHeight || defaultHeight) / scale;
-
-            return height;
+            return posHeight * containerScale;
           }
         } else {
-          height = posHeight ? posHeight : defaultHeight;
-          return height;
-        }
-      } else {
-        if (pos.isMobile) {
-          if (pos.IsResize) {
-            height = posHeight ? posHeight : defaultHeight;
-            return height;
+          if (scale > 1) {
+            return posHeight * pos.scale * containerScale * scale;
           } else {
-            height = (posHeight || defaultHeight) * pos.scale;
-            return height;
+            return posHeight * pos.scale * containerScale;
           }
-        } else {
-          height = posHeight ? posHeight : defaultHeight;
-          return height;
-        }
-      }
-    }
-  };
-
-  const xPos = (pos, signYourself) => {
-    const resizePos = pos.xPosition;
-    if (signYourself) {
-      return resizePos;
-    } else {
-      //checking both condition mobile and desktop view
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (!pos.isMobile) {
-          return resizePos / scale;
-        }
-        //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
-        else {
-          return resizePos * (pos.scale / scale);
         }
       } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
-
-        if (pos.isMobile) {
-          return pos.scale && resizePos * pos.scale;
-        }
-        //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
-        else {
-          return resizePos;
-        }
+        return posHeight * scale * containerScale;
       }
     }
   };
-  const yPos = (pos, signYourself) => {
-    const resizePos = pos.yPosition;
-    if (signYourself) {
-      return resizePos;
-    } else {
-      //checking both condition mobile and desktop view
-      if (isMobile) {
-        //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
-        if (!pos.isMobile) {
-          return resizePos / scale;
-        }
-        //pos.isMobile true -- placeholder save from mobile view(small device)  handle position in mobile view(small screen) view divided by scale
-        else {
-          return resizePos * (pos.scale / scale);
-        }
-      } else {
-        //else if pos.isMobile true -- placeholder saved from mobile or tablet view then handle position in desktop view divide by scale
 
-        if (pos.isMobile) {
-          return pos.scale && resizePos * pos.scale;
-        }
-        //else placeholder save from desktop(bigscreen) and show in desktop(bigscreen)
-        else {
-          return resizePos;
-        }
-      }
-    }
-  };
   //function for render placeholder block over pdf document
-  const checkSignedSignes = (data) => {
+  const checkSignedSigners = (data) => {
     let checkSign = [];
     //condition to handle quick send flow and using normal request sign flow
-    checkSign = signedSigners.filter(
-      (sign) => sign?.Id === data?.Id || sign?.objectId === data?.signerObjId
-    );
-    if (data.signerObjId === signerObjectId) {
-      setCurrentSigner(true);
-    }
+    checkSign = signedSigners
+      ? signedSigners?.filter(
+          (sign) =>
+            sign?.Id === data?.Id || sign?.objectId === data?.signerObjId
+        )
+      : [];
     const handleAllUserName = (Id, Role, type) => {
       return (
         <React.Fragment>
-          <div className="text-black text-[8px] font-medium">
+          <div className="text-black text-[8px] font-bold">
             {
               pdfDetails[0].Signers?.find(
                 (signer) => signer.objectId === data.signerObjId
@@ -231,7 +148,6 @@ function RenderPdf({
         </React.Fragment>
       );
     };
-
     return (
       checkSign.length === 0 &&
       data.placeHolder.map((placeData, key) => {
@@ -258,8 +174,6 @@ function RenderPdf({
                         isShowDropdown={true}
                         isNeedSign={true}
                         isSignYourself={false}
-                        xPos={xPos}
-                        yPos={yPos}
                         posWidth={posWidth}
                         posHeight={posHeight}
                         handleUserName={handleAllUserName}
@@ -271,6 +185,10 @@ function RenderPdf({
                         setSelectWidgetId={setSelectWidgetId}
                         selectWidgetId={selectWidgetId}
                         setCurrWidgetsDetails={setCurrWidgetsDetails}
+                        uniqueId={uniqueId}
+                        scale={scale}
+                        containerWH={containerWH}
+                        pdfOriginalWH={pdfOriginalWH}
                       />
                     </React.Fragment>
                   )
@@ -281,6 +199,7 @@ function RenderPdf({
       })
     );
   };
+  //function for render placeholder block over pdf document
 
   const handleUserName = (Id, Role, type) => {
     if (Id) {
@@ -316,11 +235,10 @@ function RenderPdf({
       );
     }
   };
-
   return (
     <>
       {successEmail && <Alert type={"success"}>Email sent successfully!</Alert>}
-      {isMobile && scale ? (
+      {isMobile ? (
         <div
           data-tut="reactourForth"
           style={{
@@ -330,12 +248,14 @@ function RenderPdf({
           ref={drop}
           id="container"
         >
-          {pdfLoadFail.status &&
+          {isLoadPdf &&
+            containerWH?.width &&
+            pdfOriginalWH?.width &&
             (pdfRequest
               ? signerPos.map((data, key) => {
                   return (
                     <React.Fragment key={key}>
-                      {checkSignedSignes(data)}
+                      {checkSignedSigners(data)}
                     </React.Fragment>
                   );
                 })
@@ -374,8 +294,6 @@ function RenderPdf({
                                         handleLinkUser={handleLinkUser}
                                         handleUserName={handleUserName}
                                         isSignYourself={false}
-                                        xPos={xPos}
-                                        yPos={yPos}
                                         posWidth={posWidth}
                                         posHeight={posHeight}
                                         isDragging={isDragging}
@@ -391,6 +309,12 @@ function RenderPdf({
                                         handleNameModal={handleNameModal}
                                         setTempSignerId={setTempSignerId}
                                         uniqueId={uniqueId}
+                                        handleTextSettingModal={
+                                          handleTextSettingModal
+                                        }
+                                        scale={scale}
+                                        containerWH={containerWH}
+                                        pdfOriginalWH={pdfOriginalWH}
                                       />
                                     </React.Fragment>
                                   );
@@ -422,13 +346,10 @@ function RenderPdf({
                                   index={index}
                                   xyPostion={xyPostion}
                                   setXyPostion={setXyPostion}
-                                  pdfOriginalWidth={pdfOriginalWidth}
                                   containerWH={containerWH}
                                   setIsSignPad={setIsSignPad}
                                   isShowBorder={true}
                                   isSignYourself={true}
-                                  xPos={xPos}
-                                  yPos={yPos}
                                   posWidth={posWidth}
                                   posHeight={posHeight}
                                   pdfDetails={pdfDetails[0]}
@@ -441,6 +362,11 @@ function RenderPdf({
                                   setIsCheckbox={setIsCheckbox}
                                   setValidateAlert={setValidateAlert}
                                   setCurrWidgetsDetails={setCurrWidgetsDetails}
+                                  handleTextSettingModal={
+                                    handleTextSettingModal
+                                  }
+                                  scale={scale}
+                                  pdfOriginalWH={pdfOriginalWH}
                                 />
                               )
                             );
@@ -452,7 +378,9 @@ function RenderPdf({
           {/* this component for render pdf document is in middle of the component */}
           <div className="flex items-center justify-center">
             <Document
-              onLoadError={() => setPdfLoadFail(true)}
+              onLoadError={() => {
+                setPdfLoadFail(true);
+              }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}
               // ref={pdfRef}'
@@ -469,19 +397,20 @@ function RenderPdf({
                     : pdfDetails[0].URL
               }
             >
-              {Array.from(new Array(numPages), (el, index) => (
-                <Page
-                  key={index}
-                  pageNumber={pageNumber}
-                  width={containerWH.width}
-                  height={containerWH.height}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
-                  onGetAnnotationsError={(error) => {
-                    console.log("annotation error", error);
-                  }}
-                />
-              ))}
+              <Page
+                onLoadSuccess={({ height }) => {
+                  setPdfRenderHeight && setPdfRenderHeight(height);
+                  setIsLoadPdf(true);
+                }}
+                key={index}
+                pageNumber={pageNumber}
+                width={containerWH.width}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+                onGetAnnotationsError={(error) => {
+                  console.log("annotation error", error);
+                }}
+              />
             </Document>
           </div>
         </div>
@@ -490,29 +419,31 @@ function RenderPdf({
           style={{
             position: "relative",
             boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px",
-            width:
-              pdfOriginalWidth > pdfNewWidth ? pdfNewWidth : pdfOriginalWidth,
-            height: window.innerHeight - 110 + "px"
+            height: window.innerHeight + "px",
+            zIndex: 0
           }}
           noScrollY={false}
-          noScrollX={pdfNewWidth < pdfOriginalWidth ? false : true}
+          noScrollX={scale === 1 ? true : false}
         >
           <div
-            data-tut="reactourForth"
-            style={{ border: "0.1px solid #ebe8e8", width: pdfOriginalWidth }}
+            style={{
+              width: containerWH.width * scale
+            }}
             ref={drop}
             id="container"
           >
-            {pdfLoadFail.status &&
-              (pdfRequest
-                ? signerPos.map((data, key) => {
+            {isLoadPdf &&
+              containerWH?.width &&
+              pdfOriginalWH?.width &&
+              (pdfRequest //pdf request sign flow
+                ? signerPos?.map((data, key) => {
                     return (
                       <React.Fragment key={key}>
-                        {checkSignedSignes(data)}
+                        {checkSignedSigners(data)}
                       </React.Fragment>
                     );
                   })
-                : placeholder
+                : placeholder //placeholder and template flow
                   ? signerPos.map((data, ind) => {
                       return (
                         <React.Fragment key={ind}>
@@ -547,8 +478,6 @@ function RenderPdf({
                                           handleLinkUser={handleLinkUser}
                                           handleUserName={handleUserName}
                                           isSignYourself={false}
-                                          xPos={xPos}
-                                          yPos={yPos}
                                           posWidth={posWidth}
                                           posHeight={posHeight}
                                           isDragging={isDragging}
@@ -564,6 +493,12 @@ function RenderPdf({
                                           handleNameModal={handleNameModal}
                                           setTempSignerId={setTempSignerId}
                                           uniqueId={uniqueId}
+                                          handleTextSettingModal={
+                                            handleTextSettingModal
+                                          }
+                                          scale={scale}
+                                          containerWH={containerWH}
+                                          pdfOriginalWH={pdfOriginalWH}
                                         />
                                       </React.Fragment>
                                     );
@@ -575,53 +510,54 @@ function RenderPdf({
                       );
                     })
                   : xyPostion.map((data, ind) => {
+                      // signyourself flow
                       return (
                         <React.Fragment key={ind}>
                           {data.pageNumber === pageNumber &&
                             data.pos.map((pos) => {
                               return (
-                                pos && (
-                                  <React.Fragment key={pos.key}>
-                                    <Placeholder
-                                      pos={pos}
-                                      setIsPageCopy={setIsPageCopy}
-                                      setSignKey={setSignKey}
-                                      handleDeleteSign={handleDeleteSign}
-                                      setIsStamp={setIsStamp}
-                                      handleTabDrag={handleTabDrag}
-                                      handleStop={(event, dragElement) =>
-                                        handleStop(event, dragElement, pos.type)
-                                      }
-                                      handleSignYourselfImageResize={
-                                        handleSignYourselfImageResize
-                                      }
-                                      index={index}
-                                      xyPostion={xyPostion}
-                                      setXyPostion={setXyPostion}
-                                      pdfOriginalWidth={pdfOriginalWidth}
-                                      containerWH={containerWH}
-                                      setIsSignPad={setIsSignPad}
-                                      isShowBorder={true}
-                                      isSignYourself={true}
-                                      xPos={xPos}
-                                      yPos={yPos}
-                                      posWidth={posWidth}
-                                      posHeight={posHeight}
-                                      pdfDetails={pdfDetails[0]}
-                                      isDragging={isDragging}
-                                      setIsInitial={setIsInitial}
-                                      setWidgetType={setWidgetType}
-                                      setSelectWidgetId={setSelectWidgetId}
-                                      selectWidgetId={selectWidgetId}
-                                      handleUserName={handleUserName}
-                                      setIsCheckbox={setIsCheckbox}
-                                      setValidateAlert={setValidateAlert}
-                                      setCurrWidgetsDetails={
-                                        setCurrWidgetsDetails
-                                      }
-                                    />
-                                  </React.Fragment>
-                                )
+                                <React.Fragment key={pos.key}>
+                                  <Placeholder
+                                    pos={pos}
+                                    setIsPageCopy={setIsPageCopy}
+                                    setSignKey={setSignKey}
+                                    handleDeleteSign={handleDeleteSign}
+                                    setIsStamp={setIsStamp}
+                                    handleTabDrag={handleTabDrag}
+                                    handleStop={(event, dragElement) =>
+                                      handleStop(event, dragElement, pos.type)
+                                    }
+                                    handleSignYourselfImageResize={
+                                      handleSignYourselfImageResize
+                                    }
+                                    index={index}
+                                    xyPostion={xyPostion}
+                                    setXyPostion={setXyPostion}
+                                    setIsSignPad={setIsSignPad}
+                                    isShowBorder={true}
+                                    isSignYourself={true}
+                                    posWidth={posWidth}
+                                    posHeight={posHeight}
+                                    pdfDetails={pdfDetails[0]}
+                                    isDragging={isDragging}
+                                    setIsInitial={setIsInitial}
+                                    setWidgetType={setWidgetType}
+                                    setSelectWidgetId={setSelectWidgetId}
+                                    selectWidgetId={selectWidgetId}
+                                    handleUserName={handleUserName}
+                                    setIsCheckbox={setIsCheckbox}
+                                    setValidateAlert={setValidateAlert}
+                                    setCurrWidgetsDetails={
+                                      setCurrWidgetsDetails
+                                    }
+                                    handleTextSettingModal={
+                                      handleTextSettingModal
+                                    }
+                                    scale={scale}
+                                    containerWH={containerWH}
+                                    pdfOriginalWH={pdfOriginalWH}
+                                  />
+                                </React.Fragment>
                               );
                             })}
                         </React.Fragment>
@@ -653,17 +589,22 @@ function RenderPdf({
                     : pdfDetails[0].URL
               }
             >
-              {Array.from(new Array(numPages), (el, index) => (
-                <Page
-                  key={index}
-                  pageNumber={pageNumber}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
-                  onGetAnnotationsError={(error) => {
-                    console.log("annotation error", error);
-                  }}
-                />
-              ))}
+              <Page
+                onLoadSuccess={({ height }) => {
+                  setPdfRenderHeight && setPdfRenderHeight(height);
+                  setIsLoadPdf(true);
+                }}
+                key={index}
+                width={containerWH.width}
+                scale={scale || 1}
+                className={"-z-[1]"} // when user zoom-in in tablet widgets move backward that's why pass -z-[1]
+                pageNumber={pageNumber}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+                onGetAnnotationsError={(error) => {
+                  console.log("annotation error", error);
+                }}
+              />
             </Document>
           </div>
         </RSC>

@@ -205,14 +205,14 @@ function DropdownWidgetOption(props) {
                   />
 
                   <i
-                    className="fa-solid fa-rectangle-xmark text-[25px] ml-[10px] text-error"
+                    className="fa-light fa-rectangle-xmark text-[25px] ml-[10px] text-accent cursor-pointer"
                     onClick={() => handleDeleteInput(index)}
                   ></i>
                 </div>
               ))}
               <i
                 onClick={handleAddInput}
-                className="fa-solid fa-square-plus text-[25px] ml-[10px] text-primary"
+                className="fa-light fa-square-plus text-[25px] ml-[10px] op-text-primary cursor-pointer"
               ></i>
               <div>
                 {props.type === "checkbox" && !props.isSignYourself && (

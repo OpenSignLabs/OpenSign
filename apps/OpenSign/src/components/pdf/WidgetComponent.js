@@ -297,7 +297,7 @@ function WidgetComponent({
                       </div>
                     )}
                     <div className="ml-[6px] text-[16px]">
-                      <i className="fa-solid fa-angle-down"></i>
+                      <i className="fa-light fa-angle-down"></i>
                     </div>
                   </span>
                 </div>
@@ -310,7 +310,7 @@ function WidgetComponent({
                   className="op-btn op-btn-accent w-full my-[2px]"
                   onClick={() => handleAddSigner()}
                 >
-                  <i className="fa-solid fa-plus"></i>
+                  <i className="fa-light fa-plus"></i>
                   <span>Add role</span>
                 </div>
               ) : (
@@ -320,7 +320,7 @@ function WidgetComponent({
                     className="op-btn op-btn-accent w-full my-[2px]"
                     onClick={() => setIsAddSigner(true)}
                   >
-                    <i className="fa-solid fa-plus"></i>
+                    <i className="fa-light fa-plus"></i>
                     <span>Add recipients</span>
                   </div>
                 )
@@ -349,12 +349,13 @@ function WidgetComponent({
           data-tut={dataTut}
           className={`${
             isMailSend ? "bg-opacity-50 pointer-events-none" : ""
-          } hidden md:block w-[180px] h-full bg-base-100`}
+          } hidden md:block h-full bg-base-100`}
         >
           <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
             <span>Fields</span>
           </div>
-          <div className="flex flex-col items-center my-3">
+
+          <div className="p-[15px] flex flex-col pt-4 2xl:m-5">
             <WidgetList
               updateWidgets={updateWidgets}
               handleDivClick={handleDivClick}

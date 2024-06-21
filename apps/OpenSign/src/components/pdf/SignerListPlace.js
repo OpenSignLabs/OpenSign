@@ -8,17 +8,19 @@ function SignerListPlace(props) {
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
         <span>
           {props.title ? props.title : "Recipients"}
-          <span className="text-xs mt-1 ml-0.5">
+          <span className="absolute text-xs z-[30] mt-1 ml-0.5">
             {props?.title === "Roles" && (
               <>
                 <a data-tooltip-id="my-tooltip">
                   <sup>
-                    <i className="fa-solid fa-question rounded-full border-[1.5px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
+                    <i className="fa-light fa-question rounded-full border-[1.5px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
                   </sup>
                 </a>
                 <Tooltip id="my-tooltip" className="z-[100]">
-                  <div className="max-w-[450px]">
-                    <p className="font-bold">What are template roles?</p>
+                  <div className="max-w-[450px] 2xl:max-w-[500px] 2xl:text-[20px] p-[1px]">
+                    <p className="font-bold pb-[1px]">
+                      What are template roles?
+                    </p>
                     <p>
                       Begin by specifying each role needed for the completion of
                       the document. Think about the parties involved in the
@@ -61,11 +63,11 @@ function SignerListPlace(props) {
           <div
             role="button"
             data-tut="reactourAddbtn"
-            className="op-btn op-btn-accent op-btn-outline w-full mt-[14px]"
             disabled={props?.isMailSend ? true : false}
+            className="op-btn op-btn-accent op-btn-outline w-full mt-[14px]"
             onClick={() => props.handleAddSigner()}
           >
-            <i className="fa-solid fa-plus"></i> Add role
+            <i className="fa-light fa-plus"></i> Add role
           </div>
         ) : (
           <div
@@ -75,7 +77,7 @@ function SignerListPlace(props) {
             disabled={props?.isMailSend ? true : false}
             onClick={() => props.setIsAddSigner(true)}
           >
-            <i className="fa-solid fa-plus"></i> Add recipients
+            <i className="fa-light fa-plus"></i> Add recipients
           </div>
         )}
       </div>

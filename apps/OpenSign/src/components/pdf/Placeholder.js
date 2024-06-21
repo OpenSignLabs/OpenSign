@@ -5,7 +5,7 @@ import { Rnd } from "react-rnd";
 import {
   defaultWidthHeight,
   handleCopyNextToWidget,
-  isMobile,
+  isTabAndMobile,
   onChangeInput,
   radioButtonWidget,
   textInputWidget,
@@ -88,6 +88,7 @@ const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
 
 function Placeholder(props) {
+  const [placeholderBorder, setPlaceholderBorder] = useState({ w: 0, h: 0 });
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
   const [selectDate, setSelectDate] = useState({
@@ -119,6 +120,7 @@ function Placeholder(props) {
     width: null,
     height: null
   });
+  const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
   const dateFormatArr = [
     "L",
     "DD-MM-YYYY",
@@ -293,12 +295,27 @@ function Placeholder(props) {
       props?.setShowDropdown(true);
     } else if (props.pos.type === "checkbox") {
       props?.setIsCheckbox(true);
+    } else if (
+      [
+        textInputWidget,
+        textWidget,
+        "name",
+        "company",
+        "job title",
+        "email"
+      ].includes(props.pos.type)
+    ) {
+      props.handleTextSettingModal(true);
     } else {
-      props?.handleNameModal(true);
+      props?.handleNameModal && props?.handleNameModal(true);
     }
 
-    if (props.isPlaceholder && props.type !== textWidget) {
-      props.setUniqueId(props.data.Id);
+    if (props.data && props?.pos?.type !== textWidget) {
+      props.setSignerObjId(props?.data?.signerObjId);
+      props.setUniqueId(props?.data?.Id);
+    } else if (props.data && props.pos.type === textWidget) {
+      props.setTempSignerId(props.uniqueId);
+      props.setUniqueId(props?.data?.Id);
     }
     props.setSignKey(props.pos.key);
     props.setWidgetType(props.pos.type);
@@ -375,7 +392,15 @@ function Placeholder(props) {
         <>
           {(props.isPlaceholder || props.isSignYourself) && (
             <>
-              {props.pos.type === "checkbox" && props.isSignYourself ? (
+              {[
+                "checkbox",
+                textInputWidget,
+                textWidget,
+                "name",
+                "company",
+                "job title",
+                "email"
+              ].includes(props.pos.type) && props.isSignYourself ? (
                 <i
                   onClick={(e) => {
                     e.stopPropagation();
@@ -385,7 +410,7 @@ function Placeholder(props) {
                     e.stopPropagation();
                     handleOnClickSettingIcon();
                   }}
-                  className="fa-solid fa-gear settingIcon"
+                  className="fa-light fa-gear settingIcon"
                   style={{
                     color: "#188ae2",
                     right: "29px",
@@ -395,9 +420,7 @@ function Placeholder(props) {
               ) : (
                 ((!props?.pos?.type && props.pos.isStamp) ||
                   (props?.pos?.type &&
-                    !["date", textWidget, "signature"].includes(
-                      props.pos.type
-                    ) &&
+                    !["date", "signature"].includes(props.pos.type) &&
                     !props.isSignYourself)) && (
                   <i
                     onClick={(e) => {
@@ -408,8 +431,12 @@ function Placeholder(props) {
                       e.stopPropagation();
                       handleOnClickSettingIcon();
                     }}
-                    className="fa-solid fa-gear settingIcon"
-                    style={{ color: "#188ae2", right: "47px", top: "-19px" }}
+                    className="fa-light fa-gear settingIcon"
+                    style={{
+                      color: "#188ae2",
+                      right: props?.pos?.type === textWidget ? "32px" : "47px",
+                      top: "-19px"
+                    }}
                   ></i>
                 )
               )}
@@ -417,7 +444,7 @@ function Placeholder(props) {
               {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
                   data-tut="assignSigner"
-                  className="fa-regular fa-user signUserIcon"
+                  className="fa-light fa-user signUserIcon"
                   onClick={(e) => {
                     e.stopPropagation();
                     props.handleLinkUser(props.data.Id);
@@ -464,7 +491,7 @@ function Placeholder(props) {
               }}
             >
               <i
-                className="fa-solid fa-gear settingIcon"
+                className="fa-light fa-gear settingIcon"
                 style={{
                   color: "#188ae2",
                   fontSize: "14px"
@@ -503,13 +530,13 @@ function Placeholder(props) {
             </div>
           )}
           <i
-            className="fa-regular fa-copy signCopy"
+            className="fa-light fa-copy signCopy"
             onClick={(e) => handleCopyPlaceholder(e)}
             onTouchEnd={(e) => handleCopyPlaceholder(e)}
             style={{ color: "#188ae2", right: "12px", top: "-18px" }}
           ></i>
           <i
-            className="fa-regular fa-circle-xmark signCloseBtn"
+            className="fa-light fa-circle-xmark signCloseBtn"
             onClick={(e) => {
               e.stopPropagation();
 
@@ -534,6 +561,55 @@ function Placeholder(props) {
         </>
       )
     );
+  };
+  const xPos = (pos, signYourself) => {
+    const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+    const resizePos = pos.xPosition;
+    if (signYourself) {
+      return resizePos * containerScale * props.scale;
+    } else {
+      //checking both condition mobile and desktop view
+      if (pos.isMobile && pos.scale) {
+        if (props.scale > 1) {
+          return resizePos * pos.scale * containerScale * props.scale;
+        } else {
+          return resizePos * pos.scale * containerScale;
+        }
+      } else {
+        // if (pos.scale === containerScale) {
+        //   return resizePos * pos.scale * props.scale;
+        // } else {
+        return resizePos * containerScale * props.scale;
+        // }
+      }
+    }
+  };
+  const yPos = (pos, signYourself) => {
+    const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+    const resizePos = pos.yPosition;
+
+    if (signYourself) {
+      return resizePos * containerScale * props.scale;
+    } else {
+      //checking both condition mobile and desktop view
+      if (pos.isMobile && pos.scale) {
+        if (props.scale > 1) {
+          return resizePos * pos.scale * containerScale * props.scale;
+        } else {
+          return resizePos * pos.scale * containerScale;
+        }
+      }
+      // else if (pos.scale === containerScale) {
+      //   if (props.scale > 1) {
+      //     return resizePos * pos.scale * props.scale;
+      //   } else {
+      //     return resizePos * pos.scale;
+      //   }
+      // }
+      else {
+        return resizePos * containerScale * props.scale;
+      }
+    }
   };
 
   return (
@@ -620,8 +696,20 @@ function Placeholder(props) {
         setDraggingEnabled(true);
         props.setIsResize && props.setIsResize(true);
       }}
-      onResizeStop={() => {
+      onResizeStop={(e, direction, ref) => {
         props.setIsResize && props.setIsResize(false);
+        props.handleSignYourselfImageResize &&
+          props.handleSignYourselfImageResize(
+            ref,
+            props.pos.key,
+            props.xyPostion,
+            props.setXyPostion,
+            props.index,
+            containerScale,
+            props.scale,
+            props.data && props.data.Id,
+            props.isResize
+          );
       }}
       disableDragging={
         props.isNeedSign
@@ -634,21 +722,15 @@ function Placeholder(props) {
         props.handleStop &&
         props.handleStop(event, dragElement, props.data?.Id, props.pos?.key)
       }
-      default={{
-        x: props.xPos(props.pos, props.isSignYourself),
-        y: props.yPos(props.pos, props.isSignYourself)
+      position={{
+        x: xPos(props.pos, props.isSignYourself),
+        y: yPos(props.pos, props.isSignYourself)
       }}
       onResize={(e, direction, ref) => {
-        props.handleSignYourselfImageResize &&
-          props.handleSignYourselfImageResize(
-            ref,
-            props.pos.key,
-            props.xyPostion,
-            props.setXyPostion,
-            props.index,
-            props.data && props.data.Id,
-            false
-          );
+        setPlaceholderBorder({
+          w: ref.offsetWidth / (props.scale * containerScale),
+          h: ref.offsetHeight / (props.scale * containerScale)
+        });
       }}
       onClick={() => handleOnClickPlaceholder()}
     >
@@ -677,20 +759,22 @@ function Placeholder(props) {
           pos={props.pos}
           isPlaceholder={props.isPlaceholder}
           getCheckboxRenderWidth={getCheckboxRenderWidth}
+          scale={props.scale}
+          containerScale={containerScale}
+          placeholderBorder={placeholderBorder}
         />
       )}
-      {isMobile ? (
+      {isTabAndMobile ? (
         <div
+          // className="sm:inline-block md:inline-block lg:hidden "
           style={{
-            left: props.xPos(props.pos, props.isSignYourself),
-            top: props.yPos(props.pos, props.isSignYourself),
+            left: xPos(props.pos, props.isSignYourself),
+            top: yPos(props.pos, props.isSignYourself),
             width:
               props.pos.type === radioButtonWidget ||
               props.pos.type === "checkbox"
                 ? "auto"
                 : props.posWidth(props.pos, props.isSignYourself),
-            //  "auto", //props.posWidth(props.pos, props.isSignYourself),
-            // height: props.posHeight(props.pos, props.isSignYourself),
             height:
               props.pos.type === radioButtonWidget ||
               props.pos.type === "checkbox"
@@ -699,6 +783,7 @@ function Placeholder(props) {
             zIndex: "10"
           }}
           onTouchEnd={() => handleOnClickPlaceholder()}
+          onClick={() => handleOnClickPlaceholder()}
         >
           {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
 
@@ -723,6 +808,7 @@ function Placeholder(props) {
             setStartDate={setStartDate}
             startDate={startDate}
             handleSaveDate={handleSaveDate}
+            xPos={props.xPos}
           />
         </div>
       ) : (
@@ -749,6 +835,7 @@ function Placeholder(props) {
             setStartDate={setStartDate}
             startDate={startDate}
             handleSaveDate={handleSaveDate}
+            xPos={props.xPos}
           />
         </>
       )}
