@@ -460,7 +460,7 @@ function SignYourSelf() {
       dragTypeValue
     );
     const containerScale = containerWH?.width / pdfOriginalWH?.width || 1;
-
+    //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
       const getWidth = widgetTypeExist
         ? calculateInitialWidthHeight(dragTypeValue, widgetValue).getWidth
@@ -489,11 +489,13 @@ function SignYourSelf() {
 
       dropData.push(dropObj);
     } else {
+      //This method returns the offset of the current pointer (mouse) position relative to the client viewport.
       const offset = monitor.getClientOffset();
-      //adding and updating drop position in array when user drop signature button in div
       const containerRect = document
         .getElementById("container")
         .getBoundingClientRect();
+      //`containerRect.left`,  The distance from the left of the viewport to the left side of the element.
+      //`containerRect.top` The distance from the top of the viewport to the top of the element.
 
       const x = offset.x - containerRect.left;
       const y = offset.y - containerRect.top;
@@ -705,7 +707,9 @@ function SignYourSelf() {
             );
             // console.log("pdf", pdfBytes);
             //function for call to embed signature in pdf and get digital signature pdf
-            await signPdfFun(pdfBytes, documentId);
+            if (pdfBytes) {
+              await signPdfFun(pdfBytes, documentId);
+            }
           } catch (err) {
             setIsUiLoading(false);
             if (err && err.message.includes("is encrypted.")) {
@@ -812,6 +816,7 @@ function SignYourSelf() {
     setIsDragging(true);
   };
 
+  // console.log("xy", pdfOriginalWH);
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement) => {
     if (isDragging && dragElement) {
@@ -852,17 +857,17 @@ function SignYourSelf() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const load = {
+    const firstPage = await pdf.getPage(1);
+    const scale = 1;
+    const { width, height } = firstPage.getViewport({ scale });
+    // console.log("width height", width, height);
+    setPdfOriginalWH({ width: width, height: height });
+    setPdfLoadFail({
       status: true
-    };
-    setPdfLoadFail(load);
-    pdf.getPage(1).then((pdfPage) => {
-      const pageWidth = pdfPage.view[2];
-      const pageHeight = pdfPage.view[3];
-      setPdfOriginalWH({ width: pageWidth, height: pageHeight });
     });
   };
 
+  console.log("xyPosition", xyPostion);
   //function for change page numver of pdf
   function changePage(offset) {
     setSignBtnPosition([]);
