@@ -514,6 +514,7 @@ function PlaceHolderSign() {
         const getYPosition = signBtnPosition[0]
           ? y - signBtnPosition[0].yPos
           : y;
+        console.log("getxyPos", getXPosition, getYPosition);
         const dropObj = {
           xPosition: getXPosition / (containerScale * scale),
           yPosition: getYPosition / (containerScale * scale),
@@ -1742,7 +1743,7 @@ function PlaceHolderSign() {
             {isUiLoading && (
               <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                 <Loader />
-                <span className="text-[13px] font-bold">
+                <span className="text-[13px] text-base-content">
                   This might take some time
                 </span>
               </div>
@@ -1779,7 +1780,7 @@ function PlaceHolderSign() {
                 pageNumber={pageNumber}
               />
               {/* pdf render view */}
-              <div className=" w-full  md:w-[57%] flex mr-4">
+              <div className=" w-full md:w-[57%] flex mr-4">
                 <PdfZoom
                   setScale={setScale}
                   scale={scale}

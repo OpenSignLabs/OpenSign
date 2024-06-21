@@ -249,16 +249,10 @@ const ManageSign = () => {
         </div>
       )}
       {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
-      <div
-        className="mainDiv"
-        style={{
-          width: "100%",
-          paddingRight: "10px"
-        }}
-      >
+      <div className="relative w-full pr-[10px]">
         <div className="m-[20px]">
           <div className="font-[700] text-[15px] pb-[8px]">My Signature</div>
-          <div className="signBlock mt-4">
+          <div className=" flex flex-col md:flex-row gap-0 md:gap-[12px] mt-4">
             <div>
               <div className="relative">
                 <div className="flex flex-row justify-between w-1/2 pl-[10px]">
@@ -274,7 +268,7 @@ const ManageSign = () => {
 
                     <span
                       onClick={() => handleUploadBtn()}
-                      className="imgupload"
+                      className="signature min-w-[105px]"
                     >
                       Upload Image
                     </span>
@@ -364,7 +358,7 @@ const ManageSign = () => {
                       <div>
                         <div
                           type="button"
-                          className="clearbtn cursor-pointer"
+                          className="op-link"
                           onClick={() => handleClear()}
                         >
                           Clear
@@ -465,7 +459,7 @@ const ManageSign = () => {
                   <div>
                     <div
                       type="button"
-                      className="clearbtn cursor-pointer"
+                      className="op-link"
                       onClick={() => handleClearInitials()}
                     >
                       Clear

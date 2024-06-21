@@ -410,7 +410,7 @@ function Placeholder(props) {
                     e.stopPropagation();
                     handleOnClickSettingIcon();
                   }}
-                  className="fa-light fa-gear settingIcon"
+                  className="fa-light fa-gear icon"
                   style={{
                     color: "#188ae2",
                     right: "29px",
@@ -431,7 +431,7 @@ function Placeholder(props) {
                       e.stopPropagation();
                       handleOnClickSettingIcon();
                     }}
-                    className="fa-light fa-gear settingIcon"
+                    className="fa-light fa-gear icon"
                     style={{
                       color: "#188ae2",
                       right: props?.pos?.type === textWidget ? "32px" : "47px",
@@ -444,7 +444,7 @@ function Placeholder(props) {
               {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
                   data-tut="assignSigner"
-                  className="fa-light fa-user signUserIcon"
+                  className="fa-light fa-user icon"
                   onClick={(e) => {
                     e.stopPropagation();
                     props.handleLinkUser(props.data.Id);
@@ -468,11 +468,7 @@ function Placeholder(props) {
                 top: "-19px",
                 right: props.isPlaceholder ? "60px" : "44px"
               }}
-              className={
-                isShowDateFormat
-                  ? "dropdown signUserIcon show"
-                  : "dropdown signUserIcon"
-              }
+              className={`${isShowDateFormat ? "show" : ""} dropdown icon`}
               onClick={(e) => {
                 setIsShowDateFormat(!isShowDateFormat);
                 e.stopPropagation();
@@ -491,7 +487,7 @@ function Placeholder(props) {
               }}
             >
               <i
-                className="fa-light fa-gear settingIcon"
+                className="fa-light fa-gear icon"
                 style={{
                   color: "#188ae2",
                   fontSize: "14px"
@@ -519,8 +515,7 @@ function Placeholder(props) {
                         setSelectDate(data);
                         handleSaveDate(data);
                       }}
-                      className="dropdown-item itemColor"
-                      style={{ fontSize: "12px" }}
+                      className="dropdown-item text-[13px]"
                     >
                       {data?.date ? data?.date : "nodata"}
                     </span>
@@ -530,13 +525,13 @@ function Placeholder(props) {
             </div>
           )}
           <i
-            className="fa-light fa-copy signCopy"
+            className="fa-light fa-copy icon"
             onClick={(e) => handleCopyPlaceholder(e)}
             onTouchEnd={(e) => handleCopyPlaceholder(e)}
             style={{ color: "#188ae2", right: "12px", top: "-18px" }}
           ></i>
           <i
-            className="fa-light fa-circle-xmark signCloseBtn"
+            className="fa-light fa-circle-xmark icon"
             onClick={(e) => {
               e.stopPropagation();
 
