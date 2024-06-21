@@ -87,7 +87,7 @@ function PlaceHolderSign() {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
-  const [pdfOriginalWH, setPdfOriginalWH] = useState();
+  const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const { docId } = useParams();
@@ -467,7 +467,10 @@ function PlaceHolderSign() {
       setZIndex(posZIndex);
       const signer = signersdata.find((x) => x.Id === uniqueId);
       const key = randomId();
-      const containerScale = containerWH?.width / pdfOriginalWH?.width || 1;
+      const getPdfPageWidth = pdfOriginalWH.find(
+        (data) => data.pageNumber === pageNumber
+      );
+      const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
@@ -514,7 +517,6 @@ function PlaceHolderSign() {
         const getYPosition = signBtnPosition[0]
           ? y - signBtnPosition[0].yPos
           : y;
-        console.log("getxyPos", getXPosition, getYPosition);
         const dropObj = {
           xPosition: getXPosition / (containerScale * scale),
           yPosition: getYPosition / (containerScale * scale),
@@ -661,11 +663,14 @@ function PlaceHolderSign() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
-    const scale = 1;
-    const { width, height } = firstPage.getViewport({ scale });
-    // console.log("width height", width, height);
-    setPdfOriginalWH({ width: width, height: height });
+    let pdfWHObj = [];
+    for (let index = 0; index < allPages; index++) {
+      const firstPage = await pdf.getPage(index + 1);
+      const scale = 1;
+      const { width, height } = firstPage.getViewport({ scale });
+      pdfWHObj.push({ pageNumber: index + 1, width, height });
+    }
+    setPdfOriginalWH(pdfWHObj);
     setPdfLoadFail({
       status: true
     });
@@ -685,7 +690,10 @@ function PlaceHolderSign() {
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
       const signId = signerId ? signerId : uniqueId; //? signerId : signerObjId;
       const keyValue = key ? key : dragKey;
-      const containerScale = containerWH.width / pdfOriginalWH.width;
+      const getPdfPageWidth = pdfOriginalWH.find(
+        (data) => data.pageNumber === pageNumber
+      );
+      const containerScale = containerWH.width / getPdfPageWidth?.width;
 
       if (keyValue >= 0) {
         let filterSignerPos;
@@ -864,7 +872,6 @@ function PlaceHolderSign() {
         const pdfBytes = await multiSignEmbed(
           placeholder,
           pdfDoc,
-          pdfOriginalWH,
           isSignYourSelfFlow,
           containerWH
         );
@@ -1784,7 +1791,6 @@ function PlaceHolderSign() {
                 <PdfZoom
                   setScale={setScale}
                   scale={scale}
-                  pdfOriginalWH={pdfOriginalWH}
                   containerWH={containerWH}
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}

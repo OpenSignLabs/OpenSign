@@ -70,7 +70,7 @@ const TemplatePlaceholder = () => {
   const [checkTourStatus, setCheckTourStatus] = useState(false);
   const [tourStatus, setTourStatus] = useState([]);
   const [signerUserId, setSignerUserId] = useState();
-  const [pdfOriginalWH, setPdfOriginalWH] = useState();
+  const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [contractName, setContractName] = useState("");
   const [containerWH, setContainerWH] = useState();
   const signRef = useRef(null);
@@ -369,7 +369,10 @@ const TemplatePlaceholder = () => {
       if (signer) {
         const posZIndex = zIndex + 1;
         setZIndex(posZIndex);
-        const containerScale = containerWH.width / pdfOriginalWH.width;
+        const getPdfPageWidth = pdfOriginalWH.find(
+          (data) => data.pageNumber === pageNumber
+        );
+        const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
         const key = randomId();
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
         const dragTypeValue = item?.text ? item.text : monitor.type;
@@ -537,11 +540,14 @@ const TemplatePlaceholder = () => {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
-    const scale = 1;
-    const { width, height } = firstPage.getViewport({ scale });
-    // console.log("width height", width, height);
-    setPdfOriginalWH({ width: width, height: height });
+    let pdfWHObj = [];
+    for (let index = 0; index < allPages; index++) {
+      const firstPage = await pdf.getPage(index + 1);
+      const scale = 1;
+      const { width, height } = firstPage.getViewport({ scale });
+      pdfWHObj.push({ pageNumber: index + 1, width, height });
+    }
+    setPdfOriginalWH(pdfWHObj);
     setPdfLoadFail({
       status: true
     });
@@ -560,7 +566,10 @@ const TemplatePlaceholder = () => {
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
       const signId = signerId; //? signerId : signerObjId;
       const keyValue = key ? key : dragKey;
-      const containerScale = containerWH.width / pdfOriginalWH.width;
+      const getPdfPageWidth = pdfOriginalWH.find(
+        (data) => data.pageNumber === pageNumber
+      );
+      const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
       if (keyValue >= 0) {
         const filterSignerPos = updateSignPos.filter(
           (data) => data.Id === signId
@@ -1343,7 +1352,6 @@ const TemplatePlaceholder = () => {
                 <PdfZoom
                   setScale={setScale}
                   scale={scale}
-                  pdfOriginalWH={pdfOriginalWH}
                   containerWH={containerWH}
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}
