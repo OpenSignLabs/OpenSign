@@ -46,10 +46,12 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
         FolderQuery.equalTo("Folder", folderPtr);
         FolderQuery.notEqualTo("IsArchive", true);
         FolderQuery.descending("Type");
+        FolderQuery.equalTo("CreatedBy", Parse.User.current());
       } else {
         FolderQuery.doesNotExist("Folder");
         FolderQuery.notEqualTo("IsArchive", true);
         FolderQuery.descending("Type");
+        FolderQuery.equalTo("CreatedBy", Parse.User.current());
       }
 
       const res = await FolderQuery.find();

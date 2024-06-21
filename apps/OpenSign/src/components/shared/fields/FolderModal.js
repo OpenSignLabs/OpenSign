@@ -26,10 +26,12 @@ const FolderModal = (props) => {
         FolderQuery.equalTo("Folder", folderPtr);
         FolderQuery.descending("Type");
         FolderQuery.notEqualTo("IsArchive", true);
+        FolderQuery.equalTo("CreatedBy", Parse.User.current());
       } else {
         FolderQuery.doesNotExist("Folder");
         FolderQuery.descending("Type");
         FolderQuery.notEqualTo("IsArchive", true);
+        FolderQuery.equalTo("CreatedBy", Parse.User.current());
       }
 
       const res = await FolderQuery.find();
