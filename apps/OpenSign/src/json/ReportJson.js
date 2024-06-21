@@ -15,7 +15,7 @@ export default function reportJson(id) {
             btnId: "1231",
             hoverLabel: "Edit",
             btnColor: "op-btn-primary",
-            btnIcon: "fa-solid fa-pen",
+            btnIcon: "fa-light fa-pen",
             redirectUrl: "draftDocument",
             action: "redirect"
           },
@@ -23,7 +23,7 @@ export default function reportJson(id) {
             btnId: "2142",
             hoverLabel: "Delete",
             btnColor: "op-btn-secondary",
-            btnIcon: "fa fa-trash",
+            btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
           }
@@ -42,7 +42,7 @@ export default function reportJson(id) {
             btnLabel: "sign",
             hoverLabel: "Sign",
             btnColor: "op-btn-primary",
-            btnIcon: "fa-solid fa-signature",
+            btnIcon: "fa-light fa-signature",
             redirectUrl: "pdfRequestFiles",
             action: "redirect"
           }
@@ -60,7 +60,7 @@ export default function reportJson(id) {
             btnId: "8901",
             hoverLabel: "Share",
             btnColor: "op-btn-primary",
-            btnIcon: "fa-solid fa-share",
+            btnIcon: "fa-light fa-share",
             redirectUrl: "",
             action: "share"
           },
@@ -68,7 +68,7 @@ export default function reportJson(id) {
             btnId: "1588",
             hoverLabel: "View",
             btnColor: "op-btn-secondary",
-            btnIcon: "fa fa-eye",
+            btnIcon: "fa-light fa-eye",
             redirectUrl: "pdfRequestFiles",
             action: "redirect"
           },
@@ -77,14 +77,14 @@ export default function reportJson(id) {
             hoverLabel: "option",
             btnColor: "",
             textColor: "black",
-            btnIcon: "fa-solid fa-ellipsis-vertical fa-lg",
+            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
             action: "option",
             subaction: [
               {
                 btnId: "1630",
                 btnLabel: "Resend",
                 hoverLabel: "Resend",
-                btnIcon: "fa-solid fa-envelope",
+                btnIcon: "fa-light fa-envelope",
                 redirectUrl: "",
                 action: "resend"
               },
@@ -92,7 +92,7 @@ export default function reportJson(id) {
                 btnId: "1688",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",
-                btnIcon: "fa-solid fa-file-circle-xmark",
+                btnIcon: "fa-light fa-file-circle-xmark",
                 redirectUrl: "",
                 action: "revoke"
               },
@@ -100,7 +100,7 @@ export default function reportJson(id) {
                 btnId: "1488",
                 btnLabel: "Delete",
                 hoverLabel: "Delete",
-                btnIcon: "fa fa-trash",
+                btnIcon: "fa-light fa-trash",
                 redirectUrl: "",
                 action: "delete"
               }
@@ -120,7 +120,7 @@ export default function reportJson(id) {
             btnId: "1378",
             hoverLabel: "Edit",
             btnColor: "op-btn-primary",
-            btnIcon: "fa fa-eye",
+            btnIcon: "fa-light fa-eye",
             redirectUrl: "draftDocument",
             action: "redirect"
           },
@@ -128,7 +128,7 @@ export default function reportJson(id) {
             btnId: "1278",
             hoverLabel: "Delete",
             btnColor: "op-btn-secondary",
-            btnIcon: "fa fa-trash",
+            btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
           }
@@ -146,7 +146,7 @@ export default function reportJson(id) {
             btnId: "1458",
             hoverLabel: "View",
             btnColor: "op-btn-primary",
-            btnIcon: "fa fa-eye",
+            btnIcon: "fa-light fa-eye",
             redirectUrl: "draftDocument",
             action: "redirect"
           },
@@ -154,7 +154,7 @@ export default function reportJson(id) {
             btnId: "1358",
             hoverLabel: "Delete",
             btnColor: "op-btn-secondary",
-            btnIcon: "fa fa-trash",
+            btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
           }
@@ -172,7 +172,7 @@ export default function reportJson(id) {
             btnId: "1898",
             hoverLabel: "View",
             btnColor: "op-btn-primary",
-            btnIcon: "fa fa-eye",
+            btnIcon: "fa-light fa-eye",
             redirectUrl: "draftDocument",
             action: "redirect"
           },
@@ -180,7 +180,7 @@ export default function reportJson(id) {
             btnId: "1998",
             hoverLabel: "Delete",
             btnColor: "op-btn-secondary",
-            btnIcon: "fa fa-trash",
+            btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
           }
@@ -198,7 +198,7 @@ export default function reportJson(id) {
             btnId: "1999",
             hoverLabel: "Share",
             btnColor: "op-btn-primary",
-            btnIcon: "fa-solid fa-share",
+            btnIcon: "fa-light fa-share",
             redirectUrl: "",
             action: "share"
           },
@@ -206,7 +206,7 @@ export default function reportJson(id) {
             btnId: "1999",
             hoverLabel: "View",
             btnColor: "op-btn-secondary",
-            btnIcon: "fa fa-eye",
+            btnIcon: "fa-light fa-eye",
             redirectUrl: "pdfRequestFiles",
             action: "redirect"
           },
@@ -215,14 +215,14 @@ export default function reportJson(id) {
             hoverLabel: "option",
             btnColor: "",
             textColor: "black",
-            btnIcon: "fa-solid fa-ellipsis-vertical fa-lg",
+            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
             action: "option",
             subaction: [
               {
                 btnId: "1631",
                 btnLabel: "Resend",
                 hoverLabel: "Resend",
-                btnIcon: "fa-solid fa-envelope",
+                btnIcon: "fa-light fa-envelope",
                 redirectUrl: "",
                 action: "resend"
               },
@@ -230,7 +230,7 @@ export default function reportJson(id) {
                 btnId: "6788",
                 btnLabel: "Revoke",
                 hoverLabel: "Revoke",
-                btnIcon: "fa-solid fa-file-circle-xmark",
+                btnIcon: "fa-light fa-file-circle-xmark",
                 redirectUrl: "",
                 action: "revoke"
               },
@@ -238,7 +238,7 @@ export default function reportJson(id) {
                 btnId: "2000",
                 btnLabel: "Delete",
                 hoverLabel: "Delete",
-                btnIcon: "fa fa-trash",
+                btnIcon: "fa-light fa-trash",
                 redirectUrl: "",
                 action: "delete"
               }
@@ -257,7 +257,7 @@ export default function reportJson(id) {
             btnLabel: "sign",
             hoverLabel: "Sign",
             btnColor: "op-btn-primary",
-            btnIcon: "fa-solid fa-signature",
+            btnIcon: "fa-light fa-signature",
             redirectUrl: "pdfRequestFiles",
             action: "redirect"
           }
@@ -273,7 +273,7 @@ export default function reportJson(id) {
             btnId: "2003",
             hoverLabel: "Edit",
             btnColor: "op-btn-primary",
-            btnIcon: "fa-solid fa-pen",
+            btnIcon: "fa-light fa-pen",
             redirectUrl: "draftDocument",
             action: "redirect"
           },
@@ -281,7 +281,7 @@ export default function reportJson(id) {
             btnId: "2004",
             hoverLabel: "Delete",
             btnColor: "op-btn-secondary",
-            btnIcon: "fa fa-trash",
+            btnIcon: "fa-light fa-trash",
             redirectUrl: "",
             action: "delete"
           }
@@ -296,8 +296,8 @@ export default function reportJson(id) {
           {
             btnId: "2204",
             hoverLabel: "Delete",
-            btnColor: "op-btn-outline op-btn-error",
-            btnIcon: "fa-solid fa-trash",
+            btnColor: "op-btn-secondary",
+            btnIcon: "fa-light fa-trash",
             action: "delete"
           }
         ],
@@ -316,7 +316,7 @@ export default function reportJson(id) {
             btnLabel: "Use",
             hoverLabel: "Use",
             btnColor: "op-btn-primary",
-            btnIcon: "fa fa-plus",
+            btnIcon: "fa-light fa-plus",
             redirectUrl: "placeHolderSign",
             action: "redirect",
             selector: "reactourSecond",
@@ -328,7 +328,7 @@ export default function reportJson(id) {
             btnLabel: "Quick send",
             hoverLabel: "Quick send",
             btnColor: "op-btn-secondary",
-            btnIcon: "fa-solid fa-envelope",
+            btnIcon: "fa-light fa-envelope",
             redirectUrl: "",
             action: "bulksend",
             selector: "tourbulksend",
@@ -340,7 +340,7 @@ export default function reportJson(id) {
             hoverLabel: "option",
             btnColor: "",
             textColor: "black",
-            btnIcon: "fa-solid fa-ellipsis-vertical fa-lg",
+            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
             action: "option",
             selector: "reactourThird",
             message:
@@ -350,7 +350,7 @@ export default function reportJson(id) {
                 btnId: "2434",
                 btnLabel: "Edit",
                 hoverLabel: "Edit",
-                btnIcon: "fa-solid fa-pen",
+                btnIcon: "fa-light fa-pen",
                 redirectUrl: "template",
                 action: "redirect"
               },
@@ -358,7 +358,7 @@ export default function reportJson(id) {
                 btnId: "1834",
                 btnLabel: "Delete",
                 hoverLabel: "Delete",
-                btnIcon: "fa fa-trash",
+                btnIcon: "fa-light fa-trash",
                 redirectUrl: "",
                 action: "delete"
               }

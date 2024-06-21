@@ -167,7 +167,7 @@ const SignersInput = (props) => {
           }}
           className="cursor-pointer op-input op-input-bordered focus:outline-none hover:border-base-content max-h-[38px] min-w-[48px] flex justify-center items-center"
         >
-          <i className="fas fa-plus"></i>
+          <i className="fa-light fa-plus"></i>
         </div>
         <AddSignerModal isOpen={modalIsOpen}>
           <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">

@@ -4,9 +4,9 @@ import { getWidgetType } from "../../constant/Utils";
 function WidgetList(props) {
   return props.updateWidgets.map((item, ind) => {
     return (
-      <div key={ind} className="mb-[5px]">
+      <div className="2xl:p-3 mb-[5px]" key={ind}>
         <div
-          className="select-none"
+          className="select-none mx-[2px] md:mx-0 cursor-all-scroll"
           onClick={() => {
             props.addPositionOfSignature &&
               props.addPositionOfSignature("onclick", item);
@@ -22,11 +22,10 @@ function WidgetList(props) {
             }
           }}
           onMouseMove={props?.handleDivClick}
-          onMouseDown={() => {
-            props?.handleMouseLeave();
-          }}
+          onMouseDown={() => props?.handleMouseLeave()}
+          onTouchStart={props?.handleDivClick}
         >
-          {item.ref && getWidgetType(item, props?.marginLeft)}
+          {item.ref && getWidgetType(item)}
         </div>
       </div>
     );

@@ -271,7 +271,7 @@ function SignPad({
                 }
               }}
               key={key}
-              className="fa solid fa-pen-nib"
+              className="fa-light fa-pen-nib"
               width={20}
               height={20}
             ></i>
@@ -472,7 +472,7 @@ function SignPad({
                         ref={imageRef}
                         hidden
                       />
-                      <i className="fas fa-cloud-upload-alt uploadImgLogo"></i>
+                      <i className="fa-light fa-cloud-upload-alt uploadImgLogo"></i>
                       <div className="uploadImg">Upload</div>
                     </div>
                   </div>

@@ -145,7 +145,7 @@ function PlaceholderType(props) {
       ref={ref}
     >
       {value}
-      <i className="fa-regular fa-calendar ml-[5px]"></i>
+      <i className="fa-light fa-calendar  ml-[5px]"></i>
     </div>
   ));
   ExampleCustomInput.displayName = "ExampleCustomInput";
@@ -309,7 +309,7 @@ function PlaceholderType(props) {
           alt="signature"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-[99%] h-full object-contain"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="text-[11px] text-black justify-center">
@@ -327,7 +327,7 @@ function PlaceholderType(props) {
           alt="stamp"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-[99%] h-full object-contain"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="text-[11px] text-black justify-center">
@@ -470,7 +470,7 @@ function PlaceholderType(props) {
           alt="initials"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-[99%] h-full object-contain"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="text-[11px] text-black justify-center">
@@ -650,7 +650,7 @@ function PlaceholderType(props) {
           alt="image"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-[99%] h-full object-contain"
+          className="w-full h-full object-contain"
         />
       ) : (
         <div className="text-[11px] text-black justify-center">
@@ -704,11 +704,9 @@ function PlaceholderType(props) {
             return (
               <div key={ind} className="flex items-center text-center gap-0.5">
                 <input
-                  className={`${ind === 0 ? "mt-0" : "mt-[5px]"} ${
-                    props?.pos?.Width
-                      ? `w-[${props?.pos?.Width}px] h-[${props?.pos?.Width}px]`
-                      : "w-[15px] h-[15px]"
-                  } flex justify-center op-radio`}
+                  className={`${
+                    ind === 0 ? "mt-0" : "mt-[5px]"
+                  } ${"w-[15px] h-[15px]"} flex justify-center op-radio`}
                   type="radio"
                   disabled={
                     props.isNeedSign &&
@@ -761,7 +759,7 @@ function PlaceholderType(props) {
             alt="image"
             draggable="false"
             src={props.pos.SignUrl}
-            className="w-[99%] h-full object-contain"
+            className="w-full h-full object-contain"
           />
         </div>
       ) : (

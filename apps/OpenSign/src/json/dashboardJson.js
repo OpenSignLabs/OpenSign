@@ -6,7 +6,7 @@ const dashboardJson = [
         colsize: "col-span-12 md:col-span-6 lg:col-span-6",
         widget: {
           type: "Card",
-          icon: "fas fa-signature",
+          icon: "fa-light fa-signature",
           bgColor: "bg-[#f0058e]",
           label: "Need your Signature",
           description: null,
@@ -29,7 +29,7 @@ const dashboardJson = [
         colsize: "col-span-12 md:col-span-6 lg:col-span-6",
         widget: {
           type: "Card",
-          icon: "fas fa-sign-out-alt",
+          icon: "fa-light fa-sign-out-alt",
           bgColor: "bg-[#2ed8b6]",
           label: "Out for signatures",
           description: null,

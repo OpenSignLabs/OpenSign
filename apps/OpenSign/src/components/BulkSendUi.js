@@ -205,7 +205,7 @@ const BulkSendUi = (props) => {
                           onClick={() => handleRemoveForm(index)}
                           className="absolute right-3 top-1 text-[red] border-[1px] border-[red] rounded-lg w-[1.7rem] h-[1.7rem]"
                         >
-                          <i className="fa-solid fa-trash"></i>
+                          <i className="fa-light fa-trash"></i>
                         </button>
                       )}
                       <div ref={formRef}></div>
@@ -217,13 +217,13 @@ const BulkSendUi = (props) => {
                     onClick={handleAddForm}
                     className="op-btn op-btn-primary focus:outline-none"
                   >
-                    <i className="fa-solid fa-plus"></i> <span>Add new</span>
+                    <i className="fa-light fa-plus"></i> <span>Add new</span>
                   </button>
                   <button
                     type="submit"
                     className="op-btn op-btn-secondary focus:outline-none"
                   >
-                    <i className="fa-solid fa-paper-plane"></i>{" "}
+                    <i className="fa-light fa-paper-plane"></i>{" "}
                     <span>Send</span>
                   </button>
                 </div>

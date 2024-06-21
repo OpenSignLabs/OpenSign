@@ -96,10 +96,10 @@ const Header = ({ showSidebar }) => {
     <div className="op-navbar bg-base-100 shadow">
       <div className="flex-none">
         <button
-          className="op-btn op-btn-square op-btn-ghost focus:outline-none"
+          className="op-btn op-btn-square op-btn-ghost focus:outline-none hover:bg-transparent op-btn-sm no-animation"
           onClick={showSidebar}
         >
-          <i className="fa-solid fa-bars text-xl text-base-content"></i>
+          <i className="fa-light fa-bars text-xl text-base-content"></i>
         </button>
       </div>
       <div className="flex-1 ml-2">
@@ -151,12 +151,16 @@ const Header = ({ showSidebar }) => {
           </div>
         )}
         <div className="op-dropdown op-dropdown-end" id="profile-menu">
-          <div tabIndex={0} role="button" className="op-btn op-btn-ghost">
+          <div
+            tabIndex={0}
+            role="button"
+            className="op-btn op-btn-ghost op-btn-xs w-[10px] h-[20px] hover:bg-transparent"
+          >
             <i
               tabIndex={0}
               role="button"
               onClick={toggleDropdown}
-              className="fa-solid fa-angle-down text-base-content"
+              className="fa-light fa-angle-down text-base-content"
             ></i>
           </div>
           <ul
@@ -165,7 +169,7 @@ const Header = ({ showSidebar }) => {
           >
             <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
               <span>
-                <i className="fa-solid fa-book"></i> Docs
+                <i className="fa-light fa-book"></i> Docs
               </span>
             </li>
             <li
@@ -175,7 +179,7 @@ const Header = ({ showSidebar }) => {
               }}
             >
               <span>
-                <i className="fa-regular fa-user"></i> Profile
+                <i className="fa-light fa-user"></i> Profile
               </span>
             </li>
             <li
@@ -185,7 +189,7 @@ const Header = ({ showSidebar }) => {
               }}
             >
               <span>
-                <i className="fa-solid fa-lock"></i> Change Password
+                <i className="fa-light fa-lock"></i> Change Password
               </span>
             </li>
             <li
@@ -194,12 +198,12 @@ const Header = ({ showSidebar }) => {
               }}
             >
               <span>
-                <i className="fa-regular fa-id-card"></i> Console
+                <i className="fa-light fa-id-card"></i> Console
               </span>
             </li>
             <li onClick={closeDropdown}>
               <span>
-                <i className="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+                <i className="fa-light fa-arrow-right-from-bracket"></i> Log Out
               </span>
             </li>
           </ul>
