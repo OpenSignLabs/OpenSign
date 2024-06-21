@@ -1082,7 +1082,7 @@ function PlaceHolderSign() {
               type="button"
               className="flex flex-row items-center op-link op-link-primary"
             >
-              <i className="fa-solid fa-link" aria-hidden="true"></i>
+              <i className="fa-light fa-link" aria-hidden="true"></i>
               <span className=" hidden md:block ml-1 ">Copy link</span>
             </button>
             <RWebShare
@@ -1091,7 +1091,7 @@ function PlaceHolderSign() {
                 title: "Sign url"
               }}
             >
-              <i className="fa-solid fa-share-from-square op-link op-link-secondary no-underline"></i>
+              <i className="fa-light fa-share-from-square op-link op-link-secondary no-underline"></i>
             </RWebShare>
           </div>
         </div>
@@ -2106,9 +2106,7 @@ function PlaceHolderSign() {
               </div>
 
               {/* signature button */}
-              <div
-                className={`w-full md:w-[23%] bg-[#FFFFFF]  overflow-y-auto hide-scrollbar`}
-              >
+              <div className="w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar">
                 <div className={`max-h-screen`}>
                   {isMobile ? (
                     <div>

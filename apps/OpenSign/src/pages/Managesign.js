@@ -352,7 +352,7 @@ const ManageSign = () => {
                                     }
                                   }}
                                   key={key}
-                                  className="fa solid fa-pen-nib"
+                                  className="fa-light fa-pen-nib"
                                   width={20}
                                   height={20}
                                 ></i>
@@ -378,7 +378,7 @@ const ManageSign = () => {
                       style={{ fontSize: 12 }}
                     >
                       <i
-                        className="fas fa-exclamation-circle"
+                        className="fa-light fa-exclamation-circle"
                         style={{ color: "#fab005", fontSize: 15 }}
                       ></i>{" "}
                       Please upload signature/Image
@@ -453,7 +453,7 @@ const ManageSign = () => {
                                 }
                               }}
                               key={key}
-                              className="fa solid fa-pen-nib"
+                              className="fa-light fa-pen-nib"
                               width={20}
                               height={20}
                             ></i>

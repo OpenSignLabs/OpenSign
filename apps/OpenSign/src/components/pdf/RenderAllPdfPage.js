@@ -57,7 +57,7 @@ function RenderAllPdfPage({
         <div className="absolute z-20 top-[1px] -right-[13px] -translate-x-1/2 -translate-y-1/2">
           <i
             style={{ color: bookmarkColor || "red" }}
-            className="fa-solid fa-bookmark"
+            className="fa-light fa-bookmark"
           ></i>
         </div>
       )
@@ -67,7 +67,7 @@ function RenderAllPdfPage({
   return (
     <div
       ref={pageContainer}
-      className="hidden min-h-screen w-[20%]  bg-base-100 h-full md:block"
+      className="hidden min-h-screen w-[20%] bg-base-100 h-full md:block"
     >
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
         Pages

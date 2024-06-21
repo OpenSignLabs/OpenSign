@@ -1600,7 +1600,7 @@ function PdfRequestFiles() {
                               className="font-[500] text-[13px] mr-[5px] op-btn op-btn-secondary"
                             >
                               <i
-                                className="fa-solid fa-award"
+                                className="fa-light fa-award"
                                 aria-hidden="true"
                               ></i>
                               <span className="hidden lg:block">
@@ -1614,7 +1614,10 @@ function PdfRequestFiles() {
                               type="button"
                               className="font-[500] text-[13px] mr-[5px] op-btn op-btn-neutral"
                             >
-                              <i className="fa fa-print" aria-hidden="true"></i>
+                              <i
+                                className="fa-light fa-print"
+                                aria-hidden="true"
+                              ></i>
                               <span className="hidden lg:block">Print</span>
                             </button>
                             <button
@@ -1629,7 +1632,7 @@ function PdfRequestFiles() {
                               }
                             >
                               <i
-                                className="fa fa-download"
+                                className="fa-light fa-download"
                                 aria-hidden="true"
                               ></i>
                               <span className="hidden lg:block">Download</span>
@@ -1652,15 +1655,12 @@ function PdfRequestFiles() {
                       }
                       handleClose={() => setIsDownloading("")}
                     >
-                      <div className="p-3 md:p-5 text-[13px] md:text-base text-center">
+                      <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
                         {isDownloading === "certificate"}{" "}
                         <p>
                           Your completion certificate is being generated. Please
-                          wait momentarily.
-                        </p>
-                        <p>
-                          If the download doesn&apos;t start shortly, click the
-                          button again.
+                          wait momentarily. If the download doesn&apos;t start
+                          shortly, click the button again.
                         </p>
                       </div>
                     </ModalUi>
@@ -1759,9 +1759,7 @@ function PdfRequestFiles() {
                   </div>
                 </div>
 
-                <div
-                  className={`w-full md:w-[23%] bg-[#FFFFFF]  overflow-y-auto hide-scrollbar  hidden md:inline-block`}
-                >
+                <div className="w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar hidden md:inline-block">
                   <div className={`max-h-screen`}>
                     {signedSigners.length > 0 && (
                       <>

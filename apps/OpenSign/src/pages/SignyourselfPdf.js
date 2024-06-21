@@ -1383,10 +1383,7 @@ function SignYourSelf() {
                 </div>
               </div>
             </div>
-
-            <div
-              className={`w-full md:w-[23%] bg-[#FFFFFF]  overflow-y-auto hide-scrollbar`}
-            >
+            <div className="w-full md:w-[23%] bg-base-100 overflow-y-auto hide-scrollbar">
               <div className={`max-h-screen`}>
                 {!isCompleted ? (
                   <div>

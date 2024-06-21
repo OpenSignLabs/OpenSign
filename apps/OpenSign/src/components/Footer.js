@@ -61,7 +61,7 @@ const Footer = () => {
         } fixed bottom-4 right-4 px-3 p-2 text-xl op-bg-secondary text-white rounded focus:outline-none`}
         onClick={scrollToTop}
       >
-        <i className="fa-solid fa-angle-up"></i>
+        <i className="fa-light fa-angle-up"></i>
       </button>
     </>
   );
