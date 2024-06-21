@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-
 import Menu from "./Menu";
 import Submenu from "./SubMenu";
 import SocialMedia from "./SocialMedia";
-
-import Parse from "parse";
 import dp from "../../assets/images/dp.png";
+import sidebarList from "../../json/menuJson";
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
   const [menuList, setmenuList] = useState([]);
@@ -24,13 +22,32 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
   const menuItem = async () => {
     try {
-      var sideMenu = Parse.Object.extend("w_menu");
-      var query = new Parse.Query(sideMenu);
-      query.equalTo("objectId", localStorage.getItem("defaultmenuid"));
-      const results = await query.first();
-      const resultjson = results.toJSON();
-      let result = resultjson;
-      setmenuList(result.menuItems);
+      if (localStorage.getItem("defaultmenuid")) {
+        const menuId = localStorage.getItem("defaultmenuid") !== "VPh91h0ZHk";
+        if (menuId) {
+          setmenuList(sidebarList);
+        } else {
+          const addUserForm = {
+            icon: "fa-light fa-user",
+            title: "Add User",
+            target: "_self",
+            pageType: "form",
+            description: "",
+            objectId: "lM0xRnM3iE"
+          };
+          const newSidebarList = sidebarList.map((item) => {
+            if (item.title === "Settings") {
+              // Make a shallow copy of the item
+              const newItem = { ...item };
+              // Insert addUserForm at the second position
+              newItem.children.splice(1, 0, addUserForm);
+              return newItem;
+            }
+            return item;
+          });
+          setmenuList(newSidebarList);
+        }
+      }
     } catch (e) {
       console.error("Problem", e);
     }

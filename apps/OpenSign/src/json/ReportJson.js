@@ -296,7 +296,7 @@ export default function reportJson(id) {
           {
             btnId: "2204",
             hoverLabel: "Delete",
-            btnColor: "op-btn-outline op-btn-error",
+            btnColor: "op-btn-secondary",
             btnIcon: "fa-light fa-trash",
             action: "delete"
           }
