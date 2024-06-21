@@ -76,7 +76,7 @@ function SignYourSelf() {
   const [signKey, setSignKey] = useState();
   const [imgWH, setImgWH] = useState({});
   const [pdfNewWidth, setPdfNewWidth] = useState();
-  const [pdfOriginalWH, setPdfOriginalWH] = useState();
+  const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [successEmail, setSuccessEmail] = useState(false);
   const imageRef = useRef(null);
   const [myInitial, setMyInitial] = useState("");
@@ -458,7 +458,10 @@ function SignYourSelf() {
     const widgetTypeExist = ["name", "company", "job title", "email"].includes(
       dragTypeValue
     );
-    const containerScale = containerWH?.width / pdfOriginalWH?.width || 1;
+    const getPdfPageWidth = pdfOriginalWH.find(
+      (data) => data.pageNumber === pageNumber
+    );
+    const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
     //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
       const getWidth = widgetTypeExist
@@ -695,7 +698,6 @@ function SignYourSelf() {
             const pdfBytes = await multiSignEmbed(
               xyPostion,
               pdfDoc,
-              pdfOriginalWH,
               isSignYourSelfFlow,
               scale
             );
@@ -809,13 +811,14 @@ function SignYourSelf() {
     setDragKey(key);
     setIsDragging(true);
   };
-
-  // console.log("xy", pdfOriginalWH);
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement) => {
     if (isDragging && dragElement) {
       event.preventDefault();
-      const containerScale = containerWH.width / pdfOriginalWH.width;
+      const getPdfPageWidth = pdfOriginalWH.find(
+        (data) => data.pageNumber === pageNumber
+      );
+      const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
       if (dragKey >= 0) {
         const filterDropPos = xyPostion.filter(
           (data) => data.pageNumber === pageNumber
@@ -848,13 +851,16 @@ function SignYourSelf() {
       setIsDragging(false);
     }, 200);
   };
-
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
-    const scale = 1;
-    const { width, height } = firstPage.getViewport({ scale });
-    setPdfOriginalWH({ width: width, height: height });
+    let pdfWHObj = [];
+    for (let index = 0; index < allPages; index++) {
+      const firstPage = await pdf.getPage(index + 1);
+      const scale = 1;
+      const { width, height } = firstPage.getViewport({ scale });
+      pdfWHObj.push({ pageNumber: index + 1, width, height });
+    }
+    setPdfOriginalWH(pdfWHObj);
     setPdfLoadFail({
       status: true
     });
@@ -1166,7 +1172,7 @@ function SignYourSelf() {
           {isUiLoading && (
             <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-center bg-[#e6f2f2] bg-opacity-80">
               <Loader />
-              <span className="text-[13px] text-base-content">
+              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
                 This might take some time
               </span>
             </div>
@@ -1218,7 +1224,6 @@ function SignYourSelf() {
               <PdfZoom
                 setScale={setScale}
                 scale={scale}
-                pdfOriginalWH={pdfOriginalWH}
                 containerWH={containerWH}
                 setZoomPercent={setZoomPercent}
                 zoomPercent={zoomPercent}

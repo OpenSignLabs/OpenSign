@@ -91,6 +91,7 @@ function Placeholder(props) {
   const [placeholderBorder, setPlaceholderBorder] = useState({ w: 0, h: 0 });
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
+  const [containerScale, setContainerScale] = useState();
   const [selectDate, setSelectDate] = useState({
     date:
       props.pos.type === "date"
@@ -120,7 +121,14 @@ function Placeholder(props) {
     width: null,
     height: null
   });
-  const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+
+  useEffect(() => {
+    const getPdfPageWidth = props.pdfOriginalWH.find(
+      (data) => data.pageNumber === props.pageNumber
+    );
+    setContainerScale(props.containerWH.width / getPdfPageWidth.width);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.containerWH.width, props.pdfOriginalWH]);
   const dateFormatArr = [
     "L",
     "DD-MM-YYYY",
@@ -558,7 +566,10 @@ function Placeholder(props) {
     );
   };
   const xPos = (pos, signYourself) => {
-    const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+    const getPdfPageWidth = props.pdfOriginalWH.find(
+      (data) => data.pageNumber === props.pageNumber
+    );
+    const containerScale = props.containerWH.width / getPdfPageWidth?.width;
     const resizePos = pos.xPosition;
     if (signYourself) {
       return resizePos * containerScale * props.scale;
@@ -580,7 +591,10 @@ function Placeholder(props) {
     }
   };
   const yPos = (pos, signYourself) => {
-    const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+    const getPdfPageWidth = props.pdfOriginalWH.find(
+      (data) => data.pageNumber === props.pageNumber
+    );
+    const containerScale = props.containerWH.width / getPdfPageWidth.width;
     const resizePos = pos.yPosition;
 
     if (signYourself) {

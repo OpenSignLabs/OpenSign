@@ -86,7 +86,7 @@ function PdfRequestFiles() {
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
   const [pdfNewWidth, setPdfNewWidth] = useState();
-  const [pdfOriginalWH, setPdfOriginalWH] = useState();
+  const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [signerPos, setSignerPos] = useState([]);
   const [signerObjectId, setSignerObjectId] = useState();
   const [isUiLoading, setIsUiLoading] = useState(false);
@@ -785,7 +785,6 @@ function PdfRequestFiles() {
             const pdfBytes = await multiSignEmbed(
               pngUrl,
               pdfDoc,
-              pdfOriginalWH,
               isSignYourSelfFlow,
               scale
             );
@@ -1020,11 +1019,14 @@ function PdfRequestFiles() {
   ];
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
-    const scale = 1;
-    const { width, height } = firstPage.getViewport({ scale });
-    // console.log("width height", width, height);
-    setPdfOriginalWH({ width: width, height: height });
+    let pdfWHObj = [];
+    for (let index = 0; index < allPages; index++) {
+      const firstPage = await pdf.getPage(index + 1);
+      const scale = 1;
+      const { width, height } = firstPage.getViewport({ scale });
+      pdfWHObj.push({ pageNumber: index + 1, width, height });
+    }
+    setPdfOriginalWH(pdfWHObj);
     setPdfLoadFail({
       status: true
     });
@@ -1555,7 +1557,6 @@ function PdfRequestFiles() {
                   <PdfZoom
                     setScale={setScale}
                     scale={scale}
-                    pdfOriginalWH={pdfOriginalWH}
                     containerWH={containerWH}
                     setZoomPercent={setZoomPercent}
                     zoomPercent={zoomPercent}
