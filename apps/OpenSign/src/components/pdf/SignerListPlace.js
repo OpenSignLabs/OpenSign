@@ -6,14 +6,14 @@ function SignerListPlace(props) {
   return (
     <div>
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
-        <span>
+        <span className="relative">
           {props.title ? props.title : "Recipients"}
           <span className="absolute text-xs z-[30] mt-1 ml-0.5">
             {props?.title === "Roles" && (
               <>
                 <a data-tooltip-id="my-tooltip">
                   <sup>
-                    <i className="fa-light fa-question rounded-full border-[1.5px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
+                    <i className="fa-light fa-question rounded-full border-[1px] border-base-content text-[11px] py-[1px] px-[3px]"></i>
                   </sup>
                 </a>
                 <Tooltip id="my-tooltip" className="z-[100]">

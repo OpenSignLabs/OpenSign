@@ -228,12 +228,7 @@ const ManageSign = () => {
       }
     }
   };
-  const handleSignatureBtn = () => {
-    if (imageRef.current) {
-      imageRef.current.value = "";
-    }
-    setImage("");
-  };
+
   const handleUploadBtn = () => {
     imageRef.current.click();
   };
@@ -249,35 +244,15 @@ const ManageSign = () => {
         </div>
       )}
       {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
-      <div
-        className="mainDiv"
-        style={{
-          width: "100%",
-          paddingRight: "10px"
-        }}
-      >
+      <div className="relative w-full pr-[10px]">
         <div className="m-[20px]">
-          <div className="font-[700] text-[15px] pb-[8px]">My Signature</div>
-          <div className="signBlock mt-4">
+          <div className="text-[20px] font-semibold mb-3">My Signature</div>
+          <div className="flex flex-col md:flex-row gap-0 md:gap-[12px]">
             <div>
               <div className="relative">
                 <div className="flex flex-row justify-between w-1/2 pl-[10px]">
                   <div className="flex flex-row justify-around items-center gap-[10px] mb-[10px]">
-                    <>
-                      <span
-                        onClick={() => handleSignatureBtn()}
-                        className="signature"
-                      >
-                        Signature
-                      </span>
-                    </>
-
-                    <span
-                      onClick={() => handleUploadBtn()}
-                      className="imgupload"
-                    >
-                      Upload Image
-                    </span>
+                    <span className="font-medium select-none">Signature</span>
                     <input
                       type="file"
                       onChange={onImageChange}
@@ -314,19 +289,10 @@ const ManageSign = () => {
                         dotSize={1}
                       />
                     )}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between"
-                      }}
-                      className="penContainerDefault"
-                    >
+                    <div className="penContainerDefault flex flex-row justify-between">
                       <div>
                         {!image && (
-                          <div
-                            style={{ display: "flex", flexDirection: "row" }}
-                          >
+                          <div className="flex flex-row">
                             {allColor.map((data, key) => {
                               return (
                                 <i
@@ -361,10 +327,17 @@ const ManageSign = () => {
                           </div>
                         )}
                       </div>
-                      <div>
+                      <div className="flex flex-row gap-2">
                         <div
                           type="button"
-                          className="clearbtn cursor-pointer"
+                          className="op-link"
+                          onClick={() => handleUploadBtn()}
+                        >
+                          Upload image
+                        </div>
+                        <div
+                          type="button"
+                          className="op-link"
                           onClick={() => handleClear()}
                         >
                           Clear
@@ -373,33 +346,21 @@ const ManageSign = () => {
                     </div>
                   </div>
                   {warning && (
-                    <div
-                      className="warning signWarning"
-                      style={{ fontSize: 12 }}
-                    >
-                      <i
-                        className="fa-light fa-exclamation-circle"
-                        style={{ color: "#fab005", fontSize: 15 }}
-                      ></i>{" "}
+                    <div className="warning signWarning text-[12px]">
+                      <i className="fa-light fa-exclamation-circle text-[#fab005] text-[15px] mr-[4px]"></i>
                       Please upload signature/Image
                     </div>
                   )}
                 </div>
               </div>
             </div>
-            <div style={{ position: "relative" }}>
-              <div style={{ margin: "6px 5px 18px" }}>
-                <span className="signature">Initials</span>
+            <div className="relative">
+              <div className="mb-[10px]">
+                <span className="font-medium select-none">Initials</span>
               </div>
               <div>
                 {isInitials ? (
-                  <div
-                    style={{
-                      position: "relative",
-                      border: "2px solid #888"
-                    }}
-                    className="intialSignature"
-                  >
+                  <div className="intialSignature relative border-[1px] border-[#888]">
                     <img
                       alt="inititals"
                       src={Initials}
@@ -465,7 +426,7 @@ const ManageSign = () => {
                   <div>
                     <div
                       type="button"
-                      className="clearbtn cursor-pointer"
+                      className="op-link"
                       onClick={() => handleClearInitials()}
                     >
                       Clear

@@ -91,6 +91,7 @@ function Placeholder(props) {
   const [placeholderBorder, setPlaceholderBorder] = useState({ w: 0, h: 0 });
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
   const [isShowDateFormat, setIsShowDateFormat] = useState(false);
+  const [containerScale, setContainerScale] = useState();
   const [selectDate, setSelectDate] = useState({
     date:
       props.pos.type === "date"
@@ -120,7 +121,14 @@ function Placeholder(props) {
     width: null,
     height: null
   });
-  const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+
+  useEffect(() => {
+    const getPdfPageWidth = props.pdfOriginalWH.find(
+      (data) => data.pageNumber === props.pageNumber
+    );
+    setContainerScale(props.containerWH.width / getPdfPageWidth.width);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.containerWH.width, props.pdfOriginalWH]);
   const dateFormatArr = [
     "L",
     "DD-MM-YYYY",
@@ -410,7 +418,7 @@ function Placeholder(props) {
                     e.stopPropagation();
                     handleOnClickSettingIcon();
                   }}
-                  className="fa-light fa-gear settingIcon"
+                  className="fa-light fa-gear icon"
                   style={{
                     color: "#188ae2",
                     right: "29px",
@@ -431,7 +439,7 @@ function Placeholder(props) {
                       e.stopPropagation();
                       handleOnClickSettingIcon();
                     }}
-                    className="fa-light fa-gear settingIcon"
+                    className="fa-light fa-gear icon"
                     style={{
                       color: "#188ae2",
                       right: props?.pos?.type === textWidget ? "32px" : "47px",
@@ -444,7 +452,7 @@ function Placeholder(props) {
               {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
                   data-tut="assignSigner"
-                  className="fa-light fa-user signUserIcon"
+                  className="fa-light fa-user icon"
                   onClick={(e) => {
                     e.stopPropagation();
                     props.handleLinkUser(props.data.Id);
@@ -468,11 +476,7 @@ function Placeholder(props) {
                 top: "-19px",
                 right: props.isPlaceholder ? "60px" : "44px"
               }}
-              className={
-                isShowDateFormat
-                  ? "dropdown signUserIcon show"
-                  : "dropdown signUserIcon"
-              }
+              className={`${isShowDateFormat ? "show" : ""} dropdown icon`}
               onClick={(e) => {
                 setIsShowDateFormat(!isShowDateFormat);
                 e.stopPropagation();
@@ -491,7 +495,7 @@ function Placeholder(props) {
               }}
             >
               <i
-                className="fa-light fa-gear settingIcon"
+                className="fa-light fa-gear icon"
                 style={{
                   color: "#188ae2",
                   fontSize: "14px"
@@ -519,8 +523,7 @@ function Placeholder(props) {
                         setSelectDate(data);
                         handleSaveDate(data);
                       }}
-                      className="dropdown-item itemColor"
-                      style={{ fontSize: "12px" }}
+                      className="dropdown-item text-[13px]"
                     >
                       {data?.date ? data?.date : "nodata"}
                     </span>
@@ -530,13 +533,13 @@ function Placeholder(props) {
             </div>
           )}
           <i
-            className="fa-light fa-copy signCopy"
+            className="fa-light fa-copy icon"
             onClick={(e) => handleCopyPlaceholder(e)}
             onTouchEnd={(e) => handleCopyPlaceholder(e)}
             style={{ color: "#188ae2", right: "12px", top: "-18px" }}
           ></i>
           <i
-            className="fa-light fa-circle-xmark signCloseBtn"
+            className="fa-light fa-circle-xmark icon"
             onClick={(e) => {
               e.stopPropagation();
 
@@ -563,7 +566,10 @@ function Placeholder(props) {
     );
   };
   const xPos = (pos, signYourself) => {
-    const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+    const getPdfPageWidth = props.pdfOriginalWH.find(
+      (data) => data.pageNumber === props.pageNumber
+    );
+    const containerScale = props.containerWH.width / getPdfPageWidth?.width;
     const resizePos = pos.xPosition;
     if (signYourself) {
       return resizePos * containerScale * props.scale;
@@ -585,7 +591,10 @@ function Placeholder(props) {
     }
   };
   const yPos = (pos, signYourself) => {
-    const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
+    const getPdfPageWidth = props.pdfOriginalWH.find(
+      (data) => data.pageNumber === props.pageNumber
+    );
+    const containerScale = props.containerWH.width / getPdfPageWidth.width;
     const resizePos = pos.yPosition;
 
     if (signYourself) {

@@ -76,7 +76,7 @@ function SignYourSelf() {
   const [signKey, setSignKey] = useState();
   const [imgWH, setImgWH] = useState({});
   const [pdfNewWidth, setPdfNewWidth] = useState();
-  const [pdfOriginalWH, setPdfOriginalWH] = useState();
+  const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [successEmail, setSuccessEmail] = useState(false);
   const imageRef = useRef(null);
   const [myInitial, setMyInitial] = useState("");
@@ -106,10 +106,7 @@ function SignYourSelf() {
   const [currWidgetsDetails, setCurrWidgetsDetails] = useState({});
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [widgetType, setWidgetType] = useState("");
-  const [pdfLoadFail, setPdfLoadFail] = useState({
-    status: false,
-    type: "load"
-  });
+  const [pdfLoad, setPdfLoad] = useState(false);
   const [isAlert, setIsAlert] = useState({ isShow: false, alertMessage: "" });
   const [isDontShow, setIsDontShow] = useState(false);
   const [extUserId, setExtUserId] = useState("");
@@ -120,7 +117,6 @@ function SignYourSelf() {
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [isVerifyModal, setIsVerifyModal] = useState(false);
   const [otp, setOtp] = useState("");
-  const [pdfRenderHeight, setPdfRenderHeight] = useState();
   const [zoomPercent, setZoomPercent] = useState(0);
   const isHeader = useSelector((state) => state.showHeader);
   const [scale, setScale] = useState(1);
@@ -458,7 +454,10 @@ function SignYourSelf() {
     const widgetTypeExist = ["name", "company", "job title", "email"].includes(
       dragTypeValue
     );
-    const containerScale = containerWH?.width / pdfOriginalWH?.width || 1;
+    const getPdfPageWidth = pdfOriginalWH.find(
+      (data) => data.pageNumber === pageNumber
+    );
+    const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
     //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
       const getWidth = widgetTypeExist
@@ -695,7 +694,6 @@ function SignYourSelf() {
             const pdfBytes = await multiSignEmbed(
               xyPostion,
               pdfDoc,
-              pdfOriginalWH,
               isSignYourSelfFlow,
               scale
             );
@@ -809,13 +807,14 @@ function SignYourSelf() {
     setDragKey(key);
     setIsDragging(true);
   };
-
-  // console.log("xy", pdfOriginalWH);
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement) => {
     if (isDragging && dragElement) {
       event.preventDefault();
-      const containerScale = containerWH.width / pdfOriginalWH.width;
+      const getPdfPageWidth = pdfOriginalWH.find(
+        (data) => data.pageNumber === pageNumber
+      );
+      const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
       if (dragKey >= 0) {
         const filterDropPos = xyPostion.filter(
           (data) => data.pageNumber === pageNumber
@@ -848,16 +847,18 @@ function SignYourSelf() {
       setIsDragging(false);
     }, 200);
   };
-
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
-    const scale = 1;
-    const { width, height } = firstPage.getViewport({ scale });
-    setPdfOriginalWH({ width: width, height: height });
-    setPdfLoadFail({
-      status: true
-    });
+    let pdfWHObj = [];
+    const totalPages = pdf?.numPages;
+    for (let index = 0; index < totalPages; index++) {
+      const getPage = await pdf.getPage(index + 1);
+      const scale = 1;
+      const { width, height } = getPage.getViewport({ scale });
+      pdfWHObj.push({ pageNumber: index + 1, width, height });
+    }
+    setPdfOriginalWH(pdfWHObj);
+    setPdfLoad(true);
   };
   //function for change page numver of pdf
   function changePage(offset) {
@@ -1191,7 +1192,7 @@ function SignYourSelf() {
               />
             )}
             {/* this component used for UI interaction and show their functionality */}
-            {pdfLoadFail && !checkTourStatus && (
+            {pdfLoad && !checkTourStatus && (
               <Tour
                 onRequestClose={closeTour}
                 steps={tourConfig}
@@ -1214,11 +1215,10 @@ function SignYourSelf() {
               pageNumber={pageNumber}
               containerWH={containerWH}
             />
-            <div className=" w-full  md:w-[57%] flex mr-4">
+            <div className=" w-full md:w-[57%] flex mr-4">
               <PdfZoom
                 setScale={setScale}
                 scale={scale}
-                pdfOriginalWH={pdfOriginalWH}
                 containerWH={containerWH}
                 setZoomPercent={setZoomPercent}
                 zoomPercent={zoomPercent}
@@ -1356,8 +1356,8 @@ function SignYourSelf() {
                       pdfUrl={pdfUrl}
                       numPages={numPages}
                       pageDetails={pageDetails}
-                      setPdfLoadFail={setPdfLoadFail}
-                      pdfLoadFail={pdfLoadFail}
+                      pdfLoad={pdfLoad}
+                      setPdfLoad={setPdfLoad}
                       setXyPostion={setXyPostion}
                       index={index}
                       containerWH={containerWH}
@@ -1370,8 +1370,6 @@ function SignYourSelf() {
                       setCurrWidgetsDetails={setCurrWidgetsDetails}
                       setValidateAlert={setValidateAlert}
                       handleTextSettingModal={handleTextSettingModal}
-                      pdfRenderHeight={pdfRenderHeight}
-                      setPdfRenderHeight={setPdfRenderHeight}
                       setScale={setScale}
                       scale={scale}
                     />

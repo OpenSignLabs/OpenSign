@@ -19,8 +19,12 @@ function Signedby({ pdfDetails }) {
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="userName">{pdfDetails.ExtUserPtr.Name}</span>
-            <span className="useEmail">{pdfDetails.ExtUserPtr.Email}</span>
+            <span className="text-[12px] font-bold text-[#424242] w-[100px] whitespace-nowrap overflow-hidden text-ellipsis">
+              {pdfDetails.ExtUserPtr.Name}
+            </span>
+            <span className="text-[10px] font-medium text-[#424242] w-[100px] whitespace-nowrap overflow-hidden text-ellipsis">
+              {pdfDetails.ExtUserPtr.Email}
+            </span>
           </div>
         </div>
       </div>

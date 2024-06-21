@@ -43,9 +43,10 @@ function SignerListComponent(props) {
         </span>
       </div>
       <div className="flex flex-col">
-        <span className="userName">{props.obj?.Name || props?.obj?.Role}</span>
-        <span className="useEmail">
-          {" "}
+        <span className="text-[12px] font-bold text-[#424242] w-[100px] whitespace-nowrap overflow-hidden text-ellipsis">
+          {props.obj?.Name || props?.obj?.Role}
+        </span>
+        <span className="text-[10px] font-medium text-[#424242] w-[100px] whitespace-nowrap overflow-hidden text-ellipsis">
           {props.obj?.Email || props.obj?.email}
         </span>
       </div>

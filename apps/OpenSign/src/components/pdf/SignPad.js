@@ -473,7 +473,7 @@ function SignPad({
                         hidden
                       />
                       <i className="fa-light fa-cloud-upload-alt uploadImgLogo"></i>
-                      <div className="uploadImg">Upload</div>
+                      <div className="text-[10px]">Upload</div>
                     </div>
                   </div>
                 ) : (
@@ -509,7 +509,7 @@ function SignPad({
               ) : isTab === "type" ? (
                 <div>
                   <div className="flex justify-between items-center">
-                    <span className="signatureText">
+                    <span className="mr-[5px] text-[12px]">
                       {isInitial ? "Initials" : "Signature"}:
                     </span>
                     <input
@@ -525,7 +525,7 @@ function SignPad({
                       }}
                     />
                   </div>
-                  <div className="fontOptionContainer">
+                  <div className="border-[1px] border-[#d6d3d3] mt-[10px] ml-[5px]">
                     {fontOptions.map((font, ind) => {
                       return (
                         <div

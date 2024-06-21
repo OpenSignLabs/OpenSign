@@ -313,7 +313,9 @@ function DriveBody(props) {
       const signerName = getSignersName.join(", ");
 
       return (
-        <span className="statusSpan w-[90%] break-words">{signerName}</span>
+        <span className="text-[12px] font-medium w-[90%] break-words">
+          {signerName}
+        </span>
       );
     };
     return listType === "table" ? (
@@ -398,7 +400,7 @@ function DriveBody(props) {
                   className="w-[100px] border-[1.5px] border-black rounded-sm text-[10px]"
                 />
               ) : (
-                <span className="foldName">{data.Name}</span>
+                <span className="fileName">{data.Name}</span>
               )}
             </div>
           </ContextMenu.Trigger>
@@ -515,21 +517,17 @@ function DriveBody(props) {
         <HoverCard.Portal>
           <HoverCard.Content className="HoverCardContent" sideOffset={5}>
             <strong className="text-[13px]">Title: </strong>
-            <span className="statusSpan" style={{ marginBottom: "0px" }}>
-              {" "}
-              {data.Name}
-            </span>
+            <span className="text-[12px] font-medium mb-0"> {data.Name}</span>
             <br />
             <strong className="text-[13px]">Status: </strong>
-            <span className="statusSpan"> {status}</span>
+            <span className="text-[12px] font-medium"> {status}</span>
             <br />
             <strong className="text-[13px]">Created Date: </strong>
-            <span className="statusSpan">{createddate}</span>
+            <span className="text-[12px] font-medium">{createddate}</span>
             <br />
             {signerExist && (
               <>
                 <strong className="text-[13px]">Signers: </strong>
-                {/* <span className="statusSpan">kjefjjnejkfnkbjs bbfjkdsbjbfjkbjk kscbjkbjkb</span> */}
                 {signersName()}
               </>
             )}

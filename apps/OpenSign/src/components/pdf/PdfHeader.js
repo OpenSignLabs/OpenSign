@@ -53,7 +53,7 @@ function Header({
   };
 
   return (
-    <div style={{ padding: "5px 0px 5px 0px" }} className="mobileHead">
+    <div className="flex py-[5px]">
       {isMobile && isShowHeader ? (
         <div
           id="navbar"
@@ -99,7 +99,7 @@ function Header({
                     >
                       <div className="flex flex-row">
                         <i
-                          className="fa-light fa-arrow-down mr-[2px]"
+                          className="fa-light fa-arrow-down mr-[3px]"
                           aria-hidden="true"
                         ></i>
                         Download
@@ -117,7 +117,7 @@ function Header({
                       >
                         <div className="border-none bg-[#fff]">
                           <i
-                            className="fa-light fa-award mr-[2px]"
+                            className="fa-light fa-award mr-[3px]"
                             aria-hidden="true"
                           ></i>
                           Certificate
@@ -131,7 +131,7 @@ function Header({
                       >
                         <div className="flex flex-row">
                           <i
-                            className="fa-light fa-envelope mr-[2px]"
+                            className="fa-light fa-envelope mr-[3px]"
                             aria-hidden="true"
                           ></i>
                           Mail
@@ -146,7 +146,7 @@ function Header({
                     >
                       <div className="flex flex-row">
                         <i
-                          className="fa-light fa-print mr-[2px]"
+                          className="fa-light fa-print mr-[3px]"
                           aria-hidden="true"
                         ></i>
                         Print
@@ -224,7 +224,7 @@ function Header({
                             }
                           >
                             <i
-                              className="fa-light fa-arrow-down mr-[5px]"
+                              className="fa-light fa-arrow-down mr-[3px]"
                               aria-hidden="true"
                             ></i>
                             <span className="font-[500]">Download</span>
@@ -239,7 +239,7 @@ function Header({
           </div>
         </div>
       ) : (
-        <div className="flex flex-wrap justify-between items-center mt-[5px]">
+        <div className="flex flex-wrap justify-between items-center w-full gap-y-1 ml-1">
           <PrevNext
             pageNumber={pageNumber}
             allPages={allPages}
@@ -270,7 +270,7 @@ function Header({
                 {setIsEditTemplate && (
                   <button
                     onClick={() => setIsEditTemplate(true)}
-                    className="outline-none border-none text-center mr-[5px]"
+                    className="outline-none border-none text-center mr-[3px]"
                   >
                     <i className="fa-light fa-gear fa-lg"></i>
                   </button>
@@ -278,14 +278,14 @@ function Header({
                 <button
                   onClick={() => navigate(-1)}
                   type="button"
-                  className="op-btn op-btn-ghost op-btn-sm mr-[5px]"
+                  className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
                 >
                   Back
                 </button>
                 <button
                   disabled={isMailSend && true}
                   data-tut="reactourFour"
-                  className="op-btn op-btn-primary op-btn-sm mr-[5px]"
+                  className="op-btn op-btn-primary op-btn-sm mr-[3px]"
                   onClick={() => alertSendEmail()}
                 >
                   {completeBtnTitle
@@ -305,7 +305,7 @@ function Header({
                     onClick={() =>
                       handleDownloadCertificate(pdfDetails, setIsDownloading)
                     }
-                    className="op-btn op-btn-secondary op-btn-sm mr-[5px] shadow"
+                    className="op-btn op-btn-secondary op-btn-sm mr-[3px] shadow"
                   >
                     <i
                       className="fa-light fa-award py-[3px]"
@@ -318,7 +318,7 @@ function Header({
                 <button
                   onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
                   type="button"
-                  className="op-btn op-btn-neutral op-btn-sm mr-[5px] shadow"
+                  className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
                 >
                   <i
                     className="fa-light fa-print py-[3px]"
@@ -329,7 +329,7 @@ function Header({
 
                 <button
                   type="button"
-                  className="op-btn op-btn-primary op-btn-sm mr-[5px] shadow"
+                  className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"
                   onClick={() =>
                     handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
                   }
@@ -346,21 +346,21 @@ function Header({
                 <button
                   onClick={() => navigate(-1)}
                   type="button"
-                  className="op-btn op-btn-ghost op-btn-sm mr-[5px]"
+                  className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
                 >
                   Back
                 </button>
                 {currentSigner && (
                   <>
                     <button
-                      className="op-btn op-btn-secondary op-btn-sm mr-[5px] shadow"
+                      className="op-btn op-btn-secondary op-btn-sm mr-[3px] shadow"
                       onClick={() => handleDeclinePdfAlert()}
                     >
                       Decline
                     </button>
                     <button
                       type="button"
-                      className="op-btn op-btn-primary op-btn-sm mr-[5px] shadow"
+                      className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"
                       onClick={() => embedWidgetsData()}
                     >
                       Finish
@@ -411,37 +411,37 @@ function Header({
                   onClick={() =>
                     handleDownloadCertificate(pdfDetails, setIsDownloading)
                   }
-                  className="op-btn op-btn-secondary op-btn-sm font-medium text-[13px] mr-[5px] shadow"
+                  className="op-btn op-btn-secondary op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
                 >
                   <i className="fa-light fa-award" aria-hidden="true"></i>
-                  <span className="hidden lg:block">Certificate</span>
+                  <span className="hidden lg:block ml-1">Certificate</span>
                 </button>
               )}
               <button
                 onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
                 type="button"
-                className="op-btn op-btn-neutral op-btn-sm font-medium text-[13px] mr-[5px] shadow"
+                className="op-btn op-btn-neutral op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
               >
                 <i className="fa-light fa-print" aria-hidden="true"></i>
-                <span className="hidden lg:block">Print</span>
+                <span className="hidden lg:block ml-1">Print</span>
               </button>
               <button
                 type="button"
-                className="op-btn op-btn-primary op-btn-sm font-medium text-[13px] mr-[5px] shadow"
+                className="op-btn op-btn-primary op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
                 onClick={() =>
                   handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
                 }
               >
                 <i className="fa-light fa-download" aria-hidden="true"></i>
-                <span className="hidden lg:block">Download</span>
+                <span className="hidden lg:block ml-1">Download</span>
               </button>
               <button
                 type="button"
-                className="op-btn op-btn-info op-btn-sm font-medium text-[13px] mr-[5px] shadow"
+                className="op-btn op-btn-info op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
                 onClick={() => setIsEmail(true)}
               >
                 <i className="fa-light fa-envelope" aria-hidden="true"></i>
-                <span className="hidden lg:block">Mail</span>
+                <span className="hidden lg:block ml-1">Mail</span>
               </button>
             </div>
           ) : (
@@ -449,13 +449,13 @@ function Header({
               <button
                 onClick={() => navigate(-1)}
                 type="button"
-                className="op-btn op-btn-ghost op-btn-sm mr-[5px]"
+                className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
               >
                 Back
               </button>
               <button
                 type="button"
-                className="op-btn op-btn-primary op-btn-sm mr-[5px]"
+                className="op-btn op-btn-primary op-btn-sm mr-[3px]"
                 onClick={() => {
                   if (!pdfUrl) {
                     embedWidgetsData();
