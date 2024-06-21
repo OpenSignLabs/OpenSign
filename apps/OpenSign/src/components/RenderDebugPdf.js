@@ -13,11 +13,7 @@ const RenderDebugPdf = (props) => {
       >
         <Document
           onLoadError={() => {
-            const load = {
-              status: false,
-              type: "failed"
-            };
-            props.setPdfLoadFail(load);
+            props.setPdfLoadFail(false);
           }}
           loading={"Loading Document.."}
           onLoadSuccess={props.pageDetails}

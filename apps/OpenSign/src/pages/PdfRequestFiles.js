@@ -86,7 +86,7 @@ function PdfRequestFiles() {
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
   const [pdfNewWidth, setPdfNewWidth] = useState();
-  const [pdfOriginalWH, setPdfOriginalWH] = useState();
+  const [pdfOriginalWH, setPdfOriginalWH] = useState([]);
   const [signerPos, setSignerPos] = useState([]);
   const [signerObjectId, setSignerObjectId] = useState();
   const [isUiLoading, setIsUiLoading] = useState(false);
@@ -110,10 +110,7 @@ function PdfRequestFiles() {
   });
   const [myInitial, setMyInitial] = useState("");
   const [isInitial, setIsInitial] = useState(false);
-  const [pdfLoadFail, setPdfLoadFail] = useState({
-    status: false,
-    type: "load"
-  });
+  const [pdfLoad, setPdfLoad] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
   const [alreadySign, setAlreadySign] = useState(false);
@@ -129,7 +126,6 @@ function PdfRequestFiles() {
   const [isVerifyModal, setIsVerifyModal] = useState(false);
   const [otp, setOtp] = useState("");
   const [contractName, setContractName] = useState("");
-  const [pdfRenderHeight, setPdfRenderHeight] = useState();
   const [zoomPercent, setZoomPercent] = useState(0);
   const [totalZoomPercent, setTotalZoomPercent] = useState();
   const [scale, setScale] = useState(1);
@@ -785,7 +781,6 @@ function PdfRequestFiles() {
             const pdfBytes = await multiSignEmbed(
               pngUrl,
               pdfDoc,
-              pdfOriginalWH,
               isSignYourSelfFlow,
               scale
             );
@@ -1020,14 +1015,16 @@ function PdfRequestFiles() {
   ];
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
-    const scale = 1;
-    const { width, height } = firstPage.getViewport({ scale });
-    // console.log("width height", width, height);
-    setPdfOriginalWH({ width: width, height: height });
-    setPdfLoadFail({
-      status: true
-    });
+    let pdfWHObj = [];
+    const totalPages = pdf.numPages; // Get the total number of pages
+    for (let index = 0; index < totalPages; index++) {
+      const getPage = await pdf.getPage(index + 1);
+      const scale = 1;
+      const { width, height } = getPage.getViewport({ scale });
+      pdfWHObj.push({ pageNumber: index + 1, width, height });
+    }
+    setPdfOriginalWH(pdfWHObj);
+    setPdfLoad(true);
   };
   //function for change page
   function changePage(offset) {
@@ -1555,7 +1552,6 @@ function PdfRequestFiles() {
                   <PdfZoom
                     setScale={setScale}
                     scale={scale}
-                    pdfOriginalWH={pdfOriginalWH}
                     containerWH={containerWH}
                     setZoomPercent={setZoomPercent}
                     zoomPercent={zoomPercent}
@@ -1732,8 +1728,8 @@ function PdfRequestFiles() {
                           pdfRequest={true}
                           signerObjectId={signerObjectId}
                           signedSigners={signedSigners}
-                          setPdfLoadFail={setPdfLoadFail}
-                          pdfLoadFail={pdfLoadFail}
+                          setPdfLoad={setPdfLoad}
+                          pdfLoad={pdfLoad}
                           setSignerPos={setSignerPos}
                           containerWH={containerWH}
                           setIsInitial={setIsInitial}
@@ -1743,8 +1739,6 @@ function PdfRequestFiles() {
                           selectWidgetId={selectWidgetId}
                           setCurrWidgetsDetails={setCurrWidgetsDetails}
                           divRef={divRef}
-                          setPdfRenderHeight={setPdfRenderHeight}
-                          pdfRenderHeight={pdfRenderHeight}
                           setIsResize={setIsResize}
                           isResize={isResize}
                           setTotalZoomPercent={setTotalZoomPercent}

@@ -1226,7 +1226,6 @@ export const changeImageWH = async (base64Image) => {
 export const multiSignEmbed = async (
   xyPositionArray,
   pdfDoc,
-  pdfOriginalWH,
   signyourself,
   scale
 ) => {
@@ -1287,20 +1286,8 @@ export const multiSignEmbed = async (
         }
       }
       let widgetWidth, widgetHeight;
-      widgetWidth = placeholderWidth(
-        position,
-        scale,
-        signyourself,
-        pdfOriginalWH,
-        scale
-      );
-      widgetHeight = placeholderHeight(
-        position,
-        scale,
-        signyourself,
-        pdfOriginalWH.height,
-        scale
-      );
+      widgetWidth = placeholderWidth(position);
+      widgetHeight = placeholderHeight(position);
       const xPos = (position) => {
         const resizePos = position.xPosition;
         //first two condition handle to old data already saved from mobile view which scale point diffrent
