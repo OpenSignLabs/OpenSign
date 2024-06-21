@@ -1022,15 +1022,13 @@ function PdfRequestFiles() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    pdf.getPage(1).then((pdfPage) => {
-      const pageWidth = pdfPage.view[2];
-      const pageHeight = pdfPage.view[3];
-      setPdfOriginalWH({ width: pageWidth, height: pageHeight });
-
-      const load = {
-        status: true
-      };
-      setPdfLoadFail(load);
+    const firstPage = await pdf.getPage(1);
+    const scale = 1;
+    const { width, height } = firstPage.getViewport({ scale });
+    // console.log("width height", width, height);
+    setPdfOriginalWH({ width: width, height: height });
+    setPdfLoadFail({
+      status: true
     });
   };
   //function for change page
@@ -1241,6 +1239,7 @@ function PdfRequestFiles() {
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
+  // console.log("signerpos", signerPos);
   //function to close tour and save tour status
   const closeRequestSignTour = async () => {
     setRequestSignTour(true);

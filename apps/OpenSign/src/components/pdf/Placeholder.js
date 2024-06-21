@@ -565,6 +565,7 @@ function Placeholder(props) {
   const xPos = (pos, signYourself) => {
     const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
     const resizePos = pos.xPosition;
+    console.log("go here", resizePos, containerScale, props.scale);
     if (signYourself) {
       return resizePos * containerScale * props.scale;
     } else {
@@ -582,6 +583,7 @@ function Placeholder(props) {
       //     return resizePos * pos.scale * containerScale * props.scale;
       //   }
       // }
+      console.log("go here", resizePos, containerScale, props.scale);
       return resizePos * containerScale * props.scale;
     }
   };
