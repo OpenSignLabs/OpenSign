@@ -423,6 +423,7 @@ const TemplatePlaceholder = () => {
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             scale: containerScale,
+            // isMobile: isMobile,
             zIndex: posZIndex,
             type: item.text,
             options: addWidgetOptions(dragTypeValue),
@@ -1338,7 +1339,7 @@ const TemplatePlaceholder = () => {
               />
 
               {/* pdf render view */}
-              <div className=" w-full  md:w-[57%] flex mr-4">
+              <div className=" w-full md:w-[57%] flex mr-4">
                 <PdfZoom
                   setScale={setScale}
                   scale={scale}

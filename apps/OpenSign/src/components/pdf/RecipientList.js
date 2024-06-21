@@ -249,7 +249,7 @@ const RecipientList = (props) => {
                     props.isSelectListId === ind
                       ? "text-[#424242]"
                       : "text-base-content"
-                  } cursor-pointer ml-[5px]`}
+                  } cursor-pointer`}
                 >
                   <i className="fa-light fa-trash-can 2xl:text-[30px]"></i>
                 </div>

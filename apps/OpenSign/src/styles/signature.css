@@ -3,18 +3,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap");
 
-.placeholderBlock {
-  padding: 0px;
-  position: absolute;
-  border-style: dashed;
-  width: 150px;
-  height: 60px;
-  background: #daebe0;
-  text-align: center;
-  justify-content: center;
-  border-width: 0.2px;
-}
-
 .react-datepicker__input-container {
   position: initial !important;
 }
@@ -35,46 +23,6 @@
   font-size: 12px;
   border: 1px solid #007bff;
   border-radius: 50px;
-}
-
-.drodown-input {
-  padding: 5px;
-  width: 100%;
-  font-size: 0.75rem;
-  border: 1px solid #8ad5ce;
-  /* border: 1px solid #e2dddd; */
-  /* background-color: #e0e5f5; */
-  color: black;
-  font-family: inherit;
-  font-feature-settings: inherit;
-  font-variation-settings: inherit;
-  font-weight: inherit;
-  overflow: visible;
-}
-
-.drodown-input:focus {
-  outline: none;
-  border: 1px solid #099b8d;
-}
-
-.dropdownAdd {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  color: white;
-  font-weight: 600;
-  font-size: 13px;
-  border: none;
-  margin-left: 10px;
-}
-
-.dropdownAdd:focus {
-  outline: none;
-}
-
-.dropdownList {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 50%;
 }
 
 .signatureCanvas {
@@ -102,10 +50,6 @@
   width: 460px;
 }
 
-.penContainerInitial {
-  width: 183px;
-}
-
 .borderResize {
   position: absolute;
   display: inline-block;
@@ -117,185 +61,9 @@
   cursor: sw-resize;
 }
 
-.dropdown-date-menu {
-  min-width: 7rem;
-}
-
-.mailBtn {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  padding: 3px 15px !important;
-  background-color: rgb(79 190 241);
-  border: none !important;
-  color: white !important;
-}
-
-.mailBtn:hover {
-  box-shadow: 0 2px 4px rgba(154, 36, 36, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-}
-
-.signatureBtn {
-  border: 1.5px solid #47a3ad;
-  border-radius: 3px;
-  display: flex;
-  padding: 0px;
-  justify-content: space-between;
-  background: white;
-  transition-duration: 0.4s;
-  cursor: all-scroll;
-  width: 'auto';
-  height: 30px;
-  color: black;
-}
-
-.disableSign {
-  border: 1.5px solid #47a3ad;
-  margin-bottom: 10px;
-  border-radius: 3px;
-  display: flex;
-  padding: 0px;
-  justify-content: space-between;
-  background: white;
-  transition-duration: 0.4s;
-  cursor: all-scroll;
-  width: 150px;
-  height: 30px;
-  color: black;
-  border: 1px solid rgb(203, 203, 203);
-  cursor: text;
-}
-
-.emailInput {
-  padding: 10px;
-  border: 1.5px solid gray;
-  border-radius: 4px;
-  width: 100%;
-  font-size: 15px;
-  padding-bottom: 20px;
-}
-
-.emailInput:focus {
-  outline: none;
-  border: 1.5px solid #47a3ad;
-}
-
-.addEmail {
-  padding: "0px";
-  border: 1.5px solid #47a3ad;
-  border-radius: 4px;
-  width: 100%;
-  font-size: 15px;
-}
-
-.addEmail,
-.emailInput {
-  outline: none;
-}
-
-.addEmailInput {
-  border: none;
-  outline: none;
-}
-
-.emailChip {
-  background-color: #47a3ad;
-  margin: 4px;
-  border-radius: 10px;
-  padding: 5px 10px;
-}
-
-.addEmailInput {
-  padding: 10px;
-  border-radius: 4px;
-  width: 100%;
-  font-size: 15px;
-}
-
-.addEmailInput:focus {
-  outline: none;
-  border: none;
-}
-
-.signatureInput {
-  width: 80%;
-  border-radius: 4px;
-  font-size: 20px;
-  border: 1px solid #e2dddd;
-  color: black;
-  font-family: inherit;
-  font-feature-settings: inherit;
-  font-variation-settings: inherit;
-  font-weight: inherit;
-  overflow: visible;
-  height: 30px;
-}
-
-.signatureInput:focus {
-  outline: none;
-  border: 1px solid blue;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-}
-
-.resizable-box-overlay {
+.icon {
   position: absolute;
-  border: 2px solid #ddd;
-  overflow: hidden;
-  background-color: white;
-}
-
-.box-content {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.close-button {
-  align-self: flex-end;
-  margin: 8px;
-  cursor: pointer;
-}
-
-.placeholdCloseBtn {
-  position: absolute;
-  right: -5px;
-  top: -5px;
-  border-radius: 100%;
-  font-size: 10px;
-  cursor: pointer;
-  padding: 0px 5.1px 1px 5px;
-}
-
-.signCloseBtn {
-  position: absolute;
-
   font-size: 14px;
-  cursor: pointer;
-  z-index: 2;
-  background: white;
-}
-
-.signCopy {
-  position: absolute;
-
-  font-size: 13px;
-  cursor: pointer;
-  z-index: 2;
-  background: white;
-}
-
-.signUserIcon {
-  position: absolute;
-
-  font-size: 13px;
-  cursor: pointer;
-  z-index: 2;
-  background: white;
-}
-
-.settingIcon {
-  position: absolute;
-
-  font-size: 13px;
   cursor: pointer;
   z-index: 2;
   background: white;
@@ -315,19 +83,10 @@
   align-items: center !important;
 }
 
-.finishBtn {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  padding: 3px 30px;
-  color: white;
-  font-weight: 500 !important;
-  font-size: 14px !important;
-  border: none;
-  margin-left: 10px;
-  border-radius: 2px;
-}
-
 .sendMail {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.18);
   padding: 3px 30px;
   color: white;
   font-weight: 500 !important;
@@ -336,105 +95,7 @@
   margin-left: 10px;
 }
 
-.finishBtn:focus {
-  border: none;
-  outline: none;
-}
-
-.finishBtn:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-}
-
-.saveBtn {
-  padding: 3px 18px !important;
-}
-
-.disabledFinish {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  padding: 3px 30px;
-  color: white;
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-  margin-left: 10px;
-}
-
-.sendHover:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.18);
-  color: white;
-}
-
-.defaultSignBox {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  width: 90%;
-  height: 111px;
-  padding: 8px 20px;
-  color: white;
-  font-weight: 600;
-  font-size: 14px;
-  border: none;
-  border-radius: 2px;
-  margin-left: 10px;
-}
-
-.defaultBtn {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.18);
-  padding: 3px 26px;
-  color: black;
-  font-weight: 500;
-  font-size: 14px;
-  border: 1px solid gray;
-  border-radius: 2px;
-  margin-left: 10px;
-  border: "none";
-}
-
-.defaultBtn:focus {
-  border: none;
-  outline: none;
-}
-
-
-.signerList {
-  overflow-y: scroll;
-  max-height: 180px;
-}
-
-.signerList::-webkit-scrollbar {
-  display: none;
-}
-
-.showScroll {
-  height: 100%;
-  overflow: scroll;
-}
-
-.showScroll::-webkit-scrollbar {
-  display: none;
-}
-
-.hideScroll {
-  height: 100%;
-  overflow: scroll;
-}
-
-.signedStyle {
-  color: white;
-  padding: 5px;
-  font-family: sans-serif;
-  font-size: 15px !important;
-}
-
-.userName {
-  font-size: 12px !important;
-  font-weight: bold !important;
-  color: #424242 !important;
-  width: 100px;
-  white-space: nowrap;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-}
-.user{
+.user {
   white-space: nowrap;
   overflow: hidden !important;
   text-overflow: ellipsis;
@@ -447,26 +108,6 @@
   /* background-color: #888; */
 }
 
-.useEmail {
-  font-size: 10px;
-  color: #424242;
-  font-weight: 500;
-  width: 100px;
-  white-space: nowrap;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-}
-
-.spanTagHead {
-  color: white !important;
-  font-size: 17px;
-  font-weight: 500;
-}
-
-.pTagBody {
-  font-size: 15px !important;
-}
-
 .signTab {
   cursor: pointer !important;
   font-weight: 400 !important;
@@ -474,71 +115,10 @@
   font-size: 15px !important;
 }
 
-.cancelBtn {
-  color: black;
-  border: 1px solid #ccc;
-}
-
-.draggable-button {
-  padding: 10px 20px;
-  background: #3498db;
-  color: #fff;
-  border: none;
-  cursor: grab;
-  transition: transform 0.2s;
-}
-
-.draggable-button.dragging {
-  opacity: 0.5;
-  /* Reduce opacity while dragging */
-  transform: scale(1.1);
-  /* Apply a scaling effect while dragging */
-}
-
-.signatureContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  /* background-color: #ebebeb; */
-  position: "relative";
-}
-
-
 .signerComponent {
   /* box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px; */
   /* width: 180px; */
   background-color: white;
- 
-}
-
-.modalBody {
-  padding: 1rem !important;
-  padding-top: 2rem !important;
-}
-
-.signLayoutContainer1 {
-  padding: 15px;
-  display: flex;
-  /* flex-direction: column; */
-  /* justify-content: start; */
-  align-items: center;
-}
-
-.signLayoutContainer2 {
-  display: none;
-}
-
-.preBtn1 {
-  display: flex;
-  align-items: center;
-}
-
-.preBtn2 {
-  display: none;
-}
-
-.headerBtn2 {
-  display: none;
 }
 
 .uploadImgLogo {
@@ -606,7 +186,6 @@
   gap: 5px;
   border: none;
   background-color: #887abf;
-
   width: 100px;
   white-space: nowrap;
   overflow: hidden !important;
@@ -668,7 +247,8 @@ option {
   overflow: hidden;
   background-color: white;
   border-radius: 6px;
-  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35),
+  box-shadow:
+    0px 10px 38px -10px rgba(22, 23, 24, 0.35),
     0px 10px 20px -15px rgba(22, 23, 24, 0.2);
 }
 
@@ -733,11 +313,6 @@ option {
   cursor: default;
 }
 
-.fontOptionContainer {
-  border: 1px solid #d6d3d3;
-  margin: 10px 0px 5px 0px;
-}
-
 .dropDownStyle {
   width: auto;
 }
@@ -754,16 +329,6 @@ option {
   width: 76%;
 }
 
-.regxSelect {
-  border: 1px solid #8ad5ce;
-  width: 80%;
-}
-
-.regxSelect:focus {
-  outline: none;
-  border: 1px solid #8ad5ce;
-}
-
 .radioGroupInput {
   width: 100%;
 }
@@ -774,73 +339,13 @@ option {
   justify-content: flex-start;
 }
 
-.labelWidthDesktop {
-  min-width: 100%;
-  min-height: 100%;
-}
-
-.labelWidthMobile {
-  width: 100%;
-  height: 100%;
-}
-
-.labelTextArea {
-  font-size: 12px;
-  border: 1px solid #007bff;
-  outline: none;
-  z-index: 999;
-  border-radius: 2px;
-  resize: none;
-  overflow: hidden;
-}
-
-.labelTextArea:focus {
-  outline: none;
-  border: 1px solid #188ae2;
-}
-
 @media screen and (max-width: 766px) {
   .validateInputText {
     width: 93%;
   }
 
-  .regxSelect {
-    width: 100%;
-  }
-
-  .validateText {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-
-  .showPages {
-    display: none;
-  }
-
   .dropdown-menu {
     min-width: 0rem !important;
-  }
-
-  .signatureContainer {
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* .signerComponent {
-    display: none;
-  } */
-
-  .preBtn1 {
-    display: none;
-  }
-
-  .preBtn2 {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #ebebeb;
-    padding: 5px 10px;
   }
 
   #navbar {
@@ -879,50 +384,12 @@ option {
     position: fixed;
   }
 
-  .stickyfooter {
-    position: fixed;
-    z-index: 99 !important;
-    bottom: 0px;
-    right: 0rem;
-  }
-
   /* Add some top padding to the page content
   to prevent sudden quick movement (as the
   navigation bar gets a new position at the top of the
   page (position:fixed and top:0) */
-  .stickyHead+.content {
+  .stickyHead + .content {
     padding-top: 60px;
-  }
-
-  .signLayoutContainer2 {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    margin-top: 5px;
-    padding: 2px 5px 10px 5px;
-    position: sticky;
-    align-items: center;
-  }
-
-  .headerBtn {
-    display: none;
-  }
-
-  .headerBtn2 {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-    margin-top: 5px;
-  }
-
-  .mobileHead {
-    display: flex;
-  }
-
-  .signatureText {
-    margin-right: 5px;
-    font-size: 12px;
   }
 }
 
@@ -940,17 +407,8 @@ option {
     font-size: 30px;
   }
 
-  .hidePdf {
-    display: none;
-  }
-
-  .mobileHead {
-    display: flex;
-  }
-
   .signTab {
     font-weight: 500 !important;
-
     font-size: 12px !important;
   }
 }
@@ -968,10 +426,6 @@ option {
     width: 280px;
   }
 
-  .hidePdf {
-    display: none;
-  }
-
   .signTab {
     font-weight: 500 !important;
 
@@ -980,14 +434,6 @@ option {
 
   .uploadImgLogo {
     font-size: 25px;
-  }
-
-  .uploadImg {
-    font-size: 10px !important;
-  }
-
-  .mobileHead {
-    display: flex;
   }
 }
 
@@ -1001,178 +447,12 @@ option {
     width: 230px;
   }
 
-  .hidePdf {
-    display: none;
-  }
-
   .signTab {
     font-weight: 500 !important;
-
     font-size: 8px !important;
   }
 
   .uploadImgLogo {
     font-size: 20px;
-  }
-
-  .uploadImg {
-    font-size: 10px !important;
-  }
-
-  .mobileHead {
-    display: flex;
-  }
-}
-
-.signature-backdrop {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #000;
-}
-
-.signature-backdrop.fade.in {
-  opacity: 0.5;
-}
-
-.modaloverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
-  justify-content: center;
-  align-items: center;
-  z-index: 900;
-}
-
-.modalcontainer {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  z-index: 901;
-  max-height: 80%;
-  min-width: 500px;
-  overflow-y: auto;
-  scrollbar-width: none;
-  /* Firefox */
-  -ms-overflow-style: none;
-  /* Internet Explorer and Edge */
-}
-
-.dropdownModal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  z-index: 901;
-  max-height: 80%;
-  min-width: 40%;
-  overflow-y: auto;
-  scrollbar-width: none;
-  /* Firefox */
-  -ms-overflow-style: none;
-  /* Internet Explorer and Edge */
-}
-
-/* Hide scrollbar for Webkit browsers */
-.modalcontainer::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for Webkit browsers */
-.dropdownModal::-webkit-scrollbar {
-  display: none;
-}
-
-.modalheader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  border-bottom: 1px solid #ccc;
-  color: #ffffff;
-}
-
-/* Styling for the modal title */
-.modaltitle {
-  font-size: 1.2rem;
-  font-weight: normal;
-}
-
-/* Styling for the close button */
-.closebtn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.defaultOptions {
-  font-size: 12px;
-  margin-left: 5px;
-}
-
-.defaultOptions:focus {
-  outline: none;
-}
-
-@media (max-width: 767px) {
-  .modalcontainer {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    max-height: 80%;
-    min-width: 90%;
-    overflow-y: auto;
-  }
-
-  .signatureBtn {
-    width: max-content;
-  }
-
-  .dropdownModal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    max-height: 80%;
-    min-width: 60%;
-    overflow-y: auto;
-  }
-}
-
-@media (max-width: 464px) {
-  .dropdownModal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    max-height: 80%;
-    min-width: 78%;
-    overflow-y: auto;
   }
 }
