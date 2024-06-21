@@ -565,26 +565,23 @@ function Placeholder(props) {
   const xPos = (pos, signYourself) => {
     const containerScale = props.containerWH.width / props.pdfOriginalWH.width;
     const resizePos = pos.xPosition;
-    console.log("go here", resizePos, containerScale, props.scale);
     if (signYourself) {
       return resizePos * containerScale * props.scale;
     } else {
       //checking both condition mobile and desktop view
-      // if (pos.isMobile && pos.scale) {
-      //   if (props.scale > 1) {
-      //     return resizePos * pos.scale * containerScale * props.scale;
-      //   } else {
-      //     return resizePos * pos.scale * containerScale;
-      //   }
-      // } else {
-      //   if (pos.scale === containerScale) {
-      //     return resizePos * pos.scale * props.scale;
-      //   } else {
-      //     return resizePos * pos.scale * containerScale * props.scale;
-      //   }
-      // }
-      console.log("go here", resizePos, containerScale, props.scale);
-      return resizePos * containerScale * props.scale;
+      if (pos.isMobile && pos.scale) {
+        if (props.scale > 1) {
+          return resizePos * pos.scale * containerScale * props.scale;
+        } else {
+          return resizePos * pos.scale * containerScale;
+        }
+      } else {
+        // if (pos.scale === containerScale) {
+        //   return resizePos * pos.scale * props.scale;
+        // } else {
+        return resizePos * containerScale * props.scale;
+        // }
+      }
     }
   };
   const yPos = (pos, signYourself) => {
@@ -594,23 +591,24 @@ function Placeholder(props) {
     if (signYourself) {
       return resizePos * containerScale * props.scale;
     } else {
-      // checking both condition mobile and desktop view
-      // if (pos.isMobile && pos.scale) {
-      //   if (props.scale > 1) {
-      //     return resizePos * pos.scale * containerScale * props.scale;
-      //   } else {
-      //     return resizePos * pos.scale * containerScale;
-      //   }
-      // } else if (pos.scale === containerScale) {
+      //checking both condition mobile and desktop view
+      if (pos.isMobile && pos.scale) {
+        if (props.scale > 1) {
+          return resizePos * pos.scale * containerScale * props.scale;
+        } else {
+          return resizePos * pos.scale * containerScale;
+        }
+      }
+      // else if (pos.scale === containerScale) {
       //   if (props.scale > 1) {
       //     return resizePos * pos.scale * props.scale;
       //   } else {
       //     return resizePos * pos.scale;
       //   }
-      // } else {
-      //   return resizePos * containerScale;
       // }
-      return resizePos * containerScale * props.scale;
+      else {
+        return resizePos * containerScale * props.scale;
+      }
     }
   };
 

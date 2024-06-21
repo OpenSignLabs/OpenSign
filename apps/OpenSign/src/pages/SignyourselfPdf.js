@@ -450,7 +450,6 @@ function SignYourSelf() {
     const key = randomId();
     let dropData = [];
     let dropObj = {};
-    const pdfRenderWidth = containerWH.width;
     let filterDropPos = xyPostion.filter(
       (data) => data.pageNumber === pageNumber
     );
@@ -482,9 +481,7 @@ function SignYourSelf() {
         scale: containerScale,
         Width: getWidth / (containerScale * scale),
         Height: getHeight / (containerScale * scale),
-        options: addWidgetOptions(dragTypeValue),
-        pdfRenderHeight: pdfRenderHeight,
-        pdfRenderWidth: pdfRenderWidth
+        options: addWidgetOptions(dragTypeValue)
       };
 
       dropData.push(dropObj);
@@ -517,8 +514,6 @@ function SignYourSelf() {
         Width: getWidth / (containerScale * scale),
         Height: getHeight / (containerScale * scale),
         options: addWidgetOptions(dragTypeValue),
-        pdfRenderHeight: pdfRenderHeight,
-        pdfRenderWidth: pdfRenderWidth,
         scale: containerScale
       };
 
@@ -702,7 +697,6 @@ function SignYourSelf() {
               pdfDoc,
               pdfOriginalWH,
               isSignYourSelfFlow,
-              containerWH,
               scale
             );
             // console.log("pdf", pdfBytes);
@@ -857,17 +851,14 @@ function SignYourSelf() {
 
   //function for get pdf page details
   const pageDetails = async (pdf) => {
-    const firstPage = await pdf.getPage(1);
+    const firstPage = await pdf.getPage(2);
     const scale = 1;
     const { width, height } = firstPage.getViewport({ scale });
-    // console.log("width height", width, height);
     setPdfOriginalWH({ width: width, height: height });
     setPdfLoadFail({
       status: true
     });
   };
-
-  console.log("xyPosition", xyPostion);
   //function for change page numver of pdf
   function changePage(offset) {
     setSignBtnPosition([]);

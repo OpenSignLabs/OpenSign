@@ -423,7 +423,6 @@ const TemplatePlaceholder = () => {
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             scale: containerScale,
-            // isMobile: isMobile,
             zIndex: posZIndex,
             type: item.text,
             options: addWidgetOptions(dragTypeValue),

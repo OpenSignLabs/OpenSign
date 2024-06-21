@@ -379,7 +379,7 @@ export const getWidgetType = (item) => {
     <div className="op-btn w-fit md:w-[100%] op-btn-primary op-btn-outline op-btn-sm focus:outline-none outline outline-[1.5px] ml-[6px] md:ml-0 p-0 overflow-hidden">
       <div className="w-full h-full flex md:justify-between items-center">
         <div className="flex justify-start items-center text-[13px] ml-1">
-          {!isMobile && <i className="fa-light fa-grip-vertical"></i>}
+          {!isMobile && <i className="fa-sharp fa-solid fa-grip-vertical"></i>}
           <span className="md:inline-block text-center text-[15px] ml-[5px] font-semibold pr-1 md:pr-0">
             {item.type}
           </span>
@@ -419,7 +419,7 @@ export const defaultWidthHeight = (type) => {
     case "email":
       return { width: 150, height: 20 };
     case radioButtonWidget:
-      return { width: 15, height: 30 };
+      return { width: 5, height: 10 };
     case textWidget:
       return { width: 150, height: 17 };
     default:
@@ -1224,16 +1224,16 @@ export const changeImageWH = async (base64Image) => {
 
 //function for embed multiple signature using pdf-lib
 export const multiSignEmbed = async (
-  pngUrl,
+  xyPositionArray,
   pdfDoc,
   pdfOriginalWH,
   signyourself,
-  containerWH,
-  zoomPercent
+  scale
 ) => {
-  for (let item of pngUrl) {
+  for (let item of xyPositionArray) {
     const typeExist = item.pos.some((data) => data?.type);
     let updateItem;
+
     if (typeExist) {
       if (signyourself) {
         updateItem = item.pos;
@@ -1245,16 +1245,13 @@ export const multiSignEmbed = async (
     } else {
       updateItem = item.pos;
     }
-    const newWidth = containerWH.width;
-    const scale = newWidth / pdfOriginalWH.width;
     const pageNo = item.pageNumber;
-    console.log("page number", pageNo);
-    const imgUrlList = updateItem;
+    const widgetsPositionArr = updateItem;
     const pages = pdfDoc.getPages();
     const form = pdfDoc.getForm();
     const page = pages[pageNo - 1];
     const images = await Promise.all(
-      imgUrlList.map(async (url) => {
+      widgetsPositionArr.map(async (url) => {
         let signUrl = url.SignUrl && url.SignUrl;
         if (signUrl) {
           if (url.ImageType === "image/png") {
@@ -1268,7 +1265,7 @@ export const multiSignEmbed = async (
       })
     );
 
-    imgUrlList.forEach(async (position, id) => {
+    widgetsPositionArr.forEach(async (position, id) => {
       let img;
       if (["signature", "stamp", "initials", "image"].includes(position.type)) {
         if (
@@ -1289,60 +1286,48 @@ export const multiSignEmbed = async (
           img = await pdfDoc.embedPng(images[id]);
         }
       }
-      let scaleWidth, scaleHeight;
-      scaleWidth = placeholderWidth(
+      let widgetWidth, widgetHeight;
+      widgetWidth = placeholderWidth(
         position,
         scale,
         signyourself,
         pdfOriginalWH,
-        zoomPercent
+        scale
       );
-      scaleHeight = placeholderHeight(
+      widgetHeight = placeholderHeight(
         position,
         scale,
         signyourself,
         pdfOriginalWH.height,
-        zoomPercent
+        scale
       );
-      const xPos = (pos) => {
-        const resizePos = pos.xPosition;
-        if (pos.isMobile && pos.scale) {
-          const x = resizePos * pos.scale;
+      const xPos = (position) => {
+        const resizePos = position.xPosition;
+        //first two condition handle to old data already saved from mobile view which scale point diffrent
+        if (isMobile && position.isMobile) {
+          //if pos.isMobile false -- placeholder saved from desktop view then handle position in mobile view divided by scale
+          const x = resizePos * (position.scale / scale);
+          return x * scale;
+        } else if (position.isMobile && position.scale) {
+          const x = resizePos * position.scale;
           return x;
         } else {
           return resizePos;
         }
       };
+      const yPos = (position) => {
+        const resizePos = position.yPosition;
 
-      const yPos = (pos, ind, labelDefaultHeight) => {
-        const resizePos = pos.yPosition;
-
-        let newUpdateHeight = labelDefaultHeight
-          ? labelDefaultHeight
-          : scaleHeight;
-        const widgetHeight =
-          position.type === radioButtonWidget
-            ? 10
-            : position.type === "checkbox"
-              ? 10
-              : newUpdateHeight;
-        const newHeight = ind ? (ind > 0 ? widgetHeight : 0) : widgetHeight;
-        if (pos.isMobile && pos.scale) {
-          if (pos.IsResize) {
-            const y = resizePos * pos.scale;
-            return page.getHeight() - y - newUpdateHeight;
+        if (position.isMobile && position.scale) {
+          if (position.IsResize) {
+            const y = resizePos * position.scale;
+            return y;
           } else {
-            const y = resizePos * pos.scale;
-            return page.getHeight() - y - newUpdateHeight;
+            const y = resizePos * position.scale;
+            return y;
           }
         } else {
-          if (ind && ind > 0 && position.type === "checkbox") {
-            return page.getHeight() - resizePos - newHeight;
-          } else if (position.type === "checkbox") {
-            return page.getHeight() - resizePos - 10;
-          } else {
-            return page.getHeight() - resizePos - newHeight;
-          }
+          return resizePos;
         }
       };
       const widgetTypeExist = [
@@ -1355,14 +1340,16 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        let addYPosition = 0,
-          isCheck;
-
+        const font = await pdfDoc.embedFont("Helvetica");
+        let checkboxOptionGapFromTop, isCheck;
+        let y = yPos(position);
+        const optionsFontSize = 13;
+        const checkboxSize = 18;
+        const checkboxTextGapFromLeft = 22;
         if (position?.options?.values.length > 0) {
           position?.options?.values.forEach((item, ind) => {
             const checkboxRandomId = "checkbox" + randomId();
-            let yPosition;
-            const height = 13;
+
             if (
               position?.options?.response &&
               position?.options?.response?.length > 0
@@ -1373,27 +1360,38 @@ export const multiSignEmbed = async (
             }
 
             const checkbox = form.createCheckBox(checkboxRandomId);
+
             if (ind > 0) {
-              yPosition = yPos(position, ind) - addYPosition;
-              addYPosition = addYPosition + height + 8;
+              y = y + checkboxOptionGapFromTop;
             } else {
-              yPosition = yPos(position, ind);
-              addYPosition = height + 8;
+              checkboxOptionGapFromTop = 26;
             }
+
             if (!position?.options?.isHideLabel) {
               // below line of code is used to embed label with radio button in pdf
-              page.drawText(item, {
-                x: xPos(position) + 17,
-                y: yPosition + 2,
-                size: height
-              });
+              const optionsPosition = compensateRotation(
+                page.getRotation().angle,
+                xPos(position) + checkboxTextGapFromLeft,
+                y,
+                1,
+                page.getSize(),
+                optionsFontSize,
+                rgb(0, 0, 0),
+                font,
+                page
+              );
+              page.drawText(item, optionsPosition);
             }
-            checkbox.addToPage(page, {
+            let checkboxObj = {
               x: xPos(position),
-              y: yPosition - 3,
-              width: height,
-              height: height
-            });
+              y: y,
+              width: checkboxSize,
+              height: checkboxSize
+            };
+            checkboxObj = getImagePosition(page, checkboxObj, 1);
+            checkbox.addToPage(page, checkboxObj);
+
+            //applied which checkbox should be checked
             if (isCheck) {
               checkbox.check();
             } else {
@@ -1424,7 +1422,7 @@ export const multiSignEmbed = async (
         } else if (position?.options?.defaultValue) {
           textContent = position?.options?.defaultValue;
         }
-        const fixedWidth = scaleWidth; // Set your fixed width
+        const fixedWidth = widgetWidth; // Set your fixed width
         const isNewOnEnterLineExist = textContent.includes("\n");
 
         // Function to break text into lines based on the fixed width
@@ -1478,10 +1476,10 @@ export const multiSignEmbed = async (
           : NewbreakTextIntoLines(textContent, fixedWidth);
         // Set initial y-coordinate for the first line
         let x = xPos(position);
-        let y = position.yPosition;
+        let y = yPos(position);
         // Embed each line on the page
         for (const line of lines) {
-          const correction = compensateRotation(
+          const textPosition = compensateRotation(
             page.getRotation().angle,
             x,
             y,
@@ -1492,7 +1490,7 @@ export const multiSignEmbed = async (
             font,
             page
           );
-          page.drawText(line, correction);
+          page.drawText(line, textPosition);
           y += 18; // Adjust the line height as needed
         }
       } else if (position.type === "dropdown") {
@@ -1504,19 +1502,11 @@ export const multiSignEmbed = async (
         } else if (position?.options?.defaultValue) {
           dropdown.select(position?.options?.defaultValue);
         }
-
-        // dropdown.addToPage(page, {
-        //   x: xPos(position),
-        //   y: yPos(position),
-        //   width: scaleWidth,
-        //   height: scaleHeight,
-        //   borderWidth: 0
-        // });
         const dropdownObj = {
-          x: position.xPosition,
-          y: position.yPosition,
-          width: scaleWidth,
-          height: scaleHeight
+          x: xPos(position),
+          y: yPos(position),
+          width: widgetWidth,
+          height: widgetHeight
         };
 
         const dropdownOption = getImagePosition(page, dropdownObj, 1);
@@ -1524,80 +1514,61 @@ export const multiSignEmbed = async (
         dropdown.addToPage(page, dropdownOption);
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
+        const font = await pdfDoc.embedFont("Helvetica");
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
-        let addYPosition = 18;
+        let radioOptionGapFromTop;
+        const optionsFontSize = 16;
+        const radioTextGapFromLeft = 20;
+        const radioSize = 18;
+        let y = yPos(position);
+        if (position?.options?.values.length > 0) {
+          position?.options?.values.forEach((item, ind) => {
+            if (ind > 0) {
+              y = y + radioOptionGapFromTop;
+            } else {
+              radioOptionGapFromTop = 25;
+            }
+            if (!position?.options?.isHideLabel) {
+              // below line of code is used to embed label with radio button in pdf
 
-        for (let i = 1; i <= position?.options?.values.length; i++) {
-          const data = position?.options?.values[i - 1];
-          let yPosition;
-          if (i > 1) {
-            yPosition = yPos(position) - addYPosition;
-          } else {
-            yPosition = yPos(position);
-          }
+              const optionsPosition = compensateRotation(
+                page.getRotation().angle,
+                xPos(position) + radioTextGapFromLeft,
+                y,
+                1,
+                page.getSize(),
+                optionsFontSize,
+                rgb(0, 0, 0),
+                font,
+                page
+              );
 
-          if (!position?.options?.isHideLabel) {
-            // below line of code is used to embed label with radio button in pdf
-            page.drawText(data, {
-              x: xPos(position) + 15,
-              y: yPosition + 2,
-              size: 11
-            });
-            // const text = {
-            //   x: position.xPosition + 15,
-            //   y: position.yPosition + 2,
-            //   size: 11
-            // };
-            // const correction = compensateRotationRadioFont(
-            //   page.getRotation().angle,
-            //   position.xPosition,
-            //   position.yPosition,
-            //   1,
-            //   page.getSize(),
-            //   11,
-            //   addYPosition,
-            //   i
-            // );
+              page.drawText(item, optionsPosition);
+            }
+            let radioObj = {
+              x: xPos(position),
+              y: y,
+              width: radioSize,
+              height: radioSize
+            };
 
-            // // const imageOptions = getImagePosition(page, text, 1);
-            // console.log("correction", correction);
-
-            // page.drawText(data, correction);
-          }
-          // const radio = {
-          //   x: position.xPosition,
-          //   y: position.yPosition,
-          //   width: 11,
-          //   height: 11
-          // };
-
-          // const imageOptions = getImagePosition(page, radio, 1);
-          // console.log("imageOptions", imageOptions);
-          // radioGroup.addOptionToPage(data, page, imageOptions);
-          radioGroup.addOptionToPage(data, page, {
-            x: xPos(position),
-            y: yPosition,
-            width: 11,
-            height: 11
+            radioObj = getImagePosition(page, radioObj, 1);
+            radioGroup.addOptionToPage(item, page, radioObj);
           });
-          if (i > 1) {
-            addYPosition = addYPosition + 18;
-          }
         }
         if (position?.options?.response) {
           radioGroup.select(position.options?.response);
         } else if (position?.options?.defaultValue) {
           radioGroup.select(position?.options?.defaultValue);
         }
-
         radioGroup.enableReadOnly();
       } else {
         const signature = {
-          x: position.xPosition,
-          y: position.yPosition,
-          width: scaleWidth,
-          height: scaleHeight
+          x: xPos(position),
+          y: yPos(position),
+          width: widgetWidth,
+          height: widgetHeight
         };
 
         const imageOptions = getImagePosition(page, signature, 1);
@@ -2116,66 +2087,6 @@ export async function findContact(value) {
     console.error("Error fetching suggestions:", error);
   }
 }
-
-// `compensateRotation` is used to calculate x and y position of widget on portait, landscape pdf for pdf-lib
-// function compensateRotationRadioFont(
-//   pageRotation,
-//   x,
-//   y,
-//   scale,
-//   dimensions,
-//   fontSize,
-//   addYPosition,
-//   i
-// ) {
-//   //fontsize = imagewidth
-//   let rotationRads = (pageRotation * Math.PI) / 180;
-
-//   //These coords are now from bottom/left
-//   let coordsFromBottomLeft = { x: x / scale };
-//   if (pageRotation === 90 || pageRotation === 270) {
-//     coordsFromBottomLeft.y = dimensions.width - (y + fontSize) / scale;
-//     if (i > 1) {
-//       coordsFromBottomLeft.y = coordsFromBottomLeft.y - addYPosition;
-//     }
-//   } else {
-//     coordsFromBottomLeft.y = dimensions.height - (y + fontSize) / scale;
-//   }
-
-//   let drawX = null;
-//   let drawY = null;
-//   if (pageRotation === 90) {
-//     drawX =
-//       coordsFromBottomLeft.x * Math.cos(rotationRads) -
-//       coordsFromBottomLeft.y * Math.sin(rotationRads) +
-//       dimensions.width;
-//     drawY =
-//       coordsFromBottomLeft.x * Math.sin(rotationRads) +
-//       coordsFromBottomLeft.y * Math.cos(rotationRads);
-//   } else if (pageRotation === 180) {
-//     drawX =
-//       coordsFromBottomLeft.x * Math.cos(rotationRads) -
-//       coordsFromBottomLeft.y * Math.sin(rotationRads) +
-//       dimensions.width;
-//     drawY =
-//       coordsFromBottomLeft.x * Math.sin(rotationRads) +
-//       coordsFromBottomLeft.y * Math.cos(rotationRads) +
-//       dimensions.height;
-//   } else if (pageRotation === 270) {
-//     drawX =
-//       coordsFromBottomLeft.x * Math.cos(rotationRads) -
-//       coordsFromBottomLeft.y * Math.sin(rotationRads);
-//     drawY =
-//       coordsFromBottomLeft.x * Math.sin(rotationRads) +
-//       coordsFromBottomLeft.y * Math.cos(rotationRads) +
-//       dimensions.height;
-//   } else {
-//     //no rotation
-//     drawX = coordsFromBottomLeft.x;
-//     drawY = coordsFromBottomLeft.y;
-//   }
-//   return { x: drawX + 15, y: drawY + 2, size: fontSize };
-// }
 // `compensateRotation` is used to calculate x and y position of widget on portait, landscape pdf for pdf-lib
 function compensateRotation(
   pageRotation,
@@ -2249,15 +2160,10 @@ function getImagePosition(page, image, sizeRatio) {
   let pageWidth;
   // pageHeight;
   if ([90, 270].includes(page.getRotation().angle)) {
-    console.log("go in 90 degree");
     pageWidth = page.getHeight();
-    // pageHeight = page.getWidth();
   } else {
-    console.log("go in 180 degree");
     pageWidth = page.getWidth();
-    // pageHeight = page.getHeight();
   }
-
   // eslint-disable-next-line
   if (!image?.hasOwnProperty("vpWidth")) {
     image["vpWidth"] = pageWidth;

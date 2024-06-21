@@ -24,7 +24,6 @@ function RenderPdf({
   pdfDetails,
   xyPostion,
   pdfUrl,
-  numPages,
   pageDetails,
   pdfRequest,
   signerObjectId,
@@ -398,22 +397,20 @@ function RenderPdf({
                     : pdfDetails[0].URL
               }
             >
-              {Array.from(new Array(numPages), (el, index) => (
-                <Page
-                  onLoadSuccess={({ height }) => {
-                    setPdfRenderHeight && setPdfRenderHeight(height);
-                    setIsLoadPdf(true);
-                  }}
-                  key={index}
-                  pageNumber={pageNumber}
-                  width={containerWH.width}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
-                  onGetAnnotationsError={(error) => {
-                    console.log("annotation error", error);
-                  }}
-                />
-              ))}
+              <Page
+                onLoadSuccess={({ height }) => {
+                  setPdfRenderHeight && setPdfRenderHeight(height);
+                  setIsLoadPdf(true);
+                }}
+                key={index}
+                pageNumber={pageNumber}
+                width={containerWH.width}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+                onGetAnnotationsError={(error) => {
+                  console.log("annotation error", error);
+                }}
+              />
             </Document>
           </div>
         </div>
@@ -592,24 +589,22 @@ function RenderPdf({
                     : pdfDetails[0].URL
               }
             >
-              {Array.from(new Array(numPages), (el, index) => (
-                <Page
-                  onLoadSuccess={({ height }) => {
-                    setPdfRenderHeight && setPdfRenderHeight(height);
-                    setIsLoadPdf(true);
-                  }}
-                  key={index}
-                  width={containerWH.width}
-                  scale={scale || 1}
-                  className={"-z-[1]"} // when user zoom-in in tablet widgets move backward that's why pass -z-[1]
-                  pageNumber={pageNumber}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
-                  onGetAnnotationsError={(error) => {
-                    console.log("annotation error", error);
-                  }}
-                />
-              ))}
+              <Page
+                onLoadSuccess={({ height }) => {
+                  setPdfRenderHeight && setPdfRenderHeight(height);
+                  setIsLoadPdf(true);
+                }}
+                key={index}
+                width={containerWH.width}
+                scale={scale || 1}
+                className={"-z-[1]"} // when user zoom-in in tablet widgets move backward that's why pass -z-[1]
+                pageNumber={pageNumber}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+                onGetAnnotationsError={(error) => {
+                  console.log("annotation error", error);
+                }}
+              />
             </Document>
           </div>
         </RSC>

@@ -787,7 +787,6 @@ function PdfRequestFiles() {
               pdfDoc,
               pdfOriginalWH,
               isSignYourSelfFlow,
-              containerWH,
               scale
             );
             //  console.log("pdfte", pdfBytes);
@@ -1019,7 +1018,6 @@ function PdfRequestFiles() {
       style: { fontSize: "13px" }
     }
   ];
-
   //function for get pdf page details
   const pageDetails = async (pdf) => {
     const firstPage = await pdf.getPage(1);
