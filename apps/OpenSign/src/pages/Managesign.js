@@ -265,7 +265,7 @@ const ManageSign = () => {
               <div className="relative">
                 <div>
                   {image ? (
-                    <div className="signatureCanvas relative border-[2px] border-[#888]">
+                    <div className="signatureCanvas relative border-[2px] border-[#888] rounded-box">
                       <img
                         alt="signature"
                         src={image}
@@ -279,7 +279,7 @@ const ManageSign = () => {
                       canvasProps={{
                         width: "456px",
                         height: "180px",
-                        className: "signatureCanvas"
+                        className: "signatureCanvas rounded-box"
                       }}
                       backgroundColor="rgb(255, 255, 255)"
                       onEnd={() =>
@@ -326,7 +326,7 @@ const ManageSign = () => {
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row gap-2 text-sm md:text-base mr-1">
                       <div
                         type="button"
                         className="op-link"
@@ -358,7 +358,7 @@ const ManageSign = () => {
               </span>
               <div>
                 {isInitials ? (
-                  <div className="intialSignature relative border-[1px] border-[#888]">
+                  <div className="intialSignature relative border-[1px] border-[#888] rounded-box overflow-hidden">
                     <img
                       alt="inititals"
                       src={Initials}
@@ -374,7 +374,7 @@ const ManageSign = () => {
                     ref={initailsRef}
                     penColor={initialPen}
                     canvasProps={{
-                      className: "intialSignature"
+                      className: "intialSignature rounded-box"
                     }}
                     backgroundColor="rgb(255, 255, 255)"
                     onEnd={() =>
@@ -424,7 +424,7 @@ const ManageSign = () => {
                   <div>
                     <div
                       type="button"
-                      className="op-link"
+                      className="op-link text-sm md:text-base mr-1"
                       onClick={() => handleClearInitials()}
                     >
                       Clear
