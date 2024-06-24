@@ -421,7 +421,7 @@ export const defaultWidthHeight = (type) => {
     case radioButtonWidget:
       return { width: 5, height: 10 };
     case textWidget:
-      return { width: 150, height: 17 };
+      return { width: 150, height: 25 };
     default:
       return { width: 150, height: 60 };
   }
