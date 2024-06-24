@@ -986,7 +986,7 @@ function SignYourSelf() {
   };
   const tourConfig = [
     {
-      selector: '[data-tut="reactourFirst"]',
+      selector: '[data-tut="addWidgets"]',
       content: () => (
         <TourContentWithBtn
           message={`Select and drag your preferred widgets onto the PDF to customize your document before signing. Choose the perfect spots for each modification to tailor the document to your needs.`}
@@ -1382,7 +1382,6 @@ function SignYourSelf() {
                 {!isCompleted ? (
                   <div>
                     <WidgetComponent
-                      dataTut="reactourFirst"
                       pdfUrl={pdfUrl}
                       dragSignature={dragSignature}
                       signRef={signRef}

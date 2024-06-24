@@ -72,7 +72,7 @@ function SignerListPlace(props) {
         ) : (
           <div
             role="button"
-            data-tut="reactourAddbtn"
+            data-tut="addRecipient"
             className="op-btn op-btn-accent op-btn-outline w-full mt-[14px]"
             disabled={props?.isMailSend ? true : false}
             onClick={() => props.setIsAddSigner(true)}

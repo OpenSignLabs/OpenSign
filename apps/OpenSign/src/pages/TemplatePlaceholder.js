@@ -813,7 +813,7 @@ const TemplatePlaceholder = () => {
       action: () => handleCloseRoleModal()
     },
     {
-      selector: '[data-tut="reactourSecond"]',
+      selector: '[data-tut="addWidgets"]',
       content: () => (
         <TourContentWithBtn
           message={`Drag or click on a field to add it to the document.`}
@@ -835,7 +835,7 @@ const TemplatePlaceholder = () => {
       style: { fontSize: "13px" }
     },
     {
-      selector: '[data-tut="reactourFour"]',
+      selector: '[data-tut="headerArea"]',
       content: () => (
         <TourContentWithBtn
           message={`Clicking ‘Save’ will store the current template. After saving, you’ll be prompted to create a new document from this template if you wish.`}
@@ -1545,7 +1545,6 @@ const TemplatePlaceholder = () => {
               {isMobile ? (
                 <div>
                   <WidgetComponent
-                    dataTut="reactourFirst"
                     dataTut2="reactourSecond"
                     pdfUrl={isMailSend}
                     dragSignature={dragSignature}
@@ -1609,7 +1608,7 @@ const TemplatePlaceholder = () => {
                       blockColor={blockColor}
                       setBlockColor={setBlockColor}
                     />
-                    <div data-tut="reactourSecond">
+                    <div data-tut="addWidgets">
                       <WidgetComponent
                         isMailSend={isMailSend}
                         dragSignature={dragSignature}
