@@ -1278,7 +1278,7 @@ function PlaceHolderSign() {
 
   const tourConfig = [
     {
-      selector: '[data-tut="reactourFirst"]',
+      selector: '[data-tut="recipientArea"]',
       content: () => (
         <TourContentWithBtn
           message={`Select a recipient from this list to add a place-holder where he is supposed to sign.The placeholder will appear in the same colour as the recipient name once you drop it on the document.`}
@@ -1289,7 +1289,18 @@ function PlaceHolderSign() {
       style: { fontSize: "13px" }
     },
     {
-      selector: '[data-tut="reactourSecond"]',
+      selector: '[data-tut="addRecipient"]',
+      content: () => (
+        <TourContentWithBtn
+          message={`Clicking "Add recipients" button will allow you to add more signer.`}
+          isChecked={handleDontShow}
+        />
+      ),
+      position: "top",
+      style: { fontSize: "13px" }
+    },
+    {
+      selector: '[data-tut="addWidgets"]',
       content: () => (
         <TourContentWithBtn
           message={`Drag or click on a field to add it to the document.`}
@@ -1300,7 +1311,7 @@ function PlaceHolderSign() {
       style: { fontSize: "13px" }
     },
     {
-      selector: '[data-tut="reactourThird"]',
+      selector: '[data-tut="pdfArea"]',
       content: () => (
         <TourContentWithBtn
           message={`The PDF content area already displays the template's existing placeholders. For your convenience, these placeholders will match the color of the recipient's name, making them easily identifiable.`}
@@ -1312,7 +1323,7 @@ function PlaceHolderSign() {
     },
 
     {
-      selector: '[data-tut="reactourFour"]',
+      selector: '[data-tut="headerArea"]',
       content: () => (
         <TourContentWithBtn
           message={`Clicking "Send" will save the document. In the next step you can customize the emails to be sent out to the recipients or copy the signing links and share those with the recipients yourself.`}
@@ -2048,14 +2059,9 @@ function PlaceHolderSign() {
                     alertSendEmail={alertSendEmail}
                     isShowHeader={true}
                     currentSigner={true}
-                    dataTut4="reactourFour"
                   />
 
-                  <div
-                    ref={divRef}
-                    data-tut="reactourSecond"
-                    className="h-[95%]"
-                  >
+                  <div ref={divRef} data-tut="pdfArea" className="h-[95%]">
                     {containerWH && (
                       <RenderPdf
                         pageNumber={pageNumber}
@@ -2109,8 +2115,6 @@ function PlaceHolderSign() {
                   {isMobile ? (
                     <div>
                       <WidgetComponent
-                        dataTut="reactourFirst"
-                        dataTut2="reactourSecond"
                         pdfUrl={isMailSend}
                         dragSignature={dragSignature}
                         signRef={signRef}
@@ -2169,7 +2173,7 @@ function PlaceHolderSign() {
                           roleName={roleName}
                           // handleAddSigner={handleAddSigner}
                         />
-                        <div data-tut="reactourSecond">
+                        <div data-tut="addWidgets">
                           <WidgetComponent
                             isMailSend={isMailSend}
                             dragSignature={dragSignature}

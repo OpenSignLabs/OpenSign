@@ -182,7 +182,7 @@ function PdfRequestFiles() {
     const localuser = localStorage.getItem(
       `Parse/${appInfo.appId}/currentUser`
     );
-    const currentUser = JSON.parse(JSON.stringify(localuser));
+    const currentUser = JSON.parse(localuser);
     await handleSendOTP(currentUser?.email);
     setOtpLoader(false);
     alert("OTP sent on you email");
@@ -194,7 +194,7 @@ function PdfRequestFiles() {
     const localuser = localStorage.getItem(
       `Parse/${appInfo.appId}/currentUser`
     );
-    const currentUser = JSON.parse(JSON.stringify(localuser));
+    const currentUser = JSON.parse(localuser);
     try {
       const resEmail = await Parse.Cloud.run("verifyemail", {
         otp: otp,
@@ -221,7 +221,7 @@ function PdfRequestFiles() {
     const localuser = localStorage.getItem(
       `Parse/${appInfo.appId}/currentUser`
     );
-    const currentUser = JSON.parse(JSON.stringify(localuser));
+    const currentUser = JSON.parse(localuser);
     await handleSendOTP(currentUser?.email);
   };
   async function checkIsSubscribed(extUserId, contactId) {
@@ -500,7 +500,7 @@ function PdfRequestFiles() {
         const localuser = localStorage.getItem(
           `Parse/${appInfo.appId}/currentUser`
         );
-        const currentUser = JSON.parse(JSON.stringify(localuser));
+        const currentUser = JSON.parse(localuser);
         const currentUserEmail = currentUser.email;
         const res = await contractUsers(currentUserEmail);
         if (res === "Error: Something went wrong!") {
@@ -1288,7 +1288,7 @@ function PdfRequestFiles() {
         style: { fontSize: "13px" }
       },
       {
-        selector: '[data-tut="reactourForth"]',
+        selector: '[data-tut="pdfArea"]',
         content: () => (
           <TourContentWithBtn
             message={`Click any of the placeholders appearing on the document to sign. You will then see options to draw your signature, type it, or upload an image .`}
@@ -1706,11 +1706,7 @@ function PdfRequestFiles() {
                       zoomPercent={zoomPercent}
                     />
 
-                    <div
-                      ref={divRef}
-                      data-tut="reactourSecond"
-                      className="h-[95%]"
-                    >
+                    <div ref={divRef} data-tut="pdfArea" className="h-[95%]">
                       {containerWH && (
                         <RenderPdf
                           pageNumber={pageNumber}
@@ -1776,7 +1772,10 @@ function PdfRequestFiles() {
 
                     {unsignedSigners.length > 0 && (
                       <>
-                        <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
+                        <div
+                          data-tut="reactourFirst"
+                          className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
+                        >
                           <span>Yet to sign</span>
                         </div>
                         <div className="mt-[5px]">

@@ -250,7 +250,6 @@ function WidgetComponent({
       {isMobile ? (
         !isMailSend && (
           <div
-            data-tut={dataTut}
             id="navbar"
             className="fixed z-[99] bottom-0 right-0"
             style={{ width: window.innerWidth + "px" }}
@@ -258,7 +257,7 @@ function WidgetComponent({
             <div className="mx-1">
               {isSigners && (
                 <div
-                  data-tut={dataTut}
+                  data-tut="recipientArea"
                   className="py-[10px] flex justify-center items-center op-card"
                   style={{
                     background: blockColor
@@ -316,7 +315,7 @@ function WidgetComponent({
               ) : (
                 setIsAddSigner && (
                   <div
-                    data-tut="reactourAddbtn"
+                    data-tut="addRecipient"
                     className="op-btn op-btn-accent w-full my-[2px]"
                     onClick={() => setIsAddSigner(true)}
                   >
@@ -327,6 +326,7 @@ function WidgetComponent({
               )}
             </div>
             <div
+              data-tut="addWidgets"
               ref={scrollContainerRef}
               className="bg-base-100 border-[2px] border-t-primary"
             >
