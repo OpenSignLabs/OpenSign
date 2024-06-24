@@ -261,21 +261,14 @@ const DashboardCard = (props) => {
               }
             }
             body = str;
-            await axios
-              .post(url, body, { headers: headers })
-              .then((response) => {
-                try {
-                  if (response.data.result.length > 0) {
-                    setresponse(response.data.result[0][props.FilterData.key]);
-                    setLoading(false);
-                  } else {
-                    setresponse("0");
-                    setLoading(false);
-                  }
-                } catch (error) {
-                  setLoading(false);
-                }
-              });
+            const response = await axios.post(url, body, { headers: headers });
+            if (response.data.result.length > 0) {
+              setresponse(response.data.result[0][props.FilterData.key]);
+              setLoading(false);
+            } else {
+              setresponse("0");
+              setLoading(false);
+            }
           } catch (error) {
             setLoading(false);
           }
@@ -338,7 +331,7 @@ const DashboardCard = (props) => {
       }`}
     >
       <div className="flex items-center justify-start gap-5 text-white">
-        <span className="rounded-full bg-black bg-opacity-20 w-[60px] h-[60px] self-start flex justify-center items-center">
+        <span className="rounded-full bg-base-300 bg-opacity-20 w-[60px] h-[60px] self-start flex justify-center items-center">
           <i
             className={`${
               props.Icon ? props.Icon : "fa-light fa-info"

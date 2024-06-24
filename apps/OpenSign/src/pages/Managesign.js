@@ -237,127 +237,125 @@ const ManageSign = () => {
     setIsValue(true);
   };
   return (
-    <div className="relative h-full bg-base-100 text-base-content flex shadow rounded overflow-auto">
+    <div className="relative h-full bg-base-100 text-base-content flex shadow-md rounded-box overflow-auto">
       {isLoader && (
         <div className="absolute bg-black bg-opacity-30 z-50 w-full h-full flex justify-center items-center">
           <Loader />
         </div>
       )}
       {isAlert?.message && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
-      <div className="relative w-full pr-[10px]">
-        <div className="m-[20px]">
-          <div className="text-[20px] font-semibold mb-3">My Signature</div>
+      <div className="relative w-full">
+        <div className="ml-[5px] my-[20px] md:m-[20px]">
+          <div className="text-[20px] font-semibold m-[10px] md:m-0 mb-2">
+            My Signature
+          </div>
           <div className="flex flex-col md:flex-row gap-0 md:gap-[12px]">
-            <div>
+            <div className="relative">
+              <span className="font-medium select-none flex mb-[10px] pl-[10px]">
+                Signature
+              </span>
+              <input
+                type="file"
+                onChange={onImageChange}
+                className="filetype"
+                accept="image/*"
+                ref={imageRef}
+                hidden
+              />
               <div className="relative">
-                <div className="flex flex-row justify-between w-1/2 pl-[10px]">
-                  <div className="flex flex-row justify-around items-center gap-[10px] mb-[10px]">
-                    <span className="font-medium select-none">Signature</span>
-                    <input
-                      type="file"
-                      onChange={onImageChange}
-                      className="filetype"
-                      accept="image/*"
-                      ref={imageRef}
-                      hidden
-                    />
-                  </div>
-                </div>
-                <div className="relative">
-                  <div>
-                    {image ? (
-                      <div className="signatureCanvas relative border-[2px] border-[#888]">
-                        <img
-                          alt="signature"
-                          src={image}
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <SignatureCanvas
-                        ref={canvasRef}
-                        penColor={penColor}
-                        canvasProps={{
-                          width: "456px",
-                          height: "180px",
-                          className: "signatureCanvas"
-                        }}
-                        backgroundColor="rgb(255, 255, 255)"
-                        onEnd={() =>
-                          handleSignatureChange(canvasRef.current.toDataURL())
-                        }
-                        dotSize={1}
+                <div>
+                  {image ? (
+                    <div className="signatureCanvas relative border-[2px] border-[#888]">
+                      <img
+                        alt="signature"
+                        src={image}
+                        className="w-full h-full object-contain"
                       />
-                    )}
-                    <div className="penContainerDefault flex flex-row justify-between">
-                      <div>
-                        {!image && (
-                          <div className="flex flex-row">
-                            {allColor.map((data, key) => {
-                              return (
-                                <i
-                                  style={{
-                                    margin: "5px",
-                                    color: data,
-                                    borderBottom:
-                                      key === 0 && penColor === "blue"
-                                        ? "2px solid blue"
-                                        : key === 1 && penColor === "red"
-                                          ? "2px solid red"
-                                          : key === 2 && penColor === "black"
-                                            ? "2px solid black"
-                                            : "2px solid white"
-                                  }}
-                                  onClick={() => {
-                                    if (key === 0) {
-                                      setPenColor("blue");
-                                    } else if (key === 1) {
-                                      setPenColor("red");
-                                    } else if (key === 2) {
-                                      setPenColor("black");
-                                    }
-                                  }}
-                                  key={key}
-                                  className="fa-light fa-pen-nib"
-                                  width={20}
-                                  height={20}
-                                ></i>
-                              );
-                            })}
-                          </div>
-                        )}
+                    </div>
+                  ) : (
+                    <SignatureCanvas
+                      ref={canvasRef}
+                      penColor={penColor}
+                      canvasProps={{
+                        width: "456px",
+                        height: "180px",
+                        className: "signatureCanvas"
+                      }}
+                      backgroundColor="rgb(255, 255, 255)"
+                      onEnd={() =>
+                        handleSignatureChange(canvasRef.current.toDataURL())
+                      }
+                      dotSize={1}
+                    />
+                  )}
+                  <div className="penContainerDefault flex flex-row justify-between">
+                    <div>
+                      {!image && (
+                        <div className="flex flex-row">
+                          {allColor.map((data, key) => {
+                            return (
+                              <i
+                                style={{
+                                  margin: "5px",
+                                  color: data,
+                                  borderBottom:
+                                    key === 0 && penColor === "blue"
+                                      ? "2px solid blue"
+                                      : key === 1 && penColor === "red"
+                                        ? "2px solid red"
+                                        : key === 2 && penColor === "black"
+                                          ? "2px solid black"
+                                          : "2px solid white"
+                                }}
+                                onClick={() => {
+                                  if (key === 0) {
+                                    setPenColor("blue");
+                                  } else if (key === 1) {
+                                    setPenColor("red");
+                                  } else if (key === 2) {
+                                    setPenColor("black");
+                                  }
+                                }}
+                                key={key}
+                                className="fa-light fa-pen-nib"
+                                width={20}
+                                height={20}
+                              ></i>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-row gap-2">
+                      <div
+                        type="button"
+                        className="op-link"
+                        onClick={() => handleUploadBtn()}
+                      >
+                        Upload image
                       </div>
-                      <div className="flex flex-row gap-2">
-                        <div
-                          type="button"
-                          className="op-link"
-                          onClick={() => handleUploadBtn()}
-                        >
-                          Upload image
-                        </div>
-                        <div
-                          type="button"
-                          className="op-link"
-                          onClick={() => handleClear()}
-                        >
-                          Clear
-                        </div>
+                      <div
+                        type="button"
+                        className="op-link"
+                        onClick={() => handleClear()}
+                      >
+                        Clear
                       </div>
                     </div>
                   </div>
-                  {warning && (
-                    <div className="warning signWarning text-[12px]">
-                      <i className="fa-light fa-exclamation-circle text-[#fab005] text-[15px] mr-[4px]"></i>
-                      Please upload signature/Image
-                    </div>
-                  )}
                 </div>
+                {warning && (
+                  <span className="customwarning signWarning text-[12px] w-[220px] md:w-[300px]">
+                    <i className="fa-light fa-exclamation-circle text-[#fab005] text-[15px] mr-[4px]"></i>
+                    Please upload signature/Image
+                  </span>
+                )}
               </div>
             </div>
             <div className="relative">
-              <div className="mb-[10px]">
-                <span className="font-medium select-none">Initials</span>
-              </div>
+              <span className="font-medium select-none flex mb-[10px] pl-[10px]">
+                Initials
+              </span>
               <div>
                 {isInitials ? (
                   <div className="intialSignature relative border-[1px] border-[#888]">
@@ -436,7 +434,7 @@ const ManageSign = () => {
               </div>
             </div>
           </div>
-          <div style={{ paddingTop: 10 }}>
+          <div className="pt-3 ml-2 md:ml-0">
             <button
               className="op-btn op-btn-primary"
               onClick={(e) => handleSubmit(e)}
