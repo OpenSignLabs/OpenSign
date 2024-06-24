@@ -677,7 +677,7 @@ function PlaceholderType(props) {
           className="w-full h-full"
         />
       ) : (
-        <div className="text-[11px] w-full h-full text-black flex flex-coljustify-center items-center">
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
