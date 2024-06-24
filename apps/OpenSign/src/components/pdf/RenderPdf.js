@@ -246,10 +246,9 @@ function RenderPdf({
       {isMobile ? (
         <div
           data-tut="reactourForth"
-          style={{
-            border: "0.1px solid #ebe8e8",
-            marginTop: isGuestSigner && "30px"
-          }}
+          className={`${
+            isGuestSigner ? "30px" : ""
+          } border-[0.1px] border-[#ebe8e8]`}
           ref={drop}
           id="container"
         >

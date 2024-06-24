@@ -47,7 +47,7 @@ function PlaceholderBorder(props) {
       onTouchEnd={() =>
         props.pos.type === textWidget && props?.setDraggingEnabled(true)
       }
-      className="borderResize"
+      className="absolute inline-block w-[14px] h-[14px] hover:cursor-sw-resize"
       style={{
         borderColor: themeColor,
         borderStyle: "dashed",
