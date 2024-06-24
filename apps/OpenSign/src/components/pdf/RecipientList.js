@@ -89,7 +89,7 @@ const RecipientList = (props) => {
               onDrop={(e) =>
                 props.sendInOrder && !isMobile && handleChangeSequence(e, ind)
               }
-              data-tut="reactourFirst"
+              data-tut="recipientArea"
               onMouseEnter={() => setIsHover(ind)}
               onMouseLeave={() => setIsHover(null)}
               className={`${
