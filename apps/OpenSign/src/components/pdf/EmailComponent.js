@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { saveAs } from "file-saver";
-import celebration from "../../assets/images/newCeleb.gif";
 import axios from "axios";
 import { getBase64FromUrl } from "../../constant/Utils";
 import { themeColor } from "../../constant/const";
@@ -22,7 +21,6 @@ function EmailComponent({
   const [emailList, setEmailList] = useState([]);
   const [emailValue, setEmailValue] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [isEmailCelebration, setIsEmailCelebration] = useState(false);
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
@@ -63,10 +61,6 @@ function EmailComponent({
             " target=_blank>here</a> </p></div></div></body></html>"
         };
         sendMail = await axios.post(url, params, { headers: headers });
-        setIsEmailCelebration(true);
-        setTimeout(() => {
-          setIsEmailCelebration(false);
-        }, 3000);
       } catch (error) {
         console.log("error", error);
         setIsLoading(false);
@@ -205,11 +199,6 @@ function EmailComponent({
             </div>
           </div>
           <div className="h-full p-[20px]">
-            {isEmailCelebration && (
-              <div className="absolute w-[100%] flex justify-center items-center">
-                <img alt="celeb" width={300} height={250} src={celebration} />
-              </div>
-            )}
             <p className="font-medium text-[15px] mb-[5px] text-base-content align-baseline">
               Recipients added here will get a copy of the signed document.
             </p>

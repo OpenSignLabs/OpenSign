@@ -445,7 +445,7 @@ const Forms = (props) => {
         setIsSubmit(false);
       }
     } else {
-      alert("Please wait until the PDF has been uploading.");
+      alert("Please wait while the document is being uploaded.");
     }
   };
 
@@ -834,7 +834,7 @@ const Forms = (props) => {
                   {!isEnableSubscription && (
                     <PremiumAlertHeader
                       message={
-                        "Disable Auto reminder is free in beta, this feature will incur a fee later."
+                        "Auto reminder is free in beta, this feature will incur a fee later."
                       }
                     />
                   )}

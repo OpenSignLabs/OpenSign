@@ -14,7 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import RegexParser from "regex-parser";
 const textWidgetCls =
-  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content bg-base-100 whitespace-pre-wrap";
+  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center bg-base-100 whitespace-pre-wrap";
 const selectWidgetCls =
   "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none bg-base-100 text-base-content";
 function PlaceholderType(props) {
@@ -309,10 +309,10 @@ function PlaceholderType(props) {
           alt="signature"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full object-contain"
+          className="w-full h-full "
         />
       ) : (
-        <div className="text-[11px] text-black justify-center">
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
@@ -327,10 +327,10 @@ function PlaceholderType(props) {
           alt="stamp"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full object-contain"
+          className="w-full h-full"
         />
       ) : (
-        <div className="text-[11px] text-black justify-center">
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
@@ -412,6 +412,12 @@ function PlaceholderType(props) {
             );
           }}
           className={textWidgetCls}
+          style={{
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
+          }}
           cols="50"
         />
       ) : (
@@ -470,10 +476,10 @@ function PlaceholderType(props) {
           alt="initials"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full object-contain"
+          className="w-full h-full"
         />
       ) : (
-        <div className="text-[11px] text-black justify-center">
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
@@ -505,6 +511,12 @@ function PlaceholderType(props) {
             );
           }}
           className={textWidgetCls}
+          style={{
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
+          }}
           cols="50"
         />
       ) : (
@@ -539,6 +551,12 @@ function PlaceholderType(props) {
             );
           }}
           className={textWidgetCls}
+          style={{
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
+          }}
           cols="50"
         />
       ) : (
@@ -573,6 +591,12 @@ function PlaceholderType(props) {
             );
           }}
           className={textWidgetCls}
+          style={{
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
+          }}
           cols="50"
         />
       ) : (
@@ -650,10 +674,10 @@ function PlaceholderType(props) {
           alt="image"
           draggable="false"
           src={props.pos.SignUrl}
-          className="w-full h-full object-contain"
+          className="w-full h-full"
         />
       ) : (
-        <div className="text-[11px] text-black justify-center">
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props?.handleUserName &&
             props?.handleUserName(
               props?.data?.Id,
@@ -685,6 +709,12 @@ function PlaceholderType(props) {
             );
           }}
           className={textWidgetCls}
+          style={{
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
+          }}
           cols="50"
         />
       ) : (
@@ -749,6 +779,12 @@ function PlaceholderType(props) {
             );
           }}
           className={textWidgetCls}
+          style={{
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
+          }}
           cols="50"
         />
       );
@@ -759,17 +795,11 @@ function PlaceholderType(props) {
             alt="image"
             draggable="false"
             src={props.pos.SignUrl}
-            className="w-full h-full object-contain"
+            className="w-full h-full"
           />
         </div>
       ) : (
-        <div
-          style={{
-            fontSize: "10px",
-            color: "black",
-            justifyContent: "center"
-          }}
-        >
+        <div className="text-[11px] w-full h-full text-black flex flex-col justify-center items-center">
           {props.pos.isStamp ? <div>stamp</div> : <div>signature</div>}
           {props?.handleUserName &&
             props?.handleUserName(props?.data?.Id, props?.data?.Role)}

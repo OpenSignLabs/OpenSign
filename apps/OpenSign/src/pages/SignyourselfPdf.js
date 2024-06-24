@@ -226,11 +226,15 @@ function SignYourSelf() {
       }
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
+        setIsCelebration(true);
+        setTimeout(() => {
+          setIsCelebration(false);
+        }, 5000);
         setIsCompleted(true);
         setPdfUrl(documentData[0].SignedUrl);
         const alreadySign = {
           status: true,
-          mssg: "You have successfully signed the document!"
+          mssg: "Congratulations! 🎉 This document has been successfully signed by you!"
         };
         if (showComplete) {
           setShowAlreadySignDoc(alreadySign);
@@ -238,12 +242,8 @@ function SignYourSelf() {
           setIsUiLoading(false);
           setIsSignPad(false);
           setIsEmail(true);
-          setIsCelebration(true);
           setXyPostion([]);
           setSignBtnPosition([]);
-          setTimeout(() => {
-            setIsCelebration(false);
-          }, 5000);
         }
       }
     } else if (
@@ -1173,11 +1173,11 @@ function SignYourSelf() {
             </div>
           )}
           {isCelebration && (
-            <div className="relative z-[999]">
+            <div className="relative z-[1000]">
               <Confetti width={window.innerWidth} height={window.innerHeight} />
             </div>
           )}
-          {/* <div className="min-h-screen relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"> */}
+
           <div className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300">
             {!isEmailVerified && (
               <VerifyEmail

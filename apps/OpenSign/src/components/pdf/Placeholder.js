@@ -776,6 +776,7 @@ function Placeholder(props) {
       {isTabAndMobile ? (
         <div
           // className="sm:inline-block md:inline-block lg:hidden "
+          className="flex items-stretch"
           style={{
             left: xPos(props.pos, props.isSignYourself),
             top: yPos(props.pos, props.isSignYourself),
