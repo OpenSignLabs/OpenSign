@@ -1593,7 +1593,7 @@ function PdfRequestFiles() {
                               className="font-[500] text-[13px] mr-[5px] op-btn op-btn-secondary"
                             >
                               <i
-                                className="fa-light fa-award"
+                                className="fa-light fa-award mx-[3px] lg:mx-0"
                                 aria-hidden="true"
                               ></i>
                               <span className="hidden lg:block">

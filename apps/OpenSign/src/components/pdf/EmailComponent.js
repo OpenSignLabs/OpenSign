@@ -293,7 +293,7 @@ function EmailComponent({
             <hr className="w-full my-[15px] bg-base-content" />
             <button
               type="button"
-              className="op-btn op-btn-primary"
+              className="op-btn op-btn-secondary"
               onClick={() => emailList.length > 0 && sendEmail()}
             >
               Send
