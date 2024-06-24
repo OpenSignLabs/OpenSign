@@ -28,14 +28,10 @@ function SignerListComponent(props) {
   return (
     <div
       className="rounded-xl mx-1 flex flex-row items-center py-[10px] mt-1"
-      style={{
-        background: checkSignerBackColor(props.obj)
-      }}
+      style={{ background: checkSignerBackColor(props.obj) }}
     >
       <div
-        style={{
-          background: checkUserNameColor(props.obj)
-        }}
+        style={{ background: checkUserNameColor(props.obj) }}
         className="flex w-[30px] h-[30px] rounded-full justify-center items-center mx-1"
       >
         <span className="text-[12px] text-center font-bold text-black uppercase">
