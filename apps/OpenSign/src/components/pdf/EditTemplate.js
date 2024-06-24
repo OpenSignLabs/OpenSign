@@ -138,7 +138,7 @@ const EditTemplate = ({ template, onSuccess }) => {
             {!isEnableSubscription && (
               <PremiumAlertHeader
                 message={
-                  "Disable Auto reminder is free in beta, this feature will incur a fee later."
+                  "Auto reminder is free in beta, this feature will incur a fee later."
                 }
               />
             )}
