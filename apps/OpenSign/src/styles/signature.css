@@ -50,17 +50,6 @@
   width: 460px;
 }
 
-.borderResize {
-  position: absolute;
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-}
-
-.borderResize :hover {
-  cursor: sw-resize;
-}
-
 .icon {
   position: absolute;
   font-size: 14px;
