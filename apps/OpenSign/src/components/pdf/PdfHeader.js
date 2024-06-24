@@ -29,7 +29,6 @@ function Header({
   isShowHeader,
   decline,
   currentSigner,
-  dataTut4,
   alreadySign,
   isSignYourself,
   setIsEmail,
@@ -180,7 +179,7 @@ function Header({
                         className={`${
                           isMailSend ? "" : "op-link-primary"
                         } op-link no-underline font-[650] text-[14px]`}
-                        data-tut={dataTut4}
+                        data-tut="headerArea"
                       >
                         {completeBtnTitle ? completeBtnTitle : "Send"}
                       </div>
@@ -284,7 +283,7 @@ function Header({
                 </button>
                 <button
                   disabled={isMailSend && true}
-                  data-tut="reactourFour"
+                  data-tut="headerArea"
                   className="op-btn op-btn-primary op-btn-sm mr-[3px]"
                   onClick={() => alertSendEmail()}
                 >
