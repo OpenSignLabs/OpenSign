@@ -315,7 +315,7 @@ function UserProfile() {
               {userNameError}
             </div>
           )} */}
-          <div className="bg-base-100 text-base-content flex flex-col justify-center shadow rounded-xl w-[450px]">
+          <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
               <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
                 <img

@@ -176,13 +176,13 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
       <div className="relative max-w-sm">
         <div
           onClick={() => SetIsOpen(true)}
-          className=" cursor-pointer rounded px-[20px] py-[20px] bg-base-100 border-[1px] border-base-200 shadow flex max-w-sm gap-8 items-center"
+          className="cursor-pointer rounded px-[20px] py-[20px] bg-base-100 border-[1px] border-base-200 shadow flex max-w-sm gap-8 items-center"
         >
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
-              className="w-[40px] h-[40px] fill-current text-neutral"
+              className="w-[40px] h-[40px] fill-current op-text-secondary"
             >
               <path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z" />
             </svg>
@@ -194,10 +194,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
                   ? selectFolder.Name
                   : "OpenSign™ Drive"}
               </p>
-              <div
-                className="text-black text-sm"
-                // onClick={() => SetIsOpen(true)}
-              >
+              <div className="text-black text-sm">
                 <i
                   className="fa-light fa-pencil cursor-pointer"
                   title="Select Folder"

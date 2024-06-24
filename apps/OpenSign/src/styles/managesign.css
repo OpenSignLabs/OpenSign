@@ -1,9 +1,8 @@
-.warning {
+.customwarning {
   position: absolute;
   padding: 8px;
   border: 1px solid black;
   background: white;
-  width: 300px;
   border-radius: 5px;
   animation: inAnimation 2s ease-in-out;
   z-index: 1;
@@ -35,24 +34,9 @@
     visibility: hidden;
   }
 
-  25% {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  50% {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  75% {
-    opacity: 1;
-    visibility: visible;
-  }
-
   100% {
-    opacity: 0;
-    visibility: hidden;
+    opacity: 1;
+    visibility: visible;
   }
 }
 

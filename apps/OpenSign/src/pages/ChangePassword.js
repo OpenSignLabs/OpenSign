@@ -49,8 +49,8 @@ function ChangePassword() {
     return <Navigate to="/" />;
   }
   return (
-    <div className="w-full bg-base-100 text-base-content shadow rounded p-2">
-      <Title title={"Change Password"} />
+    <div className="w-full bg-base-100 text-base-content shadow rounded-box p-2">
+      <Title title="Change Password" />
       <div className="text-xl font-bold border-b-[1px] border-gray-300">
         Change Password
       </div>
@@ -98,7 +98,10 @@ function ChangePassword() {
               required
             />
           </div>
-          <button type="submit" className="op-btn op-btn-primary shadow-md m-2">
+          <button
+            type="submit"
+            className="op-btn op-btn-primary shadow-md mt-2"
+          >
             Change Password
           </button>
         </form>

@@ -565,7 +565,7 @@ const Forms = (props) => {
     setFormData((prev) => ({ ...prev, autoreminder: !formData.autoreminder }));
   };
   return (
-    <div className="shadow-md rounded my-2 p-3 bg-base-100 text-base-content md:border-[1px] md:border-gray-600/50">
+    <div className="shadow-md rounded-box my-[2px] p-3 bg-base-100 text-base-content">
       <Title title={props?.title} />
       {isAlert && (
         <Alert type={isErr ? "danger" : "success"}>
