@@ -252,7 +252,7 @@ function WidgetComponent({
           <div
             data-tut={dataTut}
             id="navbar"
-            className="fixed z-[99] bottom-0 righit-0"
+            className="fixed z-[99] bottom-0 right-0"
             style={{ width: window.innerWidth + "px" }}
           >
             <div className="mx-1">
