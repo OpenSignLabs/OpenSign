@@ -321,7 +321,7 @@ function DriveBody(props) {
     return listType === "table" ? (
       data.Type === "Folder" ? (
         <tr onClick={() => handleOnclikFolder(data)}>
-          <td className="cursor-pointer flex items-center">
+          <td className="cursor-pointer flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
@@ -338,7 +338,7 @@ function DriveBody(props) {
         </tr>
       ) : (
         <tr onClick={() => checkPdfStatus(data)}>
-          <td className="cursor-pointer flex items-center">
+          <td className="cursor-pointer flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 384 512"

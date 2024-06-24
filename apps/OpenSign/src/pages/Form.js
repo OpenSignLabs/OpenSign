@@ -445,7 +445,7 @@ const Forms = (props) => {
         setIsSubmit(false);
       }
     } else {
-      alert("Please wait until the PDF has been uploading.");
+      alert("Please wait while the document is being uploaded.");
     }
   };
 
