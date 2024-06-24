@@ -209,7 +209,7 @@ const RecipientList = (props) => {
                 </div>
               </div>
               {isMobile && props.sendInOrder && (
-                <div className="flex flex-row items-center gap-[5px]">
+                <div className="flex flex-row items-center gap-[5px] mr-2">
                   <div
                     onClick={(e) => {
                       if (ind !== 0) {
