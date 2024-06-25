@@ -942,7 +942,23 @@ export const onChangeHeightOfTextArea = (
     setXyPostion(updatePlaceholder);
   }
 };
+//calculate width and height
+export const calculateInitialWidthHeight = (widgetData) => {
+  const intialText = widgetData;
+  const span = document.createElement("span");
+  span.textContent = intialText;
+  span.style.font = `14px`; // here put your text size and font family
+  span.style.display = "hidden";
+  document.body.appendChild(span);
+  const width = span.offsetWidth;
+  const height = span.offsetHeight;
 
+  document.body.removeChild(span);
+  return {
+    getWidth: width,
+    getHeight: height
+  };
+};
 export const addInitialData = (signerPos, setXyPostion, value, userId) => {
   function widgetDataValue(type) {
     switch (type) {
@@ -991,9 +1007,13 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
           options: {
             ...item.options,
             defaultValue: widgetData
-          },
-          Width: calculateInitialWidthHeight(item.type, widgetData).getWidth,
-          Height: calculateInitialWidthHeight(item.type, widgetData).getHeight
+          }
+          // Width:
+          //   calculateInitialWidthHeight(item.type, widgetData).getWidth ||
+          //   item?.Width,
+          // Height:
+          //   calculateInitialWidthHeight(item.type, widgetData).getHeight ||
+          //   item?.Height
         };
       } else {
         return {
@@ -1002,24 +1022,6 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
       }
     }
   });
-};
-
-//calculate width and height
-export const calculateInitialWidthHeight = (widgetData) => {
-  const intialText = widgetData;
-  const span = document.createElement("span");
-  span.textContent = intialText;
-  span.style.font = `14px`; // here put your text size and font family
-  span.style.display = "hidden";
-  document.body.appendChild(span);
-  const width = span.offsetWidth;
-  const height = span.offsetHeight;
-
-  document.body.removeChild(span);
-  return {
-    getWidth: width,
-    getHeight: height
-  };
 };
 
 //function for embed document id

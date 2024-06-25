@@ -113,9 +113,15 @@ const BulkSendUi = (props) => {
     let Placeholders = [...props.item.Placeholders];
     // Initialize an empty array to store updated documents
     let Documents = [];
-
     // Loop through each form
     forms.forEach((form) => {
+      //checking if user enter email which already exist as a signer then add user in a signers array
+      let existSigner = [];
+      form.fields.map((data) => {
+        if (data.signer) {
+          existSigner.push(data.signer);
+        }
+      });
       // Map through the copied Placeholders array to update email values
       const updatedPlaceholders = Placeholders.map((placeholder) => {
         // Find the field in the current form that matches the placeholder Id
@@ -123,23 +129,44 @@ const BulkSendUi = (props) => {
           (element) => parseInt(element.fieldId) === placeholder.Id
         );
         // If a matching field is found, update the email value in the placeholder
-        const signer = field?.signer?.objectId ? field.signer : {};
+        const signer = field?.signer?.objectId ? field.signer : "";
         if (field) {
-          return {
-            ...placeholder,
-            email: field.email,
-            signerObjId: field?.signer?.objectId || "",
-            signerPtr: signer
-          };
+          if (signer) {
+            return {
+              ...placeholder,
+              signerObjId: field?.signer?.objectId || "",
+              signerPtr: signer
+            };
+          } else {
+            return {
+              ...placeholder,
+              email: field.email,
+              signerObjId: field?.signer?.objectId || "",
+              signerPtr: signer
+            };
+          }
         }
         // If no matching field is found, keep the placeholder as is
         return placeholder;
       });
 
       // Push a new document object with updated Placeholders into the Documents array
-      Documents.push({ ...props.item, Placeholders: updatedPlaceholders });
+      if (existSigner?.length > 0) {
+        Documents.push({
+          ...props.item,
+          Placeholders: updatedPlaceholders,
+          Signers: props.item.Signers
+            ? [...props.item.Signers, ...existSigner]
+            : [...existSigner]
+        });
+      } else {
+        Documents.push({
+          ...props.item,
+          Placeholders: updatedPlaceholders
+        });
+      }
     });
-    // console.log("Documents ", Documents);
+    //console.log("Documents ", Documents);
     await batchQuery(Documents);
   };
 
