@@ -424,7 +424,7 @@ function PlaceholderType(props) {
         <div
           style={{
             color: "black",
-            fontSize: calculateFontSize()
+            fontSize: "12px"
           }}
         >
           <span>{type}</span>
@@ -523,7 +523,7 @@ function PlaceholderType(props) {
         <div
           style={{
             color: "black",
-            fontSize: calculateFontSize()
+            fontSize: "12px"
           }}
         >
           <span>{type}</span>
@@ -563,7 +563,7 @@ function PlaceholderType(props) {
         <div
           style={{
             color: "black",
-            fontSize: calculateFontSize()
+            fontSize: "12px"
           }}
         >
           <span>{type}</span>
@@ -603,7 +603,7 @@ function PlaceholderType(props) {
         <div
           style={{
             color: "black",
-            fontSize: calculateFontSize()
+            fontSize: "12px"
           }}
         >
           <span>{type}</span>
@@ -721,7 +721,7 @@ function PlaceholderType(props) {
         <div
           style={{
             color: "black",
-            fontSize: calculateFontSize()
+            fontSize: "12px"
           }}
         >
           <span>{type}</span>

@@ -1750,7 +1750,10 @@ function PdfRequestFiles() {
                   <div className={`max-h-screen`}>
                     {signedSigners.length > 0 && (
                       <>
-                        <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
+                        <div
+                          data-tut="reactourSecond"
+                          className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
+                        >
                           <span> Signed by</span>
                         </div>
                         <div className="mt-[2px]">
