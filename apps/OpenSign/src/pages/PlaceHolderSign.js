@@ -1928,6 +1928,7 @@ function PlaceHolderSign() {
                     handleClose={() => {
                       setIsSend(false);
                       setSignerPos([]);
+                      navigate("/report/1MwEuxLEkF");
                     }}
                   >
                     <div className="h-[100%] p-[20px]">
@@ -1969,6 +1970,7 @@ function PlaceHolderSign() {
                         onClick={() => {
                           setIsSend(false);
                           setSignerPos([]);
+                          navigate("/report/1MwEuxLEkF");
                         }}
                         type="button"
                         className="op-btn op-btn-ghost"
