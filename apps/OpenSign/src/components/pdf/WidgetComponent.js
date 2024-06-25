@@ -355,7 +355,10 @@ function WidgetComponent({
             <span>Fields</span>
           </div>
 
-          <div className="p-[15px] flex flex-col pt-4 2xl:m-5">
+          <div
+            className="p-[15px] flex flex-col pt-4 2xl:m-5"
+            data-tut="addWidgets"
+          >
             <WidgetList
               updateWidgets={updateWidgets}
               handleDivClick={handleDivClick}
