@@ -838,7 +838,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="headerArea"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking ‘Save’ will store the current template. After saving, you’ll be prompted to create a new document from this template if you wish.`}
+          message={`Clicking ‘Next’ will store the current template. After saving, you’ll be prompted to create a new document from this template if you wish.`}
           isChecked={handleDontShow}
         />
       ),
@@ -1477,7 +1477,7 @@ const TemplatePlaceholder = () => {
                   />
                   {/* pdf header which contain funish back button */}
                   <Header
-                    completeBtnTitle={"Save"}
+                    completeBtnTitle={"Next"}
                     isPlaceholder={true}
                     pageNumber={pageNumber}
                     allPages={allPages}
