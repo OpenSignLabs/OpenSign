@@ -1292,7 +1292,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="addRecipient"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking "Add recipients" button will allow you to add more signer.`}
+          message={`Clicking "Add recipients" button will allow you to add more signers.`}
           isChecked={handleDontShow}
         />
       ),

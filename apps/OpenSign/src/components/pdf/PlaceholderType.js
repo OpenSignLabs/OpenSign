@@ -454,7 +454,7 @@ function PlaceholderType(props) {
             {props?.pos?.options?.name}
           </option>
 
-          {props.pos?.options?.values.map((data, ind) => {
+          {props.pos?.options?.values?.map((data, ind) => {
             return (
               <option key={ind} value={data}>
                 {data}
