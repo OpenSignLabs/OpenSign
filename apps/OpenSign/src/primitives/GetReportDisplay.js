@@ -1417,7 +1417,7 @@ const ReportTable = (props) => {
                                     key={i}
                                     className="text-sm font-normal text-black flex my-2 justify-between items-center"
                                   >
-                                    <span className="w-[180px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis   text-sm font-semibold">
+                                    <span className="w-[150px] mr-[5px] md:mr-0 md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis text-sm font-semibold">
                                       {share.email}
                                     </span>
                                     <div className="flex items-center gap-2">
