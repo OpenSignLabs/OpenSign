@@ -1420,20 +1420,20 @@ const ReportTable = (props) => {
                                     <span className="w-[180px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis   text-sm font-semibold">
                                       {share.email}
                                     </span>
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-2">
                                       <RWebShare
                                         data={{
                                           url: share.url,
                                           title: "Sign url"
                                         }}
                                       >
-                                        <button className="op-btn op-btn-primary op-btn-xs md:op-btn-sm ">
+                                        <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
                                           <i className="fa-light fa-share-from-square"></i>{" "}
                                           Share
                                         </button>
                                       </RWebShare>
                                       <button
-                                        className="op-btn op-btn-primary op-btn-xs md:op-btn-sm"
+                                        className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
                                         onClick={() => copytoclipboard(share)}
                                       >
                                         <i className="fa-light fa-link"></i>{" "}
