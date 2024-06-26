@@ -865,7 +865,6 @@ function SignYourSelf() {
     setSignBtnPosition([]);
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
   }
-
   //function for image upload or update
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
