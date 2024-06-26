@@ -61,7 +61,6 @@ function SignPad({
       } else if (isStamp) {
         setImage("");
       }
-
       setIsSignImg("");
     } else if (isTab === "uploadImage") {
       setImage("");
@@ -69,11 +68,10 @@ function SignPad({
     // setIsInitial(false);
   };
   //function for set signature url
-  const handleSignatureChange = () => {
-    setSignature(canvasRef.current.toDataURL());
-    setIsSignImg(canvasRef.current.toDataURL());
+  const handleSignatureChange = (data) => {
+    setSignature(data);
+    setIsSignImg(data);
   };
-
   //save button component
   const SaveBtn = () => {
     return (
@@ -103,6 +101,8 @@ function SignPad({
                   setIsSignImg("");
                   onSaveSign(null, false, textWidth, textHeight);
                 } else {
+                  setIsSignImg("");
+                  canvasRef.current.clear();
                   onSaveSign(signatureType);
                 }
               }
@@ -127,6 +127,16 @@ function SignPad({
               ? ""
               : "pointer-events-none"
           } op-btn op-btn-primary shadow-lg`}
+          disabled={
+            (isTab === "draw" && isSignImg) ||
+            (isTab === "image" && image) ||
+            (isTab === "mysignature" && isDefaultSign) ||
+            (isTab === "type" && textWidth)
+              ? false
+              : image
+                ? false
+                : true
+          }
         >
           Save
         </button>
@@ -193,7 +203,6 @@ function SignPad({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTab]);
-
   //function for convert input text value in image
   const convertToImg = async (fontStyle, text, color) => {
     //get text content to convert in image
@@ -304,6 +313,9 @@ function SignPad({
                               setIsImageSelect(false);
                               setIsTab("draw");
                               setImage();
+                              if (isSignImg) {
+                                setSignature(isSignImg);
+                              }
                             }}
                             className={`${
                               isTab === "draw"
@@ -577,7 +589,7 @@ function SignPad({
                       }}
                       backgroundColor="rgb(255, 255, 255)"
                       onEnd={() =>
-                        handleSignatureChange(canvasRef.current.toDataURL())
+                        handleSignatureChange(canvasRef.current?.toDataURL())
                       }
                       dotSize={1}
                     />
