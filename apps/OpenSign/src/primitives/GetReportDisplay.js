@@ -1408,6 +1408,7 @@ const ReportTable = (props) => {
                               handleClose={() => {
                                 setIsShare({});
                                 setActLoader({});
+                                setCopied(false);
                               }}
                             >
                               <div className="m-[20px]">
@@ -1416,22 +1417,23 @@ const ReportTable = (props) => {
                                     key={i}
                                     className="text-sm font-normal text-black flex my-2 justify-between items-center"
                                   >
-                                    <span className="text-sm font-semibold">
+                                    <span className="w-[180px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis   text-sm font-semibold">
                                       {share.email}
                                     </span>
-                                    <div>
+                                    <div className="flex items-center gap-1">
                                       <RWebShare
                                         data={{
                                           url: share.url,
                                           title: "Sign url"
                                         }}
                                       >
-                                        <button className="bg-[#002864] text-white rounded w-[32px] h-[30px] focus:outline-none">
+                                        <button className="op-btn op-btn-primary op-btn-xs md:op-btn-sm ">
                                           <i className="fa-light fa-share-from-square"></i>{" "}
+                                          Share
                                         </button>
                                       </RWebShare>
                                       <button
-                                        className="ml-2 bg-[#002864] text-white rounded w-[100px] h-[30px] focus:outline-none"
+                                        className="op-btn op-btn-primary op-btn-xs md:op-btn-sm"
                                         onClick={() => copytoclipboard(share)}
                                       >
                                         <i className="fa-light fa-link"></i>{" "}

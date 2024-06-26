@@ -135,8 +135,8 @@ function GenerateToken() {
                     id="token"
                     className={`${
                       isSubscribe || !isEnableSubscription
-                        ? "bg-white/20 pointer-events-none select-none"
-                        : ""
+                        ? ""
+                        : "bg-white/20 pointer-events-none select-none"
                     } md:text-end py-2 md:py-0`}
                   >
                     <span
@@ -146,7 +146,7 @@ function GenerateToken() {
                       {apiToken ? apiToken : "_____"}
                     </span>
                     <button
-                      className="op-btn op-btn-accent op-btn-outline op-btn-sm ml-2"
+                      className="op-btn op-btn-accent op-btn-outline op-btn-sm ml-2 cursor-pointer"
                       onClick={() => copytoclipboard(apiToken)}
                     >
                       <i className="fa-light fa-copy"></i>
