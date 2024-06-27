@@ -74,8 +74,8 @@ function PlaceHolderSign() {
   const [isSend, setIsSend] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isAddSigner, setIsAddSigner] = useState(false);
-  const [fontSize, setFontSize] = useState("12");
-  const [fontColor, setFontColor] = useState("black");
+  const [fontSize, setFontSize] = useState();
+  const [fontColor, setFontColor] = useState();
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -636,6 +636,18 @@ function PlaceHolderSign() {
           setIsCheckbox(true);
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
+        } else if (
+          [
+            textInputWidget,
+            textWidget,
+            "name",
+            "company",
+            "job title",
+            "email"
+          ].includes(dragTypeValue)
+        ) {
+          setFontSize(12);
+          setFontColor("black");
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);
