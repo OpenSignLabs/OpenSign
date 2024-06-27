@@ -1708,8 +1708,8 @@ function PlaceHolderSign() {
               ...position,
               options: {
                 ...position.options,
-                fontSize: fontSize,
-                fontColor: fontColor
+                fontSize: fontSize || currWidgetsDetails?.options?.fontSize,
+                fontColor: fontColor || currWidgetsDetails?.options?.fontColor
               }
             };
           }

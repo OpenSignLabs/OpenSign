@@ -1248,7 +1248,6 @@ const TemplatePlaceholder = () => {
     setIsRadio(false);
     setIsCheckbox(false);
   };
-
   const handleSaveFontSize = () => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1267,8 +1266,8 @@ const TemplatePlaceholder = () => {
               ...position,
               options: {
                 ...position.options,
-                fontSize: fontSize,
-                fontColor: fontColor
+                fontSize: fontSize || currWidgetsDetails?.options?.fontSize,
+                fontColor: fontColor || currWidgetsDetails?.options?.fontColor
               }
             };
           }
