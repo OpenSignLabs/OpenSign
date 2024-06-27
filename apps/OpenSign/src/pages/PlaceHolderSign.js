@@ -74,8 +74,8 @@ function PlaceHolderSign() {
   const [isSend, setIsSend] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isAddSigner, setIsAddSigner] = useState(false);
-  const [fontSize, setFontSize] = useState();
-  const [fontColor, setFontColor] = useState();
+  const [fontSize, setFontSize] = useState("12");
+  const [fontColor, setFontColor] = useState("black");
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
     message: "This might take some time"
@@ -634,18 +634,6 @@ function PlaceHolderSign() {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
-        } else if (
-          [
-            textInputWidget,
-            textWidget,
-            "name",
-            "company",
-            "job title",
-            "email"
-          ].includes(dragTypeValue)
-        ) {
-          setFontSize(12);
-          setFontColor("black");
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
         }
@@ -751,7 +739,6 @@ function PlaceHolderSign() {
       setIsDragging(false);
     }, 200);
   };
-
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
@@ -1708,8 +1695,10 @@ function PlaceHolderSign() {
               ...position,
               options: {
                 ...position.options,
-                fontSize: fontSize || currWidgetsDetails?.options?.fontSize,
-                fontColor: fontColor || currWidgetsDetails?.options?.fontColor
+                fontSize:
+                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                fontColor:
+                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
             };
           }

@@ -149,8 +149,8 @@ const TemplatePlaceholder = () => {
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [widgetName, setWidgetName] = useState(false);
   const [isAddRole, setIsAddRole] = useState(false);
-  const [fontSize, setFontSize] = useState();
-  const [fontColor, setFontColor] = useState();
+  const [fontSize, setFontSize] = useState("12");
+  const [fontColor, setFontColor] = useState("black");
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
   const senderUser =
@@ -389,7 +389,6 @@ const TemplatePlaceholder = () => {
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             scale: containerScale,
-            // isMobile: isMobile,
             zIndex: posZIndex,
             type: dragTypeValue,
             options: addWidgetOptions(dragTypeValue),
@@ -501,13 +500,6 @@ const TemplatePlaceholder = () => {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
-        } else if (
-          [textInputWidget, "name", "company", "job title", "email"].includes(
-            dragTypeValue
-          )
-        ) {
-          setFontSize(12);
-          setFontColor("black");
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
         }
@@ -1266,8 +1258,10 @@ const TemplatePlaceholder = () => {
               ...position,
               options: {
                 ...position.options,
-                fontSize: fontSize || currWidgetsDetails?.options?.fontSize,
-                fontColor: fontColor || currWidgetsDetails?.options?.fontColor
+                fontSize:
+                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                fontColor:
+                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
             };
           }
