@@ -149,8 +149,8 @@ const TemplatePlaceholder = () => {
   const [isCheckbox, setIsCheckbox] = useState(false);
   const [widgetName, setWidgetName] = useState(false);
   const [isAddRole, setIsAddRole] = useState(false);
-  const [fontSize, setFontSize] = useState("12");
-  const [fontColor, setFontColor] = useState("black");
+  const [fontSize, setFontSize] = useState();
+  const [fontColor, setFontColor] = useState();
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
   const senderUser =
@@ -502,6 +502,13 @@ const TemplatePlaceholder = () => {
           setIsCheckbox(true);
         } else if (dragTypeValue === radioButtonWidget) {
           setIsRadio(true);
+        } else if (
+          [textInputWidget, "name", "company", "job title", "email"].includes(
+            dragTypeValue
+          )
+        ) {
+          setFontSize(12);
+          setFontColor("black");
         }
         setCurrWidgetsDetails({});
         setWidgetType(dragTypeValue);
@@ -1233,6 +1240,7 @@ const TemplatePlaceholder = () => {
     setCurrWidgetsDetails({});
     handleNameModal();
   };
+  console.log("signerpos", signerPos);
   const handleNameModal = () => {
     setIsNameModal(false);
     setCurrWidgetsDetails({});
