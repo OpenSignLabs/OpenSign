@@ -2151,6 +2151,7 @@ function PlaceHolderSign() {
                         aria-disabled
                       >
                         <SignerListPlace
+                          setSignerPos={setSignerPos}
                           signerPos={signerPos}
                           signersdata={signersdata}
                           isSelectListId={isSelectListId}

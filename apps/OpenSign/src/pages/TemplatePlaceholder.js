@@ -1591,6 +1591,7 @@ const TemplatePlaceholder = () => {
                     <SignerListPlace
                       isMailSend={isMailSend}
                       signerPos={signerPos}
+                      setSignerPos={setSignerPos}
                       signersdata={signersdata}
                       isSelectListId={isSelectListId}
                       setSignerObjId={setSignerObjId}
