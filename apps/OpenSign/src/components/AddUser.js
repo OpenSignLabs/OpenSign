@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import axios from "axios";
 import Title from "./Title";
@@ -6,19 +6,44 @@ import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 
 const AddUser = (props) => {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [formdata, setFormdata] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    department: "",
+    role: ""
+  });
   const [isLoader, setIsLoader] = useState(false);
   const [isUserExist, setIsUserExist] = useState(false);
+  const [departmentList, setDepartmentList] = useState([]);
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
 
+  useEffect(() => {
+    getDepartmentList();
+  }, []);
+
+  const getDepartmentList = async () => {
+    const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+    console.log("extUser ", extUser);
+    const department = new Parse.Query("contracts_Departments");
+    department.equalTo("OrganizationId", {
+      __type: "Pointer",
+      className: "contracts_Organizations",
+      objectId: extUser.OrganizationId.objectId
+    });
+    const departmentRes = await department.find();
+    if (departmentRes.length > 0) {
+      const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
+      setDepartmentList(_departmentRes);
+    }
+  };
   const checkUserExist = async () => {
+    const user = Parse.User.current();
     try {
       const res = await Parse.Cloud.run("getUserDetails", {
-        email: email,
-        userId: Parse.User.current().id
+        email: user.get("email"),
+        userId: user.id
       });
       if (res) {
         return true;
@@ -43,14 +68,16 @@ const AddUser = (props) => {
       }, 1000);
     } else {
       try {
-        const contactQuery = new Parse.Object("contracts_Users");
-        contactQuery.set("Name", name);
-        contactQuery.set("Phone", phone);
-        contactQuery.set("Email", email);
-        contactQuery.set("UserRole", "contracts_User");
+        const extUser = new Parse.Object("contracts_Users");
+        extUser.set("Name", formdata.name);
+        if (formdata.phone) {
+          extUser.set("Phone", formdata.phone);
+        }
+        extUser.set("Email", formdata.email);
+        extUser.set("UserRole", "contracts_User");
 
         if (localStorage.getItem("TenantId")) {
-          contactQuery.set("TenantId", {
+          extUser.set("TenantId", {
             __type: "Pointer",
             className: "partners_Tenant",
             objectId: localStorage.getItem("TenantId")
@@ -60,12 +87,12 @@ const AddUser = (props) => {
         try {
           const _users = Parse.Object.extend("User");
           const _user = new _users();
-          _user.set("name", name);
-          _user.set("username", email);
-          _user.set("email", email);
-          _user.set("password", email);
-          if (phone) {
-            _user.set("phone", phone);
+          _user.set("name", formdata.name);
+          _user.set("username", formdata.email);
+          _user.set("email", formdata.email);
+          _user.set("password", formdata.email);
+          if (formdata.phone) {
+            _user.set("phone", formdata.phone);
           }
 
           const user = await _user.save();
@@ -83,29 +110,24 @@ const AddUser = (props) => {
             };
             await axios.post(roleurl, body, { headers: headers });
             const currentUser = Parse.User.current();
-            contactQuery.set(
+            extUser.set(
               "CreatedBy",
               Parse.User.createWithoutData(currentUser.id)
             );
 
-            contactQuery.set("UserId", user);
+            extUser.set("UserId", user);
             const acl = new Parse.ACL();
             acl.setPublicReadAccess(true);
             acl.setPublicWriteAccess(true);
             acl.setReadAccess(currentUser.id, true);
             acl.setWriteAccess(currentUser.id, true);
 
-            contactQuery.setACL(acl);
+            extUser.setACL(acl);
 
-            const res = await contactQuery.save();
+            const res = await extUser.save();
 
             const parseData = JSON.parse(JSON.stringify(res));
-            if (props.details) {
-              props.details({
-                value: parseData[props.valueKey],
-                label: parseData[props.displayKey]
-              });
-            }
+
             if (props.closePopup) {
               props.closePopup();
             }
@@ -114,15 +136,19 @@ const AddUser = (props) => {
             }
 
             setIsLoader(false);
-
-            setName("");
-            setPhone("");
-            setEmail("");
+            setFormdata({
+              name: "",
+              email: "",
+              phone: "",
+              department: "",
+              role: ""
+            });
           }
         } catch (err) {
           console.log("err ", err);
           if (err.code === 202) {
-            const params = { email: email };
+            const user = Parse.User.current();
+            const params = { email: user.get("email") };
             const userRes = await Parse.Cloud.run("getUserId", params);
             const roleurl = `${parseBaseUrl}functions/AddUserToRole`;
             const headers = {
@@ -137,12 +163,12 @@ const AddUser = (props) => {
             };
             await axios.post(roleurl, body, { headers: headers });
             const currentUser = Parse.User.current();
-            contactQuery.set(
+            extUser.set(
               "CreatedBy",
               Parse.User.createWithoutData(currentUser.id)
             );
 
-            contactQuery.set("UserId", {
+            extUser.set("UserId", {
               __type: "Pointer",
               className: "_User",
               objectId: userRes.id
@@ -153,16 +179,10 @@ const AddUser = (props) => {
             acl.setReadAccess(currentUser.id, true);
             acl.setWriteAccess(currentUser.id, true);
 
-            contactQuery.setACL(acl);
-            const res = await contactQuery.save();
+            extUser.setACL(acl);
+            const res = await extUser.save();
 
             const parseData = JSON.parse(JSON.stringify(res));
-            if (props.details) {
-              props.details({
-                value: parseData[props.valueKey],
-                label: parseData[props.displayKey]
-              });
-            }
             if (props.closePopup) {
               props.closePopup();
             }
@@ -170,9 +190,13 @@ const AddUser = (props) => {
               props.handleUserData(parseData);
             }
             setIsLoader(false);
-            setName("");
-            setPhone("");
-            setEmail("");
+            setFormdata({
+              name: "",
+              email: "",
+              phone: "",
+              department: "",
+              role: ""
+            });
           }
         }
       } catch (err) {
@@ -185,13 +209,20 @@ const AddUser = (props) => {
 
   // Define a function to handle the "add yourself" checkbox
   const handleReset = () => {
-    setName("");
-    setPhone("");
-    setEmail("");
+    setFormdata({
+      name: "",
+      email: "",
+      phone: "",
+      department: "",
+      role: ""
+    });
+  };
+  const handleChange = (e) => {
+    setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   return (
-    <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
+    <div className="shadow-md rounded-box my-[1px] p-3 bg-[#ffffff]">
       <Title title={"Add User"} />
       {isUserExist && <Alert type="danger">User already exists!</Alert>}
       {isLoader && (
@@ -201,7 +232,7 @@ const AddUser = (props) => {
       )}
       <div className="w-full mx-auto">
         <form onSubmit={handleSubmit}>
-          <h1 className="text-[20px] font-semibold mb-4">Add User</h1>
+          {/* <h1 className="text-[20px] font-semibold mb-4">Add User</h1> */}
           <div className="mb-3">
             <label
               htmlFor="name"
@@ -213,8 +244,8 @@ const AddUser = (props) => {
             <input
               type="text"
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={formdata.name}
+              onChange={(e) => handleChange(e)}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
@@ -230,8 +261,8 @@ const AddUser = (props) => {
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formdata.email}
+              onChange={(e) => handleChange(e)}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
@@ -242,29 +273,48 @@ const AddUser = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Phone
-              <span className="text-[red] text-[13px]"> *</span>
+              {/* <span className="text-[red] text-[13px]"> *</span> */}
             </label>
             <input
               type="text"
               id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
+              value={formdata.phone}
+              onChange={(e) => handleChange(e)}
+              // required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
-
-          <div className="flex items-center mt-3 gap-2 text-white">
-            <button
-              type="submit"
-              className="bg-[#1ab6ce] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none"
+          <div className="mb-3">
+            <label
+              htmlFor="phone"
+              className="block text-xs text-gray-700 font-semibold"
             >
+              Department
+              {/* <span className="text-[red] text-[13px]"> *</span> */}
+            </label>
+            <select
+              value={formdata.department}
+              onChange={(e) => handleChange(e)}
+              id="department"
+              className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+            >
+              <option>select</option>
+              {departmentList.length > 0 &&
+                departmentList.map((x) => (
+                  <option key={x.objectId} value={x.objectId}>
+                    {x.Name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="flex items-center mt-3 gap-2 text-white">
+            <button type="submit" className="op-btn op-btn-primary">
               Submit
             </button>
             <div
               type="button"
               onClick={() => handleReset()}
-              className="bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
+              className="op-btn op-btn-secondary"
             >
               Reset
             </div>
