@@ -262,8 +262,8 @@ function WidgetComponent({
         !isMailSend && (
           <div id="navbar" className="fixed z-[99] bottom-0 right-0 w-full">
             {isSigners && (
-              <div className="w-full m-[2px] flex justify-center items-center gap-2">
-                <div className="w-full" onClick={() => handleModal()}>
+              <div className="w-full mb-[5px] flex justify-center items-center gap-1">
+                <div className="w-full ml-[5px]" onClick={() => handleModal()}>
                   <select
                     className="w-full op-select op-select-bordered  pointer-events-none"
                     value={handleSelectRecipient()}
@@ -281,15 +281,14 @@ function WidgetComponent({
                   </select>
                 </div>
 
-                <div className="w-[30%]">
+                <div className="w-[18%]">
                   {handleAddSigner ? (
                     <button
                       data-tut="reactourAddbtn"
                       onClick={() => handleAddSigner()}
                       className="op-btn op-btn-accent"
                     >
-                      <i className="fa-light fa-plus text-xs"></i>
-                      Add
+                      <i className="fa-light fa-plus "></i>
                     </button>
                   ) : (
                     setIsAddSigner && (
@@ -298,8 +297,7 @@ function WidgetComponent({
                         onClick={() => setIsAddSigner(true)}
                         className="op-btn op-btn-accent"
                       >
-                        <i className="fa-light fa-plus text-xs"></i>
-                        <span> Add</span>
+                        <i className="fa-light fa-plus"></i>
                       </button>
                     )
                   )}
