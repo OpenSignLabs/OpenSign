@@ -110,193 +110,115 @@ function Login() {
                     "X-Parse-Application-Id": parseAppId,
                     sessionToken: _user.sessionToken
                   };
-
-                  let body = {
-                    appname: localStorage.getItem("_appName")
-                  };
+                  const body = { appname: "contracts" };
                   await axios
                     .post(url, JSON.stringify(body), { headers: headers })
-                    .then((axiosRes) => {
+                    .then(async (axiosRes) => {
                       const roles = axiosRes.data.result;
-                      if (roles) {
-                        userRoles = roles;
-                        let _currentRole = "";
-                        const valuesToExclude = [
-                          "contracts_Guest",
-                          `${localStorage.getItem("_appName")}_appeditor`
-                        ];
-                        if (userRoles.length > 1) {
-                          const rolesfiltered = userRoles.filter(
-                            (x) => !valuesToExclude.includes(x)
-                          );
-                          if (rolesfiltered.length > 0) {
-                            _currentRole = rolesfiltered[0];
-                          }
-                        } else {
-                          const rolesfiltered = userRoles.filter(
-                            (x) => !valuesToExclude.includes(x)
-                          );
-                          if (rolesfiltered.length > 0) {
-                            _currentRole = userRoles[0];
-                          } else {
-                            _currentRole = "";
-                          }
-                        }
-                        if (
-                          _currentRole &&
-                          _currentRole !==
-                            `${localStorage.getItem("_appName")}_appeditor`
-                        ) {
-                          userSettings.forEach(async (element) => {
-                            const redirectUrl =
-                              location?.state?.from ||
-                              `/${element.pageType}/${element.pageId}`;
-                            if (element.role === _currentRole) {
-                              let _role = _currentRole.replace(
-                                `${localStorage.getItem("_appName")}_`,
-                                ""
+                      const currentUser = Parse.User.current();
+                      await Parse.Cloud.run("getUserDetails", {
+                        email: currentUser.get("email")
+                      })
+                        .then((extUser) => {
+                          if (roles) {
+                            userRoles = roles;
+                            let _currentRole = "";
+                            if (userRoles.length > 0) {
+                              _currentRole = userRoles.find(
+                                (x) => x === extUser.get("UserRole")
                               );
-                              localStorage.setItem("_user_role", _role);
-                              // Get TenentID from Extendend Class
-                              localStorage.setItem(
-                                "extended_class",
-                                element.extended_class
-                              );
-                              const currentUser = Parse.User.current();
-                              await Parse.Cloud.run("getUserDetails", {
-                                email: currentUser.get("email")
-                              }).then(
-                                async (result) => {
-                                  let tenentInfo = [];
-                                  const results = [result];
-                                  if (results) {
-                                    let extendedInfo_stringify =
-                                      JSON.stringify(results);
-                                    localStorage.setItem(
-                                      "Extand_Class",
-                                      extendedInfo_stringify
-                                    );
-                                    let extendedInfo = JSON.parse(
-                                      extendedInfo_stringify
-                                    );
-                                    if (extendedInfo.length > 1) {
-                                      extendedInfo.forEach((x) => {
-                                        if (x.TenantId) {
-                                          let obj = {
-                                            tenentId: x.TenantId.objectId,
-                                            tenentName:
-                                              x.TenantId.TenantName || ""
-                                          };
-                                          tenentInfo.push(obj);
-                                        }
-                                      });
-                                      if (tenentInfo.length) {
-                                        dispatch(
-                                          showTenant(
-                                            tenentInfo[0].tenentName || ""
-                                          )
-                                        );
-                                        localStorage.setItem(
-                                          "TenantName",
-                                          tenentInfo[0].tenentName || ""
-                                        );
+                            }
+                            userSettings.forEach(async (element) => {
+                              const redirectUrl =
+                                location?.state?.from ||
+                                `/${element.pageType}/${element.pageId}`;
+                              if (element.role === _currentRole) {
+                                let _role = _currentRole.replace(
+                                  "contracts_",
+                                  ""
+                                );
+                                localStorage.setItem("_user_role", _role);
+                                // Get TenentID from Extendend Class
+                                localStorage.setItem(
+                                  "extended_class",
+                                  element.extended_class
+                                );
+                                let tenentInfo = [];
+                                const results = [extUser];
+                                if (results) {
+                                  let extendedInfo_stringify =
+                                    JSON.stringify(results);
+                                  localStorage.setItem(
+                                    "Extand_Class",
+                                    extendedInfo_stringify
+                                  );
+                                  let extendedInfo = JSON.parse(
+                                    extendedInfo_stringify
+                                  );
+                                  if (extendedInfo.length > 1) {
+                                    extendedInfo.forEach((x) => {
+                                      if (x.TenantId) {
+                                        let obj = {
+                                          tenentId: x.TenantId.objectId,
+                                          tenentName:
+                                            x.TenantId.TenantName || ""
+                                        };
+                                        tenentInfo.push(obj);
                                       }
+                                    });
+                                    if (tenentInfo.length) {
+                                      dispatch(
+                                        showTenant(
+                                          tenentInfo[0].tenentName || ""
+                                        )
+                                      );
+                                      localStorage.setItem(
+                                        "TenantName",
+                                        tenentInfo[0].tenentName || ""
+                                      );
+                                    }
 
-                                      localStorage.setItem("showpopup", true);
-                                      localStorage.setItem(
-                                        "PageLanding",
-                                        element.pageId
-                                      );
-                                      localStorage.setItem(
-                                        "defaultmenuid",
-                                        element.menuId
-                                      );
-                                      localStorage.setItem(
-                                        "pageType",
-                                        element.pageType
-                                      );
-                                      setState({ ...state, loading: false });
-                                      navigate("/");
-                                    } else {
-                                      extendedInfo.forEach((x) => {
-                                        if (x.TenantId) {
-                                          let obj = {
-                                            tenentId: x.TenantId.objectId,
-                                            tenentName:
-                                              x.TenantId.TenantName || ""
-                                          };
-                                          localStorage.setItem(
-                                            "TenantId",
-                                            x.TenantId.objectId
-                                          );
-                                          tenentInfo.push(obj);
-                                        }
-                                      });
-                                      if (tenentInfo.length) {
-                                        dispatch(
-                                          showTenant(
-                                            tenentInfo[0].tenentName || ""
-                                          )
-                                        );
-                                        localStorage.setItem(
-                                          "TenantName",
-                                          tenentInfo[0].tenentName || ""
-                                        );
-                                      }
-                                      localStorage.setItem(
-                                        "PageLanding",
-                                        element.pageId
-                                      );
-                                      localStorage.setItem(
-                                        "defaultmenuid",
-                                        element.menuId
-                                      );
-                                      localStorage.setItem(
-                                        "pageType",
-                                        element.pageType
-                                      );
-                                      setState({ ...state, loading: false });
-                                      if (isEnableSubscription) {
-                                        const LocalUserDetails = {
-                                          name: results[0].get("Name"),
-                                          email: results[0].get("Email"),
-                                          phone: results[0]?.get("Phone") || "",
-                                          company: results[0].get("Company")
+                                    localStorage.setItem("showpopup", true);
+                                    localStorage.setItem(
+                                      "PageLanding",
+                                      element.pageId
+                                    );
+                                    localStorage.setItem(
+                                      "defaultmenuid",
+                                      element.menuId
+                                    );
+                                    localStorage.setItem(
+                                      "pageType",
+                                      element.pageType
+                                    );
+                                    setState({ ...state, loading: false });
+                                    navigate("/");
+                                  } else {
+                                    extendedInfo.forEach((x) => {
+                                      if (x.TenantId) {
+                                        let obj = {
+                                          tenentId: x.TenantId.objectId,
+                                          tenentName:
+                                            x.TenantId.TenantName || ""
                                         };
                                         localStorage.setItem(
-                                          "userDetails",
-                                          JSON.stringify(LocalUserDetails)
+                                          "TenantId",
+                                          x.TenantId.objectId
                                         );
-                                        const res = await fetchSubscription();
-                                        const freeplan = res.plan;
-                                        const billingDate = res.billingDate;
-                                        if (freeplan === "freeplan") {
-                                          navigate(redirectUrl);
-                                        } else if (billingDate) {
-                                          if (
-                                            new Date(billingDate) > new Date()
-                                          ) {
-                                            localStorage.removeItem(
-                                              "userDetails"
-                                            );
-                                            // Redirect to the appropriate URL after successful login
-                                            navigate(redirectUrl);
-                                          } else {
-                                            navigate(`/subscription`, {
-                                              replace: true
-                                            });
-                                          }
-                                        } else {
-                                          navigate(`/subscription`, {
-                                            replace: true
-                                          });
-                                        }
-                                      } else {
-                                        // Redirect to the appropriate URL after successful login
-                                        navigate(redirectUrl);
+                                        tenentInfo.push(obj);
                                       }
+                                    });
+                                    if (tenentInfo.length) {
+                                      dispatch(
+                                        showTenant(
+                                          tenentInfo[0].tenentName || ""
+                                        )
+                                      );
+                                      localStorage.setItem(
+                                        "TenantName",
+                                        tenentInfo[0].tenentName || ""
+                                      );
                                     }
-                                  } else {
                                     localStorage.setItem(
                                       "PageLanding",
                                       element.pageId
@@ -312,17 +234,35 @@ function Login() {
                                     setState({ ...state, loading: false });
                                     if (isEnableSubscription) {
                                       const LocalUserDetails = {
-                                        name: _user.name,
-                                        email: email,
-                                        phone: _user?.phone || ""
-                                        // company: results.get("Company"),
+                                        name: results[0].get("Name"),
+                                        email: results[0].get("Email"),
+                                        phone: results[0]?.get("Phone") || "",
+                                        company: results[0].get("Company")
                                       };
                                       localStorage.setItem(
                                         "userDetails",
                                         JSON.stringify(LocalUserDetails)
                                       );
-                                      const billingDate = "";
-                                      if (billingDate) {
+                                      const res = await fetchSubscription();
+                                      const freeplan = res.plan;
+                                      const billingDate = res.billingDate;
+                                      if (freeplan === "freeplan") {
+                                        navigate(redirectUrl);
+                                      } else if (billingDate) {
+                                        if (
+                                          new Date(billingDate) > new Date()
+                                        ) {
+                                          localStorage.removeItem(
+                                            "userDetails"
+                                          );
+                                          // Redirect to the appropriate URL after successful login
+                                          navigate(redirectUrl);
+                                        } else {
+                                          navigate(`/subscription`, {
+                                            replace: true
+                                          });
+                                        }
+                                      } else {
                                         navigate(`/subscription`, {
                                           replace: true
                                         });
@@ -332,28 +272,56 @@ function Login() {
                                       navigate(redirectUrl);
                                     }
                                   }
-                                },
-                                (error) => {
-                                  const payload = {
-                                    sessionToken: user.getSessionToken()
-                                  };
-                                  handleSubmitbtn(payload);
-                                  console.error(
-                                    "Error while fetching Follow",
-                                    error
+                                } else {
+                                  localStorage.setItem(
+                                    "PageLanding",
+                                    element.pageId
                                   );
+                                  localStorage.setItem(
+                                    "defaultmenuid",
+                                    element.menuId
+                                  );
+                                  localStorage.setItem(
+                                    "pageType",
+                                    element.pageType
+                                  );
+                                  setState({ ...state, loading: false });
+                                  if (isEnableSubscription) {
+                                    const LocalUserDetails = {
+                                      name: _user.name,
+                                      email: email,
+                                      phone: _user?.phone || ""
+                                      // company: results.get("Company"),
+                                    };
+                                    localStorage.setItem(
+                                      "userDetails",
+                                      JSON.stringify(LocalUserDetails)
+                                    );
+                                    const billingDate = "";
+                                    if (billingDate) {
+                                      navigate(`/subscription`, {
+                                        replace: true
+                                      });
+                                    }
+                                  } else {
+                                    // Redirect to the appropriate URL after successful login
+                                    navigate(redirectUrl);
+                                  }
                                 }
-                              );
-                            }
-                          });
-                        } else {
-                          setState({ ...state, loading: false });
-                          setIsModal(true);
-                        }
-                      } else {
-                        setState({ ...state, loading: false });
-                        setIsModal(true);
-                      }
+                              }
+                            });
+                          } else {
+                            setState({ ...state, loading: false });
+                            setIsModal(true);
+                          }
+                        })
+                        .catch((error) => {
+                          const payload = {
+                            sessionToken: user.getSessionToken()
+                          };
+                          handleSubmitbtn(payload);
+                          console.error("Error while fetching Follow", error);
+                        });
                     })
                     .catch((err) => {
                       console.log("err", err);
@@ -474,7 +442,7 @@ function Login() {
                 let _currentRole = "";
                 const valuesToExclude = [
                   "contracts_Guest",
-                  `${localStorage.getItem("_appName")}_appeditor`
+                  "contracts_appeditor"
                 ];
                 if (userRoles.length > 1) {
                   const rolesfiltered = userRoles.filter(
@@ -493,20 +461,13 @@ function Login() {
                     _currentRole = "";
                   }
                 }
-                if (
-                  _currentRole &&
-                  _currentRole !==
-                    `${localStorage.getItem("_appName")}_appeditor`
-                ) {
+                if (_currentRole && _currentRole !== "contracts_appeditor") {
                   userSettings.forEach(async (element) => {
                     const redirectUrl =
                       location?.state?.from ||
                       `/${element.pageType}/${element.pageId}`;
                     if (element.role === _currentRole) {
-                      let _role = _currentRole.replace(
-                        `${localStorage.getItem("_appName")}_`,
-                        ""
-                      );
+                      let _role = _currentRole.replace("contracts_", "");
                       localStorage.setItem("_user_role", _role);
 
                       // Get TenentID from Extendend Class
@@ -767,10 +728,7 @@ function Login() {
               userRoles = roles;
               let _currentRole = "";
               if (userRoles.length > 1) {
-                if (
-                  userRoles[0] ===
-                  `${localStorage.getItem("_appName")}_appeditor`
-                ) {
+                if (userRoles[0] === "contracts_appeditor") {
                   _currentRole = userRoles[1];
                 } else {
                   const rolesfiltered = userRoles.filter(

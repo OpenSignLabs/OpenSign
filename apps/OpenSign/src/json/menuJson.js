@@ -154,6 +154,22 @@ const sidebarList = [
         pageType: "webhook",
         description: "",
         objectId: ""
+      },
+      {
+        icon: "fa-light fa-building-memo",
+        title: "Departments",
+        target: "_self",
+        pageType: "",
+        description: "",
+        objectId: "departments"
+      },
+      {
+        icon: "fa-light fa-building-memo",
+        title: "Users",
+        target: "_self",
+        pageType: "",
+        description: "",
+        objectId: "users"
       }
     ]
   }

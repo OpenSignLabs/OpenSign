@@ -143,13 +143,13 @@ export const updateMailCount = async extUserId => {
       await contractUser.save(null, { useMasterKey: true });
     } else {
       // Create new entry if not found
-      const ContractsUsers = Parse.Object.extend('contracts_users');
+      const ContractsUsers = Parse.Object.extend('contracts_Users');
       const newContractUser = new ContractsUsers();
       newContractUser.set('EmailCount', 1);
       await newContractUser.save(null, { useMasterKey: true });
     }
   } catch (error) {
-    console.log('Error updating EmailCount in contracts_users: ' + error.message);
+    console.log('Error updating EmailCount in contracts_Users: ' + error.message);
   }
 };
 
