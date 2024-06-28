@@ -26,7 +26,6 @@ const AddUser = (props) => {
 
   const getDepartmentList = async () => {
     const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-    console.log("extUser ", extUser);
     const department = new Parse.Query("contracts_Departments");
     department.equalTo("OrganizationId", {
       __type: "Pointer",
@@ -55,7 +54,6 @@ const AddUser = (props) => {
       console.log("err", err);
     }
   };
-  console.log("formdata", formdata);
   // Define a function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -308,13 +306,14 @@ const AddUser = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Department
-              {/* <span className="text-[red] text-[13px]"> *</span> */}
+              <span className="text-[red] text-[13px]"> *</span>
             </label>
             <select
               value={formdata.department}
               onChange={(e) => handleChange(e)}
               name="department"
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+              required
             >
               <option disabled>select</option>
               {departmentList.length > 0 &&
@@ -331,13 +330,14 @@ const AddUser = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Role
-              {/* <span className="text-[red] text-[13px]"> *</span> */}
+              <span className="text-[red] text-[13px]"> *</span>
             </label>
             <select
               value={formdata.role}
               onChange={(e) => handleChange(e)}
               name="role"
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+              required
             >
               {role.length > 0 &&
                 role.map((x) => (

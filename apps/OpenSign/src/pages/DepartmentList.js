@@ -6,26 +6,19 @@ import { useLocation } from "react-router-dom";
 import Tooltip from "../primitives/Tooltip";
 import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
+import AddDepartment from "../components/AddDepartment";
 
-const heading = ["Sr.No", "Name", "Actions"];
-const actions = [
-  {
-    btnId: "1231",
-    hoverLabel: "Edit",
-    btnColor: "op-btn-primary",
-    btnIcon: "fa-light fa-pen",
-    redirectUrl: "draftDocument",
-    action: "redirect"
-  },
-  {
-    btnId: "2142",
-    hoverLabel: "Delete",
-    btnColor: "op-btn-secondary",
-    btnIcon: "fa-light fa-trash",
-    redirectUrl: "",
-    action: "delete"
-  }
-];
+const heading = ["Sr.No", "Name", "Parent Department", "Status"];
+// const actions = [
+//   {
+//     btnId: "1231",
+//     hoverLabel: "Edit",
+//     btnColor: "op-btn-primary",
+//     btnIcon: "fa-light fa-pen",
+//     redirectUrl: "draftDocument",
+//     action: "redirect"
+//   }
+// ];
 
 const DepartmentList = () => {
   const recordperPage = 10;
@@ -36,7 +29,7 @@ const DepartmentList = () => {
   const isDashboard =
     location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
   const [currentPage, setCurrentPage] = useState(1);
-  const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [isActiveModal, setIsActiveModal] = useState(false);
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const startIndex = (currentPage - 1) * recordperPage; // user per page
 
@@ -127,18 +120,38 @@ const DepartmentList = () => {
   const indexOfLastDoc = currentPage * recordperPage;
   const indexOfFirstDoc = indexOfLastDoc - recordperPage;
   const currentList = departmentList?.slice(indexOfFirstDoc, indexOfLastDoc);
-  const handleDelete = () => {};
+
   const handleClose = () => {
-    setIsDeleteModal({});
+    setIsActiveModal({});
   };
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
   const paginateBack = () => setCurrentPage(currentPage - 1);
-  const handleActionBtn = (act, item) => {
-    if (act.action === "delete") {
-      setIsDeleteModal({ [item.objectId]: true });
+  // const handleActionBtn = (act, item) => {
+  //   // if (act.action === "delete") {
+  //   //   setIsDeleteModal({ [item.objectId]: true });
+  //   // }
+  // };
+  const handleToggleBtn = (department) => {
+    setIsActiveModal({ [department.objectId]: true });
+  };
+  const handleToggleSubmit = (department) => {
+    const index = departmentList.findIndex(
+      (obj) => obj.objectId === department.objectId
+    );
+    if (index !== -1) {
+      const newArray = [...departmentList];
+      newArray[index] = {
+        ...newArray[index],
+        IsActive: !newArray[index].IsActive
+      };
+      setDepartmentList(newArray);
+      setIsActiveModal({});
     }
+  };
+  const handleDepartmentInfo = (department) => {
+    setDepartmentList((prev) => [department, ...prev]);
   };
   return (
     <div className="relative">
@@ -170,12 +183,6 @@ const DepartmentList = () => {
                     <th className="px-4 py-2">{item}</th>
                   </React.Fragment>
                 ))}
-
-                {actions?.length > 0 && (
-                  <th className="px-4 py-2 text-transparent pointer-events-none">
-                    Action
-                  </th>
-                )}
               </tr>
             </thead>
             <tbody className="text-[12px]">
@@ -186,35 +193,34 @@ const DepartmentList = () => {
                       {heading.includes("Sr.No") && (
                         <th className="px-4 py-2">{startIndex + index + 1}</th>
                       )}
-                      <td className="px-4 py-2 font-semibold">{item?.Name} </td>
-                      <td className="px-3 py-2 text-white flex flex-wrap gap-1">
-                        {actions?.length > 0 &&
-                          actions.map((act, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleActionBtn(act, item)}
-                              title={act.hoverLabel}
-                              className={`${
-                                act?.btnColor ? act.btnColor : ""
-                              } op-btn op-btn-sm w-[50px]`}
-                            >
-                              <i className={act.btnIcon}></i>
-                            </button>
-                          ))}
-                        {isDeleteModal[item.objectId] && (
+                      <td className="px-4 py-2 font-semibold">{item?.Name}</td>
+                      <td className="px-4 py-2 font-semibold">
+                        {item?.ParentId?.Name || "-"}
+                      </td>
+                      <td className="px-4 py-2 font-semibold">
+                        <label className="cursor-pointer relative block items-center mb-0">
+                          <input
+                            type="checkbox"
+                            className="op-toggle transition-all op-toggle-secondary"
+                            checked={item?.IsActive}
+                            onChange={() => handleToggleBtn(item)}
+                          />
+                        </label>
+                        {isActiveModal[item.objectId] && (
                           <ModalUi
                             isOpen
-                            title={"Delete Department"}
+                            title={"Department status"}
                             handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
-                                Are you sure you want to delete this department?
+                                Are you sure you want to disable this
+                                department?
                               </div>
                               <hr className="bg-[#ccc] mt-4 " />
                               <div className="flex items-center mt-3 gap-2 text-white">
                                 <button
-                                  onClick={() => handleDelete(item)}
+                                  onClick={() => handleToggleSubmit(item)}
                                   className="op-btn op-btn-primary"
                                 >
                                   Yes
@@ -230,6 +236,21 @@ const DepartmentList = () => {
                           </ModalUi>
                         )}
                       </td>
+                      {/* <td className="px-3 py-2 text-white flex flex-wrap gap-1">
+                        {actions?.length > 0 &&
+                          actions.map((act, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleActionBtn(act, item)}
+                              title={act.hoverLabel}
+                              className={`${
+                                act?.btnColor ? act.btnColor : ""
+                              } op-btn op-btn-sm w-[50px]`}
+                            >
+                              <i className={act.btnIcon}></i>
+                            </button>
+                          ))}
+                      </td> */}
                     </tr>
                   ))}
                 </>
@@ -283,6 +304,16 @@ const DepartmentList = () => {
             <div className="text-sm font-semibold">No Data Available</div>
           </div>
         )}
+        <ModalUi
+          title={"Add Department"}
+          isOpen={isModal}
+          handleClose={handleFormModal}
+        >
+          <AddDepartment
+            handleDepartmentInfo={handleDepartmentInfo}
+            closePopup={handleFormModal}
+          />
+        </ModalUi>
       </div>
     </div>
   );

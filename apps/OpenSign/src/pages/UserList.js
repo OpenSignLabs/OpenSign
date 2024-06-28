@@ -160,12 +160,6 @@ const UserList = () => {
                     <th className="px-4 py-2">{item}</th>
                   </React.Fragment>
                 ))}
-
-                {actions?.length > 0 && (
-                  <th className="px-4 py-2 text-transparent pointer-events-none">
-                    Action
-                  </th>
-                )}
               </tr>
             </thead>
             <tbody className="text-[12px]">
