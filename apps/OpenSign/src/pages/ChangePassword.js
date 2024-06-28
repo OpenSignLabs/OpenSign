@@ -22,6 +22,10 @@ function ChangePassword() {
                 user
                   .save()
                   .then(() => {
+                    let _user = user.toJSON();
+                    if (_user) {
+                      localStorage.setItem("accesstoken", _user.sessionToken);
+                    }
                     alert("Password updated successfully.");
                   })
                   .catch((error) => {
@@ -32,7 +36,6 @@ function ChangePassword() {
             } else {
               alert("Your current password is missing or incorrect.");
             }
-            console.log("Logged in user", user);
           })
           .catch((error) => {
             alert("Your current password is missing or incorrect.");
