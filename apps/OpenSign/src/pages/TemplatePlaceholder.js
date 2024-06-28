@@ -1240,7 +1240,6 @@ const TemplatePlaceholder = () => {
     setCurrWidgetsDetails({});
     handleNameModal();
   };
-  console.log("signerpos", signerPos);
   const handleNameModal = () => {
     setIsNameModal(false);
     setCurrWidgetsDetails({});
