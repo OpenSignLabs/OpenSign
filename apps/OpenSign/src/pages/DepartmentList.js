@@ -2,20 +2,36 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Tooltip from "../primitives/Tooltip";
 import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
 
-const heading = ["Sr.No", "Name"];
-const actions = [];
+const heading = ["Sr.No", "Name", "Actions"];
+const actions = [
+  {
+    btnId: "1231",
+    hoverLabel: "Edit",
+    btnColor: "op-btn-primary",
+    btnIcon: "fa-light fa-pen",
+    redirectUrl: "draftDocument",
+    action: "redirect"
+  },
+  {
+    btnId: "2142",
+    hoverLabel: "Delete",
+    btnColor: "op-btn-secondary",
+    btnIcon: "fa-light fa-trash",
+    redirectUrl: "",
+    action: "delete"
+  }
+];
 
 const DepartmentList = () => {
   const recordperPage = 10;
   const [departmentList, setDepartmentList] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
   const [isModal, setIsModal] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
   const isDashboard =
     location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
@@ -27,7 +43,7 @@ const DepartmentList = () => {
   const getPaginationRange = () => {
     const totalPageNumbers = 7; // Adjust this value to show more/less page numbers
     const pages = [];
-    const totalPages = Math.ceil(departmentList / recordperPage);
+    const totalPages = Math.ceil(departmentList.length / recordperPage);
     if (totalPages <= totalPageNumbers) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -82,15 +98,25 @@ const DepartmentList = () => {
   async function fetchDepartmentList() {
     try {
       setIsLoader(true);
-      const organization = JSON.parse(localStorage.getItem("Extand_Class"));
+      const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       const department = new Parse.Query("contracts_Departments");
-      department.equalTo("OrganizationId", organization[0].objectId);
+      department.equalTo("OrganizationId", {
+        __type: "Pointer",
+        className: "contracts_Organizations",
+        objectId: extUser.OrganizationId.objectId
+      });
       const departmentRes = await department.find();
-      const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
-      setDepartmentList(_departmentRes);
+      if (departmentRes.length > 0) {
+        const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
+        setDepartmentList(_departmentRes);
+      }
     } catch (err) {
-      console.log("Err ", err);
+      console.log("Err in fetch departmentlist", err);
+      setIsAlert({ type: "danger", msg: "Something went wrong." });
     } finally {
+      setTimeout(() => {
+        setIsAlert({ type: "success", msg: "" });
+      }, 1500);
       setIsLoader(false);
     }
   }
@@ -102,17 +128,22 @@ const DepartmentList = () => {
   const indexOfFirstDoc = indexOfLastDoc - recordperPage;
   const currentList = departmentList?.slice(indexOfFirstDoc, indexOfLastDoc);
   const handleDelete = () => {};
-  const handleClose = () => {};
+  const handleClose = () => {
+    setIsDeleteModal({});
+  };
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
   const paginateBack = () => setCurrentPage(currentPage - 1);
-  const handleActionBtn = () => {};
-
+  const handleActionBtn = (act, item) => {
+    if (act.action === "delete") {
+      setIsDeleteModal({ [item.objectId]: true });
+    }
+  };
   return (
     <div className="relative">
       {isLoader && (
-        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
+        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30 rounded-box">
           <Loader />
         </div>
       )}
@@ -156,9 +187,7 @@ const DepartmentList = () => {
                         <th className="px-4 py-2">{startIndex + index + 1}</th>
                       )}
                       <td className="px-4 py-2 font-semibold">{item?.Name} </td>
-                      <td className="px-4 py-2 ">{item?.Email || "-"}</td>
-                      <td className="px-4 py-2">{item?.Phone || "-"}</td>
-                      <td className="px-3 py-2 text-white grid grid-cols-2">
+                      <td className="px-3 py-2 text-white flex flex-wrap gap-1">
                         {actions?.length > 0 &&
                           actions.map((act, index) => (
                             <button
@@ -167,7 +196,7 @@ const DepartmentList = () => {
                               title={act.hoverLabel}
                               className={`${
                                 act?.btnColor ? act.btnColor : ""
-                              } op-btn op-btn-sm`}
+                              } op-btn op-btn-sm w-[50px]`}
                             >
                               <i className={act.btnIcon}></i>
                             </button>
@@ -175,12 +204,12 @@ const DepartmentList = () => {
                         {isDeleteModal[item.objectId] && (
                           <ModalUi
                             isOpen
-                            title={"Delete Contact"}
+                            title={"Delete Department"}
                             handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
-                                Are you sure you want to delete this contact?
+                                Are you sure you want to delete this department?
                               </div>
                               <hr className="bg-[#ccc] mt-4 " />
                               <div className="flex items-center mt-3 gap-2 text-white">

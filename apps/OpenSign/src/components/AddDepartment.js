@@ -5,7 +5,7 @@ import Title from "./Title";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 
-const AddUser = (props) => {
+const AddDepartment = (props) => {
   const [formdata, setFormdata] = useState({
     name: "",
     phone: "",
@@ -33,6 +33,8 @@ const AddUser = (props) => {
       className: "contracts_Organizations",
       objectId: extUser.OrganizationId.objectId
     });
+    department.doesNotExist("DepartmentParentId");
+    department.doesNotExist("Ancestors");
     const departmentRes = await department.find();
     if (departmentRes.length > 0) {
       const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
@@ -365,4 +367,4 @@ const AddUser = (props) => {
   );
 };
 
-export default AddUser;
+export default AddDepartment;

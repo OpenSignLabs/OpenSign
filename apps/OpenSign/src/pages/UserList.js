@@ -2,19 +2,17 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
 import Tooltip from "../primitives/Tooltip";
-import AddSigner from "../components/AddSigner";
 import AddUser from "../components/AddUser";
-const heading = ["Sr.No", "Name", "Email", "Phone", "Departments"];
+const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Departments"];
 const actions = [];
 const UserList = () => {
   const [userList, setUserList] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
   const [isModal, setIsModal] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
   const isDashboard =
     location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
@@ -82,17 +80,19 @@ const UserList = () => {
   async function fetchUserList() {
     try {
       setIsLoader(true);
-      const organization = JSON.parse(localStorage.getItem("Extand_Class"));
-      const res = await Parse.Cloud.run("getuserlist", {
-        organizationId: organization[0].objectId
+      const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+      const res = await Parse.Cloud.run("getuserlistbyorg", {
+        organizationId: extUser.OrganizationId.objectId
       });
-
-      console.log("res ", res);
       const _userRes = JSON.parse(JSON.stringify(res));
       setUserList(_userRes);
     } catch (err) {
-      console.log("Err ", err);
+      console.log("Err in fetch userlist", err);
+      setIsAlert({ type: "danger", msg: "Something went wrong." });
     } finally {
+      setTimeout(() => {
+        setIsAlert({ type: "success", msg: "" });
+      }, 1500);
       setIsLoader(false);
     }
   }
@@ -101,20 +101,39 @@ const UserList = () => {
   };
 
   const handleDelete = () => {};
-  const handleClose = () => {};
+  const handleClose = () => {
+    setIsDeleteModal({});
+  };
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
   const paginateBack = () => setCurrentPage(currentPage - 1);
-  const handleActionBtn = () => {};
-
+  const handleActionBtn = (act, item) => {
+    if (act.action === "delete") {
+      setIsDeleteModal({ [item.objectId]: true });
+    }
+  };
   const handleUserData = (userData) => {
     console.log("userData", userData);
+  };
+  // `formatRow` is used to show data in poper manner like
+  // if data is of array type then it will join array items with ","
+  // if data is of object type then it Name values will be show in row
+  // if no data available it will show hyphen "-"
+  const formatRow = (row) => {
+    if (Array.isArray(row)) {
+      let updateArr = row.map((x) => x.Name);
+      return updateArr.join(", ");
+    } else if (typeof row === "object" && row !== null) {
+      return row?.Name || "-";
+    } else {
+      return "-";
+    }
   };
   return (
     <div className="relative">
       {isLoader && (
-        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30">
+        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30 rounded-box">
           <Loader />
         </div>
       )}
@@ -160,6 +179,12 @@ const UserList = () => {
                       <td className="px-4 py-2 font-semibold">{item?.Name} </td>
                       <td className="px-4 py-2 ">{item?.Email || "-"}</td>
                       <td className="px-4 py-2">{item?.Phone || "-"}</td>
+                      <td className="px-4 py-2">
+                        {item?.UserRole?.split("_").pop() || "-"}
+                      </td>
+                      <td className="px-4 py-2">
+                        {formatRow(item.DepartmentIds)}
+                      </td>
                       <td className="px-3 py-2 text-white grid grid-cols-2">
                         {actions?.length > 0 &&
                           actions.map((act, index) => (
@@ -177,12 +202,12 @@ const UserList = () => {
                         {isDeleteModal[item.objectId] && (
                           <ModalUi
                             isOpen
-                            title={"Delete Contact"}
+                            title={"Delete User"}
                             handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
-                                Are you sure you want to delete this contact?
+                                Are you sure you want to delete this user?
                               </div>
                               <hr className="bg-[#ccc] mt-4 " />
                               <div className="flex items-center mt-3 gap-2 text-white">
@@ -261,10 +286,6 @@ const UserList = () => {
           isOpen={isModal}
           handleClose={handleFormModal}
         >
-          {/* <AddSigner
-            handleUserData={handleUserData}
-            closePopup={handleFormModal}
-          /> */}
           <AddUser
             handleUserData={handleUserData}
             closePopup={handleFormModal}
