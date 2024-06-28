@@ -61,15 +61,27 @@ const RecipientList = (props) => {
     );
     //splice method is used to replace or add new value in array at specific index
     remainingItems.splice(index, 0, ...draggedItem);
-
     //set current draggable recipient details,objectId,index,contract_className ... after replace recipient list
-    props.setSignersData(remainingItems);
-    props.setSignerObjId(remainingItems[index]?.objectId || "");
-    props.setIsSelectId(index);
-    props.setContractName(remainingItems[index]?.className || "");
-    props.setUniqueId(remainingItems[index]?.Id);
-    props.setRoleName(remainingItems[index]?.Role);
-    props.setBlockColor(remainingItems[index]?.blockColor);
+    props?.setSignersData(remainingItems);
+    props?.setSignerObjId(remainingItems[index]?.objectId || "");
+    props?.setIsSelectId(index);
+    props?.setContractName(remainingItems[index]?.className || "");
+    props?.setUniqueId(remainingItems[index]?.Id);
+    props?.setRoleName(remainingItems[index]?.Role);
+    props?.setBlockColor(remainingItems[index]?.blockColor);
+
+    //change order of placeholder's list using sorting method
+    //`remainingItems` is correct order of signers after change order
+    const changeOrderSignerList = props?.signerPos.sort((a, b) => {
+      //`indexA` and `indexB` is to get element position using index in correct order array
+      const indexA = remainingItems.findIndex((item) => item.Id === a.Id);
+      const indexB = remainingItems.findIndex((item) => item.Id === b.Id);
+      //and then compare `indexA - indexB` value
+      //if positive it means indexB element comes before indexA then need to sorting
+      //if negative it means indexA element is on correct position do not need to sorting
+      return indexA - indexB;
+    });
+    props?.setSignerPos(changeOrderSignerList);
   };
   return (
     <>
