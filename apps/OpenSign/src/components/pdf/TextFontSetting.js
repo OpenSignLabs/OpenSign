@@ -19,7 +19,9 @@ function TextFontSetting(props) {
           <select
             className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
             value={
-              props.fontSize || props.currWidgetsDetails?.options?.fontSize
+              props.fontSize ||
+              props.currWidgetsDetails?.options?.fontSize ||
+              "12"
             }
             onChange={(e) => props.setFontSize(e.target.value)}
           >
@@ -35,7 +37,9 @@ function TextFontSetting(props) {
             <span>color: </span>
             <select
               value={
-                props.fontColor || props.currWidgetsDetails?.options?.fontColor
+                props.fontColor ||
+                props.currWidgetsDetails?.options?.fontColor ||
+                "black"
               }
               onChange={(e) => props.setFontColor(e.target.value)}
               className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"

@@ -389,7 +389,6 @@ const TemplatePlaceholder = () => {
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             scale: containerScale,
-            // isMobile: isMobile,
             zIndex: posZIndex,
             type: dragTypeValue,
             options: addWidgetOptions(dragTypeValue),
@@ -501,6 +500,8 @@ const TemplatePlaceholder = () => {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
+        } else if (dragTypeValue === radioButtonWidget) {
+          setIsRadio(true);
         } else if (
           [textInputWidget, "name", "company", "job title", "email"].includes(
             dragTypeValue
@@ -508,8 +509,6 @@ const TemplatePlaceholder = () => {
         ) {
           setFontSize(12);
           setFontColor("black");
-        } else if (dragTypeValue === radioButtonWidget) {
-          setIsRadio(true);
         }
         setCurrWidgetsDetails({});
         setWidgetType(dragTypeValue);
@@ -1248,7 +1247,6 @@ const TemplatePlaceholder = () => {
     setIsRadio(false);
     setIsCheckbox(false);
   };
-
   const handleSaveFontSize = () => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1267,8 +1265,10 @@ const TemplatePlaceholder = () => {
               ...position,
               options: {
                 ...position.options,
-                fontSize: fontSize,
-                fontColor: fontColor
+                fontSize:
+                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                fontColor:
+                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
             };
           }
@@ -1591,6 +1591,7 @@ const TemplatePlaceholder = () => {
                     <SignerListPlace
                       isMailSend={isMailSend}
                       signerPos={signerPos}
+                      setSignerPos={setSignerPos}
                       signersdata={signersdata}
                       isSelectListId={isSelectListId}
                       setSignerObjId={setSignerObjId}
