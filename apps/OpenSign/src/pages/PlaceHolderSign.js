@@ -454,7 +454,6 @@ function PlaceHolderSign() {
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
   };
-  // console.log("signerpos", signerPos);
   const getSignerPos = (item, monitor) => {
     //  setSignerObjId("");
     // setContractName("");
@@ -634,6 +633,8 @@ function PlaceHolderSign() {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
+        } else if (dragTypeValue === radioButtonWidget) {
+          setIsRadio(true);
         } else if (
           [
             textInputWidget,
@@ -646,8 +647,6 @@ function PlaceHolderSign() {
         ) {
           setFontSize(12);
           setFontColor("black");
-        } else if (dragTypeValue === radioButtonWidget) {
-          setIsRadio(true);
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);
@@ -751,7 +750,6 @@ function PlaceHolderSign() {
       setIsDragging(false);
     }, 200);
   };
-
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
@@ -1708,8 +1706,10 @@ function PlaceHolderSign() {
               ...position,
               options: {
                 ...position.options,
-                fontSize: fontSize,
-                fontColor: fontColor
+                fontSize:
+                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                fontColor:
+                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
             };
           }
@@ -2151,6 +2151,7 @@ function PlaceHolderSign() {
                         aria-disabled
                       >
                         <SignerListPlace
+                          setSignerPos={setSignerPos}
                           signerPos={signerPos}
                           signersdata={signersdata}
                           isSelectListId={isSelectListId}
