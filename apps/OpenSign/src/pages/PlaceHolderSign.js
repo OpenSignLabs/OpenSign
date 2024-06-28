@@ -454,7 +454,6 @@ function PlaceHolderSign() {
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
   };
-  // console.log("signerpos", signerPos);
   const getSignerPos = (item, monitor) => {
     //  setSignerObjId("");
     // setContractName("");
