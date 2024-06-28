@@ -1,4 +1,4 @@
-export default async function getUserList(req) {
+export default async function getUserListByOrg(req) {
   const OrganizationId = req.params.organizationId;
   const orgPtr = {
     __type: 'Pointer',
@@ -11,6 +11,7 @@ export default async function getUserList(req) {
     try {
       const extUser = new Parse.Query('contracts_Users');
       extUser.equalTo('OrganizationId', orgPtr);
+      extUser.include('DepartmentIds');
       const userRes = await extUser.find({ useMasterKey: true });
       if (userRes.length > 0) {
         const _userRes = JSON.parse(JSON.stringify(userRes));
