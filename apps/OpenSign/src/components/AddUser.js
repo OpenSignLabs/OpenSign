@@ -4,6 +4,19 @@ import axios from "axios";
 import Title from "./Title";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
+import { copytoData } from "../constant/Utils";
+function generatePassword(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result;
+}
 
 const AddUser = (props) => {
   const [formdata, setFormdata] = useState({
@@ -11,12 +24,13 @@ const AddUser = (props) => {
     phone: "",
     email: "",
     department: "",
+    password: "",
     role: ""
   });
   const [isLoader, setIsLoader] = useState(false);
-  const [isUserExist, setIsUserExist] = useState(false);
+  const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [departmentList, setDepartmentList] = useState([]);
-  const role = ["OrgAdmin", "Manager", "User", "Guest"];
+  const role = ["OrgAdmin", "Manager", "User"];
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
 
@@ -25,6 +39,7 @@ const AddUser = (props) => {
   }, []);
 
   const getDepartmentList = async () => {
+    setFormdata((prev) => ({ ...prev, password: generatePassword(12) }));
     const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
     const department = new Parse.Query("contracts_Departments");
     department.equalTo("OrganizationId", {
@@ -59,14 +74,14 @@ const AddUser = (props) => {
     e.preventDefault();
     e.stopPropagation();
     const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-
+    console.log("formdata.department ", formdata.department);
     setIsLoader(true);
     const res = await checkUserExist();
     if (res) {
-      setIsUserExist(true);
+      setIsAlert({ type: "danger", msg: "User already exist." });
       setIsLoader(false);
       setTimeout(() => {
-        setIsUserExist(false);
+        setIsAlert({ type: "success", msg: "" });
       }, 1000);
     } else {
       try {
@@ -106,7 +121,7 @@ const AddUser = (props) => {
           _user.set("name", formdata.name);
           _user.set("username", formdata.email);
           _user.set("email", formdata.email);
-          _user.set("password", formdata.email);
+          _user.set("password", formdata.password);
           if (formdata.phone) {
             _user.set("phone", formdata.phone);
           }
@@ -218,7 +233,9 @@ const AddUser = (props) => {
       } catch (err) {
         console.log("err", err);
         setIsLoader(false);
-        alert("something went wrong!");
+        setIsAlert({ type: "danger", msg: "something went wrong." });
+      } finally {
+        setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
       }
     }
   };
@@ -232,15 +249,30 @@ const AddUser = (props) => {
       department: "",
       role: ""
     });
+    if (props.closePopup) {
+      props.closePopup();
+    }
   };
   const handleChange = (e) => {
+    console.log("e", e.target.name, e.target.value);
     setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const copytoclipboard = (text) => {
+    copytoData(text);
+    setIsAlert({ type: "success", msg: "Copied" });
+    setTimeout(() => {
+      setIsAlert({ type: "success", msg: "" });
+    }, 1500); // Reset copied state after 1.5 seconds
+  };
   return (
     <div className="shadow-md rounded-box my-[1px] p-3 bg-[#ffffff]">
       <Title title={"Add User"} />
-      {isUserExist && <Alert type="danger">User already exists!</Alert>}
+      {isAlert.msg && (
+        <Alert type={isAlert.type}>
+          <div className="ml-3">{isAlert.msg}</div>
+        </Alert>
+      )}
       {isLoader && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50 rounded-box">
           <Loader />
@@ -285,6 +317,24 @@ const AddUser = (props) => {
           </div>
           <div className="mb-3">
             <label
+              htmlFor="email"
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              Password
+            </label>
+            <div className="flex justify-between items-center op-input op-input-bordered op-input-sm bg-base-200 text-base-content w-full h-full text-[13px]">
+              <div className="break-all">{formdata?.password}</div>
+              <i
+                onClick={() => copytoclipboard(formdata?.password)}
+                className="fa-light fa-copy rounded-full hover:bg-base-300 p-[8px]"
+              ></i>
+            </div>
+            <div className="text-[12px] ml-2 mb-0 text-[red]">
+              Password will be generated one time; make sure to copy it.
+            </div>
+          </div>
+          <div className="mb-3">
+            <label
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
@@ -315,7 +365,7 @@ const AddUser = (props) => {
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
               required
             >
-              <option disabled>select</option>
+              <option>select</option>
               {departmentList.length > 0 &&
                 departmentList.map((x) => (
                   <option key={x.objectId} value={x.objectId}>
@@ -356,7 +406,7 @@ const AddUser = (props) => {
               onClick={() => handleReset()}
               className="op-btn op-btn-secondary"
             >
-              Reset
+              Cancel
             </div>
           </div>
         </form>

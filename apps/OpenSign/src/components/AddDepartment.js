@@ -49,18 +49,11 @@ const AddDepartment = (props) => {
         (x) => x.objectId === formdata.department
       )?.Ancestors;
       if (Ancestors && Ancestors.length > 0) {
-        updatedAncestors = [
-          ...Ancestors.map((x) => ({
-            __type: "Pointer",
-            className: "contracts_Departments",
-            objectId: x.objectId
-          })),
-          {
-            __type: "Pointer",
-            className: "contracts_Departments",
-            objectId: formdata.department
-          }
-        ];
+        updatedAncestors = Ancestors.map((x) => ({
+          __type: "Pointer",
+          className: "contracts_Departments",
+          objectId: x.objectId
+        }));
       } else {
         updatedAncestors.push({
           __type: "Pointer",
