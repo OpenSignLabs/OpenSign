@@ -13,8 +13,8 @@ const heading = [
   "Email",
   "Phone",
   "Role",
-  "Departments",
-  "IsActive"
+  "Department",
+  "Is-Active"
 ];
 // const actions = [];
 const UserList = () => {
@@ -182,7 +182,7 @@ const UserList = () => {
       <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
         {isAlert.msg && (
           <Alert type={isAlert.type}>
-            <div className="ml-3">{isAlert.message}</div>
+            <div className="ml-3">{isAlert.msg}</div>
           </Alert>
         )}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">

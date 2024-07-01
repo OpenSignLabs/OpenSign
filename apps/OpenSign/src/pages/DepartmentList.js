@@ -8,7 +8,7 @@ import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
 import AddDepartment from "../components/AddDepartment";
 
-const heading = ["Sr.No", "Name", "Parent Department", "IsActive"];
+const heading = ["Sr.No", "Name", "Parent Department", "Is-Active"];
 // const actions = [
 //   {
 //     btnId: "1231",
@@ -185,7 +185,7 @@ const DepartmentList = () => {
       <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
         {isAlert.msg && (
           <Alert type={isAlert.type}>
-            <div className="ml-3">{isAlert.message}</div>
+            <div className="ml-3">{isAlert.msg}</div>
           </Alert>
         )}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
