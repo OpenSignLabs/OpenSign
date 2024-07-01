@@ -8,7 +8,7 @@ import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
 import AddDepartment from "../components/AddDepartment";
 
-const heading = ["Sr.No", "Name", "Parent Department", "Status"];
+const heading = ["Sr.No", "Name", "Parent Department", "IsActive"];
 // const actions = [
 //   {
 //     btnId: "1231",
@@ -31,6 +31,7 @@ const DepartmentList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isActiveModal, setIsActiveModal] = useState(false);
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
+  const [isActLoader, setIsActLoader] = useState({});
   const startIndex = (currentPage - 1) * recordperPage; // user per page
 
   const getPaginationRange = () => {
@@ -98,6 +99,7 @@ const DepartmentList = () => {
         className: "contracts_Organizations",
         objectId: extUser.OrganizationId.objectId
       });
+      department.descending("createdAt");
       const departmentRes = await department.find();
       if (departmentRes.length > 0) {
         const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
@@ -136,18 +138,33 @@ const DepartmentList = () => {
   const handleToggleBtn = (department) => {
     setIsActiveModal({ [department.objectId]: true });
   };
-  const handleToggleSubmit = (department) => {
+  const handleToggleSubmit = async (department) => {
     const index = departmentList.findIndex(
       (obj) => obj.objectId === department.objectId
     );
     if (index !== -1) {
-      const newArray = [...departmentList];
-      newArray[index] = {
-        ...newArray[index],
-        IsActive: !newArray[index].IsActive
-      };
-      setDepartmentList(newArray);
       setIsActiveModal({});
+      setIsActLoader({ [department.objectId]: true });
+      const newArray = [...departmentList];
+      const IsActive = newArray[index].IsActive;
+      newArray[index] = { ...newArray[index], IsActive: !IsActive };
+      setDepartmentList(newArray);
+      try {
+        const departmentCls = new Parse.Object("contracts_Departments");
+        departmentCls.id = department.objectId;
+        departmentCls.set("IsActive", !IsActive);
+        await departmentCls.save();
+        setIsAlert({
+          type: "success",
+          msg: "Department disabled successfully."
+        });
+      } catch (err) {
+        setIsAlert({ type: "danger", msg: "something went wrong." });
+        console.log("err in disable department", err);
+      } finally {
+        setIsActLoader({});
+        setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+      }
     }
   };
   const handleDepartmentInfo = (department) => {
@@ -160,9 +177,17 @@ const DepartmentList = () => {
           <Loader />
         </div>
       )}
+      {Object.keys(isActLoader)?.length > 0 && (
+        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30 rounded-box">
+          <Loader />
+        </div>
+      )}
       <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
-        {isAlert && <Alert type={isAlert.type}>{isAlert.message}</Alert>}
-
+        {isAlert.msg && (
+          <Alert type={isAlert.type}>
+            <div className="ml-3">{isAlert.message}</div>
+          </Alert>
+        )}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
             department list{" "}

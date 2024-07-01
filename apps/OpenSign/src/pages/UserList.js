@@ -7,8 +7,16 @@ import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
 import Tooltip from "../primitives/Tooltip";
 import AddUser from "../components/AddUser";
-const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Departments"];
-const actions = [];
+const heading = [
+  "Sr.No",
+  "Name",
+  "Email",
+  "Phone",
+  "Role",
+  "Departments",
+  "IsActive"
+];
+// const actions = [];
 const UserList = () => {
   const [userList, setUserList] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
@@ -18,7 +26,8 @@ const UserList = () => {
     location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
   const [currentPage, setCurrentPage] = useState(1);
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
-  const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [isActiveModal, setIsActiveModal] = useState({});
+  const [isActLoader, setIsActLoader] = useState({});
   const recordperPage = 10;
   const startIndex = (currentPage - 1) * recordperPage; // user per page
 
@@ -100,21 +109,16 @@ const UserList = () => {
     setIsModal(!isModal);
   };
 
-  const handleDelete = () => {};
-  const handleClose = () => {
-    setIsDeleteModal({});
-  };
-
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
   const paginateBack = () => setCurrentPage(currentPage - 1);
-  const handleActionBtn = (act, item) => {
-    if (act.action === "delete") {
-      setIsDeleteModal({ [item.objectId]: true });
-    }
-  };
+  // const handleActionBtn = (act, item) => {
+  //   if (act.action === "delete") {
+  //     setIsDeleteModal({ [item.objectId]: true });
+  //   }
+  // };
   const handleUserData = (userData) => {
-    console.log("userData", userData);
+    setUserList((prev) => [userData, ...prev]);
   };
   // `formatRow` is used to show data in poper manner like
   // if data is of array type then it will join array items with ","
@@ -130,6 +134,39 @@ const UserList = () => {
       return "-";
     }
   };
+  const handleClose = () => {
+    setIsActiveModal({});
+  };
+  const handleToggleSubmit = async (user) => {
+    const index = userList.findIndex((obj) => obj.objectId === user.objectId);
+    if (index !== -1) {
+      setIsActiveModal({});
+      setIsActLoader({ [user.objectId]: true });
+      const newArray = [...userList];
+      const IsDisabled = newArray[index]?.IsDisabled;
+      newArray[index] = { ...newArray[index], IsDisabled: !IsDisabled };
+      setUserList(newArray);
+      try {
+        const extUser = new Parse.Object("contracts_Users");
+        extUser.id = user.objectId;
+        extUser.set("IsDisabled", !IsDisabled);
+        await extUser.save();
+        setIsAlert({
+          type: "success",
+          msg: "User disabled successfully."
+        });
+      } catch (err) {
+        setIsAlert({ type: "danger", msg: "something went wrong." });
+        console.log("err in disable department", err);
+      } finally {
+        setIsActLoader({});
+        setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+      }
+    }
+  };
+  const handleToggleBtn = (user) => {
+    setIsActiveModal({ [user.objectId]: true });
+  };
   return (
     <div className="relative">
       {isLoader && (
@@ -137,9 +174,17 @@ const UserList = () => {
           <Loader />
         </div>
       )}
+      {Object.keys(isActLoader)?.length > 0 && (
+        <div className="absolute w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-30 rounded-box">
+          <Loader />
+        </div>
+      )}
       <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
-        {isAlert && <Alert type={isAlert.type}>{isAlert.msg}</Alert>}
-
+        {isAlert.msg && (
+          <Alert type={isAlert.type}>
+            <div className="ml-3">{isAlert.message}</div>
+          </Alert>
+        )}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
             User list{" "}
@@ -179,7 +224,45 @@ const UserList = () => {
                       <td className="px-4 py-2">
                         {formatRow(item.DepartmentIds)}
                       </td>
-                      <td className="px-3 py-2 text-white grid grid-cols-2">
+                      <td className="px-4 py-2 font-semibold">
+                        <label className="cursor-pointer relative block items-center mb-0">
+                          <input
+                            type="checkbox"
+                            className="op-toggle transition-all op-toggle-secondary"
+                            checked={item?.IsDisabled !== true}
+                            onChange={() => handleToggleBtn(item)}
+                          />
+                        </label>
+                        {isActiveModal[item.objectId] && (
+                          <ModalUi
+                            isOpen
+                            title={"User status"}
+                            handleClose={handleClose}
+                          >
+                            <div className="m-[20px]">
+                              <div className="text-lg font-normal text-black">
+                                Are you sure you want to deactivate this user?
+                              </div>
+                              <hr className="bg-[#ccc] mt-4 " />
+                              <div className="flex items-center mt-3 gap-2 text-white">
+                                <button
+                                  onClick={() => handleToggleSubmit(item)}
+                                  className="op-btn op-btn-primary"
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  onClick={handleClose}
+                                  className="op-btn op-btn-secondary"
+                                >
+                                  No
+                                </button>
+                              </div>
+                            </div>
+                          </ModalUi>
+                        )}
+                      </td>
+                      {/* <td className="px-3 py-2 text-white grid grid-cols-2">
                         {actions?.length > 0 &&
                           actions.map((act, index) => (
                             <button
@@ -221,7 +304,7 @@ const UserList = () => {
                             </div>
                           </ModalUi>
                         )}
-                      </td>
+                      </td> */}
                     </tr>
                   ))}
                 </>

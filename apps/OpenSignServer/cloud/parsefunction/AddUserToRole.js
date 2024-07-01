@@ -3,7 +3,9 @@
 //-- Export Modules
 import 'dotenv/config.js';
 import axios from 'axios';
-
+const appId = process.env.APP_ID;
+const masterKey = process.env.MASTER_KEY;
+const serverUrl = process.env.SERVER_URL;
 export async function addUserToGroups(request) {
   try {
     var roleName = request.params.roleName;
@@ -36,11 +38,11 @@ export async function addUserToGroups(request) {
     function getAccessType(request) {
       return new Promise(function (resolve, reject) {
         const options = {
-          url: process.env.SERVER_URL + '/classes/w_appinfo?where={"appname":"' + appName + '"}',
+          url: serverUrl + '/classes/w_appinfo?where={"appname":"' + appName + '"}',
           method: 'get',
           headers: {
-            'X-Parse-Application-Id': process.env.APP_ID,
-            'X-Parse-Master-Key': process.env.MASTER_KEY,
+            'X-Parse-Application-Id': appId,
+            'X-Parse-Master-Key': masterKey,
           },
         };
 
@@ -77,33 +79,37 @@ export async function addUserToGroups(request) {
     } else {
       //--function to get the userid from session token
       function getuserid(request) {
-        return new Promise(function (resolve, reject) {
-          const options = {
-            url: process.env.SERVER_URL + '/users/me',
-            method: 'get',
-            headers: {
-              'X-Parse-Application-Id': process.env.APP_ID,
-              'X-Parse-Session-Token': request.headers['sessiontoken'],
-            },
-          };
+        try {
+          return new Promise(function (resolve, reject) {
+            const options = {
+              url: serverUrl + '/users/me',
+              method: 'get',
+              headers: {
+                'X-Parse-Application-Id': appId,
+                'X-Parse-Session-Token': request.headers['sessiontoken'],
+              },
+            };
 
-          axios(options)
-            .then(x => {
-              const body = x.data;
-              var error = body == '' ? true : false;
-              if (error) {
-                reject('result not found!');
-              } else {
-                resolve(body);
-              }
-            })
-            .catch(err => {
-              if (err) {
-                console.error(err);
-                return;
-              }
-            });
-        });
+            axios(options)
+              .then(x => {
+                const body = x.data;
+                var error = body == '' ? true : false;
+                if (error) {
+                  reject('result not found!');
+                } else {
+                  resolve(body);
+                }
+              })
+              .catch(err => {
+                if (err) {
+                  console.error(err);
+                  return;
+                }
+              });
+          });
+        } catch (err) {
+          console.log('err ', err);
+        }
       }
       var userData = await getuserid(request);
       if (userData.objectId == undefined) {
@@ -112,7 +118,7 @@ export async function addUserToGroups(request) {
       var chkuserid = userData.objectId;
       //console.log("chkuserid "+chkuserid);
       var url =
-        process.env.SERVER_URL +
+        serverUrl +
         '/roles?where={"users":{"__type":"Pointer","className":"_User","objectId":"' +
         chkuserid +
         '"},"name": {"$regex": "' +
@@ -126,7 +132,7 @@ export async function addUserToGroups(request) {
             url: url,
             method: 'get',
             headers: {
-              'X-Parse-Application-Id': process.env.APP_ID,
+              'X-Parse-Application-Id': appId,
             },
           };
 
@@ -174,26 +180,26 @@ export async function addUserToGroups(request) {
 
     //--after validation call adduserToRole function
     async function adduserToRole() {
-      var roleNam = roleName;
-      var roleid = await getroleobjId(roleNam);
-      console.log('roleid');
-      console.log(roleid);
-      var response = await adduserid(roleid);
-      /*process.stdin.resume();
-      // listen to the event 
-      process.on('SIGTERM', () => {
-        process.emit('cleanup');
-      })*/
-      return response;
+      try {
+        var roleNam = roleName;
+        var roleid = await getroleobjId(roleNam);
+        console.log('roleid');
+        console.log(roleid);
+        var response = await adduserid(roleid);
+
+        return response;
+      } catch (err) {
+        console.log('err in addusertorole', err);
+      }
     }
     //--function to get the role objId
     function getroleobjId(roleNam) {
       return new Promise(function (resolve, reject) {
         const options = {
-          url: process.env.SERVER_URL + '/roles?where={"name":"' + roleNam + '"}',
+          url: serverUrl + '/roles?where={"name":"' + roleNam + '"}',
           method: 'get',
           headers: {
-            'X-Parse-Application-Id': process.env.APP_ID,
+            'X-Parse-Application-Id': appId,
           },
         };
         axios(options)
@@ -225,11 +231,11 @@ export async function addUserToGroups(request) {
     function adduserid(roleid) {
       return new Promise(function (resolve, reject) {
         const options = {
-          url: process.env.SERVER_URL + '/roles/' + roleid,
+          url: serverUrl + '/roles/' + roleid,
           method: 'PUT',
           headers: {
-            'X-Parse-Application-Id': process.env.APP_ID,
-            'X-Parse-Master-Key': process.env.MASTER_KEY,
+            'X-Parse-Application-Id': appId,
+            'X-Parse-Master-Key': masterKey,
             'Content-Type': 'application/json',
           },
           data: user,

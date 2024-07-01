@@ -46,12 +46,14 @@ import ssoSignin from './parsefunction/ssoSignin.js';
 import isextenduser from './parsefunction/isextenduser.js';
 import getUserByOrg from './parsefunction/getUserByOrg.js';
 import getUserListByOrg from './parsefunction/getUserListByOrg.js';
+import DepartmentsAftersave from './parsefunction/DepartmentsAftersave.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
 Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
 Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
 Parse.Cloud.afterSave('contracts_Template', TemplateAfterSave);
+Parse.Cloud.afterSave('contracts_Departments', DepartmentsAftersave);
 
 // This beforeSave function triggers before an object is added or updated in the specified class, allowing for validation or modification.
 Parse.Cloud.beforeSave('contracts_Document', DocumentBeforesave);

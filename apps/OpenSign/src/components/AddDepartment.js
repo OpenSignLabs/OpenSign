@@ -12,8 +12,6 @@ const AddDepartment = (props) => {
   const [isLoader, setIsLoader] = useState(false);
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [departmentList, setDepartmentList] = useState([]);
-  const [parentDepartments, setParentDepartments] = useState([]);
-  const [level, setLevel] = useState(1);
   useEffect(() => {
     getDepartmentList();
   }, []);
@@ -27,12 +25,9 @@ const AddDepartment = (props) => {
         className: "contracts_Organizations",
         objectId: extUser.OrganizationId.objectId
       });
-      department.doesNotExist("ParentId");
-      department.doesNotExist("Ancestors");
       const departmentRes = await department.find();
       if (departmentRes.length > 0) {
         const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
-        // console.log("_departmentRes ", _departmentRes);
         setDepartmentList(_departmentRes);
       }
     } catch (err) {
@@ -40,68 +35,47 @@ const AddDepartment = (props) => {
     }
   };
 
-  const fetchDepartmentsbyPtr = async (departmentPtr) => {
-    setLevel((prev) => prev + 1);
-    try {
-      const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-      const department = new Parse.Query("contracts_Departments");
-      department.equalTo("ParentId", departmentPtr);
-      department.equalTo("OrganizationId", {
-        __type: "Pointer",
-        className: "contracts_Organizations",
-        objectId: extUser.OrganizationId.objectId
-      });
-
-      const departmentRes = await department.find();
-      if (departmentRes.length > 0) {
-        const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
-        // console.log("sub", ["DD_" + level] ,_departmentRes)
-        const departmentName = _departmentRes?.[0]?.ParentId?.Name;
-        setParentDepartments((prev) => [
-          ...prev,
-          {
-            ["DD_" + level]: { name: departmentName, opt: _departmentRes }
-          }
-        ]);
-      }
-    } catch (err) {
-      console.log("Err in fetch departmentlist", err);
-    }
-  };
   const handleDropdown = (e) => {
     setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    const departmentPtr = {
-      __type: "Pointer",
-      className: "contracts_Departments",
-      objectId: e.target.value
-    };
-    // const index = parentDepartments.findIndex((x) => x[e.target.name]);
-    // setParentDepartments((prev) => prev.slice(0, index +1));
-    // console.log("index ", index);
-    fetchDepartmentsbyPtr(departmentPtr);
   };
-  console.log("formdata", formdata);
   // Define a function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     // Extracting values except for the 'name' key
-    const ancestors = Object.entries(formdata)
-      .filter(([key]) => key !== "name")
-      .map(([key, value]) => value);
-
+    let updatedAncestors = [];
+    if (formdata.department) {
+      const Ancestors = departmentList.find(
+        (x) => x.objectId === formdata.department
+      )?.Ancestors;
+      if (Ancestors && Ancestors.length > 0) {
+        updatedAncestors = [
+          ...Ancestors.map((x) => ({
+            __type: "Pointer",
+            className: "contracts_Departments",
+            objectId: x.objectId
+          })),
+          {
+            __type: "Pointer",
+            className: "contracts_Departments",
+            objectId: formdata.department
+          }
+        ];
+      } else {
+        updatedAncestors.push({
+          __type: "Pointer",
+          className: "contracts_Departments",
+          objectId: formdata.department
+        });
+      }
+    }
     try {
       const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-      const ParentId = {
-        __type: "Pointer",
-        className: "contracts_Departments",
-        objectId: ""
-      };
       setIsLoader(true);
       const department = new Parse.Query("contracts_Departments");
       department.equalTo("Name", formdata.name);
-      if (ancestors.length > 0) {
-        ParentId.objectId = "";
+      if (updatedAncestors.length > 0) {
+        const ParentId = updatedAncestors[updatedAncestors.length - 1];
         department.equalTo("ParentId", ParentId);
       }
       if (localUser && localUser.OrganizationId) {
@@ -118,8 +92,10 @@ const AddDepartment = (props) => {
       } else {
         const newDepartment = new Parse.Object("contracts_Departments");
         newDepartment.set("Name", formdata.name);
-        if (ancestors.length > 0) {
+        if (updatedAncestors.length > 0) {
+          const ParentId = updatedAncestors[updatedAncestors.length - 1];
           newDepartment.set("ParentId", ParentId);
+          newDepartment.set("Ancestors", updatedAncestors);
         }
         if (localUser && localUser.OrganizationId) {
           newDepartment.set("OrganizationId", {
@@ -129,13 +105,15 @@ const AddDepartment = (props) => {
           });
         }
         const newdepartmentRes = await newDepartment.save();
-        if (ancestors.length > 0) {
-          newDepartment.set("ParentId", ParentId);
+        if (updatedAncestors.length > 0) {
+          const ParentId = departmentList.find(
+            (x) => x.objectId === formdata.department
+          );
           props.handleDepartmentInfo({
             objectId: newdepartmentRes.id,
             Name: formdata.name,
             ParentId: ParentId,
-            Ancestors: ancestors,
+            Ancestors: updatedAncestors,
             IsActive: true
           });
         } else {
@@ -222,7 +200,6 @@ const AddDepartment = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Department
-              {/* <span className="text-[red] text-[13px]"> *</span> */}
             </label>
             <select
               value={formdata.department}
@@ -239,33 +216,6 @@ const AddDepartment = (props) => {
                 ))}
             </select>
           </div>
-          {parentDepartments?.map((x, i) => (
-            <div className="mb-3" key={"DD_" + (i + 1)}>
-              <label
-                htmlFor="phone"
-                className="block text-xs text-gray-700 font-semibold"
-              >
-                {x["DD_" + (i + 1)]?.name} department
-                {/* <span className="text-[red] text-[13px]"> *</span> */}
-              </label>
-              <select
-                value={formdata["DD_" + (i + 1)]}
-                onChange={(e) => handleDropdown(e)}
-                name={"DD_" + (i + 1)}
-                className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
-              >
-                <option>select</option>
-                {x["DD_" + (i + 1)]?.opt?.map((subdepartment) => (
-                  <option
-                    key={subdepartment.objectId}
-                    value={subdepartment.objectId}
-                  >
-                    {subdepartment.Name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
           <div className="flex items-center mt-3 gap-2 text-white">
             <button type="submit" className="op-btn op-btn-primary">
               Submit
