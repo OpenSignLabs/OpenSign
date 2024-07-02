@@ -54,11 +54,9 @@ const AddUser = (props) => {
     }
   };
   const checkUserExist = async () => {
-    const user = Parse.User.current();
     try {
       const res = await Parse.Cloud.run("getUserDetails", {
-        email: user.get("email"),
-        userId: user.id
+        email: formdata.email
       });
       if (res) {
         return true;
@@ -372,7 +370,6 @@ const AddUser = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Department
-              <span className="text-[red] text-[13px]"> *</span>
             </label>
             <select
               value={formdata.department}
@@ -381,7 +378,9 @@ const AddUser = (props) => {
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
               required
             >
-              <option>select</option>
+              <option defaultValue={""} value={""}>
+                select
+              </option>
               {departmentList.length > 0 &&
                 departmentList.map((x) => (
                   <option key={x.objectId} value={x.objectId}>
@@ -396,16 +395,16 @@ const AddUser = (props) => {
               className="block text-xs text-gray-700 font-semibold"
             >
               Role
-              <span className="text-[red] text-[13px]"> *</span>
             </label>
             <select
               value={formdata.role}
               onChange={(e) => handleChange(e)}
               name="role"
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
-              required
             >
-              <option>select</option>
+              <option defaultValue={""} value={""}>
+                select
+              </option>
               {role.length > 0 &&
                 role.map((x) => (
                   <option key={x} value={x}>
