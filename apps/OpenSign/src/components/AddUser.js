@@ -14,7 +14,6 @@ function generatePassword(length) {
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
-
   return result;
 }
 
@@ -47,6 +46,7 @@ const AddUser = (props) => {
       className: "contracts_Organizations",
       objectId: extUser.OrganizationId.objectId
     });
+    department.equalTo("IsActive", true);
     const departmentRes = await department.find();
     if (departmentRes.length > 0) {
       const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
@@ -74,7 +74,6 @@ const AddUser = (props) => {
     e.preventDefault();
     e.stopPropagation();
     const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-    console.log("formdata.department ", formdata.department);
     setIsLoader(true);
     const res = await checkUserExist();
     if (res) {
@@ -92,13 +91,15 @@ const AddUser = (props) => {
         }
         extUser.set("Email", formdata.email);
         extUser.set("UserRole", `contracts_${formdata.role}`);
-        extUser.set("DepartmentIds", [
-          {
-            __type: "Pointer",
-            className: "contracts_Departments",
-            objectId: formdata.department
-          }
-        ]);
+        if (formdata?.department) {
+          extUser.set("DepartmentIds", [
+            {
+              __type: "Pointer",
+              className: "contracts_Departments",
+              objectId: formdata.department
+            }
+          ]);
+        }
         if (localUser && localUser.OrganizationId) {
           extUser.set("OrganizationId", {
             __type: "Pointer",
@@ -163,6 +164,14 @@ const AddUser = (props) => {
               props.closePopup();
             }
             if (props.handleUserData) {
+              if (formdata?.department) {
+                const department = departmentList.find(
+                  (x) => x.objectId === formdata.department
+                );
+                parseData.DepartmentIds = parseData.DepartmentIds.map((y) =>
+                  y.objectId === department.objectId ? department : y
+                );
+              }
               props.handleUserData(parseData);
             }
 
@@ -178,8 +187,7 @@ const AddUser = (props) => {
         } catch (err) {
           console.log("err ", err);
           if (err.code === 202) {
-            const user = Parse.User.current();
-            const params = { email: user.get("email") };
+            const params = { email: formdata.email };
             const userRes = await Parse.Cloud.run("getUserId", params);
             const roleurl = `${parseBaseUrl}functions/AddUserToRole`;
             const headers = {
@@ -218,6 +226,15 @@ const AddUser = (props) => {
               props.closePopup();
             }
             if (props.handleUserData) {
+              if (formdata?.department) {
+                const department = departmentList.find(
+                  (x) => x.objectId === formdata.department
+                );
+                parseData.DepartmentIds = parseData.DepartmentIds.map((y) =>
+                  y.objectId === department.objectId ? department : y
+                );
+              }
+
               props.handleUserData(parseData);
             }
             setIsLoader(false);
@@ -254,7 +271,6 @@ const AddUser = (props) => {
     }
   };
   const handleChange = (e) => {
-    console.log("e", e.target.name, e.target.value);
     setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -389,6 +405,7 @@ const AddUser = (props) => {
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
               required
             >
+              <option>select</option>
               {role.length > 0 &&
                 role.map((x) => (
                   <option key={x} value={x}>
