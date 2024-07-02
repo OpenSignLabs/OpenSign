@@ -201,7 +201,9 @@ const AddDepartment = (props) => {
               name="department"
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
             >
-              <option>select</option>
+              <option defaultValue={""} value={""}>
+                select
+              </option>
               {departmentList.length > 0 &&
                 departmentList.map((x) => (
                   <option key={x.objectId} value={x.objectId}>
