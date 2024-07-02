@@ -554,6 +554,8 @@ const TemplatePlaceholder = () => {
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
+    setFontColor();
+    setFontSize();
     if (!isResize && isDragging) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];

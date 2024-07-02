@@ -60,11 +60,14 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
 - **Audit Trails & completion certificate:** Being a security focused solution, OpenSign™ makes it a top priority to save detailed logs for tracking document activities along with time-stamps, IP addresses, email IDs & phone numbers. A completion certificate is generated as soon as document is completed which contains all the document related logs for added safety.
 - **API Support:** OpenSign™ API allows seamless integration into existing systems and software. You can generate an API key from the app and refer the [docs](https://docs.opensignlabs.com) to start integrating it in your existing applications.
 - **Integrations:** Seamless integrations with various Cloud storage systems, CRMs & enterprise platforms is available. We also have a Zapier integration that allows you to integrate it with virtually any application.
-
-<img src=https://github.com/OpenSignLabs/OpenSign/assets/5486116/b37ff443-7099-4273-9aeb-21c46d7154cf height='200'>
-<img src=https://github.com/OpenSignLabs/OpenSign/assets/5486116/86db91b7-6c2f-4885-a33c-58f4fd35ec89 height='200'>
-<img src=https://github.com/OpenSignLabs/OpenSign/assets/5486116/56835efd-c40e-42de-a206-20202c293876 height='200'>
-
+<img alt="Login page" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/8016edb6-7d6e-4185-ab72-82d2c4a16032" height='200' > 
+<img alt="Dash_board" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/6e7b96f7-3154-4c25-bc1e-caf33925cc47" height='200'>
+<img  alt="Widgets" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/7edb65bd-c265-4b3d-9758-38e79766c5c2" height='200'>
+<img  alt="Request Signature" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/1697ae46-dcac-41c9-a081-aded25693846" height='200'>
+<img  alt="Create template" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/c2060fda-50f1-4116-a532-51b94b48463a" height='200'>
+<img  alt="Manage_Template" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/90310c74-8271-49bd-8c5f-89daa5a623c4" height='200'>
+<img  alt="Folders" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/a52207e7-3b0e-497c-b5f6-747bc4e67918" height='200'>
+<img alt="OpenSign_Confetti" src="https://github.com/OpenSignLabs/OpenSign/assets/171803164/8f4c6a6e-4a73-439c-9f34-f426044d0a7f" height='200'>
 
 ---
 
