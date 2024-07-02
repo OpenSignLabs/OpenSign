@@ -41,7 +41,7 @@
     "nodemailer": "^6.9.13",
     "parse": "^5.1.0",
     "parse-dbtool": "^1.2.0",
-    "parse-server": "^7.0.0",
+    "parse-server": "^7.1.0",
     "parse-server-api-mail-adapter": "^3.1.1",
     "pdf-lib": "^1.17.1",
     "posthog-node": "^4.0.1"
