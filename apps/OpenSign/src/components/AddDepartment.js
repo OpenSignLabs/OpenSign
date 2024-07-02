@@ -25,6 +25,7 @@ const AddDepartment = (props) => {
         className: "contracts_Organizations",
         objectId: extUser.OrganizationId.objectId
       });
+      department.equalTo("IsActive", true);
       const departmentRes = await department.find();
       if (departmentRes.length > 0) {
         const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
