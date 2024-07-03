@@ -113,7 +113,7 @@ const RecipientList = (props) => {
               } flex flex-row rounded-xl px-2 py-[10px] mt-1 mx-1 items-center last:mb-0.5`}
               style={{
                 background:
-                  (!isMobile && isHover === ind) || props.isSelectListId === ind
+                  (!isMobile && isHover === ind) || props.uniqueId === obj.Id
                     ? obj?.blockColor
                       ? obj?.blockColor
                       : color[ind % color.length]

@@ -57,7 +57,8 @@ function RenderPdf({
   setTempSignerId,
   uniqueId,
   pdfOriginalWH,
-  scale
+  scale,
+  setIsSelectId
 }) {
   const isMobile = window.innerWidth < 767;
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
@@ -319,6 +320,7 @@ function RenderPdf({
                                         containerWH={containerWH}
                                         pdfOriginalWH={pdfOriginalWH}
                                         pageNumber={pageNumber}
+                                        setIsSelectId={setIsSelectId}
                                       />
                                     </React.Fragment>
                                   );
@@ -428,7 +430,7 @@ function RenderPdf({
         >
           <div
             style={{
-              width: containerWH.width * scale
+              width: containerWH.width && containerWH.width * scale
             }}
             ref={drop}
             id="container"
@@ -501,6 +503,7 @@ function RenderPdf({
                                           containerWH={containerWH}
                                           pdfOriginalWH={pdfOriginalWH}
                                           pageNumber={pageNumber}
+                                          setIsSelectId={setIsSelectId}
                                         />
                                       </React.Fragment>
                                     );

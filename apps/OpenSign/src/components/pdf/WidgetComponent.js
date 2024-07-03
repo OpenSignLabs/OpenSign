@@ -38,7 +38,7 @@ function WidgetComponent({
   isTemplateFlow,
   setBlockColor,
   setIsAddSigner,
-  blockColor
+  uniqueId
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
   const [, dropdown] = useDrag({
@@ -255,7 +255,6 @@ function WidgetComponent({
       return name;
     }
   };
-
   return (
     <>
       {isMobile ? (
@@ -265,14 +264,13 @@ function WidgetComponent({
               <div className="w-full mb-[5px] flex justify-center items-center gap-1">
                 <div className="w-full ml-[5px]" onClick={() => handleModal()}>
                   <select
+                    data-tut="recipientArea"
                     className="w-full op-select op-select-bordered  pointer-events-none"
                     value={handleSelectRecipient()}
                     style={{
-                      backgroundColor: blockColor
-                        ? blockColor
-                        : isSelectListId
-                          ? color[isSelectListId % color.length]
-                          : color[0]
+                      backgroundColor: isSelectListId
+                        ? color[isSelectListId % color.length]
+                        : color[0]
                     }}
                   >
                     <option value={handleSelectRecipient()}>
@@ -372,6 +370,7 @@ function WidgetComponent({
                 sendInOrder={sendInOrder}
                 setSignersData={setSignersData}
                 setBlockColor={setBlockColor}
+                uniqueId={uniqueId}
               />
             </div>
           ) : (
