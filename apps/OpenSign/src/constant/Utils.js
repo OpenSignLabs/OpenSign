@@ -63,7 +63,7 @@ export async function fetchSubscription(
     return { plan: "", billingDate: "" };
   }
 }
-//function to get subcripition details from Extand user class
+//function to get subcripition details from subscription class
 export async function checkIsSubscribed() {
   try {
     const res = await fetchSubscription();
@@ -71,6 +71,28 @@ export async function checkIsSubscribed() {
       return false;
     } else if (res.billingDate) {
       if (new Date(res.billingDate) > new Date()) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log("Err in fetch subscription", err);
+    return false;
+  }
+}
+
+//function to get subcripition details from subscription class
+export async function checkIsSubscribedTeam() {
+  try {
+    const res = await fetchSubscription();
+    if (res.plan === "freeplan") {
+      return false;
+    } else if (res.billingDate) {
+      const plan = res.plan === "team-weekly" || res.plan === "team-yearly";
+      if (plan && new Date(res.billingDate) > new Date()) {
         return true;
       } else {
         return false;

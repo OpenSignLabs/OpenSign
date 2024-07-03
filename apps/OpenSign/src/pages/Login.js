@@ -110,68 +110,49 @@ function Login() {
                     "X-Parse-Application-Id": parseAppId,
                     sessionToken: _user.sessionToken
                   };
-
-                  let body = {
-                    appname: localStorage.getItem("_appName")
-                  };
+                  const body = { appname: "contracts" };
                   await axios
                     .post(url, JSON.stringify(body), { headers: headers })
-                    .then((axiosRes) => {
+                    .then(async (axiosRes) => {
                       const roles = axiosRes.data.result;
-                      if (roles) {
-                        userRoles = roles;
-                        let _currentRole = "";
-                        const valuesToExclude = [
-                          "contracts_Guest",
-                          `${localStorage.getItem("_appName")}_appeditor`
-                        ];
-                        if (userRoles.length > 1) {
-                          const rolesfiltered = userRoles.filter(
-                            (x) => !valuesToExclude.includes(x)
-                          );
-                          if (rolesfiltered.length > 0) {
-                            _currentRole = rolesfiltered[0];
-                          }
-                        } else {
-                          const rolesfiltered = userRoles.filter(
-                            (x) => !valuesToExclude.includes(x)
-                          );
-                          if (rolesfiltered.length > 0) {
-                            _currentRole = userRoles[0];
-                          } else {
-                            _currentRole = "";
-                          }
-                        }
-                        if (
-                          _currentRole &&
-                          _currentRole !==
-                            `${localStorage.getItem("_appName")}_appeditor`
-                        ) {
-                          userSettings.forEach(async (element) => {
-                            const redirectUrl =
-                              location?.state?.from ||
-                              `/${element.pageType}/${element.pageId}`;
-                            if (element.role === _currentRole) {
-                              let _role = _currentRole.replace(
-                                `${localStorage.getItem("_appName")}_`,
-                                ""
-                              );
-                              localStorage.setItem("_user_role", _role);
-                              // Get TenentID from Extendend Class
-                              localStorage.setItem(
-                                "extended_class",
-                                element.extended_class
-                              );
-                              const currentUser = Parse.User.current();
-                              await Parse.Cloud.run("getUserDetails", {
-                                email: currentUser.get("email")
-                              }).then(
-                                async (result) => {
+                      const currentUser = Parse.User.current();
+                      await Parse.Cloud.run("getUserDetails", {
+                        email: currentUser.get("email")
+                      })
+                        .then((extUser) => {
+                          if (roles) {
+                            userRoles = roles;
+                            let _currentRole = "";
+                            const valuesToExclude = [
+                              "contracts_Guest",
+                              "contracts_appeditor"
+                            ];
+                            const filterRoles = userRoles.filter(
+                              (x) => !valuesToExclude.includes(x)
+                            );
+                            if (filterRoles.length > 0) {
+                              _currentRole = filterRoles?.[0];
+                              userSettings.forEach(async (element) => {
+                                const redirectUrl =
+                                  location?.state?.from ||
+                                  `/${element.pageType}/${element.pageId}`;
+                                if (element.role === _currentRole) {
+                                  let _role = _currentRole.replace(
+                                    "contracts_",
+                                    ""
+                                  );
+                                  localStorage.setItem("_user_role", _role);
+                                  // Get TenentID from Extendend Class
+                                  localStorage.setItem(
+                                    "extended_class",
+                                    element.extended_class
+                                  );
                                   let tenentInfo = [];
-                                  const results = [result];
+                                  const results = [extUser];
                                   if (results) {
                                     let extendedInfo_stringify =
                                       JSON.stringify(results);
+
                                     localStorage.setItem(
                                       "Extand_Class",
                                       extendedInfo_stringify
@@ -332,28 +313,21 @@ function Login() {
                                       navigate(redirectUrl);
                                     }
                                   }
-                                },
-                                (error) => {
-                                  const payload = {
-                                    sessionToken: user.getSessionToken()
-                                  };
-                                  handleSubmitbtn(payload);
-                                  console.error(
-                                    "Error while fetching Follow",
-                                    error
-                                  );
                                 }
-                              );
+                              });
                             }
-                          });
-                        } else {
-                          setState({ ...state, loading: false });
-                          setIsModal(true);
-                        }
-                      } else {
-                        setState({ ...state, loading: false });
-                        setIsModal(true);
-                      }
+                          } else {
+                            setState({ ...state, loading: false });
+                            setIsModal(true);
+                          }
+                        })
+                        .catch((error) => {
+                          const payload = {
+                            sessionToken: user.getSessionToken()
+                          };
+                          handleSubmitbtn(payload);
+                          console.error("Error while fetching Follow", error);
+                        });
                     })
                     .catch((err) => {
                       console.log("err", err);
@@ -474,7 +448,7 @@ function Login() {
                 let _currentRole = "";
                 const valuesToExclude = [
                   "contracts_Guest",
-                  `${localStorage.getItem("_appName")}_appeditor`
+                  "contracts_appeditor"
                 ];
                 if (userRoles.length > 1) {
                   const rolesfiltered = userRoles.filter(
@@ -493,20 +467,13 @@ function Login() {
                     _currentRole = "";
                   }
                 }
-                if (
-                  _currentRole &&
-                  _currentRole !==
-                    `${localStorage.getItem("_appName")}_appeditor`
-                ) {
+                if (_currentRole && _currentRole !== "contracts_appeditor") {
                   userSettings.forEach(async (element) => {
                     const redirectUrl =
                       location?.state?.from ||
                       `/${element.pageType}/${element.pageId}`;
                     if (element.role === _currentRole) {
-                      let _role = _currentRole.replace(
-                        `${localStorage.getItem("_appName")}_`,
-                        ""
-                      );
+                      let _role = _currentRole.replace("contracts_", "");
                       localStorage.setItem("_user_role", _role);
 
                       // Get TenentID from Extendend Class
@@ -732,185 +699,126 @@ function Login() {
     setState({ ...state, loading: true });
     try {
       const user = await Parse.User.become(localStorage.getItem("accesstoken"));
-      let _usss = user.toJSON();
-      localStorage.setItem("UserInformation", JSON.stringify(_usss));
-      localStorage.setItem("username", _usss.name);
-      localStorage.setItem("accesstoken", _usss.sessionToken);
+      let _user = user.toJSON();
+      localStorage.setItem("UserInformation", JSON.stringify(_user));
+      localStorage.setItem("username", _user.name);
+      localStorage.setItem("accesstoken", _user.sessionToken);
       localStorage.setItem("scriptId", true);
-      if (_usss.ProfilePic) {
-        localStorage.setItem("profileImg", _usss.ProfilePic);
+      if (_user.ProfilePic) {
+        localStorage.setItem("profileImg", _user.ProfilePic);
       } else {
         localStorage.setItem("profileImg", "");
       }
       let userRoles = [];
+      let userSettings = appInfo.settings;
 
-      if (localStorage.getItem("userSettings")) {
-        let userSettings = localStorage.getItem("userSettings");
+      //Get Current user roles
+      let url = `${localStorage.getItem("baseUrl")}functions/UserGroups`;
+      const headers1 = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: _user.sessionToken
+      };
+      const body = { appname: "contracts" };
 
-        //Get Current user roles
-        let url = `${localStorage.getItem("baseUrl")}functions/UserGroups`;
-        const headers1 = {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          sessionToken: _usss.sessionToken
-        };
-
-        let body = {
-          appname: localStorage.getItem("_appName")
-        };
-
-        await axios
-          .post(url, JSON.stringify(body), { headers: headers1 })
-          .then((axiosres) => {
-            const roles = axiosres.data.result;
-            if (roles) {
-              userRoles = roles;
-              let _currentRole = "";
-              if (userRoles.length > 1) {
-                if (
-                  userRoles[0] ===
-                  `${localStorage.getItem("_appName")}_appeditor`
-                ) {
-                  _currentRole = userRoles[1];
-                } else {
-                  const rolesfiltered = userRoles.filter(
-                    (x) => x !== "contracts_Guest"
+      await axios
+        .post(url, JSON.stringify(body), { headers: headers1 })
+        .then((axiosres) => {
+          const roles = axiosres.data.result;
+          if (roles && roles.length > 0) {
+            userRoles = roles;
+            let _currentRole = "";
+            const valuesToExclude = ["contracts_Guest", "contracts_appeditor"];
+            const filterRoles = userRoles.filter(
+              (x) => !valuesToExclude.includes(x)
+            );
+            if (filterRoles.length > 0) {
+              _currentRole = filterRoles?.[0];
+              let SettingsUser = userSettings;
+              SettingsUser.forEach(async (item) => {
+                if (item.role === _currentRole) {
+                  let _role = _currentRole.replace(`${appInfo.appname}_`, "");
+                  localStorage.setItem("_user_role", _role);
+                  // Get TenentID from Extendend Class
+                  localStorage.setItem("extended_class", item.extended_class);
+                  const currentUser = Parse.User.current();
+                  const userSettings = appInfo.settings;
+                  const setting = userSettings.find(
+                    (x) => x.role === _currentRole
                   );
-                  if (rolesfiltered.length > 0) {
-                    _currentRole = rolesfiltered[0];
-                  } else {
-                    setThirdpartyLoader(false);
-                    setState({
-                      ...state,
-                      loading: false,
-                      alertType: "danger",
-                      alertMsg:
-                        "Does not have permissions to access this application!"
-                    });
-                    setTimeout(function () {
-                      setState({
-                        ...state,
-                        loading: false,
-                        alertType: "danger",
-                        alertMsg: ""
-                      });
-                    }, 2000);
-                  }
-                  // _currentRole = userRoles[0];
-                }
-              } else {
-                _currentRole = userRoles[0];
-              }
-              if (_currentRole && _currentRole !== "contracts_Guest") {
-                let SettingsUser = JSON.parse(userSettings);
-                SettingsUser.forEach(async (item) => {
-                  if (item.role === _currentRole) {
-                    let _role = _currentRole.replace(`${appInfo.appname}_`, "");
-                    localStorage.setItem("_user_role", _role);
-                    // Get TenentID from Extendend Class
-                    localStorage.setItem("extended_class", item.extended_class);
-                    const currentUser = Parse.User.current();
-                    const userSettings = appInfo.settings;
-                    const setting = userSettings.find(
-                      (x) => x.role === _currentRole
-                    );
-                    const redirectUrl =
-                      location?.state?.from ||
-                      `/${setting.pageType}/${setting.pageId}`;
-                    await Parse.Cloud.run("getUserDetails", {
-                      email: currentUser.get("email")
-                    }).then(
-                      async (result) => {
-                        let tenentInfo = [];
-                        const results = [result];
-                        if (results) {
-                          let extendedInfo_stringify = JSON.stringify(results);
-                          let extendedInfo = JSON.parse(extendedInfo_stringify);
-                          if (extendedInfo.length > 1) {
-                            extendedInfo.forEach((x) => {
-                              if (x.TenantId) {
-                                let obj = {
-                                  tenentId: x.TenantId.objectId,
-                                  tenentName: x.TenantId.TenantName || ""
-                                };
-                                tenentInfo.push(obj);
-                              }
-                            });
-                            localStorage.setItem("showpopup", true);
-                            localStorage.setItem("PageLanding", item.pageId);
-                            localStorage.setItem("defaultmenuid", item.menuId);
-                            localStorage.setItem("pageType", item.pageType);
-                            navigate("/");
-                          } else {
-                            extendedInfo.forEach((x) => {
-                              if (x.TenantId) {
-                                let obj = {
-                                  tenentId: x.TenantId.objectId,
-                                  tenentName: x.TenantId.TenantName || ""
-                                };
-                                localStorage.setItem(
-                                  "TenantId",
-                                  x.TenantId.objectId
-                                );
-                                tenentInfo.push(obj);
-                              }
-                            });
-                            localStorage.setItem("PageLanding", setting.pageId);
-                            localStorage.setItem(
-                              "defaultmenuid",
-                              setting.menuId
-                            );
-                            localStorage.setItem("pageType", setting.pageType);
-                            if (isEnableSubscription) {
-                              const LocalUserDetails = {
-                                name: results[0].get("Name"),
-                                email: results[0].get("Email"),
-                                phone: results[0]?.get("Phone") || "",
-                                company: results[0].get("Company")
+                  const redirectUrl =
+                    location?.state?.from ||
+                    `/${setting.pageType}/${setting.pageId}`;
+                  await Parse.Cloud.run("getUserDetails", {
+                    email: currentUser.get("email")
+                  }).then(
+                    async (result) => {
+                      let tenentInfo = [];
+                      const results = [result];
+                      if (results) {
+                        let extendedInfo_stringify = JSON.stringify(results);
+                        localStorage.setItem(
+                          "Extand_Class",
+                          extendedInfo_stringify
+                        );
+                        let extendedInfo = JSON.parse(extendedInfo_stringify);
+                        if (extendedInfo.length > 1) {
+                          extendedInfo.forEach((x) => {
+                            if (x.TenantId) {
+                              let obj = {
+                                tenentId: x.TenantId.objectId,
+                                tenentName: x.TenantId.TenantName || ""
+                              };
+                              tenentInfo.push(obj);
+                            }
+                          });
+                          localStorage.setItem("showpopup", true);
+                          localStorage.setItem("PageLanding", item.pageId);
+                          localStorage.setItem("defaultmenuid", item.menuId);
+                          localStorage.setItem("pageType", item.pageType);
+                          navigate("/");
+                        } else {
+                          extendedInfo.forEach((x) => {
+                            if (x.TenantId) {
+                              let obj = {
+                                tenentId: x.TenantId.objectId,
+                                tenentName: x.TenantId.TenantName || ""
                               };
                               localStorage.setItem(
-                                "userDetails",
-                                JSON.stringify(LocalUserDetails)
+                                "TenantId",
+                                x.TenantId.objectId
                               );
-                              const res = await fetchSubscription();
-                              const billingDate = res.billingDate;
-                              const freeplan = res.plan;
-                              if (freeplan === "freeplan") {
-                                navigate(redirectUrl);
-                              } else if (billingDate) {
-                                if (new Date(billingDate) > new Date()) {
-                                  localStorage.removeItem("userDetails");
-                                  // Redirect to the appropriate URL after successful login
-                                  navigate(redirectUrl);
-                                } else {
-                                  navigate(`/subscription`);
-                                }
-                              } else {
-                                navigate(`/subscription`);
-                              }
-                            } else {
-                              // Redirect to the appropriate URL after successful login
-                              navigate(redirectUrl);
+                              tenentInfo.push(obj);
                             }
-                          }
-                        } else {
+                          });
                           localStorage.setItem("PageLanding", setting.pageId);
                           localStorage.setItem("defaultmenuid", setting.menuId);
                           localStorage.setItem("pageType", setting.pageType);
-                          setState({ ...state, loading: false });
                           if (isEnableSubscription) {
                             const LocalUserDetails = {
                               name: results[0].get("Name"),
                               email: results[0].get("Email"),
-                              phone: results[0]?.get("Phone") || ""
-                              // company: results.get("Company"),
+                              phone: results[0]?.get("Phone") || "",
+                              company: results[0].get("Company")
                             };
                             localStorage.setItem(
                               "userDetails",
                               JSON.stringify(LocalUserDetails)
                             );
-                            const billingDate = "";
-                            if (billingDate) {
+                            const res = await fetchSubscription();
+                            const billingDate = res.billingDate;
+                            const freeplan = res.plan;
+                            if (freeplan === "freeplan") {
+                              navigate(redirectUrl);
+                            } else if (billingDate) {
+                              if (new Date(billingDate) > new Date()) {
+                                localStorage.removeItem("userDetails");
+                                // Redirect to the appropriate URL after successful login
+                                navigate(redirectUrl);
+                              } else {
+                                navigate(`/subscription`);
+                              }
+                            } else {
                               navigate(`/subscription`);
                             }
                           } else {
@@ -918,41 +826,95 @@ function Login() {
                             navigate(redirectUrl);
                           }
                         }
-                      },
-                      (error) => {
+                      } else {
+                        localStorage.setItem("PageLanding", setting.pageId);
+                        localStorage.setItem("defaultmenuid", setting.menuId);
+                        localStorage.setItem("pageType", setting.pageType);
+                        setState({ ...state, loading: false });
+                        if (isEnableSubscription) {
+                          const LocalUserDetails = {
+                            name: results[0].get("Name"),
+                            email: results[0].get("Email"),
+                            phone: results[0]?.get("Phone") || ""
+                            // company: results.get("Company"),
+                          };
+                          localStorage.setItem(
+                            "userDetails",
+                            JSON.stringify(LocalUserDetails)
+                          );
+                          const billingDate = "";
+                          if (billingDate) {
+                            navigate(`/subscription`);
+                          }
+                        } else {
+                          // Redirect to the appropriate URL after successful login
+                          navigate(redirectUrl);
+                        }
+                      }
+                    },
+                    (error) => {
+                      setState({
+                        ...state,
+                        loading: false,
+                        alertType: "danger",
+                        alertMsg: "You don`t have access to this application!"
+                      });
+                      setTimeout(function () {
                         setState({
                           ...state,
                           loading: false,
                           alertType: "danger",
-                          alertMsg: "You don`t have access to this application!"
+                          alertMsg: ""
                         });
-                        setTimeout(function () {
-                          setState({
-                            ...state,
-                            loading: false,
-                            alertType: "danger",
-                            alertMsg: ""
-                          });
-                        }, 2000);
-                        localStorage.setItem("accesstoken", null);
-                        console.error("Error while fetching Follow", error);
-                      }
-                    );
-                  }
-                });
-              } else {
-                setState({ ...state, loading: false });
-                handleCloseModal();
-              }
+                      }, 2000);
+                      localStorage.setItem("accesstoken", null);
+                      console.error("Error while fetching Follow", error);
+                    }
+                  );
+                }
+              });
             } else {
-              console.log("User Role Not Found.");
+              setState({ ...state, loading: false });
+              handleCloseModal();
+              setThirdpartyLoader(false);
+              setState({
+                ...state,
+                loading: false,
+                alertType: "danger",
+                alertMsg:
+                  "Does not have permissions to access this application!"
+              });
+              setTimeout(function () {
+                setState({
+                  ...state,
+                  loading: false,
+                  alertType: "danger",
+                  alertMsg: ""
+                });
+              }, 2000);
             }
-          })
-          .catch((err) => {
-            setState({ ...state, loading: false });
-            console.log("err", err);
-          });
-      }
+          } else {
+            console.log("User Role Not Found.");
+            setThirdpartyLoader(false);
+            setState({
+              ...state,
+              loading: false,
+              alertType: "danger",
+              alertMsg: "Does not have permissions to access this application!"
+            });
+            setTimeout(function () {
+              setState({
+                ...state,
+                alertType: "danger",
+                alertMsg: ""
+              });
+            }, 2000);
+          }
+        })
+        .catch((err) => {
+          setState({ ...state, loading: false });
+          console.log("err", err);
+        });
     } catch (error) {
       setState({ ...state, loading: false });
       console.log("err", error);

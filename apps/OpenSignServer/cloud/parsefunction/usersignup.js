@@ -82,7 +82,7 @@ export default async function usersignup(request) {
       if (userDetails?.phone) {
         partnerQuery.set('ContactNumber', userDetails.phone);
       }
-      partnerQuery.set('TenantName', userDetails.name);
+      partnerQuery.set('TenantName', userDetails.company);
       partnerQuery.set('EmailAddress', userDetails.email);
       partnerQuery.set('IsActive', true);
       partnerQuery.set('CreatedBy', {

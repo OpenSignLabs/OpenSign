@@ -8,7 +8,7 @@ export default async function getReport(request) {
 
   const serverUrl = process.env.SERVER_URL;
   const appId = process.env.APP_ID;
-
+  const masterKey = process.env.MASTER_KEY;
   try {
     const userRes = await axios.get(serverUrl + '/users/me', {
       headers: {
@@ -23,12 +23,49 @@ export default async function getReport(request) {
       if (json) {
         const { params, keys } = json;
         const orderBy = '-updatedAt';
-        const strParams = JSON.stringify(params);
         const strKeys = keys.join();
+        let strParams = JSON.stringify(params);
+        if (reportId == '6TeaPr321t') {
+          const extUserQuery = new Parse.Query('contracts_Users');
+          extUserQuery.equalTo('Email', userRes.data.email);
+          extUserQuery.include('DepartmentIds');
+          const extUser = await extUserQuery.first({ useMasterKey: true });
+          if (extUser) {
+            const _extUser = JSON.parse(JSON.stringify(extUser));
+            if (_extUser?.DepartmentIds && _extUser.DepartmentIds?.length > 0) {
+              let departmentArr = [];
+              _extUser?.DepartmentIds?.forEach(
+                x => (departmentArr = [...departmentArr, ...x.Ancestors])
+              );
+              strParams = JSON.stringify({
+                ...params,
+                $or: [
+                  { SharedWith: { $in: departmentArr } },
+                  {
+                    ExtUserPtr: {
+                      __type: 'Pointer',
+                      className: 'contracts_Users',
+                      objectId: extUser.id,
+                    },
+                  },
+                ],
+              });
+            } else {
+              strParams = JSON.stringify({
+                ...params,
+                CreatedBy: {
+                  __type: 'Pointer',
+                  className: '_User',
+                  objectId: userId,
+                },
+              });
+            }
+          }
+        }
         const headers = {
           'Content-Type': 'application/json',
           'X-Parse-Application-Id': appId,
-          'X-Parse-Master-Key': process.env.MASTER_KEY,
+          'X-Parse-Master-Key': masterKey,
         };
         const url = `${serverUrl}/classes/${clsName}?where=${strParams}&keys=${strKeys}&order=${orderBy}&skip=${skip}&limit=${limit}&include=AuditTrail.UserPtr,Placeholders.signerPtr`;
         const res = await axios.get(url, { headers: headers });

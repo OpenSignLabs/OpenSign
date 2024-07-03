@@ -204,10 +204,7 @@ app.use('/v1', v1);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
-  // res.statusCode = 200;
-  // res.setHeader('Content-Type', 'text/plain');
-  // res.end('I dream of being a website.  Please star the parse-server repo on GitHub!');
-  res.status(200).send('open-sign-server is running !!!');
+  res.status(200).send('opensign-server is running !!!');
 });
 
 if (!process.env.TESTING) {
@@ -217,7 +214,7 @@ if (!process.env.TESTING) {
   httpServer.keepAliveTimeout = 100000; // in milliseconds
   httpServer.headersTimeout = 100000; // in milliseconds
   httpServer.listen(port, '0.0.0.0', function () {
-    console.log('parse-server-example running on port ' + port + '.');
+    console.log('opensign-server running on port ' + port + '.');
     const isWindows = process.platform === 'win32';
     // console.log('isWindows', isWindows);
 

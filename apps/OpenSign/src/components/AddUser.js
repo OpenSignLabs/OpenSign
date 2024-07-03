@@ -1,24 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import axios from "axios";
 import Title from "./Title";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
+import { copytoData } from "../constant/Utils";
+function generatePassword(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 const AddUser = (props) => {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [formdata, setFormdata] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    department: "",
+    password: "",
+    role: ""
+  });
   const [isLoader, setIsLoader] = useState(false);
-  const [isUserExist, setIsUserExist] = useState(false);
+  const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
+  const [departmentList, setDepartmentList] = useState([]);
+  const role = ["OrgAdmin", "Manager", "User"];
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
 
+  useEffect(() => {
+    getDepartmentList();
+  }, []);
+
+  const getDepartmentList = async () => {
+    setFormdata((prev) => ({ ...prev, password: generatePassword(12) }));
+    const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+    const department = new Parse.Query("contracts_Departments");
+    department.equalTo("OrganizationId", {
+      __type: "Pointer",
+      className: "contracts_Organizations",
+      objectId: extUser.OrganizationId.objectId
+    });
+    department.equalTo("IsActive", true);
+    const departmentRes = await department.find();
+    if (departmentRes.length > 0) {
+      const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
+      setDepartmentList(_departmentRes);
+    }
+  };
   const checkUserExist = async () => {
     try {
       const res = await Parse.Cloud.run("getUserDetails", {
-        email: email,
-        userId: Parse.User.current().id
+        email: formdata.email
       });
       if (res) {
         return true;
@@ -33,24 +71,43 @@ const AddUser = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
     setIsLoader(true);
     const res = await checkUserExist();
     if (res) {
-      setIsUserExist(true);
+      setIsAlert({ type: "danger", msg: "User already exist." });
       setIsLoader(false);
       setTimeout(() => {
-        setIsUserExist(false);
+        setIsAlert({ type: "success", msg: "" });
       }, 1000);
     } else {
       try {
-        const contactQuery = new Parse.Object("contracts_Users");
-        contactQuery.set("Name", name);
-        contactQuery.set("Phone", phone);
-        contactQuery.set("Email", email);
-        contactQuery.set("UserRole", "contracts_User");
+        const extUser = new Parse.Object("contracts_Users");
+        extUser.set("Name", formdata.name);
+        if (formdata.phone) {
+          extUser.set("Phone", formdata.phone);
+        }
+        extUser.set("Email", formdata.email);
+        extUser.set("UserRole", `contracts_${formdata.role}`);
+        if (formdata?.department) {
+          extUser.set("DepartmentIds", [
+            {
+              __type: "Pointer",
+              className: "contracts_Departments",
+              objectId: formdata.department
+            }
+          ]);
+        }
+        if (localUser && localUser.OrganizationId) {
+          extUser.set("OrganizationId", {
+            __type: "Pointer",
+            className: "contracts_Organizations",
+            objectId: localUser.OrganizationId.objectId
+          });
+        }
 
         if (localStorage.getItem("TenantId")) {
-          contactQuery.set("TenantId", {
+          extUser.set("TenantId", {
             __type: "Pointer",
             className: "partners_Tenant",
             objectId: localStorage.getItem("TenantId")
@@ -60,12 +117,12 @@ const AddUser = (props) => {
         try {
           const _users = Parse.Object.extend("User");
           const _user = new _users();
-          _user.set("name", name);
-          _user.set("username", email);
-          _user.set("email", email);
-          _user.set("password", email);
-          if (phone) {
-            _user.set("phone", phone);
+          _user.set("name", formdata.name);
+          _user.set("username", formdata.email);
+          _user.set("email", formdata.email);
+          _user.set("password", formdata.password);
+          if (formdata.phone) {
+            _user.set("phone", formdata.phone);
           }
 
           const user = await _user.save();
@@ -77,52 +134,58 @@ const AddUser = (props) => {
               sessionToken: localStorage.getItem("accesstoken")
             };
             const body = {
-              appName: localStorage.getItem("_appName"),
-              roleName: "contracts_User",
+              appName: "contracts",
+              roleName: "contracts_" + formdata.role,
               userId: user.id
             };
             await axios.post(roleurl, body, { headers: headers });
             const currentUser = Parse.User.current();
-            contactQuery.set(
+            extUser.set(
               "CreatedBy",
               Parse.User.createWithoutData(currentUser.id)
             );
 
-            contactQuery.set("UserId", user);
+            extUser.set("UserId", user);
             const acl = new Parse.ACL();
             acl.setPublicReadAccess(true);
             acl.setPublicWriteAccess(true);
             acl.setReadAccess(currentUser.id, true);
             acl.setWriteAccess(currentUser.id, true);
 
-            contactQuery.setACL(acl);
+            extUser.setACL(acl);
 
-            const res = await contactQuery.save();
+            const res = await extUser.save();
 
             const parseData = JSON.parse(JSON.stringify(res));
-            if (props.details) {
-              props.details({
-                value: parseData[props.valueKey],
-                label: parseData[props.displayKey]
-              });
-            }
+
             if (props.closePopup) {
               props.closePopup();
             }
             if (props.handleUserData) {
+              if (formdata?.department) {
+                const department = departmentList.find(
+                  (x) => x.objectId === formdata.department
+                );
+                parseData.DepartmentIds = parseData.DepartmentIds.map((y) =>
+                  y.objectId === department.objectId ? department : y
+                );
+              }
               props.handleUserData(parseData);
             }
 
             setIsLoader(false);
-
-            setName("");
-            setPhone("");
-            setEmail("");
+            setFormdata({
+              name: "",
+              email: "",
+              phone: "",
+              department: "",
+              role: ""
+            });
           }
         } catch (err) {
           console.log("err ", err);
           if (err.code === 202) {
-            const params = { email: email };
+            const params = { email: formdata.email };
             const userRes = await Parse.Cloud.run("getUserId", params);
             const roleurl = `${parseBaseUrl}functions/AddUserToRole`;
             const headers = {
@@ -131,18 +194,18 @@ const AddUser = (props) => {
               sessionToken: localStorage.getItem("accesstoken")
             };
             const body = {
-              appName: localStorage.getItem("_appName"),
-              roleName: "contracts_User",
+              appName: "contracts",
+              roleName: "contracts_" + formdata.role,
               userId: userRes.id
             };
             await axios.post(roleurl, body, { headers: headers });
             const currentUser = Parse.User.current();
-            contactQuery.set(
+            extUser.set(
               "CreatedBy",
               Parse.User.createWithoutData(currentUser.id)
             );
 
-            contactQuery.set("UserId", {
+            extUser.set("UserId", {
               __type: "Pointer",
               className: "_User",
               objectId: userRes.id
@@ -153,55 +216,85 @@ const AddUser = (props) => {
             acl.setReadAccess(currentUser.id, true);
             acl.setWriteAccess(currentUser.id, true);
 
-            contactQuery.setACL(acl);
-            const res = await contactQuery.save();
+            extUser.setACL(acl);
+            const res = await extUser.save();
 
             const parseData = JSON.parse(JSON.stringify(res));
-            if (props.details) {
-              props.details({
-                value: parseData[props.valueKey],
-                label: parseData[props.displayKey]
-              });
-            }
             if (props.closePopup) {
               props.closePopup();
             }
             if (props.handleUserData) {
+              if (formdata?.department) {
+                const department = departmentList.find(
+                  (x) => x.objectId === formdata.department
+                );
+                parseData.DepartmentIds = parseData.DepartmentIds.map((y) =>
+                  y.objectId === department.objectId ? department : y
+                );
+              }
+
               props.handleUserData(parseData);
             }
             setIsLoader(false);
-            setName("");
-            setPhone("");
-            setEmail("");
+            setFormdata({
+              name: "",
+              email: "",
+              phone: "",
+              department: "",
+              role: ""
+            });
           }
         }
       } catch (err) {
-        // console.log("err", err);
+        console.log("err", err);
         setIsLoader(false);
-        alert("something went wrong!");
+        setIsAlert({ type: "danger", msg: "something went wrong." });
+      } finally {
+        setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
       }
     }
   };
 
   // Define a function to handle the "add yourself" checkbox
   const handleReset = () => {
-    setName("");
-    setPhone("");
-    setEmail("");
+    setFormdata({
+      name: "",
+      email: "",
+      phone: "",
+      department: "",
+      role: ""
+    });
+    if (props.closePopup) {
+      props.closePopup();
+    }
+  };
+  const handleChange = (e) => {
+    setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const copytoclipboard = (text) => {
+    copytoData(text);
+    setIsAlert({ type: "success", msg: "Copied" });
+    setTimeout(() => {
+      setIsAlert({ type: "success", msg: "" });
+    }, 1500); // Reset copied state after 1.5 seconds
+  };
   return (
-    <div className="shadow-md rounded my-2 p-3 bg-[#ffffff] md:border-[1px] md:border-gray-600/50">
+    <div className="shadow-md rounded-box my-[1px] p-3 bg-[#ffffff]">
       <Title title={"Add User"} />
-      {isUserExist && <Alert type="danger">User already exists!</Alert>}
+      {isAlert.msg && (
+        <Alert type={isAlert.type}>
+          <div className="ml-3">{isAlert.msg}</div>
+        </Alert>
+      )}
       {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50">
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50 rounded-box">
           <Loader />
         </div>
       )}
       <div className="w-full mx-auto">
         <form onSubmit={handleSubmit}>
-          <h1 className="text-[20px] font-semibold mb-4">Add User</h1>
+          {/* <h1 className="text-[20px] font-semibold mb-4">Add User</h1> */}
           <div className="mb-3">
             <label
               htmlFor="name"
@@ -212,9 +305,9 @@ const AddUser = (props) => {
             </label>
             <input
               type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              name="name"
+              value={formdata.name}
+              onChange={(e) => handleChange(e)}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
@@ -229,10 +322,46 @@ const AddUser = (props) => {
             </label>
             <input
               type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formdata.email}
+              onChange={(e) => handleChange(e)}
               required
+              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+            />
+          </div>
+          <div className="mb-3">
+            <label
+              htmlFor="email"
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              Password
+            </label>
+            <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
+              <div className="break-all">{formdata?.password}</div>
+              <i
+                onClick={() => copytoclipboard(formdata?.password)}
+                className="fa-light fa-copy rounded-full hover:bg-base-300 p-[8px]"
+              ></i>
+            </div>
+            <div className="text-[12px] ml-2 mb-0 text-[red]">
+              Password will only be generated once; make sure to copy it.
+            </div>
+          </div>
+          <div className="mb-3">
+            <label
+              htmlFor="phone"
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              Phone
+              {/* <span className="text-[red] text-[13px]"> *</span> */}
+            </label>
+            <input
+              type="text"
+              name="phone"
+              placeholder="optional"
+              value={formdata.phone}
+              onChange={(e) => handleChange(e)}
+              // required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
@@ -241,32 +370,60 @@ const AddUser = (props) => {
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Phone
-              <span className="text-[red] text-[13px]"> *</span>
+              Team
             </label>
-            <input
-              type="text"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+            <select
+              value={formdata.department}
+              onChange={(e) => handleChange(e)}
+              name="department"
+              className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
               required
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-            />
-          </div>
-
-          <div className="flex items-center mt-3 gap-2 text-white">
-            <button
-              type="submit"
-              className="bg-[#1ab6ce] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 focus:outline-none"
             >
+              <option defaultValue={""} value={""}>
+                select
+              </option>
+              {departmentList.length > 0 &&
+                departmentList.map((x) => (
+                  <option key={x.objectId} value={x.objectId}>
+                    {x.Name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="mb-3">
+            <label
+              htmlFor="phone"
+              className="block text-xs text-gray-700 font-semibold"
+            >
+              Role
+            </label>
+            <select
+              value={formdata.role}
+              onChange={(e) => handleChange(e)}
+              name="role"
+              className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+            >
+              <option defaultValue={""} value={""}>
+                select
+              </option>
+              {role.length > 0 &&
+                role.map((x) => (
+                  <option key={x} value={x}>
+                    {x}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="flex items-center mt-3 gap-2 text-white">
+            <button type="submit" className="op-btn op-btn-primary">
               Submit
             </button>
             <div
               type="button"
               onClick={() => handleReset()}
-              className="bg-[#188ae2] rounded-sm shadow-md text-[13px] font-semibold uppercase text-white py-1.5 px-2.5 text-center ml-[2px] focus:outline-none"
+              className="op-btn op-btn-secondary"
             >
-              Reset
+              Cancel
             </div>
           </div>
         </form>

@@ -21,15 +21,29 @@ export const appInfo = {
   objectId: "aIPmIvMzGM",
   settings: [
     {
-      role: "contracts_User",
+      role: "contracts_Admin",
+      menuId: "VPh91h0ZHk",
+      pageType: "dashboard",
+      pageId: "35KBoSgoAK",
+      extended_class: "contracts_Users"
+    },
+    {
+      role: "contracts_OrgAdmin",
+      menuId: "VPh91h0ZHk",
+      pageType: "dashboard",
+      pageId: "35KBoSgoAK",
+      extended_class: "contracts_Users"
+    },
+    {
+      role: "contracts_Manager",
       menuId: "H9vRfEYKhT",
       pageType: "dashboard",
       pageId: "35KBoSgoAK",
       extended_class: "contracts_Users"
     },
     {
-      role: "contracts_Admin",
-      menuId: "VPh91h0ZHk",
+      role: "contracts_User",
+      menuId: "H9vRfEYKhT",
       pageType: "dashboard",
       pageId: "35KBoSgoAK",
       extended_class: "contracts_Users"

@@ -265,7 +265,7 @@ const ManageSign = () => {
               <div className="relative">
                 <div>
                   {image ? (
-                    <div className="signatureCanvas relative border-[2px] border-[#888] rounded-box">
+                    <div className="signatureCanvas relative border-[2px] border-[#888] rounded-box overflow-hidden">
                       <img
                         alt="signature"
                         src={image}
