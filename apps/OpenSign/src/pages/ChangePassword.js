@@ -21,9 +21,10 @@ function ChangePassword() {
                 user.set("password", newpassword);
                 user
                   .save()
-                  .then(() => {
+                  .then(async () => {
                     let _user = user.toJSON();
                     if (_user) {
+                      await Parse.User.become(_user.sessionToken);
                       localStorage.setItem("accesstoken", _user.sessionToken);
                     }
                     alert("Password updated successfully.");

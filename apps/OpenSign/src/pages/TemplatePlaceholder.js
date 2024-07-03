@@ -616,7 +616,6 @@ const TemplatePlaceholder = () => {
       setIsDragging(false);
     }, 200);
   };
-
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
@@ -1538,6 +1537,7 @@ const TemplatePlaceholder = () => {
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}
                         scale={scale}
+                        setIsSelectId={setIsSelectId}
                       />
                     )}
                   </div>
@@ -1610,6 +1610,7 @@ const TemplatePlaceholder = () => {
                       setSignersData={setSignersData}
                       blockColor={blockColor}
                       setBlockColor={setBlockColor}
+                      uniqueId={uniqueId}
                     />
                     <div data-tut="addWidgets">
                       <WidgetComponent
