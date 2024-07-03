@@ -56,11 +56,15 @@ const AddDepartment = (props) => {
           objectId: x.objectId
         }));
       } else {
-        updatedAncestors.push({
-          __type: "Pointer",
-          className: "contracts_Departments",
-          objectId: formdata.department
-        });
+        const AllUser = departmentList.find((x) => x.objectId === "All User");
+        updatedAncestors = [
+          AllUser,
+          {
+            __type: "Pointer",
+            className: "contracts_Departments",
+            objectId: formdata.department
+          }
+        ];
       }
     }
     try {

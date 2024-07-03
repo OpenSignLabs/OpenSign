@@ -30,8 +30,7 @@ const LottieWithLoader = () => {
   return (
     <div>
       {!isLoaded && !hasError && (
-        <div className="loader">
-          {" "}
+        <div className="w-[120px] h-[120px] mx-auto">
           <Loader />
         </div>
       )}
@@ -39,9 +38,8 @@ const LottieWithLoader = () => {
       {isLoaded && animationSrc && (
         <DotLottieReact
           src={animationSrc}
-          loop
           autoplay
-          style={{ display: "block" }}
+          className="w-[120px] h-[120px] md:w-[200px] md:h-[200px] mx-auto"
         />
       )}
     </div>

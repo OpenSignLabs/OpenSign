@@ -42,10 +42,10 @@ export default async function getReport(request) {
                 $or: [
                   { SharedWith: { $in: departmentArr } },
                   {
-                    CreatedBy: {
+                    ExtUserPtr: {
                       __type: 'Pointer',
-                      className: '_User',
-                      objectId: userId,
+                      className: 'contracts_Users',
+                      objectId: extUser.id,
                     },
                   },
                 ],
