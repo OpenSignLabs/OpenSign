@@ -30,7 +30,7 @@ const plans = [
     planName: "OPENSIGN™ PROFESSIONAL",
     currency: "$",
     monthlyPrice: "29.99",
-    yearlyPrice: "329.99",
+    yearlyPrice: "10 <sup>/month/user</sup>",
     subtitle: "Exclusive Access to advanced features.",
     btnText: "Subscribe",
     url:
@@ -57,10 +57,10 @@ const plans = [
     ]
   },
   {
-    planName: "OPENSIGN™ TEAM",
+    planName: "OPENSIGN™ TEAMS",
     currency: "$",
-    monthlyPrice: "100.99",
-    yearlyPrice: "329.99",
+    monthlyPrice: "40",
+    yearlyPrice: "20 <sup>/month/user</sup>",
     subtitle: "Exclusive Access to advanced features.",
     btnText: "Subscribe",
     url:

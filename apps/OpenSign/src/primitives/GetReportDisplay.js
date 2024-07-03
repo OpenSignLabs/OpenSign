@@ -1379,7 +1379,7 @@ const ReportTable = (props) => {
                                       )}
                                       {isOption[item.objectId] &&
                                         act.action === "option" && (
-                                          <ul className="absolute -right-2 top-6 z-[20] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                          <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
                                             {act.subaction?.map((subact) => (
                                               <li
                                                 key={subact.btnId}
@@ -1431,7 +1431,7 @@ const ReportTable = (props) => {
                                         options={departmentList}
                                         value={selectedDepartments}
                                         onChange={onChange}
-                                        closeMenuOnSelect={false}
+                                        closeMenuOnSelect
                                         required={true}
                                         noOptionsMessage={() =>
                                           "Departments not found"
@@ -1469,7 +1469,10 @@ const ReportTable = (props) => {
                                     >
                                       ✕
                                     </div>
-                                    <SubscribeCard plan={"TEAM"} />
+                                    <SubscribeCard
+                                      plan={"TEAMS"}
+                                      price={"20"}
+                                    />
                                   </>
                                 )}
                               </div>

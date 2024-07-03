@@ -16,7 +16,7 @@ const listItemStyle = {
 
 const PlanSubscriptions = () => {
   const navigate = useNavigate();
-  const [yearlyVisible, setYearlyVisible] = useState(false);
+  const [yearlyVisible, setYearlyVisible] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
   const extUser =
     localStorage.getItem("Extand_Class") &&
@@ -132,9 +132,22 @@ const PlanSubscriptions = () => {
                       <div>
                         <span className="text-3xl">
                           {item.currency && <small>{item.currency}</small>}
-                          {yearlyVisible
-                            ? item?.yearlyPrice
-                            : item.monthlyPrice}
+                          {yearlyVisible ? (
+                            <>
+                              {item?.yearlyPrice.includes("<") ? (
+                                <div
+                                  className="inline-block"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item?.yearlyPrice
+                                  }}
+                                />
+                              ) : (
+                                <span>{item?.yearlyPrice}</span>
+                              )}
+                            </>
+                          ) : (
+                            item.monthlyPrice
+                          )}
                         </span>
                         <p className="font-semibold pt-2 text-sm">
                           {yearlyVisible ? "Billed Yearly" : "Billed Monthly"}

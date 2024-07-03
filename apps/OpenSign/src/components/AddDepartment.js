@@ -56,7 +56,7 @@ const AddDepartment = (props) => {
           objectId: x.objectId
         }));
       } else {
-        const AllUser = departmentList.find((x) => x.objectId === "All User");
+        const AllUser = departmentList.find((x) => x.objectId === "All Users");
         updatedAncestors = [
           AllUser,
           {
@@ -107,7 +107,7 @@ const AddDepartment = (props) => {
           const ParentId = departmentList.find(
             (x) => x.objectId === formdata.department
           );
-          props.handleDepartmentInfo({
+          props.handleTeamInfo({
             objectId: newdepartmentRes.id,
             Name: formdata.name,
             ParentId: ParentId,
@@ -115,7 +115,7 @@ const AddDepartment = (props) => {
             IsActive: true
           });
         } else {
-          props.handleDepartmentInfo({
+          props.handleTeamInfo({
             objectId: newdepartmentRes.id,
             Name: formdata.name,
             ParentId: "",
@@ -197,7 +197,7 @@ const AddDepartment = (props) => {
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Department
+              Parent Team
             </label>
             <select
               value={formdata.department}

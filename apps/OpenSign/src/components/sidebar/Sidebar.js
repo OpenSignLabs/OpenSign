@@ -50,11 +50,11 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                 ...newItem.children,
                 {
                   icon: "fa-light fa-building-memo",
-                  title: "Departments",
+                  title: "Teams",
                   target: "_self",
                   pageType: "",
                   description: "",
-                  objectId: "departments"
+                  objectId: "teams"
                 },
                 {
                   icon: "fa-light fa-users fa-fw",

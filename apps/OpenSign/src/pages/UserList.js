@@ -10,15 +10,7 @@ import AddUser from "../components/AddUser";
 import SubscribeCard from "../primitives/SubscribeCard";
 import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribedTeam } from "../constant/Utils";
-const heading = [
-  "Sr.No",
-  "Name",
-  "Email",
-  "Phone",
-  "Role",
-  "Department",
-  "Is-Active"
-];
+const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Team", "Active"];
 // const actions = [];
 const UserList = () => {
   const [userList, setUserList] = useState([]);
@@ -165,7 +157,7 @@ const UserList = () => {
         });
       } catch (err) {
         setIsAlert({ type: "danger", msg: "something went wrong." });
-        console.log("err in disable department", err);
+        console.log("err in disable team", err);
       } finally {
         setIsActLoader({});
         setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
@@ -196,9 +188,9 @@ const UserList = () => {
           )}
           <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
             <div className="font-light">
-              User list{" "}
+              Users{" "}
               <span className="text-xs md:text-[13px] font-normal">
-                <Tooltip message={"user list from departments"} />
+                <Tooltip message={"users from Teams"} />
               </span>
             </div>
             <div className="cursor-pointer" onClick={() => handleFormModal()}>
@@ -385,7 +377,7 @@ const UserList = () => {
       )}
       {!isSubscribe && isEnableSubscription && !isLoader && (
         <div data-tut="apisubscribe">
-          <SubscribeCard plan={"TEAM"} />
+          <SubscribeCard plan={"TEAMS"} price={"20"} />
         </div>
       )}
     </div>

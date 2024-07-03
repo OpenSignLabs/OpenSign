@@ -336,7 +336,7 @@ const AddUser = (props) => {
             >
               Password
             </label>
-            <div className="flex justify-between items-center op-input op-input-bordered op-input-sm bg-base-200 text-base-content w-full h-full text-[13px]">
+            <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
               <div className="break-all">{formdata?.password}</div>
               <i
                 onClick={() => copytoclipboard(formdata?.password)}
@@ -344,7 +344,7 @@ const AddUser = (props) => {
               ></i>
             </div>
             <div className="text-[12px] ml-2 mb-0 text-[red]">
-              Password will be generated one time; make sure to copy it.
+              Password will only be generated once; make sure to copy it.
             </div>
           </div>
           <div className="mb-3">
@@ -358,6 +358,7 @@ const AddUser = (props) => {
             <input
               type="text"
               name="phone"
+              placeholder="optional"
               value={formdata.phone}
               onChange={(e) => handleChange(e)}
               // required
@@ -369,7 +370,7 @@ const AddUser = (props) => {
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Department
+              Team
             </label>
             <select
               value={formdata.department}
