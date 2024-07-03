@@ -2101,6 +2101,7 @@ function PlaceHolderSign() {
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}
                         scale={scale}
+                        setIsSelectId={setIsSelectId}
                       />
                     )}
                   </div>
@@ -2144,6 +2145,7 @@ function PlaceHolderSign() {
                         setBlockColor={setBlockColor}
                         setIsAddSigner={setIsAddSigner}
                         handleDeleteUser={handleDeleteUser}
+                        uniqueId={uniqueId}
                       />
                     </div>
                   ) : (
@@ -2170,6 +2172,7 @@ function PlaceHolderSign() {
                           setIsAddSigner={setIsAddSigner}
                           handleDeleteUser={handleDeleteUser}
                           roleName={roleName}
+                          uniqueId={uniqueId}
                           // handleAddSigner={handleAddSigner}
                         />
                         <div data-tut="addWidgets">
