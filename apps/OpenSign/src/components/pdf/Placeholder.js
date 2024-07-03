@@ -262,6 +262,10 @@ function Placeholder(props) {
       if (props.pos.key === props.selectWidgetId) {
         props.handleLinkUser(props.data.Id);
         props.setUniqueId(props.data.Id);
+        const checkIndex = props.xyPostion.findIndex(
+          (data) => data.Id === props.data.Id
+        );
+        props.setIsSelectId(checkIndex || 0);
       }
     } else if (!props.pos.type) {
       if (
@@ -321,9 +325,19 @@ function Placeholder(props) {
     if (props.data && props?.pos?.type !== textWidget) {
       props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
+      const checkIndex = props.xyPostion.findIndex(
+        (data) => data.Id === props.data.Id
+      );
+
+      props.setIsSelectId(checkIndex || 0);
     } else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
       props.setUniqueId(props?.data?.Id);
+      const checkIndex = props.xyPostion.findIndex(
+        (data) => data.Id === props.data.Id
+      );
+
+      props.setIsSelectId(checkIndex || 0);
     }
     props.setSignKey(props.pos.key);
     props.setWidgetType(props.pos.type);
@@ -340,10 +354,19 @@ function Placeholder(props) {
     if (props.data && props?.pos?.type !== textWidget) {
       props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
+      const checkIndex = props.xyPostion.findIndex(
+        (data) => data.Id === props.data.Id
+      );
+
+      props.setIsSelectId(checkIndex || 0);
     } else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
       props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
+      const checkIndex = props.xyPostion.findIndex(
+        (data) => data.Id === props.data.Id
+      );
+      props.setIsSelectId(checkIndex || 0);
     }
 
     //checking widget's type and open widget copy modal for required widgets
@@ -457,11 +480,19 @@ function Placeholder(props) {
                     e.stopPropagation();
                     props.handleLinkUser(props.data.Id);
                     props.setUniqueId(props.data.Id);
+                    const checkIndex = props.xyPostion.findIndex(
+                      (data) => data.Id === props.data.Id
+                    );
+                    props.setIsSelectId(checkIndex || 0);
                   }}
                   onTouchEnd={(e) => {
                     e.stopPropagation();
                     props.handleLinkUser(props.data.Id);
                     props.setUniqueId(props.data.Id);
+                    const checkIndex = props.xyPostion.findIndex(
+                      (data) => data.Id === props.data.Id
+                    );
+                    props.setIsSelectId(checkIndex || 0);
                   }}
                   style={{ color: "#188ae2", right: "32px", top: "-18px" }}
                 ></i>
@@ -483,6 +514,10 @@ function Placeholder(props) {
                 if (props.data) {
                   props.setSignKey(props.pos.key);
                   props.setUniqueId(props.data.Id);
+                  const checkIndex = props.xyPostion.findIndex(
+                    (data) => data.Id === props.data.Id
+                  );
+                  props.setIsSelectId(checkIndex || 0);
                 }
               }}
               onTouchEnd={(e) => {
@@ -491,6 +526,10 @@ function Placeholder(props) {
                 if (props.data) {
                   props.setSignKey(props.pos.key);
                   props.setUniqueId(props.data.Id);
+                  const checkIndex = props.xyPostion.findIndex(
+                    (data) => data.Id === props.data.Id
+                  );
+                  props.setIsSelectId(checkIndex || 0);
                 }
               }}
             >
