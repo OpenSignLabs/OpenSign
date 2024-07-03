@@ -5,7 +5,7 @@ async function addDepartmentAndOrg(extUser) {
     orgCls.set('IsActive', true);
     const orgRes = await orgCls.save(null, { useMasterKey: true });
     const departmentCls = new Parse.Object('contracts_Departments');
-    departmentCls.set('Name', 'All User');
+    departmentCls.set('Name', 'All Users');
     departmentCls.set('OrganizationId', {
       __type: 'Pointer',
       className: 'contracts_Organizations',

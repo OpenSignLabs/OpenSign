@@ -18,9 +18,8 @@ import LazyPage from "./primitives/LazyPage";
 import { isEnableSubscription } from "./constant/const";
 import SSOVerify from "./pages/SSOVerify";
 import Loader from "./primitives/Loader";
-import DepartmentList from "./pages/DepartmentList";
+import TeamList from "./pages/TeamList";
 import UserList from "./pages/UserList";
-import AddDepartment from "./components/AddDepartment";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
@@ -123,11 +122,8 @@ function App() {
               </>
             )}
             <Route element={<HomeLayout />}>
-              <Route path="/departments" element={<DepartmentList />} />
-              <Route path="/departmentform" element={<AddDepartment />} />
-
+              <Route path="/teams" element={<TeamList />} />
               <Route path="/users" element={<UserList />} />
-
               <Route
                 path="/changepassword"
                 element={<LazyPage Page={ChangePassword} />}

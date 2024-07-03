@@ -11,7 +11,7 @@ import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribedTeam } from "../constant/Utils";
 import SubscribeCard from "../primitives/SubscribeCard";
 
-const heading = ["Sr.No", "Name", "Parent Department", "Is-Active"];
+const heading = ["Sr.No", "Name", "Parent Team", "Active"];
 // const actions = [
 //   {
 //     btnId: "1231",
@@ -23,9 +23,9 @@ const heading = ["Sr.No", "Name", "Parent Department", "Is-Active"];
 //   }
 // ];
 
-const DepartmentList = () => {
+const TeamList = () => {
   const recordperPage = 10;
-  const [departmentList, setDepartmentList] = useState([]);
+  const [teamList, setTeamList] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
   const [isModal, setIsModal] = useState(false);
   const location = useLocation();
@@ -41,7 +41,7 @@ const DepartmentList = () => {
   const getPaginationRange = () => {
     const totalPageNumbers = 7; // Adjust this value to show more/less page numbers
     const pages = [];
-    const totalPages = Math.ceil(departmentList.length / recordperPage);
+    const totalPages = Math.ceil(teamList.length / recordperPage);
     if (totalPages <= totalPageNumbers) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -91,9 +91,9 @@ const DepartmentList = () => {
   };
   const pageNumbers = getPaginationRange();
   useEffect(() => {
-    fetchDepartmentList();
+    fetchTeamList();
   }, []);
-  async function fetchDepartmentList() {
+  async function fetchTeamList() {
     try {
       setIsLoader(true);
       if (isEnableSubscription) {
@@ -101,20 +101,20 @@ const DepartmentList = () => {
         setIsSubscribe(getIsSubscribe);
       }
       const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-      const department = new Parse.Query("contracts_Departments");
-      department.equalTo("OrganizationId", {
+      const teamCls = new Parse.Query("contracts_Departments");
+      teamCls.equalTo("OrganizationId", {
         __type: "Pointer",
         className: "contracts_Organizations",
         objectId: extUser.OrganizationId.objectId
       });
-      department.descending("createdAt");
-      const departmentRes = await department.find();
-      if (departmentRes.length > 0) {
-        const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
-        setDepartmentList(_departmentRes);
+      teamCls.descending("createdAt");
+      const teamRes = await teamCls.find();
+      if (teamCls.length > 0) {
+        const _teamRes = JSON.parse(JSON.stringify(teamRes));
+        setTeamList(_teamRes);
       }
     } catch (err) {
-      console.log("Err in fetch departmentlist", err);
+      console.log("Err in fetch teamlist", err);
       setIsAlert({ type: "danger", msg: "Something went wrong." });
     } finally {
       setTimeout(() => {
@@ -129,7 +129,7 @@ const DepartmentList = () => {
   // Get current list
   const indexOfLastDoc = currentPage * recordperPage;
   const indexOfFirstDoc = indexOfLastDoc - recordperPage;
-  const currentList = departmentList?.slice(indexOfFirstDoc, indexOfLastDoc);
+  const currentList = teamList?.slice(indexOfFirstDoc, indexOfLastDoc);
 
   const handleClose = () => {
     setIsActiveModal({});
@@ -143,40 +143,38 @@ const DepartmentList = () => {
   //   //   setIsDeleteModal({ [item.objectId]: true });
   //   // }
   // };
-  const handleToggleBtn = (department) => {
-    setIsActiveModal({ [department.objectId]: true });
+  const handleToggleBtn = (team) => {
+    setIsActiveModal({ [team.objectId]: true });
   };
-  const handleToggleSubmit = async (department) => {
-    const index = departmentList.findIndex(
-      (obj) => obj.objectId === department.objectId
-    );
+  const handleToggleSubmit = async (team) => {
+    const index = teamList.findIndex((obj) => obj.objectId === team.objectId);
     if (index !== -1) {
       setIsActiveModal({});
-      setIsActLoader({ [department.objectId]: true });
-      const newArray = [...departmentList];
+      setIsActLoader({ [team.objectId]: true });
+      const newArray = [...teamList];
       const IsActive = newArray[index].IsActive;
       newArray[index] = { ...newArray[index], IsActive: !IsActive };
-      setDepartmentList(newArray);
+      setTeamList(newArray);
       try {
-        const departmentCls = new Parse.Object("contracts_Departments");
-        departmentCls.id = department.objectId;
-        departmentCls.set("IsActive", !IsActive);
-        await departmentCls.save();
+        const teamCls = new Parse.Object("contracts_Departments");
+        teamCls.id = team.objectId;
+        teamCls.set("IsActive", !IsActive);
+        await teamCls.save();
         setIsAlert({
           type: "success",
-          msg: "Department disabled successfully."
+          msg: "Team disabled successfully."
         });
       } catch (err) {
         setIsAlert({ type: "danger", msg: "something went wrong." });
-        console.log("err in disable department", err);
+        console.log("err in disable team", err);
       } finally {
         setIsActLoader({});
         setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
       }
     }
   };
-  const handleDepartmentInfo = (department) => {
-    setDepartmentList((prev) => [department, ...prev]);
+  const handleTeamInfo = (team) => {
+    setTeamList((prev) => [team, ...prev]);
   };
   return (
     <div className="relative">
@@ -199,9 +197,9 @@ const DepartmentList = () => {
           )}
           <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
             <div className="font-light">
-              department list{" "}
+              Teams{" "}
               <span className="text-xs md:text-[13px] font-normal">
-                <Tooltip message={"department list"} />
+                <Tooltip message={"Teams"} />
               </span>
             </div>
             <div className="cursor-pointer" onClick={() => handleFormModal()}>
@@ -220,7 +218,7 @@ const DepartmentList = () => {
                 </tr>
               </thead>
               <tbody className="text-[12px]">
-                {departmentList?.length > 0 && (
+                {teamList?.length > 0 && (
                   <>
                     {currentList.map((item, index) => (
                       <tr className="border-y-[1px]" key={index}>
@@ -235,7 +233,7 @@ const DepartmentList = () => {
                         <td className="px-4 py-2 font-semibold">
                           {item?.ParentId?.Name || "-"}
                         </td>
-                        {item?.Name !== "All User" && (
+                        {item?.Name !== "All Users" && (
                           <td className="px-4 py-2 font-semibold">
                             <label className="cursor-pointer relative block items-center mb-0">
                               <input
@@ -248,13 +246,12 @@ const DepartmentList = () => {
                             {isActiveModal[item.objectId] && (
                               <ModalUi
                                 isOpen
-                                title={"Department status"}
+                                title={"Team status"}
                                 handleClose={handleClose}
                               >
                                 <div className="m-[20px]">
                                   <div className="text-lg font-normal text-black">
-                                    Are you sure you want to disable this
-                                    department?
+                                    Are you sure you want to disable this team?
                                   </div>
                                   <hr className="bg-[#ccc] mt-4 " />
                                   <div className="flex items-center mt-3 gap-2 text-white">
@@ -299,7 +296,7 @@ const DepartmentList = () => {
             </table>
           </div>
           <div className="op-join flex flex-wrap items-center p-2">
-            {departmentList.length > recordperPage && (
+            {teamList.length > recordperPage && (
               <button
                 onClick={() => paginateBack()}
                 className="op-join-item op-btn op-btn-sm"
@@ -319,7 +316,7 @@ const DepartmentList = () => {
                 {x}
               </button>
             ))}
-            {departmentList.length > recordperPage && (
+            {teamList.length > recordperPage && (
               <button
                 onClick={() => paginateFront()}
                 className="op-join-item op-btn op-btn-sm"
@@ -328,7 +325,7 @@ const DepartmentList = () => {
               </button>
             )}
           </div>
-          {departmentList?.length <= 0 && (
+          {teamList?.length <= 0 && (
             <div
               className={`${
                 isDashboard ? "h-[317px]" : ""
@@ -345,12 +342,12 @@ const DepartmentList = () => {
             </div>
           )}
           <ModalUi
-            title={"Add Department"}
+            title={"Add Team"}
             isOpen={isModal}
             handleClose={handleFormModal}
           >
             <AddDepartment
-              handleDepartmentInfo={handleDepartmentInfo}
+              handleTeamInfo={handleTeamInfo}
               closePopup={handleFormModal}
             />
           </ModalUi>
@@ -358,11 +355,11 @@ const DepartmentList = () => {
       )}
       {!isSubscribe && isEnableSubscription && !isLoader && (
         <div data-tut="apisubscribe">
-          <SubscribeCard plan={"TEAM"} />
+          <SubscribeCard plan={"TEAMS"} price={"20"} />
         </div>
       )}
     </div>
   );
 };
 
-export default DepartmentList;
+export default TeamList;
