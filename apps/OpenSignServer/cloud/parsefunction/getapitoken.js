@@ -18,8 +18,7 @@ export default async function getapitoken(request) {
       }
     }
   } catch (err) {
-    console.log('Err', err);
-    console.log('err', err);
+    console.log('Err in getapitoken', err);
     if (err.code == 209) {
       return { error: 'Invalid session token' };
     } else {

@@ -298,6 +298,17 @@ function Header({
           ) : isPdfRequestFiles ? (
             alreadySign ? (
               <div className="flex flex-row">
+                <button
+                  onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
+                  type="button"
+                  className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
+                >
+                  <i
+                    className="fa-light fa-print py-[3px]"
+                    aria-hidden="true"
+                  ></i>
+                  <span className="hidden lg:block">Print</span>
+                </button>
                 {isCompleted && (
                   <button
                     type="button"
@@ -313,19 +324,6 @@ function Header({
                     <span className="hidden lg:block">Certificate</span>
                   </button>
                 )}
-
-                <button
-                  onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
-                  type="button"
-                  className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
-                >
-                  <i
-                    className="fa-light fa-print py-[3px]"
-                    aria-hidden="true"
-                  ></i>
-                  <span className="hidden lg:block">Print</span>
-                </button>
-
                 <button
                   type="button"
                   className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"

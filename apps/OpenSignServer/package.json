@@ -38,8 +38,8 @@
     "multer": "^1.4.5-lts.1",
     "multer-s3": "^3.0.1",
     "node-forge": "^1.3.1",
-    "nodemailer": "^6.9.13",
-    "parse": "^5.1.0",
+    "nodemailer": "^6.9.14",
+    "parse": "^5.2.0",
     "parse-dbtool": "^1.2.0",
     "parse-server": "^7.1.0",
     "parse-server-api-mail-adapter": "^3.1.1",
@@ -49,13 +49,12 @@
   "type": "module",
   "devDependencies": {
     "@babel/eslint-parser": "^7.24.7",
-    "eslint": "^9.3.0",
+    "eslint": "^9.6.0",
     "jasmine": "^5.1.0",
     "mongodb-runner": "^5.6.2",
-    "nodemon": "^3.1.3",
+    "nodemon": "^3.1.4",
     "nyc": "15.1.0",
-    "prettier": "^3.3.2",
-    "uglify-js": "^3.17.4"
+    "prettier": "^3.3.2"
   },
   "engines": {
     "node": ">=12.22.10 <21"

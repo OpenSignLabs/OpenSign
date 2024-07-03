@@ -15,13 +15,13 @@ async function TemplateBeforeSave(request) {
           await contractUser.save(null, { useMasterKey: true });
         } else {
           // Create new entry if not found
-          const ContractsUsers = Parse.Object.extend('contracts_users');
+          const ContractsUsers = Parse.Object.extend('contracts_Users');
           const newContractUser = new ContractsUsers();
           newContractUser.set('TemplateCount', 1);
           await newContractUser.save(null, { useMasterKey: true });
         }
       } catch (error) {
-        console.log('Error updating template count in contracts_users: ' + error.message);
+        console.log('Error updating template count in contracts_Users: ' + error.message);
       }
     }
   } catch (err) {

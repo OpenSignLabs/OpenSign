@@ -30,7 +30,7 @@ const plans = [
     planName: "OPENSIGN™ PROFESSIONAL",
     currency: "$",
     monthlyPrice: "29.99",
-    yearlyPrice: "329.99",
+    yearlyPrice: "10 <sup>/month/user</sup>",
     subtitle: "Exclusive Access to advanced features.",
     btnText: "Subscribe",
     url:
@@ -44,6 +44,36 @@ const plans = [
     target: "_self",
     benefits: [
       "Everything in OpenSign™ free",
+      "Field validations",
+      "Regular expression validations",
+      "Organize docs in OpenSign™ Drive",
+      "Webhooks",
+      "Zapier integration",
+      "API Access",
+      "100 API signatures included",
+      "DocumentId removal from signed docs",
+      "Custom email templates",
+      "Auto reminders"
+    ]
+  },
+  {
+    planName: "OPENSIGN™ TEAMS",
+    currency: "$",
+    monthlyPrice: "40",
+    yearlyPrice: "20 <sup>/month/user</sup>",
+    subtitle: "Exclusive Access to advanced features.",
+    btnText: "Subscribe",
+    url:
+      window.location.origin === "http://localhost:3001"
+        ? "https://billing.zoho.in/subscribe/ed8097273a82b6bf39892c11a3bb3c381eb2705736014cfbdbde1ccf1c7a189d/team-weekly"
+        : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d1a09dfa8085585cdd4ec4d7f32137f3/professional-monthly",
+    yearlyUrl:
+      window.location.origin === "http://localhost:3001"
+        ? "https://billing.zoho.in/subscribe/ed8097273a82b6bf39892c11a3bb3c381eb2705736014cfbdbde1ccf1c7a189d/team-weekly"
+        : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d8ad1135190dff951330360e47585a71/professional-yearly",
+    target: "_self",
+    benefits: [
+      "Everything in OpenSign™ free, professional",
       "Field validations",
       "Regular expression validations",
       "Organize docs in OpenSign™ Drive",

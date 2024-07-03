@@ -23,29 +23,57 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   const menuItem = async () => {
     try {
       if (localStorage.getItem("defaultmenuid")) {
-        const menuId = localStorage.getItem("defaultmenuid") !== "VPh91h0ZHk";
-        if (menuId) {
-          setmenuList(sidebarList);
-        } else {
-          const addUserForm = {
-            icon: "fa-light fa-user",
-            title: "Add User",
-            target: "_self",
-            pageType: "form",
-            description: "",
-            objectId: "lM0xRnM3iE"
-          };
+        const Extand_Class = localStorage.getItem("Extand_Class");
+        const extClass = Extand_Class && JSON.parse(Extand_Class);
+        // console.log("extClass ", extClass);
+        let userRole = "contracts_Users";
+        if (extClass && extClass.length > 0) {
+          userRole = extClass[0].UserRole;
+        }
+        if (
+          userRole === "contracts_Admin" ||
+          userRole === "contracts_OrgAdmin"
+        ) {
+          // const addUserForm = {
+          //   icon: "fa-light fa-user",
+          //   title: "Add User",
+          //   target: "_self",
+          //   pageType: "form",
+          //   description: "",
+          //   objectId: "lM0xRnM3iE"
+          // };
           const newSidebarList = sidebarList.map((item) => {
             if (item.title === "Settings") {
               // Make a shallow copy of the item
               const newItem = { ...item };
+              newItem.children = [
+                ...newItem.children,
+                {
+                  icon: "fa-light fa-building-memo",
+                  title: "Teams",
+                  target: "_self",
+                  pageType: "",
+                  description: "",
+                  objectId: "teams"
+                },
+                {
+                  icon: "fa-light fa-users fa-fw",
+                  title: "Users",
+                  target: "_self",
+                  pageType: "",
+                  description: "",
+                  objectId: "users"
+                }
+              ];
               // Insert addUserForm at the second position
-              newItem.children.splice(1, 0, addUserForm);
+              // newItem.children.splice(1, 0, addUserForm);
               return newItem;
             }
             return item;
           });
           setmenuList(newSidebarList);
+        } else {
+          setmenuList(sidebarList);
         }
       }
     } catch (e) {
@@ -63,7 +91,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   };
   return (
     <aside
-      className={`absolute lg:relative bg-base-100 h-screen overflow-y-auto transition-all z-[999] shadow-lg hide-scrollbar
+      className={`absolute lg:relative bg-base-100 h-screen overflow-y-auto transition-all z-[500] shadow-lg hide-scrollbar
      ${isOpen ? "w-full md:w-[300px]" : "w-0"}`}
     >
       <div className="flex px-2 py-3 gap-2 items-center shadow-md">

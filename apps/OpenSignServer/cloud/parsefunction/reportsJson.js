@@ -318,11 +318,6 @@ export default function reportJson(id, userId) {
         params: {
           Type: { $ne: 'Folder' },
           IsArchive: { $ne: true },
-          CreatedBy: {
-            __type: 'Pointer',
-            className: '_User',
-            objectId: currentUserId,
-          },
         },
         keys: [
           'Name',
@@ -335,6 +330,7 @@ export default function reportJson(id, userId) {
           'Signers.Phone',
           'Placeholders',
           'IsPublic',
+          'SharedWith.Name',
         ],
       };
     default:
