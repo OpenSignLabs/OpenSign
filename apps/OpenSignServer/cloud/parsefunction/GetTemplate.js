@@ -24,18 +24,16 @@ export default async function GetTemplate(request) {
 
         const extUserQuery = new Parse.Query('contracts_Users');
         extUserQuery.equalTo('Email', userRes.data.email);
-        extUserQuery.include('DepartmentIds');
+        extUserQuery.include('TeamIds');
         const extUser = await extUserQuery.first({ useMasterKey: true });
         if (extUser) {
           const _extUser = JSON.parse(JSON.stringify(extUser));
-          if (_extUser?.DepartmentIds && _extUser.DepartmentIds?.length > 0) {
-            let departmentArr = [];
-            _extUser?.DepartmentIds?.forEach(
-              x => (departmentArr = [...departmentArr, ...x.Ancestors])
-            );
+          if (_extUser?.TeamIds && _extUser.TeamIds?.length > 0) {
+            let teamsArr = [];
+            _extUser?.TeamIds?.forEach(x => (teamsArr = [...teamsArr, ...x.Ancestors]));
             // Create the first query
             const sharedWithQuery = new Parse.Query('contracts_Template');
-            sharedWithQuery.containedIn('SharedWith', departmentArr);
+            sharedWithQuery.containedIn('SharedWith', teamsArr);
 
             // Create the second query
             const createdByQuery = new Parse.Query('contracts_Template');

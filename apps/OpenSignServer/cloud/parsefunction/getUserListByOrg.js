@@ -11,7 +11,7 @@ export default async function getUserListByOrg(req) {
     try {
       const extUser = new Parse.Query('contracts_Users');
       extUser.equalTo('OrganizationId', orgPtr);
-      extUser.include('DepartmentIds');
+      extUser.include('TeamIds');
       extUser.descending('createdAt');
       const userRes = await extUser.find({ useMasterKey: true });
       if (userRes.length > 0) {

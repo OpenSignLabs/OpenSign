@@ -28,19 +28,17 @@ export default async function getReport(request) {
         if (reportId == '6TeaPr321t') {
           const extUserQuery = new Parse.Query('contracts_Users');
           extUserQuery.equalTo('Email', userRes.data.email);
-          extUserQuery.include('DepartmentIds');
+          extUserQuery.include('TeamIds');
           const extUser = await extUserQuery.first({ useMasterKey: true });
           if (extUser) {
             const _extUser = JSON.parse(JSON.stringify(extUser));
-            if (_extUser?.DepartmentIds && _extUser.DepartmentIds?.length > 0) {
-              let departmentArr = [];
-              _extUser?.DepartmentIds?.forEach(
-                x => (departmentArr = [...departmentArr, ...x.Ancestors])
-              );
+            if (_extUser?.TeamIds && _extUser.TeamIds?.length > 0) {
+              let teamArr = [];
+              _extUser?.TeamIds?.forEach(x => (teamArr = [...teamArr, ...x.Ancestors]));
               strParams = JSON.stringify({
                 ...params,
                 $or: [
-                  { SharedWith: { $in: departmentArr } },
+                  { SharedWith: { $in: teamArr } },
                   {
                     ExtUserPtr: {
                       __type: 'Pointer',

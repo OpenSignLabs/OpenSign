@@ -1950,29 +1950,37 @@ function PlaceHolderSign() {
                       {!mailStatus && (
                         <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                       )}
-                      {isCurrUser && (
+                      <div
+                        className={
+                          mailStatus === "success"
+                            ? "flex justify-center mt-1"
+                            : ""
+                        }
+                      >
+                        {isCurrUser && (
+                          <button
+                            onClick={() => {
+                              handleRecipientSign();
+                            }}
+                            type="button"
+                            className="op-btn op-btn-primary mr-1"
+                          >
+                            Yes
+                          </button>
+                        )}
+
                         <button
                           onClick={() => {
-                            handleRecipientSign();
+                            setIsSend(false);
+                            setSignerPos([]);
+                            navigate("/report/1MwEuxLEkF");
                           }}
                           type="button"
-                          className="op-btn op-btn-primary mr-1"
+                          className="op-btn op-btn-ghost"
                         >
-                          Yes
+                          {isCurrUser ? "No" : "Close"}
                         </button>
-                      )}
-
-                      <button
-                        onClick={() => {
-                          setIsSend(false);
-                          setSignerPos([]);
-                          navigate("/report/1MwEuxLEkF");
-                        }}
-                        type="button"
-                        className="op-btn op-btn-ghost"
-                      >
-                        {isCurrUser ? "No" : "Close"}
-                      </button>
+                      </div>
                     </div>
                   </ModalUi>
                   <ModalUi
