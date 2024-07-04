@@ -120,7 +120,7 @@ function Login() {
                         email: currentUser.get("email")
                       })
                         .then((extUser) => {
-                          if (roles) {
+                          if (extUser && roles) {
                             userRoles = roles;
                             let _currentRole = "";
                             const valuesToExclude = [
@@ -149,7 +149,7 @@ function Login() {
                                   );
                                   let tenentInfo = [];
                                   const results = [extUser];
-                                  if (results) {
+                                  if (extUser) {
                                     let extendedInfo_stringify =
                                       JSON.stringify(results);
 
@@ -160,45 +160,7 @@ function Login() {
                                     let extendedInfo = JSON.parse(
                                       extendedInfo_stringify
                                     );
-                                    if (extendedInfo.length > 1) {
-                                      extendedInfo.forEach((x) => {
-                                        if (x.TenantId) {
-                                          let obj = {
-                                            tenentId: x.TenantId.objectId,
-                                            tenentName:
-                                              x.TenantId.TenantName || ""
-                                          };
-                                          tenentInfo.push(obj);
-                                        }
-                                      });
-                                      if (tenentInfo.length) {
-                                        dispatch(
-                                          showTenant(
-                                            tenentInfo[0].tenentName || ""
-                                          )
-                                        );
-                                        localStorage.setItem(
-                                          "TenantName",
-                                          tenentInfo[0].tenentName || ""
-                                        );
-                                      }
-
-                                      localStorage.setItem("showpopup", true);
-                                      localStorage.setItem(
-                                        "PageLanding",
-                                        element.pageId
-                                      );
-                                      localStorage.setItem(
-                                        "defaultmenuid",
-                                        element.menuId
-                                      );
-                                      localStorage.setItem(
-                                        "pageType",
-                                        element.pageType
-                                      );
-                                      setState({ ...state, loading: false });
-                                      navigate("/");
-                                    } else {
+                                    if (extendedInfo.length > 0) {
                                       extendedInfo.forEach((x) => {
                                         if (x.TenantId) {
                                           let obj = {
@@ -488,7 +450,7 @@ function Login() {
                         async (result) => {
                           let tenentInfo = [];
                           const results = [result];
-                          if (results) {
+                          if (results && results.length > 0) {
                             let extendedInfo_stringify =
                               JSON.stringify(results);
                             localStorage.setItem(

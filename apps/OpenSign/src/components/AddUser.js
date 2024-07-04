@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import axios from "axios";
 import Title from "./Title";
-import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 import { copytoData } from "../constant/Utils";
 function generatePassword(length) {
@@ -22,35 +21,34 @@ const AddUser = (props) => {
     name: "",
     phone: "",
     email: "",
-    department: "",
+    team: "",
     password: "",
     role: ""
   });
   const [isLoader, setIsLoader] = useState(false);
-  const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
-  const [departmentList, setDepartmentList] = useState([]);
+  const [teamList, setTeamList] = useState([]);
   const role = ["OrgAdmin", "Manager", "User"];
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
 
   useEffect(() => {
-    getDepartmentList();
+    getTeamList();
   }, []);
 
-  const getDepartmentList = async () => {
+  const getTeamList = async () => {
     setFormdata((prev) => ({ ...prev, password: generatePassword(12) }));
     const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-    const department = new Parse.Query("contracts_Departments");
-    department.equalTo("OrganizationId", {
+    const team = new Parse.Query("contracts_Teams");
+    team.equalTo("OrganizationId", {
       __type: "Pointer",
       className: "contracts_Organizations",
       objectId: extUser.OrganizationId.objectId
     });
-    department.equalTo("IsActive", true);
-    const departmentRes = await department.find();
-    if (departmentRes.length > 0) {
-      const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
-      setDepartmentList(_departmentRes);
+    team.equalTo("IsActive", true);
+    const teamRes = await team.find();
+    if (teamRes.length > 0) {
+      const _teamRes = JSON.parse(JSON.stringify(teamRes));
+      setTeamList(_teamRes);
     }
   };
   const checkUserExist = async () => {
@@ -75,10 +73,10 @@ const AddUser = (props) => {
     setIsLoader(true);
     const res = await checkUserExist();
     if (res) {
-      setIsAlert({ type: "danger", msg: "User already exist." });
+      props.setIsAlert({ type: "danger", msg: "User already exist." });
       setIsLoader(false);
       setTimeout(() => {
-        setIsAlert({ type: "success", msg: "" });
+        props.setIsAlert({ type: "success", msg: "" });
       }, 1000);
     } else {
       try {
@@ -89,12 +87,12 @@ const AddUser = (props) => {
         }
         extUser.set("Email", formdata.email);
         extUser.set("UserRole", `contracts_${formdata.role}`);
-        if (formdata?.department) {
-          extUser.set("DepartmentIds", [
+        if (formdata?.team) {
+          extUser.set("TeamIds", [
             {
               __type: "Pointer",
-              className: "contracts_Departments",
-              objectId: formdata.department
+              className: "contracts_Teams",
+              objectId: formdata.team
             }
           ]);
         }
@@ -162,12 +160,10 @@ const AddUser = (props) => {
               props.closePopup();
             }
             if (props.handleUserData) {
-              if (formdata?.department) {
-                const department = departmentList.find(
-                  (x) => x.objectId === formdata.department
-                );
-                parseData.DepartmentIds = parseData.DepartmentIds.map((y) =>
-                  y.objectId === department.objectId ? department : y
+              if (formdata?.team) {
+                const team = teamList.find((x) => x.objectId === formdata.team);
+                parseData.TeamIds = parseData.TeamIds.map((y) =>
+                  y.objectId === team.objectId ? team : y
                 );
               }
               props.handleUserData(parseData);
@@ -178,7 +174,7 @@ const AddUser = (props) => {
               name: "",
               email: "",
               phone: "",
-              department: "",
+              team: "",
               role: ""
             });
           }
@@ -224,12 +220,10 @@ const AddUser = (props) => {
               props.closePopup();
             }
             if (props.handleUserData) {
-              if (formdata?.department) {
-                const department = departmentList.find(
-                  (x) => x.objectId === formdata.department
-                );
-                parseData.DepartmentIds = parseData.DepartmentIds.map((y) =>
-                  y.objectId === department.objectId ? department : y
+              if (formdata?.team) {
+                const team = teamList.find((x) => x.objectId === formdata.team);
+                parseData.TeamIds = parseData.TeamIds.map((y) =>
+                  y.objectId === team.objectId ? team : y
                 );
               }
 
@@ -240,7 +234,7 @@ const AddUser = (props) => {
               name: "",
               email: "",
               phone: "",
-              department: "",
+              team: "",
               role: ""
             });
           }
@@ -248,9 +242,9 @@ const AddUser = (props) => {
       } catch (err) {
         console.log("err", err);
         setIsLoader(false);
-        setIsAlert({ type: "danger", msg: "something went wrong." });
+        props.setIsAlert({ type: "danger", msg: "something went wrong." });
       } finally {
-        setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+        setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500);
       }
     }
   };
@@ -261,7 +255,7 @@ const AddUser = (props) => {
       name: "",
       email: "",
       phone: "",
-      department: "",
+      team: "",
       role: ""
     });
     if (props.closePopup) {
@@ -274,19 +268,12 @@ const AddUser = (props) => {
 
   const copytoclipboard = (text) => {
     copytoData(text);
-    setIsAlert({ type: "success", msg: "Copied" });
-    setTimeout(() => {
-      setIsAlert({ type: "success", msg: "" });
-    }, 1500); // Reset copied state after 1.5 seconds
+    props.setIsAlert({ type: "success", msg: "Copied" });
+    setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500); // Reset copied state after 1.5 seconds
   };
   return (
     <div className="shadow-md rounded-box my-[1px] p-3 bg-[#ffffff]">
       <Title title={"Add User"} />
-      {isAlert.msg && (
-        <Alert type={isAlert.type}>
-          <div className="ml-3">{isAlert.msg}</div>
-        </Alert>
-      )}
       {isLoader && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50 rounded-box">
           <Loader />
@@ -340,10 +327,10 @@ const AddUser = (props) => {
               <div className="break-all">{formdata?.password}</div>
               <i
                 onClick={() => copytoclipboard(formdata?.password)}
-                className="fa-light fa-copy rounded-full hover:bg-base-300 p-[8px]"
+                className="fa-light fa-copy rounded-full hover:bg-base-300 p-[8px] cursor-pointer "
               ></i>
             </div>
-            <div className="text-[12px] ml-2 mb-0 text-[red]">
+            <div className="text-[12px] ml-2 mb-0 text-[red] select-none">
               Password will only be generated once; make sure to copy it.
             </div>
           </div>
@@ -370,20 +357,20 @@ const AddUser = (props) => {
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Team
+              Team<span className="text-[red] text-[13px]"> *</span>
             </label>
             <select
-              value={formdata.department}
+              value={formdata.team}
               onChange={(e) => handleChange(e)}
-              name="department"
+              name="team"
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
               required
             >
               <option defaultValue={""} value={""}>
                 select
               </option>
-              {departmentList.length > 0 &&
-                departmentList.map((x) => (
+              {teamList.length > 0 &&
+                teamList.map((x) => (
                   <option key={x.objectId} value={x.objectId}>
                     {x.Name}
                   </option>
@@ -395,13 +382,14 @@ const AddUser = (props) => {
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Role
+              Role<span className="text-[red] text-[13px]"> *</span>
             </label>
             <select
               value={formdata.role}
               onChange={(e) => handleChange(e)}
               name="role"
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+              required
             >
               <option defaultValue={""} value={""}>
                 select

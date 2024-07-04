@@ -1,18 +1,34 @@
-async function addDepartmentAndOrg(extUser) {
+async function addTeamAndOrg(extUser) {
   try {
     const orgCls = new Parse.Object('contracts_Organizations');
     orgCls.set('Name', extUser.Company);
     orgCls.set('IsActive', true);
+    orgCls.set('ExtUserId', {
+      __type: 'Pointer',
+      className: 'contracts_Users',
+      objectId: extUser?.objectId,
+    });
+    orgCls.set('CreatedBy', {
+      __type: 'Pointer',
+      className: '_User',
+      objectId: extUser?.UserId?.objectId,
+    });
+    orgCls.set('TenantId', {
+      __type: 'Pointer',
+      className: 'partners_Tenant',
+      objectId: extUser?.TenantId?.objectId,
+    });
+
     const orgRes = await orgCls.save(null, { useMasterKey: true });
-    const departmentCls = new Parse.Object('contracts_Departments');
-    departmentCls.set('Name', 'All Users');
-    departmentCls.set('OrganizationId', {
+    const teamCls = new Parse.Object('contracts_Teams');
+    teamCls.set('Name', 'All Users');
+    teamCls.set('OrganizationId', {
       __type: 'Pointer',
       className: 'contracts_Organizations',
       objectId: orgRes.id,
     });
-    departmentCls.set('IsActive', true);
-    const departmentRes = await departmentCls.save(null, { useMasterKey: true });
+    teamCls.set('IsActive', true);
+    const teamRes = await teamCls.save(null, { useMasterKey: true });
     const updateUser = new Parse.Object('contracts_Users');
     updateUser.id = extUser.objectId;
     updateUser.set('UserRole', 'contracts_Admin');
@@ -21,16 +37,16 @@ async function addDepartmentAndOrg(extUser) {
       className: 'contracts_Organizations',
       objectId: orgRes.id,
     });
-    updateUser.set('DepartmentIds', [
+    updateUser.set('TeamIds', [
       {
         __type: 'Pointer',
-        className: 'contracts_Departments',
-        objectId: departmentRes.id,
+        className: 'contracts_Teams',
+        objectId: teamRes.id,
       },
     ]);
     const extUserRes = await updateUser.save(null, { useMasterKey: true });
   } catch (err) {
-    console.log('err in add department, role, org', err);
+    console.log('err in add team, role, org', err);
   }
 }
 
@@ -50,7 +66,7 @@ export default async function SubscriptionAftersave(request) {
         if (extUserRes) {
           const extUser = JSON.parse(JSON.stringify(extUserRes));
           if (extUser?.UserRole !== 'contracts_Admin') {
-            await addDepartmentAndOrg(extUser);
+            await addTeamAndOrg(extUser);
           }
         }
       }
@@ -71,7 +87,7 @@ export default async function SubscriptionAftersave(request) {
         if (extUserRes) {
           const extUser = JSON.parse(JSON.stringify(extUserRes));
           if (extUser?.UserRole !== 'contracts_Admin') {
-            await addDepartmentAndOrg(extUser);
+            await addTeamAndOrg(extUser);
           }
         }
       }

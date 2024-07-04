@@ -226,47 +226,48 @@ const UserList = () => {
                         <td className="px-4 py-2">
                           {item?.UserRole?.split("_").pop() || "-"}
                         </td>
-                        <td className="px-4 py-2">
-                          {formatRow(item.DepartmentIds)}
-                        </td>
-                        <td className="px-4 py-2 font-semibold">
-                          <label className="cursor-pointer relative block items-center mb-0">
-                            <input
-                              type="checkbox"
-                              className="op-toggle transition-all op-toggle-secondary"
-                              checked={item?.IsDisabled !== true}
-                              onChange={() => handleToggleBtn(item)}
-                            />
-                          </label>
-                          {isActiveModal[item.objectId] && (
-                            <ModalUi
-                              isOpen
-                              title={"User status"}
-                              handleClose={handleClose}
-                            >
-                              <div className="m-[20px]">
-                                <div className="text-lg font-normal text-black">
-                                  Are you sure you want to deactivate this user?
+                        <td className="px-4 py-2">{formatRow(item.TeamIds)}</td>
+                        {item.UserRole !== "contracts_Admin" && (
+                          <td className="px-4 py-2 font-semibold">
+                            <label className="cursor-pointer relative block items-center mb-0">
+                              <input
+                                type="checkbox"
+                                className="op-toggle transition-all op-toggle-secondary"
+                                checked={item?.IsDisabled !== true}
+                                onChange={() => handleToggleBtn(item)}
+                              />
+                            </label>
+                            {isActiveModal[item.objectId] && (
+                              <ModalUi
+                                isOpen
+                                title={"User status"}
+                                handleClose={handleClose}
+                              >
+                                <div className="m-[20px]">
+                                  <div className="text-lg font-normal text-black">
+                                    Are you sure you want to deactivate this
+                                    user?
+                                  </div>
+                                  <hr className="bg-[#ccc] mt-4 " />
+                                  <div className="flex items-center mt-3 gap-2 text-white">
+                                    <button
+                                      onClick={() => handleToggleSubmit(item)}
+                                      className="op-btn op-btn-primary"
+                                    >
+                                      Yes
+                                    </button>
+                                    <button
+                                      onClick={handleClose}
+                                      className="op-btn op-btn-secondary"
+                                    >
+                                      No
+                                    </button>
+                                  </div>
                                 </div>
-                                <hr className="bg-[#ccc] mt-4 " />
-                                <div className="flex items-center mt-3 gap-2 text-white">
-                                  <button
-                                    onClick={() => handleToggleSubmit(item)}
-                                    className="op-btn op-btn-primary"
-                                  >
-                                    Yes
-                                  </button>
-                                  <button
-                                    onClick={handleClose}
-                                    className="op-btn op-btn-secondary"
-                                  >
-                                    No
-                                  </button>
-                                </div>
-                              </div>
-                            </ModalUi>
-                          )}
-                        </td>
+                              </ModalUi>
+                            )}
+                          </td>
+                        )}
                         {/* <td className="px-3 py-2 text-white grid grid-cols-2">
                         {actions?.length > 0 &&
                           actions.map((act, index) => (
@@ -369,6 +370,7 @@ const UserList = () => {
             handleClose={handleFormModal}
           >
             <AddUser
+              setIsAlert={setIsAlert}
               handleUserData={handleUserData}
               closePopup={handleFormModal}
             />

@@ -1,4 +1,4 @@
-export default async function DepartmentsAftersave(req) {
+export default async function TeamsAftersave(req) {
   if (!req.original) {
     try {
       const Ancestors = req.object.get('Ancestors');
@@ -8,7 +8,7 @@ export default async function DepartmentsAftersave(req) {
           ...Ancestors,
           {
             __type: 'Pointer',
-            className: 'contracts_Departments',
+            className: 'contracts_Teams',
             objectId: req.object.id,
           },
         ];
@@ -16,7 +16,7 @@ export default async function DepartmentsAftersave(req) {
         updatedAncestors = [
           {
             __type: 'Pointer',
-            className: 'contracts_Departments',
+            className: 'contracts_Teams',
             objectId: req.object.id,
           },
         ];
@@ -24,7 +24,7 @@ export default async function DepartmentsAftersave(req) {
       req.object.set('Ancestors', updatedAncestors);
       await req.object.save(null, { useMasterKey: true });
     } catch (err) {
-      console.log('Err in department aftersave', err);
+      console.log('Err in team aftersave', err);
     }
   }
 }
