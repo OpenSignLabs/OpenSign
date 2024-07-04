@@ -6,22 +6,22 @@ import { useLocation } from "react-router-dom";
 import Tooltip from "../primitives/Tooltip";
 import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
-import AddDepartment from "../components/AddDepartment";
+import AddTeam from "../components/AddTeam";
 import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribedTeam } from "../constant/Utils";
 import SubscribeCard from "../primitives/SubscribeCard";
 
 const heading = ["Sr.No", "Name", "Parent Team", "Active"];
-// const actions = [
-//   {
-//     btnId: "1231",
-//     hoverLabel: "Edit",
-//     btnColor: "op-btn-primary",
-//     btnIcon: "fa-light fa-pen",
-//     redirectUrl: "draftDocument",
-//     action: "redirect"
-//   }
-// ];
+const actions = [
+  {
+    btnId: "1231",
+    hoverLabel: "Edit",
+    btnColor: "op-btn-primary",
+    btnIcon: "fa-light fa-pen",
+    redirectUrl: "",
+    action: "edit"
+  }
+];
 
 const TeamList = () => {
   const recordperPage = 10;
@@ -32,10 +32,11 @@ const TeamList = () => {
   const isDashboard =
     location?.pathname === "/dashboard/35KBoSgoAK" ? true : false;
   const [currentPage, setCurrentPage] = useState(1);
-  const [isActiveModal, setIsActiveModal] = useState(false);
+  const [isActiveModal, setIsActiveModal] = useState({});
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isActLoader, setIsActLoader] = useState({});
   const [isSubscribe, setIsSubscribe] = useState(false);
+  const [isEditModal, setIsEditModal] = useState({});
   const startIndex = (currentPage - 1) * recordperPage; // user per page
 
   const getPaginationRange = () => {
@@ -101,7 +102,7 @@ const TeamList = () => {
         setIsSubscribe(getIsSubscribe);
       }
       const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-      const teamCls = new Parse.Query("contracts_Departments");
+      const teamCls = new Parse.Query("contracts_Teams");
       teamCls.equalTo("OrganizationId", {
         __type: "Pointer",
         className: "contracts_Organizations",
@@ -109,7 +110,7 @@ const TeamList = () => {
       });
       teamCls.descending("createdAt");
       const teamRes = await teamCls.find();
-      if (teamCls.length > 0) {
+      if (teamRes.length > 0) {
         const _teamRes = JSON.parse(JSON.stringify(teamRes));
         setTeamList(_teamRes);
       }
@@ -133,16 +134,17 @@ const TeamList = () => {
 
   const handleClose = () => {
     setIsActiveModal({});
+    setIsEditModal({});
   };
 
   // Change page
   const paginateFront = () => setCurrentPage(currentPage + 1);
   const paginateBack = () => setCurrentPage(currentPage - 1);
-  // const handleActionBtn = (act, item) => {
-  //   // if (act.action === "delete") {
-  //   //   setIsDeleteModal({ [item.objectId]: true });
-  //   // }
-  // };
+  const handleActionBtn = (act, item) => {
+    if (act.action === "edit") {
+      setIsEditModal({ [item.objectId]: true });
+    }
+  };
   const handleToggleBtn = (team) => {
     setIsActiveModal({ [team.objectId]: true });
   };
@@ -156,7 +158,7 @@ const TeamList = () => {
       newArray[index] = { ...newArray[index], IsActive: !IsActive };
       setTeamList(newArray);
       try {
-        const teamCls = new Parse.Object("contracts_Departments");
+        const teamCls = new Parse.Object("contracts_Teams");
         teamCls.id = team.objectId;
         teamCls.set("IsActive", !IsActive);
         await teamCls.save();
@@ -175,6 +177,33 @@ const TeamList = () => {
   };
   const handleTeamInfo = (team) => {
     setTeamList((prev) => [team, ...prev]);
+  };
+  const handleEditChange = (e, team) => {
+    const index = teamList.findIndex((obj) => obj.objectId === team.objectId);
+    if (index !== -1) {
+      const newArray = [...teamList];
+      newArray[index] = { ...newArray[index], Name: e.target.value };
+      setTeamList(newArray);
+    }
+  };
+  const updateTeamName = async (e, team) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsActLoader({ [team.objectId]: true });
+    setIsEditModal({});
+    try {
+      const teamCls = new Parse.Object("contracts_Teams");
+      teamCls.id = team?.objectId;
+      teamCls.set("Name", team.Name);
+      await teamCls.save();
+      setIsAlert({ type: "success", msg: "Team Update successfully." });
+    } catch (Err) {
+      console.log("Err in update team name"), Err;
+      setIsAlert({ type: "danger", msg: "Something went wrong." });
+    } finally {
+      setIsActLoader({});
+      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
+    }
   };
   return (
     <div className="relative">
@@ -233,61 +262,101 @@ const TeamList = () => {
                         <td className="px-4 py-2 font-semibold">
                           {item?.ParentId?.Name || "-"}
                         </td>
-                        {item?.Name !== "All Users" && (
-                          <td className="px-4 py-2 font-semibold">
-                            <label className="cursor-pointer relative block items-center mb-0">
-                              <input
-                                type="checkbox"
-                                className="op-toggle transition-all op-toggle-secondary"
-                                checked={item?.IsActive}
-                                onChange={() => handleToggleBtn(item)}
-                              />
-                            </label>
-                            {isActiveModal[item.objectId] && (
-                              <ModalUi
-                                isOpen
-                                title={"Team status"}
-                                handleClose={handleClose}
-                              >
-                                <div className="m-[20px]">
-                                  <div className="text-lg font-normal text-black">
-                                    Are you sure you want to disable this team?
+                        <td className="px-4 py-2 font-semibold">
+                          {item?.Name !== "All Users" && (
+                            <>
+                              <label className="cursor-pointer relative block items-center mb-0">
+                                <input
+                                  type="checkbox"
+                                  className="op-toggle transition-all op-toggle-secondary"
+                                  checked={item?.IsActive}
+                                  onChange={() => handleToggleBtn(item)}
+                                />
+                              </label>
+                              {isActiveModal[item.objectId] && (
+                                <ModalUi
+                                  isOpen
+                                  title={"Team status"}
+                                  handleClose={handleClose}
+                                >
+                                  <div className="m-[20px]">
+                                    <div className="text-lg font-normal text-black">
+                                      Are you sure you want to disable this
+                                      team?
+                                    </div>
+                                    <hr className="bg-[#ccc] mt-4 " />
+                                    <div className="flex items-center mt-3 gap-2 text-white">
+                                      <button
+                                        onClick={() => handleToggleSubmit(item)}
+                                        className="op-btn op-btn-primary"
+                                      >
+                                        Yes
+                                      </button>
+                                      <button
+                                        onClick={handleClose}
+                                        className="op-btn op-btn-secondary"
+                                      >
+                                        No
+                                      </button>
+                                    </div>
                                   </div>
-                                  <hr className="bg-[#ccc] mt-4 " />
-                                  <div className="flex items-center mt-3 gap-2 text-white">
+                                </ModalUi>
+                              )}
+                            </>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-white flex flex-wrap gap-1">
+                          {item?.Name !== "All Users" && (
+                            <>
+                              {actions?.length > 0 &&
+                                actions.map((act, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={() => handleActionBtn(act, item)}
+                                    title={act.hoverLabel}
+                                    className={`${
+                                      act?.btnColor ? act.btnColor : ""
+                                    } op-btn op-btn-sm w-[50px]`}
+                                  >
+                                    <i className={act.btnIcon}></i>
+                                  </button>
+                                ))}
+                              {isEditModal[item.objectId] && (
+                                <ModalUi
+                                  isOpen
+                                  title={"Edit Team"}
+                                  handleClose={handleClose}
+                                >
+                                  <form
+                                    className="m-[20px]"
+                                    onSubmit={(e) => updateTeamName(e, item)}
+                                  >
+                                    <label className="text-xs font-semibold text-base-content ml-1">
+                                      Name of Team{" "}
+                                      <span className="text-[red] text-[13px]">
+                                        *
+                                      </span>
+                                    </label>
+                                    <input
+                                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-base-content w-full text-xs"
+                                      value={item.Name}
+                                      onChange={(e) =>
+                                        handleEditChange(e, item)
+                                      }
+                                      required
+                                    />
                                     <button
-                                      onClick={() => handleToggleSubmit(item)}
-                                      className="op-btn op-btn-primary"
+                                      type="submit"
+                                      className="op-btn op-btn-primary mt-3"
                                     >
-                                      Yes
+                                      Save
                                     </button>
-                                    <button
-                                      onClick={handleClose}
-                                      className="op-btn op-btn-secondary"
-                                    >
-                                      No
-                                    </button>
-                                  </div>
-                                </div>
-                              </ModalUi>
-                            )}
-                          </td>
-                        )}
-                        {/* <td className="px-3 py-2 text-white flex flex-wrap gap-1">
-                        {actions?.length > 0 &&
-                          actions.map((act, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleActionBtn(act, item)}
-                              title={act.hoverLabel}
-                              className={`${
-                                act?.btnColor ? act.btnColor : ""
-                              } op-btn op-btn-sm w-[50px]`}
-                            >
-                              <i className={act.btnIcon}></i>
-                            </button>
-                          ))}
-                      </td> */}
+                                  </form>
+                                </ModalUi>
+                              )}
+                            </>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </>
@@ -346,7 +415,8 @@ const TeamList = () => {
             isOpen={isModal}
             handleClose={handleFormModal}
           >
-            <AddDepartment
+            <AddTeam
+              setIsAlert={setIsAlert}
               handleTeamInfo={handleTeamInfo}
               closePopup={handleFormModal}
             />
