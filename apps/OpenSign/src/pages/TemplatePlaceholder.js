@@ -1400,6 +1400,7 @@ const TemplatePlaceholder = () => {
                           <button
                             onClick={() => {
                               setIsCreateDocModal(false);
+                              navigate("/report/6TeaPr321t");
                             }}
                             type="button"
                             className="op-btn op-btn-secondary ml-2"

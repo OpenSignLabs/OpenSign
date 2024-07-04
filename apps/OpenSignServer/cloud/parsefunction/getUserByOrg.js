@@ -10,7 +10,7 @@ export default async function getUserByOrg(req) {
   } else {
     try {
       const extUser = new Parse.Query('contracts_Users');
-      extUser.include('DepartmentIds');
+      extUser.include('TeamIds');
       extUser.equalTo('OrganizationId', orgPtr);
       const userRes = await extUser.first({ useMasterKey: true });
       if (userRes.length > 0) {

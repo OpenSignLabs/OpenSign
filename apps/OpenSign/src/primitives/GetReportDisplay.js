@@ -57,9 +57,9 @@ const ReportTable = (props) => {
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
   const [isShareWith, setIsShareWith] = useState({});
-  const [departmentList, setDepartmentList] = useState([]);
-  const [selectedDepartments, setSelectedDepartments] = useState([]);
-  const onChange = (selectedOptions) => setSelectedDepartments(selectedOptions);
+  const [teamList, setTeamList] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState([]);
+  const onChange = (selectedOptions) => setSelectedTeam(selectedOptions);
   // const [selectedPublicRole, setSelectedPublicRole] = useState("");
   // const [isCelebration, setIsCelebration] = useState(false);
   // const [currentLists, setCurrentLists] = useState([]);
@@ -136,34 +136,34 @@ const ReportTable = (props) => {
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
     checkTourStatus();
-    fetchDepartmentList();
+    fetchTeamList();
     return () => setCurrentPage(1);
     // eslint-disable-next-line
   }, []);
 
-  // `fetchDepartmentList` is used to fetch department list for share with functionality
-  const fetchDepartmentList = async () => {
+  // `fetchTeamList` is used to fetch team list for share with functionality
+  const fetchTeamList = async () => {
     if (props.ReportName === "Templates") {
       try {
         const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-        const department = new Parse.Query("contracts_Departments");
-        department.equalTo("OrganizationId", {
+        const team = new Parse.Query("contracts_Teams");
+        team.equalTo("OrganizationId", {
           __type: "Pointer",
           className: "contracts_Organizations",
           objectId: extUser.OrganizationId.objectId
         });
-        department.equalTo("IsActive", true);
-        const departmentRes = await department.find();
-        if (departmentRes.length > 0) {
-          const _departmentRes = JSON.parse(JSON.stringify(departmentRes));
-          const formatedList = _departmentRes.map((x) => ({
+        team.equalTo("IsActive", true);
+        const teamtRes = await team.find();
+        if (teamtRes.length > 0) {
+          const _teamRes = JSON.parse(JSON.stringify(teamtRes));
+          const formatedList = _teamRes.map((x) => ({
             label: x.Name,
             value: x.objectId
           }));
-          setDepartmentList(formatedList);
+          setTeamList(formatedList);
         }
       } catch (err) {
-        console.log("Err in fetch top level departmentlist", err);
+        console.log("Err in fetch top level teamlist", err);
       }
     }
   };
@@ -353,12 +353,12 @@ const ReportTable = (props) => {
         setIsSubscribe(getIsSubscribe);
       }
       if (item?.SharedWith && item?.SharedWith.length > 0) {
-        // below code is used to get existing sharewith departments and formated them as per react-select
+        // below code is used to get existing sharewith teams and formated them as per react-select
         const formatedList = item?.SharedWith.map((x) => ({
           label: x.Name,
           value: x.objectId
         }));
-        setSelectedDepartments(formatedList);
+        setSelectedTeam(formatedList);
       }
       setIsShareWith({ [item.objectId]: true });
     }
@@ -979,7 +979,7 @@ const ReportTable = (props) => {
   //   setTimeout(() => setIsAlert(false), 1500);
   // };
 
-  // `handleShareWith` is used to save departments in sharedWith field
+  // `handleShareWith` is used to save teams in sharedWith field
   const handleShareWith = async (e, template) => {
     e.preventDefault();
     e.stopPropagation();
@@ -988,12 +988,12 @@ const ReportTable = (props) => {
     try {
       const templateCls = new Parse.Object("contracts_Template");
       templateCls.id = template.objectId;
-      const departmentArr = selectedDepartments.map((x) => ({
+      const teamArr = selectedTeam.map((x) => ({
         __type: "Pointer",
-        className: "contracts_Departments",
+        className: "contracts_Teams",
         objectId: x.value
       }));
-      templateCls.set("SharedWith", departmentArr);
+      templateCls.set("SharedWith", teamArr);
       const res = await templateCls.save();
       if (res) {
         setIsAlert(true);
@@ -1411,54 +1411,76 @@ const ReportTable = (props) => {
                               <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">
                                 {isSubscribe && isEnableSubscription && (
                                   <>
-                                    <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-                                      Share with
-                                    </h3>
-                                    <div
-                                      className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
-                                      onClick={() => setIsShareWith({})}
-                                    >
-                                      ✕
-                                    </div>
-                                    <form
-                                      className="h-full w-full z-[1300] px-2 mt-3"
-                                      onSubmit={(e) => handleShareWith(e, item)}
-                                    >
-                                      <Select
-                                        // onSortEnd={onSortEnd}
-                                        distance={4}
-                                        isMulti
-                                        options={departmentList}
-                                        value={selectedDepartments}
-                                        onChange={onChange}
-                                        closeMenuOnSelect
-                                        required={true}
-                                        noOptionsMessage={() =>
-                                          "Departments not found"
-                                        }
-                                        unstyled
-                                        classNames={{
-                                          control: () =>
-                                            "op-input op-input-bordered op-input-sm border-gray-400 focus:outline-none hover:border-base-content w-full h-full text-[11px]",
-                                          valueContainer: () =>
-                                            "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
-                                          multiValue: () =>
-                                            "op-badge op-badge-primary h-full text-[11px]",
-                                          multiValueLabel: () => "mb-[2px]",
-                                          menu: () =>
-                                            "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
-                                          menuList: () =>
-                                            "shadow-md rounded-lg overflow-hidden",
-                                          option: () =>
-                                            "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
-                                          noOptionsMessage: () =>
-                                            "p-2 bg-base-200 rounded-lg m-1 p-2"
-                                        }}
-                                      />
-                                      <button className="op-btn op-btn-primary ml-[10px] my-3">
-                                        Submit
-                                      </button>
-                                    </form>
+                                    {item?.Signers?.length > 0 ? (
+                                      <div className="h-[150px] flex justify-center items-center mx-2">
+                                        <div
+                                          className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                          onClick={() => setIsShareWith({})}
+                                        >
+                                          ✕
+                                        </div>
+                                        <div className="text-base-content text-base text-center">
+                                          You cannot share a template if any
+                                          roles already have contacts assigned.
+                                          Please remove all contact assignments
+                                          from the roles before sharing the
+                                          template.
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                                          Share with
+                                        </h3>
+                                        <div
+                                          className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                          onClick={() => setIsShareWith({})}
+                                        >
+                                          ✕
+                                        </div>
+                                        <form
+                                          className="h-full w-full z-[1300] px-2 mt-3"
+                                          onSubmit={(e) =>
+                                            handleShareWith(e, item)
+                                          }
+                                        >
+                                          <Select
+                                            // onSortEnd={onSortEnd}
+                                            distance={4}
+                                            isMulti
+                                            options={teamList}
+                                            value={selectedTeam}
+                                            onChange={onChange}
+                                            closeMenuOnSelect
+                                            required={true}
+                                            noOptionsMessage={() =>
+                                              "Team not found"
+                                            }
+                                            unstyled
+                                            classNames={{
+                                              control: () =>
+                                                "op-input op-input-bordered op-input-sm border-gray-400 focus:outline-none hover:border-base-content w-full h-full text-[11px]",
+                                              valueContainer: () =>
+                                                "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
+                                              multiValue: () =>
+                                                "op-badge op-badge-primary h-full text-[11px]",
+                                              multiValueLabel: () => "mb-[2px]",
+                                              menu: () =>
+                                                "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
+                                              menuList: () =>
+                                                "shadow-md rounded-lg overflow-hidden",
+                                              option: () =>
+                                                "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
+                                              noOptionsMessage: () =>
+                                                "p-2 bg-base-200 rounded-lg m-1 p-2"
+                                            }}
+                                          />
+                                          <button className="op-btn op-btn-primary ml-[10px] my-3">
+                                            Submit
+                                          </button>
+                                        </form>
+                                      </>
+                                    )}
                                   </>
                                 )}
                                 {!isSubscribe && isEnableSubscription && (
