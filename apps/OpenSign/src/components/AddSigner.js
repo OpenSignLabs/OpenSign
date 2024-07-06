@@ -92,7 +92,7 @@ const AddSigner = (props) => {
                 sessionToken: localStorage.getItem("accesstoken")
               };
               const body = {
-                appName: localStorage.getItem("_appName"),
+                appName: "contracts",
                 roleName: "contracts_Guest",
                 userId: user.id
               };
@@ -147,7 +147,7 @@ const AddSigner = (props) => {
                 sessionToken: localStorage.getItem("accesstoken")
               };
               const body = {
-                appName: localStorage.getItem("_appName"),
+                appName: "contracts",
                 roleName: "contracts_Guest",
                 userId: userRes.id
               };

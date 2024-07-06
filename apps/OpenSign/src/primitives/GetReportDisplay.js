@@ -1354,7 +1354,7 @@ const ReportTable = (props) => {
                             {props.actions?.length > 0 &&
                               props.actions.map((act, index) =>
                                 props.ReportName === "Templates" ? (
-                                  <>
+                                  <React.Fragment key={index}>
                                     {(item.ExtUserPtr?.objectId ===
                                       extClass?.[0]?.objectId ||
                                       act.btnLabel === "Use") && (
@@ -1412,7 +1412,7 @@ const ReportTable = (props) => {
                                           )}
                                       </div>
                                     )}
-                                  </>
+                                  </React.Fragment>
                                 ) : (
                                   <div
                                     role="button"

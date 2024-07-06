@@ -553,9 +553,9 @@ function PdfRequestFiles() {
     }
     await axios
       .get(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
+        `${localStorage.getItem(
+          "baseUrl"
+        )}classes/contracts_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
           jsonSender?.objectId
         }"}}`,
         {
@@ -1255,9 +1255,9 @@ function PdfRequestFiles() {
       }
       try {
         await axios.put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}${contractName}/${signerUserId}`,
+          `${localStorage.getItem(
+            "baseUrl"
+          )}classes/contracts${contractName}/${signerUserId}`,
           {
             TourStatus: updatedTourStatus
           },

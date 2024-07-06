@@ -4,12 +4,10 @@ import "../styles/managesign.css";
 import "../styles/signature.css";
 import { toDataUrl } from "../constant/Utils";
 import Parse from "parse";
-import { appInfo } from "../constant/appinfo";
 import { SaveFileSize } from "../constant/saveFileSize";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 const ManageSign = () => {
-  const appName = appInfo.appname;
   const [penColor, setPenColor] = useState("blue");
   const [initialPen, setInitialPen] = useState("blue");
   const [image, setImage] = useState();
@@ -39,7 +37,7 @@ const ManageSign = () => {
         objectId: User.id
       };
       try {
-        const signCls = `${appName}_Signature`;
+        const signCls = "contracts_Signature";
         const signQuery = new Parse.Query(signCls);
         signQuery.equalTo("UserId", userId);
         const signRes = await signQuery.first();
@@ -174,7 +172,7 @@ const ManageSign = () => {
   };
 
   const saveEntry = async (obj) => {
-    const signCls = `${appName}_Signature`;
+    const signCls = "contracts_Signature";
     const User = Parse.User.current().id;
     const userId = { __type: "Pointer", className: "_User", objectId: User };
     if (id) {

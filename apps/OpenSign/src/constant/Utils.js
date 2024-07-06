@@ -691,9 +691,7 @@ export const createDocument = async (template, placeholders, signerData) => {
 
     try {
       const res = await axios.post(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document`,
+        `${localStorage.getItem("baseUrl")}classes/contracts_Document`,
         data,
         {
           headers: {
@@ -1640,9 +1638,9 @@ export const placeholderHeight = (pos) => {
 export const contactBook = async (objectId) => {
   const result = await axios
     .get(
-      `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-        "_appName"
-      )}_Contactbook?where={"objectId":"${objectId}"}`,
+      `${localStorage.getItem(
+        "baseUrl"
+      )}classes/contracts_Contactbook?where={"objectId":"${objectId}"}`,
       {
         headers: {
           "Content-Type": "application/json",
