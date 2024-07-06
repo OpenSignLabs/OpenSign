@@ -81,7 +81,6 @@ function Login() {
         let baseUrl = localStorage.getItem("baseUrl");
         let parseAppId = localStorage.getItem("parseAppId");
         localStorage.setItem("appLogo", appInfo.applogo);
-        localStorage.setItem("appName", appInfo.appname);
         // Pass the username and password to logIn function
         await Parse.User.logIn(email, password)
           .then(async (user) => {
@@ -398,9 +397,7 @@ function Login() {
             sessionToken: _user.sessionToken
           };
 
-          let body = {
-            appname: localStorage.getItem("_appName")
-          };
+          let body = { appname: "contracts" };
           await axios
             .post(url, JSON.stringify(body), { headers: headers })
             .then((axiosRes) => {
@@ -699,7 +696,7 @@ function Login() {
               let SettingsUser = userSettings;
               SettingsUser.forEach(async (item) => {
                 if (item.role === _currentRole) {
-                  let _role = _currentRole.replace(`${appInfo.appname}_`, "");
+                  let _role = _currentRole.replace("contracts_", "");
                   localStorage.setItem("_user_role", _role);
                   // Get TenentID from Extendend Class
                   localStorage.setItem("extended_class", item.extended_class);
@@ -942,22 +939,16 @@ function Login() {
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
-    let appName = localStorage.getItem("appName");
     let defaultmenuid = localStorage.getItem("defaultmenuid");
     let PageLanding = localStorage.getItem("PageLanding");
-    let domain = localStorage.getItem("domain");
-    let _appName = localStorage.getItem("_appName");
     let baseUrl = localStorage.getItem("baseUrl");
     let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
 
     localStorage.setItem("appLogo", applogo);
-    localStorage.setItem("appName", appName);
-    localStorage.setItem("_appName", _appName);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);
-    localStorage.setItem("domain", domain);
     localStorage.setItem("userSettings", appdata);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);

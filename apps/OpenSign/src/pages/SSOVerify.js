@@ -160,7 +160,7 @@ const SSOVerify = () => {
             "X-Parse-Application-Id": parseAppId,
             sessionToken: _user.sessionToken
           };
-          const body = { appname: appInfo.appname };
+          const body = { appname: "contracts" };
           const UserGroupsRes = await axios.post(url, JSON.stringify(body), {
             headers: headers
           });
@@ -184,7 +184,7 @@ const SSOVerify = () => {
               const redirectUrl =
                 location?.state?.from ||
                 `/${roleSetting.pageType}/${roleSetting.pageId}`;
-              const _role = _currentRole.replace(`${appInfo.appname}_`, "");
+              const _role = _currentRole.replace("contracts_", "");
               localStorage.setItem("_user_role", _role);
               // Get TenentID from Extendend Class
               localStorage.setItem(

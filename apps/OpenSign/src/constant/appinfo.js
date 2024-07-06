@@ -1,6 +1,5 @@
 import logo from "../assets/images/logo.png";
 export const appInfo = {
-  appTitle: "contracts",
   applogo: logo,
   appname: "contracts",
   appId: process.env.REACT_APP_APPID ? process.env.REACT_APP_APPID : "opensign",
@@ -48,6 +47,5 @@ export const appInfo = {
       pageId: "35KBoSgoAK",
       extended_class: "contracts_Users"
     }
-  ],
-  version: "0.1"
+  ]
 };

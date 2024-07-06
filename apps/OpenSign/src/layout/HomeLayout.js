@@ -109,11 +109,7 @@ const HomeLayout = () => {
   }, [width]);
 
   useEffect(() => {
-    if (
-      localStorage.getItem("domain") === "contracts" &&
-      arr &&
-      arr.length > 0
-    ) {
+    if (arr && arr.length > 0) {
       handleDynamicSteps();
     } else {
       setIsTour(false);

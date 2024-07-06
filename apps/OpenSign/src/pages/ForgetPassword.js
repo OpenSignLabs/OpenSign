@@ -36,9 +36,6 @@ function ForgotPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     localStorage.setItem("appLogo", appInfo.applogo);
-    localStorage.setItem("appName", appInfo.appname);
-    // localStorage.setItem("defaultmenuid", props.appInfo.defaultmenuid);
-    // localStorage.setItem("PageLanding", props.appInfo.LandingPageId);
     localStorage.setItem("userSettings", JSON.stringify(appInfo.settings));
     if (state.email) {
       const username = state.email;

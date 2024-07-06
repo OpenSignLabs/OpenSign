@@ -53,22 +53,16 @@ const Header = ({ showSidebar }) => {
     }
     let appdata = localStorage.getItem("userSettings");
     let applogo = localStorage.getItem("appLogo");
-    let appName = localStorage.getItem("appName");
     let defaultmenuid = localStorage.getItem("defaultmenuid");
     let PageLanding = localStorage.getItem("PageLanding");
-    let domain = localStorage.getItem("domain");
-    let _appName = localStorage.getItem("_appName");
     let baseUrl = localStorage.getItem("baseUrl");
     let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
 
     localStorage.setItem("appLogo", applogo);
-    localStorage.setItem("appName", appName);
-    localStorage.setItem("_appName", _appName);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);
-    localStorage.setItem("domain", domain);
     localStorage.setItem("userSettings", appdata);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
