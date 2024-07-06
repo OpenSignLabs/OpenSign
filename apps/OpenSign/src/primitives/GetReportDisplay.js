@@ -1352,58 +1352,115 @@ const ReportTable = (props) => {
                         <td className="px-2 py-2">
                           <div className="text-base-content flex flex-row gap-x-2 gap-y-1 justify-start items-center">
                             {props.actions?.length > 0 &&
-                              props.actions.map(
-                                (act, index) =>
-                                  (item.ExtUserPtr?.objectId ===
-                                    extClass?.[0]?.objectId ||
-                                    act.btnLabel === "Use") && (
-                                    <div
-                                      role="button"
-                                      data-tut={act?.selector}
-                                      key={index}
-                                      onClick={() => handleActionBtn(act, item)}
-                                      title={act.hoverLabel}
-                                      className={
-                                        act.action !== "option"
-                                          ? `${
-                                              act?.btnColor ? act.btnColor : ""
-                                            } op-btn op-btn-sm mr-1`
-                                          : "text-base-content focus:outline-none text-lg mr-2 relative"
-                                      }
-                                    >
-                                      <i className={act.btnIcon}></i>
-                                      {act.btnLabel && (
-                                        <span className="uppercase font-medium">
-                                          {act.btnLabel}
-                                        </span>
-                                      )}
-                                      {isOption[item.objectId] &&
-                                        act.action === "option" && (
-                                          <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
-                                            {act.subaction?.map((subact) => (
-                                              <li
-                                                key={subact.btnId}
-                                                onClick={() =>
-                                                  handleActionBtn(subact, item)
-                                                }
-                                                title={subact.hoverLabel}
-                                              >
-                                                <span>
-                                                  <i
-                                                    className={`${subact.btnIcon} mr-1.5`}
-                                                  ></i>
-                                                  {subact.btnLabel && (
-                                                    <span className="text-[13px] capitalize font-medium">
-                                                      {subact.btnLabel}
-                                                    </span>
-                                                  )}
-                                                </span>
-                                              </li>
-                                            ))}
-                                          </ul>
+                              props.actions.map((act, index) =>
+                                props.ReportName === "Templates" ? (
+                                  <>
+                                    {(item.ExtUserPtr?.objectId ===
+                                      extClass?.[0]?.objectId ||
+                                      act.btnLabel === "Use") && (
+                                      <div
+                                        role="button"
+                                        data-tut={act?.selector}
+                                        key={index}
+                                        onClick={() =>
+                                          handleActionBtn(act, item)
+                                        }
+                                        title={act.hoverLabel}
+                                        className={
+                                          act.action !== "option"
+                                            ? `${
+                                                act?.btnColor
+                                                  ? act.btnColor
+                                                  : ""
+                                              } op-btn op-btn-sm mr-1`
+                                            : "text-base-content focus:outline-none text-lg mr-2 relative"
+                                        }
+                                      >
+                                        <i className={act.btnIcon}></i>
+                                        {act.btnLabel && (
+                                          <span className="uppercase font-medium">
+                                            {act.btnLabel}
+                                          </span>
                                         )}
-                                    </div>
-                                  )
+                                        {isOption[item.objectId] &&
+                                          act.action === "option" && (
+                                            <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                              {act.subaction?.map((subact) => (
+                                                <li
+                                                  key={subact.btnId}
+                                                  onClick={() =>
+                                                    handleActionBtn(
+                                                      subact,
+                                                      item
+                                                    )
+                                                  }
+                                                  title={subact.hoverLabel}
+                                                >
+                                                  <span>
+                                                    <i
+                                                      className={`${subact.btnIcon} mr-1.5`}
+                                                    ></i>
+                                                    {subact.btnLabel && (
+                                                      <span className="text-[13px] capitalize font-medium">
+                                                        {subact.btnLabel}
+                                                      </span>
+                                                    )}
+                                                  </span>
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          )}
+                                      </div>
+                                    )}
+                                  </>
+                                ) : (
+                                  <div
+                                    role="button"
+                                    data-tut={act?.selector}
+                                    key={index}
+                                    onClick={() => handleActionBtn(act, item)}
+                                    title={act.hoverLabel}
+                                    className={
+                                      act.action !== "option"
+                                        ? `${
+                                            act?.btnColor ? act.btnColor : ""
+                                          } op-btn op-btn-sm mr-1`
+                                        : "text-base-content focus:outline-none text-lg mr-2 relative"
+                                    }
+                                  >
+                                    <i className={act.btnIcon}></i>
+                                    {act.btnLabel && (
+                                      <span className="uppercase font-medium">
+                                        {act.btnLabel}
+                                      </span>
+                                    )}
+                                    {isOption[item.objectId] &&
+                                      act.action === "option" && (
+                                        <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                          {act.subaction?.map((subact) => (
+                                            <li
+                                              key={subact.btnId}
+                                              onClick={() =>
+                                                handleActionBtn(subact, item)
+                                              }
+                                              title={subact.hoverLabel}
+                                            >
+                                              <span>
+                                                <i
+                                                  className={`${subact.btnIcon} mr-1.5`}
+                                                ></i>
+                                                {subact.btnLabel && (
+                                                  <span className="text-[13px] capitalize font-medium">
+                                                    {subact.btnLabel}
+                                                  </span>
+                                                )}
+                                              </span>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      )}
+                                  </div>
+                                )
                               )}
                           </div>
                           {isShareWith[item.objectId] && (
