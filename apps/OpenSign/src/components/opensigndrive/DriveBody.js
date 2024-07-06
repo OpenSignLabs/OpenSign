@@ -70,9 +70,9 @@ function DriveBody(props) {
       props.sortingData(null, null, updatedData);
       await axios
         .put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}_Document/${docId}`,
+          `${localStorage.getItem(
+            "baseUrl"
+          )}classes/contracts_Document/${docId}`,
           updateName,
           {
             headers: {
@@ -170,9 +170,7 @@ function DriveBody(props) {
 
     await axios
       .put(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document/${docId}`,
+        `${localStorage.getItem("baseUrl")}classes/contracts_Document/${docId}`,
         data,
         {
           headers: {
@@ -219,7 +217,7 @@ function DriveBody(props) {
         updateData = {
           Folder: {
             __type: "Pointer",
-            className: `${localStorage.getItem("_appName")}_Document`,
+            className: "contracts_Document",
             objectId: moveFolderId
           }
         };
@@ -231,9 +229,9 @@ function DriveBody(props) {
 
       await axios
         .put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}_Document/${updateDocId}`,
+          `${localStorage.getItem(
+            "baseUrl"
+          )}classes/contracts_Document/${updateDocId}`,
           updateData,
           {
             headers: {

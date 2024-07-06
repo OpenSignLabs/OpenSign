@@ -54,11 +54,9 @@ function App() {
     const baseurl = process.env.REACT_APP_SERVERURL
       ? process.env.REACT_APP_SERVERURL
       : window.location.origin + "/api/app";
-    const appName = "contracts";
     try {
       localStorage.setItem("baseUrl", `${baseurl}/`);
       localStorage.setItem("parseAppId", appId);
-      localStorage.setItem("domain", appName);
       setIsLoading(false);
     } catch (error) {
       console.log("err ", error);
