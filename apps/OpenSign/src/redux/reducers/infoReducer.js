@@ -6,7 +6,6 @@ const infoSlice = createSlice({
   initialState: {},
   reducers: {
     fetchAppInfo: () => {
-      localStorage.setItem("_app_objectId", appInfo.objectId);
       localStorage.setItem("baseUrl", `${appInfo.baseUrl}/`);
       localStorage.setItem("parseAppId", appInfo.appId);
       localStorage.setItem("appLogo", appInfo.applogo);
