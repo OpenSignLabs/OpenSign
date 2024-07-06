@@ -1007,9 +1007,9 @@ function PlaceHolderSign() {
       }
       await axios
         .put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}_Document/${documentId}`,
+          `${localStorage.getItem(
+            "baseUrl"
+          )}classes/contracts_Document/${documentId}`,
           data,
           {
             headers: {
@@ -1237,9 +1237,9 @@ function PlaceHolderSign() {
 
         await axios
           .put(
-            `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-              "_appName"
-            )}_Document/${documentId}`,
+            `${localStorage.getItem(
+              "baseUrl"
+            )}classes/contracts_Document/${documentId}`,
             data,
             {
               headers: {

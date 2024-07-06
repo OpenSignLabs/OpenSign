@@ -107,8 +107,6 @@ const PgSignUp = () => {
     }
   };
   const saveUser = async (obj) => {
-    // const domain = localStorage.getItem("domain");
-    // console.log("domain", domain)
     try {
       const zohoRes = await axios.post(
         parseBaseUrl + "functions/zohodetails",
@@ -232,9 +230,7 @@ const PgSignUp = () => {
             sessionToken: _user.sessionToken
           };
 
-          let body = {
-            appname: localStorage.getItem("_appName")
-          };
+          let body = { appname: "contracts" };
           await axios
             .post(url, JSON.stringify(body), { headers: headers })
             .then((roles) => {
@@ -242,10 +238,7 @@ const PgSignUp = () => {
                 userRoles = roles.data.result;
                 let _currentRole = "";
                 if (userRoles.length > 1) {
-                  if (
-                    userRoles[0] ===
-                    `${localStorage.getItem("_appName")}_appeditor`
-                  ) {
+                  if (userRoles[0] === "contracts_appeditor") {
                     _currentRole = userRoles[1];
                   } else {
                     _currentRole = userRoles[0];
@@ -253,16 +246,10 @@ const PgSignUp = () => {
                 } else {
                   _currentRole = userRoles[0];
                 }
-                if (
-                  _currentRole !==
-                  `${localStorage.getItem("_appName")}_appeditor`
-                ) {
+                if (_currentRole !== "contracts_appeditor") {
                   userSettings.forEach(async (element) => {
                     if (element.role === _currentRole) {
-                      let _role = _currentRole.replace(
-                        `${localStorage.getItem("_appName")}_`,
-                        ""
-                      );
+                      let _role = _currentRole.replace("contracts_", "");
                       localStorage.setItem("_user_role", _role);
                       // Get TenentID from Extendend Class
                       localStorage.setItem(

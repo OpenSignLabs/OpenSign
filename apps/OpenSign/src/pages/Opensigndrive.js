@@ -272,7 +272,7 @@ function Opensigndrive() {
       setIsFolderLoader(true);
       const getParentObjId = folderName[folderName.length - 1];
       const parentId = getParentObjId && getParentObjId.objectId;
-      const foldercls = `${localStorage.getItem("_appName")}_Document`;
+      const foldercls = "contracts_Document";
       const folderPtr = {
         __type: "Pointer",
         className: foldercls,

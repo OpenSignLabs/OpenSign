@@ -44,14 +44,9 @@ const Signup = () => {
     let baseUrl = localStorage.getItem("baseUrl");
     let appid = localStorage.getItem("parseAppId");
     let applogo = localStorage.getItem("appLogo");
-    let domain = localStorage.getItem("domain");
-    let appversion = localStorage.getItem("appVersion");
-    let appTitle = localStorage.getItem("appTitle");
     let defaultmenuid = localStorage.getItem("defaultmenuid");
     let PageLanding = localStorage.getItem("PageLanding");
-    let _appName = localStorage.getItem("_appName");
     let _app_objectId = localStorage.getItem("_app_objectId");
-    let appName = localStorage.getItem("appName");
     let userSettings = localStorage.getItem("userSettings");
 
     localStorage.clear();
@@ -59,14 +54,9 @@ const Signup = () => {
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
     localStorage.setItem("appLogo", applogo);
-    localStorage.setItem("domain", domain);
-    localStorage.setItem("appversion", appversion);
-    localStorage.setItem("appTitle", appTitle);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);
-    localStorage.setItem("_appName", _appName);
     localStorage.setItem("_app_objectId", _app_objectId);
-    localStorage.setItem("appName", appName);
     localStorage.setItem("userSettings", userSettings);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
@@ -217,9 +207,7 @@ const Signup = () => {
             sessionToken: _user.sessionToken
           };
 
-          let body = {
-            appname: localStorage.getItem("_appName")
-          };
+          let body = { appname: "contracts" };
           await axios
             .post(url, JSON.stringify(body), { headers: headers })
             .then((roles) => {
@@ -227,10 +215,7 @@ const Signup = () => {
                 userRoles = roles.data.result;
                 let _currentRole = "";
                 if (userRoles.length > 1) {
-                  if (
-                    userRoles[0] ===
-                    `${localStorage.getItem("_appName")}_appeditor`
-                  ) {
+                  if (userRoles[0] === "contracts_appeditor") {
                     _currentRole = userRoles[1];
                   } else {
                     _currentRole = userRoles[0];
@@ -238,16 +223,10 @@ const Signup = () => {
                 } else {
                   _currentRole = userRoles[0];
                 }
-                if (
-                  _currentRole !==
-                  `${localStorage.getItem("_appName")}_appeditor`
-                ) {
+                if (_currentRole !== "contracts_appeditor") {
                   userSettings.forEach(async (element) => {
                     if (element.role === _currentRole) {
-                      let _role = _currentRole.replace(
-                        `${localStorage.getItem("_appName")}_`,
-                        ""
-                      );
+                      let _role = _currentRole.replace("contracts_", "");
                       localStorage.setItem("_user_role", _role);
                       // Get TenentID from Extendend Class
                       localStorage.setItem(
