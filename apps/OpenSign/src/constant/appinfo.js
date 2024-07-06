@@ -1,7 +1,6 @@
 import logo from "../assets/images/logo.png";
 export const appInfo = {
   applogo: logo,
-  appname: "contracts",
   appId: process.env.REACT_APP_APPID ? process.env.REACT_APP_APPID : "opensign",
   baseUrl: process.env.REACT_APP_SERVERURL
     ? process.env.REACT_APP_SERVERURL
@@ -17,7 +16,6 @@ export const appInfo = {
     : "",
   metaDescription:
     "The fastest way to sign PDFs & request signatures from others.",
-  objectId: "aIPmIvMzGM",
   settings: [
     {
       role: "contracts_Admin",

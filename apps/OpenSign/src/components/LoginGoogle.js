@@ -53,7 +53,6 @@ const GoogleSignInBtn = ({
     let applogo = localStorage.getItem("appLogo");
     let defaultmenuid = localStorage.getItem("defaultmenuid");
     let PageLanding = localStorage.getItem("PageLanding");
-    let _app_objectId = localStorage.getItem("_app_objectId");
     let userSettings = localStorage.getItem("userSettings");
 
     localStorage.clear();
@@ -63,7 +62,6 @@ const GoogleSignInBtn = ({
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);
-    localStorage.setItem("_app_objectId", _app_objectId);
     localStorage.setItem("userSettings", userSettings);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
