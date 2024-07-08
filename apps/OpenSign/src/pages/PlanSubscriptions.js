@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
-import plansArr from "../json/plansArr";
+import plansArr, { stagingPlan } from "../json/plansArr";
 import Title from "../components/Title";
 import Parse from "parse";
 import { openInNewTab } from "../constant/Utils";
@@ -16,6 +16,7 @@ const listItemStyle = {
 
 const PlanSubscriptions = () => {
   const navigate = useNavigate();
+  const isStagingPlan = plansArr.some((x) => x.planName === "OPENSIGN™ TEAMS");
   const [yearlyVisible, setYearlyVisible] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
   const extUser =
@@ -53,11 +54,13 @@ const PlanSubscriptions = () => {
     company +
     phone;
   useEffect(() => {
-    // if (localStorage.getItem("accesstoken")) {
     setIsLoader(false);
-    // } else {
-    //   navigate("/", { replace: true });
-    // }
+    if (
+      !isStagingPlan &&
+      window.location.origin === "https://staging-app.opensignlabs.com"
+    ) {
+      plansArr.splice(2, 0, stagingPlan);
+    }
     // eslint-disable-next-line
   }, []);
 
@@ -130,11 +133,11 @@ const PlanSubscriptions = () => {
                       <h3 className="text-[#002862] uppercase">
                         {item.planName}
                       </h3>
-                      <div className="w-[150px] h-[150px]">
+                      <div className="w-[120px] h-[120px] overflow-hidden">
                         <img
-                          className="icon-basic mx-auto"
-                          src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                          alt="freeimg"
+                          className="w-full h-full object-contain"
+                          src={require(`../assets/images/${item?.img}`)}
+                          alt="img"
                         />
                       </div>
                       <div>
@@ -154,7 +157,18 @@ const PlanSubscriptions = () => {
                               )}
                             </>
                           ) : (
-                            item.monthlyPrice
+                            <>
+                              {item?.monthlyPrice.includes("<") ? (
+                                <div
+                                  className="inline-block"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item?.monthlyPrice
+                                  }}
+                                />
+                              ) : (
+                                <span>{item?.monthlyPrice}</span>
+                              )}
+                            </>
                           )}
                         </span>
                         <p className="font-semibold pt-2 text-sm">
@@ -182,10 +196,12 @@ const PlanSubscriptions = () => {
                         </div>
                       </div>
                       <button
-                        className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:text-white cursor-pointer"
+                        className={`${
+                          item?.btn?.color ? item?.btn?.color : "op-btn-primary"
+                        } w-full text-white py-2 op-btn uppercase hover:text-white cursor-pointer`}
                         onClick={() => handleFreePlan(item)}
                       >
-                        {item.btnText}
+                        {item?.btn?.text}
                       </button>
                     </div>
                     <hr className="w-full bg-gray-300 h-[0.5px]" />
