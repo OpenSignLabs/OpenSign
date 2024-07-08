@@ -70,6 +70,19 @@ const PgSignUp = () => {
           });
           if (res) {
             localStorage.removeItem("userDetails");
+            try {
+              const extUser = await Parse.Cloud.run("getUserDetails", {
+                email: userDetails.email
+              });
+              const userRole = extUser?.get("UserRole");
+              const _currentRole = userRole;
+              const _role = _currentRole.replace("contracts_", "");
+              localStorage.setItem("_user_role", _role);
+              const extInfo_stringify = JSON.stringify([extUser]);
+              localStorage.setItem("Extand_Class", extInfo_stringify);
+            } catch (err) {
+              console.log("Err in fetching extuser", err);
+            }
             navigate(
               "/" + userSettings[0].pageType + "/" + userSettings[0].pageId
             );
