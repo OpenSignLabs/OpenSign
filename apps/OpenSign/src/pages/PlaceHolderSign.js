@@ -1542,7 +1542,6 @@ function PlaceHolderSign() {
   const closeTour = async () => {
     setPlaceholderTour(false);
     if (isDontShow) {
-      const extUserClass = localStorage.getItem("extended_class");
       let updatedTourStatus = [];
       if (tourStatus.length > 0) {
         updatedTourStatus = [...tourStatus];
@@ -1561,7 +1560,7 @@ function PlaceHolderSign() {
         .put(
           `${localStorage.getItem(
             "baseUrl"
-          )}classes/${extUserClass}/${signerUserId}`,
+          )}classes/contracts_Users/${signerUserId}`,
           {
             TourStatus: updatedTourStatus
           },

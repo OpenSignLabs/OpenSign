@@ -163,8 +163,8 @@ const TeamList = () => {
         teamCls.set("IsActive", !IsActive);
         await teamCls.save();
         setIsAlert({
-          type: "success",
-          msg: "Team disabled successfully."
+          type: !IsActive === false ? "danger" : "success",
+          msg: !IsActive === false ? "Team disabled." : "Team enabled."
         });
       } catch (err) {
         setIsAlert({ type: "danger", msg: "something went wrong." });
@@ -281,8 +281,9 @@ const TeamList = () => {
                                 >
                                   <div className="m-[20px]">
                                     <div className="text-lg font-normal text-black">
-                                      Are you sure you want to disable this
-                                      team?
+                                      Are you sure you want to{" "}
+                                      {item?.IsActive ? "disable" : "enable"}{" "}
+                                      this team?
                                     </div>
                                     <hr className="bg-[#ccc] mt-4 " />
                                     <div className="flex items-center mt-3 gap-2 text-white">
