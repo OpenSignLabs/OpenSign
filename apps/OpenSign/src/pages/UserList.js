@@ -152,8 +152,8 @@ const UserList = () => {
         extUser.set("IsDisabled", !IsDisabled);
         await extUser.save();
         setIsAlert({
-          type: "success",
-          msg: "User disabled successfully."
+          type: !IsDisabled === true ? "danger" : "success",
+          msg: !IsDisabled === true ? "User deactivated." : "User activated."
         });
       } catch (err) {
         setIsAlert({ type: "danger", msg: "something went wrong." });
@@ -245,8 +245,11 @@ const UserList = () => {
                               >
                                 <div className="m-[20px]">
                                   <div className="text-lg font-normal text-black">
-                                    Are you sure you want to deactivate this
-                                    user?
+                                    Are you sure you want to{" "}
+                                    {item?.IsDisabled
+                                      ? "activate"
+                                      : "deactivate"}{" "}
+                                    this user?
                                   </div>
                                   <hr className="bg-[#ccc] mt-4 " />
                                   <div className="flex items-center mt-3 gap-2 text-white">

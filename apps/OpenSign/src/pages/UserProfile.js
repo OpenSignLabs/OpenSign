@@ -155,7 +155,6 @@ function UserProfile() {
 
   //  `updateExtUser` is used to update user details in extended class
   const updateExtUser = async (obj) => {
-    const extClass = localStorage.getItem("extended_class");
     const extData = JSON.parse(localStorage.getItem("Extand_Class"));
     const ExtUserId = extData[0].objectId;
     const body = {
@@ -168,7 +167,7 @@ function UserProfile() {
     };
 
     await axios.put(
-      parseBaseUrl + "classes/" + extClass + "/" + ExtUserId,
+      parseBaseUrl + "classes/contracts_Users/" + ExtUserId,
       body,
       {
         headers: {
