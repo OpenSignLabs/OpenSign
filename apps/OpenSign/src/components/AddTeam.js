@@ -107,6 +107,7 @@ const AddTeam = (props) => {
             objectId: localUser.OrganizationId.objectId
           });
         }
+        newTeam.set("IsActive", true);
         const newTeamRes = await newTeam.save();
         if (updatedAncestors.length > 0) {
           const ParentId = teamList.find((x) => x.objectId === formdata.team);

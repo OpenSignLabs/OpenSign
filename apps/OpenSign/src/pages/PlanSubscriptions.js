@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
 import plansArr from "../json/plansArr";
 import Title from "../components/Title";
@@ -61,25 +61,33 @@ const PlanSubscriptions = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleFreePlan = async () => {
-    setIsLoader(true);
-    try {
-      const params = { userId: Parse.User.current().id };
-      const res = await Parse.Cloud.run("freesubscription", params);
-      if (res.status === "success" && res.result === "already subscribed!") {
-        setIsLoader(false);
-        alert("You have already subscribed to plan!");
-      } else if (res.status === "success") {
-        setIsLoader(false);
-        navigate("/");
-      } else if (res.status === "error") {
-        setIsLoader(false);
-        alert(res.result);
+  const handleFreePlan = async (item) => {
+    if (item.url) {
+      const url = yearlyVisible ? item.yearlyUrl + details : item.url + details;
+      if (user) {
+        localStorage.setItem("userDetails", JSON.stringify(user));
       }
-    } catch (err) {
-      setIsLoader(false);
-      console.log("err in free subscribe", err.message);
-      alert("Somenthing went wrong, please try again later!");
+      openInNewTab(url, item?.target);
+    } else {
+      setIsLoader(true);
+      try {
+        const params = { userId: Parse.User.current().id };
+        const res = await Parse.Cloud.run("freesubscription", params);
+        if (res.status === "success" && res.result === "already subscribed!") {
+          setIsLoader(false);
+          alert("You have already subscribed to plan!");
+        } else if (res.status === "success") {
+          setIsLoader(false);
+          navigate("/");
+        } else if (res.status === "error") {
+          setIsLoader(false);
+          alert(res.result);
+        }
+      } catch (err) {
+        setIsLoader(false);
+        console.log("err in free subscribe", err.message);
+        alert("Somenthing went wrong, please try again later!");
+      }
     }
   };
   return (
@@ -173,28 +181,12 @@ const PlanSubscriptions = () => {
                           </div>
                         </div>
                       </div>
-                      {item.url ? (
-                        <NavLink
-                          to={
-                            item.btnText === "Subscribe"
-                              ? yearlyVisible
-                                ? item.yearlyUrl + details
-                                : item.url + details
-                              : item.url
-                          }
-                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
-                          target={item.target}
-                        >
-                          {item.btnText}
-                        </NavLink>
-                      ) : (
-                        <button
-                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:text-white cursor-pointer"
-                          onClick={() => handleFreePlan()}
-                        >
-                          {item.btnText}
-                        </button>
-                      )}
+                      <button
+                        className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:text-white cursor-pointer"
+                        onClick={() => handleFreePlan(item)}
+                      >
+                        {item.btnText}
+                      </button>
                     </div>
                     <hr className="w-full bg-gray-300 h-[0.5px]" />
                     <ul className="mx-1 p-3 text-left break-words text-sm list-none">
