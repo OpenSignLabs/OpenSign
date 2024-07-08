@@ -152,7 +152,7 @@ const ReportTable = (props) => {
           className: "contracts_Organizations",
           objectId: extUser.OrganizationId.objectId
         });
-        team.equalTo("IsActive", true);
+        team.notEqualTo("IsActive", false);
         const teamtRes = await team.find();
         if (teamtRes.length > 0) {
           const _teamRes = JSON.parse(JSON.stringify(teamtRes));
