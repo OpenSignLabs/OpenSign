@@ -465,7 +465,6 @@ function Opensigndrive() {
     if (isDontShow) {
       const serverUrl = localStorage.getItem("baseUrl");
       const appId = localStorage.getItem("parseAppId");
-      const extUserClass = localStorage.getItem("extended_class");
       const json = JSON.parse(localStorage.getItem("Extand_Class"));
       const extUserId = json && json.length > 0 && json[0].objectId;
       let updatedTourStatus = [];
@@ -483,7 +482,7 @@ function Opensigndrive() {
         updatedTourStatus = [{ driveTour: true }];
       }
       await axios.put(
-        serverUrl + "classes/" + extUserClass + "/" + extUserId,
+        serverUrl + "classes/contracts_Users/" + extUserId,
         {
           TourStatus: updatedTourStatus
         },

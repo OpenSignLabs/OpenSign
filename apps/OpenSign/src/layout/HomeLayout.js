@@ -167,7 +167,6 @@ const HomeLayout = () => {
     setIsTour(false);
     const serverUrl = localStorage.getItem("baseUrl");
     const appId = localStorage.getItem("parseAppId");
-    const extUserClass = localStorage.getItem("extended_class");
     const json = JSON.parse(localStorage.getItem("Extand_Class"));
     const extUserId = json && json.length > 0 && json[0].objectId;
     // console.log("extUserId ", extUserId)
@@ -189,7 +188,7 @@ const HomeLayout = () => {
 
     // console.log("updatedTourStatus ", updatedTourStatus);
     await axios.put(
-      serverUrl + "classes/" + extUserClass + "/" + extUserId,
+      serverUrl + "classes/contracts_Users/" + extUserId,
       {
         TourStatus: updatedTourStatus
       },
