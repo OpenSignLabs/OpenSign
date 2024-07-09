@@ -91,7 +91,13 @@ export async function checkIsSubscribedTeam() {
     if (res.plan === "freeplan") {
       return false;
     } else if (res.billingDate) {
-      const plan = res.plan === "team-weekly" || res.plan === "team-yearly";
+      const plan =
+        res.plan === "team-weekly" ||
+        res.plan === "team-yearly" ||
+        res.plan === "teams-monthly" ||
+        res.plan === "teams-yearly" ||
+        res.plan === "enterprise-monthly" ||
+        res.plan === "enterprise-yearly";
       if (plan && new Date(res.billingDate) > new Date()) {
         return true;
       } else {
