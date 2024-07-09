@@ -1,3 +1,5 @@
+import { isStaging } from "../constant/const";
+
 const plans = [
   {
     planName: "OPENSIGN™ FREE",
@@ -35,14 +37,12 @@ const plans = [
     yearlyPrice: `10 <sup style="font-size: 17px;">/month/user</sup>`,
     subtitle: "Exclusive Access to advanced features.",
     btn: { text: "Subscribe", color: "op-btn-primary" },
-    url:
-      window.location.origin === "https://staging-app.opensignlabs.com"
-        ? "https://billing.zoho.in/subscribe/9627f62a09df1c8ce500f2f4dc8328dd84ecda20eeae13878ce581d60240f206/pro-weekly"
-        : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d1a09dfa8085585cdd4ec4d7f32137f3/professional-monthly",
-    yearlyUrl:
-      window.location.origin === "https://staging-app.opensignlabs.com"
-        ? "https://billing.zoho.in/subscribe/9627f62a09df1c8ce500f2f4dc8328ddc184411129224f1f29ed84f6cef3b862/pro-yearly"
-        : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d8ad1135190dff951330360e47585a71/professional-yearly",
+    url: isStaging
+      ? "https://billing.zoho.in/subscribe/9627f62a09df1c8ce500f2f4dc8328dd84ecda20eeae13878ce581d60240f206/pro-weekly"
+      : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d1a09dfa8085585cdd4ec4d7f32137f3/professional-monthly",
+    yearlyUrl: isStaging
+      ? "https://billing.zoho.in/subscribe/9627f62a09df1c8ce500f2f4dc8328ddc184411129224f1f29ed84f6cef3b862/pro-yearly"
+      : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d8ad1135190dff951330360e47585a71/professional-yearly",
     target: "_self",
     benefits: [
       "Everything in OpenSign™ free",
@@ -86,14 +86,12 @@ export const stagingPlan = {
   yearlyPrice: `20 <sup style="font-size: 17px;">/month/user</sup>`,
   subtitle: "Exclusive Access to advanced features.",
   btn: { text: "Subscribe", color: "op-btn-accent" },
-  url:
-    window.location.origin === "https://staging-app.opensignlabs.com"
-      ? "https://billing.zoho.in/subscribe/ed8097273a82b6bf39892c11a3bb3c381eb2705736014cfbdbde1ccf1c7a189d/team-weekly"
-      : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d1a09dfa8085585cdd4ec4d7f32137f3/professional-monthly",
-  yearlyUrl:
-    window.location.origin === "https://staging-app.opensignlabs.com"
-      ? "https://billing.zoho.in/subscribe/ed8097273a82b6bf39892c11a3bb3c381eb2705736014cfbdbde1ccf1c7a189d/team-weekly"
-      : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d8ad1135190dff951330360e47585a71/professional-yearly",
+  url: isStaging
+    ? "https://billing.zoho.in/subscribe/ed8097273a82b6bf39892c11a3bb3c381eb2705736014cfbdbde1ccf1c7a189d/team-weekly"
+    : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d1a09dfa8085585cdd4ec4d7f32137f3/professional-monthly",
+  yearlyUrl: isStaging
+    ? "https://billing.zoho.in/subscribe/ed8097273a82b6bf39892c11a3bb3c381eb2705736014cfbdbde1ccf1c7a189d/team-weekly"
+    : "https://billing.opensignlabs.com/subscribe/ef798486e6a0a11ea65f2bae8f2af901d8ad1135190dff951330360e47585a71/professional-yearly",
   target: "_self",
   benefits: [
     "Everything in OpenSign™ free, professional",
