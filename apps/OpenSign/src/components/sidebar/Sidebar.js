@@ -4,11 +4,14 @@ import Submenu from "./SubMenu";
 import SocialMedia from "./SocialMedia";
 import dp from "../../assets/images/dp.png";
 import sidebarList from "../../json/menuJson";
+import { useNavigate } from "react-router-dom";
+import { isStaging } from "../../constant/const";
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
+  const navigate = useNavigate();
   const [menuList, setmenuList] = useState([]);
   const [submenuOpen, setSubmenuOpen] = useState(false);
-  let username = localStorage.getItem("username");
+  const username = localStorage.getItem("username");
   const image = localStorage.getItem("profileImg") || dp;
   const tenantname = localStorage.getItem("Extand_Class")
     ? JSON.parse(localStorage.getItem("Extand_Class"))?.[0]?.Company
@@ -34,16 +37,8 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           userRole === "contracts_Admin" ||
           userRole === "contracts_OrgAdmin"
         ) {
-          // const addUserForm = {
-          //   icon: "fa-light fa-user",
-          //   title: "Add User",
-          //   target: "_self",
-          //   pageType: "form",
-          //   description: "",
-          //   objectId: "lM0xRnM3iE"
-          // };
           const newSidebarList = sidebarList.map((item) => {
-            if (item.title === "Settings") {
+            if (item.title === "Settings" && isStaging) {
               // Make a shallow copy of the item
               const newItem = { ...item };
               newItem.children = [
@@ -65,8 +60,6 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                   objectId: "users"
                 }
               ];
-              // Insert addUserForm at the second position
-              // newItem.children.splice(1, 0, addUserForm);
               return newItem;
             }
             return item;
@@ -89,13 +82,19 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     closeSidebar();
     setSubmenuOpen({});
   };
+  const handleProfile = () => {
+    navigate("/profile");
+  };
   return (
     <aside
       className={`absolute lg:relative bg-base-100 h-screen overflow-y-auto transition-all z-[500] shadow-lg hide-scrollbar
      ${isOpen ? "w-full md:w-[300px]" : "w-0"}`}
     >
       <div className="flex px-2 py-3 gap-2 items-center shadow-md">
-        <div className="w-[75px] h-[75px] rounded-full ring-[2px] ring-offset-2 ring-gray-400 overflow-hidden">
+        <div
+          onClick={() => handleProfile()}
+          className="w-[75px] h-[75px] rounded-full ring-[2px] ring-offset-2 ring-gray-400 overflow-hidden cursor-pointer"
+        >
           <img
             className="w-full h-full object-contain"
             src={image}
@@ -103,9 +102,15 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           />
         </div>
         <div>
-          <p className="text-[14px] font-bold text-base-content">{username}</p>
           <p
-            className={`text-[12px] text-base-content ${
+            onClick={handleProfile}
+            className="text-[14px] font-bold text-base-content cursor-pointer"
+          >
+            {username}
+          </p>
+          <p
+            onClick={handleProfile}
+            className={`cursor-pointer text-[12px] text-base-content ${
               tenantname ? "mt-2" : ""
             }`}
           >
