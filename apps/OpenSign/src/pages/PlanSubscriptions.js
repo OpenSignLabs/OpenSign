@@ -6,6 +6,7 @@ import Title from "../components/Title";
 import Parse from "parse";
 import { openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
+import { isStaging } from "../constant/const";
 const listItemStyle = {
   paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -16,7 +17,7 @@ const listItemStyle = {
 
 const PlanSubscriptions = () => {
   const navigate = useNavigate();
-  const isStagingPlan = plansArr.some((x) => x.planName === "OPENSIGN™ TEAMS");
+  const isTeamPlan = plansArr.some((x) => x.planName === "OPENSIGN™ TEAMS");
   const [yearlyVisible, setYearlyVisible] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
   const extUser =
@@ -30,10 +31,15 @@ const PlanSubscriptions = () => {
   };
   const userDetails = JSON.parse(localStorage.getItem("userDetails")) || user;
   // console.log("userDetails ", userDetails);
-  const name =
-    userDetails && userDetails.name
-      ? "first_name=" + encodeURIComponent(userDetails.name)
-      : "";
+  const fullname =
+    userDetails && userDetails.name ? userDetails.name.split(" ") : "";
+  const firstname = fullname?.[0]
+    ? "first_name=" + encodeURIComponent(fullname?.[0])
+    : "";
+  const lastname = fullname?.[1]
+    ? "&last_name=" + encodeURIComponent(fullname?.[1])
+    : "";
+  const name = firstname ? firstname + lastname : "";
   const email =
     userDetails && userDetails.email
       ? "&email=" + encodeURIComponent(userDetails.email)
@@ -55,10 +61,7 @@ const PlanSubscriptions = () => {
     phone;
   useEffect(() => {
     setIsLoader(false);
-    if (
-      !isStagingPlan &&
-      window.location.origin === "https://staging-app.opensignlabs.com"
-    ) {
+    if (!isTeamPlan && isStaging) {
       plansArr.splice(2, 0, stagingPlan);
     }
     // eslint-disable-next-line
