@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Parse from "parse";
-import axios from "axios";
 import { appInfo } from "../constant/appinfo";
 import { isEnableSubscription } from "../constant/const";
 import { fetchSubscription } from "../constant/Utils";
@@ -136,8 +135,6 @@ const SSOVerify = () => {
   };
   // `thirdpartyLoginfn` is used to save necessary parameters locally for the logged-in user
   const thirdpartyLoginfn = async (sessionToken) => {
-    const baseUrl = localStorage.getItem("baseUrl");
-    const parseAppId = localStorage.getItem("parseAppId");
     try {
       const validUser = await Parse.User.become(sessionToken);
       if (validUser) {
@@ -151,76 +148,44 @@ const SSOVerify = () => {
         }
         // Check extended class user role and tenentId
         try {
-          let userRoles = [];
           const userSettings = appInfo.settings;
-          //Get Current user roles
-          const url = `${baseUrl}functions/UserGroups`;
-          const headers = {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": parseAppId,
-            sessionToken: _user.sessionToken
-          };
-          const body = { appname: appInfo.appname };
-          const UserGroupsRes = await axios.post(url, JSON.stringify(body), {
-            headers: headers
-          });
-          userRoles = (UserGroupsRes.data && UserGroupsRes.data.result) || [];
-          if (userRoles) {
-            let _currentRole = "";
-            const excludeRoles = ["contracts_Guest", `contracts_appeditor`];
-            const filteredRole = userRoles.filter(
-              (x) => !excludeRoles.includes(x)
-            );
-            if (filteredRole?.length > 1) {
-              console.log("user has two roles");
-              // _currentRole = filteredRole.filter((x) => x === "contracts_User");
-            } else {
-              _currentRole = filteredRole?.[0] || "";
-            }
-            if (_currentRole) {
-              const roleSetting = userSettings?.find(
-                (setting) => setting.role === _currentRole
-              );
-              const redirectUrl =
-                location?.state?.from ||
-                `/${roleSetting.pageType}/${roleSetting.pageId}`;
-              const _role = _currentRole.replace(`${appInfo.appname}_`, "");
-              localStorage.setItem("_user_role", _role);
-              // Get TenentID from Extendend Class
-              localStorage.setItem(
-                "extended_class",
-                roleSetting.extended_class
-              );
-              try {
-                const extUser = await Parse.Cloud.run("getUserDetails", {
-                  email: _user.email
-                });
-                if (extUser) {
-                  const _extUser = JSON.parse(JSON.stringify(extUser));
-                  localStorage.setItem("userEmail", _extUser.Email);
-                  localStorage.setItem("username", _extUser.Name);
-                  localStorage.setItem("scriptId", true);
-                  let tenentInfo = [];
-                  const results = [extUser];
-                  if (results) {
-                    let extendedInfo_stringify = JSON.stringify(results);
-                    localStorage.setItem(
-                      "Extand_Class",
-                      extendedInfo_stringify
-                    );
+          const currentUser = Parse.User.current();
+          await Parse.Cloud.run("getUserDetails", {
+            email: currentUser.get("email")
+          })
+            .then(async (extUser) => {
+              if (extUser) {
+                const IsDisabled = extUser?.get("IsDisabled") || false;
+                if (!IsDisabled) {
+                  const userRole = extUser?.get("UserRole");
+                  const menu =
+                    userRole &&
+                    userSettings.find((menu) => menu.role === userRole);
+                  if (menu) {
+                    const _currentRole = userRole;
+                    const redirectUrl =
+                      location?.state?.from ||
+                      `/${menu.pageType}/${menu.pageId}`;
+                    const _role = _currentRole.replace("contracts_", "");
+                    localStorage.setItem("_user_role", _role);
+                    const extUser_stringify = JSON.stringify([extUser]);
+                    localStorage.setItem("Extand_Class", extUser_stringify);
+                    const _extUser = JSON.parse(JSON.stringify(extUser));
+                    localStorage.setItem("userEmail", _extUser.Email);
+                    localStorage.setItem("username", _extUser.Name);
+                    localStorage.setItem("scriptId", true);
                     if (_extUser.TenantId) {
-                      const obj = {
-                        tenentId: _extUser.TenantId.objectId,
-                        tenentName: _extUser.TenantId.TenantName || ""
+                      const tenant = {
+                        Id: _extUser?.TenantId?.objectId || "",
+                        Name: _extUser?.TenantId?.TenantName || ""
                       };
-                      localStorage.setItem("TenantId", obj.tenentId);
-                      tenentInfo.push(obj);
-                      dispatch(showTenant(obj.tenentName || ""));
-                      localStorage.setItem("TenantName", obj.tenentName || "");
+                      localStorage.setItem("TenantId", tenant?.Id);
+                      dispatch(showTenant(tenant?.Name));
+                      localStorage.setItem("TenantName", tenant?.Name);
                     }
-                    localStorage.setItem("PageLanding", roleSetting.pageId);
-                    localStorage.setItem("defaultmenuid", roleSetting.menuId);
-                    localStorage.setItem("pageType", roleSetting.pageType);
+                    localStorage.setItem("PageLanding", menu.pageId);
+                    localStorage.setItem("defaultmenuid", menu.menuId);
+                    localStorage.setItem("pageType", menu.pageType);
                     if (isEnableSubscription) {
                       const res = await fetchSubscription();
                       const plan = res.plan;
@@ -232,33 +197,30 @@ const SSOVerify = () => {
                           localStorage.removeItem("userDetails");
                           navigate(redirectUrl);
                         } else {
-                          navigate(`/subscription`, {
-                            replace: true
-                          });
+                          navigate(`/subscription`, { replace: true });
                         }
                       } else {
-                        navigate(`/subscription`, {
-                          replace: true
-                        });
+                        navigate(`/subscription`, { replace: true });
                       }
                     } else {
                       navigate(redirectUrl);
                     }
                   }
+                } else {
+                  alert(
+                    "Error: You don't have access, please contact the admin."
+                  );
+                  setMessage(
+                    "Error: You don't have access, please contact the admin."
+                  );
                 }
-              } catch (err) {
-                alert("user not exist.");
-                setMessage("Error: User not exist.");
-                console.log("err in get extUser", err);
               }
-            } else {
-              alert("Role does not exists.");
-              setMessage("Error: Role does not exists.");
-            }
-          } else {
-            alert("Role does not exists.");
-            setMessage("Error: Role does not exists.");
-          }
+            })
+            .catch((error) => {
+              console.error("Err in fetch extuser", error);
+              alert("user not exist.");
+              setMessage("Error: User not exist.");
+            });
         } catch (err) {
           console.log("err in usergroups", err);
         }

@@ -70,6 +70,19 @@ const PgSignUp = () => {
           });
           if (res) {
             localStorage.removeItem("userDetails");
+            try {
+              const extUser = await Parse.Cloud.run("getUserDetails", {
+                email: userDetails.email
+              });
+              const userRole = extUser?.get("UserRole");
+              const _currentRole = userRole;
+              const _role = _currentRole.replace("contracts_", "");
+              localStorage.setItem("_user_role", _role);
+              const extInfo_stringify = JSON.stringify([extUser]);
+              localStorage.setItem("Extand_Class", extInfo_stringify);
+            } catch (err) {
+              console.log("Err in fetching extuser", err);
+            }
             navigate(
               "/" + userSettings[0].pageType + "/" + userSettings[0].pageId
             );
@@ -107,8 +120,6 @@ const PgSignUp = () => {
     }
   };
   const saveUser = async (obj) => {
-    // const domain = localStorage.getItem("domain");
-    // console.log("domain", domain)
     try {
       const zohoRes = await axios.post(
         parseBaseUrl + "functions/zohodetails",
@@ -209,8 +220,6 @@ const PgSignUp = () => {
     if (res.data) {
       let _user = res.data;
       localStorage.setItem("UserInformation", JSON.stringify(_user));
-      localStorage.setItem("userEmail", _user.email);
-      localStorage.setItem("username", _user.name);
       localStorage.setItem("accesstoken", _user.sessionToken);
       localStorage.setItem("scriptId", true);
       if (_user.ProfilePic) {
@@ -220,190 +229,52 @@ const PgSignUp = () => {
       }
       // Check extended class user role and tenentId
       try {
-        let userRoles = [];
-        if (appInfo.settings) {
-          let userSettings = appInfo.settings;
-
-          //Get Current user roles
-          let url = `${baseUrl}functions/UserGroups`;
-          const headers = {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": parseAppId,
-            sessionToken: _user.sessionToken
-          };
-
-          let body = {
-            appname: localStorage.getItem("_appName")
-          };
-          await axios
-            .post(url, JSON.stringify(body), { headers: headers })
-            .then((roles) => {
-              if (roles) {
-                userRoles = roles.data.result;
-                let _currentRole = "";
-                if (userRoles.length > 1) {
-                  if (
-                    userRoles[0] ===
-                    `${localStorage.getItem("_appName")}_appeditor`
-                  ) {
-                    _currentRole = userRoles[1];
-                  } else {
-                    _currentRole = userRoles[0];
-                  }
-                } else {
-                  _currentRole = userRoles[0];
-                }
-                if (
-                  _currentRole !==
-                  `${localStorage.getItem("_appName")}_appeditor`
-                ) {
-                  userSettings.forEach(async (element) => {
-                    if (element.role === _currentRole) {
-                      let _role = _currentRole.replace(
-                        `${localStorage.getItem("_appName")}_`,
-                        ""
-                      );
-                      localStorage.setItem("_user_role", _role);
-                      // Get TenentID from Extendend Class
-                      localStorage.setItem(
-                        "extended_class",
-                        element.extended_class
-                      );
-                      const currentUser = Parse.User.current();
-                      await Parse.Cloud.run("getUserDetails", {
-                        email: currentUser.get("email")
-                      }).then(
-                        (result) => {
-                          const results = [result];
-                          let tenentInfo = [];
-                          if (results) {
-                            let extendedInfo_stringify =
-                              JSON.stringify(results);
-                            localStorage.setItem(
-                              "Extand_Class",
-                              extendedInfo_stringify
-                            );
-                            let extendedInfo = JSON.parse(
-                              extendedInfo_stringify
-                            );
-                            if (extendedInfo.length > 1) {
-                              extendedInfo.forEach((x) => {
-                                if (x.TenantId) {
-                                  let obj = {
-                                    tenentId: x.TenantId.objectId,
-                                    tenentName: x.TenantId.TenantName || ""
-                                  };
-                                  tenentInfo.push(obj);
-                                }
-                              });
-                              if (tenentInfo.length) {
-                                dispatch(
-                                  showTenant(tenentInfo[0].tenentName || "")
-                                );
-                                localStorage.setItem(
-                                  "TenantName",
-                                  tenentInfo[0].tenentName || ""
-                                );
-                              }
-
-                              localStorage.setItem("showpopup", true);
-                              localStorage.setItem(
-                                "PageLanding",
-                                element.pageId
-                              );
-                              localStorage.setItem(
-                                "defaultmenuid",
-                                element.menuId
-                              );
-                              localStorage.setItem(
-                                "pageType",
-                                element.pageType
-                              );
-                              setIsLoader(false);
-                              navigate("/", { replace: true });
-                            } else {
-                              extendedInfo.forEach((x) => {
-                                if (x.TenantId) {
-                                  let obj = {
-                                    tenentId: x.TenantId.objectId,
-                                    tenentName: x.TenantId.TenantName || ""
-                                  };
-                                  localStorage.setItem(
-                                    "TenantId",
-                                    x.TenantId.objectId
-                                  );
-                                  tenentInfo.push(obj);
-                                }
-                              });
-                              if (tenentInfo.length) {
-                                dispatch(
-                                  showTenant(tenentInfo[0].tenentName || "")
-                                );
-                                localStorage.setItem(
-                                  "TenantName",
-                                  tenentInfo[0].tenentName || ""
-                                );
-                              }
-                              localStorage.setItem(
-                                "PageLanding",
-                                element.pageId
-                              );
-                              localStorage.setItem(
-                                "defaultmenuid",
-                                element.menuId
-                              );
-                              localStorage.setItem(
-                                "pageType",
-                                element.pageType
-                              );
-                              setIsLoader(false);
-                              alert("Registered user successfully");
-                              const redirectUrl =
-                                location?.state?.from ||
-                                `/${element.pageType}/${element.pageId}`;
-
-                              // Redirect to the appropriate URL after successful login
-                              navigate(redirectUrl);
-                            }
-                          } else {
-                            alert("Registered user successfully");
-                            localStorage.setItem("PageLanding", element.pageId);
-                            localStorage.setItem(
-                              "defaultmenuid",
-                              element.menuId
-                            );
-                            localStorage.setItem("pageType", element.pageType);
-                            setIsLoader(false);
-                            const redirectUrl =
-                              location?.state?.from ||
-                              `/${element.pageType}/${element.pageId}`;
-
-                            // Redirect to the appropriate URL after successful login
-                            navigate(redirectUrl);
-                          }
-                        },
-                        (error) => {
-                          setIsLoader(false);
-                          console.error("Error while fetching Follow", error);
-                        }
-                      );
-                    }
-                  });
-                } else {
-                  setIsLoader(false);
-                }
-              } else {
-                setIsLoader(false);
+        const userSettings = appInfo.settings;
+        const currentUser = Parse.User.current();
+        const extUser = await Parse.Cloud.run("getUserDetails", {
+          email: currentUser.get("email")
+        });
+        if (extUser) {
+          const IsDisabled = extUser?.get("IsDisabled") || false;
+          if (!IsDisabled) {
+            const userRole = extUser?.get("UserRole");
+            const menu =
+              userRole && userSettings.find((menu) => menu.role === userRole);
+            if (menu) {
+              const _currentRole = userRole;
+              const _role = _currentRole.replace("contracts_", "");
+              localStorage.setItem("_user_role", _role);
+              const extInfo_stringify = JSON.stringify([extUser]);
+              localStorage.setItem("Extand_Class", extInfo_stringify);
+              const extInfo = JSON.parse(JSON.stringify(extUser));
+              localStorage.setItem("userEmail", extInfo?.Email);
+              localStorage.setItem("username", extInfo?.Name);
+              if (extInfo?.TenantId) {
+                const tenant = {
+                  Id: extInfo?.TenantId?.objectId || "",
+                  Name: extInfo?.TenantId?.TenantName || ""
+                };
+                localStorage.setItem("TenantId", tenant?.Id);
+                dispatch(showTenant(tenant?.Name));
+                localStorage.setItem("TenantName", tenant?.Name);
               }
-            })
-            .catch((err) => {
-              console.log("err", err);
+              localStorage.setItem("PageLanding", menu.pageId);
+              localStorage.setItem("defaultmenuid", menu.menuId);
+              localStorage.setItem("pageType", menu.pageType);
               setIsLoader(false);
-            });
+              alert("Registered user successfully");
+              const redirectUrl =
+                location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
+              // Redirect to the appropriate URL after successful login
+              navigate(redirectUrl);
+            }
+          } else {
+            setIsLoader(false);
+          }
         }
       } catch (error) {
         setIsLoader(false);
-        console.log(error);
+        console.log("Err in fetch extuser", error);
       }
     }
   };

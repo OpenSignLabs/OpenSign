@@ -37,11 +37,10 @@ function WidgetComponent({
   sendInOrder,
   isTemplateFlow,
   setBlockColor,
-  blockColor,
-  setIsAddSigner
+  setIsAddSigner,
+  uniqueId
 }) {
   const [isSignersModal, setIsSignersModal] = useState(false);
-
   const [, dropdown] = useDrag({
     type: "BOX",
     item: {
@@ -187,7 +186,6 @@ function WidgetComponent({
   const isMobile = window.innerWidth < 767;
   const scrollContainerRef = useRef(null);
   const [widget, setWidget] = useState([]);
-
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -245,86 +243,66 @@ function WidgetComponent({
       ? textWidgetData
       : widget;
 
+  const handleSelectRecipient = () => {
+    if (
+      signersdata[isSelectListId]?.Email ||
+      signersdata[isSelectListId]?.Role
+    ) {
+      const userData =
+        signersdata[isSelectListId]?.Name || signersdata[isSelectListId]?.Role;
+      const name =
+        userData?.length > 20 ? `${userData.slice(0, 20)}...` : userData;
+      return name;
+    }
+  };
   return (
     <>
       {isMobile ? (
         !isMailSend && (
-          <div
-            id="navbar"
-            className="fixed z-[99] bottom-0 right-0"
-            style={{ width: window.innerWidth + "px" }}
-          >
-            <div className="mx-1">
-              {isSigners && (
-                <div
-                  data-tut="recipientArea"
-                  className="py-[10px] flex justify-center items-center op-card"
-                  style={{
-                    background: blockColor
-                      ? blockColor
-                      : isSelectListId
+          <div id="navbar" className="fixed z-[99] bottom-0 right-0 w-full">
+            {isSigners && (
+              <div className="w-full mb-[5px] flex justify-center items-center gap-1">
+                <div className="w-full ml-[5px]" onClick={() => handleModal()}>
+                  <select
+                    data-tut="recipientArea"
+                    className="w-full op-select op-select-bordered  pointer-events-none"
+                    value={handleSelectRecipient()}
+                    style={{
+                      backgroundColor: isSelectListId
                         ? color[isSelectListId % color.length]
                         : color[0]
-                  }}
-                  onClick={() => handleModal()}
-                >
-                  <span className="text-[13px] font-bold flex items-center">
-                    {title ? title : "Recipient"}
-                    {signersdata[isSelectListId]?.Role && (
-                      <div>
-                        {signersdata[isSelectListId]?.Name ? (
-                          <>
-                            :{" "}
-                            {signersdata[isSelectListId]?.Name?.length > 12
-                              ? `${signersdata[isSelectListId].Name.slice(
-                                  0,
-                                  12
-                                )}...`
-                              : signersdata[isSelectListId]?.Name}
-                          </>
-                        ) : (
-                          <>
-                            :{" "}
-                            {signersdata[isSelectListId]?.Role?.length > 12
-                              ? `${signersdata[isSelectListId].Role.slice(
-                                  0,
-                                  12
-                                )}...`
-                              : signersdata[isSelectListId]?.Role}
-                          </>
-                        )}
-                      </div>
-                    )}
-                    <div className="ml-[6px] text-[16px]">
-                      <i className="fa-light fa-angle-down"></i>
-                    </div>
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="mx-1">
-              {handleAddSigner ? (
-                <div
-                  data-tut="reactourAddbtn"
-                  className="op-btn op-btn-accent w-full my-[2px]"
-                  onClick={() => handleAddSigner()}
-                >
-                  <i className="fa-light fa-plus"></i>
-                  <span>Add role</span>
-                </div>
-              ) : (
-                setIsAddSigner && (
-                  <div
-                    data-tut="addRecipient"
-                    className="op-btn op-btn-accent w-full my-[2px]"
-                    onClick={() => setIsAddSigner(true)}
+                    }}
                   >
-                    <i className="fa-light fa-plus"></i>
-                    <span>Add recipients</span>
-                  </div>
-                )
-              )}
-            </div>
+                    <option value={handleSelectRecipient()}>
+                      {handleSelectRecipient()}
+                    </option>
+                  </select>
+                </div>
+
+                <div className="w-[18%]">
+                  {handleAddSigner ? (
+                    <button
+                      data-tut="reactourAddbtn"
+                      onClick={() => handleAddSigner()}
+                      className="op-btn op-btn-accent"
+                    >
+                      <i className="fa-light fa-plus "></i>
+                    </button>
+                  ) : (
+                    setIsAddSigner && (
+                      <button
+                        data-tut="addRecipient"
+                        onClick={() => setIsAddSigner(true)}
+                        className="op-btn op-btn-accent"
+                      >
+                        <i className="fa-light fa-plus"></i>
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+
             <div
               data-tut="addWidgets"
               ref={scrollContainerRef}
@@ -392,6 +370,7 @@ function WidgetComponent({
                 sendInOrder={sendInOrder}
                 setSignersData={setSignersData}
                 setBlockColor={setBlockColor}
+                uniqueId={uniqueId}
               />
             </div>
           ) : (

@@ -12,6 +12,7 @@ import Tour from "reactour";
 import Parse from "parse";
 import { saveAs } from "file-saver";
 import {
+  checkIsSubscribedTeam,
   // copytoData,
   replaceMailVaribles
 } from "../constant/Utils";
@@ -24,6 +25,9 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
+import Select from "react-select";
+import { isEnableSubscription } from "../constant/const";
+import SubscribeCard from "./SubscribeCard";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
@@ -52,6 +56,10 @@ const ReportTable = (props) => {
   const [templateDeatils, setTemplateDetails] = useState({});
   const [placeholders, setPlaceholders] = useState([]);
   const [isLoader, setIsLoader] = useState({});
+  const [isShareWith, setIsShareWith] = useState({});
+  const [teamList, setTeamList] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState([]);
+  const onChange = (selectedOptions) => setSelectedTeam(selectedOptions);
   // const [selectedPublicRole, setSelectedPublicRole] = useState("");
   // const [isCelebration, setIsCelebration] = useState(false);
   // const [currentLists, setCurrentLists] = useState([]);
@@ -59,6 +67,9 @@ const ReportTable = (props) => {
   // const [isPublicProfile, setIsPublicProfile] = useState({});
   // const [publicUserName, setIsPublicUserName] = useState("");
   const [isViewShare, setIsViewShare] = useState({});
+  const [isSubscribe, setIsSubscribe] = useState(true);
+  const Extand_Class = localStorage.getItem("Extand_Class");
+  const extClass = Extand_Class && JSON.parse(Extand_Class);
   const startIndex = (currentPage - 1) * props.docPerPage;
   const { isMoreDocs, setIsNextRecord } = props;
   // For loop is used to calculate page numbers visible below table
@@ -125,9 +136,37 @@ const ReportTable = (props) => {
   //  below useEffect reset currenpage to 1 if user change route
   useEffect(() => {
     checkTourStatus();
+    fetchTeamList();
     return () => setCurrentPage(1);
+    // eslint-disable-next-line
   }, []);
 
+  // `fetchTeamList` is used to fetch team list for share with functionality
+  const fetchTeamList = async () => {
+    if (props.ReportName === "Templates") {
+      try {
+        const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+        const team = new Parse.Query("contracts_Teams");
+        team.equalTo("OrganizationId", {
+          __type: "Pointer",
+          className: "contracts_Organizations",
+          objectId: extUser.OrganizationId.objectId
+        });
+        team.notEqualTo("IsActive", false);
+        const teamtRes = await team.find();
+        if (teamtRes.length > 0) {
+          const _teamRes = JSON.parse(JSON.stringify(teamtRes));
+          const formatedList = _teamRes.map((x) => ({
+            label: x.Name,
+            value: x.objectId
+          }));
+          setTeamList(formatedList);
+        }
+      } catch (err) {
+        console.log("Err in fetch top level teamlist", err);
+      }
+    }
+  };
   // `formatRow` is used to show data in poper manner like
   // if data is of array type then it will join array items with ","
   // if data is of object type then it Name values will be show in row
@@ -158,9 +197,7 @@ const ReportTable = (props) => {
       } else {
         setActLoader({ [`${item.objectId}_${act.btnId}`]: true });
         try {
-          const params = {
-            templateId: item.objectId
-          };
+          const params = { templateId: item.objectId };
           const templateDeatils = await axios.post(
             `${localStorage.getItem("baseUrl")}functions/getTemplate`,
             params,
@@ -191,6 +228,19 @@ const ReportTable = (props) => {
               });
             }
 
+            // console.log("extClass ", extClass);
+            let extUserId = Doc.ExtUserPtr.objectId;
+            let creatorId = Doc.CreatedBy.objectId;
+            if (extClass && extClass.length > 0) {
+              if (Doc.ExtUserPtr?.objectId !== extClass[0].objectId) {
+                const Extand_Class = localStorage.getItem("Extand_Class");
+                const extClass = Extand_Class && JSON.parse(Extand_Class);
+                if (extClass && extClass.length > 0) {
+                  extUserId = extClass[0].objectId;
+                  creatorId = extClass[0]?.UserId.objectId;
+                }
+              }
+            }
             let placeholdersArr = [];
             if (Doc.Placeholders?.length > 0) {
               placeholdersArr = Doc.Placeholders;
@@ -205,12 +255,12 @@ const ReportTable = (props) => {
                 ExtUserPtr: {
                   __type: "Pointer",
                   className: "contracts_Users",
-                  objectId: Doc.ExtUserPtr.objectId
+                  objectId: extUserId
                 },
                 CreatedBy: {
                   __type: "Pointer",
                   className: "_User",
-                  objectId: Doc.CreatedBy.objectId
+                  objectId: creatorId
                 },
                 Signers: signers,
                 SendinOrder: Doc?.SendinOrder || false,
@@ -221,7 +271,7 @@ const ReportTable = (props) => {
                 const res = await axios.post(
                   `${localStorage.getItem(
                     "baseUrl"
-                  )}classes/${localStorage.getItem("_appName")}_Document`,
+                  )}classes/contracts_Document`,
                   data,
                   {
                     headers: {
@@ -282,7 +332,7 @@ const ReportTable = (props) => {
     }
   };
 
-  const handleActionBtn = (act, item) => {
+  const handleActionBtn = async (act, item) => {
     if (act.action === "redirect") {
       handleURL(item, act);
     } else if (act.action === "delete") {
@@ -297,6 +347,20 @@ const ReportTable = (props) => {
       setIsResendMail({ [item.objectId]: true });
     } else if (act.action === "bulksend") {
       handleBulkSend(item);
+    } else if (act.action === "sharewith") {
+      if (isEnableSubscription) {
+        const getIsSubscribe = await checkIsSubscribedTeam();
+        setIsSubscribe(getIsSubscribe);
+      }
+      if (item?.SharedWith && item?.SharedWith.length > 0) {
+        // below code is used to get existing sharewith teams and formated them as per react-select
+        const formatedList = item?.SharedWith.map((x) => ({
+          label: x.Name,
+          value: x.objectId
+        }));
+        setSelectedTeam(formatedList);
+      }
+      setIsShareWith({ [item.objectId]: true });
     }
   };
   // Get current list
@@ -504,7 +568,6 @@ const ReportTable = (props) => {
     if (props.isDontShow) {
       const serverUrl = localStorage.getItem("baseUrl");
       const appId = localStorage.getItem("parseAppId");
-      const extUserClass = localStorage.getItem("extended_class");
       const json = JSON.parse(localStorage.getItem("Extand_Class"));
       const extUserId = json && json.length > 0 && json[0].objectId;
       // console.log("extUserId ", extUserId)
@@ -525,7 +588,7 @@ const ReportTable = (props) => {
       }
 
       await axios.put(
-        serverUrl + "classes/" + extUserClass + "/" + extUserId,
+        serverUrl + "classes/contracts_Users/" + extUserId,
         {
           TourStatus: updatedTourStatus
         },
@@ -915,6 +978,41 @@ const ReportTable = (props) => {
   //   setTimeout(() => setIsAlert(false), 1500);
   // };
 
+  // `handleShareWith` is used to save teams in sharedWith field
+  const handleShareWith = async (e, template) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsShareWith({});
+    setActLoader({ [template.objectId]: true });
+    try {
+      const templateCls = new Parse.Object("contracts_Template");
+      templateCls.id = template.objectId;
+      const teamArr = selectedTeam.map((x) => ({
+        __type: "Pointer",
+        className: "contracts_Teams",
+        objectId: x.value
+      }));
+      templateCls.set("SharedWith", teamArr);
+      const res = await templateCls.save();
+      if (res) {
+        setIsAlert(true);
+        setAlertMsg({
+          type: "success",
+          message: "Template Shared successfully."
+        });
+      }
+    } catch (err) {
+      setIsAlert(true);
+      setAlertMsg({
+        type: "danger",
+        message: "Something went wrong, Please try again later."
+      });
+    } finally {
+      setActLoader({});
+      setTimeout(() => setIsAlert(false), 1500);
+    }
+  };
+
   return (
     <div className="relative">
       {Object.keys(actLoader)?.length > 0 && (
@@ -1253,55 +1351,211 @@ const ReportTable = (props) => {
                         <td className="px-2 py-2">
                           <div className="text-base-content flex flex-row gap-x-2 gap-y-1 justify-start items-center">
                             {props.actions?.length > 0 &&
-                              props.actions.map((act, index) => (
-                                <div
-                                  role="button"
-                                  data-tut={act?.selector}
-                                  key={index}
-                                  onClick={() => handleActionBtn(act, item)}
-                                  title={act.hoverLabel}
-                                  className={
-                                    act.action !== "option"
-                                      ? `${
-                                          act?.btnColor ? act.btnColor : ""
-                                        } op-btn op-btn-sm mr-1`
-                                      : "text-base-content focus:outline-none text-lg mr-2 relative"
-                                  }
-                                >
-                                  <i className={act.btnIcon}></i>
-                                  {act.btnLabel && (
-                                    <span className="uppercase font-medium">
-                                      {act.btnLabel}
-                                    </span>
-                                  )}
-                                  {isOption[item.objectId] &&
-                                    act.action === "option" && (
-                                      <ul className="absolute -right-2 top-6 z-[20] op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box ">
-                                        {act.subaction?.map((subact) => (
-                                          <li
-                                            key={subact.btnId}
-                                            onClick={() =>
-                                              handleActionBtn(subact, item)
-                                            }
-                                            title={subact.hoverLabel}
-                                          >
-                                            <span>
-                                              <i
-                                                className={`${subact.btnIcon} mr-1.5`}
-                                              ></i>
-                                              {subact.btnLabel && (
-                                                <span className="text-[13px] capitalize font-medium">
-                                                  {subact.btnLabel}
-                                                </span>
-                                              )}
-                                            </span>
-                                          </li>
-                                        ))}
-                                      </ul>
+                              props.actions.map((act, index) =>
+                                props.ReportName === "Templates" ? (
+                                  <React.Fragment key={index}>
+                                    {(item.ExtUserPtr?.objectId ===
+                                      extClass?.[0]?.objectId ||
+                                      act.btnLabel === "Use") && (
+                                      <div
+                                        role="button"
+                                        data-tut={act?.selector}
+                                        key={index}
+                                        onClick={() =>
+                                          handleActionBtn(act, item)
+                                        }
+                                        title={act.hoverLabel}
+                                        className={
+                                          act.action !== "option"
+                                            ? `${
+                                                act?.btnColor
+                                                  ? act.btnColor
+                                                  : ""
+                                              } op-btn op-btn-sm mr-1`
+                                            : "text-base-content focus:outline-none text-lg mr-2 relative"
+                                        }
+                                      >
+                                        <i className={act.btnIcon}></i>
+                                        {act.btnLabel && (
+                                          <span className="uppercase font-medium">
+                                            {act.btnLabel}
+                                          </span>
+                                        )}
+                                        {isOption[item.objectId] &&
+                                          act.action === "option" && (
+                                            <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                              {act.subaction?.map((subact) => (
+                                                <li
+                                                  key={subact.btnId}
+                                                  onClick={() =>
+                                                    handleActionBtn(
+                                                      subact,
+                                                      item
+                                                    )
+                                                  }
+                                                  title={subact.hoverLabel}
+                                                >
+                                                  <span>
+                                                    <i
+                                                      className={`${subact.btnIcon} mr-1.5`}
+                                                    ></i>
+                                                    {subact.btnLabel && (
+                                                      <span className="text-[13px] capitalize font-medium">
+                                                        {subact.btnLabel}
+                                                      </span>
+                                                    )}
+                                                  </span>
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          )}
+                                      </div>
                                     )}
-                                </div>
-                              ))}
+                                  </React.Fragment>
+                                ) : (
+                                  <div
+                                    role="button"
+                                    data-tut={act?.selector}
+                                    key={index}
+                                    onClick={() => handleActionBtn(act, item)}
+                                    title={act.hoverLabel}
+                                    className={
+                                      act.action !== "option"
+                                        ? `${
+                                            act?.btnColor ? act.btnColor : ""
+                                          } op-btn op-btn-sm mr-1`
+                                        : "text-base-content focus:outline-none text-lg mr-2 relative"
+                                    }
+                                  >
+                                    <i className={act.btnIcon}></i>
+                                    {act.btnLabel && (
+                                      <span className="uppercase font-medium">
+                                        {act.btnLabel}
+                                      </span>
+                                    )}
+                                    {isOption[item.objectId] &&
+                                      act.action === "option" && (
+                                        <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                          {act.subaction?.map((subact) => (
+                                            <li
+                                              key={subact.btnId}
+                                              onClick={() =>
+                                                handleActionBtn(subact, item)
+                                              }
+                                              title={subact.hoverLabel}
+                                            >
+                                              <span>
+                                                <i
+                                                  className={`${subact.btnIcon} mr-1.5`}
+                                                ></i>
+                                                {subact.btnLabel && (
+                                                  <span className="text-[13px] capitalize font-medium">
+                                                    {subact.btnLabel}
+                                                  </span>
+                                                )}
+                                              </span>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      )}
+                                  </div>
+                                )
+                              )}
                           </div>
+                          {isShareWith[item.objectId] && (
+                            <div className="op-modal op-modal-open">
+                              <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">
+                                {isSubscribe && isEnableSubscription && (
+                                  <>
+                                    {item?.Signers?.length > 0 ? (
+                                      <div className="h-[150px] flex justify-center items-center mx-2">
+                                        <div
+                                          className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                          onClick={() => setIsShareWith({})}
+                                        >
+                                          ✕
+                                        </div>
+                                        <div className="text-base-content text-base text-center">
+                                          You cannot share a template if any
+                                          roles already have contacts assigned.
+                                          Please remove all contact assignments
+                                          from the roles before sharing the
+                                          template.
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                                          Share with
+                                        </h3>
+                                        <div
+                                          className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                          onClick={() => setIsShareWith({})}
+                                        >
+                                          ✕
+                                        </div>
+                                        <form
+                                          className="h-full w-full z-[1300] px-2 mt-3"
+                                          onSubmit={(e) =>
+                                            handleShareWith(e, item)
+                                          }
+                                        >
+                                          <Select
+                                            // onSortEnd={onSortEnd}
+                                            distance={4}
+                                            isMulti
+                                            options={teamList}
+                                            value={selectedTeam}
+                                            onChange={onChange}
+                                            closeMenuOnSelect
+                                            required={true}
+                                            noOptionsMessage={() =>
+                                              "Team not found"
+                                            }
+                                            unstyled
+                                            classNames={{
+                                              control: () =>
+                                                "op-input op-input-bordered op-input-sm border-gray-400 focus:outline-none hover:border-base-content w-full h-full text-[11px]",
+                                              valueContainer: () =>
+                                                "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
+                                              multiValue: () =>
+                                                "op-badge op-badge-primary h-full text-[11px]",
+                                              multiValueLabel: () => "mb-[2px]",
+                                              menu: () =>
+                                                "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
+                                              menuList: () =>
+                                                "shadow-md rounded-lg overflow-hidden",
+                                              option: () =>
+                                                "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
+                                              noOptionsMessage: () =>
+                                                "p-2 bg-base-200 rounded-lg m-1 p-2"
+                                            }}
+                                          />
+                                          <button className="op-btn op-btn-primary ml-[10px] my-3">
+                                            Submit
+                                          </button>
+                                        </form>
+                                      </>
+                                    )}
+                                  </>
+                                )}
+                                {!isSubscribe && isEnableSubscription && (
+                                  <>
+                                    <div
+                                      className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-primary-content absolute right-2 top-2 z-40"
+                                      onClick={() => setIsShareWith({})}
+                                    >
+                                      ✕
+                                    </div>
+                                    <SubscribeCard
+                                      plan={"TEAMS"}
+                                      price={"20"}
+                                    />
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          )}
                           {isViewShare[item.objectId] && (
                             <ModalUi
                               isOpen

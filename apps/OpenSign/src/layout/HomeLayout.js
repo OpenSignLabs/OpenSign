@@ -109,11 +109,7 @@ const HomeLayout = () => {
   }, [width]);
 
   useEffect(() => {
-    if (
-      localStorage.getItem("domain") === "contracts" &&
-      arr &&
-      arr.length > 0
-    ) {
+    if (arr && arr.length > 0) {
       handleDynamicSteps();
     } else {
       setIsTour(false);
@@ -171,7 +167,6 @@ const HomeLayout = () => {
     setIsTour(false);
     const serverUrl = localStorage.getItem("baseUrl");
     const appId = localStorage.getItem("parseAppId");
-    const extUserClass = localStorage.getItem("extended_class");
     const json = JSON.parse(localStorage.getItem("Extand_Class"));
     const extUserId = json && json.length > 0 && json[0].objectId;
     // console.log("extUserId ", extUserId)
@@ -193,7 +188,7 @@ const HomeLayout = () => {
 
     // console.log("updatedTourStatus ", updatedTourStatus);
     await axios.put(
-      serverUrl + "classes/" + extUserClass + "/" + extUserId,
+      serverUrl + "classes/contracts_Users/" + extUserId,
       {
         TourStatus: updatedTourStatus
       },
@@ -251,7 +246,7 @@ const HomeLayout = () => {
   };
   return (
     <div>
-      <div className="sticky top-0 z-[101]">
+      <div className="sticky top-0 z-[501]">
         {!isLoader && <Header showSidebar={showSidebar} />}
       </div>
       {isUserValid ? (

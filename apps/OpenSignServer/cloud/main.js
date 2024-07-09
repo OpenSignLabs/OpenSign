@@ -44,13 +44,18 @@ import GetPublicUserName from './parsefunction/GetPublicUserName.js';
 import GetPublicTemplate from './parsefunction/GetPublicTemplate.js';
 import ssoSignin from './parsefunction/ssoSignin.js';
 import isextenduser from './parsefunction/isextenduser.js';
+import getUserByOrg from './parsefunction/getUserByOrg.js';
+import getUserListByOrg from './parsefunction/getUserListByOrg.js';
+import TeamsAftersave from './parsefunction/TeamsAftersave.js';
+import SubscriptionAftersave from './parsefunction/SubscriptionAftersave.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
 Parse.Cloud.afterSave('contracts_Contactbook', ContactbookAftersave);
 Parse.Cloud.afterSave('contracts_Users', ContractUsersAftersave);
 Parse.Cloud.afterSave('contracts_Template', TemplateAfterSave);
-
+Parse.Cloud.afterSave('contracts_Teams', TeamsAftersave);
+Parse.Cloud.afterSave('contracts_Subscriptions', SubscriptionAftersave);
 // This beforeSave function triggers before an object is added or updated in the specified class, allowing for validation or modification.
 Parse.Cloud.beforeSave('contracts_Document', DocumentBeforesave);
 Parse.Cloud.beforeSave('contracts_Template', TemplateBeforeSave);
@@ -98,3 +103,5 @@ Parse.Cloud.define('getpublicusername', GetPublicUserName);
 Parse.Cloud.define('getpublictemplate', GetPublicTemplate);
 Parse.Cloud.define('ssosign', ssoSignin);
 Parse.Cloud.define('isextenduser', isextenduser);
+Parse.Cloud.define('getuserbyorg', getUserByOrg);
+Parse.Cloud.define('getuserlistbyorg', getUserListByOrg);

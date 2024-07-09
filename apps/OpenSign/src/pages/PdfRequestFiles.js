@@ -553,9 +553,9 @@ function PdfRequestFiles() {
     }
     await axios
       .get(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
+        `${localStorage.getItem(
+          "baseUrl"
+        )}classes/contracts_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
           jsonSender?.objectId
         }"}}`,
         {
@@ -1255,9 +1255,9 @@ function PdfRequestFiles() {
       }
       try {
         await axios.put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}${contractName}/${signerUserId}`,
+          `${localStorage.getItem(
+            "baseUrl"
+          )}classes/contracts${contractName}/${signerUserId}`,
           {
             TourStatus: updatedTourStatus
           },
@@ -1583,6 +1583,19 @@ function PdfRequestFiles() {
                         {!isCompleted?.message && (
                           <div className="flex mt-4 gap-1 px-[15px]">
                             <button
+                              onClick={(e) =>
+                                handleToPrint(e, pdfUrl, setIsDownloading)
+                              }
+                              type="button"
+                              className="font-[500] text-[13px] mr-[5px] op-btn op-btn-neutral"
+                            >
+                              <i
+                                className="fa-light fa-print"
+                                aria-hidden="true"
+                              ></i>
+                              <span className="hidden lg:block">Print</span>
+                            </button>
+                            <button
                               type="button"
                               onClick={() =>
                                 handleDownloadCertificate(
@@ -1599,19 +1612,6 @@ function PdfRequestFiles() {
                               <span className="hidden lg:block">
                                 Certificate
                               </span>
-                            </button>
-                            <button
-                              onClick={(e) =>
-                                handleToPrint(e, pdfUrl, setIsDownloading)
-                              }
-                              type="button"
-                              className="font-[500] text-[13px] mr-[5px] op-btn op-btn-neutral"
-                            >
-                              <i
-                                className="fa-light fa-print"
-                                aria-hidden="true"
-                              ></i>
-                              <span className="hidden lg:block">Print</span>
                             </button>
                             <button
                               type="button"

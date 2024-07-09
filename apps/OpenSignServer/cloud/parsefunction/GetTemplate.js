@@ -16,22 +16,43 @@ export default async function GetTemplate(request) {
     // console.log("userId ",userId)
     if (templateId && userId) {
       try {
-        const template = new Parse.Query('contracts_Template');
+        let template = new Parse.Query('contracts_Template');
         template.equalTo('objectId', templateId);
         template.include('ExtUserPtr');
         template.include('Signers');
-        template.include('CreateBy');
+        template.include('CreatedBy');
+
+        const extUserQuery = new Parse.Query('contracts_Users');
+        extUserQuery.equalTo('Email', userRes.data.email);
+        extUserQuery.include('TeamIds');
+        const extUser = await extUserQuery.first({ useMasterKey: true });
+        if (extUser) {
+          const _extUser = JSON.parse(JSON.stringify(extUser));
+          if (_extUser?.TeamIds && _extUser.TeamIds?.length > 0) {
+            let teamsArr = [];
+            _extUser?.TeamIds?.forEach(x => (teamsArr = [...teamsArr, ...x.Ancestors]));
+            // Create the first query
+            const sharedWithQuery = new Parse.Query('contracts_Template');
+            sharedWithQuery.containedIn('SharedWith', teamsArr);
+
+            // Create the second query
+            const createdByQuery = new Parse.Query('contracts_Template');
+            createdByQuery.equalTo('ExtUserPtr', {
+              __type: 'Pointer',
+              className: 'contracts_Users',
+              objectId: extUser.id,
+            });
+            template = Parse.Query.or(sharedWithQuery, createdByQuery);
+            template.equalTo('objectId', templateId);
+            template.include('ExtUserPtr');
+            template.include('Signers');
+            template.include('CreatedBy');
+          }
+        }
         const res = await template.first({ useMasterKey: true });
-        // console.log("res ", res)
         if (res) {
           // console.log("res ",res)
-          const acl = res.getACL();
-          // console.log("acl", acl.getReadAccess(userId))
-          if (acl && acl.getReadAccess(userId)) {
-            return res;
-          } else {
-            return { error: "You don't have access of this document!" };
-          }
+          return res;
         } else {
           return { error: "You don't have access of this document!" };
         }

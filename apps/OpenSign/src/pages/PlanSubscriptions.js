@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
-import plansArr from "../json/plansArr";
+import plansArr, { stagingPlan } from "../json/plansArr";
 import Title from "../components/Title";
 import Parse from "parse";
 import { openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
+import { isStaging } from "../constant/const";
 const listItemStyle = {
   paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -16,7 +17,8 @@ const listItemStyle = {
 
 const PlanSubscriptions = () => {
   const navigate = useNavigate();
-  const [yearlyVisible, setYearlyVisible] = useState(false);
+  const isTeamPlan = plansArr.some((x) => x.planName === "OPENSIGN™ TEAMS");
+  const [yearlyVisible, setYearlyVisible] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
   const extUser =
     localStorage.getItem("Extand_Class") &&
@@ -29,10 +31,15 @@ const PlanSubscriptions = () => {
   };
   const userDetails = JSON.parse(localStorage.getItem("userDetails")) || user;
   // console.log("userDetails ", userDetails);
-  const name =
-    userDetails && userDetails.name
-      ? "first_name=" + encodeURIComponent(userDetails.name)
-      : "";
+  const fullname =
+    userDetails && userDetails.name ? userDetails.name.split(" ") : "";
+  const firstname = fullname?.[0]
+    ? "first_name=" + encodeURIComponent(fullname?.[0])
+    : "";
+  const lastname = fullname?.[1]
+    ? "&last_name=" + encodeURIComponent(fullname?.[1])
+    : "";
+  const name = firstname ? firstname + lastname : "";
   const email =
     userDetails && userDetails.email
       ? "&email=" + encodeURIComponent(userDetails.email)
@@ -53,33 +60,40 @@ const PlanSubscriptions = () => {
     company +
     phone;
   useEffect(() => {
-    // if (localStorage.getItem("accesstoken")) {
     setIsLoader(false);
-    // } else {
-    //   navigate("/", { replace: true });
-    // }
+    if (!isTeamPlan && isStaging) {
+      plansArr.splice(2, 0, stagingPlan);
+    }
     // eslint-disable-next-line
   }, []);
 
-  const handleFreePlan = async () => {
-    setIsLoader(true);
-    try {
-      const params = { userId: Parse.User.current().id };
-      const res = await Parse.Cloud.run("freesubscription", params);
-      if (res.status === "success" && res.result === "already subscribed!") {
-        setIsLoader(false);
-        alert("You have already subscribed to plan!");
-      } else if (res.status === "success") {
-        setIsLoader(false);
-        navigate("/");
-      } else if (res.status === "error") {
-        setIsLoader(false);
-        alert(res.result);
+  const handleFreePlan = async (item) => {
+    if (item.url) {
+      const url = yearlyVisible ? item.yearlyUrl + details : item.url + details;
+      if (user) {
+        localStorage.setItem("userDetails", JSON.stringify(user));
       }
-    } catch (err) {
-      setIsLoader(false);
-      console.log("err in free subscribe", err.message);
-      alert("Somenthing went wrong, please try again later!");
+      openInNewTab(url, item?.target);
+    } else {
+      setIsLoader(true);
+      try {
+        const params = { userId: Parse.User.current().id };
+        const res = await Parse.Cloud.run("freesubscription", params);
+        if (res.status === "success" && res.result === "already subscribed!") {
+          setIsLoader(false);
+          alert("You have already subscribed to plan!");
+        } else if (res.status === "success") {
+          setIsLoader(false);
+          navigate("/");
+        } else if (res.status === "error") {
+          setIsLoader(false);
+          alert(res.result);
+        }
+      } catch (err) {
+        setIsLoader(false);
+        console.log("err in free subscribe", err.message);
+        alert("Somenthing went wrong, please try again later!");
+      }
     }
   };
   return (
@@ -122,19 +136,43 @@ const PlanSubscriptions = () => {
                       <h3 className="text-[#002862] uppercase">
                         {item.planName}
                       </h3>
-                      <div className="w-[150px] h-[150px]">
+                      <div className="w-[120px] h-[120px] overflow-hidden">
                         <img
-                          className="icon-basic mx-auto"
-                          src="https://js.zohostatic.com/books/zfwidgets/assets/images/plan.png"
-                          alt="freeimg"
+                          className="w-full h-full object-contain"
+                          src={require(`../assets/images/${item?.img}`)}
+                          alt="img"
                         />
                       </div>
                       <div>
                         <span className="text-3xl">
                           {item.currency && <small>{item.currency}</small>}
-                          {yearlyVisible
-                            ? item?.yearlyPrice
-                            : item.monthlyPrice}
+                          {yearlyVisible ? (
+                            <>
+                              {item?.yearlyPrice.includes("<") ? (
+                                <div
+                                  className="inline-block"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item?.yearlyPrice
+                                  }}
+                                />
+                              ) : (
+                                <span>{item?.yearlyPrice}</span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {item?.monthlyPrice.includes("<") ? (
+                                <div
+                                  className="inline-block"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item?.monthlyPrice
+                                  }}
+                                />
+                              ) : (
+                                <span>{item?.monthlyPrice}</span>
+                              )}
+                            </>
+                          )}
                         </span>
                         <p className="font-semibold pt-2 text-sm">
                           {yearlyVisible ? "Billed Yearly" : "Billed Monthly"}
@@ -160,28 +198,14 @@ const PlanSubscriptions = () => {
                           </div>
                         </div>
                       </div>
-                      {item.url ? (
-                        <NavLink
-                          to={
-                            item.btnText === "Subscribe"
-                              ? yearlyVisible
-                                ? item.yearlyUrl + details
-                                : item.url + details
-                              : item.url
-                          }
-                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:no-underline hover:text-white cursor-pointer"
-                          target={item.target}
-                        >
-                          {item.btnText}
-                        </NavLink>
-                      ) : (
-                        <button
-                          className="bg-[#002862] w-full text-white py-2 rounded uppercase hover:text-white cursor-pointer"
-                          onClick={() => handleFreePlan()}
-                        >
-                          {item.btnText}
-                        </button>
-                      )}
+                      <button
+                        className={`${
+                          item?.btn?.color ? item?.btn?.color : "op-btn-primary"
+                        } w-full text-white py-2 op-btn uppercase hover:text-white cursor-pointer`}
+                        onClick={() => handleFreePlan(item)}
+                      >
+                        {item?.btn?.text}
+                      </button>
                     </div>
                     <hr className="w-full bg-gray-300 h-[0.5px]" />
                     <ul className="mx-1 p-3 text-left break-words text-sm list-none">

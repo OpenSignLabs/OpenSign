@@ -389,7 +389,6 @@ const TemplatePlaceholder = () => {
               (dragTypeValue === "stamp" || dragTypeValue === "image") && true,
             key: key,
             scale: containerScale,
-            // isMobile: isMobile,
             zIndex: posZIndex,
             type: dragTypeValue,
             options: addWidgetOptions(dragTypeValue),
@@ -501,6 +500,8 @@ const TemplatePlaceholder = () => {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
+        } else if (dragTypeValue === radioButtonWidget) {
+          setIsRadio(true);
         } else if (
           [textInputWidget, "name", "company", "job title", "email"].includes(
             dragTypeValue
@@ -508,8 +509,6 @@ const TemplatePlaceholder = () => {
         ) {
           setFontSize(12);
           setFontColor("black");
-        } else if (dragTypeValue === radioButtonWidget) {
-          setIsRadio(true);
         }
         setCurrWidgetsDetails({});
         setWidgetType(dragTypeValue);
@@ -555,6 +554,8 @@ const TemplatePlaceholder = () => {
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
+    setFontColor();
+    setFontSize();
     if (!isResize && isDragging) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
@@ -615,7 +616,6 @@ const TemplatePlaceholder = () => {
       setIsDragging(false);
     }, 200);
   };
-
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
@@ -851,7 +851,6 @@ const TemplatePlaceholder = () => {
   const closeTour = async () => {
     setTemplateTour(false);
     if (isDontShow) {
-      const extUserClass = localStorage.getItem("extended_class");
       let updatedTourStatus = [];
       if (tourStatus.length > 0) {
         updatedTourStatus = [...tourStatus];
@@ -870,7 +869,7 @@ const TemplatePlaceholder = () => {
         .put(
           `${localStorage.getItem(
             "baseUrl"
-          )}classes/${extUserClass}/${signerUserId}`,
+          )}classes/contracts_Users/${signerUserId}`,
           {
             TourStatus: updatedTourStatus
           },
@@ -1248,7 +1247,6 @@ const TemplatePlaceholder = () => {
     setIsRadio(false);
     setIsCheckbox(false);
   };
-
   const handleSaveFontSize = () => {
     const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
     if (filterSignerPos.length > 0) {
@@ -1267,8 +1265,10 @@ const TemplatePlaceholder = () => {
               ...position,
               options: {
                 ...position.options,
-                fontSize: fontSize,
-                fontColor: fontColor
+                fontSize:
+                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                fontColor:
+                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
             };
           }
@@ -1399,6 +1399,7 @@ const TemplatePlaceholder = () => {
                           <button
                             onClick={() => {
                               setIsCreateDocModal(false);
+                              navigate("/report/6TeaPr321t");
                             }}
                             type="button"
                             className="op-btn op-btn-secondary ml-2"
@@ -1536,6 +1537,7 @@ const TemplatePlaceholder = () => {
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}
                         scale={scale}
+                        setIsSelectId={setIsSelectId}
                       />
                     )}
                   </div>
@@ -1591,6 +1593,7 @@ const TemplatePlaceholder = () => {
                     <SignerListPlace
                       isMailSend={isMailSend}
                       signerPos={signerPos}
+                      setSignerPos={setSignerPos}
                       signersdata={signersdata}
                       isSelectListId={isSelectListId}
                       setSignerObjId={setSignerObjId}
@@ -1607,6 +1610,7 @@ const TemplatePlaceholder = () => {
                       setSignersData={setSignersData}
                       blockColor={blockColor}
                       setBlockColor={setBlockColor}
+                      uniqueId={uniqueId}
                     />
                     <div data-tut="addWidgets">
                       <WidgetComponent

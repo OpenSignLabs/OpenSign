@@ -71,8 +71,8 @@ function SignYourSelf() {
   const signRef = useRef(null);
   const dragRef = useRef(null);
   const [dragKey, setDragKey] = useState();
-  const [fontSize, setFontSize] = useState(11);
-  const [fontColor, setFontColor] = useState("black");
+  const [fontSize, setFontSize] = useState();
+  const [fontColor, setFontColor] = useState();
   const [signKey, setSignKey] = useState();
   const [imgWH, setImgWH] = useState({});
   const [pdfNewWidth, setPdfNewWidth] = useState();
@@ -264,9 +264,9 @@ function SignYourSelf() {
     }
     await axios
       .get(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
+        `${localStorage.getItem(
+          "baseUrl"
+        )}classes/contracts_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
           jsonSender.objectId
         }"}}`,
         {
@@ -809,6 +809,8 @@ function SignYourSelf() {
   };
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement) => {
+    setFontSize();
+    setFontColor();
     if (isDragging && dragElement) {
       event.preventDefault();
       const getPdfPageWidth = pdfOriginalWH.find(
@@ -1028,9 +1030,9 @@ function SignYourSelf() {
       }
       await axios
         .put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}${contractName}/${signerUserId}`,
+          `${localStorage.getItem(
+            "baseUrl"
+          )}classes/contracts${contractName}/${signerUserId}`,
           {
             TourStatus: updatedTourStatus
           },
@@ -1134,8 +1136,10 @@ function SignYourSelf() {
             ...position,
             options: {
               ...position.options,
-              fontSize: fontSize || currWidgetsDetails?.options?.fontSize,
-              fontColor: fontColor || currWidgetsDetails?.options?.fontColor
+              fontSize:
+                fontSize || currWidgetsDetails?.options?.fontSize || "12",
+              fontColor:
+                fontColor || currWidgetsDetails?.options?.fontColor || "black"
             }
           };
         }
@@ -1153,7 +1157,6 @@ function SignYourSelf() {
       handleTextSettingModal(false);
     }
   };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Self Sign"} />

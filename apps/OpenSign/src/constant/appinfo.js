@@ -1,8 +1,6 @@
 import logo from "../assets/images/logo.png";
 export const appInfo = {
-  appTitle: "contracts",
   applogo: logo,
-  appname: "contracts",
   appId: process.env.REACT_APP_APPID ? process.env.REACT_APP_APPID : "opensign",
   baseUrl: process.env.REACT_APP_SERVERURL
     ? process.env.REACT_APP_SERVERURL
@@ -18,22 +16,34 @@ export const appInfo = {
     : "",
   metaDescription:
     "The fastest way to sign PDFs & request signatures from others.",
-  objectId: "aIPmIvMzGM",
   settings: [
-    {
-      role: "contracts_User",
-      menuId: "H9vRfEYKhT",
-      pageType: "dashboard",
-      pageId: "35KBoSgoAK",
-      extended_class: "contracts_Users"
-    },
     {
       role: "contracts_Admin",
       menuId: "VPh91h0ZHk",
       pageType: "dashboard",
       pageId: "35KBoSgoAK",
       extended_class: "contracts_Users"
+    },
+    {
+      role: "contracts_OrgAdmin",
+      menuId: "VPh91h0ZHk",
+      pageType: "dashboard",
+      pageId: "35KBoSgoAK",
+      extended_class: "contracts_Users"
+    },
+    {
+      role: "contracts_Manager",
+      menuId: "H9vRfEYKhT",
+      pageType: "dashboard",
+      pageId: "35KBoSgoAK",
+      extended_class: "contracts_Users"
+    },
+    {
+      role: "contracts_User",
+      menuId: "H9vRfEYKhT",
+      pageType: "dashboard",
+      pageId: "35KBoSgoAK",
+      extended_class: "contracts_Users"
     }
-  ],
-  version: "0.1"
+  ]
 };

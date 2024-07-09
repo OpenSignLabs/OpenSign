@@ -63,7 +63,7 @@ export async function fetchSubscription(
     return { plan: "", billingDate: "" };
   }
 }
-//function to get subcripition details from Extand user class
+//function to get subcripition details from subscription class
 export async function checkIsSubscribed() {
   try {
     const res = await fetchSubscription();
@@ -71,6 +71,34 @@ export async function checkIsSubscribed() {
       return false;
     } else if (res.billingDate) {
       if (new Date(res.billingDate) > new Date()) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log("Err in fetch subscription", err);
+    return false;
+  }
+}
+
+//function to get subcripition details from subscription class
+export async function checkIsSubscribedTeam() {
+  try {
+    const res = await fetchSubscription();
+    if (res.plan === "freeplan") {
+      return false;
+    } else if (res.billingDate) {
+      const plan =
+        res.plan === "team-weekly" ||
+        res.plan === "team-yearly" ||
+        res.plan === "teams-monthly" ||
+        res.plan === "teams-yearly" ||
+        res.plan === "enterprise-monthly" ||
+        res.plan === "enterprise-yearly";
+      if (plan && new Date(res.billingDate) > new Date()) {
         return true;
       } else {
         return false;
@@ -669,9 +697,7 @@ export const createDocument = async (template, placeholders, signerData) => {
 
     try {
       const res = await axios.post(
-        `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-          "_appName"
-        )}_Document`,
+        `${localStorage.getItem("baseUrl")}classes/contracts_Document`,
         data,
         {
           headers: {
@@ -1618,9 +1644,9 @@ export const placeholderHeight = (pos) => {
 export const contactBook = async (objectId) => {
   const result = await axios
     .get(
-      `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-        "_appName"
-      )}_Contactbook?where={"objectId":"${objectId}"}`,
+      `${localStorage.getItem(
+        "baseUrl"
+      )}classes/contracts_Contactbook?where={"objectId":"${objectId}"}`,
       {
         headers: {
           "Content-Type": "application/json",

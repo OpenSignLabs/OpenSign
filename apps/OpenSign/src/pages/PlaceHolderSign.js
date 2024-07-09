@@ -454,7 +454,6 @@ function PlaceHolderSign() {
   const addPositionOfSignature = (item, monitor) => {
     getSignerPos(item, monitor);
   };
-  // console.log("signerpos", signerPos);
   const getSignerPos = (item, monitor) => {
     //  setSignerObjId("");
     // setContractName("");
@@ -634,6 +633,8 @@ function PlaceHolderSign() {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
+        } else if (dragTypeValue === radioButtonWidget) {
+          setIsRadio(true);
         } else if (
           [
             textInputWidget,
@@ -646,8 +647,6 @@ function PlaceHolderSign() {
         ) {
           setFontSize(12);
           setFontColor("black");
-        } else if (dragTypeValue === radioButtonWidget) {
-          setIsRadio(true);
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);
@@ -679,6 +678,8 @@ function PlaceHolderSign() {
 
   //function for set and update x and y postion after drag and drop signature tab
   const handleStop = (event, dragElement, signerId, key) => {
+    setFontColor();
+    setFontSize();
     if (!isResize && isDragging) {
       const dataNewPlace = addZIndex(signerPos, key, setZIndex);
       let updateSignPos = [...signerPos];
@@ -751,7 +752,6 @@ function PlaceHolderSign() {
       setIsDragging(false);
     }, 200);
   };
-
   //function for delete signature block
   const handleDeleteSign = (key, Id) => {
     const updateData = [];
@@ -1007,9 +1007,9 @@ function PlaceHolderSign() {
       }
       await axios
         .put(
-          `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-            "_appName"
-          )}_Document/${documentId}`,
+          `${localStorage.getItem(
+            "baseUrl"
+          )}classes/contracts_Document/${documentId}`,
           data,
           {
             headers: {
@@ -1237,9 +1237,9 @@ function PlaceHolderSign() {
 
         await axios
           .put(
-            `${localStorage.getItem("baseUrl")}classes/${localStorage.getItem(
-              "_appName"
-            )}_Document/${documentId}`,
+            `${localStorage.getItem(
+              "baseUrl"
+            )}classes/contracts_Document/${documentId}`,
             data,
             {
               headers: {
@@ -1542,7 +1542,6 @@ function PlaceHolderSign() {
   const closeTour = async () => {
     setPlaceholderTour(false);
     if (isDontShow) {
-      const extUserClass = localStorage.getItem("extended_class");
       let updatedTourStatus = [];
       if (tourStatus.length > 0) {
         updatedTourStatus = [...tourStatus];
@@ -1561,7 +1560,7 @@ function PlaceHolderSign() {
         .put(
           `${localStorage.getItem(
             "baseUrl"
-          )}classes/${extUserClass}/${signerUserId}`,
+          )}classes/contracts_Users/${signerUserId}`,
           {
             TourStatus: updatedTourStatus
           },
@@ -1708,8 +1707,10 @@ function PlaceHolderSign() {
               ...position,
               options: {
                 ...position.options,
-                fontSize: fontSize,
-                fontColor: fontColor
+                fontSize:
+                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                fontColor:
+                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
             };
           }
@@ -1948,29 +1949,37 @@ function PlaceHolderSign() {
                       {!mailStatus && (
                         <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                       )}
-                      {isCurrUser && (
+                      <div
+                        className={
+                          mailStatus === "success"
+                            ? "flex justify-center mt-1"
+                            : ""
+                        }
+                      >
+                        {isCurrUser && (
+                          <button
+                            onClick={() => {
+                              handleRecipientSign();
+                            }}
+                            type="button"
+                            className="op-btn op-btn-primary mr-1"
+                          >
+                            Yes
+                          </button>
+                        )}
+
                         <button
                           onClick={() => {
-                            handleRecipientSign();
+                            setIsSend(false);
+                            setSignerPos([]);
+                            navigate("/report/1MwEuxLEkF");
                           }}
                           type="button"
-                          className="op-btn op-btn-primary mr-1"
+                          className="op-btn op-btn-ghost"
                         >
-                          Yes
+                          {isCurrUser ? "No" : "Close"}
                         </button>
-                      )}
-
-                      <button
-                        onClick={() => {
-                          setIsSend(false);
-                          setSignerPos([]);
-                          navigate("/report/1MwEuxLEkF");
-                        }}
-                        type="button"
-                        className="op-btn op-btn-ghost"
-                      >
-                        {isCurrUser ? "No" : "Close"}
-                      </button>
+                      </div>
                     </div>
                   </ModalUi>
                   <ModalUi
@@ -2099,6 +2108,7 @@ function PlaceHolderSign() {
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}
                         scale={scale}
+                        setIsSelectId={setIsSelectId}
                       />
                     )}
                   </div>
@@ -2142,6 +2152,7 @@ function PlaceHolderSign() {
                         setBlockColor={setBlockColor}
                         setIsAddSigner={setIsAddSigner}
                         handleDeleteUser={handleDeleteUser}
+                        uniqueId={uniqueId}
                       />
                     </div>
                   ) : (
@@ -2151,6 +2162,7 @@ function PlaceHolderSign() {
                         aria-disabled
                       >
                         <SignerListPlace
+                          setSignerPos={setSignerPos}
                           signerPos={signerPos}
                           signersdata={signersdata}
                           isSelectListId={isSelectListId}
@@ -2167,6 +2179,7 @@ function PlaceHolderSign() {
                           setIsAddSigner={setIsAddSigner}
                           handleDeleteUser={handleDeleteUser}
                           roleName={roleName}
+                          uniqueId={uniqueId}
                           // handleAddSigner={handleAddSigner}
                         />
                         <div data-tut="addWidgets">

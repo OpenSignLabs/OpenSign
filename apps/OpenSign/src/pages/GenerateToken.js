@@ -45,7 +45,7 @@ function GenerateToken() {
       };
       const res = await axios.post(url, {}, { headers: headers });
       if (res) {
-        SetApiToken(res.data.result.result);
+        SetApiToken(res.data?.result?.result);
       }
       setIsLoader(false);
     } catch (err) {
