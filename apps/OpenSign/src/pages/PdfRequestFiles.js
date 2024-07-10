@@ -1233,11 +1233,9 @@ function PdfRequestFiles(props) {
     });
   };
   //function for set decline true on press decline button
-  const declineDoc = async () => {
+  const declineDoc = async (reason) => {
     setIsDecline({ isDeclined: false });
-    const data = {
-      IsDeclined: true
-    };
+    const data = { IsDeclined: true, DeclineReason: reason };
     setIsUiLoading(true);
 
     await axios
@@ -1464,7 +1462,7 @@ function PdfRequestFiles(props) {
     try {
       const params = {
         ...contact,
-        tempid: pdfDetails[0]?.objectId,
+        templateid: pdfDetails[0]?.objectId,
         role: pdfDetails[0]?.PublicRole[0]
       };
       const userRes = await axios.post(
@@ -1854,12 +1852,9 @@ function PdfRequestFiles(props) {
                 <ModalUi
                   isOpen={defaultSignAlert.isShow}
                   title={"Auto sign"}
-                  handleClose={() => {
-                    setDefaultSignAlert({
-                      isShow: false,
-                      alertMessage: ""
-                    });
-                  }}
+                  handleClose={() =>
+                    setDefaultSignAlert({ isShow: false, alertMessage: "" })
+                  }
                 >
                   <div className="h-full p-[20px]">
                     <p>{defaultSignAlert.alertMessage}</p>
@@ -1874,12 +1869,12 @@ function PdfRequestFiles(props) {
                           Yes
                         </button>
                         <button
-                          onClick={() => {
+                          onClick={() =>
                             setDefaultSignAlert({
                               isShow: false,
                               alertMessage: ""
-                            });
-                          }}
+                            })
+                          }
                           type="button"
                           className="op-btn op-btn-secondary"
                         >
@@ -1888,12 +1883,9 @@ function PdfRequestFiles(props) {
                       </>
                     ) : (
                       <button
-                        onClick={() => {
-                          setIsAlert({
-                            isShow: false,
-                            alertMessage: ""
-                          });
-                        }}
+                        onClick={() =>
+                          setIsAlert({ isShow: false, alertMessage: "" })
+                        }
                         type="button"
                         className="op-btn op-btn-primary"
                       >

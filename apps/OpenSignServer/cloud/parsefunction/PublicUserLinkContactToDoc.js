@@ -92,16 +92,16 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
 // create new document from template and save contact pointer in placeholder, signers and ACL of Document
 export default async function PublicUserLinkContactToDoc(req) {
   const email = req.params.email;
-  const tempid = req.params.tempid;
+  const templateid = req.params.templateid;
   const name = req.params.name;
   const phone = req.params.phone;
   const role = req.params.role;
   try {
-    if (tempid) {
-      // Execute the query to get the template with the specified 'tempid'
+    if (templateid) {
+      // Execute the query to get the template with the specified 'templateid'
       const docQuery = new Parse.Query('contracts_Template');
       docQuery.include('ExtUserPtr');
-      const tempRes = await docQuery.get(tempid, { useMasterKey: true });
+      const tempRes = await docQuery.get(templateid, { useMasterKey: true });
       // Check if the template was found; if not, throw an error indicating the template was not found
       if (!tempRes) {
         throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Template not found.');
