@@ -65,7 +65,7 @@ export default async function SubscriptionAftersave(request) {
         const extUserRes = await extUserQuery.first({ useMasterKey: true });
         if (extUserRes) {
           const extUser = JSON.parse(JSON.stringify(extUserRes));
-          if (extUser?.UserRole !== 'contracts_Admin') {
+          if (!extUser?.OrganizationId) {
             await addTeamAndOrg(extUser);
           }
         }
@@ -86,7 +86,7 @@ export default async function SubscriptionAftersave(request) {
         const extUserRes = await extUserQuery.first({ useMasterKey: true });
         if (extUserRes) {
           const extUser = JSON.parse(JSON.stringify(extUserRes));
-          if (extUser?.UserRole !== 'contracts_Admin') {
+          if (!extUser?.OrganizationId) {
             await addTeamAndOrg(extUser);
           }
         }

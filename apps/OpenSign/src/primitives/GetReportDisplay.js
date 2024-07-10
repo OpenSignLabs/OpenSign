@@ -68,6 +68,7 @@ const ReportTable = (props) => {
   // const [publicUserName, setIsPublicUserName] = useState("");
   const [isViewShare, setIsViewShare] = useState({});
   const [isSubscribe, setIsSubscribe] = useState(true);
+  const [reason, setReason] = useState("");
   const Extand_Class = localStorage.getItem("Extand_Class");
   const extClass = Extand_Class && JSON.parse(Extand_Class);
   const startIndex = (currentPage - 1) * props.docPerPage;
@@ -146,21 +147,23 @@ const ReportTable = (props) => {
     if (props.ReportName === "Templates") {
       try {
         const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-        const team = new Parse.Query("contracts_Teams");
-        team.equalTo("OrganizationId", {
-          __type: "Pointer",
-          className: "contracts_Organizations",
-          objectId: extUser.OrganizationId.objectId
-        });
-        team.notEqualTo("IsActive", false);
-        const teamtRes = await team.find();
-        if (teamtRes.length > 0) {
-          const _teamRes = JSON.parse(JSON.stringify(teamtRes));
-          const formatedList = _teamRes.map((x) => ({
-            label: x.Name,
-            value: x.objectId
-          }));
-          setTeamList(formatedList);
+        if (extUser?.OrganizationId?.objectId) {
+          const team = new Parse.Query("contracts_Teams");
+          team.equalTo("OrganizationId", {
+            __type: "Pointer",
+            className: "contracts_Organizations",
+            objectId: extUser.OrganizationId.objectId
+          });
+          team.notEqualTo("IsActive", false);
+          const teamtRes = await team.find();
+          if (teamtRes.length > 0) {
+            const _teamRes = JSON.parse(JSON.stringify(teamtRes));
+            const formatedList = _teamRes.map((x) => ({
+              label: x.Name,
+              value: x.objectId
+            }));
+            setTeamList(formatedList);
+          }
         }
       } catch (err) {
         console.log("Err in fetch top level teamlist", err);
@@ -444,6 +447,7 @@ const ReportTable = (props) => {
   const handleClose = () => {
     setIsRevoke({});
     setIsDeleteModal({});
+    setReason("");
     // setIsMakePublic({});
     // setSelectedPublicRole("");
     // setIsPublicProfile({});
@@ -487,10 +491,7 @@ const ReportTable = (props) => {
   const handleRevoke = async (item) => {
     setIsRevoke({});
     setActLoader({ [`${item.objectId}`]: true });
-    const data = {
-      IsDeclined: true
-    };
-
+    const data = { IsDeclined: true, DeclineReason: reason };
     await axios
       .put(
         `${localStorage.getItem("baseUrl")}classes/contracts_Document/${
@@ -508,6 +509,7 @@ const ReportTable = (props) => {
       .then(async (result) => {
         const res = result.data;
         if (res) {
+          setReason("");
           setActLoader({});
           setIsAlert(true);
           setAlertMsg({
@@ -523,6 +525,7 @@ const ReportTable = (props) => {
       })
       .catch((err) => {
         console.log("err", err);
+        setReason("");
         setIsAlert(true);
         setAlertMsg({
           type: "danger",
@@ -1708,20 +1711,28 @@ const ReportTable = (props) => {
                               handleClose={handleClose}
                             >
                               <div className="m-[20px]">
-                                <div className="text-lg font-normal text-black">
+                                <div className="text-sm md:text-lg font-normal text-black">
                                   Are you sure you want to revoke this document?
                                 </div>
-                                <hr className="bg-[#ccc] mt-4" />
+                                <div className="mt-2">
+                                  <textarea
+                                    rows={3}
+                                    placeholder="Reason (optional)"
+                                    className="px-4 op-textarea op-textarea-bordered focus:outline-none hover:border-base-content w-full text-xs"
+                                    value={reason}
+                                    onChange={(e) => setReason(e.target.value)}
+                                  ></textarea>
+                                </div>
                                 <div className="flex items-center mt-3 gap-2">
                                   <button
                                     onClick={() => handleRevoke(item)}
-                                    className="op-btn op-btn-primary"
+                                    className="op-btn op-btn-primary px-6"
                                   >
                                     Yes
                                   </button>
                                   <button
                                     onClick={handleClose}
-                                    className="op-btn op-btn-secondary"
+                                    className="op-btn op-btn-secondary px-6"
                                   >
                                     No
                                   </button>
