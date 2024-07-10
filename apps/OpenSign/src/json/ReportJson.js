@@ -346,14 +346,14 @@ export default function reportJson(id) {
             message:
               "This menu reveals more options such as Edit & Delete. Use the 'Edit' button to add signer roles, modify fields, and update your template. Changes will apply to all future documents created from this template but won’t affect existing documents.Use the Delete button you can delete template. ",
             subaction: [
-              // {
-              //   btnId: "1873",
-              //   btnLabel: "Share-with",
-              //   hoverLabel: "Share-with",
-              //   btnIcon: "fa-light fa-share-nodes",
-              //   redirectUrl: "",
-              //   action: "sharewith"
-              // },
+              {
+                btnId: "1873",
+                btnLabel: "Share-with",
+                hoverLabel: "Share-with",
+                btnIcon: "fa-light fa-share-nodes",
+                redirectUrl: "",
+                action: "sharewith"
+              },
               {
                 btnId: "2434",
                 btnLabel: "Edit",

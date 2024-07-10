@@ -44,10 +44,7 @@ function Header({
 
   //function for show decline alert
   const handleDeclinePdfAlert = async () => {
-    const currentDecline = {
-      currnt: "Sure",
-      isDeclined: true
-    };
+    const currentDecline = { currnt: "Sure", isDeclined: true };
     setIsDecline(currentDecline);
   };
 
@@ -209,7 +206,7 @@ function Header({
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content
-                          className="bg-white shadow-md rounded px-2 py-1"
+                          className="bg-white shadow-md rounded-full px-3 py-2"
                           sideOffset={5}
                         >
                           <DropdownMenu.Item
@@ -362,40 +359,16 @@ function Header({
                     >
                       Finish
                     </button>
-                    <div className="op-dropdown op-dropdown-end">
-                      <div
-                        tabIndex={0}
-                        role="button"
-                        className="op-btn op-btn-info op-btn-sm shadow"
-                      >
-                        <i
-                          className="fa-light fa-ellipsis-v"
-                          aria-hidden="true"
-                        ></i>
-                      </div>
-                      <ul
-                        tabIndex={0}
-                        className="op-dropdown-content z-[1] op-menu op-menu-sm p-1 shadow bg-base-100 rounded-box mt-1"
-                      >
-                        <li
-                          onClick={() =>
-                            handleDownloadPdf(
-                              pdfDetails,
-                              pdfUrl,
-                              setIsDownloading
-                            )
-                          }
-                        >
-                          <span className="font-semibold text-[12px]">
-                            <i
-                              className="fa-light fa-arrow-down"
-                              aria-hidden="true"
-                            ></i>{" "}
-                            Download
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
+                    <button
+                      type="button"
+                      className="op-btn op-btn-neutral op-btn-sm mr-[3px] shadow"
+                      onClick={() =>
+                        handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
+                      }
+                    >
+                      <i className="fa-light fa-arrow-down font-semibold lg:hidden"></i>
+                      <span className="hidden lg:block">Download</span>
+                    </button>
                   </>
                 )}
               </div>
