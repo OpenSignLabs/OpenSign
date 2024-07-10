@@ -3,15 +3,19 @@ import axios from 'axios';
 export default async function GetTemplate(request) {
   const serverUrl = process.env.SERVER_URL;
   const templateId = request.params.templateId;
+  const ispublic = request.params.ispublic;
 
   try {
-    const userRes = await axios.get(serverUrl + '/users/me', {
-      headers: {
-        'X-Parse-Application-Id': process.env.APP_ID,
-        'X-Parse-Session-Token': request.headers['sessiontoken'],
-      },
-    });
-    const userId = userRes.data && userRes.data.objectId;
+    let userId, userRes;
+    if (!ispublic) {
+      userRes = await axios.get(serverUrl + '/users/me', {
+        headers: {
+          'X-Parse-Application-Id': process.env.APP_ID,
+          'X-Parse-Session-Token': request.headers['sessiontoken'],
+        },
+      });
+      userId = userRes.data && userRes.data.objectId;
+    }
     // console.log("templateId ", templateId)
     // console.log("userId ",userId)
     if (templateId && userId) {
@@ -52,6 +56,24 @@ export default async function GetTemplate(request) {
         const res = await template.first({ useMasterKey: true });
         if (res) {
           // console.log("res ",res)
+          return res;
+        } else {
+          return { error: "You don't have access of this document!" };
+        }
+      } catch (err) {
+        console.log('err', err);
+        return err;
+      }
+    } else if (templateId && ispublic) {
+      try {
+        const template = new Parse.Query('contracts_Template');
+        template.equalTo('objectId', templateId);
+        template.include('ExtUserPtr');
+        template.include('Signers');
+        template.include('CreatedBy');
+        const res = await template.first({ useMasterKey: true });
+        // console.log("res ", res)
+        if (res) {
           return res;
         } else {
           return { error: "You don't have access of this document!" };

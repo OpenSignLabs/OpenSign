@@ -21,7 +21,23 @@ async function AuthLoginAsMail(request) {
 
       if (resOtp === otp) {
         var result = await getToken(request);
-        return result;
+        if (result && !result?.emailVerified) {
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(result?.objectId, {
+            sessionToken: result.sessionToken,
+          });
+          // Update the emailVerified field to true
+          user.set('emailVerified', true);
+          // Save the user object
+          const res = await user.save(null, { useMasterKey: true });
+          if (res) {
+            return result;
+          } else {
+            reject('user not found!');
+          }
+        } else {
+          return result;
+        }
 
         async function getToken(request) {
           return new Promise(function (resolve, reject) {
@@ -56,6 +72,7 @@ async function AuthLoginAsMail(request) {
                   .catch(err => {
                     reject('user not found!');
                   });
+
                 // user couldn't find lets sign up!
               })
               .catch(() => {
