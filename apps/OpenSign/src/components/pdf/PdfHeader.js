@@ -7,7 +7,6 @@ import {
 } from "../../constant/Utils";
 import "../../styles/signature.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { useNavigate } from "react-router-dom";
 import ModalUi from "../../primitives/ModalUi";
 import Loader from "../../primitives/Loader";
 
@@ -33,12 +32,12 @@ function Header({
   isSignYourself,
   setIsEmail,
   completeBtnTitle,
-  setIsEditTemplate
+  setIsEditTemplate,
+  isPublicTemplate
 }) {
   const filterPrefill =
     signerPos && signerPos?.filter((data) => data.Role !== "prefill");
   const isMobile = window.innerWidth < 767;
-  const navigate = useNavigate();
   const [isDownloading, setIsDownloading] = useState("");
   const isGuestSigner = localStorage.getItem("isGuestSigner");
 
@@ -64,7 +63,7 @@ function Header({
           }}
         >
           <div className="flex justify-between items-center py-[5px] px-[10px] ">
-            <div onClick={() => navigate(-1)}>
+            <div onClick={() => window.history.go(-2)}>
               <i
                 className="fa-light fa-arrow-left text-base-content"
                 aria-hidden="true"
@@ -275,7 +274,7 @@ function Header({
                   </button>
                 )}
                 <button
-                  onClick={() => navigate(-1)}
+                  onClick={() => window.history.go(-2)}
                   type="button"
                   className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
                 >
@@ -341,7 +340,7 @@ function Header({
             ) : (
               <div className="flex" data-tut="reactourFifth">
                 <button
-                  onClick={() => navigate(-1)}
+                  onClick={() => window.history.go(-2)}
                   type="button"
                   className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
                 >
@@ -441,10 +440,24 @@ function Header({
                 <span className="hidden lg:block ml-1">Mail</span>
               </button>
             </div>
+          ) : isPublicTemplate ? (
+            <>
+              <div className="flex">
+                <button
+                  type="button"
+                  className="op-btn op-btn-primary op-btn-sm  shadow"
+                  onClick={() => {
+                    embedWidgetsData();
+                  }}
+                >
+                  Sign Now
+                </button>
+              </div>
+            </>
           ) : (
             <div className="flex">
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => window.history.go(-2)}
                 type="button"
                 className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
               >

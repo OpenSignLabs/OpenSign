@@ -57,7 +57,7 @@ function RenderAllPdfPage({
         <div className="absolute z-20 top-[1px] -right-[13px] -translate-x-1/2 -translate-y-1/2">
           <i
             style={{ color: bookmarkColor || "red" }}
-            className="fa-light fa-bookmark"
+            className="fa-solid fa-bookmark"
           ></i>
         </div>
       )

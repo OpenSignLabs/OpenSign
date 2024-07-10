@@ -164,8 +164,8 @@ function SignPad({
       }
     }
 
-    const trimmedName = currentUserName.trim();
-    const firstCharacter = trimmedName.charAt(0);
+    const trimmedName = currentUserName && currentUserName.trim();
+    const firstCharacter = trimmedName?.charAt(0);
     const userName = isInitial ? firstCharacter : currentUserName;
     setSignValue(userName);
     setFontSelect("Fasthand");

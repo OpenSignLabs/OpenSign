@@ -43,7 +43,7 @@ export default function reportJson(id) {
             hoverLabel: "Sign",
             btnColor: "op-btn-primary",
             btnIcon: "fa-light fa-signature",
-            redirectUrl: "pdfRequestFiles",
+            redirectUrl: "draftDocument",
             action: "redirect"
           }
         ],
@@ -69,7 +69,7 @@ export default function reportJson(id) {
             hoverLabel: "View",
             btnColor: "op-btn-secondary",
             btnIcon: "fa-light fa-eye",
-            redirectUrl: "pdfRequestFiles",
+            redirectUrl: "draftDocument",
             action: "redirect"
           },
           {
@@ -207,7 +207,7 @@ export default function reportJson(id) {
             hoverLabel: "View",
             btnColor: "op-btn-secondary",
             btnIcon: "fa-light fa-eye",
-            redirectUrl: "pdfRequestFiles",
+            redirectUrl: "draftDocument",
             action: "redirect"
           },
           {
@@ -258,7 +258,7 @@ export default function reportJson(id) {
             hoverLabel: "Sign",
             btnColor: "op-btn-primary",
             btnIcon: "fa-light fa-signature",
-            redirectUrl: "pdfRequestFiles",
+            redirectUrl: "draftDocument",
             action: "redirect"
           }
         ]
