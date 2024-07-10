@@ -24,7 +24,8 @@ const appId = process.env.REACT_APP_APPID
 const serverUrl = process.env.REACT_APP_SERVERURL
   ? process.env.REACT_APP_SERVERURL
   : window.location.origin + "/api/app";
-
+localStorage.setItem("baseUrl", `${serverUrl}/`);
+localStorage.setItem("parseAppId", appId);
 Parse.initialize(appId);
 Parse.serverURL = serverUrl;
 // Create a new div element and append it to the body
