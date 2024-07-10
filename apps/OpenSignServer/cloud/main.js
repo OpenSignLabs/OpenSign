@@ -48,6 +48,7 @@ import getUserByOrg from './parsefunction/getUserByOrg.js';
 import getUserListByOrg from './parsefunction/getUserListByOrg.js';
 import TeamsAftersave from './parsefunction/TeamsAftersave.js';
 import SubscriptionAftersave from './parsefunction/SubscriptionAftersave.js';
+import PublicUserLinkContactToDoc from './parsefunction/PublicUserLinkContactToDoc.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -105,3 +106,4 @@ Parse.Cloud.define('ssosign', ssoSignin);
 Parse.Cloud.define('isextenduser', isextenduser);
 Parse.Cloud.define('getuserbyorg', getUserByOrg);
 Parse.Cloud.define('getuserlistbyorg', getUserListByOrg);
+Parse.Cloud.define('publicuserlinkcontacttodoc', PublicUserLinkContactToDoc);
