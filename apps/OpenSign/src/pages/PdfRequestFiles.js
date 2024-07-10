@@ -1140,11 +1140,9 @@ function PdfRequestFiles() {
     });
   };
   //function for set decline true on press decline button
-  const declineDoc = async () => {
+  const declineDoc = async (reason) => {
     setIsDecline({ isDeclined: false });
-    const data = {
-      IsDeclined: true
-    };
+    const data = { IsDeclined: true, DeclineReason: reason };
     setIsUiLoading(true);
 
     await axios
@@ -1486,12 +1484,9 @@ function PdfRequestFiles() {
                 <ModalUi
                   isOpen={defaultSignAlert.isShow}
                   title={"Auto sign"}
-                  handleClose={() => {
-                    setDefaultSignAlert({
-                      isShow: false,
-                      alertMessage: ""
-                    });
-                  }}
+                  handleClose={() =>
+                    setDefaultSignAlert({ isShow: false, alertMessage: "" })
+                  }
                 >
                   <div className="h-full p-[20px]">
                     <p>{defaultSignAlert.alertMessage}</p>
@@ -1506,12 +1501,12 @@ function PdfRequestFiles() {
                           Yes
                         </button>
                         <button
-                          onClick={() => {
+                          onClick={() =>
                             setDefaultSignAlert({
                               isShow: false,
                               alertMessage: ""
-                            });
-                          }}
+                            })
+                          }
                           type="button"
                           className="op-btn op-btn-secondary"
                         >
@@ -1520,12 +1515,9 @@ function PdfRequestFiles() {
                       </>
                     ) : (
                       <button
-                        onClick={() => {
-                          setIsAlert({
-                            isShow: false,
-                            alertMessage: ""
-                          });
-                        }}
+                        onClick={() =>
+                          setIsAlert({ isShow: false, alertMessage: "" })
+                        }
                         type="button"
                         className="op-btn op-btn-primary"
                       >
