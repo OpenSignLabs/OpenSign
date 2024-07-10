@@ -104,7 +104,7 @@ function DriveBody(props) {
     const signedUrl = data.SignedUrl;
     //checking if document has completed and request signature flow
     if (data?.IsCompleted && signerExist?.length > 0) {
-      navigate(`/pdfRequestFiles/${data.objectId}`);
+      navigate(`/recipientSignPdf/${data.objectId}`);
     }
     //checking if document has completed and signyour-self flow
     else if (!signerExist && !isPlaceholder) {
@@ -112,7 +112,7 @@ function DriveBody(props) {
     }
     //checking if document has declined by someone
     else if (isDecline) {
-      navigate(`/pdfRequestFiles/${data.objectId}`);
+      navigate(`/recipientSignPdf/${data.objectId}`);
       //checking draft type document
     } else if (
       signerExist?.length > 0 &&
@@ -123,7 +123,7 @@ function DriveBody(props) {
     }
     //Inprogress document
     else if (isPlaceholder?.length > 0 && signerExist?.length > 0) {
-      navigate(`/pdfRequestFiles/${data.objectId}`);
+      navigate(`/recipientSignPdf/${data.objectId}`);
     } //placeholder draft document
     else if (
       (signerExist?.length > 0 &&

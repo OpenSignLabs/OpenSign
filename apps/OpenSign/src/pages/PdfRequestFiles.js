@@ -6,7 +6,6 @@ import Parse from "parse";
 import axios from "axios";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SignPad from "../components/pdf/SignPad";
 import RenderAllPdfPage from "../components/pdf/RenderAllPdfPage";
 import Tour from "reactour";
@@ -49,15 +48,7 @@ import SignerListComponent from "../components/pdf/SignerListComponent";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-function PdfRequestFiles() {
-  const { docId } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const query = useQuery();
-  const sendmail = query.get("sendmail");
+function PdfRequestFiles(props) {
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
   const [unsignedSigners, setUnSignedSigners] = useState([]);
@@ -129,19 +120,18 @@ function PdfRequestFiles() {
   const [zoomPercent, setZoomPercent] = useState(0);
   const [totalZoomPercent, setTotalZoomPercent] = useState();
   const [scale, setScale] = useState(1);
+  const [uniqueId, setUniqueId] = useState("");
+  const [isPublicTemplate, setIsPublicTemplate] = useState(false);
+  const [contact, setContact] = useState({ name: "", phone: "", email: "" });
+  const [isOtp, setIsOtp] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [res, setRes] = useState({});
+  const [documentId, setDocumentId] = useState("");
+  const [isPublicContact, setIsPublicContact] = useState(false);
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
+
   const isMobile = window.innerWidth < 767;
-  const rowLevel =
-    localStorage.getItem("rowlevel") &&
-    JSON.parse(localStorage.getItem("rowlevel"));
-
-  const objectId =
-    rowLevel && rowLevel.id
-      ? rowLevel.id
-      : rowLevel?.objectId && rowLevel.objectId;
-  const documentId = docId ? docId : objectId && objectId;
-
   const senderUser =
     localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
@@ -151,12 +141,36 @@ function PdfRequestFiles() {
     );
   const jsonSender = JSON.parse(senderUser);
 
+  let isGuestSignFlow = false;
+  let sendmail;
+  let getDocId = "";
+  const route = !props.templateId && window.location.pathname;
+  const getQuery =
+    !props.templateId &&
+    window.location?.search &&
+    window.location?.search?.split("?");
+
+  if (getQuery) {
+    sendmail = getQuery[1].split("=")[1];
+  }
+  const checkSplit = route && route?.split("/");
+
+  if (checkSplit && checkSplit.length > 4) {
+    isGuestSignFlow = true;
+    getDocId = checkSplit[3];
+  } else {
+    getDocId = checkSplit[2];
+  }
+  let getDocumentId = getDocId || documentId;
   useEffect(() => {
-    if (documentId) {
-      getDocumentDetails();
+    if (getDocumentId) {
+      setDocumentId(getDocumentId);
+      getDocumentDetails(getDocumentId);
+    } else if (props.templateId) {
+      getTemplateDetails();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.templateId, getDocumentId]);
   useEffect(() => {
     const updateSize = () => {
       if (divRef.current) {
@@ -171,7 +185,6 @@ function PdfRequestFiles() {
 
     // Use setTimeout to wait for the transition to complete
     const timer = setTimeout(updateSize, 100); // match the transition duration
-
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
@@ -208,7 +221,7 @@ function PdfRequestFiles() {
       setOtp("");
       alert(resEmail.message);
       setIsVerifyModal(false);
-      // handleRecipientSign();
+      //handleRecipientSign();
     } catch (error) {
       alert(error.message);
     } finally {
@@ -225,7 +238,7 @@ function PdfRequestFiles() {
     await handleSendOTP(currentUser?.email);
   };
   async function checkIsSubscribed(extUserId, contactId) {
-    const isGuestSign = location.pathname.includes("/load/") || false;
+    const isGuestSign = isGuestSignFlow || false;
     const res = await fetchSubscription(extUserId, contactId, isGuestSign);
     const plan = res.plan;
     const billingDate = res?.billingDate;
@@ -237,10 +250,10 @@ function PdfRequestFiles() {
         setIsSubscribed(true);
         return true;
       } else {
-        if (location.pathname.includes("/load/")) {
+        if (isGuestSign) {
           setIsSubscriptionExpired(true);
         } else {
-          navigate(`/subscription`);
+          window.location.href = "/subscription";
         }
       }
     } else if (isGuestSign) {
@@ -254,15 +267,92 @@ function PdfRequestFiles() {
       if (isGuestSign) {
         setIsSubscriptionExpired(true);
       } else {
-        navigate(`/subscription`);
+        window.location.href = "/subscription";
       }
     }
   }
   //function for get document details for perticular signer with signer'object id
-  const getDocumentDetails = async (isNextUser) => {
+  const getTemplateDetails = async () => {
+    try {
+      const params = { templateId: props.templateId, ispublic: true };
+      const templateDeatils = await axios.post(
+        `${localStorage.getItem("baseUrl")}functions/getTemplate`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+            sessiontoken: localStorage.getItem("accesstoken")
+          }
+        }
+      );
+      const documentData =
+        templateDeatils.data && templateDeatils.data.result
+          ? [templateDeatils.data.result]
+          : [];
+
+      if (documentData && documentData.length > 0) {
+        setIsPublicTemplate(true);
+        const getPublicRole = documentData[0].PublicRole[0];
+        const getUniqueIdDetails = documentData[0].Placeholders.find(
+          (x) => x.Role === getPublicRole
+        );
+        if (getUniqueIdDetails) {
+          setUniqueId(getUniqueIdDetails.Id);
+        }
+        setSignerPos(documentData[0].Placeholders);
+        let placeholdersOrSigners = [];
+        // const placeholder = documentData[0]?.Placeholders;
+        for (const placeholder of documentData[0].Placeholders) {
+          //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
+          const signerIdExist = placeholder?.signerObjId;
+          if (signerIdExist) {
+            const getSignerData = documentData[0].Signers.find(
+              (data) => data.objectId === placeholder?.signerObjId
+            );
+            placeholdersOrSigners.push(getSignerData);
+          } else {
+            placeholdersOrSigners.push(placeholder);
+          }
+        }
+
+        setUnSignedSigners(placeholdersOrSigners);
+
+        setPdfDetails(documentData);
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
+      } else if (
+        documentData === "Error: Something went wrong!" ||
+        (documentData.result && documentData.result.error)
+      ) {
+        const loadObj = {
+          isLoad: false
+        };
+        setHandleError("Error: Something went wrong!");
+        setIsLoading(loadObj);
+      } else {
+        setHandleError("No Data Found!");
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
+      }
+    } catch (err) {
+      console.log("err ", err);
+      if (err?.response?.data?.code === 101) {
+        setHandleError("Error: Template not found!");
+      } else {
+        setHandleError("Error: Something went wrong!");
+      }
+    }
+  };
+  //function for get document details for perticular signer with signer'object id
+  const getDocumentDetails = async (docId, isNextUser) => {
     let currUserId;
     //getting document details
-    const documentData = await contractDocument(documentId);
+    const documentData = await contractDocument(documentId || docId);
     if (documentData && documentData.length > 0) {
       setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
       const isCompleted =
@@ -336,8 +426,7 @@ function PdfRequestFiles() {
           setCurrentSigner(true);
         }
       }
-
-      const isGuestSign = location.pathname.includes("/load/");
+      const isGuestSign = isGuestSignFlow;
       if (
         !isGuestSign &&
         !isCompleted &&
@@ -436,14 +525,14 @@ function PdfRequestFiles() {
       const placeholdersOrSigners = [];
       for (const placeholder of documentData[0].Placeholders) {
         //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
-        const emailExist = placeholder?.email;
-        if (emailExist) {
-          placeholdersOrSigners.push(placeholder);
-        } else {
+        const signerIdExist = placeholder?.signerObjId;
+        if (signerIdExist) {
           const getSignerData = documentData[0].Signers.find(
             (data) => data.objectId === placeholder?.signerObjId
           );
           placeholdersOrSigners.push(getSignerData);
+        } else {
+          placeholdersOrSigners.push(placeholder);
         }
       }
       //condition to check already signed document by someone
@@ -872,7 +961,12 @@ function PdfRequestFiles() {
                           `${pdfDetails?.[0].objectId}/${user.Email}`
                         );
                       }
-                      let signPdf = `${hostUrl}/login/${encodeBase64}`;
+                      // let signPdf = `${hostUrl}/login/${encodeBase64}`;
+                      const hostPublicUrl =
+                        "https://staging-app.opensignlabs.com";
+                      let signPdf = props?.templateId
+                        ? `${hostPublicUrl}/login/${encodeBase64}`
+                        : `${hostUrl}/login/${encodeBase64}`;
                       const openSignUrl =
                         "https://www.opensignlabs.com/contact-us";
                       const orgName = pdfDetails[0]?.ExtUserPtr.Company
@@ -1075,7 +1169,6 @@ function PdfRequestFiles() {
       return newState; // Update the state with the modified copy
     });
   };
-
   //function for save button to save signature or image url
   const saveSign = (type, isDefaultSign, width, height) => {
     const isTypeText = width && height ? true : false;
@@ -1359,9 +1452,141 @@ function PdfRequestFiles() {
       />
     );
   };
+
+  const handleUserDetails = () => {
+    setIsPublicContact(true);
+  };
+
+  //`handlePublicUser` function to use create user from public role and create document from public template
+  const handlePublicUser = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const params = {
+        ...contact,
+        tempid: pdfDetails[0]?.objectId,
+        role: pdfDetails[0]?.PublicRole[0]
+      };
+      const userRes = await axios.post(
+        `${localStorage.getItem(
+          "baseUrl"
+        )}/functions/publicuserlinkcontacttodoc`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+          }
+        }
+      );
+
+      if (userRes?.data?.result) {
+        setRes(userRes.data.result);
+        await SendOtp();
+      } else {
+        alert("something went wrong");
+      }
+    } catch (e) {
+      console.log("e", e);
+      //   setIsLoader(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const SendOtp = async () => {
+    try {
+      const params = { email: contact.email, docId: res.docId };
+
+      const Otp = await axios.post(
+        `${localStorage.getItem("baseUrl")}/functions/SendOTPMailV1`,
+        params,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": localStorage.getItem("parseAppId")
+          }
+        }
+      );
+
+      if (Otp) {
+        setIsOtp(true);
+        setLoading(false);
+      }
+    } catch (error) {
+      alert("something went wrong!");
+    }
+  };
+
+  //verify OTP send on via email
+  const VerifyOTP = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const serverUrl =
+      localStorage.getItem("baseUrl") && localStorage.getItem("baseUrl");
+    const parseId =
+      localStorage.getItem("parseAppId") && localStorage.getItem("parseAppId");
+    if (otp) {
+      // setLoading(true);
+      try {
+        let url = `${serverUrl}/functions/AuthLoginAsMail/`;
+        const headers = {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": parseId
+        };
+        let body = {
+          email: contact.email,
+          otp: otp
+        };
+        let user = await axios.post(url, body, { headers: headers });
+        if (user.data.result === "Invalid Otp") {
+          alert("Invalid Otp");
+          setLoading(false);
+        } else if (user.data.result === "user not found!") {
+          alert("User not found!");
+          setLoading(false);
+        } else {
+          let _user = user.data.result;
+          const parseId = localStorage.getItem("parseAppId");
+          const contractUserDetails = await contractUsers(_user.email);
+          localStorage.setItem("UserInformation", JSON.stringify(_user));
+          localStorage.setItem(
+            `Parse/${parseId}/currentUser`,
+            JSON.stringify(_user)
+          );
+          if (contractUserDetails && contractUserDetails.length > 0) {
+            localStorage.setItem(
+              "Extand_Class",
+              JSON.stringify(contractUserDetails)
+            );
+          }
+
+          localStorage.setItem("username", _user.name);
+          localStorage.setItem("accesstoken", _user.sessionToken);
+          setLoading(false);
+          // navigate(`/load/recipientSignPdf/${res?.docId}/${res?.contactId}`);
+          // document.getElementById("my_modal").close();
+          setIsPublicContact(false);
+          setIsPublicTemplate(false);
+          setIsLoading({
+            isLoad: false
+          });
+          setDocumentId(res?.docId);
+          getDocumentDetails(res?.docId);
+        }
+      } catch (error) {
+        console.log("err ", error);
+      }
+    } else {
+      alert("Please Enter OTP!");
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <Title title={"Request Sign"} />
+      <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
       {isSubscriptionExpired ? (
         <ModalUi
           title={"Subscription Expired"}
@@ -1408,7 +1633,9 @@ function PdfRequestFiles() {
                 }}
                 className="relative op-card overflow-hidden flex flex-col md:flex-row justify-between bg-base-300"
               >
-                {!requestSignTour && requestSignTourFunction()}
+                {!requestSignTour &&
+                  signerObjectId &&
+                  requestSignTourFunction()}
                 <ModalUi
                   isOpen={isAlert.isShow}
                   title={"Alert message"}
@@ -1483,6 +1710,147 @@ function PdfRequestFiles() {
                   />
                 )}
 
+                <ModalUi
+                  isOpen={isPublicContact}
+                  title={"Contact Details"}
+                  handleClose={() => {
+                    setIsPublicContact(false);
+                  }}
+                >
+                  <div className="h-full p-[20px]">
+                    {isOtp ? (
+                      <form onSubmit={VerifyOTP}>
+                        <div className="flex flex-col gap-2">
+                          <span>You will get a OTP via Email</span>
+                          <label className="op-input op-input-bordered flex items-center gap-2 ">
+                            <input
+                              type="number"
+                              name="otp"
+                              className="grow"
+                              placeholder="Enter Verification Code"
+                              required
+                              value={otp}
+                              onChange={(e) => setOtp(e.target.value)}
+                              disabled={loading}
+                            />
+                          </label>
+                        </div>
+                        <div className="op-modal-action">
+                          <div className="flex gap-2">
+                            <button
+                              className="op-btn op-btn-ghost"
+                              onClick={() => {
+                                // document.getElementById("my_modal").close();
+                                setIsPublicContact(false);
+                                setLoading(false);
+                                setIsOtp(false);
+                                setOtp();
+                                setContact({
+                                  name: "",
+                                  email: "",
+                                  phone: ""
+                                });
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="op-btn op-btn-primary"
+                              disabled={loading}
+                            >
+                              {loading ? "Loading..." : "Verify"}
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    ) : (
+                      <form onSubmit={handlePublicUser}>
+                        <div className="flex flex-col gap-2">
+                          <label className="op-input op-input-bordered  flex items-center gap-2  ">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 16 16"
+                              fill="currentColor"
+                              className="w-4 h-4 opacity-70"
+                            >
+                              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                            </svg>
+                            <input
+                              type="text"
+                              className="grow"
+                              name="name"
+                              value={contact.name}
+                              onChange={handleInputChange}
+                              placeholder="name"
+                              required
+                              disabled={loading}
+                            />
+                          </label>
+                          <label className="op-input op-input-bordered flex items-center gap-2 ">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 16 16"
+                              fill="currentColor"
+                              className="w-4 h-4 opacity-70"
+                            >
+                              <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
+                              <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
+                            </svg>
+                            <input
+                              type="text"
+                              className="grow"
+                              name="email"
+                              value={contact.email}
+                              onChange={handleInputChange}
+                              placeholder="Email"
+                              required
+                              disabled={loading}
+                            />
+                          </label>
+
+                          <label className="op-input op-input-bordered flex items-center gap-2 ">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 16 16"
+                              fill="currentColor"
+                              className="w-4 h-4 opacity-70"
+                            >
+                              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                            </svg>
+                            <input
+                              value={contact.phone}
+                              onChange={handleInputChange}
+                              type="text"
+                              name="phone"
+                              className="grow"
+                              placeholder="phone"
+                              disabled={loading}
+                            />
+                          </label>
+                        </div>
+                        <div className="op-modal-action">
+                          <div className="flex gap-2">
+                            <button
+                              className="op-btn op-btn-ghost"
+                              onClick={() => {
+                                // document.getElementById("my_modal").close();
+                                setIsPublicContact(false);
+                              }}
+                            >
+                              Close
+                            </button>
+                            <button
+                              className="op-btn op-btn-primary"
+                              disabled={loading}
+                            >
+                              {loading ? "Loading..." : "Submit"}
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                </ModalUi>
                 <ModalUi
                   isOpen={defaultSignAlert.isShow}
                   title={"Auto sign"}
@@ -1681,7 +2049,7 @@ function PdfRequestFiles() {
                     />
                     {/* pdf header which contain funish back button */}
                     <Header
-                      isPdfRequestFiles={true}
+                      isPdfRequestFiles={isPublicTemplate ? false : true}
                       pageNumber={pageNumber}
                       allPages={allPages}
                       changePage={changePage}
@@ -1689,7 +2057,9 @@ function PdfRequestFiles() {
                       signerPos={signerPos}
                       isSigned={isSigned}
                       isCompleted={isCompleted.isCertificate}
-                      embedWidgetsData={embedWidgetsData}
+                      embedWidgetsData={
+                        isPublicTemplate ? handleUserDetails : embedWidgetsData
+                      }
                       isShowHeader={true}
                       setIsDecline={setIsDecline}
                       decline={true}
@@ -1704,6 +2074,7 @@ function PdfRequestFiles() {
                       containerWH={containerWH}
                       setZoomPercent={setZoomPercent}
                       zoomPercent={zoomPercent}
+                      isPublicTemplate={isPublicTemplate}
                     />
 
                     <div ref={divRef} data-tut="pdfArea" className="h-[95%]">
@@ -1740,6 +2111,9 @@ function PdfRequestFiles() {
                           setTotalZoomPercent={setTotalZoomPercent}
                           setScale={setScale}
                           scale={scale}
+                          uniqueId={uniqueId}
+                          ispublicTemplate={isPublicTemplate}
+                          handleUserDetails={handleUserDetails}
                         />
                       )}
                     </div>

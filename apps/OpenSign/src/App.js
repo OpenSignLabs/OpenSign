@@ -166,9 +166,14 @@ function App() {
                 path="/pdfRequestFiles/:docId"
                 element={<PdfRequestFiles />}
               />
+
               {/* recipient signature route with no rowlevel data using docId from url */}
               <Route
                 path="/recipientSignPdf/:docId/:contactBookId"
+                element={<PdfRequestFiles />}
+              />
+              <Route
+                path="/recipientSignPdf/:docId"
                 element={<PdfRequestFiles />}
               />
             </Route>

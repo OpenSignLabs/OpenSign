@@ -85,7 +85,13 @@ const Header = ({ showSidebar }) => {
       document.removeEventListener("click", closeMenuOnOutsideClick);
     };
   }, [isOpen]);
-
+  const handleConsoleRedirect = () => {
+    if (window.location.host === "staging-app.opensignlabs.com") {
+      window.open("http://uat-console.opensignlabs.com/");
+    } else {
+      window.open("https://console.opensignlabs.com/");
+    }
+  };
   return (
     <div className="op-navbar bg-base-100 shadow">
       <div className="flex-none">
@@ -188,7 +194,7 @@ const Header = ({ showSidebar }) => {
             </li>
             <li
               onClick={() => {
-                window.open("https://console.opensignlabs.com/");
+                handleConsoleRedirect();
               }}
             >
               <span>
