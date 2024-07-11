@@ -30,7 +30,7 @@ export default function Home() {
   return (
     <Layout
       title={`Official OpenSign™ Docs - tutorials, API documentation, self-host help & much more.`}
-      description="Description will go into a meta tag in <head />">
+      description="Explore the official OpenSign™ documentation! Find comprehensive tutorials, API guides, self-hosting help, and much more to enhance your digital signing experience.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
