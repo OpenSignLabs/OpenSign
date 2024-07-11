@@ -451,9 +451,7 @@ function UserProfile() {
                       />
                     </span>
                     <div className="flex md:flex-row flex-col md:items-center">
-                      <span className="mb-1 md:mb-1">
-                        opensign-me.vercel.app/
-                      </span>
+                      <span className="mb-1 md:mb-1">opensign.me/</span>
                       {editmode ? (
                         <input
                           maxLength={40}
