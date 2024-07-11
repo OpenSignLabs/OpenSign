@@ -60,8 +60,8 @@ module.exports = {
           "success-content": "#f5f5f4",
           warning: "#ffbe00",
           "warning-content": "#ccd9e8",
-          error: "#ff0000",
-          "error-content": "#f3f4f6",
+          error: "#ffa1a7",
+          "error-content": "#16090a",
           "--rounded-btn": "1.9rem",
           "--tab-border": "2px",
           "--tab-radius": "0.7rem"

@@ -67,11 +67,21 @@ const HomeLayout = () => {
     const indexOfFirstDot = domainName.indexOf(".");
     // Remove the first dot and get the substring starting from the next character
     const updateDomain = domainName.substring(indexOfFirstDot); //.opensignlabs.com
+    const serverUrl = localStorage.getItem("baseUrl");
+    const parseAppId = localStorage.getItem("parseAppId");
     setCookie("accesstoken", localStorage.getItem("accesstoken"), {
       secure: true,
       domain: updateDomain
     });
     setCookie("main_Domain", main_Domain, {
+      secure: true,
+      domain: updateDomain
+    });
+    setCookie("server_url", serverUrl, {
+      secure: true,
+      domain: updateDomain
+    });
+    setCookie("parse_app_id", parseAppId, {
       secure: true,
       domain: updateDomain
     });
