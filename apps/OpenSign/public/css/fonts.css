@@ -28356,7 +28356,7 @@
 :root {
   --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Pro";
 }
-/* @font-face {
+@font-face {
   font-family: "Font Awesome 6 Pro";
   font-style: normal;
   font-weight: 900;
@@ -28364,7 +28364,7 @@
   src:
     url(../webfonts/fa-solid-900.woff2) format("woff2"),
     url(../webfonts/fa-solid-900.ttf) format("truetype");
-} */
+}
 .fa-solid,
 .fas {
   font-weight: 900;
@@ -28395,14 +28395,14 @@
     url(../webfonts/fa-brands-400.woff2) format("woff2"),
     url(../webfonts/fa-brands-400.ttf) format("truetype");
 }
-/* @font-face {
+@font-face {
   font-family: "Font Awesome 5 Pro";
   font-display: block;
   font-weight: 900;
   src:
     url(../webfonts/fa-solid-900.woff2) format("woff2"),
     url(../webfonts/fa-solid-900.ttf) format("truetype");
-} */
+}
 /* @font-face {
   font-family: "Font Awesome 5 Pro";
   font-display: block;
@@ -28427,13 +28427,13 @@
     url(../webfonts/fa-duotone-900.woff2) format("woff2"),
     url(../webfonts/fa-duotone-900.ttf) format("truetype");
 } */
-/* @font-face {
+@font-face {
   font-family: "FontAwesome";
   font-display: block;
   src:
     url(../webfonts/fa-solid-900.woff2) format("woff2"),
     url(../webfonts/fa-solid-900.ttf) format("truetype");
-} */
+}
 @font-face {
   font-family: "FontAwesome";
   font-display: block;

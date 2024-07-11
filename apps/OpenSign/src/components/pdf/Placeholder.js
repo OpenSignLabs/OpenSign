@@ -234,25 +234,29 @@ function Placeholder(props) {
       setDraggingEnabled(false);
     }
     if ((props.isNeedSign || props.isSignYourself) && !props.isDragging) {
-      if (props.pos.type) {
-        if (
-          props.pos.type === "signature" ||
-          props.pos.type === "stamp" ||
-          props.pos.type === "image"
-        ) {
-          props.setIsSignPad(true);
-          props.setSignKey(props.pos.key);
-          props.setIsStamp(props.pos.isStamp);
-        } else if (props.pos.type === "initials") {
-          props.setIsSignPad(true);
-          props.setSignKey(props.pos.key);
-          props.setIsStamp(props.pos.isStamp);
-          props.setIsInitial(true);
-        }
+      if (props?.ispublicTemplate) {
+        props.handleUserDetails();
       } else {
-        props.setIsSignPad(true);
-        props.setSignKey(props.pos.key);
-        props.setIsStamp(props.pos?.isStamp ? props.pos.isStamp : false);
+        if (props.pos.type) {
+          if (
+            props.pos.type === "signature" ||
+            props.pos.type === "stamp" ||
+            props.pos.type === "image"
+          ) {
+            props.setIsSignPad(true);
+            props.setSignKey(props.pos.key);
+            props.setIsStamp(props.pos.isStamp);
+          } else if (props.pos.type === "initials") {
+            props.setIsSignPad(true);
+            props.setSignKey(props.pos.key);
+            props.setIsStamp(props.pos.isStamp);
+            props.setIsInitial(true);
+          }
+        } else {
+          props.setIsSignPad(true);
+          props.setSignKey(props.pos.key);
+          props.setIsStamp(props.pos?.isStamp ? props.pos.isStamp : false);
+        }
       }
     } else if (
       props.isPlaceholder &&
@@ -294,6 +298,12 @@ function Placeholder(props) {
       props.setWidgetType(props.pos.type);
     }
     if (props.isNeedSign && props.data?.signerObjId === props.signerObjId) {
+      handleWidgetIdandPopup();
+    } else if (
+      props?.isNeedSign &&
+      props?.uniqueId &&
+      props.data?.Id === props?.uniqueId
+    ) {
       handleWidgetIdandPopup();
     } else if (props.isPlaceholder || props.isSignYourself) {
       handleWidgetIdandPopup();
@@ -660,6 +670,19 @@ function Placeholder(props) {
     }
   };
 
+  const getCursor = () => {
+    if (props.data && props.isNeedSign) {
+      if (props?.signerObjId && props.data?.signerObjId === props.signerObjId) {
+        return "pointer";
+      } else if (props?.uniqueId && props.data?.Id === props.uniqueId) {
+        return "pointer";
+      } else {
+        return "not-allowed";
+      }
+    } else {
+      return "all-scroll";
+    }
+  };
   return (
     <Rnd
       id={props.pos.key}
@@ -710,12 +733,7 @@ function Placeholder(props) {
           props.pos.type !== "company" &&
           props.pos.type !== "job title" &&
           "center",
-        cursor:
-          props.data && props.isNeedSign
-            ? props.data?.signerObjId === props.signerObjId
-              ? "pointer"
-              : "not-allowed"
-            : "all-scroll",
+        cursor: getCursor(),
         zIndex:
           props.pos.type === "date"
             ? props.pos.key === props.selectWidgetId

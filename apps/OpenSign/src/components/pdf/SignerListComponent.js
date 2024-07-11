@@ -35,7 +35,9 @@ function SignerListComponent(props) {
         className="flex w-[30px] h-[30px] rounded-full justify-center items-center mx-1"
       >
         <span className="text-[12px] text-center font-bold text-black uppercase">
-          {getFirstLetter(props?.obj?.Name || props?.obj?.Role)}
+          {getFirstLetter(
+            props.obj?.Name || props.obj?.email || props.obj?.Role
+          )}
         </span>
       </div>
       <div className="flex flex-col">

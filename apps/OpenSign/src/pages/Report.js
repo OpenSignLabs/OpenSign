@@ -22,6 +22,7 @@ const Report = () => {
   const [form, setForm] = useState("");
   const [tourData, setTourData] = useState([]);
   const [isDontShow, setIsDontShow] = useState(false);
+  const [isPublic, setIsPublic] = useState({});
   const abortController = new AbortController();
   const docPerPage = 10;
 
@@ -156,6 +157,13 @@ const Report = () => {
                 ? [...prevRecord, ...res.data.result]
                 : res.data.result
             );
+            const listData = res.data.result;
+            setIsPublic(
+              listData.reduce((acc, item) => {
+                acc[item.objectId] = item?.IsPublic || false;
+                return acc;
+              }, {})
+            );
           }
         }
         setIsLoader(false);
@@ -193,6 +201,8 @@ const Report = () => {
               report_help={reporthelp}
               tourData={tourData}
               isDontShow={isDontShow}
+              setIsPublic={setIsPublic}
+              isPublic={isPublic}
             />
           ) : (
             <PageNotFound prefix={"Report"} />

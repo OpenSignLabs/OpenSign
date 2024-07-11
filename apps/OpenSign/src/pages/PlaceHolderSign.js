@@ -170,16 +170,7 @@ function PlaceHolderSign() {
       isDragStamp: !!monitor.isDragging()
     })
   });
-
-  const rowLevel =
-    localStorage.getItem("rowlevel") &&
-    JSON.parse(localStorage.getItem("rowlevel"));
-  const objectId =
-    rowLevel && rowLevel.id
-      ? rowLevel.id
-      : rowLevel?.objectId && rowLevel.objectId;
-
-  const documentId = docId ? docId : objectId && objectId;
+  const documentId = docId;
   useEffect(() => {
     if (documentId) {
       getDocumentDetails();
@@ -633,8 +624,6 @@ function PlaceHolderSign() {
           setShowDropdown(true);
         } else if (dragTypeValue === "checkbox") {
           setIsCheckbox(true);
-        } else if (dragTypeValue === radioButtonWidget) {
-          setIsRadio(true);
         } else if (
           [
             textInputWidget,
@@ -647,6 +636,8 @@ function PlaceHolderSign() {
         ) {
           setFontSize(12);
           setFontColor("black");
+        } else if (dragTypeValue === radioButtonWidget) {
+          setIsRadio(true);
         }
         setWidgetType(dragTypeValue);
         setSignKey(key);

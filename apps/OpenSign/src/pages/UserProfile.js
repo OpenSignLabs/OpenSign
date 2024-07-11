@@ -1,8 +1,4 @@
-import React, {
-  useState,
-  useEffect
-  // useRef
-} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
@@ -32,10 +28,11 @@ function UserProfile() {
   const [percentage, setpercentage] = useState(0);
   const [isDisableDocId, setIsDisableDocId] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
-  // const [publicUserName, setPublicUserName] = useState(
-  //   extendUser && extendUser?.[0]?.UserName
-  // );
-  // const previousPublicUserName = useRef(publicUserName);
+  const [isUpgrade, setIsUpgrade] = useState(false);
+  const [publicUserName, setPublicUserName] = useState(
+    extendUser && extendUser?.[0]?.UserName
+  );
+  const previousPublicUserName = useRef(publicUserName);
   const [company, setCompany] = useState(
     extendUser && extendUser?.[0]?.Company
   );
@@ -46,7 +43,10 @@ function UserProfile() {
   const [otp, setOtp] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  // const [userNameError, setUserNameError] = useState("");
+  const [userNameError, setUserNameError] = useState("");
+  const [tagLine, setTagLine] = useState(
+    extendUser && extendUser?.[0]?.Tagline
+  );
   useEffect(() => {
     getUserDetail();
   }, []);
@@ -85,31 +85,31 @@ function UserProfile() {
     }
   };
   //function to check public username already exist
-  // const handleCheckPublicUserName = async () => {
-  //   try {
-  //     const res = await Parse.Cloud.run("getpublicusername", {
-  //       username: publicUserName
-  //     });
-  //     if (res) {
-  //       setIsLoader(false);
-  //       setUserNameError("user name already exist");
-  //       setTimeout(() => {
-  //         setUserNameError("");
-  //       }, 3000);
-  //       return res;
-  //     }
-  //   } catch (e) {
-  //     console.log("error in getpublicusername cloud function");
-  //   }
-  // };
+  const handleCheckPublicUserName = async () => {
+    try {
+      const res = await Parse.Cloud.run("getpublicusername", {
+        username: publicUserName
+      });
+      if (res) {
+        setIsLoader(false);
+        setUserNameError("user name already exist");
+        setTimeout(() => {
+          setUserNameError("");
+        }, 3000);
+        return res;
+      }
+    } catch (e) {
+      console.log("error in getpublicusername cloud function");
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     let phn = Phone,
       res = "";
     //condition to call cloud function when user change publicUserName
-    // if (previousPublicUserName.current !== publicUserName) {
-    //   res = await handleCheckPublicUserName();
-    // }
+    if (previousPublicUserName.current !== publicUserName) {
+      res = await handleCheckPublicUserName();
+    }
     if (!res) {
       setIsLoader(true);
       try {
@@ -162,8 +162,9 @@ function UserProfile() {
       Name: obj.Name,
       HeaderDocId: isDisableDocId,
       JobTitle: jobTitle,
-      Company: company
-      // UserName: publicUserName || ""
+      Company: company,
+      UserName: publicUserName || "",
+      Tagline: tagLine || ""
     };
 
     await axios.put(
@@ -277,23 +278,19 @@ function UserProfile() {
     alert("OTP sent on you email");
   };
   //function to handle onchange username and restrict 6-characters username for free users
-  // const handleOnchangeUserName = (e) => {
-  //   const value = e.target.value;
-  //   if (value.length > 6 && !isSubscribe) {
-  //     setUserNameError("Please upgrade to allow more than 6 characters.");
-  //     setTimeout(() => {
-  //       setUserNameError("");
-  //     }, 2000);
-  //   } else {
-  //     setPublicUserName(e.target.value);
-  //   }
-  // };
+  const handleOnchangeUserName = (e) => {
+    setPublicUserName(e.target.value);
+  };
+
+  const handleOnchangeTagLine = (e) => {
+    setTagLine(e.target.value);
+  };
   const handleCancel = () => {
     setEditMode(false);
     SetName(localStorage.getItem("username"));
     SetPhone(UserProfile && UserProfile.phone);
     setImage(localStorage.getItem("profileImg"));
-    // setPublicUserName(extendUser && extendUser?.[0]?.UserName);
+    setPublicUserName(extendUser && extendUser?.[0]?.UserName);
     setCompany(extendUser && extendUser?.[0]?.Company);
     setJobTitle(extendUser?.[0]?.JobTitle);
     setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
@@ -307,13 +304,13 @@ function UserProfile() {
         </div>
       ) : (
         <div className="flex justify-center items-center w-full relative">
-          {/* {userNameError && (
+          {userNameError && (
             <div
               className={`z-[1000] fixed top-[50%] transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]`}
             >
               {userNameError}
             </div>
-          )} */}
+          )}
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
               <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
@@ -441,37 +438,75 @@ function UserProfile() {
                   )}
                 </span>
               </li>
-              {/* {isEnableSubscription && (
-                <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                  <span className="font-semibold">
-                    Public profile :{" "}
-                    <Tooltip
-                      message={`this is your public URL. Copy or share it
+              {isEnableSubscription && (
+                <>
+                  <li className="flex md:flex-row flex-col md:justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
+                    <span className="font-semibold flex gap-1">
+                      Public profile :{" "}
+                      <Tooltip
+                        maxWidth="max-w-[250px]"
+                        message={`this is your public URL. Copy or share it
                    with the signer, and you will be able to see
                    all your publicly set templates.`}
-                    />
-                  </span>
-                  <div className="flex text-xs items-center">
-                    <span>opensign-me.vercel.app/</span>
-                    {editmode ? (
-                      <input
-                        onChange={handleOnchangeUserName}
-                        value={publicUserName}
-                        disabled={!editmode}
-                        placeholder="enter user name"
-                        className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-xs"
                       />
-                    ) : (
-                      <input
-                        value={extendUser?.[0]?.UserName}
-                        disabled
-                        placeholder="enter user name"
-                        className="op-input op-input-bordered op-input-xs"
+                    </span>
+                    <div className="flex md:flex-row flex-col md:items-center">
+                      <span className="mb-1 md:mb-1">opensign.me/</span>
+                      {editmode ? (
+                        <input
+                          maxLength={40}
+                          style={{
+                            border:
+                              !isSubscribe &&
+                              publicUserName.length > 0 &&
+                              publicUserName.length < 9 &&
+                              "solid red"
+                          }}
+                          onChange={handleOnchangeUserName}
+                          value={publicUserName}
+                          disabled={!editmode}
+                          placeholder="enter user name"
+                          className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-xs"
+                        />
+                      ) : (
+                        <input
+                          value={extendUser?.[0]?.UserName}
+                          disabled
+                          placeholder="enter user name"
+                          className="op-input op-input-bordered op-input-xs"
+                        />
+                      )}
+                    </div>
+                  </li>
+                  <li className="flex md:flex-row flex-col md:justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
+                    <span className="font-semibold flex gap-1">
+                      Tagline :{" "}
+                      <Tooltip
+                        maxWidth="max-w-[250px]"
+                        message={`This Tagline will appear on your OpenSign public profile for ex. https://opensign.me/alex`}
                       />
-                    )}
-                  </div>
-                </li>
-              )} */}
+                    </span>
+                    <div className="flex md:flex-row flex-col md:items-center">
+                      {editmode ? (
+                        <input
+                          onChange={handleOnchangeTagLine}
+                          value={tagLine}
+                          disabled={!editmode}
+                          placeholder="enter tagline"
+                          className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-xs"
+                        />
+                      ) : (
+                        <input
+                          value={extendUser?.[0]?.Tagline}
+                          disabled
+                          placeholder="enter tagline"
+                          className="op-input op-input-bordered op-input-xs"
+                        />
+                      )}
+                    </div>
+                  </li>
+                </>
+              )}
               <li className="border-y-[1px] border-gray-300 break-all">
                 <div className="flex justify-between items-center py-2">
                   <span
@@ -517,9 +552,17 @@ function UserProfile() {
             <div className="flex justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4">
               <button
                 type="button"
-                onClick={(e) =>
-                  editmode ? handleSubmit(e) : setEditMode(true)
-                }
+                onClick={(e) => {
+                  if (
+                    !isSubscribe &&
+                    publicUserName.length > 0 &&
+                    publicUserName.length < 9
+                  ) {
+                    setIsUpgrade(true);
+                  } else {
+                    editmode ? handleSubmit(e) : setEditMode(true);
+                  }
+                }}
                 className="op-btn op-btn-primary"
               >
                 {editmode ? "Save" : "Edit"}
@@ -575,6 +618,38 @@ function UserProfile() {
                 </form>
               )}
             </ModalUi>
+          )}
+          {isUpgrade && (
+            <div className="op-modal op-modal-open">
+              <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">
+                <>
+                  <div
+                    className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-primary-content absolute right-2 top-2 z-40"
+                    onClick={() => setIsUpgrade(false)}
+                  >
+                    ✕
+                  </div>
+
+                  <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
+                    <div className="op-card-body">
+                      <h2 className="op-card-title">Upgrade to Plan</h2>
+                      <p>
+                        To have a username less than 8 character please
+                        subscribe
+                      </p>
+                      <div className="op-card-actions justify-end">
+                        <button
+                          onClick={() => navigate("/subscription")}
+                          className="op-btn op-btn-accent"
+                        >
+                          Upgrade Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              </div>
+            </div>
           )}
         </div>
       )}

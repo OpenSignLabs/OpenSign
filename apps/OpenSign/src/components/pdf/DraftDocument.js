@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import LoaderWithMsg from "../../primitives/LoaderWithMsg";
 import { contractDocument } from "../../constant/Utils";
 import HandleError from "../../primitives/HandleError";
+import { useLocation, useNavigate } from "react-router-dom";
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 function DraftDocument() {
   const navigate = useNavigate();
+  const query = useQuery();
+  const docId = query.get("docId");
   const [isLoading, setIsLoading] = useState({
     isLoader: true,
     message: "This might take some time"
   });
-
-  const rowLevel =
-    localStorage.getItem("rowlevel") &&
-    JSON.parse(localStorage.getItem("rowlevel"));
-  const docId =
-    rowLevel && rowLevel?.id
-      ? rowLevel.id
-      : rowLevel?.objectId && rowLevel.objectId;
-
   useEffect(() => {
     getDocumentDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,7 +49,7 @@ function DraftDocument() {
     const signedUrl = data.SignedUrl;
     //checking if document has completed and request signature flow
     if (data?.IsCompleted && signerExist?.length > 0) {
-      navigate(`/pdfRequestFiles/${data.objectId}`);
+      navigate(`/recipientSignPdf/${data.objectId}`);
     }
     //checking if document has completed and signyour-self flow
     else if (!signerExist && !isPlaceholder) {
@@ -61,7 +57,7 @@ function DraftDocument() {
     }
     //checking if document has declined by someone
     else if (isDecline) {
-      navigate(`/pdfRequestFiles/${data.objectId}`);
+      navigate(`/recipientSignPdf/${data.objectId}`);
       //checking draft type document
     } else if (
       signerExist?.length > 0 &&
@@ -72,7 +68,7 @@ function DraftDocument() {
     }
     //Inprogress document
     else if (isPlaceholder?.length > 0 && signerExist?.length > 0) {
-      navigate(`/pdfRequestFiles/${data.objectId}`);
+      navigate(`/recipientSignPdf/${data.objectId}`);
     } //placeholder draft document
     else if (
       (signerExist?.length > 0 &&
