@@ -968,7 +968,7 @@ const ReportTable = (props) => {
 
   // function to copy public profile links
   const copytoProfileLink = () => {
-    const url = `https://opensign-me.vercel.app/${publicUserName}`;
+    const url = `https://opensign.me/${publicUserName}`;
     copytoData(url);
     setIsAlert(true);
     setAlertMsg({

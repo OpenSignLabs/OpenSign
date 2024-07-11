@@ -87,7 +87,7 @@ const Header = ({ showSidebar }) => {
   }, [isOpen]);
   const handleConsoleRedirect = () => {
     if (window.location.host === "staging-app.opensignlabs.com") {
-      window.open("http://uat-console.opensignlabs.com/");
+      window.open(" https://staging-console.opensignlabs.com/");
     } else {
       window.open("https://console.opensignlabs.com/");
     }
