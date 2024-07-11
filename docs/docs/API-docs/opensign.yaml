@@ -1,11 +1,11 @@
 ---
 openapi: 3.0.3
 info:
-  title: OpenSign API v1
-  description: "This is API documentation for OpenSign API v1 based on the OpenAPI 3.1 specification. \n\nSome useful links:\n- [Official Website](https://www.opensignlabs.com)\n- [Github repo](https://github.com/opensignlabs/opensign)"
+  title: OpenSign - Official API documenation
+  description: "Welcome to the OpenSign™ API documentation! Our powerful and flexible API allows you to seamlessly integrate digital signing capabilities into your applications. Whether you're a developer looking to automate document workflows, a business seeking to enhance security, or an enterprise aiming for efficient contract management, our API provides robust solutions to meet your needs. Dive into our detailed guides, code examples, and best practices to start leveraging the full potential of OpenSign™ and transform your digital document processes today. \n\nSome useful links:\n- [OpenSign Website](https://www.opensignlabs.com)\n- [OpenSign Github repo](https://github.com/opensignlabs/opensign)"
   termsOfService: http://www.opensignlabs.com/terms/
   contact:
-    email: contact@opensignlabs.com
+    email: api@opensignlabs.com
   license:
     name: AGPL v 3.0
     url: http://github.com/opensignlabs/opensign/LICENSE
@@ -28,17 +28,17 @@ tags:
     description: Visit github
     url: http://github.com/opensignlabs/opensign
 - name: User
-  description: Operations about user
+  description: Access detailed user information with the OpenSign™ API. Retrieve and manage user details effortlessly to enhance your application’s functionality and user experience.
 - name: Contacts
-  description: Operations about contacts
+  description: Utilize the OpenSign™ API to efficiently manage contacts in your OpenSign contact book. Seamlessly add, update, and organize your contacts for a streamlined digital signing experience.
 - name: Documents
-  description: Operations about documents
+  description: Streamline your document management with the OpenSign™ API. Easily upload, delete and organize your documents for efficient digital signing and seamless workflow integration.
 - name: Templates
-  description: Operations about templates
+  description: Optimize your document creation process with the OpenSign™ API for managing reusable templates. Create, update, and organize templates effortlessly to ensure consistency and efficiency in your digital signing workflows.
 - name: Webhook
-  description: Operations about Webhook
+  description: Enhance your application’s responsiveness with the OpenSign™ API for managing webhooks. Easily set up, update, and manage webhooks to receive real-time notifications and automate your digital signing processes. 
 - name: Folder
-  description: Operations about Folder
+  description: Organize your documents efficiently with the OpenSign™ API for managing folders in OpenSign Drive. Create, update and manage folders seamlessly to keep your digital signing files structured and easily accessible.
 paths:
   /getuser:
     get:
