@@ -1240,42 +1240,18 @@ const ReportTable = (props) => {
                                       <p className="text-lg">
                                         {props.isPublic[item.objectId]
                                           ? `Are you sure you want to make this template public ?`
-                                          : `Are you sure you want to make this template private ? This will remove it from your public profile ?`}
+                                          : `Are you sure you want to make this template private? This will remove it from your public profile.`}
                                       </p>
                                       {props.isPublic[item.objectId] && (
                                         <div className="flex mt-2 gap-2 md:items-center">
                                           <p className="text-[15px]">
                                             Public role :{" "}
                                           </p>
-                                          {/* {item?.Placeholders?.length > 1 ? (
-                                            <select
-                                              className="w-[60%] md:w-[70%] border-[1px] border-gray-200 rounded-sm p-[2px]"
-                                              name="textvalidate"
-                                              value={selectedPublicRole}
-                                              onChange={(e) =>
-                                                setSelectedPublicRole(
-                                                  e.target.value
-                                                )
-                                              }
-                                            >
-                                              <option
-                                                disabled
-                                                style={{ fontSize: "13px" }}
-                                                value=""
-                                              >
-                                                Select...
-                                              </option>
-                                              {handleShowRole(item)}
-                                            </select>
-                                          ) : ( */}
+
                                           <input
                                             className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-sm"
                                             value={handleShowRole(item)}
                                           />
-                                          {/* {item?.Placeholders[0]?.Role} */}
-                                          {/* {handleShowRole(item)} */}
-                                          {/* </div> */}
-                                          {/* )} */}
                                         </div>
                                       )}
                                     </div>
@@ -1306,27 +1282,24 @@ const ReportTable = (props) => {
                                   handleClose={() => {
                                     setIsPublicProfile({});
                                   }}
-                                  reduceWidth={
-                                    "md:min-w-[440px] md:max-w-[550px]"
-                                  }
                                 >
                                   <div className="m-[20px]">
                                     {publicUserName ? (
                                       <div className="font-normal text-black">
                                         <p>
-                                          Here’s your public URL. Copy or share
-                                          it with the signer, and you will be
-                                          able to see all your publicly set
+                                          Here’s your public URL: Copy it or
+                                          share it with the signer, and you will
+                                          be able to see all your publicly set
                                           templates.
                                         </p>
-                                        <div className=" flex items-center gap-5 mt-2  p-[2px] w-[75%]">
+                                        <div className=" flex items-center gap-3 mt-2  p-[2px] ">
                                           <span className="font-bold">
                                             Public URL :{" "}
                                           </span>
                                           <span
                                             onClick={() => copytoProfileLink()}
                                             className="underline underline-offset-2 cursor-pointer"
-                                          >{`https://opensign-me.vercel.app/${publicUserName}`}</span>
+                                          >{`https://opensign.me/${publicUserName}`}</span>
                                         </div>
                                       </div>
                                     ) : (
