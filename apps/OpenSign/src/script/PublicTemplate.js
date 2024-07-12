@@ -23,7 +23,7 @@ const appId = process.env.REACT_APP_APPID
   : "opensign";
 const serverUrl = process.env.REACT_APP_SERVERURL
   ? process.env.REACT_APP_SERVERURL
-  : window.location.origin + "/api/app";
+  : "https://staging-app.opensignlabs.com/api/app";
 localStorage.setItem("baseUrl", `${serverUrl}/`);
 localStorage.setItem("parseAppId", appId);
 Parse.initialize(appId);
@@ -33,7 +33,7 @@ const scriptComponent = document.createElement("div");
 scriptComponent.id = "script-component";
 document.body.appendChild(scriptComponent);
 const link = document.createElement("link");
-link.href = `${process.env.PUBLIC_URL}/css/fonts.css`;
+link.href = "https://staging-app.opensignlabs.com/css/fonts.css";
 link.rel = "stylesheet";
 document.head.appendChild(link);
 
