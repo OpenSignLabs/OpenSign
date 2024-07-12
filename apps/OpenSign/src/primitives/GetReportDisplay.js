@@ -160,6 +160,16 @@ const ReportTable = (props) => {
               value: x.objectId
             }));
             setTeamList(formatedList);
+            if (!isEnableSubscription) {
+              const selected = _teamRes.map(
+                (x) =>
+                  x.Name === "All Users" && {
+                    label: x.Name,
+                    value: x.objectId
+                  }
+              );
+              setSelectedTeam(selected);
+            }
           }
         }
       } catch (err) {
@@ -351,6 +361,8 @@ const ReportTable = (props) => {
       if (isEnableSubscription) {
         const getIsSubscribe = await checkIsSubscribedTeam();
         setIsSubscribe(getIsSubscribe);
+      } else {
+        setIsSubscribe(true);
       }
       if (item?.SharedWith && item?.SharedWith.length > 0) {
         // below code is used to get existing sharewith teams and formated them as per react-select
@@ -1158,6 +1170,13 @@ const ReportTable = (props) => {
                         <td className="px-4 py-2 font-semibold min-w-56 max-w-56">
                           {item?.Name}{" "}
                         </td>
+                        {props?.heading?.includes("Reason") && (
+                          <td className="px-4 py-2">
+                            {item?.DeclineReason?.length > 25
+                              ? item?.DeclineReason?.slice(0, 25) + "..."
+                              : item?.DeclineReason || "-"}
+                          </td>
+                        )}
                         {props.heading.includes("Note") && (
                           <td className="px-4 py-2">
                             {item?.Note?.length > 25
@@ -1525,6 +1544,30 @@ const ReportTable = (props) => {
                                       plan={"TEAMS"}
                                       price={"20"}
                                     />
+                                  </>
+                                )}
+                                {isSubscribe && !isEnableSubscription && (
+                                  <>
+                                    <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                                      Share with
+                                    </h3>
+                                    <div
+                                      className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                      onClick={() => setIsShareWith({})}
+                                    >
+                                      ✕
+                                    </div>
+                                    <div className="px-2 mt-3 w-full h-full">
+                                      <div className="op-input op-input-bordered op-input-sm w-full h-full text-[13px] break-all">
+                                        {selectedTeam?.[0]?.label}
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={(e) => handleShareWith(e, item)}
+                                      className="op-btn op-btn-primary ml-[10px] my-3"
+                                    >
+                                      Submit
+                                    </button>
                                   </>
                                 )}
                               </div>

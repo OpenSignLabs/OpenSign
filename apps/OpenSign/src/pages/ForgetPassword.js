@@ -61,9 +61,9 @@ function ForgotPassword() {
   }, []);
   const saveLogo = async () => {
     if (isEnableSubscription) {
-      const logo = await getAppLogo();
-      if (logo) {
-        setImage(logo);
+      const app = await getAppLogo();
+      if (app?.logo) {
+        setImage(app?.logo);
       } else {
         setImage(appInfo?.applogo || undefined);
       }

@@ -32,6 +32,8 @@ const Opensigndrive = lazy(() => import("./pages/Opensigndrive"));
 const ManageSign = lazy(() => import("./pages/Managesign"));
 const GenerateToken = lazy(() => import("./pages/GenerateToken"));
 const Webhook = lazy(() => import("./pages/Webhook"));
+const AddAdmin = lazy(() => import("./pages/AddAdmin"));
+const UpdateExistUserAdmin = lazy(() => import("./pages/UpdateExistUserAdmin"));
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 const AppLoader = () => {
@@ -72,7 +74,21 @@ function App() {
           <Routes>
             <Route element={<ValidateRoute />}>
               <Route exact path="/" element={<Login />} />
-              <Route path="/signup" element={<LazyPage Page={Signup} />} />
+              {isEnableSubscription && (
+                <Route path="/signup" element={<LazyPage Page={Signup} />} />
+              )}
+              {!isEnableSubscription && (
+                <>
+                  <Route
+                    path="/addadmin"
+                    element={<LazyPage Page={AddAdmin} />}
+                  />
+                  <Route
+                    path="/addexistadmin"
+                    element={<LazyPage Page={UpdateExistUserAdmin} />}
+                  />
+                </>
+              )}
             </Route>
             <Route element={<Validate />}>
               <Route

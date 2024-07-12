@@ -4,6 +4,7 @@ import axios from "axios";
 import Title from "./Title";
 import Loader from "../primitives/Loader";
 import { copytoData } from "../constant/Utils";
+import { isEnableSubscription } from "../constant/const";
 function generatePassword(length) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -27,7 +28,7 @@ const AddUser = (props) => {
   });
   const [isLoader, setIsLoader] = useState(false);
   const [teamList, setTeamList] = useState([]);
-  const role = ["OrgAdmin", "Manager", "User"];
+  const role = ["OrgAdmin", "Editor", "User"];
   const parseBaseUrl = localStorage.getItem("baseUrl");
   const parseAppId = localStorage.getItem("parseAppId");
 
@@ -48,7 +49,13 @@ const AddUser = (props) => {
     const teamRes = await team.find();
     if (teamRes.length > 0) {
       const _teamRes = JSON.parse(JSON.stringify(teamRes));
+      // if (isEnableSubscription) {
       setTeamList(_teamRes);
+      if (!isEnableSubscription) {
+        const allUserId =
+          _teamRes.find((x) => x.Name === "All Users")?.objectId || "";
+        setFormdata((prev) => ({ ...prev, team: allUserId }));
+      }
     }
   };
   const checkUserExist = async () => {
@@ -226,7 +233,6 @@ const AddUser = (props) => {
                   y.objectId === team.objectId ? team : y
                 );
               }
-
               props.handleUserData(parseData);
             }
             setIsLoader(false);
@@ -352,31 +358,33 @@ const AddUser = (props) => {
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
-          <div className="mb-3">
-            <label
-              htmlFor="phone"
-              className="block text-xs text-gray-700 font-semibold"
-            >
-              Team<span className="text-[red] text-[13px]"> *</span>
-            </label>
-            <select
-              value={formdata.team}
-              onChange={(e) => handleChange(e)}
-              name="team"
-              className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
-              required
-            >
-              <option defaultValue={""} value={""}>
-                select
-              </option>
-              {teamList.length > 0 &&
-                teamList.map((x) => (
-                  <option key={x.objectId} value={x.objectId}>
-                    {x.Name}
-                  </option>
-                ))}
-            </select>
-          </div>
+          {isEnableSubscription && (
+            <div className="mb-3">
+              <label
+                htmlFor="phone"
+                className="block text-xs text-gray-700 font-semibold"
+              >
+                Team<span className="text-[red] text-[13px]"> *</span>
+              </label>
+              <select
+                value={formdata.team}
+                onChange={(e) => handleChange(e)}
+                name="team"
+                className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+                required
+              >
+                <option defaultValue={""} value={""}>
+                  select
+                </option>
+                {teamList.length > 0 &&
+                  teamList.map((x) => (
+                    <option key={x.objectId} value={x.objectId}>
+                      {x.Name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
           <div className="mb-3">
             <label
               htmlFor="phone"
