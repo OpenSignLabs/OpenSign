@@ -64,7 +64,7 @@ module.exports = {
       : [])
   ],
   optimization: {
-    minimize: isProduction,
+    minimize: isProduction ? true : false,
     minimizer: [new TerserPlugin()]
   },
   devtool: isProduction ? "source-map" : "inline-source-map"
