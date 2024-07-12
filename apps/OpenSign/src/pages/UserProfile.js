@@ -185,6 +185,7 @@ function UserProfile() {
     const json = JSON.parse(JSON.stringify([res]));
     const extRes = JSON.stringify(json);
     localStorage.setItem("Extand_Class", extRes);
+    previousPublicUserName.current = publicUserName;
     // console.log("updateRes ", updateRes);
   };
   // file upload function

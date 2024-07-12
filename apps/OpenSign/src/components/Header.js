@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
 import { checkIsSubscribed, getAppLogo, openInNewTab } from "../constant/Utils";
-import { isEnableSubscription } from "../constant/const";
+import { isEnableSubscription, isStaging } from "../constant/const";
 
 const Header = ({ showSidebar }) => {
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ const Header = ({ showSidebar }) => {
     };
   }, [isOpen]);
   const handleConsoleRedirect = () => {
-    if (window.location.host === "staging-app.opensignlabs.com") {
+    if (isStaging) {
       window.open(" https://staging-console.opensignlabs.com/");
     } else {
       window.open("https://console.opensignlabs.com/");
