@@ -162,6 +162,7 @@ export default function reportJson(id, userId) {
           'Signers.Email',
           'Signers.Phone',
           'Placeholders',
+          'DeclineReason',
         ],
       };
     //  Expired Documents report

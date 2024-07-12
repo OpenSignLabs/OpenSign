@@ -29,9 +29,9 @@ function GuestLogin() {
   //function generate serverUrl and parseAppId from url and save it in local storage
   const handleServerUrl = async () => {
     if (isEnableSubscription) {
-      const applogo = await getAppLogo();
-      if (applogo) {
-        setAppLogo(applogo);
+      const app = await getAppLogo();
+      if (app?.logo) {
+        setAppLogo(app?.logo);
       } else {
         setAppLogo(logo);
       }

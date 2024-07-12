@@ -32,7 +32,7 @@ export const appInfo = {
       extended_class: "contracts_Users"
     },
     {
-      role: "contracts_Manager",
+      role: "contracts_Editor",
       menuId: "H9vRfEYKhT",
       pageType: "dashboard",
       pageId: "35KBoSgoAK",
