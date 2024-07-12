@@ -1239,7 +1239,7 @@ const ReportTable = (props) => {
                                     <div className="font-normal text-black">
                                       <p className="text-lg">
                                         {props.isPublic[item.objectId]
-                                          ? `Are you sure you want to make this template public ?`
+                                          ? `Are you sure you want to make this template public?`
                                           : `Are you sure you want to make this template private? This will remove it from your public profile.`}
                                       </p>
                                       {props.isPublic[item.objectId] && (
@@ -1294,11 +1294,11 @@ const ReportTable = (props) => {
                                         </p>
                                         <div className=" flex items-center gap-3 mt-2  p-[2px] ">
                                           <span className="font-bold">
-                                            Public URL :{" "}
+                                            Public URL :
                                           </span>
                                           <span
                                             onClick={() => copytoProfileLink()}
-                                            className="underline underline-offset-2 cursor-pointer"
+                                            className="underline underline-offset-2 w-[150px] md:w-[350px] whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer"
                                           >{`https://opensign.me/${publicUserName}`}</span>
                                         </div>
                                       </div>
