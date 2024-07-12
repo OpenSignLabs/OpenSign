@@ -280,7 +280,8 @@ function UserProfile() {
   };
   //function to handle onchange username and restrict 6-characters username for free users
   const handleOnchangeUserName = (e) => {
-    setPublicUserName(e.target.value);
+    const newValue = e.target.value.replace(/\s+/g, "");
+    setPublicUserName(newValue);
   };
 
   const handleOnchangeTagLine = (e) => {
