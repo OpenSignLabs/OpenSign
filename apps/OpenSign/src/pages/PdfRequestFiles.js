@@ -1676,7 +1676,7 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg="Document Declined"
+                  headMsg="Document declined"
                   bodyMssg={
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
@@ -1692,7 +1692,7 @@ function PdfRequestFiles(props) {
                 {/* this modal is used for show expired alert */}
                 <PdfDeclineModal
                   show={isExpired}
-                  headMsg="Document Expired!"
+                  headMsg="Document expired"
                   bodyMssg={`This document expired on ${expiredDate} and is no longer available to sign.`}
                 />
                 {!isEmailVerified && (

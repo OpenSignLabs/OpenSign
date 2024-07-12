@@ -1,8 +1,13 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fs from 'node:fs';
+import fontkit from '@pdf-lib/fontkit';
+
 export default async function GenerateCertificate(docDetails) {
   const pdfDoc = await PDFDocument.create();
-  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+  // `fontBytes` is used to embed custom font in pdf
+  const fontBytes = fs.readFileSync('./font/times.ttf'); //
+  pdfDoc.registerFontkit(fontkit);
+  const timesRomanFont = await pdfDoc.embedFont(fontBytes, { subset: true });
   const pngUrl = fs.readFileSync('./logo.png').buffer;
   const pngImage = await pdfDoc.embedPng(pngUrl);
   const page = pdfDoc.addPage();

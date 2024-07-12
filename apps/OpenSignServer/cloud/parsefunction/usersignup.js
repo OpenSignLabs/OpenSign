@@ -58,18 +58,6 @@ export default async function usersignup(request) {
     if (extUser) {
       return { message: 'User already exist' };
     } else {
-      const roleurl = `${serverUrl}/functions/AddUserToRole`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'X-Parse-Application-Id': APPID,
-        sessionToken: user.sessionToken, //localStorage.getItem("accesstoken"),
-      };
-      let body = {
-        appName: extClass,
-        roleName: userDetails.role,
-        userId: user.id,
-      };
-      let role = await axios.post(roleurl, body, { headers: headers });
       // console.log("role ", role);
       const partnerCls = Parse.Object.extend('partners_Tenant');
       const partnerQuery = new partnerCls();
