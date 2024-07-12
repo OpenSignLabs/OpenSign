@@ -107,7 +107,7 @@ function UserProfile() {
     let phn = Phone,
       res = "";
     //condition to call cloud function when user change publicUserName
-    if (previousPublicUserName.current !== publicUserName) {
+    if (publicUserName && previousPublicUserName.current !== publicUserName) {
       res = await handleCheckPublicUserName();
     }
     if (!res) {
