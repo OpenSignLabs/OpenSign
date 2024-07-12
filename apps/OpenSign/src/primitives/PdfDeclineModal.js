@@ -14,7 +14,7 @@ function CustomModal({
     show && (
       <dialog className="op-modal op-modal-open absolute z-[448]">
         <div className="w-[95%] md:w-[60%] lg:w-[40%] op-modal-box p-0 overflow-y-auto hide-scrollbar text-sm">
-          <h3 className="text-[#de4337] font-bold text-lg pt-[15px] px-[20px]">
+          <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
             {headMsg && headMsg}
           </h3>
           <div className="p-[10px] px-[20px]">

@@ -50,18 +50,16 @@ function Login() {
     }
     dispatch(fetchAppInfo());
     saveLogo();
-
     // eslint-disable-next-line
   }, []);
 
   const saveLogo = async () => {
-    if (isEnableSubscription) {
-      const logo = await getAppLogo();
-      if (logo) {
-        setImage(logo);
-      } else {
-        setImage(appInfo?.applogo || undefined);
-      }
+    const app = await getAppLogo();
+    if (!isEnableSubscription && app?.user === "not_exist") {
+      navigate("/addadmin");
+    }
+    if (app?.logo) {
+      setImage(app?.logo);
     } else {
       setImage(appInfo?.applogo || undefined);
     }
@@ -686,20 +684,22 @@ function Login() {
                       >
                         {state.loading ? "Loading..." : "Login"}
                       </button>
-                      <button
-                        type="button"
-                        className="op-btn op-btn-accent"
-                        disabled={state.loading}
-                        onClick={() =>
-                          navigate(
-                            location.search
-                              ? "/signup" + location.search
-                              : "/signup"
-                          )
-                        }
-                      >
-                        Create Account
-                      </button>
+                      {isEnableSubscription && (
+                        <button
+                          type="button"
+                          className="op-btn op-btn-accent"
+                          disabled={state.loading}
+                          onClick={() =>
+                            navigate(
+                              location.search
+                                ? "/signup" + location.search
+                                : "/signup"
+                            )
+                          }
+                        >
+                          Create Account
+                        </button>
+                      )}
                     </div>
                   </form>
                   {(appInfo.googleClietId || isEnableSubscription) && (

@@ -1856,18 +1856,21 @@ export const getFileName = (fileUrl) => {
 
 //fetch tenant app logo from `partners_Tenant` class by domain name
 export const getAppLogo = async () => {
-  const domainName = window.location.host;
-  try {
-    const tenantCreditsQuery = new Parse.Query("partners_Tenant");
-    tenantCreditsQuery.equalTo("Domain", domainName);
-    const res = await tenantCreditsQuery.first();
-
-    if (res) {
-      const updateRes = JSON.parse(JSON.stringify(res));
-      return updateRes?.Logo;
+  if (window.location.host === "app.opensignlabs.com") {
+    return { logo: appInfo.applogo, user: "exist" };
+  } else {
+    const domain = window.location.host;
+    try {
+      const tenant = await Parse.Cloud.run("getlogobydomain", {
+        domain: domain
+      });
+      if (tenant) {
+        return { logo: tenant?.logo, user: tenant?.user };
+      }
+    } catch (err) {
+      console.log("err in getlogo ", err);
+      return { logo: appInfo.applogo, user: "exist" };
     }
-  } catch (e) {
-    return null;
   }
 };
 

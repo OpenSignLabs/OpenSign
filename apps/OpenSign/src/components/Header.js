@@ -31,8 +31,8 @@ const Header = ({ showSidebar }) => {
       const getIsSubscribe = await checkIsSubscribed();
       if (getIsSubscribe) {
         const applogo = await getAppLogo();
-        if (applogo) {
-          setAppLogo(applogo);
+        if (applogo?.logo) {
+          setAppLogo(applogo?.logo);
         } else {
           setAppLogo(localStorage.getItem("appLogo") || "");
         }

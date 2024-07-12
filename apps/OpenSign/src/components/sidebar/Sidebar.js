@@ -5,7 +5,7 @@ import SocialMedia from "./SocialMedia";
 import dp from "../../assets/images/dp.png";
 import sidebarList from "../../json/menuJson";
 import { useNavigate } from "react-router-dom";
-import { isStaging } from "../../constant/const";
+import { isEnableSubscription } from "../../constant/const";
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         const Extand_Class = localStorage.getItem("Extand_Class");
         const extClass = Extand_Class && JSON.parse(Extand_Class);
         // console.log("extClass ", extClass);
-        let userRole = "contracts_Users";
+        let userRole = "contracts_User";
         if (extClass && extClass.length > 0) {
           userRole = extClass[0].UserRole;
         }
@@ -38,28 +38,42 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           userRole === "contracts_OrgAdmin"
         ) {
           const newSidebarList = sidebarList.map((item) => {
-            if (item.title === "Settings" && isStaging) {
+            if (item.title === "Settings") {
               // Make a shallow copy of the item
               const newItem = { ...item };
-              newItem.children = [
-                ...newItem.children,
-                {
-                  icon: "fa-light fa-building-memo",
-                  title: "Teams",
-                  target: "_self",
-                  pageType: "",
-                  description: "",
-                  objectId: "teams"
-                },
-                {
-                  icon: "fa-light fa-users fa-fw",
-                  title: "Users",
-                  target: "_self",
-                  pageType: "",
-                  description: "",
-                  objectId: "users"
-                }
-              ];
+              if (isEnableSubscription) {
+                newItem.children = [
+                  ...newItem.children,
+                  {
+                    icon: "fa-light fa-building-memo",
+                    title: "Teams",
+                    target: "_self",
+                    pageType: "",
+                    description: "",
+                    objectId: "teams"
+                  },
+                  {
+                    icon: "fa-light fa-users fa-fw",
+                    title: "Users",
+                    target: "_self",
+                    pageType: "",
+                    description: "",
+                    objectId: "users"
+                  }
+                ];
+              } else {
+                newItem.children = [
+                  ...newItem.children,
+                  {
+                    icon: "fa-light fa-users fa-fw",
+                    title: "Users",
+                    target: "_self",
+                    pageType: "",
+                    description: "",
+                    objectId: "users"
+                  }
+                ];
+              }
               return newItem;
             }
             return item;

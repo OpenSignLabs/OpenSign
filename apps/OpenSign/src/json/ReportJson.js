@@ -1,6 +1,15 @@
 export default function reportJson(id) {
   // console.log("json ", json);
   const head = ["Sr.No", "Title", "Note", "Folder", "File", "Owner", "Signers"];
+  const declineHead = [
+    "Sr.No",
+    "Title",
+    "Reason",
+    "Folder",
+    "File",
+    "Owner",
+    "Signers"
+  ];
   const contactbook = ["Sr.No", "Title", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
   const templateReport = ["Sr.No", "Title", "File", "Owner", "Signers"];
@@ -140,7 +149,7 @@ export default function reportJson(id) {
     case "UPr2Fm5WY3":
       return {
         reportName: "Declined Documents",
-        heading: head,
+        heading: declineHead,
         actions: [
           {
             btnId: "1458",
@@ -306,76 +315,99 @@ export default function reportJson(id) {
           "This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document."
       };
     // template report
-    case "6TeaPr321t":
+    case "6TeaPr321t": {
+      const templateAct = [
+        {
+          btnId: "2234",
+          btnLabel: "Use",
+          hoverLabel: "Use",
+          btnColor: "op-btn-primary",
+          btnIcon: "fa-light fa-plus",
+          redirectUrl: "placeHolderSign",
+          action: "redirect",
+          selector: "reactourSecond",
+          message:
+            "Click the 'Use' button to create a new document from an existing template. "
+        },
+        {
+          btnId: "1631",
+          btnLabel: "Quick send",
+          hoverLabel: "Quick send",
+          btnColor: "op-btn-secondary",
+          btnIcon: "fa-light fa-envelope",
+          redirectUrl: "",
+          action: "bulksend",
+          selector: "tourbulksend",
+          message:
+            "To quickly create and send multiple documents using an existing template, click the 'Quick Send' button."
+        },
+        {
+          btnId: "2234",
+          hoverLabel: "option",
+          btnColor: "",
+          textColor: "black",
+          btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
+          action: "option",
+          selector: "reactourThird",
+          message:
+            "This menu reveals more options such as Edit & Delete. Use the 'Edit' button to add signer roles, modify fields, and update your template. Changes will apply to all future documents created from this template but won’t affect existing documents.Use the Delete button you can delete template. ",
+          subaction: [
+            {
+              btnId: "2434",
+              btnLabel: "Edit",
+              hoverLabel: "Edit",
+              btnIcon: "fa-light fa-pen",
+              redirectUrl: "template",
+              action: "redirect"
+            },
+            {
+              btnId: "1834",
+              btnLabel: "Delete",
+              hoverLabel: "Delete",
+              btnIcon: "fa-light fa-trash",
+              redirectUrl: "",
+              action: "delete"
+            }
+          ]
+        }
+      ];
+      const Extand_Class = localStorage.getItem("Extand_Class");
+      const extClass = Extand_Class && JSON.parse(Extand_Class);
+      // console.log("extClass ", extClass);
+      let templateActions = templateAct;
+      if (extClass && extClass.length > 0) {
+        if (extClass?.[0]?.UserRole !== "contracts_User") {
+          templateActions = templateAct.map((item) => {
+            if (item.action === "option") {
+              // Make a shallow copy of the item
+              const newItem = { ...item };
+              newItem.subaction = [
+                {
+                  btnId: "1873",
+                  btnLabel: "Share with team",
+                  hoverLabel: "Share with team",
+                  btnIcon: "fa-light fa-share-nodes",
+                  redirectUrl: "",
+                  action: "sharewith"
+                },
+                ...newItem.subaction
+              ];
+
+              return newItem;
+            }
+            return item;
+          });
+        }
+      }
+
       return {
         reportName: "Templates",
         heading: templateReport,
-        actions: [
-          {
-            btnId: "2234",
-            btnLabel: "Use",
-            hoverLabel: "Use",
-            btnColor: "op-btn-primary",
-            btnIcon: "fa-light fa-plus",
-            redirectUrl: "placeHolderSign",
-            action: "redirect",
-            selector: "reactourSecond",
-            message:
-              "Click the 'Use' button to create a new document from an existing template. "
-          },
-          {
-            btnId: "1631",
-            btnLabel: "Quick send",
-            hoverLabel: "Quick send",
-            btnColor: "op-btn-secondary",
-            btnIcon: "fa-light fa-envelope",
-            redirectUrl: "",
-            action: "bulksend",
-            selector: "tourbulksend",
-            message:
-              "To quickly create and send multiple documents using an existing template, click the 'Quick Send' button."
-          },
-          {
-            btnId: "2234",
-            hoverLabel: "option",
-            btnColor: "",
-            textColor: "black",
-            btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
-            action: "option",
-            selector: "reactourThird",
-            message:
-              "This menu reveals more options such as Edit & Delete. Use the 'Edit' button to add signer roles, modify fields, and update your template. Changes will apply to all future documents created from this template but won’t affect existing documents.Use the Delete button you can delete template. ",
-            subaction: [
-              {
-                btnId: "1873",
-                btnLabel: "Share-with",
-                hoverLabel: "Share-with",
-                btnIcon: "fa-light fa-share-nodes",
-                redirectUrl: "",
-                action: "sharewith"
-              },
-              {
-                btnId: "2434",
-                btnLabel: "Edit",
-                hoverLabel: "Edit",
-                btnIcon: "fa-light fa-pen",
-                redirectUrl: "template",
-                action: "redirect"
-              },
-              {
-                btnId: "1834",
-                btnLabel: "Delete",
-                hoverLabel: "Delete",
-                btnIcon: "fa-light fa-trash",
-                redirectUrl: "",
-                action: "delete"
-              }
-            ]
-          }
-        ],
+        actions: templateActions,
         helpMsg:
           "This is a list of templates that are available to you for creating documents. You can click the 'use' button to create a new document using a template, modify the document & add signers in the next step."
       };
+    }
     default:
       return null;
   }

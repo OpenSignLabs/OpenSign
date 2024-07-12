@@ -88,6 +88,8 @@ const UserList = () => {
       if (isEnableSubscription) {
         const getIsSubscribe = await checkIsSubscribedTeam();
         setIsSubscribe(getIsSubscribe);
+      } else {
+        setIsSubscribe(true);
       }
       const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       const res = await Parse.Cloud.run("getuserlistbyorg", {
@@ -179,7 +181,7 @@ const UserList = () => {
           <Loader />
         </div>
       )}
-      {isSubscribe && isEnableSubscription && !isLoader && (
+      {isSubscribe && !isLoader && (
         <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
           {isAlert.msg && (
             <Alert type={isAlert.type}>
