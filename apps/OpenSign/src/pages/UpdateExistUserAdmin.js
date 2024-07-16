@@ -3,6 +3,7 @@ import Loader from "../primitives/Loader";
 import Parse from "parse";
 import { NavLink, useNavigate } from "react-router-dom";
 import Alert from "../primitives/Alert";
+import Title from "../components/Title";
 
 const UpdateExistUserAdmin = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const UpdateExistUserAdmin = () => {
         "updateuserasadmin",
         formdata
       );
-      console.log("updateUserAsAdmin ", updateUserAsAdmin);
+      // console.log("updateUserAsAdmin ", updateUserAsAdmin);
       if (updateUserAsAdmin === "admin_created") {
         setIsAlert({ type: "success", msg: "Admin created" });
         navigate("/");
@@ -57,12 +58,13 @@ const UpdateExistUserAdmin = () => {
     } finally {
       setIsSubmitLoading(false);
       setTimeout(() => {
-        setIsAlert((prev) => ({ type: "danger", msg: "" }));
+        setIsAlert(() => ({ type: "danger", msg: "" }));
       }, 2000);
     }
   };
   return (
     <div className="h-screen flex justify-center">
+      <Title title={"Add Admin"} />
       {isAlert.msg && (
         <Alert type={isAlert.type}>
           <div className="ml-3">{isAlert.msg}</div>

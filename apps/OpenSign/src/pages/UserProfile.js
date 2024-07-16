@@ -460,8 +460,8 @@ function UserProfile() {
                           style={{
                             border:
                               !isSubscribe &&
-                              publicUserName.length > 0 &&
-                              publicUserName.length < 9 &&
+                              publicUserName?.length > 0 &&
+                              publicUserName?.length < 9 &&
                               "solid red"
                           }}
                           onChange={handleOnchangeUserName}
@@ -557,8 +557,8 @@ function UserProfile() {
                 onClick={(e) => {
                   if (
                     !isSubscribe &&
-                    publicUserName.length > 0 &&
-                    publicUserName.length < 9
+                    publicUserName?.length > 0 &&
+                    publicUserName?.length < 9
                   ) {
                     setIsUpgrade(true);
                   } else {
