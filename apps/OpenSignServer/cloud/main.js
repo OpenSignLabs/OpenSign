@@ -4,8 +4,6 @@ import GoogleSign from './parsefunction/GoogleSign.js';
 import ZohoDetails from './parsefunction/ZohoDetails.js';
 import usersignup from './parsefunction/usersignup.js';
 import FacebookSign from './parsefunction/FacebookSign.js';
-import { addUserToGroups } from './parsefunction/AddUserToRole.js';
-import { getUserGroups } from './parsefunction/UserGroups.js';
 import DocumentAftersave from './parsefunction/DocumentAftersave.js';
 import ContactbookAftersave from './parsefunction/ContactBookAftersave.js';
 // import ContractUsersAftersave from './parsefunction/ContractUsersAftersave.js';
@@ -73,8 +71,6 @@ Parse.Cloud.afterFind('contracts_Signature', SignatureAfterFind);
 Parse.Cloud.afterFind('partners_Tenant', TenantAterFind);
 
 // This define function creates a custom Cloud Function that can be called from the client-side, enabling custom business logic on the server.
-Parse.Cloud.define('AddUserToRole', addUserToGroups);
-Parse.Cloud.define('UserGroups', getUserGroups);
 Parse.Cloud.define('signPdf', PDF);
 Parse.Cloud.define('sendmailv3', sendmailv3);
 Parse.Cloud.define('googlesign', GoogleSign);

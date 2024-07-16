@@ -84,7 +84,7 @@ function App() {
                     element={<LazyPage Page={AddAdmin} />}
                   />
                   <Route
-                    path="/addexistadmin"
+                    path="/upgrade-2.1"
                     element={<LazyPage Page={UpdateExistUserAdmin} />}
                   />
                 </>
@@ -136,7 +136,9 @@ function App() {
               </>
             )}
             <Route element={<HomeLayout />}>
-              <Route path="/teams" element={<TeamList />} />
+              {isEnableSubscription && (
+                <Route path="/teams" element={<TeamList />} />
+              )}
               <Route path="/users" element={<UserList />} />
               <Route
                 path="/changepassword"
