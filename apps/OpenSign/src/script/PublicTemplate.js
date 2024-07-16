@@ -37,6 +37,12 @@ link.href = "https://staging-app.opensignlabs.com/css/fonts.css";
 link.rel = "stylesheet";
 document.head.appendChild(link);
 
+//add the Tailwind CSS file
+const tailwindCssLink = document.createElement("link");
+tailwindCssLink.href =
+  "https://staging-app.opensignlabs.com/static/js/public-template.bundle.css"; // css bundle file
+tailwindCssLink.rel = "stylesheet";
+document.head.appendChild(tailwindCssLink);
 // Create a root and render the wrapper component with initial props
 const root = ReactDOM.createRoot(document.getElementById("script-component"));
 root.render(

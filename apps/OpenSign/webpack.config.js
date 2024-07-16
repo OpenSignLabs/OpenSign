@@ -58,7 +58,7 @@ module.exports = {
     ...(isProduction
       ? [
           new MiniCssExtractPlugin({
-            filename: "[name].[contenthash].css"
+            filename: "public-template.bundle.css"
           })
         ]
       : [])
