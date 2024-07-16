@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
-import axios from "axios";
 import Loader from "../primitives/Loader";
 
 const AddSigner = (props) => {
@@ -10,8 +9,6 @@ const AddSigner = (props) => {
   const [addYourself, setAddYourself] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
   const [isUserExist, setIsUserExist] = useState(false);
-  const parseBaseUrl = localStorage.getItem("baseUrl");
-  const parseAppId = localStorage.getItem("parseAppId");
 
   useEffect(() => {
     checkUserExist();
@@ -85,18 +82,6 @@ const AddSigner = (props) => {
             }
             const user = await _user.save();
             if (user) {
-              const roleurl = `${parseBaseUrl}functions/AddUserToRole`;
-              const headers = {
-                "Content-Type": "application/json",
-                "X-Parse-Application-Id": parseAppId,
-                sessionToken: localStorage.getItem("accesstoken")
-              };
-              const body = {
-                appName: "contracts",
-                roleName: "contracts_Guest",
-                userId: user.id
-              };
-              await axios.post(roleurl, body, { headers: headers });
               const currentUser = Parse.User.current();
               contactQuery.set(
                 "CreatedBy",
@@ -140,18 +125,6 @@ const AddSigner = (props) => {
             if (err.code === 202) {
               const params = { email: email };
               const userRes = await Parse.Cloud.run("getUserId", params);
-              const roleurl = `${parseBaseUrl}functions/AddUserToRole`;
-              const headers = {
-                "Content-Type": "application/json",
-                "X-Parse-Application-Id": parseAppId,
-                sessionToken: localStorage.getItem("accesstoken")
-              };
-              const body = {
-                appName: "contracts",
-                roleName: "contracts_Guest",
-                userId: userRes.id
-              };
-              await axios.post(roleurl, body, { headers: headers });
               const currentUser = Parse.User.current();
               contactQuery.set(
                 "CreatedBy",

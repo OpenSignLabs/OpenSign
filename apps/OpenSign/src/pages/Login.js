@@ -200,9 +200,6 @@ function Login() {
                       alertMsg:
                         "You don't have access, please contact the admin."
                     });
-                    setTimeout(() => {
-                      setState({ ...state, alertMsg: "" });
-                    }, 2000);
                     logOutUser();
                   }
                 } else {
@@ -218,27 +215,22 @@ function Login() {
           } catch (error) {
             setState({
               ...state,
-              loading: false,
               alertType: "danger",
               alertMsg: `${error.message}`
             });
-            setTimeout(() => {
-              setState({ ...state, alertMsg: "" });
-            }, 2000);
             console.log(error);
           }
         }
       } catch (error) {
         setState({
           ...state,
-          loading: false,
           alertType: "danger",
           alertMsg: "Invalid username or password!"
         });
-        setTimeout(() => {
-          setState({ ...state, alertMsg: "" });
-        }, 2000);
         console.error("Error while logging in user", error);
+      } finally {
+        setState({ ...state, loading: false });
+        setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
       }
     }
   };
@@ -325,8 +317,6 @@ function Login() {
                   localStorage.setItem("PageLanding", menu.pageId);
                   localStorage.setItem("defaultmenuid", menu.menuId);
                   localStorage.setItem("pageType", menu.pageType);
-                  setThirdpartyLoader(false);
-                  setState({ ...state, loading: false });
                   if (isEnableSubscription) {
                     const res = await fetchSubscription();
                     const freeplan = res.plan;
@@ -356,41 +346,44 @@ function Login() {
                   }
                 }
               } else {
-                setThirdpartyLoader(false);
                 setState({
                   ...state,
                   loading: false,
                   alertType: "danger",
                   alertMsg: "You don't have access, please contact the admin."
                 });
-                setTimeout(() => {
-                  setState({ ...state, alertMsg: "" });
-                }, 2000);
                 logOutUser();
               }
             } else {
-              setThirdpartyLoader(false);
-              setState({ ...state, loading: false });
+              setState({
+                ...state,
+                alertType: "danger",
+                alertMsg: "User not found."
+              });
+              logOutUser();
             }
           })
           .catch((err) => {
             console.error("err in fetching extUser", err);
+            setState({
+              ...state,
+              alertType: "danger",
+              alertMsg: `${err.message}`
+            });
             const payload = { sessionToken: sessionToken };
-            setThirdpartyLoader(false);
             handleSubmitbtn(payload);
           });
       } catch (error) {
-        setThirdpartyLoader(false);
         setState({
           ...state,
-          loading: false,
           alertType: "danger",
           alertMsg: `${error.message}`
         });
-        setTimeout(() => {
-          setState({ ...state, alertMsg: "" });
-        }, 2000);
         console.log(error);
+      } finally {
+        setThirdpartyLoader(false);
+        setState({ ...state, loading: false });
+        setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
       }
     }
   };
@@ -478,16 +471,27 @@ function Login() {
               alertType: "danger",
               alertMsg: "You don't have access, please contact the admin."
             });
-            setTimeout(() => {
-              setState({ ...state, alertMsg: "" });
-            }, 2000);
             logOutUser();
           }
+        } else {
+          setState({
+            ...state,
+            alertType: "danger",
+            alertMsg: "User not found."
+          });
+          logOutUser();
         }
       });
     } catch (error) {
-      setState({ ...state, loading: false });
+      setState({
+        ...state,
+        alertType: "danger",
+        alertMsg: "Something went wrong, please try again later."
+      });
       console.log("err", error);
+    } finally {
+      setState({ ...state, loading: false });
+      setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
     }
   };
 
