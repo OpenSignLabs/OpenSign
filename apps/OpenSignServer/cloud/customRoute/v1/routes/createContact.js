@@ -1,7 +1,4 @@
-import axios from 'axios';
 export default async function createContact(request, response) {
-  const serverUrl = process.env.SERVER_URL;
-  const appId = process.env.APP_ID;
   const name = request.body.name;
   const phone = request.body?.phone;
   const email = request.body.email;
@@ -74,18 +71,6 @@ export default async function createContact(request, response) {
 
               const user = await _user.save();
               if (user) {
-                const roleurl = `${serverUrl}/functions/AddUserToRole`;
-                const headers = {
-                  'Content-Type': 'application/json',
-                  'X-Parse-Application-Id': appId,
-                  // sessionToken: localStorage.getItem('accesstoken'),
-                };
-                const body = {
-                  appName: 'contracts',
-                  roleName: 'contracts_Guest',
-                  userId: user.id,
-                };
-                await axios.post(roleurl, body, { headers: headers });
                 const currentUser = userPtr;
                 contactQuery.set('CreatedBy', currentUser);
                 contactQuery.set('UserId', user);
@@ -120,18 +105,6 @@ export default async function createContact(request, response) {
               if (err.code === 202) {
                 const params = { email: email };
                 const userRes = await Parse.Cloud.run('getUserId', params);
-                const roleurl = `${serverUrl}/functions/AddUserToRole`;
-                const headers = {
-                  'Content-Type': 'application/json',
-                  'X-Parse-Application-Id': appId,
-                  // sessionToken: localStorage.getItem('accesstoken'),
-                };
-                const body = {
-                  appName: 'contracts',
-                  roleName: 'contracts_Guest',
-                  userId: userRes.objectId,
-                };
-                await axios.post(roleurl, body, { headers: headers });
                 contactQuery.set('CreatedBy', userPtr);
                 contactQuery.set('UserId', {
                   __type: 'Pointer',
