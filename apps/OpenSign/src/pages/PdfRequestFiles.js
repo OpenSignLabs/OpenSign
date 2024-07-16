@@ -293,14 +293,14 @@ function PdfRequestFiles(props) {
 
       if (documentData && documentData.length > 0) {
         setIsPublicTemplate(true);
-        const getPublicRole = documentData[0].PublicRole[0];
-        const getUniqueIdDetails = documentData[0].Placeholders.find(
+        const getPublicRole = documentData[0]?.PublicRole[0];
+        const getUniqueIdDetails = documentData[0]?.Placeholders.find(
           (x) => x.Role === getPublicRole
         );
         if (getUniqueIdDetails) {
           setUniqueId(getUniqueIdDetails.Id);
         }
-        setSignerPos(documentData[0].Placeholders);
+        setSignerPos(documentData[0]?.Placeholders);
         let placeholdersOrSigners = [];
         // const placeholder = documentData[0]?.Placeholders;
         for (const placeholder of documentData[0].Placeholders) {
