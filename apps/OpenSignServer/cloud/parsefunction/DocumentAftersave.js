@@ -7,7 +7,7 @@ async function DocumentAftersave(request) {
       const ip = request?.headers?.['x-real-ip'] || '';
       if (createdAt && Folder === undefined) {
         // console.log("IN If condition")
-        const TimeToCompleteDays = request.object.get('TimeToCompleteDays');
+        const TimeToCompleteDays = request.object.get('TimeToCompleteDays') || 15;
         const ExpiryDate = new Date(createdAt);
         ExpiryDate.setDate(ExpiryDate.getDate() + TimeToCompleteDays);
         const documentQuery = new Parse.Query('contracts_Document');
