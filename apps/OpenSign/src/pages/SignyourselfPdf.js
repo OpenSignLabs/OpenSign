@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
-import { isEnableSubscription } from "../constant/const";
 import Confetti from "react-confetti";
 import axios from "axios";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
@@ -739,7 +738,7 @@ function SignYourSelf() {
       if (
         tenantDetails?.CompletionBody &&
         tenantDetails?.CompletionSubject &&
-        (!isEnableSubscription || getIsSubscribe)
+        getIsSubscribe
       ) {
         isCustomCompletionMail = true;
       }

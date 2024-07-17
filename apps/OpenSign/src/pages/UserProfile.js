@@ -6,7 +6,6 @@ import dp from "../assets/images/dp.png";
 import Title from "../components/Title";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
-import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
 import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, handleSendOTP } from "../constant/Utils";
@@ -509,49 +508,48 @@ function UserProfile() {
                   </li>
                 </>
               )}
-              <li className="border-y-[1px] border-gray-300 break-all">
-                <div className="flex justify-between items-center py-2">
-                  <span
-                    className={
-                      isSubscribe || !isEnableSubscription
-                        ? "font-semibold"
-                        : "font-semibold text-gray-300"
-                    }
-                  >
-                    Disable DocumentId :{" "}
-                    <Tooltip
-                      url={
-                        "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
+              {isEnableSubscription && (
+                <li className="border-y-[1px] border-gray-300 break-all">
+                  <div className="flex justify-between items-center py-2">
+                    <span
+                      className={
+                        isSubscribe
+                          ? "font-semibold"
+                          : "font-semibold text-gray-300"
                       }
-                    />
-                    {!isSubscribe && isEnableSubscription && <Upgrade />}
-                  </span>
-                  <label
-                    className={`${
-                      isSubscribe || !isEnableSubscription
-                        ? `${editmode ? "cursor-pointer" : ""}`
-                        : "pointer-events-none opacity-50"
-                    } relative block items-center mb-0`}
-                  >
-                    <input
-                      disabled={editmode ? false : true}
-                      type="checkbox"
-                      className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
-                      checked={isDisableDocId}
-                      onChange={handleDisableDocId}
-                    />
-                  </label>
-                </div>
-                {!isEnableSubscription && (
-                  <PremiumAlertHeader
-                    message={
-                      "Disable documentId is free in beta, this feature will incur a fee later."
-                    }
-                  />
-                )}
-              </li>
+                    >
+                      Disable DocumentId :{" "}
+                      <Tooltip
+                        url={
+                          "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
+                        }
+                      />
+                      {!isSubscribe && isEnableSubscription && <Upgrade />}
+                    </span>
+                    <label
+                      className={`${
+                        isSubscribe
+                          ? `${editmode ? "cursor-pointer" : ""}`
+                          : "pointer-events-none opacity-50"
+                      } relative block items-center mb-0`}
+                    >
+                      <input
+                        disabled={editmode ? false : true}
+                        type="checkbox"
+                        className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
+                        checked={isDisableDocId}
+                        onChange={handleDisableDocId}
+                      />
+                    </label>
+                  </div>
+                </li>
+              )}
             </ul>
-            <div className="flex justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4">
+            <div
+              className={`${
+                !isEnableSubscription ? "border-t-[1px] border-gray-300" : ""
+              } flex justify-center gap-2 pt-2 pb-3 md:pt-3 md:pb-4`}
+            >
               <button
                 type="button"
                 onClick={(e) => {

@@ -136,10 +136,6 @@ function App() {
               </>
             )}
             <Route element={<HomeLayout />}>
-              {isEnableSubscription && (
-                <Route path="/teams" element={<TeamList />} />
-              )}
-              <Route path="/users" element={<UserList />} />
               <Route
                 path="/changepassword"
                 element={<LazyPage Page={ChangePassword} />}
@@ -159,11 +155,6 @@ function App() {
                 path="/managesign"
                 element={<LazyPage Page={ManageSign} />}
               />
-              <Route
-                path="/generatetoken"
-                element={<LazyPage Page={GenerateToken} />}
-              />
-              <Route path="/webhook" element={<LazyPage Page={Webhook} />} />
               <Route
                 path="/template/:templateId"
                 element={<TemplatePlaceholder />}
@@ -194,6 +185,20 @@ function App() {
                 path="/recipientSignPdf/:docId"
                 element={<PdfRequestFiles />}
               />
+              {isEnableSubscription && (
+                <>
+                  <Route path="/teams" element={<TeamList />} />
+                  <Route
+                    path="/generatetoken"
+                    element={<LazyPage Page={GenerateToken} />}
+                  />
+                  <Route
+                    path="/webhook"
+                    element={<LazyPage Page={Webhook} />}
+                  />
+                </>
+              )}
+              <Route path="/users" element={<UserList />} />
             </Route>
             <Route path="/sso" element={<SSOVerify />} />
             <Route path="*" element={<PageNotFound />} />
