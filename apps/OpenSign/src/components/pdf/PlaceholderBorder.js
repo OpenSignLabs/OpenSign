@@ -51,8 +51,8 @@ function PlaceholderBorder(props) {
       style={{
         borderColor: themeColor,
         borderStyle: "dashed",
-        minWidth: handleMinWidth(),
-        minHeight: handleMinHeight(),
+        minWidth: handleMinWidth() || 0,
+        minHeight: handleMinHeight() || 0,
         borderWidth: "0.2px",
         overflow: "hidden"
       }}
