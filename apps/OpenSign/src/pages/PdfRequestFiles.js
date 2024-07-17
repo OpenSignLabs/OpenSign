@@ -426,33 +426,6 @@ function PdfRequestFiles(props) {
           setCurrentSigner(true);
         }
       }
-      const isGuestSign = isGuestSignFlow;
-      if (
-        !isGuestSign &&
-        !isCompleted &&
-        !declined &&
-        currDate < expireUpdateDate
-      ) {
-        const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
-        let isEmailVerified;
-        isEmailVerified = currentUser?.emailVerified;
-        if (isEmailVerified) {
-          setIsEmailVerified(isEmailVerified);
-        } else {
-          try {
-            const userQuery = new Parse.Query(Parse.User);
-            const user = await userQuery.get(currentUser.objectId, {
-              sessionToken: localStorage.getItem("accesstoken")
-            });
-            if (user) {
-              isEmailVerified = user?.get("emailVerified");
-              setIsEmailVerified(isEmailVerified);
-            }
-          } catch (e) {
-            setHandleError("Error: Something went wrong!");
-          }
-        }
-      }
       const audittrailData =
         documentData[0].AuditTrail &&
         documentData[0].AuditTrail.length > 0 &&
@@ -600,8 +573,11 @@ function PdfRequestFiles(props) {
           setSignerUserId(currUserId);
           const tourData = res[0].TourStatus && res[0].TourStatus;
           if (tourData && tourData.length > 0) {
+            const checkTourRequest = tourData.filter(
+              (data) => data?.requestSign
+            );
             setTourStatus(tourData);
-            setRequestSignTour(tourData[0]?.requestSign || false);
+            setRequestSignTour(checkTourRequest[0]?.requestSign || false);
           }
         } else if (res?.length === 0) {
           const res = await contactBook(currUserId);
@@ -614,8 +590,11 @@ function PdfRequestFiles(props) {
             setSignerUserId(objectId);
             const tourData = res[0].TourStatus && res[0].TourStatus;
             if (tourData && tourData.length > 0) {
+              const checkTourRequest = tourData.filter(
+                (data) => data?.requestSign
+              );
               setTourStatus(tourData);
-              setRequestSignTour(tourData[0]?.requestSign || false);
+              setRequestSignTour(checkTourRequest[0]?.requestSign || false);
             }
           } else if (res.length === 0) {
             setHandleError("Error: User does not exist!");
@@ -680,127 +659,108 @@ function PdfRequestFiles(props) {
   };
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
-    try {
-      const checkUser = signerPos.filter(
-        (data) => data.signerObjId === signerObjectId
-      );
-      if (checkUser && checkUser.length > 0) {
-        let checkboxExist,
-          requiredRadio,
-          showAlert = false,
-          widgetKey,
-          radioExist,
-          requiredCheckbox,
-          pageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
+    const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+    let isEmailVerified;
+    isEmailVerified = currentUser?.emailVerified;
+    if (isEmailVerified) {
+      setIsEmailVerified(isEmailVerified);
+      try {
+        const checkUser = signerPos.filter(
+          (data) => data.signerObjId === signerObjectId
+        );
+        if (checkUser && checkUser.length > 0) {
+          let checkboxExist,
+            requiredRadio,
+            showAlert = false,
+            widgetKey,
+            radioExist,
+            requiredCheckbox,
+            pageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
 
-        for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
-          for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
-            //get current page
-            const updatePage = checkUser[0].placeHolder[i]?.pageNumber;
-            //checking checbox type widget
-            checkboxExist =
-              checkUser[0].placeHolder[i].pos[j].type === "checkbox";
-            //checking radio button type widget
-            radioExist =
-              checkUser[0].placeHolder[i].pos[j].type === radioButtonWidget;
-            //condition to check checkbox widget exist or not
-            if (checkboxExist) {
-              //get all required type checkbox
-              requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
-                (position) =>
-                  !position.options?.isReadOnly && position.type === "checkbox"
-              );
-              //if required type checkbox data exit then check user checked all checkbox or some checkbox remain to check
-              //also validate to minimum and maximum required checkbox
-              if (requiredCheckbox && requiredCheckbox.length > 0) {
-                for (let i = 0; i < requiredCheckbox.length; i++) {
-                  //get minimum required count if  exit
-                  const minCount =
-                    requiredCheckbox[i].options?.validation?.minRequiredCount;
-                  const parseMin = minCount && parseInt(minCount);
-                  //get maximum required count if  exit
-                  const maxCount =
-                    requiredCheckbox[i].options?.validation?.maxRequiredCount;
-                  const parseMax = maxCount && parseInt(maxCount);
-                  //in `response` variable is used to get how many checkbox checked by user
-                  const response =
-                    requiredCheckbox[i].options?.response?.length;
-                  //in `defaultValue` variable is used to get how many checkbox checked by default
-                  const defaultValue =
-                    requiredCheckbox[i].options?.defaultValue?.length;
-                  //condition to check  parseMin  and parseMax greater than 0  then consider it as a required check box
-                  if (
-                    parseMin > 0 &&
-                    parseMax > 0 &&
-                    !response &&
-                    !defaultValue &&
-                    !showAlert
-                  ) {
-                    showAlert = true;
-                    widgetKey = requiredCheckbox[i].key;
-                    pageNumber = updatePage;
-                    setminRequiredCount(parseMin);
-                  }
-                  //else condition to validate minimum required checkbox
-                  else if (parseMin > 0 && (parseMin > response || !response)) {
-                    if (!showAlert) {
+          for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
+            for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
+              //get current page
+              const updatePage = checkUser[0].placeHolder[i]?.pageNumber;
+              //checking checbox type widget
+              checkboxExist =
+                checkUser[0].placeHolder[i].pos[j].type === "checkbox";
+              //checking radio button type widget
+              radioExist =
+                checkUser[0].placeHolder[i].pos[j].type === radioButtonWidget;
+              //condition to check checkbox widget exist or not
+              if (checkboxExist) {
+                //get all required type checkbox
+                requiredCheckbox = checkUser[0].placeHolder[i].pos.filter(
+                  (position) =>
+                    !position.options?.isReadOnly &&
+                    position.type === "checkbox"
+                );
+                //if required type checkbox data exit then check user checked all checkbox or some checkbox remain to check
+                //also validate to minimum and maximum required checkbox
+                if (requiredCheckbox && requiredCheckbox.length > 0) {
+                  for (let i = 0; i < requiredCheckbox.length; i++) {
+                    //get minimum required count if  exit
+                    const minCount =
+                      requiredCheckbox[i].options?.validation?.minRequiredCount;
+                    const parseMin = minCount && parseInt(minCount);
+                    //get maximum required count if  exit
+                    const maxCount =
+                      requiredCheckbox[i].options?.validation?.maxRequiredCount;
+                    const parseMax = maxCount && parseInt(maxCount);
+                    //in `response` variable is used to get how many checkbox checked by user
+                    const response =
+                      requiredCheckbox[i].options?.response?.length;
+                    //in `defaultValue` variable is used to get how many checkbox checked by default
+                    const defaultValue =
+                      requiredCheckbox[i].options?.defaultValue?.length;
+                    //condition to check  parseMin  and parseMax greater than 0  then consider it as a required check box
+                    if (
+                      parseMin > 0 &&
+                      parseMax > 0 &&
+                      !response &&
+                      !defaultValue &&
+                      !showAlert
+                    ) {
                       showAlert = true;
                       widgetKey = requiredCheckbox[i].key;
                       pageNumber = updatePage;
-
                       setminRequiredCount(parseMin);
                     }
-                  }
-                }
-              }
-            }
-            //condition to check radio widget exist or not
-            else if (radioExist) {
-              //get all required type radio button
-              requiredRadio = checkUser[0].placeHolder[i].pos.filter(
-                (position) =>
-                  !position.options?.isReadOnly &&
-                  position.type === radioButtonWidget
-              );
-              //if required type radio data exit then check user checked all radio button or some radio remain to check
-              if (requiredRadio && requiredRadio?.length > 0) {
-                let checkSigned;
-                for (let i = 0; i < requiredRadio?.length; i++) {
-                  checkSigned = requiredRadio[i]?.options?.response;
-                  if (!checkSigned) {
-                    let checkDefaultSigned =
-                      requiredRadio[i]?.options?.defaultValue;
-                    if (!checkDefaultSigned && !showAlert) {
-                      showAlert = true;
-                      widgetKey = requiredRadio[i].key;
-                      pageNumber = updatePage;
-                      setminRequiredCount(null);
+                    //else condition to validate minimum required checkbox
+                    else if (
+                      parseMin > 0 &&
+                      (parseMin > response || !response)
+                    ) {
+                      if (!showAlert) {
+                        showAlert = true;
+                        widgetKey = requiredCheckbox[i].key;
+                        pageNumber = updatePage;
+
+                        setminRequiredCount(parseMin);
+                      }
                     }
                   }
                 }
               }
-            }
-            //else condition to check all type widget data fill or not except checkbox and radio button
-            else {
-              //get all required type widgets except checkbox and radio
-              const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
-                (position) =>
-                  position.options?.status === "required" &&
-                  position.type !== radioButtonWidget &&
-                  position.type !== "checkbox"
-              );
-              if (requiredWidgets && requiredWidgets?.length > 0) {
-                let checkSigned;
-                for (let i = 0; i < requiredWidgets?.length; i++) {
-                  checkSigned = requiredWidgets[i]?.options?.response;
-                  if (!checkSigned) {
-                    const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
-                    if (!checkSignUrl) {
+              //condition to check radio widget exist or not
+              else if (radioExist) {
+                //get all required type radio button
+                requiredRadio = checkUser[0].placeHolder[i].pos.filter(
+                  (position) =>
+                    !position.options?.isReadOnly &&
+                    position.type === radioButtonWidget
+                );
+                //if required type radio data exit then check user checked all radio button or some radio remain to check
+                if (requiredRadio && requiredRadio?.length > 0) {
+                  let checkSigned;
+                  for (let i = 0; i < requiredRadio?.length; i++) {
+                    checkSigned = requiredRadio[i]?.options?.response;
+                    if (!checkSigned) {
                       let checkDefaultSigned =
-                        requiredWidgets[i]?.options?.defaultValue;
+                        requiredRadio[i]?.options?.defaultValue;
                       if (!checkDefaultSigned && !showAlert) {
                         showAlert = true;
-                        widgetKey = requiredWidgets[i].key;
+                        widgetKey = requiredRadio[i].key;
                         pageNumber = updatePage;
                         setminRequiredCount(null);
                       }
@@ -808,287 +768,329 @@ function PdfRequestFiles(props) {
                   }
                 }
               }
-            }
-          }
-          //when showAlert is true then break the loop and show alert to fill required data in widgets
-          if (showAlert) {
-            break;
-          }
-        }
-        if (checkboxExist && requiredCheckbox && showAlert) {
-          setUnSignedWidgetId(widgetKey);
-          setPageNumber(pageNumber);
-          setWidgetsTour(true);
-        } else if (radioExist && showAlert) {
-          setUnSignedWidgetId(widgetKey);
-          setPageNumber(pageNumber);
-          setWidgetsTour(true);
-        } else if (showAlert) {
-          setUnSignedWidgetId(widgetKey);
-          setPageNumber(pageNumber);
-          setWidgetsTour(true);
-        } else {
-          setIsUiLoading(true);
-
-          const pngUrl = checkUser[0].placeHolder;
-          let pdfArrBuffer;
-          //`contractDocument` function used to get updated SignedUrl
-          //resolved issue of sign document by multiple signers simultaneously
-          const documentData = await contractDocument(documentId);
-          if (documentData && documentData.length > 0) {
-            const url = documentData[0]?.SignedUrl || documentData[0]?.URL;
-            //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-            const arrayBuffer = await convertPdfArrayBuffer(url);
-            if (arrayBuffer === "Error") {
-              setHandleError("Error: invalid document!");
-            } else {
-              pdfArrBuffer = arrayBuffer;
-            }
-          } else if (
-            documentData === "Error: Something went wrong!" ||
-            (documentData.result && documentData.result.error)
-          ) {
-            setHandleError("Error: Something went wrong!");
-          } else {
-            setHandleError("Document not Found!");
-          }
-
-          // Load a PDFDocument from the existing PDF bytes
-          const existingPdfBytes = pdfArrBuffer;
-          try {
-            const pdfDoc = await PDFDocument.load(existingPdfBytes);
-            const isSignYourSelfFlow = false;
-            const extUserPtr = pdfDetails[0].ExtUserPtr;
-            const HeaderDocId = extUserPtr?.HeaderDocId;
-            //embed document's object id to all pages in pdf document
-            if (!HeaderDocId) {
-              if (!isDocId) {
-                await embedDocId(pdfDoc, documentId, allPages);
-              }
-            }
-            //embed multi signature in pdf
-            const pdfBytes = await multiSignEmbed(
-              pngUrl,
-              pdfDoc,
-              isSignYourSelfFlow,
-              scale
-            );
-            //  console.log("pdfte", pdfBytes);
-            //get ExistUserPtr object id of user class to get tenantDetails
-            const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
-            //get ExistUserPtr email to get userDetails
-            const currentUserEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
-            const res = await contractUsers(currentUserEmail);
-            let activeMailAdapter = "";
-            if (res === "Error: Something went wrong!") {
-              setHandleError("Error: Something went wrong!");
-              setIsLoading({
-                isLoad: false
-              });
-            } else if (!res || res?.length === 0) {
-              activeMailAdapter = "";
-            } else if (res[0] && res.length) {
-              activeMailAdapter = res[0]?.active_mail_adapter;
-            }
-            //function for call to embed signature in pdf and get digital signature pdf
-            try {
-              const res = await signPdfFun(
-                pdfBytes,
-                documentId,
-                signerObjectId,
-                setIsAlert,
-                objectId,
-                isSubscribed,
-                activeMailAdapter,
-                pngUrl
-              );
-              if (res && res.status === "success") {
-                setPdfUrl(res.data);
-                setIsSigned(true);
-                setSignedSigners([]);
-                setUnSignedSigners([]);
-                getDocumentDetails(true);
-                const index = pdfDetails?.[0].Signers.findIndex(
-                  (x) => x.Email === jsonSender.email
+              //else condition to check all type widget data fill or not except checkbox and radio button
+              else {
+                //get all required type widgets except checkbox and radio
+                const requiredWidgets = checkUser[0].placeHolder[i].pos.filter(
+                  (position) =>
+                    position.options?.status === "required" &&
+                    position.type !== radioButtonWidget &&
+                    position.type !== "checkbox"
                 );
-                const newIndex = index + 1;
-                const usermail = {
-                  Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
-                };
-                const user = usermail?.Email
-                  ? usermail
-                  : pdfDetails?.[0]?.Signers[newIndex];
-                if (sendmail !== "false" && sendInOrder) {
-                  const requestBody = pdfDetails?.[0]?.RequestBody;
-                  const requestSubject = pdfDetails?.[0]?.RequestSubject;
-                  if (user) {
-                    const expireDate = pdfDetails?.[0].ExpiryDate.iso;
-                    const newDate = new Date(expireDate);
-                    const localExpireDate = newDate.toLocaleDateString(
-                      "en-US",
-                      {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric"
+                if (requiredWidgets && requiredWidgets?.length > 0) {
+                  let checkSigned;
+                  for (let i = 0; i < requiredWidgets?.length; i++) {
+                    checkSigned = requiredWidgets[i]?.options?.response;
+                    if (!checkSigned) {
+                      const checkSignUrl = requiredWidgets[i]?.pos?.SignUrl;
+                      if (!checkSignUrl) {
+                        let checkDefaultSigned =
+                          requiredWidgets[i]?.options?.defaultValue;
+                        if (!checkDefaultSigned && !showAlert) {
+                          showAlert = true;
+                          widgetKey = requiredWidgets[i].key;
+                          pageNumber = updatePage;
+                          setminRequiredCount(null);
+                        }
                       }
-                    );
-                    let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
-                    let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
-                    const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
-
-                    try {
-                      const imgPng =
-                        "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
-                      let url = `${localStorage.getItem(
-                        "baseUrl"
-                      )}functions/sendmailv3`;
-                      const headers = {
-                        "Content-Type": "application/json",
-                        "X-Parse-Application-Id":
-                          localStorage.getItem("parseAppId"),
-                        sessionToken: localStorage.getItem("accesstoken")
-                      };
-                      const objectId = user?.objectId;
-                      const hostUrl = window.location.origin;
-                      //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
-                      let encodeBase64;
-                      if (objectId) {
-                        encodeBase64 = btoa(
-                          `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
-                        );
-                      } else {
-                        encodeBase64 = btoa(
-                          `${pdfDetails?.[0].objectId}/${user.Email}`
-                        );
-                      }
-                      // let signPdf = `${hostUrl}/login/${encodeBase64}`;
-                      const hostPublicUrl =
-                        "https://staging-app.opensignlabs.com";
-                      let signPdf = props?.templateId
-                        ? `${hostPublicUrl}/login/${encodeBase64}`
-                        : `${hostUrl}/login/${encodeBase64}`;
-                      const openSignUrl =
-                        "https://www.opensignlabs.com/contact-us";
-                      const orgName = pdfDetails[0]?.ExtUserPtr.Company
-                        ? pdfDetails[0].ExtUserPtr.Company
-                        : "";
-                      const themeBGcolor = themeColor;
-                      let replaceVar;
-                      if (
-                        requestBody &&
-                        requestSubject &&
-                        (!isEnableSubscription || isSubscribed)
-                      ) {
-                        const replacedRequestBody = requestBody.replace(
-                          /"/g,
-                          "'"
-                        );
-                        const htmlReqBody =
-                          "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
-                          replacedRequestBody +
-                          "</body> </html>";
-
-                        const variables = {
-                          document_title: pdfDetails?.[0].Name,
-                          sender_name: senderName,
-                          sender_mail: senderEmail,
-                          sender_phone: senderPhone,
-                          receiver_name: user.Name,
-                          receiver_email: user.Email,
-                          receiver_phone: user.Phone,
-                          expiry_date: localExpireDate,
-                          company_name: orgName,
-                          signing_url: `<a href=${signPdf}>Sign here</a>`
-                        };
-                        replaceVar = replaceMailVaribles(
-                          requestSubject,
-                          htmlReqBody,
-                          variables
-                        );
-                      }
-
-                      let params = {
-                        mailProvider: activeMailAdapter,
-                        extUserId: extUserId,
-                        recipient: user.Email,
-                        subject: requestSubject
-                          ? replaceVar?.subject
-                          : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
-                        from: senderEmail,
-                        html: requestBody
-                          ? replaceVar?.body
-                          : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
-                            imgPng +
-                            " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
-                            themeBGcolor +
-                            ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
-                            pdfDetails?.[0].ExtUserPtr.Name +
-                            " has requested you to review and sign <strong> " +
-                            pdfDetails?.[0].Name +
-                            "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
-                            senderEmail +
-                            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
-                            orgName +
-                            "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
-                            localExpireDate +
-                            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
-                            signPdf +
-                            "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
-                            senderEmail +
-                            " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
-                            openSignUrl +
-                            " target=_blank>here</a>.</p> </div></div></body> </html>"
-                      };
-                      await axios.post(url, params, {
-                        headers: headers
-                      });
-                    } catch (error) {
-                      console.log("error", error);
                     }
                   }
                 }
+              }
+            }
+            //when showAlert is true then break the loop and show alert to fill required data in widgets
+            if (showAlert) {
+              break;
+            }
+          }
+          if (checkboxExist && requiredCheckbox && showAlert) {
+            setUnSignedWidgetId(widgetKey);
+            setPageNumber(pageNumber);
+            setWidgetsTour(true);
+          } else if (radioExist && showAlert) {
+            setUnSignedWidgetId(widgetKey);
+            setPageNumber(pageNumber);
+            setWidgetsTour(true);
+          } else if (showAlert) {
+            setUnSignedWidgetId(widgetKey);
+            setPageNumber(pageNumber);
+            setWidgetsTour(true);
+          } else {
+            setIsUiLoading(true);
+
+            const pngUrl = checkUser[0].placeHolder;
+            let pdfArrBuffer;
+            //`contractDocument` function used to get updated SignedUrl
+            //resolved issue of sign document by multiple signers simultaneously
+            const documentData = await contractDocument(documentId);
+            if (documentData && documentData.length > 0) {
+              const url = documentData[0]?.SignedUrl || documentData[0]?.URL;
+              //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+              const arrayBuffer = await convertPdfArrayBuffer(url);
+              if (arrayBuffer === "Error") {
+                setHandleError("Error: invalid document!");
               } else {
+                pdfArrBuffer = arrayBuffer;
+              }
+            } else if (
+              documentData === "Error: Something went wrong!" ||
+              (documentData.result && documentData.result.error)
+            ) {
+              setHandleError("Error: Something went wrong!");
+            } else {
+              setHandleError("Document not Found!");
+            }
+
+            // Load a PDFDocument from the existing PDF bytes
+            const existingPdfBytes = pdfArrBuffer;
+            try {
+              const pdfDoc = await PDFDocument.load(existingPdfBytes);
+              const isSignYourSelfFlow = false;
+              const extUserPtr = pdfDetails[0].ExtUserPtr;
+              const HeaderDocId = extUserPtr?.HeaderDocId;
+              //embed document's object id to all pages in pdf document
+              if (!HeaderDocId) {
+                if (!isDocId) {
+                  await embedDocId(pdfDoc, documentId, allPages);
+                }
+              }
+              //embed multi signature in pdf
+              const pdfBytes = await multiSignEmbed(
+                pngUrl,
+                pdfDoc,
+                isSignYourSelfFlow,
+                scale
+              );
+              //  console.log("pdfte", pdfBytes);
+              //get ExistUserPtr object id of user class to get tenantDetails
+              const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
+              //get ExistUserPtr email to get userDetails
+              const currentUserEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
+              const res = await contractUsers(currentUserEmail);
+              let activeMailAdapter = "";
+              if (res === "Error: Something went wrong!") {
+                setHandleError("Error: Something went wrong!");
+                setIsLoading({
+                  isLoad: false
+                });
+              } else if (!res || res?.length === 0) {
+                activeMailAdapter = "";
+              } else if (res[0] && res.length) {
+                activeMailAdapter = res[0]?.active_mail_adapter;
+              }
+              //function for call to embed signature in pdf and get digital signature pdf
+              try {
+                const res = await signPdfFun(
+                  pdfBytes,
+                  documentId,
+                  signerObjectId,
+                  setIsAlert,
+                  objectId,
+                  isSubscribed,
+                  activeMailAdapter,
+                  pngUrl
+                );
+                if (res && res.status === "success") {
+                  setPdfUrl(res.data);
+                  setIsSigned(true);
+                  setSignedSigners([]);
+                  setUnSignedSigners([]);
+                  getDocumentDetails(true);
+                  const index = pdfDetails?.[0].Signers.findIndex(
+                    (x) => x.Email === jsonSender.email
+                  );
+                  const newIndex = index + 1;
+                  const usermail = {
+                    Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
+                  };
+                  const user = usermail?.Email
+                    ? usermail
+                    : pdfDetails?.[0]?.Signers[newIndex];
+                  if (sendmail !== "false" && sendInOrder) {
+                    const requestBody = pdfDetails?.[0]?.RequestBody;
+                    const requestSubject = pdfDetails?.[0]?.RequestSubject;
+                    if (user) {
+                      const expireDate = pdfDetails?.[0].ExpiryDate.iso;
+                      const newDate = new Date(expireDate);
+                      const localExpireDate = newDate.toLocaleDateString(
+                        "en-US",
+                        {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric"
+                        }
+                      );
+                      let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
+                      let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
+                      const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
+
+                      try {
+                        const imgPng =
+                          "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
+                        let url = `${localStorage.getItem(
+                          "baseUrl"
+                        )}functions/sendmailv3`;
+                        const headers = {
+                          "Content-Type": "application/json",
+                          "X-Parse-Application-Id":
+                            localStorage.getItem("parseAppId"),
+                          sessionToken: localStorage.getItem("accesstoken")
+                        };
+                        const objectId = user?.objectId;
+                        const hostUrl = window.location.origin;
+                        //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
+                        let encodeBase64;
+                        if (objectId) {
+                          encodeBase64 = btoa(
+                            `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
+                          );
+                        } else {
+                          encodeBase64 = btoa(
+                            `${pdfDetails?.[0].objectId}/${user.Email}`
+                          );
+                        }
+                        // let signPdf = `${hostUrl}/login/${encodeBase64}`;
+                        const hostPublicUrl =
+                          "https://staging-app.opensignlabs.com";
+                        let signPdf = props?.templateId
+                          ? `${hostPublicUrl}/login/${encodeBase64}`
+                          : `${hostUrl}/login/${encodeBase64}`;
+                        const openSignUrl =
+                          "https://www.opensignlabs.com/contact-us";
+                        const orgName = pdfDetails[0]?.ExtUserPtr.Company
+                          ? pdfDetails[0].ExtUserPtr.Company
+                          : "";
+                        const themeBGcolor = themeColor;
+                        let replaceVar;
+                        if (
+                          requestBody &&
+                          requestSubject &&
+                          (!isEnableSubscription || isSubscribed)
+                        ) {
+                          const replacedRequestBody = requestBody.replace(
+                            /"/g,
+                            "'"
+                          );
+                          const htmlReqBody =
+                            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+                            replacedRequestBody +
+                            "</body> </html>";
+
+                          const variables = {
+                            document_title: pdfDetails?.[0].Name,
+                            sender_name: senderName,
+                            sender_mail: senderEmail,
+                            sender_phone: senderPhone,
+                            receiver_name: user.Name,
+                            receiver_email: user.Email,
+                            receiver_phone: user.Phone,
+                            expiry_date: localExpireDate,
+                            company_name: orgName,
+                            signing_url: `<a href=${signPdf}>Sign here</a>`
+                          };
+                          replaceVar = replaceMailVaribles(
+                            requestSubject,
+                            htmlReqBody,
+                            variables
+                          );
+                        }
+
+                        let params = {
+                          mailProvider: activeMailAdapter,
+                          extUserId: extUserId,
+                          recipient: user.Email,
+                          subject: requestSubject
+                            ? replaceVar?.subject
+                            : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
+                          from: senderEmail,
+                          html: requestBody
+                            ? replaceVar?.body
+                            : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+                              imgPng +
+                              " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+                              themeBGcolor +
+                              ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+                              pdfDetails?.[0].ExtUserPtr.Name +
+                              " has requested you to review and sign <strong> " +
+                              pdfDetails?.[0].Name +
+                              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+                              senderEmail +
+                              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+                              orgName +
+                              "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+                              localExpireDate +
+                              "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+                              signPdf +
+                              "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+                              senderEmail +
+                              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+                              openSignUrl +
+                              " target=_blank>here</a>.</p> </div></div></body> </html>"
+                        };
+                        await axios.post(url, params, {
+                          headers: headers
+                        });
+                      } catch (error) {
+                        console.log("error", error);
+                      }
+                    }
+                  }
+                } else {
+                  setIsAlert({
+                    isShow: true,
+                    alertMessage: "something went wrong"
+                  });
+                }
+              } catch (err) {
                 setIsAlert({
                   isShow: true,
                   alertMessage: "something went wrong"
                 });
               }
             } catch (err) {
-              setIsAlert({
-                isShow: true,
-                alertMessage: "something went wrong"
-              });
-            }
-          } catch (err) {
-            setIsUiLoading(false);
-            if (err && err.message.includes("is encrypted.")) {
-              setIsAlert({
-                isShow: true,
-                alertMessage: `Currently encrypted pdf files are not supported.`
-              });
-            } else {
-              console.log("err in request signing", err);
-              setIsAlert({
-                isShow: true,
-                alertMessage: `Something went wrong.`
-              });
+              setIsUiLoading(false);
+              if (err && err.message.includes("is encrypted.")) {
+                setIsAlert({
+                  isShow: true,
+                  alertMessage: `Currently encrypted pdf files are not supported.`
+                });
+              } else {
+                console.log("err in request signing", err);
+                setIsAlert({
+                  isShow: true,
+                  alertMessage: `Something went wrong.`
+                });
+              }
             }
           }
+          setIsSignPad(false);
+        } else {
+          setIsAlert({
+            isShow: true,
+            alertMessage: "something went wrong"
+          });
         }
-        setIsSignPad(false);
-      } else {
+      } catch (err) {
+        console.log("err in embedsign", err);
+        setIsUiLoading(false);
         setIsAlert({
           isShow: true,
-          alertMessage: "something went wrong"
+          alertMessage: "something went wrong, please try again later."
         });
       }
-    } catch (err) {
-      console.log("err in embedsign", err);
-      setIsUiLoading(false);
-      setIsAlert({
-        isShow: true,
-        alertMessage: "something went wrong, please try again later."
-      });
+    } else {
+      try {
+        const userQuery = new Parse.Query(Parse.User);
+        const user = await userQuery.get(currentUser.objectId, {
+          sessionToken: localStorage.getItem("accesstoken")
+        });
+        if (user) {
+          isEmailVerified = user?.get("emailVerified");
+          setIsEmailVerified(isEmailVerified);
+        }
+      } catch (e) {
+        setHandleError("Error: Something went wrong!");
+      }
     }
   }
 
@@ -1581,7 +1583,7 @@ function PdfRequestFiles(props) {
       alert("Please Enter OTP!");
     }
   };
-
+  console.log("requestSignTour", requestSignTour);
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
