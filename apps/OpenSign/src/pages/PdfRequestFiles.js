@@ -1583,7 +1583,7 @@ function PdfRequestFiles(props) {
       alert("Please Enter OTP!");
     }
   };
-  console.log("requestSignTour", requestSignTour);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
