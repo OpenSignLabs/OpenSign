@@ -6,7 +6,7 @@ async function updateUserExceptAdmin(data) {
 
   while (hasMore) {
     const query = new Parse.Query(Contracts);
-    query.notEqualTo('UserRole', 'contracts_Admin');
+    query.notEqualTo('Email', data.email);
     query.limit(limit);
     query.skip(skip);
 
@@ -24,6 +24,8 @@ async function updateUserExceptAdmin(data) {
         contract.set('UserRole', 'contracts_User');
         contract.set('OrganizationId', data.orgPtr);
         contract.set('TeamIds', data.teamIds);
+        contract.set('CreatedBy', data.createdBy);
+        contract.set('TenantId', data.tenantId);
       }
 
       // Save all the updated entries
@@ -46,11 +48,9 @@ export default async function UpdateExistUserAsAdmin(request) {
     }
     const extClsQuery = new Parse.Query('contracts_Users');
     extClsQuery.equalTo('UserRole', 'contracts_Admin');
-    extClsQuery.exists('OrganizationId');
-    extClsQuery.exists('TeamIds');
     extClsQuery.notEqualTo('IsDisabled', true);
-    const extAdminRes = await extClsQuery.first({ useMasterKey: true });
-    if (extAdminRes) {
+    const extAdminRes = await extClsQuery.find({ useMasterKey: true });
+    if (extAdminRes && extAdminRes.length === 1 && extAdminRes?.[0]?.get('OrganizationId')) {
       throw new Parse.Error(Parse.Error.DUPLICATE_VALUE, 'Admin already exist.');
     } else {
       const extCls = new Parse.Query('contracts_Users');
@@ -60,24 +60,26 @@ export default async function UpdateExistUserAsAdmin(request) {
       console.log('extRes ', extRes);
       if (extRes) {
         const _extRes = JSON.parse(JSON.stringify(extRes));
-        const org = new Parse.Object('contracts_Organizations');
-        org.set('Name', _extRes.Company);
-        org.set('IsActive', true);
-        org.set('TenantId', {
+        const tenantId = {
           __type: 'Pointer',
           className: 'partners_Tenant',
           objectId: _extRes.TenantId.objectId,
-        });
+        };
+        const createdBy = {
+          __type: 'Pointer',
+          className: '_User',
+          objectId: _extRes.UserId.objectId,
+        };
+        const org = new Parse.Object('contracts_Organizations');
+        org.set('Name', _extRes.Company);
+        org.set('IsActive', true);
+        org.set('TenantId', tenantId);
         org.set('ExtUserId', {
           __type: 'Pointer',
           className: 'contracts_Users',
           objectId: extRes.id,
         });
-        org.set('CreatedBy', {
-          __type: 'Pointer',
-          className: '_User',
-          objectId: _extRes.UserId.objectId,
-        });
+        org.set('CreatedBy', createdBy);
         const orgRes = await org.save(null, { useMasterKey: true });
         const teamCls = new Parse.Object('contracts_Teams');
         teamCls.set('Name', 'All Users');
@@ -107,7 +109,13 @@ export default async function UpdateExistUserAsAdmin(request) {
         extUser.set('TeamIds', teamIds);
         const extUserRes = await extUser.save(null, { useMasterKey: true });
         if (extUserRes) {
-          const data = { orgPtr: orgPtr, teamIds: teamIds };
+          const data = {
+            orgPtr: orgPtr,
+            teamIds: teamIds,
+            email: email,
+            createdBy: createdBy,
+            tenantId: tenantId,
+          };
           updateUserExceptAdmin(data);
           return 'admin_created';
         }
