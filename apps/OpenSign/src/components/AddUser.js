@@ -106,6 +106,9 @@ const AddUser = (props) => {
             objectId: localUser.OrganizationId.objectId
           });
         }
+        if (localUser && localUser.Company) {
+          extUser.set("Company", localUser.Company);
+        }
 
         if (localStorage.getItem("TenantId")) {
           extUser.set("TenantId", {
