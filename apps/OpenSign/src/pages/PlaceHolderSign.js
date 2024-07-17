@@ -1135,12 +1135,7 @@ function PlaceHolderSign() {
         const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
         const documentName = `${pdfDetails?.[0].Name}`;
         let replaceVar;
-        if (
-          requestBody &&
-          requestSubject &&
-          isCustomize &&
-          (isSubscribe || !isEnableSubscription)
-        ) {
+        if (requestBody && requestSubject && isCustomize && isSubscribe) {
           const replacedRequestBody = requestBody.replace(/"/g, "'");
           htmlReqBody =
             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
@@ -1208,12 +1203,7 @@ function PlaceHolderSign() {
       setMailStatus("success");
       try {
         let data;
-        if (
-          requestBody &&
-          requestSubject &&
-          isCustomize &&
-          (isSubscribe || !isEnableSubscription)
-        ) {
+        if (requestBody && requestSubject && isCustomize && isSubscribe) {
           data = {
             RequestBody: htmlReqBody,
             RequestSubject: requestSubject,
@@ -1478,7 +1468,7 @@ function PlaceHolderSign() {
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
                   validation:
-                    (isSubscribe || !isEnableSubscription) && inputype
+                    isSubscribe && inputype
                       ? {
                           type: inputype,
                           pattern:
@@ -1769,7 +1759,6 @@ function PlaceHolderSign() {
                         : isSendAlert.mssg === "confirm" && "Send Mail"
                     }
                     handleClose={() => setIsSendAlert({})}
-                    showHeaderMessage={isSendAlert.mssg === "confirm"}
                   >
                     <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px] text-base-content">
                       {isSendAlert.mssg === "sure" ? (
@@ -1784,86 +1773,69 @@ function PlaceHolderSign() {
                       ) : (
                         isSendAlert.mssg === "confirm" && (
                           <>
-                            <>
-                              {!isCustomize && (
-                                <span>
-                                  Are you sure you want to send out this
-                                  document for signatures?
-                                </span>
-                              )}
-                              {isCustomize &&
-                                (!isEnableSubscription || isSubscribe) && (
-                                  <>
-                                    <EmailBody
-                                      editorRef={editorRef}
-                                      requestBody={requestBody}
-                                      requestSubject={requestSubject}
-                                      handleOnchangeRequest={
-                                        handleOnchangeRequest
-                                      }
-                                      setRequestSubject={setRequestSubject}
-                                    />
-                                    <div
-                                      className="flex justify-end items-center gap-1 mt-2 op-link op-link-primary"
-                                      onClick={() => {
-                                        setRequestBody(defaultBody);
-                                        setRequestSubject(defaultSubject);
-                                      }}
-                                    >
-                                      <span>Reset to default</span>
-                                    </div>
-                                  </>
-                                )}
-                              <div
-                                className={
-                                  "flex flex-row md:items-center gap-2 md:gap-6 mt-2 "
-                                }
-                              >
-                                <div className="flex flex-row gap-2">
-                                  <button
-                                    onClick={() => sendEmailToSigners()}
-                                    className="op-btn op-btn-primary font-[500] text-sm shadow"
-                                  >
-                                    Send
-                                  </button>
-                                  {isCustomize && (
-                                    <button
-                                      onClick={() => {
-                                        setIsCustomize(false);
-                                      }}
-                                      className="op-btn op-btn-ghost font-[500] text-sm"
-                                    >
-                                      Close
-                                    </button>
-                                  )}
+                            {!isCustomize && (
+                              <span>
+                                Are you sure you want to send out this document
+                                for signatures?
+                              </span>
+                            )}
+                            {isCustomize && isSubscribe && (
+                              <>
+                                <EmailBody
+                                  editorRef={editorRef}
+                                  requestBody={requestBody}
+                                  requestSubject={requestSubject}
+                                  handleOnchangeRequest={handleOnchangeRequest}
+                                  setRequestSubject={setRequestSubject}
+                                />
+                                <div
+                                  className="flex justify-end items-center gap-1 mt-2 op-link op-link-primary"
+                                  onClick={() => {
+                                    setRequestBody(defaultBody);
+                                    setRequestSubject(defaultSubject);
+                                  }}
+                                >
+                                  <span>Reset to default</span>
                                 </div>
-
-                                {!isCustomize &&
-                                  (isSubscribe || !isEnableSubscription) && (
-                                    <span
-                                      className="op-link op-link-accent text-sm"
-                                      onClick={() => {
-                                        setIsCustomize(!isCustomize);
-                                      }}
-                                    >
-                                      Cutomize Email
-                                    </span>
-                                  )}
-
-                                {!isSubscribe && isEnableSubscription && (
-                                  <div className="mt-2">
-                                    <Upgrade
-                                      message="Upgrade to customize Email"
-                                      newWindow={true}
-                                    />
-                                  </div>
+                              </>
+                            )}
+                            <div className="flex flex-row md:items-center gap-2 md:gap-6 mt-2">
+                              <div className="flex flex-row gap-2">
+                                <button
+                                  onClick={() => sendEmailToSigners()}
+                                  className="op-btn op-btn-primary font-[500] text-sm shadow"
+                                >
+                                  Send
+                                </button>
+                                {isCustomize && (
+                                  <button
+                                    onClick={() => setIsCustomize(false)}
+                                    className="op-btn op-btn-ghost font-[500] text-sm"
+                                  >
+                                    Close
+                                  </button>
                                 )}
                               </div>
-                            </>
+                              {!isCustomize && isSubscribe && (
+                                <span
+                                  className="op-link op-link-accent text-sm"
+                                  onClick={() => setIsCustomize(!isCustomize)}
+                                >
+                                  Cutomize Email
+                                </span>
+                              )}
+                              {!isSubscribe && isEnableSubscription && (
+                                <div className="mt-2">
+                                  <Upgrade
+                                    message="Upgrade to customize Email"
+                                    newWindow={true}
+                                  />
+                                </div>
+                              )}
+                            </div>
                           </>
                         )
                       )}
-
                       {isSendAlert.mssg === "confirm" && (
                         <>
                           <div className="flex justify-center items-center mt-3">

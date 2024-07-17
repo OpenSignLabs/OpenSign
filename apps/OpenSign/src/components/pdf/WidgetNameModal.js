@@ -3,7 +3,6 @@ import ModalUi from "../../primitives/ModalUi";
 import "../../styles/AddUser.css";
 import RegexParser from "regex-parser";
 import { textInputWidget, textWidget } from "../../constant/Utils";
-import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 import Upgrade from "../../primitives/Upgrade";
 import { isEnableSubscription } from "../../constant/const";
 import Tooltip from "../../primitives/Tooltip";
@@ -107,15 +106,6 @@ const WidgetNameModal = (props) => {
       handleClose={props.handleClose && props.handleClose}
       title={"Widget info"}
     >
-      {(props.defaultdata?.type === textInputWidget ||
-        props.widgetName === textInputWidget) &&
-        !isEnableSubscription && (
-          <PremiumAlertHeader
-            message={
-              "Field validations are free in beta, this feature will incur a fee later."
-            }
-          />
-        )}
       <form
         onSubmit={handleSubmit}
         className={`${
@@ -141,64 +131,69 @@ const WidgetNameModal = (props) => {
         {(props.defaultdata?.type === textInputWidget ||
           props.widgetName === textInputWidget) && (
           <>
-            <div className="mb-[0.75rem]">
-              <div className="flex items-center gap-1">
-                <label
-                  htmlFor="textvalidate"
+            {isEnableSubscription && (
+              <div className="mb-[0.75rem]">
+                <div className="flex items-center gap-1">
+                  <label
+                    htmlFor="textvalidate"
+                    className={`${
+                      !props.isSubscribe && isEnableSubscription
+                        ? "bg-opacity-50 pointer-events-none"
+                        : ""
+                    } text-[13px]`}
+                  >
+                    Validation
+                  </label>
+                  <Tooltip
+                    url={"https://www.w3schools.com/jsref/jsref_obj_regexp.asp"}
+                  />
+                  {!props.isSubscribe && isEnableSubscription && <Upgrade />}
+                </div>
+                <div
                   className={`${
                     !props.isSubscribe && isEnableSubscription
                       ? "bg-opacity-50 pointer-events-none"
                       : ""
-                  } text-[13px]`}
+                  } flex flex-row gap-[10px] mb-[0.5rem]`}
                 >
-                  Validation
-                </label>
-                <Tooltip
-                  url={"https://www.w3schools.com/jsref/jsref_obj_regexp.asp"}
-                />
-                {!props.isSubscribe && isEnableSubscription && <Upgrade />}
-              </div>
-              <div
-                className={`${
-                  !props.isSubscribe && isEnableSubscription
-                    ? "bg-opacity-50 pointer-events-none"
-                    : ""
-                } flex flex-row gap-[10px] mb-[0.5rem]`}
-              >
-                <div className="w-full relative group">
-                  <input
-                    className="z-20 relative op-input op-input-bordered rounded-r-none op-input-sm focus:outline-none group-hover:border-base-content w-[87%] md:w-[92%] text-xs"
-                    name="textvalidate"
-                    placeholder="Enter custom regular expression"
-                    value={formdata.textvalidate}
-                    onChange={(e) => handleChange(e)}
-                    // onBlur={() => handleBlurRegex()}
-                  />
-                  <select
-                    className="validationlist op-input op-input-bordered op-input-sm focus:outline-none group-hover:border-base-content w-full text-xs"
-                    name="textvalidate"
-                    value={formdata.textvalidate}
-                    onChange={(e) => handleChange(e)}
-                    onBlur={() => handleBlurRegex()}
-                  >
-                    <option
-                      disabled={formdata?.textvalidate}
-                      className="text-[13px]"
+                  <div className="w-full relative group">
+                    <input
+                      className="z-20 relative op-input op-input-bordered rounded-r-none op-input-sm focus:outline-none group-hover:border-base-content w-[87%] md:w-[92%] text-xs"
+                      name="textvalidate"
+                      placeholder="Enter custom regular expression"
+                      value={formdata.textvalidate}
+                      onChange={(e) => handleChange(e)}
+                      // onBlur={() => handleBlurRegex()}
+                    />
+                    <select
+                      className="validationlist op-input op-input-bordered op-input-sm focus:outline-none group-hover:border-base-content w-full text-xs"
+                      name="textvalidate"
+                      value={formdata.textvalidate}
+                      onChange={(e) => handleChange(e)}
+                      onBlur={() => handleBlurRegex()}
                     >
-                      Select...
-                    </option>
-                    {inputOpt.map((data, ind) => {
-                      return (
-                        <option className="text-[13px]" key={ind} value={data}>
-                          {data}
-                        </option>
-                      );
-                    })}
-                  </select>
+                      <option
+                        disabled={formdata?.textvalidate}
+                        className="text-[13px]"
+                      >
+                        Select...
+                      </option>
+                      {inputOpt.map((data, ind) => {
+                        return (
+                          <option
+                            className="text-[13px]"
+                            key={ind}
+                            value={data}
+                          >
+                            {data}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
-
+            )}
             <div className="mb-[0.75rem]">
               <label htmlFor="name" className="text-[13px]">
                 Default value

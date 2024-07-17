@@ -1,6 +1,5 @@
 import axios from "axios";
 import moment from "moment";
-import { isEnableSubscription } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
 import Parse from "parse";
@@ -569,7 +568,7 @@ export const signPdfFun = async (
       if (
         tenantDetails?.CompletionBody &&
         tenantDetails?.CompletionSubject &&
-        (!isEnableSubscription || isSubscribed)
+        isSubscribed
       ) {
         isCustomCompletionMail = true;
       }

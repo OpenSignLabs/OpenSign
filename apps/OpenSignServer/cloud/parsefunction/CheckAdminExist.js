@@ -3,10 +3,10 @@ export default async function CheckAdminExist() {
   try {
     const extClsQuery = new Parse.Query('contracts_Users');
     extClsQuery.equalTo('UserRole', 'contracts_Admin');
-    extClsQuery.exists('OrganizationId');
     extClsQuery.notEqualTo('IsDisabled', true);
-    const extAdminRes = await extClsQuery.first({ useMasterKey: true });
-    if (extAdminRes) {
+    const extAdminRes = await extClsQuery.find({ useMasterKey: true });
+    // must be only one admin
+    if (extAdminRes && extAdminRes.length === 1 && extAdminRes?.[0]?.get('OrganizationId')) {
       return 'exist';
     } else {
       return 'not_exist';

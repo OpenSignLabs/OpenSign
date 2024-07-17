@@ -1197,7 +1197,7 @@ const TemplatePlaceholder = () => {
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
                   validation:
-                    (isSubscribe || !isEnableSubscription) && inputype
+                    isSubscribe && inputype
                       ? {
                           type: inputype,
                           pattern:

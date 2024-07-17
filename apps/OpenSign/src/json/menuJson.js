@@ -143,17 +143,17 @@ const sidebarList = [
         icon: "fa-light fa-key",
         title: "API Token",
         target: "_self",
-        pageType: "generatetoken",
+        pageType: "",
         description: "",
-        objectId: ""
+        objectId: "generatetoken"
       },
       {
         icon: "fa-light fa-globe",
         title: "Webhook",
         target: "_self",
-        pageType: "webhook",
+        pageType: "",
         description: "",
-        objectId: ""
+        objectId: "webhook"
       }
     ]
   }
