@@ -1968,12 +1968,12 @@ export const handleDownloadPdf = async (
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     const axiosRes = await axios.post(
-      `${appInfo.baseUrl}/functions/getsignedurl`,
+      `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
       { url: pdfUrl },
       {
         headers: {
           "content-type": "Application/json",
-          "X-Parse-Application-Id": appInfo.appId,
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       }
@@ -1999,12 +1999,12 @@ export const handleToPrint = async (event, pdfUrl, setIsDownloading) => {
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     const axiosRes = await axios.post(
-      `${appInfo.baseUrl}/functions/getsignedurl`,
+      `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
       { url: pdfUrl },
       {
         headers: {
           "content-type": "Application/json",
-          "X-Parse-Application-Id": appInfo.appId,
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       }
