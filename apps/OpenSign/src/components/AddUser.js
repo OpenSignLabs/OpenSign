@@ -46,7 +46,6 @@ const AddUser = (props) => {
     const teamRes = await team.find();
     if (teamRes.length > 0) {
       const _teamRes = JSON.parse(JSON.stringify(teamRes));
-      // if (isEnableSubscription) {
       setTeamList(_teamRes);
       if (!isEnableSubscription) {
         const allUserId =
@@ -106,6 +105,9 @@ const AddUser = (props) => {
             className: "contracts_Organizations",
             objectId: localUser.OrganizationId.objectId
           });
+        }
+        if (localUser && localUser.Company) {
+          extUser.set("Company", localUser.Company);
         }
 
         if (localStorage.getItem("TenantId")) {

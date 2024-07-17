@@ -962,11 +962,7 @@ function PdfRequestFiles(props) {
                           : "";
                         const themeBGcolor = themeColor;
                         let replaceVar;
-                        if (
-                          requestBody &&
-                          requestSubject &&
-                          (!isEnableSubscription || isSubscribed)
-                        ) {
+                        if (requestBody && requestSubject && isSubscribed) {
                           const replacedRequestBody = requestBody.replace(
                             /"/g,
                             "'"

@@ -5,7 +5,6 @@ import Alert from "../primitives/Alert";
 import ModalUi from "../primitives/ModalUi";
 import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, copytoData, openInNewTab } from "../constant/Utils";
-import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
 import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
@@ -112,7 +111,6 @@ function GenerateToken() {
       ) : (
         <>
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box mb-3">
-            {!isEnableSubscription && <PremiumAlertHeader />}
             <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
               OpenSign™ API{" "}
               <Tooltip
@@ -122,19 +120,14 @@ function GenerateToken() {
                 isSubscribe={true}
               />
             </h1>
-            <ul
-              className={"w-full flex flex-col p-2 text-sm"}
-              // isSubscribe || !isEnableSubscription
-              // ? "w-full flex flex-col p-2 text-sm "
-              // : "w-full flex flex-col p-2 text-sm opacity-20 pointer-events-none select-none"
-            >
+            <ul className="w-full flex flex-col p-2 text-sm">
               <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
                 <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5">
                   <span className="ml-1">API Token:</span>{" "}
                   <span
                     id="token"
                     className={`${
-                      isSubscribe || !isEnableSubscription
+                      isSubscribe
                         ? ""
                         : "bg-white/20 pointer-events-none select-none"
                     } md:text-end py-2 md:py-0`}
