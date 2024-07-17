@@ -423,8 +423,10 @@ function PlaceholderType(props) {
       ) : (
         <div
           style={{
-            color: "black",
-            fontSize: "12px"
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
           }}
         >
           <span>{type}</span>
@@ -522,8 +524,10 @@ function PlaceholderType(props) {
       ) : (
         <div
           style={{
-            color: "black",
-            fontSize: "12px"
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
           }}
         >
           <span>{type}</span>
@@ -562,8 +566,10 @@ function PlaceholderType(props) {
       ) : (
         <div
           style={{
-            color: "black",
-            fontSize: "12px"
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
           }}
         >
           <span>{type}</span>
@@ -602,8 +608,10 @@ function PlaceholderType(props) {
       ) : (
         <div
           style={{
-            color: "black",
-            fontSize: "12px"
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
           }}
         >
           <span>{type}</span>
@@ -720,8 +728,10 @@ function PlaceholderType(props) {
       ) : (
         <div
           style={{
-            color: "black",
-            fontSize: "12px"
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
           }}
         >
           <span>{type}</span>
