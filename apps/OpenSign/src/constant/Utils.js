@@ -1998,6 +1998,8 @@ export const handleToPrint = async (event, pdfUrl, setIsDownloading) => {
   setIsDownloading("pdf");
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+    //`localStorage.getItem("baseUrl")` is also use in public-profile flow for public-sign
+    //if we give this `appInfo.baseUrl` as a base url then in public-profile it will create base url of it's window.location.origin ex- opensign.me which is not base url
     const axiosRes = await axios.post(
       `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
       { url: pdfUrl },
