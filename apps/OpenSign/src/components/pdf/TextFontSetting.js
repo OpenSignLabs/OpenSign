@@ -9,9 +9,7 @@ function TextFontSetting(props) {
       isOpen={props.isTextSetting}
       reduceWidth={"max-w-[350px]"}
       title={"Text field"}
-      handleClose={() => {
-        props.setIsTextSetting(false);
-      }}
+      handleClose={() => props.setIsTextSetting(false)}
     >
       <div className="h-full p-[20px]">
         <div className="flex items-center">

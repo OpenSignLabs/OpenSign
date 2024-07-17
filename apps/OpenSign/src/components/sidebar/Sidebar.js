@@ -62,8 +62,9 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                   }
                 ];
               } else {
+                const arr = newItem.children.slice(1, 2);
                 newItem.children = [
-                  ...newItem.children,
+                  ...arr,
                   {
                     icon: "fa-light fa-users fa-fw",
                     title: "Users",

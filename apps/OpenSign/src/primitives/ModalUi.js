@@ -1,6 +1,4 @@
 import React from "react";
-import { isEnableSubscription } from "../constant/const";
-import PremiumAlertHeader from "./PremiumAlertHeader";
 
 const ModalUi = ({
   children,
@@ -9,8 +7,7 @@ const ModalUi = ({
   handleClose,
   showHeader = true,
   showClose = true,
-  reduceWidth,
-  showHeaderMessage
+  reduceWidth
 }) => {
   const width = reduceWidth;
   return (
@@ -36,13 +33,6 @@ const ModalUi = ({
                   </button>
                 )}
               </>
-            )}
-            {!isEnableSubscription && showHeaderMessage && (
-              <PremiumAlertHeader
-                message={
-                  "Cutomize Email is free in beta, this feature will incur a fee later."
-                }
-              />
             )}
             <div>{children}</div>
           </div>

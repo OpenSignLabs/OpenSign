@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { checkIsSubscribed, getFileName } from "../../constant/Utils";
-import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 import Upgrade from "../../primitives/Upgrade";
 import { isEnableSubscription } from "../../constant/const";
 // import SelectFolder from "../../premitives/SelectFolder";
@@ -134,39 +133,32 @@ const EditTemplate = ({ template, onSuccess }) => {
               <div className="text-[12px]">No</div>
             </div>
           </div>
-          <div className="text-xs mt-2">
-            {!isEnableSubscription && (
-              <PremiumAlertHeader
-                message={
-                  "Auto reminder is free in beta, this feature will incur a fee later."
+          {isEnableSubscription && (
+            <div className="text-xs mt-2">
+              <span
+                className={
+                  isSubscribe ? "font-semibold" : "font-semibold text-gray-300"
                 }
-              />
-            )}
-            <span
-              className={
-                isSubscribe || !isEnableSubscription
-                  ? "font-semibold"
-                  : "font-semibold text-gray-300"
-              }
-            >
-              Auto reminder{"  "}
-              {!isSubscribe && isEnableSubscription && <Upgrade />}
-            </span>
-            <label
-              className={`${
-                isSubscribe || !isEnableSubscription
-                  ? "cursor-pointer "
-                  : "pointer-events-none opacity-50"
-              } relative block items-center mb-0`}
-            >
-              <input
-                checked={formData.AutomaticReminders}
-                onChange={handleAutoReminder}
-                type="checkbox"
-                className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white mt-2"
-              />
-            </label>
-          </div>
+              >
+                Auto reminder{"  "}
+                {!isSubscribe && isEnableSubscription && <Upgrade />}
+              </span>
+              <label
+                className={`${
+                  isSubscribe
+                    ? "cursor-pointer "
+                    : "pointer-events-none opacity-50"
+                } relative block items-center mb-0`}
+              >
+                <input
+                  checked={formData.AutomaticReminders}
+                  onChange={handleAutoReminder}
+                  type="checkbox"
+                  className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white mt-2"
+                />
+              </label>
+            </div>
+          )}
           {isSubscribe && formData?.AutomaticReminders === true && (
             <div className="text-xs mt-2">
               <label className="block">

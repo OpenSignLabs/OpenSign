@@ -46,7 +46,6 @@ const AddUser = (props) => {
     const teamRes = await team.find();
     if (teamRes.length > 0) {
       const _teamRes = JSON.parse(JSON.stringify(teamRes));
-      // if (isEnableSubscription) {
       setTeamList(_teamRes);
       if (!isEnableSubscription) {
         const allUserId =
