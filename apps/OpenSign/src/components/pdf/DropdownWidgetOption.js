@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { isEnableSubscription } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
-import PremiumAlertHeader from "../../primitives/PremiumAlertHeader";
 import Upgrade from "../../primitives/Upgrade";
 function DropdownWidgetOption(props) {
   const [dropdownOptionList, setDropdownOptionList] = useState([
@@ -214,55 +213,57 @@ function DropdownWidgetOption(props) {
                 onClick={handleAddInput}
                 className="fa-light fa-square-plus text-[25px] ml-[10px] op-text-primary cursor-pointer"
               ></i>
-              <div>
-                {props.type === "checkbox" && !props.isSignYourself && (
-                  <>
-                    <label
-                      className={`${
-                        !props.isSubscribe ? "text-[gray]" : ""
-                      } text-[13px] font-semibold`}
-                    >
-                      Minimun check
-                    </label>
-                    {!props.isSubscribe && isEnableSubscription && <Upgrade />}
-                    <input
-                      required
-                      defaultValue={0}
-                      value={minCount}
-                      onChange={(e) => {
-                        const count = handleSetMinMax(e);
-                        setMinCount(count);
-                      }}
-                      className={`${
-                        props.isSubscribe || !isEnableSubscription
-                          ? ""
-                          : "pointer-events-none bg-opacity-50"
-                      } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
-                    />
-                    <label
-                      className={`${
-                        !props.isSubscribe ? "text-[gray]" : ""
-                      } text-[13px] font-semibold`}
-                    >
-                      Maximum check
-                    </label>
-                    <input
-                      required
-                      defaultValue={0}
-                      value={maxCount}
-                      onChange={(e) => {
-                        const count = handleSetMinMax(e);
-                        setMaxCount(count);
-                      }}
-                      className={`${
-                        props.isSubscribe || !isEnableSubscription
-                          ? ""
-                          : "pointer-events-none bg-opacity-50"
-                      } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
-                    />
-                  </>
-                )}
-              </div>
+              {isEnableSubscription && (
+                <div>
+                  {props.type === "checkbox" && !props.isSignYourself && (
+                    <>
+                      <label
+                        className={`${
+                          !props.isSubscribe ? "text-[gray]" : ""
+                        } text-[13px] font-semibold`}
+                      >
+                        Minimun check
+                      </label>
+                      {!props.isSubscribe && isEnableSubscription && (
+                        <Upgrade />
+                      )}
+                      <input
+                        required
+                        defaultValue={0}
+                        value={minCount}
+                        disabled={props.isSubscribe ? false : true}
+                        onChange={(e) => {
+                          const count = handleSetMinMax(e);
+                          setMinCount(count);
+                        }}
+                        className={`${
+                          props.isSubscribe ? "" : "pointer-events-none"
+                        } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
+                      />
+                      <label
+                        className={`${
+                          !props.isSubscribe ? "text-[gray]" : ""
+                        } text-[13px] font-semibold`}
+                      >
+                        Maximum check
+                      </label>
+                      <input
+                        required
+                        defaultValue={0}
+                        value={maxCount}
+                        disabled={props.isSubscribe ? false : true}
+                        onChange={(e) => {
+                          const count = handleSetMinMax(e);
+                          setMaxCount(count);
+                        }}
+                        className={`${
+                          props.isSubscribe ? "" : "pointer-events-none"
+                        } op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs`}
+                      />
+                    </>
+                  )}
+                </div>
+              )}
             </div>
             {["dropdown", radioButtonWidget].includes(props.type) && (
               <>
@@ -344,15 +345,6 @@ function DropdownWidgetOption(props) {
               </div>
             )}
           </div>
-          {props.type === "checkbox" &&
-            !props.isSignYourself &&
-            !isEnableSubscription && (
-              <PremiumAlertHeader
-                message={
-                  "Field validations are free in beta, this feature will incur a fee later."
-                }
-              />
-            )}
           <div
             className={`${
               props.type === "checkbox" && !props.isSignYourself

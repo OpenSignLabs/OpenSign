@@ -18,7 +18,6 @@ import { isEnableSubscription } from "../constant/const";
 import ModalUi from "../primitives/ModalUi";
 import { Tooltip } from "react-tooltip";
 import Upgrade from "../primitives/Upgrade";
-import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Loader from "../primitives/Loader";
 
 // `Form` render all type of Form on this basis of their provided in path
@@ -830,39 +829,34 @@ const Forms = (props) => {
                     <div className="text-center">No</div>
                   </div>
                 </div>
-                <div className="text-xs mt-2">
-                  {!isEnableSubscription && (
-                    <PremiumAlertHeader
-                      message={
-                        "Auto reminder is free in beta, this feature will incur a fee later."
+                {isEnableSubscription && (
+                  <div className="text-xs mt-2">
+                    <span
+                      className={
+                        isSubscribe
+                          ? "font-semibold"
+                          : "font-semibold text-gray-300"
                       }
-                    />
-                  )}
-                  <span
-                    className={
-                      isSubscribe || !isEnableSubscription
-                        ? "font-semibold"
-                        : "font-semibold text-gray-300"
-                    }
-                  >
-                    Auto reminder{"  "}
-                    {!isSubscribe && isEnableSubscription && <Upgrade />}
-                  </span>
-                  <label
-                    className={`${
-                      isSubscribe || !isEnableSubscription
-                        ? "cursor-pointer "
-                        : "pointer-events-none opacity-50"
-                    } relative block items-center mb-0`}
-                  >
-                    <input
-                      type="checkbox"
-                      className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
-                      checked={formData.autoreminder}
-                      onChange={handleAutoReminder}
-                    />
-                  </label>
-                </div>
+                    >
+                      Auto reminder{"  "}
+                      {!isSubscribe && isEnableSubscription && <Upgrade />}
+                    </span>
+                    <label
+                      className={`${
+                        isSubscribe
+                          ? "cursor-pointer "
+                          : "pointer-events-none opacity-50"
+                      } relative block items-center mb-0`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
+                        checked={formData.autoreminder}
+                        onChange={handleAutoReminder}
+                      />
+                    </label>
+                  </div>
+                )}
                 {formData?.autoreminder === true && (
                   <div className="text-xs mt-2">
                     <label className="block">
