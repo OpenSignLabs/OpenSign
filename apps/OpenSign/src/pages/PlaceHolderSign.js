@@ -50,7 +50,6 @@ import Upgrade from "../primitives/Upgrade";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
 import { useSelector } from "react-redux";
-import TextFontSetting from "../components/pdf/TextFontSetting";
 import PdfZoom from "../components/pdf/PdfZoom";
 import LottieWithLoader from "../primitives/DotLottieReact";
 
@@ -1485,7 +1484,13 @@ function PlaceHolderSign() {
                           pattern:
                             inputype === "regex" ? defaultdata.textvalidate : ""
                         }
-                      : {}
+                      : {},
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black"
                 }
               };
             } else {
@@ -1495,7 +1500,13 @@ function PlaceHolderSign() {
                   ...position.options,
                   name: defaultdata.name,
                   status: defaultdata.status,
-                  defaultValue: defaultdata.defaultValue
+                  defaultValue: defaultdata.defaultValue,
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black"
                 }
               };
             }
@@ -1520,6 +1531,15 @@ function PlaceHolderSign() {
     }
     setCurrWidgetsDetails({});
     handleNameModal();
+    setFontSize();
+    setFontColor();
+    //condition for text widget type after set all values for text widget
+    //change setUniqueId which is set in tempsignerId
+    //because textwidget do not have signer user so for selected signers we have to do
+    if (currWidgetsDetails.type === textWidget) {
+      setUniqueId(tempSignerId);
+      setTempSignerId("");
+    }
   };
 
   const handleNameModal = () => {
@@ -1678,62 +1698,6 @@ function PlaceHolderSign() {
 
     setSignerPos(updatePlaceholderUser);
     setIsMailSend(false);
-  };
-
-  const handleSaveFontSize = () => {
-    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-    if (filterSignerPos.length > 0) {
-      const getPlaceHolder = filterSignerPos[0].placeHolder;
-
-      const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-
-      if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position) => {
-          if (position.key === signKey) {
-            return {
-              ...position,
-              options: {
-                ...position.options,
-                fontSize:
-                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
-                fontColor:
-                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
-              }
-            };
-          }
-          return position;
-        });
-
-        const newUpdateSignPos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === pageNumber) {
-            return { ...obj, pos: addSignPos };
-          }
-          return obj;
-        });
-        const newUpdateSigner = signerPos.map((obj) => {
-          if (obj.Id === uniqueId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
-          }
-          return obj;
-        });
-        setSignerPos(newUpdateSigner);
-      }
-    }
-    setFontSize();
-    setFontColor();
-    if (currWidgetsDetails.type === textWidget) {
-      setUniqueId(tempSignerId);
-      setTempSignerId("");
-    }
-
-    handleTextSettingModal(false);
-  };
-  const handleTextSettingModal = (value) => {
-    setIsTextSetting(value);
   };
   return (
     <>
@@ -2095,7 +2059,6 @@ function PlaceHolderSign() {
                         handleNameModal={setIsNameModal}
                         setTempSignerId={setTempSignerId}
                         uniqueId={uniqueId}
-                        handleTextSettingModal={handleTextSettingModal}
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}
                         scale={scale}
@@ -2215,17 +2178,6 @@ function PlaceHolderSign() {
             </button>
           </div>
         </ModalUi>
-        <TextFontSetting
-          isTextSetting={isTextSetting}
-          setIsTextSetting={setIsTextSetting}
-          fontSize={fontSize}
-          setFontSize={setFontSize}
-          fontColor={fontColor}
-          setFontColor={setFontColor}
-          handleSaveFontSize={handleSaveFontSize}
-          currWidgetsDetails={currWidgetsDetails}
-        />
-
         <LinkUserModal
           handleAddUser={handleAddUser}
           isAddUser={isAddUser}
@@ -2246,6 +2198,12 @@ function PlaceHolderSign() {
           handleClose={handleNameModal}
           handleData={handleWidgetdefaultdata}
           isSubscribe={isSubscribe}
+          isTextSetting={isTextSetting}
+          setIsTextSetting={setIsTextSetting}
+          fontSize={fontSize}
+          setFontSize={setFontSize}
+          fontColor={fontColor}
+          setFontColor={setFontColor}
         />
       </DndProvider>
     </>

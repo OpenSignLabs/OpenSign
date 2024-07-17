@@ -317,7 +317,9 @@ function Placeholder(props) {
       props?.setShowDropdown(true);
     } else if (props.pos.type === "checkbox") {
       props?.setIsCheckbox(true);
-    } else if (
+    }
+    //condition to handle setting icon for signyour-self flow for all type text widgets
+    else if (
       [
         textInputWidget,
         textWidget,
@@ -325,13 +327,15 @@ function Placeholder(props) {
         "company",
         "job title",
         "email"
-      ].includes(props.pos.type)
+      ].includes(props.pos.type) &&
+      props.isSignYourself
     ) {
       props.handleTextSettingModal(true);
     } else {
       props?.handleNameModal && props?.handleNameModal(true);
     }
 
+    //condition for only placeholder and template flow
     if (props.data && props?.pos?.type !== textWidget) {
       props.setSignerObjId(props?.data?.signerObjId);
       props.setUniqueId(props?.data?.Id);
@@ -340,13 +344,15 @@ function Placeholder(props) {
       );
 
       props.setIsSelectId(checkIndex || 0);
-    } else if (props.data && props.pos.type === textWidget) {
+    }
+    //condition to handle in placeholder and template flow for text widget signerId for text widgets i have to set uniqueId in tempSignerId because
+    //it does not have any signer user and any signerobjId
+    else if (props.data && props.pos.type === textWidget) {
       props.setTempSignerId(props.uniqueId);
       props.setUniqueId(props?.data?.Id);
       const checkIndex = props.xyPostion.findIndex(
         (data) => data.Id === props.data.Id
       );
-
       props.setIsSelectId(checkIndex || 0);
     }
     props.setSignKey(props.pos.key);
@@ -433,6 +439,9 @@ function Placeholder(props) {
         <>
           {(props.isPlaceholder || props.isSignYourself) && (
             <>
+              {/* condition to add setting icon for signyour-self flow for particular text widgets
+            and also it have diffrent position 
+            */}
               {[
                 "checkbox",
                 textInputWidget,
@@ -459,6 +468,7 @@ function Placeholder(props) {
                   }}
                 ></i>
               ) : (
+                /* condition to add setting icon for placeholder & template flow for all widgets except signature and date */
                 ((!props?.pos?.type && props.pos.isStamp) ||
                   (props?.pos?.type &&
                     !["date", "signature"].includes(props.pos.type) &&
@@ -481,7 +491,7 @@ function Placeholder(props) {
                   ></i>
                 )
               )}
-
+              {/* condition for usericon for all widgets except text widgets and signyour-self flow */}
               {props.pos.type !== textWidget && !props.isSignYourself && (
                 <i
                   data-tut="assignSigner"
@@ -509,6 +519,7 @@ function Placeholder(props) {
               )}
             </>
           )}
+          {/* setting icon only for date widgets */}
           {props.pos.type === "date" && selectDate && (
             <div
               id="menu-container"
@@ -581,29 +592,37 @@ function Placeholder(props) {
               </div>
             </div>
           )}
+          {/* copy icon for all widgets */}
           <i
             className="fa-light fa-copy icon"
             onClick={(e) => handleCopyPlaceholder(e)}
             onTouchEnd={(e) => handleCopyPlaceholder(e)}
             style={{ color: "#188ae2", right: "12px", top: "-18px" }}
           ></i>
+          {/* delete icon for all widgets */}
           <i
             className="fa-light fa-circle-xmark icon"
             onClick={(e) => {
               e.stopPropagation();
-
+              //condition for template and placeholder flow
               if (props.data) {
                 props.handleDeleteSign(props.pos.key, props.data.Id);
-              } else {
+              }
+              //condition for signyour-self flow
+              else {
                 props.handleDeleteSign(props.pos.key);
                 props.setIsStamp(false);
               }
             }}
+            //for mobile and tablet touch event
             onTouchEnd={(e) => {
               e.stopPropagation();
+              //condition for template and placeholder flow
               if (props.data) {
                 props.handleDeleteSign(props.pos.key, props.data?.Id);
-              } else {
+              }
+              //condition for signyour-self flow
+              else {
                 props.handleDeleteSign(props.pos.key);
                 props.setIsStamp(false);
               }
@@ -689,7 +708,6 @@ function Placeholder(props) {
       data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
       key={props.pos.key}
       lockAspectRatio={
-        // props.pos.type !== textWidget
         ![
           textWidget,
           "email",
@@ -832,7 +850,6 @@ function Placeholder(props) {
       )}
       {isTabAndMobile ? (
         <div
-          // className="sm:inline-block md:inline-block lg:hidden "
           className="flex items-stretch"
           style={{
             left: xPos(props.pos, props.isSignYourself),
