@@ -47,7 +47,7 @@ const ReportTable = (props) => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [isResendMail, setIsResendMail] = useState({});
-  const [isMakePublic, setIsMakePublic] = useState({});
+  const [isMakePublicModal, setIsMakePublicModal] = useState({});
   const [mail, setMail] = useState({ subject: "", body: "" });
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
@@ -443,7 +443,7 @@ const ReportTable = (props) => {
   const handleClose = (item) => {
     setIsRevoke({});
     setIsDeleteModal({});
-    setIsMakePublic({});
+    setIsMakePublicModal({});
     setSelectedPublicRole("");
     setIsPublicProfile({});
     if (item?.objectId) {
@@ -855,7 +855,7 @@ const ReportTable = (props) => {
   const handlePublicTemplate = async (item) => {
     if (selectedPublicRole || !props.isPublic[item.objectId]) {
       setActLoader({ [item.objectId]: true });
-      setIsMakePublic(false);
+      setIsMakePublicModal(false);
       try {
         const res = await Parse.Cloud.run("createpublictemplate", {
           templateid: item.objectId,
@@ -925,7 +925,7 @@ const ReportTable = (props) => {
     //conditon to check role is exist or not
     if (getPlaceholder && getPlaceholder.length > 0) {
       const signers = item?.Signers;
-      //condition to check there should be attached all role to signers except one public role
+      //condition to check that every role is attached to signers except the public role.
       if (getPlaceholder.length - 1 === signers?.length) {
         //check template send in order
         const IsSendInOrder = item?.SendinOrder;
@@ -935,8 +935,8 @@ const ReportTable = (props) => {
         const getIndex = item.Placeholders.findIndex(
           (obj) => obj.Role === getRole?.Role
         );
-        //condition for if send in order true then public role order should be on top
-        //if send in order false and do not need to check order of public role
+        //condition for if send in order true then the public role order should be prioritized.
+        //When send in order is false and there's no need to verify the public role's order
         if ((IsSendInOrder && getIndex === 0) || !IsSendInOrder) {
           const checkIsSignatureExist = getPlaceholder?.every(
             (placeholderObj) =>
@@ -951,6 +951,7 @@ const ReportTable = (props) => {
             setIsPublicUserName(extendUser[0]?.UserName);
             //condition to check user have public url or not
             if (userName) {
+              //`setIsPublic` variable is used to collect all template public status
               props.setIsPublic((prevStates) => ({
                 ...prevStates,
                 [item.objectId]: e.target.checked
@@ -958,7 +959,8 @@ const ReportTable = (props) => {
               if (getRole?.Role) {
                 setSelectedPublicRole(getRole?.Role);
               }
-              setIsMakePublic({ [item.objectId]: true });
+              //`setIsMakePublicModal` is used to open modal after succesfully make public
+              setIsMakePublicModal({ [item.objectId]: true });
             } else {
               setIsPublicProfile({ [item.objectId]: true });
             }
@@ -1258,7 +1260,7 @@ const ReportTable = (props) => {
                                   </label>
                                 </div>
                               )}
-                              {isMakePublic[item.objectId] && (
+                              {isMakePublicModal[item.objectId] && (
                                 <ModalUi
                                   isOpen
                                   title={
@@ -1267,7 +1269,7 @@ const ReportTable = (props) => {
                                       : "Make template private"
                                   }
                                   handleClose={() => {
-                                    setIsMakePublic({});
+                                    setIsMakePublicModal({});
                                     setSelectedPublicRole("");
                                     props.setIsPublic((prevStates) => ({
                                       ...prevStates,
