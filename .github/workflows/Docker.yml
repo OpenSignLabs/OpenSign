@@ -2,7 +2,7 @@ name: ci
 on:
   push:
     branches:
-      - 'main'
+      - 'staging'
 
 jobs:
   docker:
@@ -10,9 +10,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - image: amolshejole/OpenSign
+          - image: opensign/opensign
             dockerfile: apps/OpenSign/Dockerhubfile
-          - image: amolshejole/OpenSignServer
+          - image: opensign/opensignserver
             dockerfile: apps/OpenSignServer/Dockerhubfile
     steps:
       -
