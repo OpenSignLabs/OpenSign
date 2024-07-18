@@ -49,20 +49,19 @@ const saveRoleContact = async contact => {
 const createDocumentFromTemplate = async (template, existContact, index) => {
   try {
     if (template) {
-      const Doc = JSON.parse(JSON.stringify(template));
       //update contact in placeholder, signers and update ACl in provide document
       const object = new Parse.Object('contracts_Document');
-      object.set('Name', Doc?.Name);
-      object.set('Description', Doc?.Description);
-      object.set('Note', Doc?.Note);
-      object.set('TimeToCompleteDays', Doc.TimeToCompleteDays || 15);
-      object.set('SendinOrder', Doc?.SendinOrder);
-      object.set('AutomaticReminders', Doc.AutomaticReminders);
-      object.set('RemindOnceInEvery', Doc?.RemindOnceInEvery);
-      object.set('URL', Doc?.URL);
-      object.set('CreatedBy', Doc?.CreatedBy);
-      object.set('ExtUserPtr', Doc?.ExtUserPtr);
-      let signers = Doc?.Signers || [];
+      object.set('Name', template?.Name);
+      object.set('Description', template?.Description);
+      object.set('Note', template?.Note);
+      object.set('TimeToCompleteDays', template.TimeToCompleteDays || 15);
+      object.set('SendinOrder', template?.SendinOrder);
+      object.set('AutomaticReminders', template.AutomaticReminders);
+      object.set('RemindOnceInEvery', template?.RemindOnceInEvery);
+      object.set('URL', template?.URL);
+      object.set('CreatedBy', template?.CreatedBy);
+      object.set('ExtUserPtr', template?.ExtUserPtr);
+      let signers = template?.Signers || [];
       const signerobj = {
         __type: 'Pointer',
         className: 'contracts_Contactbook',
@@ -70,8 +69,8 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       };
       signers = [...signers.slice(0, index), signerobj, ...signers.slice(index)];
       object.set('Signers', signers);
-      object.set('SignedUrl', Doc.URL || Doc.SignedUrl);
-      const Placeholders = Doc?.Placeholders || [];
+      object.set('SignedUrl', template.URL || template.SignedUrl);
+      const Placeholders = template?.Placeholders || [];
       Placeholders[index] = {
         ...Placeholders[index],
         signerObjId: existContact.id,
@@ -115,7 +114,6 @@ const sendMailToAllSigners = async docId => {
           extUserId: existUserId,
           ispublic: true,
         });
-
         if (getSubscriptionDetails) {
           const tenantRes = JSON.parse(JSON.stringify(res));
           const extUserDetails = Doc?.ExtUserPtr;
@@ -151,7 +149,7 @@ const sendMailToAllSigners = async docId => {
               const senderName = `${Doc?.ExtUserPtr.Name}`;
               const documentName = `${Doc?.Name}`;
               let replaceVar;
-              if (requestBody && requestSubject && isSubscribed) {
+              if (isSubscribed && requestBody && requestSubject) {
                 const replacedRequestBody = requestBody.replace(/"/g, "'");
                 htmlReqBody =
                   "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +

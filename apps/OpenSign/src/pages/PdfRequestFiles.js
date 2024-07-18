@@ -951,7 +951,7 @@ function PdfRequestFiles(props) {
                         }
                         const hostPublicUrl = isStaging
                           ? "https://staging-app.opensignlabs.com"
-                          : "https://app.opensignlabs.com/";
+                          : "https://app.opensignlabs.com";
                         let signPdf = props?.templateId
                           ? `${hostPublicUrl}/login/${encodeBase64}`
                           : `${hostUrl}/login/${encodeBase64}`;
