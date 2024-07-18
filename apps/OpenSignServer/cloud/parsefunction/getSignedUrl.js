@@ -1,15 +1,15 @@
 import AWS from 'aws-sdk';
 import { useLocal } from '../../Utils.js';
-const credentials = {
-  accessKeyId: process.env.DO_ACCESS_KEY_ID,
-  secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
-};
-AWS.config.update({ credentials: credentials, region: process.env.DO_REGION });
-const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
-
-const s3 = new AWS.S3({ endpoint: spacesEndpoint });
-
 export default function getPresignedUrl(url) {
+  const credentials = {
+    accessKeyId: process.env.DO_ACCESS_KEY_ID,
+    secretAccessKey: process.env.DO_SECRET_ACCESS_KEY,
+  };
+  AWS.config.update({ credentials: credentials, region: process.env.DO_REGION });
+  const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
+
+  const s3 = new AWS.S3({ endpoint: spacesEndpoint });
+
   // Create a new URL object
   const parsedUrl = new URL(url);
   // Get the pathname of the URL

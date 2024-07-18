@@ -62,7 +62,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                   }
                 ];
               } else {
-                const arr = newItem.children.slice(1, 2);
+                const arr = newItem.children.slice(0, 1);
                 newItem.children = [
                   ...arr,
                   {
