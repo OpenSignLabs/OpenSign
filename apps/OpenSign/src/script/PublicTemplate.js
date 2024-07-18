@@ -33,7 +33,7 @@ const scriptComponent = document.createElement("div");
 scriptComponent.id = "script-component";
 document.body.appendChild(scriptComponent);
 const link = document.createElement("link");
-link.href = "https://staging-app.opensignlabs.com/css/fonts.css";
+link.href = "https://cdn.opensignlabs.com/fonts.css";
 link.rel = "stylesheet";
 document.head.appendChild(link);
 

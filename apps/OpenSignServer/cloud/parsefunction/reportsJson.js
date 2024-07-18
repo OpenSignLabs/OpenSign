@@ -333,6 +333,7 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'IsPublic',
           'SharedWith.Name',
+          'SendinOrder',
         ],
       };
     default:
