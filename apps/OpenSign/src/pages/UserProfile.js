@@ -446,9 +446,7 @@ function UserProfile() {
                       Public profile :{" "}
                       <Tooltip
                         maxWidth="max-w-[250px]"
-                        message={`this is your public URL. Copy or share it
-                   with the signer, and you will be able to see
-                   all your publicly set templates.`}
+                        message={`This is your public URL. Copy or share it with the signer, and you will be able to see all your publicly set templates.`}
                       />
                     </span>
                     <div className="flex md:flex-row flex-col md:items-center">

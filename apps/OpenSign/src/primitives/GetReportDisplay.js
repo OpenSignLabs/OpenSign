@@ -922,40 +922,61 @@ const ReportTable = (props) => {
   //function to handle change template status is public or private
   const handlePublicChange = async (e, item) => {
     const getPlaceholder = item?.Placeholders;
-    //condiiton to check role is exist or not
+    //conditon to check role is exist or not
     if (getPlaceholder && getPlaceholder.length > 0) {
-      const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
-        placeholderObj?.placeHolder?.some((holder) =>
-          holder?.pos?.some((posItem) => posItem?.type === "signature")
-        )
-      );
       const signers = item?.Signers;
+      //condition to check there should be attached all role to signers except one public role
       if (getPlaceholder.length - 1 === signers?.length) {
-        if (checkIsSignatureExistt) {
-          let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
-          const userName = extendUser[0]?.UserName;
-          setIsPublicUserName(extendUser[0]?.UserName);
-          //condition to check user have public url or not
-          if (userName) {
-            props.setIsPublic((prevStates) => ({
-              ...prevStates,
-              [item.objectId]: e.target.checked
-            }));
-            const getRole = item.Placeholders.find((data) => !data.signerObjId);
-            if (getRole?.Role) {
-              setSelectedPublicRole(getRole?.Role);
+        //check template send in order
+        const IsSendInOrder = item?.SendinOrder;
+        //get role to set public role
+        const getRole = item.Placeholders.find((data) => !data.signerObjId);
+        //get public role index to check order
+        const getIndex = item.Placeholders.findIndex(
+          (obj) => obj.Role === getRole?.Role
+        );
+        //condition for if send in order true then public role order should be on top
+        //if send in order false and do not need to check order of public role
+        if ((IsSendInOrder && getIndex === 0) || !IsSendInOrder) {
+          const checkIsSignatureExist = getPlaceholder?.every(
+            (placeholderObj) =>
+              placeholderObj?.placeHolder?.some((holder) =>
+                holder?.pos?.some((posItem) => posItem?.type === "signature")
+              )
+          );
+          //condition for validate signature widgets should be all signers
+          if (checkIsSignatureExist) {
+            let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+            const userName = extendUser[0]?.UserName;
+            setIsPublicUserName(extendUser[0]?.UserName);
+            //condition to check user have public url or not
+            if (userName) {
+              props.setIsPublic((prevStates) => ({
+                ...prevStates,
+                [item.objectId]: e.target.checked
+              }));
+              if (getRole?.Role) {
+                setSelectedPublicRole(getRole?.Role);
+              }
+              setIsMakePublic({ [item.objectId]: true });
+            } else {
+              setIsPublicProfile({ [item.objectId]: true });
             }
-
-            setIsMakePublic({ [item.objectId]: true });
           } else {
-            setIsPublicProfile({ [item.objectId]: true });
+            setIsAlert(true);
+            setAlertMsg({
+              type: "danger",
+              message:
+                " Please ensure there's at least one signature widget added for all signers."
+            });
+            setTimeout(() => setIsAlert(false), 5000);
           }
-        } else {
+        } else if (IsSendInOrder) {
           setIsAlert(true);
           setAlertMsg({
             type: "danger",
             message:
-              " Please ensure there's at least one signature widget added for all recipients."
+              "The send-in-order for this template is enabled, and the public role must be at the top."
           });
           setTimeout(() => setIsAlert(false), 5000);
         }
@@ -972,7 +993,8 @@ const ReportTable = (props) => {
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
-        message: "Please assign at least one role to make this template public."
+        message:
+          "Please assign at least one public role to make this template public."
       });
       setTimeout(() => setIsAlert(false), 5000);
     }

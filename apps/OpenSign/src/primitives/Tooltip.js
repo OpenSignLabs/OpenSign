@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { openInNewTab } from "../constant/Utils";
-const Tooltip = ({ id, message, url, iconColor }) =>
+const Tooltip = ({ id, message, url, iconColor, maxWidth }) =>
   url ? (
     <button onClick={() => openInNewTab(url)} className={"text-center"}>
       <sup>
@@ -33,7 +33,7 @@ const Tooltip = ({ id, message, url, iconColor }) =>
       </a>
       <ReactTooltip
         id={id ? id : "my-tooltip"}
-        className="max-w-[200px]  z-[200]"
+        className={`${maxWidth ? maxWidth : "max-w-[200px]"}    z-[200]`}
       />
     </>
   );
