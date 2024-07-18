@@ -51,6 +51,7 @@ import GetLogoByDomain from './parsefunction/GetLogobyDomain.js';
 import AddAdmin from './parsefunction/AddAdmin.js';
 import CheckAdminExist from './parsefunction/CheckAdminExist.js';
 import UpdateExistUserAsAdmin from './parsefunction/UpdateExistUserAsAdmin.js';
+import Newsletter from './parsefunction/Newsletter.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -111,3 +112,4 @@ Parse.Cloud.define('getlogobydomain', GetLogoByDomain);
 Parse.Cloud.define('addadmin', AddAdmin);
 Parse.Cloud.define('checkadminexist', CheckAdminExist);
 Parse.Cloud.define('updateuserasadmin', UpdateExistUserAsAdmin);
+Parse.Cloud.define('newsletter', Newsletter);
