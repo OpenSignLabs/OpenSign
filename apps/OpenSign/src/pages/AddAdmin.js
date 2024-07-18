@@ -6,7 +6,6 @@ import { getAppLogo, openInNewTab } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import Loader from "../primitives/Loader";
-import axios from "axios";
 import Title from "../components/Title";
 
 const AddAdmin = () => {
@@ -241,16 +240,9 @@ const AddAdmin = () => {
   };
   const subscribeNewsletter = async () => {
     try {
-      const headers = {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": "legadranaxn"
-      };
-      const newsletter = await axios.post(
-        "https://app.opensignlabs.com",
-        { Name: name, Email: email, Domain: window.location.host },
-        { header: headers }
-      );
-      console.log("newsletter ", newsletter);
+      const params = { name: name, email: email, domain: window.location.host };
+      await Parse.Cloud.run("newsletter", params);
+      // console.log("newsletter ", newsletter);
     } catch (err) {
       console.log("err in subscribeNewsletter", err);
     }
