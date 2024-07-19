@@ -419,11 +419,13 @@ function PdfRequestFiles(props) {
             "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
         });
       } else {
-        const checkCurrentUser = documentData[0].Placeholders.find(
-          (data) => data.signerObjId === currUserId
-        );
-        if (checkCurrentUser) {
-          setCurrentSigner(true);
+        if (currUserId) {
+          const checkCurrentUser = documentData[0].Placeholders.find(
+            (data) => data?.signerObjId === currUserId
+          );
+          if (checkCurrentUser) {
+            setCurrentSigner(true);
+          }
         }
       }
       const audittrailData =
