@@ -48,21 +48,21 @@ In the "Draw Signature" popup, you have three options available:
        -  Draw the initials using your mouse cursor.
        -  Upload the digitally scanned initials.
        -  Type the initials using text input.
-     - **Name**: Once you drop the name widget, you can edit the name. We also provide customization options such as setting the color or font. Additionally, there is a copy option available to copy the widget.
+     - **Name**: Once you drop the name widget, you can edit the name. We also provide customization options such as setting the color or font. Additionally, there is a copy option available to duplicate the widget.
      - **Job Title**: Once you drop the job title widget, you can edit the job title. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to copy the widget.
-     - **Company**: Once you drop the company widget, you can edit the company name. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to copy the widget.
+     - **Company**: Once you drop the company widget, you can edit the company name. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
      - **Date** :  Once you drop the date widget, you can choose from various date formats.
      - **Text**: Once you drop the text widget, you can write the text. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
      - **Checkbox**: After dropping the checkbox widget, a popup will open allowing you to set the checkbox name and options. Once you click save, the checkbox will be created on the document. Additionally, a copy option will be available to duplicate the widget.
-     - **Image** : After dragging and dropping the image widget, the "Upload Image" popup will appear, allowing you to upload an image from your file explorer. Once the image is uploaded, it will be displayed on the document. Additionally, there is an option to copy the image.
+     - **Image** : After dragging and dropping the image widget, the "Upload Image" popup will appear, allowing you to upload an image from your file explorer. Once the image is uploaded, it will be displayed on the document. Additionally, there is an option to duplicate the image.
      - **Email**: Once you drop the email widget, you can edit the email. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
 
 <img width="918" alt="OpenSign_Widgets" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/OpenSign_Widgets.png" />
 
-### Step 4: Finalizing the Process:
+### Step 5: Finalizing the Process:
 - **Finish**: After adding the widgets and signatures, click the "Finish" button. This will create a digitally signed document.
 
-### Step 5: Print, download or send the document copy via email
+### Step 6: Print, download or send the document copy via email
 After finishing the document, a "Successfully Signed!" popup will appear, offering options to print, download, or send the document via email. 
 In the "Add Email Address" text field, enter the email address you want to send the document to, then click the "Send" button to receive a copy of the signed document.
 
