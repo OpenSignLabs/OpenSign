@@ -929,12 +929,15 @@ const ReportTable = (props) => {
       if (getPlaceholder.length - 1 === signers?.length) {
         //check template send in order
         const IsSendInOrder = item?.SendinOrder;
+        let getIndex = -1;
         //get role to set public role
         const getRole = item.Placeholders.find((data) => !data.signerObjId);
         //get public role index to check order
-        const getIndex = item.Placeholders.findIndex(
-          (obj) => obj.Role === getRole?.Role
-        );
+        if (IsSendInOrder) {
+          getIndex = item.Placeholders.findIndex(
+            (obj) => obj.Role === getRole?.Role
+          );
+        }
         //condition for if send in order true then the public role order should be prioritized.
         //When send in order is false and there's no need to verify the public role's order
         if ((IsSendInOrder && getIndex === 0) || !IsSendInOrder) {
