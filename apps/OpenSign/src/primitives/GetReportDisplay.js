@@ -1056,7 +1056,7 @@ const ReportTable = (props) => {
           <Loader />
         </div>
       )}
-      <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
+      <div className="p-2 w-full overflow-auto bg-base-100 text-base-content op-card shadow-lg">
         {isCelebration && (
           <div className="relative z-[1000]">
             <Confetti width={window.innerWidth} height={window.innerHeight} />
@@ -1100,9 +1100,9 @@ const ReportTable = (props) => {
         <div
           className={`${
             isDashboard && props.List?.length > 0 ? "h-[317px]" : "h-full"
-          } overflow-x-auto w-full`}
+          } w-full`}
         >
-          <table className="op-table border-collapse w-full">
+          <table className="op-table border-collapse w-full ">
             <thead className="text-[14px]">
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (
@@ -1396,7 +1396,7 @@ const ReportTable = (props) => {
                                         )}
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
-                                            <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                            <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
                                               {act.subaction?.map((subact) => (
                                                 <li
                                                   key={subact.btnId}
@@ -1448,7 +1448,7 @@ const ReportTable = (props) => {
                                     )}
                                     {isOption[item.objectId] &&
                                       act.action === "option" && (
-                                        <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                        <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
                                           {act.subaction?.map((subact) => (
                                             <li
                                               key={subact.btnId}
