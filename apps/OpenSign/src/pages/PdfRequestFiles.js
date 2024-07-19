@@ -41,7 +41,6 @@ import Title from "../components/Title";
 import DefaultSignature from "../components/pdf/DefaultSignature";
 import ModalUi from "../primitives/ModalUi";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
-import { appInfo } from "../constant/appinfo";
 import Loader from "../primitives/Loader";
 import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
@@ -193,7 +192,7 @@ function PdfRequestFiles(props) {
     e.preventDefault();
     setOtpLoader(true);
     const localuser = localStorage.getItem(
-      `Parse/${appInfo.appId}/currentUser`
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
     const currentUser = JSON.parse(localuser);
     await handleSendOTP(currentUser?.email);
@@ -205,7 +204,7 @@ function PdfRequestFiles(props) {
     e.preventDefault();
     setOtpLoader(true);
     const localuser = localStorage.getItem(
-      `Parse/${appInfo.appId}/currentUser`
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
     const currentUser = JSON.parse(localuser);
     try {
@@ -232,7 +231,7 @@ function PdfRequestFiles(props) {
   const handleVerifyBtn = async () => {
     setIsVerifyModal(true);
     const localuser = localStorage.getItem(
-      `Parse/${appInfo.appId}/currentUser`
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
     const currentUser = JSON.parse(localuser);
     await handleSendOTP(currentUser?.email);
@@ -315,32 +314,28 @@ function PdfRequestFiles(props) {
             placeholdersOrSigners.push(placeholder);
           }
         }
-
         setUnSignedSigners(placeholdersOrSigners);
-
         setPdfDetails(documentData);
-        const loadObj = {
+        setIsLoading({
           isLoad: false
-        };
-        setIsLoading(loadObj);
+        });
       } else if (
         documentData === "Error: Something went wrong!" ||
         (documentData.result && documentData.result.error)
       ) {
-        const loadObj = {
-          isLoad: false
-        };
+        console.log("err in get template details ");
         setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
+        setIsLoading({
+          isLoad: false
+        });
       } else {
         setHandleError("No Data Found!");
-        const loadObj = {
+        setIsLoading({
           isLoad: false
-        };
-        setIsLoading(loadObj);
+        });
       }
     } catch (err) {
-      console.log("err ", err);
+      console.log("err in get template details ", err);
       if (err?.response?.data?.code === 101) {
         setHandleError("Error: Template not found!");
       } else {
@@ -367,7 +362,6 @@ function PdfRequestFiles(props) {
         getSigners.filter(
           (data) => data.UserId.objectId === jsonSender.objectId
         );
-
       currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
       if (isEnableSubscription) {
         await checkIsSubscribed(
@@ -562,7 +556,7 @@ function PdfRequestFiles(props) {
         //else condition to check current user exist in contracts_Users class and check tour message status
         //if not then check user exist in contracts_Contactbook class and check tour message status
         const localuser = localStorage.getItem(
-          `Parse/${appInfo.appId}/currentUser`
+          `Parse/${localStorage.getItem("parseAppId")}/currentUser`
         );
         const currentUser = JSON.parse(localuser);
         const currentUserEmail = currentUser.email;
@@ -583,7 +577,6 @@ function PdfRequestFiles(props) {
           }
         } else if (res?.length === 0) {
           const res = await contactBook(currUserId);
-
           if (res === "Error: Something went wrong!") {
             setHandleError("Error: Something went wrong!");
           } else if (res[0] && res.length) {
@@ -608,18 +601,16 @@ function PdfRequestFiles(props) {
       documentData === "Error: Something went wrong!" ||
       (documentData.result && documentData.result.error)
     ) {
-      const loadObj = {
-        isLoad: false
-      };
       setHandleError("Error: Something went wrong!");
-      setIsLoading(loadObj);
+      setIsLoading({
+        isLoad: false
+      });
+      console.log("err in  getDocument cloud function ");
     } else {
       setHandleError("No Data Found!");
-      const loadObj = {
+      setIsUiLoading({
         isLoad: false
-      };
-      setIsLoading(loadObj);
-      setIsUiLoading(false);
+      });
     }
     await axios
       .get(
@@ -651,19 +642,22 @@ function PdfRequestFiles(props) {
         setIsLoading(loadObj);
       })
       .catch((err) => {
-        const loadObj = {
-          isLoad: false
-        };
-        console.log("Err ", err);
+        console.log("Err in contracts_Signature class", err);
         setHandleError("Error: Something went wrong!");
-        setIsLoading(loadObj);
+        setIsLoading({
+          isLoad: false
+        });
       });
   };
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
-    const currentUser = JSON.parse(JSON.stringify(Parse.User.current()));
+    const localuser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const currentUser = JSON.parse(localuser);
     let isEmailVerified;
     isEmailVerified = currentUser?.emailVerified;
+    //check if isEmailVerified then go on next step
     if (isEmailVerified) {
       setIsEmailVerified(isEmailVerified);
       try {
@@ -1077,6 +1071,7 @@ function PdfRequestFiles(props) {
         });
       }
     } else {
+      //else verify users email
       try {
         const userQuery = new Parse.Query(Parse.User);
         const user = await userQuery.get(currentUser.objectId, {
@@ -1087,6 +1082,7 @@ function PdfRequestFiles(props) {
           setIsEmailVerified(isEmailVerified);
         }
       } catch (e) {
+        console.log("error in save user's emailVerified in user class");
         setHandleError("Error: Something went wrong!");
       }
     }
@@ -1482,6 +1478,7 @@ function PdfRequestFiles(props) {
         setRes(userRes.data.result);
         await SendOtp();
       } else {
+        console.log("error in public-sign to create user details");
         alert("something went wrong");
       }
     } catch (e) {
@@ -1514,6 +1511,7 @@ function PdfRequestFiles(props) {
         setLoading(false);
       }
     } catch (error) {
+      console.log("error in verify otp in public-sign", error);
       alert("something went wrong!");
     }
   };
@@ -2205,5 +2203,4 @@ function PdfRequestFiles(props) {
     </DndProvider>
   );
 }
-
 export default PdfRequestFiles;
