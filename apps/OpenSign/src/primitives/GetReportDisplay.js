@@ -922,22 +922,15 @@ const ReportTable = (props) => {
   //function to handle change template status is public or private
   const handlePublicChange = async (e, item) => {
     const getPlaceholder = item?.Placeholders;
-    //conditon to check role is exist or not
-    if (getPlaceholder && getPlaceholder.length > 0) {
+    //checking index for public role
+    const getIndex = getPlaceholder.findIndex((obj) => !obj.signerObjId);
+    //conditon to check empty role is exist or not
+    if (getPlaceholder && getPlaceholder.length > 0 && getIndex >= 0) {
       const signers = item?.Signers;
       //condition to check that every role is attached to signers except the public role.
       if (getPlaceholder.length - 1 === signers?.length) {
         //check template send in order
         const IsSendInOrder = item?.SendinOrder;
-        let getIndex = -1;
-        //get role to set public role
-        const getRole = item.Placeholders.find((data) => !data.signerObjId);
-        //get public role index to check order
-        if (IsSendInOrder) {
-          getIndex = item.Placeholders.findIndex(
-            (obj) => obj.Role === getRole?.Role
-          );
-        }
         //condition for if send in order true then the public role order should be prioritized.
         //When send in order is false and there's no need to verify the public role's order
         if ((IsSendInOrder && getIndex === 0) || !IsSendInOrder) {
@@ -959,8 +952,8 @@ const ReportTable = (props) => {
                 ...prevStates,
                 [item.objectId]: e.target.checked
               }));
-              if (getRole?.Role) {
-                setSelectedPublicRole(getRole?.Role);
+              if (getPlaceholder[getIndex]?.Role) {
+                setSelectedPublicRole(getPlaceholder[getIndex].Role);
               }
               //`setIsMakePublicModal` is used to open modal after succesfully make public
               setIsMakePublicModal({ [item.objectId]: true });
