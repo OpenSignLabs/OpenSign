@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Parse from "parse";
-import axios from "axios";
 import Title from "./Title";
 import Loader from "../primitives/Loader";
 import { copytoData } from "../constant/Utils";
@@ -29,8 +28,6 @@ const AddUser = (props) => {
   const [isLoader, setIsLoader] = useState(false);
   const [teamList, setTeamList] = useState([]);
   const role = ["OrgAdmin", "Editor", "User"];
-  const parseBaseUrl = localStorage.getItem("baseUrl");
-  const parseAppId = localStorage.getItem("parseAppId");
 
   useEffect(() => {
     getTeamList();
@@ -49,7 +46,6 @@ const AddUser = (props) => {
     const teamRes = await team.find();
     if (teamRes.length > 0) {
       const _teamRes = JSON.parse(JSON.stringify(teamRes));
-      // if (isEnableSubscription) {
       setTeamList(_teamRes);
       if (!isEnableSubscription) {
         const allUserId =
@@ -110,6 +106,9 @@ const AddUser = (props) => {
             objectId: localUser.OrganizationId.objectId
           });
         }
+        if (localUser && localUser.Company) {
+          extUser.set("Company", localUser.Company);
+        }
 
         if (localStorage.getItem("TenantId")) {
           extUser.set("TenantId", {
@@ -132,18 +131,6 @@ const AddUser = (props) => {
 
           const user = await _user.save();
           if (user) {
-            const roleurl = `${parseBaseUrl}functions/AddUserToRole`;
-            const headers = {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": parseAppId,
-              sessionToken: localStorage.getItem("accesstoken")
-            };
-            const body = {
-              appName: "contracts",
-              roleName: "contracts_" + formdata.role,
-              userId: user.id
-            };
-            await axios.post(roleurl, body, { headers: headers });
             const currentUser = Parse.User.current();
             extUser.set(
               "CreatedBy",
@@ -190,18 +177,6 @@ const AddUser = (props) => {
           if (err.code === 202) {
             const params = { email: formdata.email };
             const userRes = await Parse.Cloud.run("getUserId", params);
-            const roleurl = `${parseBaseUrl}functions/AddUserToRole`;
-            const headers = {
-              "Content-Type": "application/json",
-              "X-Parse-Application-Id": parseAppId,
-              sessionToken: localStorage.getItem("accesstoken")
-            };
-            const body = {
-              appName: "contracts",
-              roleName: "contracts_" + formdata.role,
-              userId: userRes.id
-            };
-            await axios.post(roleurl, body, { headers: headers });
             const currentUser = Parse.User.current();
             extUser.set(
               "CreatedBy",

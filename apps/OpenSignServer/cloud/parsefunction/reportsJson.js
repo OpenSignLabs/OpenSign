@@ -40,6 +40,7 @@ export default function reportJson(id, userId) {
           IsCompleted: { $ne: true },
           IsDeclined: { $ne: true },
           IsArchive: { $ne: true },
+          SignedUrl: { $ne: null },
           ExpiryDate: {
             $gt: { __type: 'Date', iso: new Date().toISOString() },
           },
@@ -332,6 +333,7 @@ export default function reportJson(id, userId) {
           'Placeholders',
           'IsPublic',
           'SharedWith.Name',
+          'SendinOrder',
         ],
       };
     default:

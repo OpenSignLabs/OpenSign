@@ -6,7 +6,7 @@ import { getAppLogo, openInNewTab } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import Loader from "../primitives/Loader";
-import axios from "axios";
+import Title from "../components/Title";
 
 const AddAdmin = () => {
   const navigate = useNavigate();
@@ -152,7 +152,7 @@ const AddAdmin = () => {
     const res = await Parse.User.become(sessionToken);
     if (res) {
       const _user = JSON.parse(JSON.stringify(res));
-      console.log("_user ", _user);
+      // console.log("_user ", _user);
       localStorage.setItem("accesstoken", sessionToken);
       localStorage.setItem("UserInformation", JSON.stringify(_user));
       localStorage.setItem("accesstoken", _user.sessionToken);
@@ -240,22 +240,16 @@ const AddAdmin = () => {
   };
   const subscribeNewsletter = async () => {
     try {
-      const headers = {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": "legadranaxn"
-      };
-      const newsletter = await axios.post(
-        "https://app.opensignlabs.com",
-        { Name: name, Email: email, Domain: window.location.host },
-        { header: headers }
-      );
-      console.log("newsletter ", newsletter);
+      const params = { name: name, email: email, domain: window.location.host };
+      await Parse.Cloud.run("newsletter", params);
+      // console.log("newsletter ", newsletter);
     } catch (err) {
       console.log("err in subscribeNewsletter", err);
     }
   };
   return (
     <div className="h-screen flex justify-center">
+      <Title title={"Add admin"} />
       {state.loading ? (
         <div className="text-[grey] flex justify-center items-center text-lg md:text-2xl">
           <Loader />

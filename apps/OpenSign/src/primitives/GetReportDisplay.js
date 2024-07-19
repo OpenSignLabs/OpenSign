@@ -47,7 +47,7 @@ const ReportTable = (props) => {
   const [isTour, setIsTour] = useState(false);
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [isResendMail, setIsResendMail] = useState({});
-  const [isMakePublic, setIsMakePublic] = useState({});
+  const [isMakePublicModal, setIsMakePublicModal] = useState({});
   const [mail, setMail] = useState({ subject: "", body: "" });
   const [userDetails, setUserDetails] = useState({});
   const [isNextStep, setIsNextStep] = useState({});
@@ -443,7 +443,7 @@ const ReportTable = (props) => {
   const handleClose = (item) => {
     setIsRevoke({});
     setIsDeleteModal({});
-    setIsMakePublic({});
+    setIsMakePublicModal({});
     setSelectedPublicRole("");
     setIsPublicProfile({});
     if (item?.objectId) {
@@ -855,7 +855,7 @@ const ReportTable = (props) => {
   const handlePublicTemplate = async (item) => {
     if (selectedPublicRole || !props.isPublic[item.objectId]) {
       setActLoader({ [item.objectId]: true });
-      setIsMakePublic(false);
+      setIsMakePublicModal(false);
       try {
         const res = await Parse.Cloud.run("createpublictemplate", {
           templateid: item.objectId,
@@ -922,40 +922,59 @@ const ReportTable = (props) => {
   //function to handle change template status is public or private
   const handlePublicChange = async (e, item) => {
     const getPlaceholder = item?.Placeholders;
-    //condiiton to check role is exist or not
-    if (getPlaceholder && getPlaceholder.length > 0) {
-      const checkIsSignatureExistt = getPlaceholder?.every((placeholderObj) =>
-        placeholderObj?.placeHolder?.some((holder) =>
-          holder?.pos?.some((posItem) => posItem?.type === "signature")
-        )
-      );
+    //checking index for public role
+    const getIndex = getPlaceholder.findIndex((obj) => !obj.signerObjId);
+    //conditon to check empty role is exist or not
+    if (getPlaceholder && getPlaceholder.length > 0 && getIndex >= 0) {
       const signers = item?.Signers;
+      //condition to check that every role is attached to signers except the public role.
       if (getPlaceholder.length - 1 === signers?.length) {
-        if (checkIsSignatureExistt) {
-          let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
-          const userName = extendUser[0]?.UserName;
-          setIsPublicUserName(extendUser[0]?.UserName);
-          //condition to check user have public url or not
-          if (userName) {
-            props.setIsPublic((prevStates) => ({
-              ...prevStates,
-              [item.objectId]: e.target.checked
-            }));
-            const getRole = item.Placeholders.find((data) => !data.signerObjId);
-            if (getRole?.Role) {
-              setSelectedPublicRole(getRole?.Role);
+        //check template send in order
+        const IsSendInOrder = item?.SendinOrder;
+        //condition for if send in order true then the public role order should be prioritized.
+        //When send in order is false and there's no need to verify the public role's order
+        if ((IsSendInOrder && getIndex === 0) || !IsSendInOrder) {
+          const checkIsSignatureExist = getPlaceholder?.every(
+            (placeholderObj) =>
+              placeholderObj?.placeHolder?.some((holder) =>
+                holder?.pos?.some((posItem) => posItem?.type === "signature")
+              )
+          );
+          //condition for validate signature widgets should be all signers
+          if (checkIsSignatureExist) {
+            let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
+            const userName = extendUser[0]?.UserName;
+            setIsPublicUserName(extendUser[0]?.UserName);
+            //condition to check user have public url or not
+            if (userName) {
+              //`setIsPublic` variable is used to collect all template public status
+              props.setIsPublic((prevStates) => ({
+                ...prevStates,
+                [item.objectId]: e.target.checked
+              }));
+              if (getPlaceholder[getIndex]?.Role) {
+                setSelectedPublicRole(getPlaceholder[getIndex].Role);
+              }
+              //`setIsMakePublicModal` is used to open modal after succesfully make public
+              setIsMakePublicModal({ [item.objectId]: true });
+            } else {
+              setIsPublicProfile({ [item.objectId]: true });
             }
-
-            setIsMakePublic({ [item.objectId]: true });
           } else {
-            setIsPublicProfile({ [item.objectId]: true });
+            setIsAlert(true);
+            setAlertMsg({
+              type: "danger",
+              message:
+                " Please ensure there's at least one signature widget added for all signers."
+            });
+            setTimeout(() => setIsAlert(false), 5000);
           }
-        } else {
+        } else if (IsSendInOrder) {
           setIsAlert(true);
           setAlertMsg({
             type: "danger",
             message:
-              " Please ensure there's at least one signature widget added for all recipients."
+              "The send-in-order for this template is enabled, and the public role must be at the top."
           });
           setTimeout(() => setIsAlert(false), 5000);
         }
@@ -972,7 +991,8 @@ const ReportTable = (props) => {
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
-        message: "Please assign at least one role to make this template public."
+        message:
+          "Please assign at least one public role to make this template public."
       });
       setTimeout(() => setIsAlert(false), 5000);
     }
@@ -1036,7 +1056,7 @@ const ReportTable = (props) => {
           <Loader />
         </div>
       )}
-      <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
+      <div className="p-2 w-full overflow-auto bg-base-100 text-base-content op-card shadow-lg">
         {isCelebration && (
           <div className="relative z-[1000]">
             <Confetti width={window.innerWidth} height={window.innerHeight} />
@@ -1080,9 +1100,9 @@ const ReportTable = (props) => {
         <div
           className={`${
             isDashboard && props.List?.length > 0 ? "h-[317px]" : "h-full"
-          } overflow-x-auto w-full`}
+          } w-full`}
         >
-          <table className="op-table border-collapse w-full">
+          <table className="op-table border-collapse w-full ">
             <thead className="text-[14px]">
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (
@@ -1236,7 +1256,7 @@ const ReportTable = (props) => {
                                   </label>
                                 </div>
                               )}
-                              {isMakePublic[item.objectId] && (
+                              {isMakePublicModal[item.objectId] && (
                                 <ModalUi
                                   isOpen
                                   title={
@@ -1245,7 +1265,7 @@ const ReportTable = (props) => {
                                       : "Make template private"
                                   }
                                   handleClose={() => {
-                                    setIsMakePublic({});
+                                    setIsMakePublicModal({});
                                     setSelectedPublicRole("");
                                     props.setIsPublic((prevStates) => ({
                                       ...prevStates,
@@ -1376,7 +1396,7 @@ const ReportTable = (props) => {
                                         )}
                                         {isOption[item.objectId] &&
                                           act.action === "option" && (
-                                            <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                            <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
                                               {act.subaction?.map((subact) => (
                                                 <li
                                                   key={subact.btnId}
@@ -1428,7 +1448,7 @@ const ReportTable = (props) => {
                                     )}
                                     {isOption[item.objectId] &&
                                       act.action === "option" && (
-                                        <ul className="fixed right-14 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
+                                        <ul className="absolute -right-1 top-auto z-[70] w-max op-dropdown-content op-menu shadow bg-base-100 text-base-content rounded-box">
                                           {act.subaction?.map((subact) => (
                                             <li
                                               key={subact.btnId}

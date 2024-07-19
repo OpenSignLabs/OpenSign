@@ -4,8 +4,6 @@ import GoogleSign from './parsefunction/GoogleSign.js';
 import ZohoDetails from './parsefunction/ZohoDetails.js';
 import usersignup from './parsefunction/usersignup.js';
 import FacebookSign from './parsefunction/FacebookSign.js';
-import { addUserToGroups } from './parsefunction/AddUserToRole.js';
-import { getUserGroups } from './parsefunction/UserGroups.js';
 import DocumentAftersave from './parsefunction/DocumentAftersave.js';
 import ContactbookAftersave from './parsefunction/ContactBookAftersave.js';
 // import ContractUsersAftersave from './parsefunction/ContractUsersAftersave.js';
@@ -53,6 +51,7 @@ import GetLogoByDomain from './parsefunction/GetLogobyDomain.js';
 import AddAdmin from './parsefunction/AddAdmin.js';
 import CheckAdminExist from './parsefunction/CheckAdminExist.js';
 import UpdateExistUserAsAdmin from './parsefunction/UpdateExistUserAsAdmin.js';
+import Newsletter from './parsefunction/Newsletter.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -73,8 +72,6 @@ Parse.Cloud.afterFind('contracts_Signature', SignatureAfterFind);
 Parse.Cloud.afterFind('partners_Tenant', TenantAterFind);
 
 // This define function creates a custom Cloud Function that can be called from the client-side, enabling custom business logic on the server.
-Parse.Cloud.define('AddUserToRole', addUserToGroups);
-Parse.Cloud.define('UserGroups', getUserGroups);
 Parse.Cloud.define('signPdf', PDF);
 Parse.Cloud.define('sendmailv3', sendmailv3);
 Parse.Cloud.define('googlesign', GoogleSign);
@@ -115,3 +112,4 @@ Parse.Cloud.define('getlogobydomain', GetLogoByDomain);
 Parse.Cloud.define('addadmin', AddAdmin);
 Parse.Cloud.define('checkadminexist', CheckAdminExist);
 Parse.Cloud.define('updateuserasadmin', UpdateExistUserAsAdmin);
+Parse.Cloud.define('newsletter', Newsletter);

@@ -38,7 +38,6 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import Parse from "parse";
 import { useSelector } from "react-redux";
-import TextFontSetting from "../components/pdf/TextFontSetting";
 import PdfZoom from "../components/pdf/PdfZoom";
 const TemplatePlaceholder = () => {
   const navigate = useNavigate();
@@ -1198,13 +1197,19 @@ const TemplatePlaceholder = () => {
                   hint: defaultdata?.hint || "",
                   defaultValue: defaultdata?.defaultValue || "",
                   validation:
-                    (isSubscribe || !isEnableSubscription) && inputype
+                    isSubscribe && inputype
                       ? {
                           type: inputype,
                           pattern:
                             inputype === "regex" ? defaultdata.textvalidate : ""
                         }
-                      : {}
+                      : {},
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black"
                 }
               };
             } else {
@@ -1214,7 +1219,13 @@ const TemplatePlaceholder = () => {
                   ...position.options,
                   name: defaultdata.name,
                   status: defaultdata.status,
-                  defaultValue: defaultdata.defaultValue
+                  defaultValue: defaultdata.defaultValue,
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black"
                 }
               };
             }
@@ -1237,6 +1248,8 @@ const TemplatePlaceholder = () => {
         setSignerPos(newUpdateSigner);
       }
     }
+    setFontSize();
+    setFontColor();
     setCurrWidgetsDetails({});
     handleNameModal();
   };
@@ -1247,57 +1260,7 @@ const TemplatePlaceholder = () => {
     setIsRadio(false);
     setIsCheckbox(false);
   };
-  const handleSaveFontSize = () => {
-    const filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
-    if (filterSignerPos.length > 0) {
-      const getPlaceHolder = filterSignerPos[0].placeHolder;
 
-      const getPageNumer = getPlaceHolder.filter(
-        (data) => data.pageNumber === pageNumber
-      );
-
-      if (getPageNumer.length > 0) {
-        const getXYdata = getPageNumer[0].pos;
-        const getPosData = getXYdata;
-        const addSignPos = getPosData.map((position) => {
-          if (position.key === signKey) {
-            return {
-              ...position,
-              options: {
-                ...position.options,
-                fontSize:
-                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
-                fontColor:
-                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
-              }
-            };
-          }
-          return position;
-        });
-
-        const newUpdateSignPos = getPlaceHolder.map((obj) => {
-          if (obj.pageNumber === pageNumber) {
-            return { ...obj, pos: addSignPos };
-          }
-          return obj;
-        });
-        const newUpdateSigner = signerPos.map((obj) => {
-          if (obj.Id === uniqueId) {
-            return { ...obj, placeHolder: newUpdateSignPos };
-          }
-          return obj;
-        });
-        setSignerPos(newUpdateSigner);
-      }
-    }
-    setFontSize();
-    setFontColor();
-
-    handleTextSettingModal(false);
-  };
-  const handleTextSettingModal = (value) => {
-    setIsTextSetting(value);
-  };
   return (
     <>
       <Title title={"Template"} />
@@ -1533,7 +1496,6 @@ const TemplatePlaceholder = () => {
                         selectWidgetId={selectWidgetId}
                         setIsCheckbox={setIsCheckbox}
                         handleNameModal={setIsNameModal}
-                        handleTextSettingModal={handleTextSettingModal}
                         pdfOriginalWH={pdfOriginalWH}
                         setScale={setScale}
                         scale={scale}
@@ -1673,16 +1635,12 @@ const TemplatePlaceholder = () => {
           handleClose={handleNameModal}
           handleData={handleWidgetdefaultdata}
           isSubscribe={isSubscribe}
-        />
-        <TextFontSetting
           isTextSetting={isTextSetting}
           setIsTextSetting={setIsTextSetting}
           fontSize={fontSize}
           setFontSize={setFontSize}
           fontColor={fontColor}
           setFontColor={setFontColor}
-          handleSaveFontSize={handleSaveFontSize}
-          currWidgetsDetails={currWidgetsDetails}
         />
       </DndProvider>
     </>

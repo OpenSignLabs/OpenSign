@@ -6,7 +6,6 @@ import ModalUi from "../primitives/ModalUi";
 import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribed, openInNewTab } from "../constant/Utils";
 import Parse from "parse";
-import PremiumAlertHeader from "../primitives/PremiumAlertHeader";
 import Tooltip from "../primitives/Tooltip";
 import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
@@ -107,7 +106,6 @@ function Webhook() {
       ) : (
         <>
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box mb-3">
-            {!isEnableSubscription && <PremiumAlertHeader />}
             <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
               OpenSign™ Webhook{" "}
               <Tooltip

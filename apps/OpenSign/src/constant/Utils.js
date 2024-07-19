@@ -1,6 +1,5 @@
 import axios from "axios";
 import moment from "moment";
-import { isEnableSubscription } from "./const";
 import React from "react";
 import { rgb } from "pdf-lib";
 import Parse from "parse";
@@ -179,7 +178,7 @@ export const getDrive = async (documentId, skip = 0, limit = 100) => {
       }
     })
     .catch((err) => {
-      console.log("Err ", err);
+      console.log("Err in getDrive cloud function", err);
       return "Error: Something went wrong!";
     });
 
@@ -214,7 +213,7 @@ export const contractUsers = async (email) => {
       return data;
     })
     .catch((err) => {
-      console.log("Err ", err);
+      console.log("Err in getUserDetails cloud function", err);
       return "Error: Something went wrong!";
     });
 
@@ -569,7 +568,7 @@ export const signPdfFun = async (
       if (
         tenantDetails?.CompletionBody &&
         tenantDetails?.CompletionSubject &&
-        (!isEnableSubscription || isSubscribed)
+        isSubscribed
       ) {
         isCustomCompletionMail = true;
       }
@@ -627,7 +626,7 @@ export const signPdfFun = async (
         return res;
       })
       .catch((err) => {
-        console.log("Err ", err);
+        console.log("Err in signPdf cloud function ", err);
         setIsAlert({
           isShow: true,
           alertMessage: "something went wrong"
@@ -1662,7 +1661,7 @@ export const contactBook = async (objectId) => {
     })
 
     .catch((err) => {
-      console.log("Err ", err);
+      console.log("Err in contracts_Contactbook class ", err);
       return "Error: Something went wrong!";
     });
   return result;
@@ -1694,7 +1693,7 @@ export const contractDocument = async (documentId) => {
       }
     })
     .catch((err) => {
-      console.log("Err ", err);
+      console.log("Err in getDocument cloud function ", err);
       return "Error: Something went wrong!";
     });
 
@@ -1969,12 +1968,12 @@ export const handleDownloadPdf = async (
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
     const axiosRes = await axios.post(
-      `${appInfo.baseUrl}/functions/getsignedurl`,
+      `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
       { url: pdfUrl },
       {
         headers: {
           "content-type": "Application/json",
-          "X-Parse-Application-Id": appInfo.appId,
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       }
@@ -1999,13 +1998,15 @@ export const handleToPrint = async (event, pdfUrl, setIsDownloading) => {
   setIsDownloading("pdf");
   try {
     // const url = await Parse.Cloud.run("getsignedurl", { url: pdfUrl });
+    //`localStorage.getItem("baseUrl")` is also use in public-profile flow for public-sign
+    //if we give this `appInfo.baseUrl` as a base url then in public-profile it will create base url of it's window.location.origin ex- opensign.me which is not base url
     const axiosRes = await axios.post(
-      `${appInfo.baseUrl}/functions/getsignedurl`,
+      `${localStorage.getItem("baseUrl")}/functions/getsignedurl`,
       { url: pdfUrl },
       {
         headers: {
           "content-type": "Application/json",
-          "X-Parse-Application-Id": appInfo.appId,
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
           "X-Parse-Session-Token": localStorage.getItem("accesstoken")
         }
       }

@@ -222,7 +222,7 @@ const SSOVerify = () => {
               setMessage("Error: User not exist.");
             });
         } catch (err) {
-          console.log("err in usergroups", err);
+          console.log("err in getuserdetails", err);
         }
       }
     } catch (err) {
