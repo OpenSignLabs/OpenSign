@@ -67,7 +67,7 @@ function DraftDocument() {
       navigate(`/placeHolderSign/${data.objectId}`);
     }
     //Inprogress document
-    else if (isPlaceholder?.length > 0 && signerExist?.length > 0) {
+    else if (isPlaceholder?.length > 0 && signedUrl) {
       navigate(`/recipientSignPdf/${data.objectId}`);
     } //placeholder draft document
     else if (
