@@ -4,17 +4,22 @@ const appId = process.env.APP_ID;
 export default async function getSubscription(request) {
   const extUserId = request.params.extUserId || '';
   const contactId = request.params.contactId || '';
+  const ispublic = request.params.ispublic || false;
 
   if (extUserId) {
     try {
-      const userRes = await axios.get(serverUrl + '/users/me', {
-        headers: {
-          'X-Parse-Application-Id': appId,
-          'X-Parse-Session-Token': request.headers['sessiontoken'],
-        },
-      });
-      const userId = userRes.data && userRes.data.objectId;
-      if (userId) {
+      let userId;
+      //`ispublic` is used in public profile to get subscription details
+      if (!ispublic) {
+        const userRes = await axios.get(serverUrl + '/users/me', {
+          headers: {
+            'X-Parse-Application-Id': appId,
+            'X-Parse-Session-Token': request.headers['sessiontoken'],
+          },
+        });
+        userId = userRes.data && userRes.data.objectId;
+      }
+      if (userId || ispublic) {
         const extCls = new Parse.Query('contracts_Users');
         const exUser = await extCls.get(extUserId, { useMasterKey: true });
         if (exUser) {
