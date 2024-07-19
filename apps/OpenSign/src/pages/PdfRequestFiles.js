@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { isEnableSubscription, themeColor } from "../constant/const";
+import { isEnableSubscription, isStaging, themeColor } from "../constant/const";
 import { PDFDocument } from "pdf-lib";
 import "../styles/signature.css";
 import Parse from "parse";
@@ -949,9 +949,9 @@ function PdfRequestFiles(props) {
                             `${pdfDetails?.[0].objectId}/${user.Email}`
                           );
                         }
-                        // let signPdf = `${hostUrl}/login/${encodeBase64}`;
-                        const hostPublicUrl =
-                          "https://staging-app.opensignlabs.com";
+                        const hostPublicUrl = isStaging
+                          ? "https://staging-app.opensignlabs.com"
+                          : "https://app.opensignlabs.com";
                         let signPdf = props?.templateId
                           ? `${hostPublicUrl}/login/${encodeBase64}`
                           : `${hostUrl}/login/${encodeBase64}`;
