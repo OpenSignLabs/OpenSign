@@ -81,7 +81,21 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           });
           setmenuList(newSidebarList);
         } else {
-          setmenuList(sidebarList);
+          if (!isEnableSubscription) {
+            const newSidebarList = sidebarList.map((item) => {
+              if (item.title === "Settings") {
+                // Make a shallow copy of the item
+                const newItem = { ...item };
+                const arr = newItem.children.slice(0, 1);
+                newItem.children = arr;
+                return newItem;
+              }
+              return item;
+            });
+            setmenuList(newSidebarList);
+          } else {
+            setmenuList(sidebarList);
+          }
         }
       }
     } catch (e) {
