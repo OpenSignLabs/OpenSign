@@ -34,7 +34,7 @@
     "react-quill": "^2.0.0",
     "react-redux": "^9.1.2",
     "react-rnd": "^10.4.11",
-    "react-router-dom": "^6.24.1",
+    "react-router-dom": "^6.25.1",
     "react-scripts": "5.0.1",
     "react-scrollbars-custom": "^4.1.1",
     "react-select": "^5.8.0",
@@ -47,7 +47,7 @@
     "regex-parser": "^2.3.0",
     "serve": "^14.2.3",
     "styled-components": "^4.4.1",
-    "web-vitals": "^4.2.1",
+    "web-vitals": "^4.2.2",
     "ws": "^8.18.0"
   },
   "scripts": {
@@ -107,9 +107,9 @@
     "lint-staged": "^15.2.7",
     "mini-css-extract-plugin": "^2.9.0",
     "postcss": "^8.4.39",
-    "prettier": "^3.3.2",
+    "prettier": "^3.3.3",
     "pretty-quick": "^4.0.0",
-   "tailwindcss": "^3.4.4",
+    "tailwindcss": "^3.4.6",
     "terser-webpack-plugin": "^5.3.10",
     "webpack-cli": "^5.1.4"
   },
