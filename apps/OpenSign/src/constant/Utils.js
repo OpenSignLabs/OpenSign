@@ -178,7 +178,7 @@ export const getDrive = async (documentId, skip = 0, limit = 100) => {
       }
     })
     .catch((err) => {
-      console.log("Err ", err);
+      console.log("Err in getDrive cloud function", err);
       return "Error: Something went wrong!";
     });
 
@@ -213,7 +213,7 @@ export const contractUsers = async (email) => {
       return data;
     })
     .catch((err) => {
-      console.log("Err ", err);
+      console.log("Err in getUserDetails cloud function", err);
       return "Error: Something went wrong!";
     });
 
@@ -626,7 +626,7 @@ export const signPdfFun = async (
         return res;
       })
       .catch((err) => {
-        console.log("Err ", err);
+        console.log("Err in signPdf cloud function ", err);
         setIsAlert({
           isShow: true,
           alertMessage: "something went wrong"
@@ -1661,7 +1661,7 @@ export const contactBook = async (objectId) => {
     })
 
     .catch((err) => {
-      console.log("Err ", err);
+      console.log("Err in contracts_Contactbook class ", err);
       return "Error: Something went wrong!";
     });
   return result;
@@ -1693,7 +1693,7 @@ export const contractDocument = async (documentId) => {
       }
     })
     .catch((err) => {
-      console.log("Err ", err);
+      console.log("Err in getDocument cloud function ", err);
       return "Error: Something went wrong!";
     });
 
