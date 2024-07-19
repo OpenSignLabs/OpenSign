@@ -113,80 +113,58 @@ function Login() {
                       let _role = _currentRole.replace("contracts_", "");
                       localStorage.setItem("_user_role", _role);
                       const results = [extUser];
-                      if (extUser) {
-                        const extUser_str = JSON.stringify(results);
-                        localStorage.setItem("Extand_Class", extUser_str);
-                        const extInfo = JSON.parse(JSON.stringify(extUser));
-                        localStorage.setItem("userEmail", extInfo.Email);
-                        localStorage.setItem("username", extInfo.Name);
-                        if (extInfo?.TenantId) {
-                          const tenant = {
-                            Id: extInfo?.TenantId?.objectId || "",
-                            Name: extInfo?.TenantId?.TenantName || ""
-                          };
-                          localStorage.setItem("TenantId", tenant?.Id);
-                          dispatch(showTenant(tenant?.Name));
-                          localStorage.setItem("TenantName", tenant?.Name);
-                        }
-                        localStorage.setItem("PageLanding", menu.pageId);
-                        localStorage.setItem("defaultmenuid", menu.menuId);
-                        localStorage.setItem("pageType", menu.pageType);
-                        setState({ ...state, loading: false });
-                        if (isEnableSubscription) {
-                          const LocalUserDetails = {
-                            name: results[0].get("Name"),
-                            email: results[0].get("Email"),
-                            phone: results[0]?.get("Phone") || "",
-                            company: results[0].get("Company")
-                          };
-                          localStorage.setItem(
-                            "userDetails",
-                            JSON.stringify(LocalUserDetails)
-                          );
-                          const res = await fetchSubscription();
-                          const freeplan = res.plan;
-                          const billingDate = res.billingDate;
-                          if (freeplan === "freeplan") {
+                      const extUser_str = JSON.stringify(results);
+                      localStorage.setItem("Extand_Class", extUser_str);
+                      const extInfo = JSON.parse(JSON.stringify(extUser));
+                      localStorage.setItem("userEmail", extInfo.Email);
+                      localStorage.setItem("username", extInfo.Name);
+                      if (extInfo?.TenantId) {
+                        const tenant = {
+                          Id: extInfo?.TenantId?.objectId || "",
+                          Name: extInfo?.TenantId?.TenantName || ""
+                        };
+                        localStorage.setItem("TenantId", tenant?.Id);
+                        dispatch(showTenant(tenant?.Name));
+                        localStorage.setItem("TenantName", tenant?.Name);
+                      }
+                      localStorage.setItem("PageLanding", menu.pageId);
+                      localStorage.setItem("defaultmenuid", menu.menuId);
+                      localStorage.setItem("pageType", menu.pageType);
+                      if (isEnableSubscription) {
+                        const LocalUserDetails = {
+                          name: results[0].get("Name"),
+                          email: results[0].get("Email"),
+                          phone: results[0]?.get("Phone") || "",
+                          company: results[0].get("Company")
+                        };
+                        localStorage.setItem(
+                          "userDetails",
+                          JSON.stringify(LocalUserDetails)
+                        );
+                        const res = await fetchSubscription();
+                        const freeplan = res.plan;
+                        const billingDate = res.billingDate;
+                        if (freeplan === "freeplan") {
+                          setState({ ...state, loading: false });
+                          navigate(redirectUrl);
+                        } else if (billingDate) {
+                          if (new Date(billingDate) > new Date()) {
+                            localStorage.removeItem("userDetails");
+                            // Redirect to the appropriate URL after successful login                              setState({ ...state, loading: false });
+                            setState({ ...state, loading: false });
                             navigate(redirectUrl);
-                          } else if (billingDate) {
-                            if (new Date(billingDate) > new Date()) {
-                              localStorage.removeItem("userDetails");
-                              // Redirect to the appropriate URL after successful login
-                              navigate(redirectUrl);
-                            } else {
-                              navigate(`/subscription`, { replace: true });
-                            }
                           } else {
+                            setState({ ...state, loading: false });
                             navigate(`/subscription`, { replace: true });
                           }
                         } else {
-                          // Redirect to the appropriate URL after successful login
-                          navigate(redirectUrl);
+                          setState({ ...state, loading: false });
+                          navigate(`/subscription`, { replace: true });
                         }
                       } else {
-                        localStorage.setItem("PageLanding", menu.pageId);
-                        localStorage.setItem("defaultmenuid", menu.menuId);
-                        localStorage.setItem("pageType", menu.pageType);
                         setState({ ...state, loading: false });
-                        if (isEnableSubscription) {
-                          const LocalUserDetails = {
-                            name: _user.name,
-                            email: email,
-                            phone: _user?.phone || ""
-                            // company: results.get("Company"),
-                          };
-                          localStorage.setItem(
-                            "userDetails",
-                            JSON.stringify(LocalUserDetails)
-                          );
-                          const billingDate = "";
-                          if (billingDate) {
-                            navigate(`/subscription`, { replace: true });
-                          }
-                        } else {
-                          // Redirect to the appropriate URL after successful login
-                          navigate(redirectUrl);
-                        }
+                        // Redirect to the appropriate URL after successful login
+                        navigate(redirectUrl);
                       }
                     } else {
                       setState({ ...state, loading: false });
@@ -203,34 +181,54 @@ function Login() {
                     logOutUser();
                   }
                 } else {
-                  setState({ ...state, loading: false });
-                  setIsModal(true);
+                  if (isEnableSubscription) {
+                    setState({ ...state, loading: false });
+                    setIsModal(true);
+                  } else {
+                    setState({ ...state, loading: false });
+                    setState({
+                      ...state,
+                      loading: false,
+                      alertType: "danger",
+                      alertMsg: "User not found."
+                    });
+                    logOutUser();
+                  }
                 }
               })
               .catch((error) => {
-                const payload = { sessionToken: user.getSessionToken() };
-                handleSubmitbtn(payload);
+                // const payload = { sessionToken: user.getSessionToken() };
+                // handleSubmitbtn(payload);
+                setState({
+                  ...state,
+                  loading: false,
+                  alertType: "danger",
+                  alertMsg: `Something went wrong.`
+                });
+                setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
                 console.error("Error while fetching Follow", error);
               });
           } catch (error) {
             setState({
               ...state,
+              loading: false,
               alertType: "danger",
               alertMsg: `${error.message}`
             });
             console.log(error);
+            setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
           }
         }
       } catch (error) {
         setState({
           ...state,
+          loading: false,
           alertType: "danger",
           alertMsg: "Invalid username or password!"
         });
         console.error("Error while logging in user", error);
       } finally {
-        setState({ ...state, loading: false });
-        setTimeout(() => setState({ ...state, alertMsg: "" }), 2000);
+        setTimeout(() => setState((prev) => ({ ...prev, alertMsg: "" })), 2000);
       }
     }
   };
@@ -344,6 +342,14 @@ function Login() {
                   } else {
                     navigate(redirectUrl);
                   }
+                } else {
+                  setState({
+                    ...state,
+                    loading: false,
+                    alertType: "danger",
+                    alertMsg: "Role not found."
+                  });
+                  logOutUser();
                 }
               } else {
                 setState({
@@ -463,6 +469,9 @@ function Login() {
                 // Redirect to the appropriate URL after successful login
                 navigate(redirectUrl);
               }
+            } else {
+              setState({ ...state, loading: false });
+              logOutUser();
             }
           } else {
             setState({
@@ -543,7 +552,13 @@ function Login() {
         alert("Internal server error !");
       }
     } else {
-      alert("Please fill required details!");
+      setState({
+        ...state,
+        loading: false,
+        alertType: "warning",
+        alertMsg: "Please fill required details."
+      });
+      setTimeout(() => setState((prev) => ({ ...prev, alertMsg: "" })), 2000);
     }
   };
 
