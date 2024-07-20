@@ -974,7 +974,7 @@ const ReportTable = (props) => {
           setAlertMsg({
             type: "danger",
             message:
-              "The send-in-order for this template is enabled, and the public role must be at the top."
+              "Since this template has send-in-order enabled, the public role must be positioned at the top."
           });
           setTimeout(() => setIsAlert(false), 5000);
         }
@@ -983,7 +983,7 @@ const ReportTable = (props) => {
         setAlertMsg({
           type: "danger",
           message:
-            "Please attach signers to all remaining users except the public role user."
+            "Please attach signers to all roles except for the public role user."
         });
         setTimeout(() => setIsAlert(false), 5000);
       }

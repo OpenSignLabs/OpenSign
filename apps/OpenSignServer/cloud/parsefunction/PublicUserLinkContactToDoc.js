@@ -138,7 +138,7 @@ const sendMailToAllSigners = async docId => {
               });
               const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
               const objectId = signerMail[i].objectId;
-              const hostPublicUrl = 'https://staging-app.opensignlabs.com';
+              const hostPublicUrl = 'https://app.opensignlabs.com';
 
               //encode this url value `${Doc.objectId}/${signerMail[i].Email}/${objectId}` to base64 using `btoa` function
               const encodeBase64 = btoa(`${Doc?.objectId}/${signerMail[i].Email}/${objectId}`);
