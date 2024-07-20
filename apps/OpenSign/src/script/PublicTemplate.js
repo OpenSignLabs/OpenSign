@@ -18,12 +18,10 @@ const PublicScriptFileWrapper = ({ initialProps }) => {
   return <PdfRequestFiles {...props} />;
 };
 
-const appId = process.env.REACT_APP_APPID
-  ? process.env.REACT_APP_APPID
-  : "opensign";
-const serverUrl = process.env.REACT_APP_SERVERURL
-  ? process.env.REACT_APP_SERVERURL
-  : "https://staging-app.opensignlabs.com/api/app";
+const appId = "legadranaxn";
+// "opensign";
+const serverUrl = "https://app.opensignlabs.com/api/app";
+// "https://staging-app.opensignlabs.com/api/app";
 localStorage.setItem("baseUrl", `${serverUrl}/`);
 localStorage.setItem("parseAppId", appId);
 Parse.initialize(appId);
@@ -40,7 +38,8 @@ document.head.appendChild(link);
 //add the Tailwind CSS file
 const tailwindCssLink = document.createElement("link");
 tailwindCssLink.href =
-  "https://staging-app.opensignlabs.com/static/js/public-template.bundle.css"; // css bundle file
+  "https://app.opensignlabs.com/static/js/public-template.bundle.css"; // css bundle file
+// "https://staging-app.opensignlabs.com/static/js/public-template.bundle.css"; // css bundle file
 tailwindCssLink.rel = "stylesheet";
 document.head.appendChild(tailwindCssLink);
 // Create a root and render the wrapper component with initial props
