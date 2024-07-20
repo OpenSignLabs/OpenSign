@@ -10,7 +10,8 @@ function RenderAllPdfPage({
   setSignBtnPosition,
   pageNumber,
   signerPos,
-  signerObjectId
+  signerObjectId,
+  containerWH
 }) {
   const [signPageNumber, setSignPageNumber] = useState([]);
   const [bookmarkColor, setBookmarkColor] = useState("");
@@ -48,7 +49,7 @@ function RenderAllPdfPage({
     const timer = setTimeout(updateSize, 100); // match the transition duration
 
     return () => clearTimeout(timer);
-  }, [isHeader, pageContainer]);
+  }, [isHeader, pageContainer, containerWH]);
   //'function `addSignatureBookmark` is used to display the page where the user's signature is located.
   const addSignatureBookmark = (index) => {
     const ispageNumber = signPageNumber.includes(index + 1);
@@ -63,7 +64,6 @@ function RenderAllPdfPage({
       )
     );
   };
-
   return (
     <div ref={pageContainer} className="hidden w-[20%] bg-base-100 md:block">
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">

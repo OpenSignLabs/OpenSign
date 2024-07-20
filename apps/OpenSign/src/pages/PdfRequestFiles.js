@@ -131,14 +131,6 @@ function PdfRequestFiles(props) {
   const divRef = useRef(null);
 
   const isMobile = window.innerWidth < 767;
-  const senderUser =
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    ) &&
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    );
-  const jsonSender = JSON.parse(senderUser);
 
   let isGuestSignFlow = false;
   let sendmail;
@@ -345,6 +337,10 @@ function PdfRequestFiles(props) {
   };
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (docId, isNextUser) => {
+    const senderUser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const jsonSender = JSON.parse(senderUser);
     let currUserId;
     //getting document details
     const documentData = await contractDocument(documentId || docId);
@@ -360,8 +356,9 @@ function PdfRequestFiles(props) {
       const getCurrentSigner =
         getSigners &&
         getSigners.filter(
-          (data) => data.UserId.objectId === jsonSender.objectId
+          (data) => data.UserId.objectId === jsonSender?.objectId
         );
+
       currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
       if (isEnableSubscription) {
         await checkIsSubscribed(
@@ -651,12 +648,22 @@ function PdfRequestFiles(props) {
   };
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
+    //for emailVerified data checking first in localstorage
     const localuser = localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
-    const currentUser = JSON.parse(localuser);
-    let isEmailVerified;
-    isEmailVerified = currentUser?.emailVerified;
+    let currentUser = JSON.parse(localuser);
+    //if emailVerified data is not present in local user details then fetch again in _user class
+    if (!currentUser?.emailVerified) {
+      const userQuery = new Parse.Query(Parse.User);
+      const getUser = await userQuery.get(currentUser?.objectId, {
+        sessionToken: currentUser?.sessionToken
+      });
+      if (getUser) {
+        currentUser = JSON.parse(JSON.stringify(getUser));
+      }
+    }
+    let isEmailVerified = currentUser?.emailVerified;
     //check if isEmailVerified then go on next step
     if (isEmailVerified) {
       setIsEmailVerified(isEmailVerified);
@@ -893,7 +900,7 @@ function PdfRequestFiles(props) {
                   setUnSignedSigners([]);
                   getDocumentDetails(true);
                   const index = pdfDetails?.[0].Signers.findIndex(
-                    (x) => x.Email === jsonSender.email
+                    (x) => x.Email === currentUser?.email
                   );
                   const newIndex = index + 1;
                   const usermail = {
@@ -1074,7 +1081,7 @@ function PdfRequestFiles(props) {
       //else verify users email
       try {
         const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(currentUser.objectId, {
+        const user = await userQuery.get(currentUser?.objectId, {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
@@ -1230,6 +1237,10 @@ function PdfRequestFiles(props) {
   };
   //function for set decline true on press decline button
   const declineDoc = async (reason) => {
+    const senderUser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const jsonSender = JSON.parse(senderUser);
     setIsDecline({ isDeclined: false });
     const data = { IsDeclined: true, DeclineReason: reason };
     setIsUiLoading(true);
@@ -1904,6 +1915,7 @@ function PdfRequestFiles(props) {
                   setAllPages={setAllPages}
                   setPageNumber={setPageNumber}
                   pageNumber={pageNumber}
+                  containerWH={containerWH}
                 />
                 {/* pdf render view */}
                 <div className=" w-full md:w-[57%] flex mr-4">
