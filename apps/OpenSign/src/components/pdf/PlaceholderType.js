@@ -14,9 +14,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import RegexParser from "regex-parser";
 const textWidgetCls =
-  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center bg-base-100 whitespace-pre-wrap";
+  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap";
 const selectWidgetCls =
-  "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none bg-base-100 text-base-content";
+  "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none text-base-content";
 function PlaceholderType(props) {
   const type = props?.pos?.type;
   const [selectOption, setSelectOption] = useState("");
@@ -618,7 +618,8 @@ function PlaceholderType(props) {
         </div>
       );
     case "date":
-      return (
+      return props.isSignYourself ||
+        (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <div>
           <DatePicker
             renderCustomHeader={({ date, changeYear, changeMonth }) => (
@@ -674,6 +675,16 @@ function PlaceholderType(props) {
                   : "MM/dd/yyyy"
             }
           />
+        </div>
+      ) : (
+        <div className="text-[12px] text-black uppercase items-center">
+          <span>
+            {props.selectDate
+              ? props.selectDate?.format
+              : props.pos?.options?.validation?.format
+                ? props.pos?.options?.validation?.format
+                : "MM/dd/yyyy"}
+          </span>
         </div>
       );
     case "image":

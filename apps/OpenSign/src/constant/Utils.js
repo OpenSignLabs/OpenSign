@@ -353,7 +353,7 @@ export const getDate = () => {
 };
 export const addWidgetOptions = (type) => {
   const defaultOpt = {
-    name: "",
+    name: type,
     status: "required"
   };
   switch (type) {
