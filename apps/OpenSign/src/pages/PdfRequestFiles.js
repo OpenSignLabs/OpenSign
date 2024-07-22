@@ -653,7 +653,7 @@ function PdfRequestFiles(props) {
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
     let currentUser = JSON.parse(localuser);
-    //if emailVerified data is not present in local user details then fetch again in _user class
+    //if emailVerified data is not present in local user details then fetch again in _User class
     if (!currentUser?.emailVerified) {
       const userQuery = new Parse.Query(Parse.User);
       const getUser = await userQuery.get(currentUser?.objectId, {
@@ -1685,7 +1685,7 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg="Document declined"
+                  headMsg="Document decline"
                   bodyMssg={
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
