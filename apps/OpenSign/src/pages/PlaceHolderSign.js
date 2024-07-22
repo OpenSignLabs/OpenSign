@@ -1520,16 +1520,9 @@ function PlaceHolderSign() {
       }
     }
     setCurrWidgetsDetails({});
-    handleNameModal();
     setFontSize();
     setFontColor();
-    //condition for text widget type after set all values for text widget
-    //change setUniqueId which is set in tempsignerId
-    //because textwidget do not have signer user so for selected signers we have to do
-    if (currWidgetsDetails.type === textWidget) {
-      setUniqueId(tempSignerId);
-      setTempSignerId("");
-    }
+    handleNameModal();
   };
 
   const handleNameModal = () => {
@@ -1538,6 +1531,14 @@ function PlaceHolderSign() {
     setShowDropdown(false);
     setIsRadio(false);
     setIsCheckbox(false);
+    setIsPageCopy(false);
+    //condition for text widget type after set all values for text widget
+    //change setUniqueId which is set in tempsignerId
+    //because textwidget do not have signer user so for selected signers we have to do
+    if (currWidgetsDetails.type === textWidget) {
+      setUniqueId(tempSignerId);
+      setTempSignerId("");
+    }
   };
   //function for update TourStatus
   const closeTour = async () => {
@@ -1620,13 +1621,11 @@ function PlaceHolderSign() {
           setCurrentId(getCurrentUserDeatils[0].Email);
         }
       }
-
       setSignersData(updateSigner);
       const index = signersdata.findIndex((x) => x.Id === uniqueId);
       setIsSelectId(index);
     }
   };
-
   //function to add new signer in document signers list
   const handleAddNewRecipients = (data) => {
     const newId = randomId();
