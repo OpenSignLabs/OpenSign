@@ -23,7 +23,7 @@ const WidgetNameModal = (props) => {
   useEffect(() => {
     if (props.defaultdata) {
       setFormdata({
-        name: props.defaultdata?.options?.name || props?.widgetName || "",
+        name: props.defaultdata?.options?.name || "",
         defaultValue: props.defaultdata?.options?.defaultValue || "",
         status: props.defaultdata?.options?.status || "required",
         hint: props.defaultdata?.options?.hint || "",
@@ -35,11 +35,11 @@ const WidgetNameModal = (props) => {
     } else {
       setFormdata({
         ...formdata,
-        name: props.defaultdata?.options?.name || props?.widgetName || ""
+        name: props.defaultdata?.options?.name || ""
       });
     }
     // eslint-disable-next-line
-  }, [props.defaultdata, props.widgetName]);
+  }, [props.defaultdata]);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (props.handleData) {
@@ -109,10 +109,7 @@ const WidgetNameModal = (props) => {
       <form
         onSubmit={handleSubmit}
         className={`${
-          props.defaultdata?.type === textInputWidget ||
-          props.widgetName === textInputWidget
-            ? "pt-0"
-            : ""
+          props.defaultdata?.type === textInputWidget ? "pt-0" : ""
         } p-[20px] text-base-content`}
       >
         <div className="mb-[0.75rem] text-[13px]">
@@ -128,8 +125,7 @@ const WidgetNameModal = (props) => {
             required
           />
         </div>
-        {(props.defaultdata?.type === textInputWidget ||
-          props.widgetName === textInputWidget) && (
+        {props.defaultdata?.type === textInputWidget && (
           <>
             {isEnableSubscription && (
               <div className="mb-[0.75rem]">
@@ -248,8 +244,7 @@ const WidgetNameModal = (props) => {
             })}
           </div>
         </div>
-        {(props.defaultdata?.type === textInputWidget ||
-          props?.widgetName === textInputWidget) && (
+        {props.defaultdata?.type === textInputWidget && (
           <div className="mb-[0.75rem]">
             <label htmlFor="hint" className="text-[13px]">
               Hint
@@ -269,15 +264,13 @@ const WidgetNameModal = (props) => {
           "company",
           "job title",
           "email"
-        ].includes(props.defaultdata?.type || props?.widgetName) && (
+        ].includes(props.defaultdata?.type) && (
           <div className="flex items-center mb-[0.75rem]">
             <span>Font size:</span>
             <select
               className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               value={
-                props.fontSize ||
-                props.currWidgetsDetails?.options?.fontSize ||
-                "12"
+                props.fontSize || props.defaultdata?.options?.fontSize || "12"
               }
               onChange={(e) => props.setFontSize(e.target.value)}
             >
@@ -294,7 +287,7 @@ const WidgetNameModal = (props) => {
               <select
                 value={
                   props.fontColor ||
-                  props.currWidgetsDetails?.options?.fontColor ||
+                  props.defaultdata?.options?.fontColor ||
                   "black"
                 }
                 onChange={(e) => props.setFontColor(e.target.value)}
@@ -312,7 +305,7 @@ const WidgetNameModal = (props) => {
                 style={{
                   background:
                     props.fontColor ||
-                    props.currWidgetsDetails?.options?.fontColor ||
+                    props.defaultdata?.options?.fontColor ||
                     "black"
                 }}
                 className="w-5 h-[19px] ml-1"

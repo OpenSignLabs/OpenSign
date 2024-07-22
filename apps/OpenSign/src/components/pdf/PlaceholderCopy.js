@@ -189,9 +189,7 @@ function PlaceholderCopy(props) {
     <ModalUi
       isOpen={props.isPageCopy}
       title={"Copy to all pages"}
-      handleClose={() => {
-        props.setIsPageCopy(false);
-      }}
+      handleClose={() => handleUniqueId()}
     >
       <div className="h-full p-[20px] text-base-content">
         {copyType.map((data, key) => {
