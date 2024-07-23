@@ -70,6 +70,7 @@ export default function reportJson(id, userId) {
           'Signers.UserId',
           'AuditTrail',
           'Placeholders',
+          'SignedUrl',
         ],
       };
     // In progess report
@@ -106,6 +107,7 @@ export default function reportJson(id, userId) {
           'ExpiryDate',
           'SendMail',
           'Placeholders',
+          'SignedUrl',
         ],
       };
     // completed documents report
@@ -137,7 +139,6 @@ export default function reportJson(id, userId) {
           'Placeholders',
         ],
       };
-
     //  declined documents report
     case 'UPr2Fm5WY3':
       return {
@@ -164,6 +165,7 @@ export default function reportJson(id, userId) {
           'Signers.Phone',
           'Placeholders',
           'DeclineReason',
+          'SignedUrl',
         ],
       };
     //  Expired Documents report
@@ -195,6 +197,7 @@ export default function reportJson(id, userId) {
           'Signers.Email',
           'Signers.Phone',
           'Placeholders',
+          'SignedUrl',
         ],
       };
     //  Recently sent for signatures report show on dashboard
@@ -229,6 +232,7 @@ export default function reportJson(id, userId) {
           'AuditTrail.UserPtr',
           'ExpiryDate',
           'Placeholders',
+          'SignedUrl',
         ],
       };
     //  Recent signature requests report show on dashboard
@@ -267,6 +271,7 @@ export default function reportJson(id, userId) {
           'Signers.Email',
           'Signers.Phone',
           'Placeholders',
+          'SignedUrl',
         ],
       };
     // Drafts report show on dashboard
