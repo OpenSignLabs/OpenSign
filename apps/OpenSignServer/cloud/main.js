@@ -52,6 +52,12 @@ import AddAdmin from './parsefunction/AddAdmin.js';
 import CheckAdminExist from './parsefunction/CheckAdminExist.js';
 import UpdateExistUserAsAdmin from './parsefunction/UpdateExistUserAsAdmin.js';
 import Newsletter from './parsefunction/Newsletter.js';
+import getOrganizations from './parsefunction/getOrganizations.js';
+import addOrganization from './parsefunction/addOrganization.js';
+import updateOrganization from './parsefunction/updateOrganization.js';
+import getTeams from './parsefunction/getTeams.js';
+import addTeam from './parsefunction/addTeam.js';
+import updateTeam from './parsefunction/updateTeam.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -113,3 +119,9 @@ Parse.Cloud.define('addadmin', AddAdmin);
 Parse.Cloud.define('checkadminexist', CheckAdminExist);
 Parse.Cloud.define('updateuserasadmin', UpdateExistUserAsAdmin);
 Parse.Cloud.define('newsletter', Newsletter);
+Parse.Cloud.define('getorganizations', getOrganizations);
+Parse.Cloud.define('addorganization', addOrganization);
+Parse.Cloud.define('updateorganization', updateOrganization);
+Parse.Cloud.define('getteams', getTeams);
+Parse.Cloud.define('addteam', addTeam);
+Parse.Cloud.define('updateteam', updateTeam);
