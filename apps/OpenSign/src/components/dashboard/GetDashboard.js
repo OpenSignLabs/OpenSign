@@ -31,7 +31,7 @@ const GetDashboard = (props) => {
           <div
             className={`${
               col?.widget?.bgColor ? col.widget.bgColor : "bg-[#2ed8b6]"
-            } op-card w-full h-[140px] px-3 pt-4 mb-3 shadow-md"`}
+            } op-card w-full h-[140px] px-3 pt-4 mb-3 shadow-md`}
             data-tut={col.widget.data.tourSection}
           >
             <Suspense
