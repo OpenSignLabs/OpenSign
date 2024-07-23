@@ -38,7 +38,16 @@ exports.up = async Parse => {
     .addBoolean('HeaderDocId')
     .addPointer('CreatedBy', '_User')
     .addString('Webhook')
-    .addBoolean('ShareWithTeam', false);
+    .addBoolean('ShareWithTeam', false)
+    .setCLP({
+      get: {},
+      find: {},
+      count: {},
+      create: { '*': true },
+      update: { '*': true },
+      delete: {},
+      addField: {},
+    });
   await extUsers.save(null, { useMasterKey: true });
 
   const doc = new Parse.Schema('contracts_Document');
