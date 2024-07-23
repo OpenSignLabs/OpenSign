@@ -1254,7 +1254,8 @@ export const multiSignEmbed = async (
   xyPositionArray,
   pdfDoc,
   signyourself,
-  scale
+  scale,
+  containerScale
 ) => {
   for (let item of xyPositionArray) {
     const typeExist = item.pos.some((data) => data?.type);
@@ -1416,7 +1417,9 @@ export const multiSignEmbed = async (
         }
       } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
-        const fontSize = parseInt(position?.options?.fontSize) || 12;
+        const fontSize =
+          parseInt(position?.options?.fontSize / containerScale) ||
+          12 / containerScale;
         const color = position?.options?.fontColor;
         let updateColorInRgb;
         if (color === "red") {
@@ -1591,7 +1594,7 @@ export const multiSignEmbed = async (
     });
   }
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-  // console.log("pdf", pdfBytes);
+  //console.log("pdf", pdfBytes);
   return pdfBytes;
 };
 
@@ -2211,3 +2214,11 @@ function getImagePosition(page, image, sizeRatio) {
     rotate: page.getRotation()
   };
 }
+//function to use calculate pdf rendering scale in the container
+export const getContainerScale = (pdfOriginalWH, pageNumber, containerWH) => {
+  const getPdfPageWidth = pdfOriginalWH.find(
+    (data) => data.pageNumber === pageNumber
+  );
+  const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
+  return containerScale;
+};

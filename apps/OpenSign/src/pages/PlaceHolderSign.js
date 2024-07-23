@@ -33,7 +33,8 @@ import {
   replaceMailVaribles,
   copytoData,
   fetchSubscription,
-  convertPdfArrayBuffer
+  convertPdfArrayBuffer,
+  getContainerScale
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -452,10 +453,11 @@ function PlaceHolderSign() {
       setZIndex(posZIndex);
       const signer = signersdata.find((x) => x.Id === uniqueId);
       const key = randomId();
-      const getPdfPageWidth = pdfOriginalWH.find(
-        (data) => data.pageNumber === pageNumber
+      const containerScale = getContainerScale(
+        pdfOriginalWH,
+        pageNumber,
+        containerWH
       );
-      const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
@@ -676,11 +678,11 @@ function PlaceHolderSign() {
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
       const signId = signerId ? signerId : uniqueId; //? signerId : signerObjId;
       const keyValue = key ? key : dragKey;
-      const getPdfPageWidth = pdfOriginalWH.find(
-        (data) => data.pageNumber === pageNumber
+      const containerScale = getContainerScale(
+        pdfOriginalWH,
+        pageNumber,
+        containerWH
       );
-      const containerScale = containerWH.width / getPdfPageWidth?.width;
-
       if (keyValue >= 0) {
         let filterSignerPos;
         if (signId) {
@@ -851,14 +853,19 @@ function PlaceHolderSign() {
       const pdfDoc = await PDFDocument.load(existingPdfBytes, {
         ignoreEncryption: true
       });
-
       const isSignYourSelfFlow = false;
+      const containerScale = getContainerScale(
+        pdfOriginalWH,
+        pageNumber,
+        containerWH
+      );
       try {
         const pdfBytes = await multiSignEmbed(
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
-          containerWH
+          containerWH,
+          containerScale
         );
 
         const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";

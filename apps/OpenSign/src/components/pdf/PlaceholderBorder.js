@@ -47,14 +47,11 @@ function PlaceholderBorder(props) {
       onTouchEnd={() =>
         props.pos.type === textWidget && props?.setDraggingEnabled(true)
       }
-      className="absolute inline-block w-[14px] h-[14px] hover:cursor-sw-resize"
+      className="absolute inline-block w-[14px] h-[14px]  border-[0.2px] overflow-hidden border-dashed"
       style={{
         borderColor: themeColor,
-        borderStyle: "dashed",
         minWidth: handleMinWidth() || 0,
-        minHeight: handleMinHeight() || 0,
-        borderWidth: "0.2px",
-        overflow: "hidden"
+        minHeight: handleMinHeight() || 0
       }}
     ></div>
   );
