@@ -17,15 +17,8 @@ const AddTeam = (props) => {
   const getTeamList = async () => {
     setIsLoader(true);
     try {
-      const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-      const teamCls = new Parse.Query("contracts_Teams");
-      teamCls.equalTo("OrganizationId", {
-        __type: "Pointer",
-        className: "contracts_Organizations",
-        objectId: extUser.OrganizationId.objectId
-      });
-      teamCls.equalTo("IsActive", true);
-      const teamRes = await teamCls.find();
+      const teams = await Parse.Cloud.run("getteams");
+      const teamRes = JSON.parse(JSON.stringify(teams));
       if (teamRes.length > 0) {
         const _teamRes = JSON.parse(JSON.stringify(teamRes));
         const allUsersteam = _teamRes.find((x) => x.Name === "All Users");
@@ -73,76 +66,47 @@ const AddTeam = (props) => {
       }
     }
     try {
-      const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       setIsLoader(true);
-      const team = new Parse.Query("contracts_Teams");
-      team.equalTo("Name", formdata.name);
+      let data = { Name: formdata.name };
       if (updatedAncestors.length > 0) {
         const ParentId = updatedAncestors[updatedAncestors.length - 1];
-        team.equalTo("ParentId", ParentId);
+        data["ParentId"] = ParentId?.objectId;
+        data["Ancestors"] = updatedAncestors;
       }
-      if (localUser && localUser.OrganizationId) {
-        team.equalTo("OrganizationId", {
-          __type: "Pointer",
-          className: "contracts_Organizations",
-          objectId: localUser.OrganizationId.objectId
+      const newTeamRes = await Parse.Cloud.run("addteam", data);
+      // console.log("teamRes ", newTeamRes);
+      if (updatedAncestors.length > 0) {
+        const ParentId = teamList.find((x) => x.objectId === formdata.team);
+        props.handleTeamInfo({
+          objectId: newTeamRes.id,
+          Name: formdata.name,
+          ParentId: ParentId,
+          Ancestors: updatedAncestors,
+          IsActive: true
         });
-      }
-      const isTeam = await team.first();
-      if (isTeam) {
-        props.setIsAlert({ type: "info", msg: "Teams already exists." });
-        setIsLoader(false);
       } else {
-        const newTeam = new Parse.Object("contracts_Teams");
-        newTeam.set("Name", formdata.name);
-        if (updatedAncestors.length > 0) {
-          const ParentId = updatedAncestors[updatedAncestors.length - 1];
-          newTeam.set("ParentId", ParentId);
-          newTeam.set("Ancestors", updatedAncestors);
-        }
-        if (localUser && localUser.OrganizationId) {
-          newTeam.set("OrganizationId", {
-            __type: "Pointer",
-            className: "contracts_Organizations",
-            objectId: localUser.OrganizationId.objectId
-          });
-        }
-        newTeam.set("IsActive", true);
-        const newTeamRes = await newTeam.save();
-        if (updatedAncestors.length > 0) {
-          const ParentId = teamList.find((x) => x.objectId === formdata.team);
-          props.handleTeamInfo({
-            objectId: newTeamRes.id,
-            Name: formdata.name,
-            ParentId: ParentId,
-            Ancestors: updatedAncestors,
-            IsActive: true
-          });
-        } else {
-          props.handleTeamInfo({
-            objectId: newTeamRes.id,
-            Name: formdata.name,
-            ParentId: "",
-            Ancestors: "",
-            IsActive: true
-          });
-        }
-
-        if (props.closePopup) {
-          props.closePopup();
-        }
-        setFormdata({
-          name: "",
-          team: { name: "", objectId: "" }
-        });
-        props.setIsAlert({
-          type: "success",
-          msg: "Team created successfully."
+        props.handleTeamInfo({
+          objectId: newTeamRes.id,
+          Name: formdata.name,
+          ParentId: "",
+          Ancestors: "",
+          IsActive: true
         });
       }
+      if (props.closePopup) {
+        props.closePopup();
+      }
+      setFormdata({ name: "", team: { name: "", objectId: "" } });
+      props.setIsAlert({ type: "success", msg: "Team created successfully." });
     } catch (err) {
       console.log("err in save team", err);
-      props.setIsAlert({ type: "danger", msg: "Something went wrong." });
+      if (err.code === 137) {
+        props.setIsAlert({ type: "danger", msg: "Teams already exists." });
+      } else if (err.code === 102) {
+        props.setIsAlert({ type: "warning", msg: "Provide team name." });
+      } else {
+        props.setIsAlert({ type: "danger", msg: "Something went wrong." });
+      }
     } finally {
       setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500);
       setIsLoader(false);
