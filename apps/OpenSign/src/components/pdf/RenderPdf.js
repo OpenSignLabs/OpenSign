@@ -3,6 +3,7 @@ import RSC from "react-scrollbars-custom";
 import { Document, Page } from "react-pdf";
 import {
   defaultWidthHeight,
+  getContainerScale,
   handleImageResize,
   handleSignYourselfImageResize
 } from "../../constant/Utils";
@@ -68,10 +69,11 @@ function RenderPdf({
 
   // handle signature block width and height according to screen
   const posWidth = (pos, signYourself) => {
-    const getPdfPageWidth = pdfOriginalWH.find(
-      (data) => data.pageNumber === pageNumber
+    const containerScale = getContainerScale(
+      pdfOriginalWH,
+      pageNumber,
+      containerWH
     );
-    const containerScale = containerWH.width / getPdfPageWidth.width || 1;
     const defaultWidth = defaultWidthHeight(pos.type).width;
     const posWidth = pos.Width ? pos.Width : defaultWidth;
     if (signYourself) {
@@ -97,11 +99,11 @@ function RenderPdf({
     }
   };
   const posHeight = (pos, signYourself) => {
-    const getPdfPageWidth = pdfOriginalWH.find(
-      (data) => data.pageNumber === pageNumber
+    const containerScale = getContainerScale(
+      pdfOriginalWH,
+      pageNumber,
+      containerWH
     );
-    const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
-
     const posHeight = pos.Height || defaultWidthHeight(pos.type).height;
     if (signYourself) {
       return posHeight * scale * containerScale;

@@ -30,7 +30,8 @@ import {
   contactBook,
   handleDownloadPdf,
   handleToPrint,
-  handleDownloadCertificate
+  handleDownloadCertificate,
+  getContainerScale
 } from "../constant/Utils";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -857,12 +858,18 @@ function PdfRequestFiles(props) {
                   await embedDocId(pdfDoc, documentId, allPages);
                 }
               }
+              const containerScale = getContainerScale(
+                pdfOriginalWH,
+                pageNumber,
+                containerWH
+              );
               //embed multi signature in pdf
               const pdfBytes = await multiSignEmbed(
                 pngUrl,
                 pdfDoc,
                 isSignYourSelfFlow,
-                scale
+                scale,
+                containerScale
               );
               //  console.log("pdfte", pdfBytes);
               //get ExistUserPtr object id of user class to get tenantDetails
