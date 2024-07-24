@@ -7,24 +7,26 @@ const ValidateRoute = () => {
       try {
         // Use the session token to validate the user
         const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(Parse.User.current().id, {
+        const user = await userQuery.get(Parse?.User?.current()?.id, {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (!user) {
           handlelogout();
         }
       } catch (error) {
+        console.log("err in validate route", error);
         handlelogout();
       }
     })();
   }, []);
   const handlelogout = async () => {
     try {
-      Parse.User.logOut();
+      // if (Parse?.User?.current()) {
+      //   Parse?.User?.logOut();
+      // }
       localStorage.removeItem("accesstoken");
     } catch (err) {
       console.log("err ", err);
-    } finally {
       localStorage.removeItem("accesstoken");
     }
   };

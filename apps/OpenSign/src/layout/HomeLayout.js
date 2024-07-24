@@ -40,7 +40,7 @@ const HomeLayout = () => {
         try {
           // Use the session token to validate the user
           const userQuery = new Parse.Query(Parse.User);
-          const user = await userQuery.get(Parse.User.current().id, {
+          const user = await userQuery.get(Parse?.User?.current()?.id, {
             sessionToken: localStorage.getItem("accesstoken")
           });
           if (user) {
@@ -246,7 +246,7 @@ const HomeLayout = () => {
 
   const handleLoginBtn = () => {
     try {
-      Parse.User.logOut();
+      Parse?.User?.logOut();
     } catch (err) {
       console.log("err ", err);
     } finally {
