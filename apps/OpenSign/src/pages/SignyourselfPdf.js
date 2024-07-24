@@ -691,18 +691,14 @@ function SignYourSelf() {
             if (!HeaderDocId) {
               await embedDocId(pdfDoc, documentId, allPages);
             }
-            const containerScale = getContainerScale(
-              pdfOriginalWH,
-              pageNumber,
-              containerWH
-            );
             //embed multi signature in pdf
             const pdfBytes = await multiSignEmbed(
               xyPostion,
               pdfDoc,
               isSignYourSelfFlow,
               scale,
-              containerScale
+              pdfOriginalWH,
+              containerWH
             );
             // console.log("pdf", pdfBytes);
             //function for call to embed signature in pdf and get digital signature pdf

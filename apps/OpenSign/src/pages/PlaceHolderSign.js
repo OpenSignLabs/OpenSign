@@ -854,18 +854,14 @@ function PlaceHolderSign() {
         ignoreEncryption: true
       });
       const isSignYourSelfFlow = false;
-      const containerScale = getContainerScale(
-        pdfOriginalWH,
-        pageNumber,
-        containerWH
-      );
       try {
         const pdfBytes = await multiSignEmbed(
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
-          containerWH,
-          containerScale
+          scale,
+          pdfOriginalWH,
+          containerWH
         );
 
         const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";

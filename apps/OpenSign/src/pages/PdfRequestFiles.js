@@ -30,8 +30,7 @@ import {
   contactBook,
   handleDownloadPdf,
   handleToPrint,
-  handleDownloadCertificate,
-  getContainerScale
+  handleDownloadCertificate
 } from "../constant/Utils";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -679,7 +678,7 @@ function PdfRequestFiles(props) {
             widgetKey,
             radioExist,
             requiredCheckbox,
-            pageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
+            TourPageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
 
           for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
             for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
@@ -727,7 +726,7 @@ function PdfRequestFiles(props) {
                     ) {
                       showAlert = true;
                       widgetKey = requiredCheckbox[i].key;
-                      pageNumber = updatePage;
+                      TourPageNumber = updatePage;
                       setminRequiredCount(parseMin);
                     }
                     //else condition to validate minimum required checkbox
@@ -738,8 +737,7 @@ function PdfRequestFiles(props) {
                       if (!showAlert) {
                         showAlert = true;
                         widgetKey = requiredCheckbox[i].key;
-                        pageNumber = updatePage;
-
+                        TourPageNumber = updatePage;
                         setminRequiredCount(parseMin);
                       }
                     }
@@ -765,7 +763,7 @@ function PdfRequestFiles(props) {
                       if (!checkDefaultSigned && !showAlert) {
                         showAlert = true;
                         widgetKey = requiredRadio[i].key;
-                        pageNumber = updatePage;
+                        TourPageNumber = updatePage;
                         setminRequiredCount(null);
                       }
                     }
@@ -793,7 +791,7 @@ function PdfRequestFiles(props) {
                         if (!checkDefaultSigned && !showAlert) {
                           showAlert = true;
                           widgetKey = requiredWidgets[i].key;
-                          pageNumber = updatePage;
+                          TourPageNumber = updatePage;
                           setminRequiredCount(null);
                         }
                       }
@@ -809,15 +807,15 @@ function PdfRequestFiles(props) {
           }
           if (checkboxExist && requiredCheckbox && showAlert) {
             setUnSignedWidgetId(widgetKey);
-            setPageNumber(pageNumber);
+            setPageNumber(TourPageNumber);
             setWidgetsTour(true);
           } else if (radioExist && showAlert) {
             setUnSignedWidgetId(widgetKey);
-            setPageNumber(pageNumber);
+            setPageNumber(TourPageNumber);
             setWidgetsTour(true);
           } else if (showAlert) {
             setUnSignedWidgetId(widgetKey);
-            setPageNumber(pageNumber);
+            setPageNumber(TourPageNumber);
             setWidgetsTour(true);
           } else {
             setIsUiLoading(true);
@@ -858,18 +856,14 @@ function PdfRequestFiles(props) {
                   await embedDocId(pdfDoc, documentId, allPages);
                 }
               }
-              const containerScale = getContainerScale(
-                pdfOriginalWH,
-                pageNumber,
-                containerWH
-              );
               //embed multi signature in pdf
               const pdfBytes = await multiSignEmbed(
                 pngUrl,
                 pdfDoc,
                 isSignYourSelfFlow,
                 scale,
-                containerScale
+                pdfOriginalWH,
+                containerWH
               );
               //  console.log("pdfte", pdfBytes);
               //get ExistUserPtr object id of user class to get tenantDetails

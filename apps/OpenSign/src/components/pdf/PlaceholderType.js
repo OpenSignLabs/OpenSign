@@ -520,7 +520,8 @@ function PlaceholderType(props) {
               ? props.pos.options?.fontSize + "px"
               : "12px",
             color: props.pos.options?.fontColor || "black",
-            fontFamily: "Arial, sans-serif"
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
           }}
         >
           <span>{type}</span>
@@ -607,7 +608,8 @@ function PlaceholderType(props) {
               ? props.pos.options?.fontSize + "px"
               : "12px",
             color: props.pos.options?.fontColor || "black",
-            fontFamily: "Arial, sans-serif"
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
           }}
         >
           <span>{type}</span>
@@ -740,7 +742,8 @@ function PlaceholderType(props) {
               ? props.pos.options?.fontSize + "px"
               : "12px",
             color: props.pos.options?.fontColor || "black",
-            fontFamily: "Arial, sans-serif"
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
           }}
         >
           <span>{type}</span>
