@@ -1249,15 +1249,30 @@ export const changeImageWH = async (base64Image) => {
   });
 };
 
+//function to calculate font size of text area widgets
+const calculateFontSize = (position, containerScale, signyourself) => {
+  const font = position?.options?.fontSize || 12;
+  if (!signyourself && position?.isMobile && position?.scale) {
+    return font / position?.scale / containerScale;
+  } else {
+    return font / containerScale;
+  }
+};
 //function for embed multiple signature using pdf-lib
 export const multiSignEmbed = async (
   xyPositionArray,
   pdfDoc,
   signyourself,
   scale,
-  containerScale
+  pdfOriginalWH,
+  containerWH
 ) => {
   for (let item of xyPositionArray) {
+    const containerScale = getContainerScale(
+      pdfOriginalWH,
+      item?.pageNumber,
+      containerWH
+    );
     const typeExist = item.pos.some((data) => data?.type);
     let updateItem;
 
@@ -1417,9 +1432,13 @@ export const multiSignEmbed = async (
         }
       } else if (widgetTypeExist) {
         const font = await pdfDoc.embedFont("Helvetica");
-        const fontSize =
-          parseInt(position?.options?.fontSize / containerScale) ||
-          12 / containerScale;
+        const fontSize = calculateFontSize(
+          position,
+          containerScale,
+          signyourself
+        );
+        parseInt(fontSize);
+
         const color = position?.options?.fontColor;
         let updateColorInRgb;
         if (color === "red") {
