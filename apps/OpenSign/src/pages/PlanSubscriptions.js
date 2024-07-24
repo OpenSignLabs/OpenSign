@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import checkmark from "../assets/images/checkmark.png";
-import plansArr, { stagingPlan } from "../json/plansArr";
+import plansArr from "../json/plansArr";
 import Title from "../components/Title";
 import Parse from "parse";
 import { openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
-import { isStaging } from "../constant/const";
 const listItemStyle = {
   paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -17,7 +16,6 @@ const listItemStyle = {
 
 const PlanSubscriptions = () => {
   const navigate = useNavigate();
-  const isTeamPlan = plansArr.some((x) => x.planName === "OPENSIGN™ TEAMS");
   const [yearlyVisible, setYearlyVisible] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
   const extUser =
@@ -61,9 +59,6 @@ const PlanSubscriptions = () => {
     phone;
   useEffect(() => {
     setIsLoader(false);
-    if (!isTeamPlan && isStaging) {
-      plansArr.splice(2, 0, stagingPlan);
-    }
     // eslint-disable-next-line
   }, []);
 
@@ -123,7 +118,7 @@ const PlanSubscriptions = () => {
                   role="tab"
                   className={`${yearlyVisible ? "op-tab-active" : ""} op-tab`}
                 >
-                  Yearly (10% off)
+                  Yearly (upto 66% off)
                 </a>
               </div>
               <ul className="op-card flex flex-col md:flex-row h-full bg-base-100 justify-center shadow-lg">
@@ -209,11 +204,18 @@ const PlanSubscriptions = () => {
                     </div>
                     <hr className="w-full bg-gray-300 h-[0.5px]" />
                     <ul className="mx-1 p-3 text-left break-words text-sm list-none">
-                      {item.benefits.map((subitem, index) => (
-                        <li style={listItemStyle} key={index} className="m-1">
-                          <span className="relative">{subitem}</span>
-                        </li>
-                      ))}
+                      {!yearlyVisible &&
+                        item.benefits.map((subitem, index) => (
+                          <li style={listItemStyle} key={index} className="m-1">
+                            <span className="relative">{subitem}</span>
+                          </li>
+                        ))}
+                      {yearlyVisible &&
+                        item?.yearlyBenefits?.map((subitem, index) => (
+                          <li style={listItemStyle} key={index} className="m-1">
+                            <span className="relative">{subitem}</span>
+                          </li>
+                        ))}
                     </ul>
                   </li>
                 ))}
