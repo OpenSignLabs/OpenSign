@@ -5,7 +5,7 @@ FROM mongo:latest
 RUN mkdir -p /docker-entrypoint-initdb.d
 
 # Copy default data JSON files to the initialization directory
-COPY ./default-data/*.json /docker-entrypoint-initdb.d/
+# COPY ./default-data/*.json /docker-entrypoint-initdb.d/
 
 # Execute the initialization script during container startup
 CMD ["mongod"]

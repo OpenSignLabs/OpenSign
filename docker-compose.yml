@@ -28,9 +28,8 @@ services:
     image: opensign-mongo
     volumes:
       - data-volume:/data/db
-      - ./apps/mongo/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     ports:
-      - "27017:27017"
+      - "27018:27017"
     networks:
       - app-network
   client:
