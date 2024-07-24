@@ -1,7 +1,7 @@
 ---
 title: How to generate self-signed document signing certificate?
 ---
-# Steps to generate self-signed document singing certificate for testing OpenSign
+# Steps to generate self-signed document signing certificate for testing OpenSign
 ```
 # execute below command and use passphrase 'opensign'
 openssl genrsa -des3 -out ./local_dev.key 2048
