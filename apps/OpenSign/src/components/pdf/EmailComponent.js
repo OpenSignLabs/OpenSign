@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { saveAs } from "file-saver";
 import axios from "axios";
 import { getBase64FromUrl } from "../../constant/Utils";
-import { themeColor } from "../../constant/const";
+import { themeColor, emailRegex } from "../../constant/const";
 import printModule from "print-js";
 import Loader from "../../primitives/Loader";
 import ModalUi from "../../primitives/ModalUi";
@@ -19,8 +19,9 @@ function EmailComponent({
   activeMailAdapter
 }) {
   const [emailList, setEmailList] = useState([]);
-  const [emailValue, setEmailValue] = useState();
+  const [emailValue, setEmailValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailErr, setEmailErr] = useState(false);
   //function for send email
   const sendEmail = async () => {
     setIsLoading(true);
@@ -111,17 +112,30 @@ function EmailComponent({
   //function for get email value
   const handleEmailValue = (e) => {
     const value = e.target.value;
+    setEmailErr(false);
     setEmailValue(value);
   };
 
   //function for save email in array after press enter
   const handleEnterPress = (e) => {
+    const pattern = emailRegex;
+    const validate = emailValue?.match(pattern);
     if (e.key === "Enter" && emailValue) {
-      setEmailList((prev) => [...prev, emailValue]);
-      setEmailValue("");
+      if (validate) {
+        const emailLowerCase = emailValue?.toLowerCase();
+        setEmailList((prev) => [...prev, emailLowerCase]);
+        setEmailValue("");
+      } else {
+        setEmailErr(true);
+      }
     } else if (e === "add" && emailValue) {
-      setEmailList((prev) => [...prev, emailValue]);
-      setEmailValue("");
+      if (validate) {
+        const emailLowerCase = emailValue?.toLowerCase();
+        setEmailList((prev) => [...prev, emailLowerCase]);
+        setEmailValue("");
+      } else {
+        setEmailErr(true);
+      }
     }
   };
 
@@ -179,7 +193,6 @@ function EmailComponent({
               Successfully signed!
             </span>
             <div className="flex flex-row">
-              <div></div>
               {!isAndroid && (
                 <button
                   onClick={handleToPrint}
@@ -203,72 +216,63 @@ function EmailComponent({
               Recipients added here will get a copy of the signed document.
             </p>
             {emailList.length > 0 ? (
-              <>
-                <div className="p-0 border-[1.5px] op-border-primary rounded w-full text-[15px]">
-                  <div className="flex flex-row flex-wrap">
-                    {emailList.map((data, ind) => {
-                      return (
-                        <div
-                          className="flex flex-row items-center op-bg-primary m-[4px] rounded-md py-[5px] px-[10px]"
-                          key={ind}
+              <div className="p-0 border-[1.5px] op-border-primary rounded w-full text-[15px]">
+                <div className="flex flex-row flex-wrap">
+                  {emailList.map((data, ind) => {
+                    return (
+                      <div
+                        className="flex flex-row items-center op-bg-primary m-[4px] rounded-md py-[5px] px-[10px]"
+                        key={ind}
+                      >
+                        <span className="text-base-100 text-[13px]">
+                          {data}
+                        </span>
+                        <span
+                          className="text-base-100 text-[13px] font-semibold ml-[7px] cursor-pointer"
+                          onClick={() => removeChip(ind)}
                         >
-                          <span className="text-base-100 text-[13px]">
-                            {data}
-                          </span>
-                          <span
-                            className="text-base-100 text-[13px] font-semibold ml-[7px] cursor-pointer"
-                            onClick={() => removeChip(ind)}
-                          >
-                            <i className="fa-light fa-xmark"></i>
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {emailList.length <= 9 && (
-                    <input
-                      type="text"
-                      value={emailValue}
-                      className="p-[10px] pb-[20px] rounded w-full text-[15px] bg-transparent outline-none"
-                      onChange={handleEmailValue}
-                      onKeyDown={handleEnterPress}
-                      onBlur={() => {
-                        if (emailValue) {
-                          handleEnterPress("add");
-                        }
-                      }}
-                      required
-                    />
-                  )}
+                          <i className="fa-light fa-xmark"></i>
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
-              </>
+                {emailList.length <= 9 && (
+                  <input
+                    type="email"
+                    value={emailValue}
+                    className="p-[10px] pb-[20px] rounded w-full text-[15px] bg-transparent outline-none"
+                    onChange={handleEmailValue}
+                    onKeyDown={handleEnterPress}
+                    onBlur={() => emailValue && handleEnterPress("add")}
+                    required
+                  />
+                )}
+              </div>
             ) : (
               <div>
                 <input
-                  type="text"
+                  type="email"
                   value={emailValue}
                   className="p-[10px] pb-[20px] rounded w-full text-[15px] outline-none bg-transparent border-[1.5px] op-border-primary"
                   onChange={handleEmailValue}
                   onKeyDown={handleEnterPress}
-                  placeholder="Add the email addresses"
-                  onBlur={() => {
-                    if (emailValue) {
-                      handleEnterPress("add");
-                    }
-                  }}
+                  placeholder="Add an email address and hit enter"
+                  onBlur={() => emailValue && handleEnterPress("add")}
                   required
                 />
               </div>
+            )}
+            {emailErr && (
+              <p className="text-xs text-[red] ml-1.5 mt-0.5">
+                please provide correct email address
+              </p>
             )}
             <button
               className={`${
                 emailValue ? "cursor-pointer" : "cursor-default"
               } op-btn op-btn-primary op-btn-sm m-2 shadow-md`}
-              onClick={() => {
-                if (emailValue) {
-                  handleEnterPress("add");
-                }
-              }}
+              onClick={() => emailValue && handleEnterPress("add")}
             >
               <i className="fa-light fa-plus" aria-hidden="true"></i>
             </button>
