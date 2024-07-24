@@ -8,7 +8,11 @@ import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
 import { isEnableSubscription } from "../constant/const";
-import { checkIsSubscribed, handleSendOTP } from "../constant/Utils";
+import {
+  checkIsSubscribed,
+  checkIsSubscribedTeam,
+  handleSendOTP
+} from "../constant/Utils";
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
@@ -46,6 +50,7 @@ function UserProfile() {
   const [tagLine, setTagLine] = useState(
     extendUser && extendUser?.[0]?.Tagline
   );
+  const [isTeam, setIsTeam] = useState(false);
   useEffect(() => {
     getUserDetail();
   }, []);
@@ -57,7 +62,9 @@ function UserProfile() {
     const HeaderDocId = jsonSender[0]?.HeaderDocId;
     if (isEnableSubscription) {
       const getIsSubscribe = await checkIsSubscribed();
+      const getIsTeam = await checkIsSubscribedTeam();
       setIsSubscribe(getIsSubscribe);
+      setIsTeam(getIsTeam);
     }
     if (HeaderDocId) {
       setIsDisableDocId(HeaderDocId);
@@ -511,9 +518,7 @@ function UserProfile() {
                   <div className="flex justify-between items-center py-2">
                     <span
                       className={
-                        isSubscribe
-                          ? "font-semibold"
-                          : "font-semibold text-gray-300"
+                        isTeam ? "font-semibold" : "font-semibold text-gray-300"
                       }
                     >
                       Disable DocumentId :{" "}
@@ -522,17 +527,17 @@ function UserProfile() {
                           "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
                         }
                       />
-                      {!isSubscribe && isEnableSubscription && <Upgrade />}
+                      {!isTeam && isEnableSubscription && <Upgrade />}
                     </span>
                     <label
                       className={`${
-                        isSubscribe
+                        isTeam
                           ? `${editmode ? "cursor-pointer" : ""}`
                           : "pointer-events-none opacity-50"
                       } relative block items-center mb-0`}
                     >
                       <input
-                        disabled={editmode ? false : true}
+                        disabled={isTeam ? false : true}
                         type="checkbox"
                         className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
                         checked={isDisableDocId}
