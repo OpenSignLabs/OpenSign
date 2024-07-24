@@ -4,7 +4,7 @@ title: Localhost OpenSign™ Setup with Docker on Linux/MacOS
 import ReactPlayer from 'react-player';
 
 ## Steps to run OpenSign™ with docker in macos/linux:
-  1. Firstly, install Docker and ensure it is running before proceeding to the next steps.
+  1. Firstly, install Docker and ensure it is running before proceeding to the next steps. Make sure that you have NodeJS & GIT installed on your machine.
   2. Now, open the terminal and type the following command: 
   ```
   git clone https://github.com/OpenSignLabs/OpenSign.git
