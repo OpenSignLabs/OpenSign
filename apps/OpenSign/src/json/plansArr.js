@@ -55,7 +55,7 @@ const plans = [
     img: "professional.png",
     currency: "$",
     monthlyPrice: "29.99",
-    yearlyPrice: "9.99",
+    yearlyPrice: `9.99<sup style="font-size: 17px;">/month</sup>`,
     subtitle: "Exclusive Access to advanced features.",
     btn: { text: "Subscribe", color: "op-btn-primary" },
     url: isStaging
