@@ -4,7 +4,12 @@ import FullScreenButton from "./FullScreenButton";
 import { useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
-import { checkIsSubscribed, getAppLogo, openInNewTab } from "../constant/Utils";
+import {
+  checkIsSubscribed,
+  checkIsSubscribedTeam,
+  getAppLogo,
+  openInNewTab
+} from "../constant/Utils";
 import { isEnableSubscription, isStaging } from "../constant/const";
 
 const Header = ({ showSidebar }) => {
@@ -15,6 +20,7 @@ const Header = ({ showSidebar }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(true);
   const [isPro, setIsPro] = useState(false);
+  const [isTeam, setIsTeam] = useState(false);
   const [applogo, setAppLogo] = useState(
     localStorage.getItem("appLogo") || " "
   );
@@ -29,6 +35,7 @@ const Header = ({ showSidebar }) => {
   async function checkSubscription() {
     if (isEnableSubscription) {
       const getIsSubscribe = await checkIsSubscribed();
+      const getIsTeam = await checkIsSubscribedTeam();
       if (getIsSubscribe) {
         const applogo = await getAppLogo();
         if (applogo?.logo) {
@@ -38,6 +45,7 @@ const Header = ({ showSidebar }) => {
         }
       }
       setIsPro(getIsSubscribe);
+      setIsTeam(getIsTeam);
       setIsSubscribe(getIsSubscribe);
     }
   }
@@ -122,9 +130,14 @@ const Header = ({ showSidebar }) => {
             </button>
           </div>
         )}
-        {isPro && (
+        {!isTeam && isPro && (
           <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
             PRO
+          </div>
+        )}
+        {isTeam && (
+          <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] text-[13px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
+            TEAM
           </div>
         )}
         <div>
