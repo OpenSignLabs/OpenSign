@@ -13,6 +13,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import RegexParser from "regex-parser";
+import { emailRegex } from "../../constant/const";
 const textWidgetCls =
   "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center bg-base-100 whitespace-pre-wrap";
 const selectWidgetCls =
@@ -61,7 +62,7 @@ function PlaceholderType(props) {
     if (validateType && validateType !== "text") {
       switch (validateType) {
         case "email":
-          regexValidation = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          regexValidation = emailRegex;
           validateExpression(regexValidation);
           break;
         case "number":
