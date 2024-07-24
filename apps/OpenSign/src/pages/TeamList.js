@@ -113,16 +113,9 @@ const TeamList = () => {
             : false;
         setIsAdmin(admin);
       }
-      const teamCls = new Parse.Query("contracts_Teams");
-      teamCls.equalTo("OrganizationId", {
-        __type: "Pointer",
-        className: "contracts_Organizations",
-        objectId: extUser.OrganizationId.objectId
-      });
-      teamCls.descending("createdAt");
-      const teamRes = await teamCls.find();
-      if (teamRes.length > 0) {
-        const _teamRes = JSON.parse(JSON.stringify(teamRes));
+      const teams = await Parse.Cloud.run("getteams");
+      if (teams.length > 0) {
+        const _teamRes = JSON.parse(JSON.stringify(teams));
         setTeamList(_teamRes);
       }
     } catch (err) {
@@ -169,10 +162,11 @@ const TeamList = () => {
       newArray[index] = { ...newArray[index], IsActive: !IsActive };
       setTeamList(newArray);
       try {
-        const teamCls = new Parse.Object("contracts_Teams");
-        teamCls.id = team.objectId;
-        teamCls.set("IsActive", !IsActive);
-        await teamCls.save();
+        await Parse.Cloud.run("updateteam", {
+          IsActive: !IsActive,
+          TeamId: team.objectId
+        });
+        // console.log("teamRes ", teamRes);
         setIsAlert({
           type: !IsActive === false ? "danger" : "success",
           msg: !IsActive === false ? "Team disabled." : "Team enabled."
@@ -203,10 +197,9 @@ const TeamList = () => {
     setIsActLoader({ [team.objectId]: true });
     setIsEditModal({});
     try {
-      const teamCls = new Parse.Object("contracts_Teams");
-      teamCls.id = team?.objectId;
-      teamCls.set("Name", team.Name);
-      await teamCls.save();
+      const data = { Name: team.Name, TeamId: team.objectId };
+      await Parse.Cloud.run("updateteam", data);
+      // console.log("updateTeamRes ", updateTeamRes);
       setIsAlert({ type: "success", msg: "Team Update successfully." });
     } catch (Err) {
       console.log("Err in update team name"), Err;
