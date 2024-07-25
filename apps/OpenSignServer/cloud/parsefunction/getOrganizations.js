@@ -2,6 +2,7 @@ export default async function getOrganizations(request) {
   const limit = request.params.limit || 200;
   const skip = request.params.skip || 0;
   const extUserId = request.params.extUserId;
+  const activeOrgs = request.params.active;
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
@@ -17,7 +18,9 @@ export default async function getOrganizations(request) {
       className: 'contracts_Users',
       objectId: extUserId,
     });
-    orgQuery.equalTo('IsActive', true);
+    if (activeOrgs) {
+      orgQuery.equalTo('IsActive', true);
+    }
     orgQuery.exclude('ExtUserId');
     orgQuery.limit(limit);
     orgQuery.skip(skip);
