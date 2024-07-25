@@ -35,7 +35,7 @@ const AddUser = (props) => {
 
   const getTeamList = async () => {
     setFormdata((prev) => ({ ...prev, password: generatePassword(12) }));
-    const teamRes = await Parse.Cloud.run("getteams");
+    const teamRes = await Parse.Cloud.run("getteams", { active: true });
     if (teamRes.length > 0) {
       const _teamRes = JSON.parse(JSON.stringify(teamRes));
       setTeamList(_teamRes);
