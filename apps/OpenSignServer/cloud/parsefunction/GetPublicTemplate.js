@@ -19,6 +19,7 @@ async function GetPublicTemplate(request) {
         });
         templatQuery.descending('updatedAt');
         templatQuery.equalTo('IsPublic', true);
+        templatQuery.notEqualTo('IsArchive', true);
         const getTemplate = await templatQuery.find({ useMasterKey: true });
 
         const extend_Res = await Parse.Cloud.run('getUserDetails', {

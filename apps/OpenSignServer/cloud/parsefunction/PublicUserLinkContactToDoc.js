@@ -54,10 +54,10 @@ const createDocumentFromTemplate = async (template, existContact, index) => {
       object.set('Name', template?.Name);
       object.set('Description', template?.Description);
       object.set('Note', template?.Note);
-      object.set('TimeToCompleteDays', template.TimeToCompleteDays || 15);
+      object.set('TimeToCompleteDays', template?.TimeToCompleteDays || 15);
       object.set('SendinOrder', template?.SendinOrder);
-      object.set('AutomaticReminders', template.AutomaticReminders);
-      object.set('RemindOnceInEvery', template?.RemindOnceInEvery);
+      object.set('AutomaticReminders', template?.AutomaticReminders || false);
+      object.set('RemindOnceInEvery', template?.RemindOnceInEvery || 5);
       object.set('URL', template?.URL);
       object.set('CreatedBy', template?.CreatedBy);
       object.set('ExtUserPtr', template?.ExtUserPtr);
@@ -212,11 +212,11 @@ const sendMailToAllSigners = async docId => {
           throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
         }
       } catch (e) {
-        console.log('err in create document from template', err);
+        console.log('error in get partners_Tenant class details', err);
       }
     }
   } catch (e) {
-    console.log('err in create document from template', err);
+    console.log('error in sendMailToAllSigners function', err);
   }
 };
 
