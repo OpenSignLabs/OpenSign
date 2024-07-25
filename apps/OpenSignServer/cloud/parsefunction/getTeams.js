@@ -1,4 +1,5 @@
 export default async function getTeams(request) {
+  const activeTeams = request.params.active;
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
@@ -18,7 +19,9 @@ export default async function getTeams(request) {
       className: 'contracts_Organizations',
       objectId: extUser.OrganizationId.objectId,
     });
-    teamCls.equalTo('IsActive', true);
+    if (activeTeams) {
+      teamCls.equalTo('IsActive', true);
+    }
     teamCls.descending('createdAt');
     const teamRes = await teamCls.find({ useMasterKey: true });
     if (teamRes && teamRes.length > 0) {

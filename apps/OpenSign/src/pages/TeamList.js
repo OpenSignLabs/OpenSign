@@ -163,7 +163,7 @@ const TeamList = () => {
       setTeamList(newArray);
       try {
         await Parse.Cloud.run("updateteam", {
-          IsActive: !IsActive,
+          IsActive: !IsActive === false ? "false" : "true",
           TeamId: team.objectId
         });
         // console.log("teamRes ", teamRes);
