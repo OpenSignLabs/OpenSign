@@ -145,14 +145,7 @@ const ReportTable = (props) => {
       try {
         const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
         if (extUser?.OrganizationId?.objectId) {
-          const team = new Parse.Query("contracts_Teams");
-          team.equalTo("OrganizationId", {
-            __type: "Pointer",
-            className: "contracts_Organizations",
-            objectId: extUser.OrganizationId.objectId
-          });
-          team.notEqualTo("IsActive", false);
-          const teamtRes = await team.find();
+          const teamtRes = await Parse.Cloud.run("getteams", { active: true });
           if (teamtRes.length > 0) {
             const _teamRes = JSON.parse(JSON.stringify(teamtRes));
             const formatedList = _teamRes.map((x) => ({
@@ -974,7 +967,7 @@ const ReportTable = (props) => {
           setAlertMsg({
             type: "danger",
             message:
-              "The send-in-order for this template is enabled, and the public role must be at the top."
+              "Since this template has send-in-order enabled, the public role must be positioned at the top."
           });
           setTimeout(() => setIsAlert(false), 5000);
         }
@@ -983,7 +976,7 @@ const ReportTable = (props) => {
         setAlertMsg({
           type: "danger",
           message:
-            "Please attach signers to all remaining users except the public role user."
+            "Please attach signers to all roles except for the public role user."
         });
         setTimeout(() => setIsAlert(false), 5000);
       }

@@ -33,7 +33,8 @@ import {
   replaceMailVaribles,
   copytoData,
   fetchSubscription,
-  convertPdfArrayBuffer
+  convertPdfArrayBuffer,
+  getContainerScale
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -452,10 +453,11 @@ function PlaceHolderSign() {
       setZIndex(posZIndex);
       const signer = signersdata.find((x) => x.Id === uniqueId);
       const key = randomId();
-      const getPdfPageWidth = pdfOriginalWH.find(
-        (data) => data.pageNumber === pageNumber
+      const containerScale = getContainerScale(
+        pdfOriginalWH,
+        pageNumber,
+        containerWH
       );
-      const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
       let dropData = [];
       let placeHolder;
       const dragTypeValue = item?.text ? item.text : monitor.type;
@@ -676,11 +678,11 @@ function PlaceHolderSign() {
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
       const signId = signerId ? signerId : uniqueId; //? signerId : signerObjId;
       const keyValue = key ? key : dragKey;
-      const getPdfPageWidth = pdfOriginalWH.find(
-        (data) => data.pageNumber === pageNumber
+      const containerScale = getContainerScale(
+        pdfOriginalWH,
+        pageNumber,
+        containerWH
       );
-      const containerScale = containerWH.width / getPdfPageWidth?.width;
-
       if (keyValue >= 0) {
         let filterSignerPos;
         if (signId) {
@@ -851,13 +853,14 @@ function PlaceHolderSign() {
       const pdfDoc = await PDFDocument.load(existingPdfBytes, {
         ignoreEncryption: true
       });
-
       const isSignYourSelfFlow = false;
       try {
         const pdfBytes = await multiSignEmbed(
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
+          scale,
+          pdfOriginalWH,
           containerWH
         );
 
@@ -1520,16 +1523,9 @@ function PlaceHolderSign() {
       }
     }
     setCurrWidgetsDetails({});
-    handleNameModal();
     setFontSize();
     setFontColor();
-    //condition for text widget type after set all values for text widget
-    //change setUniqueId which is set in tempsignerId
-    //because textwidget do not have signer user so for selected signers we have to do
-    if (currWidgetsDetails.type === textWidget) {
-      setUniqueId(tempSignerId);
-      setTempSignerId("");
-    }
+    handleNameModal();
   };
 
   const handleNameModal = () => {
@@ -1538,6 +1534,14 @@ function PlaceHolderSign() {
     setShowDropdown(false);
     setIsRadio(false);
     setIsCheckbox(false);
+    setIsPageCopy(false);
+    //condition for text widget type after set all values for text widget
+    //change setUniqueId which is set in tempsignerId
+    //because textwidget do not have signer user so for selected signers we have to do
+    if (currWidgetsDetails.type === textWidget) {
+      setUniqueId(tempSignerId);
+      setTempSignerId("");
+    }
   };
   //function for update TourStatus
   const closeTour = async () => {
@@ -1620,13 +1624,11 @@ function PlaceHolderSign() {
           setCurrentId(getCurrentUserDeatils[0].Email);
         }
       }
-
       setSignersData(updateSigner);
       const index = signersdata.findIndex((x) => x.Id === uniqueId);
       setIsSelectId(index);
     }
   };
-
   //function to add new signer in document signers list
   const handleAddNewRecipients = (data) => {
     const newId = randomId();

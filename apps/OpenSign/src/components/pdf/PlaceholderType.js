@@ -13,10 +13,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import RegexParser from "regex-parser";
+import { emailRegex } from "../../constant/const";
 const textWidgetCls =
-  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center bg-base-100 whitespace-pre-wrap";
+  "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap";
 const selectWidgetCls =
-  "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none bg-base-100 text-base-content";
+  "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none text-base-content";
 function PlaceholderType(props) {
   const type = props?.pos?.type;
   const [selectOption, setSelectOption] = useState("");
@@ -61,7 +62,7 @@ function PlaceholderType(props) {
     if (validateType && validateType !== "text") {
       switch (validateType) {
         case "email":
-          regexValidation = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          regexValidation = emailRegex;
           validateExpression(regexValidation);
           break;
         case "number":
@@ -139,8 +140,7 @@ function PlaceholderType(props) {
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
-      className={`${selectWidgetCls} overflow-hidden`}
-      style={{ fontSize: calculateFontSize() }}
+      className={`${selectWidgetCls} text-[12px] overflow-hidden`}
       onClick={onClick}
       ref={ref}
     >
@@ -171,12 +171,6 @@ function PlaceholderType(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
-
-  const calculateFontSize = () => {
-    const fontSize = 10 + Math.min(props.pos.Width, props.pos.Height) * 0.1;
-    const size = fontSize ? fontSize : 12;
-    return size + "px";
-  };
   //function for show checked checkbox
   const selectCheckbox = (ind) => {
     const res = props.pos.options?.response;
@@ -426,7 +420,8 @@ function PlaceholderType(props) {
             fontSize: props.pos.options?.fontSize
               ? props.pos.options?.fontSize + "px"
               : "12px",
-            color: props.pos.options?.fontColor || "black"
+            color: props.pos.options?.fontColor || "black",
+            overflow: "hidden"
           }}
         >
           <span>{type}</span>
@@ -465,10 +460,7 @@ function PlaceholderType(props) {
           })}
         </select>
       ) : (
-        <div
-          className={selectWidgetCls}
-          style={{ fontSize: calculateFontSize() }}
-        >
+        <div className="text-[12px] overflow-hidden">
           {props.pos?.options?.name ? props.pos.options.name : type}
         </div>
       );
@@ -527,7 +519,9 @@ function PlaceholderType(props) {
             fontSize: props.pos.options?.fontSize
               ? props.pos.options?.fontSize + "px"
               : "12px",
-            color: props.pos.options?.fontColor || "black"
+            color: props.pos.options?.fontColor || "black",
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
           }}
         >
           <span>{type}</span>
@@ -569,7 +563,9 @@ function PlaceholderType(props) {
             fontSize: props.pos.options?.fontSize
               ? props.pos.options?.fontSize + "px"
               : "12px",
-            color: props.pos.options?.fontColor || "black"
+            color: props.pos.options?.fontColor || "black",
+            overflow: "hidden",
+            fontFamily: "Arial, sans-serif"
           }}
         >
           <span>{type}</span>
@@ -611,14 +607,17 @@ function PlaceholderType(props) {
             fontSize: props.pos.options?.fontSize
               ? props.pos.options?.fontSize + "px"
               : "12px",
-            color: props.pos.options?.fontColor || "black"
+            color: props.pos.options?.fontColor || "black",
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
           }}
         >
           <span>{type}</span>
         </div>
       );
     case "date":
-      return (
+      return props.isSignYourself ||
+        (props.isNeedSign && props.data?.signerObjId === props.signerObjId) ? (
         <div>
           <DatePicker
             renderCustomHeader={({ date, changeYear, changeMonth }) => (
@@ -675,6 +674,16 @@ function PlaceholderType(props) {
             }
           />
         </div>
+      ) : (
+        <div className="text-[12px] text-black items-center overflow-hidden">
+          <span>
+            {props.selectDate
+              ? props.selectDate?.format
+              : props.pos?.options?.validation?.format
+                ? props.pos?.options?.validation?.format
+                : "MM/dd/yyyy"}
+          </span>
+        </div>
       );
     case "image":
       return props.pos.SignUrl ? (
@@ -721,7 +730,8 @@ function PlaceholderType(props) {
             fontSize: props.pos.options?.fontSize
               ? props.pos.options?.fontSize + "px"
               : "12px",
-            color: props.pos.options?.fontColor || "black"
+            color: props.pos.options?.fontColor || "black",
+            fontFamily: "Arial, sans-serif"
           }}
           cols="50"
         />
@@ -731,7 +741,9 @@ function PlaceholderType(props) {
             fontSize: props.pos.options?.fontSize
               ? props.pos.options?.fontSize + "px"
               : "12px",
-            color: props.pos.options?.fontColor || "black"
+            color: props.pos.options?.fontColor || "black",
+            fontFamily: "Arial, sans-serif",
+            overflow: "hidden"
           }}
         >
           <span>{type}</span>
@@ -790,6 +802,7 @@ function PlaceholderType(props) {
           }}
           className={textWidgetCls}
           style={{
+            fontFamily: "Arial, sans-serif",
             fontSize: props.pos.options?.fontSize
               ? props.pos.options?.fontSize + "px"
               : "12px",

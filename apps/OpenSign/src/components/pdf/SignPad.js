@@ -149,7 +149,6 @@ function SignPad({
       const isWidgetType = currWidgetsDetails?.type;
       const signatureType = currWidgetsDetails?.signatureType;
       const url = currWidgetsDetails?.SignUrl;
-
       //checking widget type and draw type signature url
       if (isInitial) {
         if (isWidgetType === "initials" && signatureType === "draw" && url) {
@@ -299,8 +298,9 @@ function SignPad({
                 <div className="flex flex-row justify-between mt-[3px]">
                   <div className="flex flex-row justify-between gap-[5px] md:gap-[8px] text-[11px] md:text-base">
                     {isStamp ? (
-                      <span className="op-link-primary op-link">
-                        {widgetType === "image"
+                      <span className="text-base-content font-bold text-lg">
+                        {widgetType === "image" ||
+                        currWidgetsDetails?.type === "image"
                           ? "Upload image"
                           : "Upload stamp image"}
                       </span>

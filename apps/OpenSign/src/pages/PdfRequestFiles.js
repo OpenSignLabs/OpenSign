@@ -131,14 +131,6 @@ function PdfRequestFiles(props) {
   const divRef = useRef(null);
 
   const isMobile = window.innerWidth < 767;
-  const senderUser =
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    ) &&
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    );
-  const jsonSender = JSON.parse(senderUser);
 
   let isGuestSignFlow = false;
   let sendmail;
@@ -345,6 +337,10 @@ function PdfRequestFiles(props) {
   };
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (docId, isNextUser) => {
+    const senderUser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const jsonSender = JSON.parse(senderUser);
     let currUserId;
     //getting document details
     const documentData = await contractDocument(documentId || docId);
@@ -360,8 +356,9 @@ function PdfRequestFiles(props) {
       const getCurrentSigner =
         getSigners &&
         getSigners.filter(
-          (data) => data.UserId.objectId === jsonSender.objectId
+          (data) => data.UserId.objectId === jsonSender?.objectId
         );
+
       currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
       if (isEnableSubscription) {
         await checkIsSubscribed(
@@ -651,12 +648,22 @@ function PdfRequestFiles(props) {
   };
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
+    //for emailVerified data checking first in localstorage
     const localuser = localStorage.getItem(
       `Parse/${localStorage.getItem("parseAppId")}/currentUser`
     );
-    const currentUser = JSON.parse(localuser);
-    let isEmailVerified;
-    isEmailVerified = currentUser?.emailVerified;
+    let currentUser = JSON.parse(localuser);
+    //if emailVerified data is not present in local user details then fetch again in _User class
+    if (!currentUser?.emailVerified) {
+      const userQuery = new Parse.Query(Parse.User);
+      const getUser = await userQuery.get(currentUser?.objectId, {
+        sessionToken: currentUser?.sessionToken
+      });
+      if (getUser) {
+        currentUser = JSON.parse(JSON.stringify(getUser));
+      }
+    }
+    let isEmailVerified = currentUser?.emailVerified;
     //check if isEmailVerified then go on next step
     if (isEmailVerified) {
       setIsEmailVerified(isEmailVerified);
@@ -671,7 +678,7 @@ function PdfRequestFiles(props) {
             widgetKey,
             radioExist,
             requiredCheckbox,
-            pageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
+            TourPageNumber; // `pageNumber` is used to check on which page user did not fill widget's data then change current pageNumber and show tour message on that page
 
           for (let i = 0; i < checkUser[0].placeHolder.length; i++) {
             for (let j = 0; j < checkUser[0].placeHolder[i].pos.length; j++) {
@@ -719,7 +726,7 @@ function PdfRequestFiles(props) {
                     ) {
                       showAlert = true;
                       widgetKey = requiredCheckbox[i].key;
-                      pageNumber = updatePage;
+                      TourPageNumber = updatePage;
                       setminRequiredCount(parseMin);
                     }
                     //else condition to validate minimum required checkbox
@@ -730,8 +737,7 @@ function PdfRequestFiles(props) {
                       if (!showAlert) {
                         showAlert = true;
                         widgetKey = requiredCheckbox[i].key;
-                        pageNumber = updatePage;
-
+                        TourPageNumber = updatePage;
                         setminRequiredCount(parseMin);
                       }
                     }
@@ -757,7 +763,7 @@ function PdfRequestFiles(props) {
                       if (!checkDefaultSigned && !showAlert) {
                         showAlert = true;
                         widgetKey = requiredRadio[i].key;
-                        pageNumber = updatePage;
+                        TourPageNumber = updatePage;
                         setminRequiredCount(null);
                       }
                     }
@@ -785,7 +791,7 @@ function PdfRequestFiles(props) {
                         if (!checkDefaultSigned && !showAlert) {
                           showAlert = true;
                           widgetKey = requiredWidgets[i].key;
-                          pageNumber = updatePage;
+                          TourPageNumber = updatePage;
                           setminRequiredCount(null);
                         }
                       }
@@ -801,15 +807,15 @@ function PdfRequestFiles(props) {
           }
           if (checkboxExist && requiredCheckbox && showAlert) {
             setUnSignedWidgetId(widgetKey);
-            setPageNumber(pageNumber);
+            setPageNumber(TourPageNumber);
             setWidgetsTour(true);
           } else if (radioExist && showAlert) {
             setUnSignedWidgetId(widgetKey);
-            setPageNumber(pageNumber);
+            setPageNumber(TourPageNumber);
             setWidgetsTour(true);
           } else if (showAlert) {
             setUnSignedWidgetId(widgetKey);
-            setPageNumber(pageNumber);
+            setPageNumber(TourPageNumber);
             setWidgetsTour(true);
           } else {
             setIsUiLoading(true);
@@ -855,7 +861,9 @@ function PdfRequestFiles(props) {
                 pngUrl,
                 pdfDoc,
                 isSignYourSelfFlow,
-                scale
+                scale,
+                pdfOriginalWH,
+                containerWH
               );
               //  console.log("pdfte", pdfBytes);
               //get ExistUserPtr object id of user class to get tenantDetails
@@ -893,7 +901,7 @@ function PdfRequestFiles(props) {
                   setUnSignedSigners([]);
                   getDocumentDetails(true);
                   const index = pdfDetails?.[0].Signers.findIndex(
-                    (x) => x.Email === jsonSender.email
+                    (x) => x.Email === currentUser?.email
                   );
                   const newIndex = index + 1;
                   const usermail = {
@@ -1074,7 +1082,7 @@ function PdfRequestFiles(props) {
       //else verify users email
       try {
         const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(currentUser.objectId, {
+        const user = await userQuery.get(currentUser?.objectId, {
           sessionToken: localStorage.getItem("accesstoken")
         });
         if (user) {
@@ -1230,6 +1238,10 @@ function PdfRequestFiles(props) {
   };
   //function for set decline true on press decline button
   const declineDoc = async (reason) => {
+    const senderUser = localStorage.getItem(
+      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+    );
+    const jsonSender = JSON.parse(senderUser);
     setIsDecline({ isDeclined: false });
     const data = { IsDeclined: true, DeclineReason: reason };
     setIsUiLoading(true);
@@ -1674,7 +1686,7 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg="Document declined"
+                  headMsg="Document decline"
                   bodyMssg={
                     isDecline.currnt === "Sure"
                       ? "Are you sure want to decline this document ?"
@@ -1904,6 +1916,7 @@ function PdfRequestFiles(props) {
                   setAllPages={setAllPages}
                   setPageNumber={setPageNumber}
                   pageNumber={pageNumber}
+                  containerWH={containerWH}
                 />
                 {/* pdf render view */}
                 <div className=" w-full md:w-[57%] flex mr-4">

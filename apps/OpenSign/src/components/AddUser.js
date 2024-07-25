@@ -35,15 +35,7 @@ const AddUser = (props) => {
 
   const getTeamList = async () => {
     setFormdata((prev) => ({ ...prev, password: generatePassword(12) }));
-    const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-    const team = new Parse.Query("contracts_Teams");
-    team.equalTo("OrganizationId", {
-      __type: "Pointer",
-      className: "contracts_Organizations",
-      objectId: extUser.OrganizationId.objectId
-    });
-    team.notEqualTo("IsActive", false);
-    const teamRes = await team.find();
+    const teamRes = await Parse.Cloud.run("getteams", { active: true });
     if (teamRes.length > 0) {
       const _teamRes = JSON.parse(JSON.stringify(teamRes));
       setTeamList(_teamRes);
