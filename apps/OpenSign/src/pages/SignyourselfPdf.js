@@ -443,6 +443,7 @@ function SignYourSelf() {
   };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
+    setCurrWidgetsDetails({});
     const key = randomId();
     let dropData = [];
     let dropObj = {};

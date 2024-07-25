@@ -7,7 +7,7 @@ import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
 
-export const fontsizeArr = [7, 8, 9, 10, 11, 12, 13, 14, 15, 18];
+export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
 export const isMobile = window.innerWidth < 767;
 export const isTabAndMobile = window.innerWidth < 1023;
