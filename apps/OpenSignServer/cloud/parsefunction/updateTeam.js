@@ -33,7 +33,8 @@ export default async function updateTeam(request) {
         updateteam.set('Name', Name);
       }
       if (IsActive) {
-        updateteam.set('IsActive', IsActive);
+        const active = IsActive === 'false' ? false : true;
+        updateteam.set('IsActive', active);
       }
       const updateTeamRes = await updateteam.save(null, { useMasterKey: true });
       return updateTeamRes;

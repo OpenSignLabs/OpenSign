@@ -32,7 +32,8 @@ import {
   textInputWidget,
   fetchImageBase64,
   changeImageWH,
-  handleSendOTP
+  handleSendOTP,
+  getContainerScale
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -442,6 +443,7 @@ function SignYourSelf() {
   };
   //function for setting position after drop signature button over pdf
   const addPositionOfSignature = (item, monitor) => {
+    setCurrWidgetsDetails({});
     const key = randomId();
     let dropData = [];
     let dropObj = {};
@@ -453,10 +455,11 @@ function SignYourSelf() {
     const widgetTypeExist = ["name", "company", "job title", "email"].includes(
       dragTypeValue
     );
-    const getPdfPageWidth = pdfOriginalWH.find(
-      (data) => data.pageNumber === pageNumber
+    const containerScale = getContainerScale(
+      pdfOriginalWH,
+      pageNumber,
+      containerWH
     );
-    const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
     //adding and updating drop position in array when user drop signature button in div
     if (item === "onclick") {
       const getWidth = widgetTypeExist
@@ -694,7 +697,9 @@ function SignYourSelf() {
               xyPostion,
               pdfDoc,
               isSignYourSelfFlow,
-              scale
+              scale,
+              pdfOriginalWH,
+              containerWH
             );
             // console.log("pdf", pdfBytes);
             //function for call to embed signature in pdf and get digital signature pdf
@@ -812,10 +817,11 @@ function SignYourSelf() {
     setFontColor();
     if (isDragging && dragElement) {
       event.preventDefault();
-      const getPdfPageWidth = pdfOriginalWH.find(
-        (data) => data.pageNumber === pageNumber
+      const containerScale = getContainerScale(
+        pdfOriginalWH,
+        pageNumber,
+        containerWH
       );
-      const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
       if (dragKey >= 0) {
         const filterDropPos = xyPostion.filter(
           (data) => data.pageNumber === pageNumber
