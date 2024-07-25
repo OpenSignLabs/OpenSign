@@ -17,7 +17,7 @@ const AddTeam = (props) => {
   const getTeamList = async () => {
     setIsLoader(true);
     try {
-      const teams = await Parse.Cloud.run("getteams");
+      const teams = await Parse.Cloud.run("getteams", { active: true });
       const teamRes = JSON.parse(JSON.stringify(teams));
       if (teamRes.length > 0) {
         const _teamRes = JSON.parse(JSON.stringify(teamRes));

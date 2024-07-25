@@ -145,7 +145,7 @@ const ReportTable = (props) => {
       try {
         const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
         if (extUser?.OrganizationId?.objectId) {
-          const teamtRes = await Parse.Cloud.run("getteams");
+          const teamtRes = await Parse.Cloud.run("getteams", { active: true });
           if (teamtRes.length > 0) {
             const _teamRes = JSON.parse(JSON.stringify(teamtRes));
             const formatedList = _teamRes.map((x) => ({
