@@ -48,6 +48,15 @@ export default async function addOrganization(request) {
         objectId: resExt.id,
       });
       const newResOrg = await newOrg.save(null, { useMasterKey: true });
+      const teamCls = new Parse.Object('contracts_Teams');
+      teamCls.set('Name', 'All Users');
+      teamCls.set('OrganizationId', {
+        __type: 'Pointer',
+        className: 'contracts_Organizations',
+        objectId: newResOrg.id,
+      });
+      teamCls.set('IsActive', true);
+      await teamCls.save(null, { useMasterKey: true });
       if (newResOrg) {
         return newResOrg;
       }
