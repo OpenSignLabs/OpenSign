@@ -4,6 +4,7 @@ import PlaceholderBorder from "./PlaceholderBorder";
 import { Rnd } from "react-rnd";
 import {
   defaultWidthHeight,
+  getContainerScale,
   handleCopyNextToWidget,
   isTabAndMobile,
   onChangeInput,
@@ -634,10 +635,11 @@ function Placeholder(props) {
     );
   };
   const xPos = (pos, signYourself) => {
-    const getPdfPageWidth = props.pdfOriginalWH.find(
-      (data) => data.pageNumber === props.pageNumber
+    const containerScale = getContainerScale(
+      props.pdfOriginalWH,
+      props.pageNumber,
+      props.containerWH
     );
-    const containerScale = props.containerWH.width / getPdfPageWidth?.width;
     const resizePos = pos.xPosition;
     if (signYourself) {
       return resizePos * containerScale * props.scale;
@@ -659,10 +661,11 @@ function Placeholder(props) {
     }
   };
   const yPos = (pos, signYourself) => {
-    const getPdfPageWidth = props.pdfOriginalWH.find(
-      (data) => data.pageNumber === props.pageNumber
+    const containerScale = getContainerScale(
+      props.pdfOriginalWH,
+      props.pageNumber,
+      props.containerWH
     );
-    const containerScale = props.containerWH.width / getPdfPageWidth.width;
     const resizePos = pos.yPosition;
 
     if (signYourself) {

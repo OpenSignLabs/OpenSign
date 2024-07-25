@@ -24,7 +24,8 @@ import {
   addWidgetOptions,
   textInputWidget,
   radioButtonWidget,
-  fetchSubscription
+  fetchSubscription,
+  getContainerScale
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -364,10 +365,11 @@ const TemplatePlaceholder = () => {
       if (signer) {
         const posZIndex = zIndex + 1;
         setZIndex(posZIndex);
-        const getPdfPageWidth = pdfOriginalWH.find(
-          (data) => data.pageNumber === pageNumber
+        const containerScale = getContainerScale(
+          pdfOriginalWH,
+          pageNumber,
+          containerWH
         );
-        const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
         const key = randomId();
         let filterSignerPos = signerPos.filter((data) => data.Id === uniqueId);
         const dragTypeValue = item?.text ? item.text : monitor.type;
@@ -561,10 +563,11 @@ const TemplatePlaceholder = () => {
       updateSignPos.splice(0, updateSignPos.length, ...dataNewPlace);
       const signId = signerId; //? signerId : signerObjId;
       const keyValue = key ? key : dragKey;
-      const getPdfPageWidth = pdfOriginalWH.find(
-        (data) => data.pageNumber === pageNumber
+      const containerScale = getContainerScale(
+        pdfOriginalWH,
+        pageNumber,
+        containerWH
       );
-      const containerScale = containerWH.width / getPdfPageWidth?.width || 1;
       if (keyValue >= 0) {
         const filterSignerPos = updateSignPos.filter(
           (data) => data.Id === signId
