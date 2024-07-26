@@ -10,10 +10,10 @@ import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
 import Tour from "reactour";
 import Parse from "parse";
-import { saveAs } from "file-saver";
 import {
   checkIsSubscribedTeam,
   copytoData,
+  fetchUrl,
   replaceMailVaribles
 } from "../constant/Utils";
 import Confetti from "react-confetti";
@@ -595,14 +595,18 @@ const ReportTable = (props) => {
 
   // `handleDownload` is used to get valid doc url available in completed report
   const handleDownload = async (item) => {
+    setActLoader({ [`${item.objectId}`]: true });
     const url = item?.SignedUrl || item?.URL || "";
+    const pdfName = item?.Name || "exported_file";
     if (url) {
       try {
         const signedUrl = await Parse.Cloud.run("getsignedurl", { url: url });
-        saveAs(signedUrl);
+        await fetchUrl(signedUrl, pdfName);
+        setActLoader({});
       } catch (err) {
         console.log("err in getsignedurl", err);
         alert("something went wrong, please try again later.");
+        setActLoader({});
       }
     }
   };
