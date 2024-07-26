@@ -11,7 +11,6 @@ export default async function TemplateAfterSave(request) {
         const ReminderDate = new Date(request?.object?.get('createdAt'));
         ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
         request.object.set('NextReminderDate', ReminderDate);
-        request.object.set('OriginIp', ip);
       }
       request.object.set('OriginIp', ip);
       await request.object.save(null, { useMasterKey: true });
