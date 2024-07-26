@@ -12,9 +12,8 @@ export default async function TemplateAfterSave(request) {
         ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
         request.object.set('NextReminderDate', ReminderDate);
         request.object.set('OriginIp', ip);
-      } else {
-        request.object.set('OriginIp', ip);
       }
+      request.object.set('OriginIp', ip);
       await request.object.save(null, { useMasterKey: true });
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
