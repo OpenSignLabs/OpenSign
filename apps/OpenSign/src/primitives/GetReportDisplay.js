@@ -10,10 +10,10 @@ import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
 import Tour from "reactour";
 import Parse from "parse";
-import { saveAs } from "file-saver";
 import {
   checkIsSubscribedTeam,
   copytoData,
+  fetchUrl,
   replaceMailVaribles
 } from "../constant/Utils";
 import Confetti from "react-confetti";
@@ -27,7 +27,6 @@ import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
 import Select from "react-select";
 import SubscribeCard from "./SubscribeCard";
-import sanitizeFileName from "./sanitizeFileName";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
@@ -602,21 +601,8 @@ const ReportTable = (props) => {
     if (url) {
       try {
         const signedUrl = await Parse.Cloud.run("getsignedurl", { url: url });
-        // saveAs(signedUrl);
-        try {
-          const response = await fetch(signedUrl);
-          if (!response.ok) {
-            alert("something went wrong, please try again later.");
-            throw new Error("Network response was not ok");
-          }
-          const blob = await response.blob();
-          saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
-          setActLoader({});
-        } catch (error) {
-          alert("something went wrong, please try again later.");
-          console.error("Error downloading the file:", error);
-          setActLoader({});
-        }
+        await fetchUrl(signedUrl, pdfName);
+        setActLoader({});
       } catch (err) {
         console.log("err in getsignedurl", err);
         alert("something went wrong, please try again later.");
