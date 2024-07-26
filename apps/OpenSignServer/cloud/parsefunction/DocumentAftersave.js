@@ -13,7 +13,7 @@ async function DocumentAftersave(request) {
         const documentQuery = new Parse.Query('contracts_Document');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
-        updateQuery.set('OriginIp', ip);
+        updateQuery.set('OriginIp', ip || request.object?.get('OriginIp') || '');
         const AutoReminder = request?.object?.get('AutomaticReminders') || false;
         if (AutoReminder) {
           const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
