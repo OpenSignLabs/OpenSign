@@ -4,7 +4,7 @@ async function DocumentAftersave(request) {
       console.log('new entry is insert in contracts_Document');
       const createdAt = request.object.get('createdAt');
       const Folder = request.object.get('Type');
-      const ip = request?.headers?.['x-real-ip'] || '';
+      const ip = request?.headers?.['x-real-ip'] || request.object?.get('OriginIp') || '';
       if (createdAt && Folder === undefined) {
         // console.log("IN If condition")
         const TimeToCompleteDays = request.object.get('TimeToCompleteDays') || 15;
