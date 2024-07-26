@@ -5,13 +5,15 @@ export default async function TemplateAfterSave(request) {
       // update acl of New Document If There are signers present in array
       const signers = request.object.get('Signers');
       const AutoReminder = request?.object?.get('AutomaticReminders') || false;
+      const ip = request?.headers?.['x-real-ip'] || '';
       if (AutoReminder) {
         const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
         const ReminderDate = new Date(request?.object?.get('createdAt'));
         ReminderDate.setDate(ReminderDate.getDate() + RemindOnceInEvery);
         request.object.set('NextReminderDate', ReminderDate);
-        await request.object.save(null, { useMasterKey: true });
       }
+      request.object.set('OriginIp', ip);
+      await request.object.save(null, { useMasterKey: true });
       if (signers && signers.length > 0) {
         await updateAclDoc(request.object.id);
       } else {
