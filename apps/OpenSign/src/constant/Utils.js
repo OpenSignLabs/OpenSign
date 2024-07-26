@@ -2001,7 +2001,18 @@ export const handleDownloadPdf = async (
       }
     );
     const url = axiosRes.data.result;
-    saveAs(url, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        alert("something went wrong, please try again later.");
+        throw new Error("Network response was not ok");
+      }
+      const blob = await response.blob();
+      saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    } catch (error) {
+      alert("something went wrong, please try again later.");
+      console.error("Error downloading the file:", error);
+    }
     setIsDownloading("");
   } catch (err) {
     console.log("err in getsignedurl", err);
