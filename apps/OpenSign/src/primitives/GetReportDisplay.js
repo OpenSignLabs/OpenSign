@@ -27,6 +27,7 @@ import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
 import Select from "react-select";
 import SubscribeCard from "./SubscribeCard";
+import sanitizeFileName from "./sanitizeFileName";
 
 const ReportTable = (props) => {
   const navigate = useNavigate();
@@ -595,14 +596,31 @@ const ReportTable = (props) => {
 
   // `handleDownload` is used to get valid doc url available in completed report
   const handleDownload = async (item) => {
+    setActLoader({ [`${item.objectId}`]: true });
     const url = item?.SignedUrl || item?.URL || "";
+    const pdfName = item?.Name || "exported_file";
     if (url) {
       try {
         const signedUrl = await Parse.Cloud.run("getsignedurl", { url: url });
-        saveAs(signedUrl);
+        // saveAs(signedUrl);
+        try {
+          const response = await fetch(signedUrl);
+          if (!response.ok) {
+            alert("something went wrong, please try again later.");
+            throw new Error("Network response was not ok");
+          }
+          const blob = await response.blob();
+          saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+          setActLoader({});
+        } catch (error) {
+          alert("something went wrong, please try again later.");
+          console.error("Error downloading the file:", error);
+          setActLoader({});
+        }
       } catch (err) {
         console.log("err in getsignedurl", err);
         alert("something went wrong, please try again later.");
+        setActLoader({});
       }
     }
   };
