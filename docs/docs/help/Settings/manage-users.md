@@ -30,7 +30,7 @@ To add a new user:
    - **Team** (required): Select the team the user belongs to from the dropdown. Teams can be created only on the Teams & Enterprise plans.
    - **Role** (required): Select the user's role from the dropdown - OrgAdmin(Has all permissions including user management), Editor(Has all permissions other than user management like creating & sharing templates with teams, User(cannot manager users & cannot share templates with teams but can use templates features for themselves).
 
-![image](https://github.com/user-attachments/assets/0b338873-569c-4693-9ea3-cd8583bf6a76)
+![image](https://github.com/user-attachments/assets/d8c3c94e-842d-4f97-bfbc-8a63fc8d62c3)
 
 3. **Submit or Cancel**
    - Click **Submit** to add the user.
