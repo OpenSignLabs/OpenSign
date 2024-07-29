@@ -16,9 +16,11 @@ import {
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 function UserProfile() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   let UserProfile = JSON.parse(localStorage.getItem("UserInformation"));
   let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -51,6 +53,12 @@ function UserProfile() {
     extendUser && extendUser?.[0]?.Tagline
   );
   const [isTeam, setIsTeam] = useState(false);
+  const languages = [
+    { value: "en", text: "English" },
+    { value: "fr", text: "French" }
+  ];
+  const [lang, setLang] = useState("en");
+
   useEffect(() => {
     getUserDetail();
   }, []);
@@ -303,6 +311,12 @@ function UserProfile() {
     setJobTitle(extendUser?.[0]?.JobTitle);
     setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
   };
+  // This function put query that helps to
+  // change the language
+  const handleChangeLang = (e) => {
+    setLang(e.target.value);
+    i18n.changeLanguage(e.target.value);
+  };
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -360,7 +374,30 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">Name:</span>{" "}
+                <span className="font-semibold">{t("language")}:</span>{" "}
+                <select
+                  value={lang}
+                  onChange={handleChangeLang}
+                  className="select select-bordered w-[30%] border-[1px] max-w-xs"
+                >
+                  <option disabled selected>
+                    select
+                  </option>
+                  {languages.map((item) => {
+                    return (
+                      <option key={item.value} value={item.value}>
+                        {item.text}
+                      </option>
+                    );
+                  })}
+                </select>
+              </li>
+              <li
+                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                  editmode ? "py-1.5" : "py-2"
+                }`}
+              >
+                <span className="font-semibold">{t("name")}:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
@@ -377,7 +414,7 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">Phone:</span>{" "}
+                <span className="font-semibold">{t("phone")}:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
@@ -390,7 +427,7 @@ function UserProfile() {
                 )}
               </li>
               <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                <span className="font-semibold">Email:</span>{" "}
+                <span className="font-semibold">{t("email")}:</span>{" "}
                 <span>{UserProfile && UserProfile.email}</span>
               </li>
               <li
@@ -398,7 +435,7 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">Company:</span>{" "}
+                <span className="font-semibold">{t("company")}:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
@@ -415,7 +452,7 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">Job title:</span>{" "}
+                <span className="font-semibold">{t("job-title")}:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
@@ -428,7 +465,7 @@ function UserProfile() {
                 )}
               </li>
               <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                <span className="font-semibold">Is Email verified:</span>{" "}
+                <span className="font-semibold">{t("is-email-verified")}:</span>{" "}
                 <span>
                   {isEmailVerified ? (
                     "Verified"
@@ -450,7 +487,7 @@ function UserProfile() {
                 <>
                   <li className="flex md:flex-row flex-col md:justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
                     <span className="font-semibold flex gap-1">
-                      Public profile :{" "}
+                      {t("public-profile")} :{" "}
                       <Tooltip
                         maxWidth="max-w-[250px]"
                         message={`This is your public URL. Copy or share it with the signer, and you will be able to see all your publicly set templates.`}
@@ -486,7 +523,7 @@ function UserProfile() {
                   </li>
                   <li className="flex md:flex-row flex-col md:justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
                     <span className="font-semibold flex gap-1">
-                      Tagline :{" "}
+                      {t("tagline")} :{" "}
                       <Tooltip
                         maxWidth="max-w-[250px]"
                         message={`This Tagline will appear on your OpenSign public profile for ex. https://opensign.me/alex`}

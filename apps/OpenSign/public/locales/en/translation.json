@@ -1,0 +1,20 @@
+{
+   "create-account": "Create account",
+    "login": "Login",
+    "language":"Language",
+    "name":"Name",
+    "phone":"Phone",
+    "email":"Email",
+    "company":"Company",
+    "job-title":"Job title",
+    "is-email-verified":"Is Email verified",
+    "public-profile":"Public profile",
+    "tagline":"Tagline ",
+    "has-requested-you-to-sign":"has requested you to sign",
+    "has-requested-you-to-review-and-sign":" has requested you to review and sign",
+    "ascending":"Ascending",
+    "Action":"Action",
+    "add":"add",
+    "add-new-folder":"ajouter un nouveau dossier"
+  }
+  
