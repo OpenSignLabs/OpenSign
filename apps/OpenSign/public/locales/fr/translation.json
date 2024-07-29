@@ -1,0 +1,20 @@
+{
+    "create account": "Créer un compte",
+    "login": "se connecter",
+    "language":"Langue",
+    "name":"Nom",
+    "phone":"Téléphone",
+    "email":"E-mail",
+    "company":"Entreprise",
+    "job-title":"Titre d'emploi",
+    "is-email-verified":"L'e-mail est-il vérifié",
+    "public-profile":"Profil public",
+    "tagline":"Slogan",
+    "has-requested-you-to-sign":" vous a demandé de signer",
+    "has-requested-you-to-review-and-sign":"vous a demandé de consulter et de signer",
+    "Ascending":"Ascendant",
+    "Action":"Action",
+    "add":"ajouter",
+    "add-new-folder":"add new folder"
+  }
+  
