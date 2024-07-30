@@ -1,3 +1,4 @@
+import { cloudServerUrl } from '../../Utils.js';
 import reportJson from './reportsJson.js';
 import axios from 'axios';
 
@@ -6,7 +7,7 @@ export default async function getReport(request) {
   const limit = request.params.limit;
   const skip = request.params.skip;
 
-  const serverUrl = process.env.SERVER_URL;
+  const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const appId = process.env.APP_ID;
   const masterKey = process.env.MASTER_KEY;
   try {

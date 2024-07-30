@@ -1,11 +1,13 @@
 import fs from 'node:fs';
 import https from 'https';
+import http from 'http';
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';
-import { smtpenable, smtpsecure, updateMailCount } from '../../Utils.js';
+import { smtpenable, smtpsecure, updateMailCount, useLocal } from '../../Utils.js';
 import sendMailGmailProvider from './sendMailGmailProvider.js';
 import { createTransport } from 'nodemailer';
 async function sendMailProvider(req) {
+  const protocol = new URL(process.env.SERVER_URL);
   try {
     let transporterSMTP;
     let mailgunClient;
@@ -32,10 +34,17 @@ async function sendMailProvider(req) {
       let Pdf = fs.createWriteStream('test.pdf');
       const writeToLocalDisk = () => {
         return new Promise((resolve, reject) => {
-          https.get(req.params.url, async function (response) {
-            response.pipe(Pdf);
-            response.on('end', () => resolve('success'));
-          });
+          if (useLocal !== 'true' && protocol.hostname !== 'localhost') {
+            https.get(req.params.url, async function (response) {
+              response.pipe(Pdf);
+              response.on('end', () => resolve('success'));
+            });
+          } else {
+            http.get(req.params.url, async function (response) {
+              response.pipe(Pdf);
+              response.on('end', () => resolve('success'));
+            });
+          }
         });
       };
       // `writeToLocalDisk` is used to create pdf file from doc url

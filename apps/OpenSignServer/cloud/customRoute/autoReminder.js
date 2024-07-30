@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 
 // `replaceMailVaribles` is used to replace variables from mail with there actual values
 function replaceMailVaribles(subject, body, variables) {
@@ -26,7 +27,7 @@ function replaceMailVaribles(subject, body, variables) {
 async function sendMail(doc, signer) {
   const subject = `{{sender_name}} has requested you to sign "{{document_title}}"`;
   const body = `<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body><p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;<b>"{{document_title}}"</b>.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br></body> </html>`;
-  const url = `${process.env.SERVER_URL}/functions/sendmailv3`;
+  const url = `${cloudServerUrl}/functions/sendmailv3`;
   const headers = {
     'Content-Type': 'application/json',
     'X-Parse-Application-Id': process.env.APP_ID,

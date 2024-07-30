@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { replaceMailVaribles } from '../../../../Utils.js';
+import { cloudServerUrl, replaceMailVaribles } from '../../../../Utils.js';
 
 export default async function resendMail(request, response) {
   try {
@@ -44,7 +44,7 @@ export default async function resendMail(request, response) {
         if (contact) {
           try {
             const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
-            let url = `${process.env.SERVER_URL}/functions/sendmailv3/`;
+            let url = `${cloudServerUrl}/functions/sendmailv3/`;
             const headers = {
               'Content-Type': 'application/json',
               'X-Parse-Application-Id': process.env.APP_ID,

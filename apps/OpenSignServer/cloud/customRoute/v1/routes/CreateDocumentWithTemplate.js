@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { customAPIurl, replaceMailVaribles } from '../../../../Utils.js';
+import { cloudServerUrl, customAPIurl, replaceMailVaribles } from '../../../../Utils.js';
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
 async function sendDoctoWebhook(doc, WebhookUrl, userId) {
@@ -220,7 +220,7 @@ export default async function createDocumentWithTemplate(request, response) {
               for (let i = 0; i < contactMail.length; i++) {
                 try {
                   const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
-                  let url = `${process.env.SERVER_URL}/functions/sendmailv3/`;
+                  let url = `${cloudServerUrl}/functions/sendmailv3/`;
                   const headers = {
                     'Content-Type': 'application/json',
                     'X-Parse-Application-Id': process.env.APP_ID,

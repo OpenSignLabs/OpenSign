@@ -6,6 +6,7 @@ import {
   saveFileUsage,
   formatWidgetOptions,
   sanitizeFileName,
+  cloudServerUrl,
 } from '../../../../Utils.js';
 
 // `sendDoctoWebhook` is used to send res data of document on webhook
@@ -281,7 +282,7 @@ export default async function createDocumentwithCoordinate(request, response) {
           for (let i = 0; i < contactMail.length; i++) {
             try {
               const imgPng = 'https://qikinnovation.ams3.digitaloceanspaces.com/logo.png';
-              let url = `${process.env.SERVER_URL}/functions/sendmailv3/`;
+              let url = `${cloudServerUrl}/functions/sendmailv3/`;
               const headers = {
                 'Content-Type': 'application/json',
                 'X-Parse-Application-Id': process.env.APP_ID,
