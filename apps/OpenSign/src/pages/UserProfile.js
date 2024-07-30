@@ -378,7 +378,7 @@ function UserProfile() {
                 <select
                   value={lang}
                   onChange={handleChangeLang}
-                  className="select select-bordered w-[30%] border-[1px] max-w-xs"
+                  className="select select-bordered w-[30%] border-[1px] rounded-lg p-2 max-w-xs"
                 >
                   <option disabled selected>
                     select
@@ -490,7 +490,7 @@ function UserProfile() {
                       {t("public-profile")} :{" "}
                       <Tooltip
                         maxWidth="max-w-[250px]"
-                        message={`This is your public URL. Copy or share it with the signer, and you will be able to see all your publicly set templates.`}
+                        message={t("public-profile-help")}
                       />
                     </span>
                     <div className="flex md:flex-row flex-col md:items-center">
@@ -526,7 +526,7 @@ function UserProfile() {
                       {t("tagline")} :{" "}
                       <Tooltip
                         maxWidth="max-w-[250px]"
-                        message={`This Tagline will appear on your OpenSign public profile for ex. https://opensign.me/alex`}
+                        message={t("tagline-help")}
                       />
                     </span>
                     <div className="flex md:flex-row flex-col md:items-center">
@@ -558,7 +558,7 @@ function UserProfile() {
                         isTeam ? "font-semibold" : "font-semibold text-gray-300"
                       }
                     >
-                      Disable DocumentId :{" "}
+                      {t("disable-documentId")} :{" "}
                       <Tooltip
                         url={
                           "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
@@ -605,7 +605,7 @@ function UserProfile() {
                 }}
                 className="op-btn op-btn-primary"
               >
-                {editmode ? "Save" : "Edit"}
+                {editmode ? t("save") : t("edit")}
               </button>
               <button
                 type="button"
@@ -616,7 +616,7 @@ function UserProfile() {
                   editmode ? "op-btn-ghost" : "op-btn-secondary"
                 }`}
               >
-                {editmode ? "Cancel" : "Change Password"}
+                {editmode ? t("cancel") : t("change-password")}
               </button>
             </div>
           </div>
@@ -682,7 +682,7 @@ function UserProfile() {
                           onClick={() => navigate("/subscription")}
                           className="op-btn op-btn-accent"
                         >
-                          Upgrade Now
+                          {t("upgrade-now")}
                         </button>
                       </div>
                     </div>

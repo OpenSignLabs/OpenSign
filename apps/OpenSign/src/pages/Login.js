@@ -16,7 +16,9 @@ import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { fetchSubscription, getAppLogo, openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 function Login() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -605,7 +607,7 @@ function Login() {
   };
   return (
     <div>
-      <Title title={"Login Page"} />
+      <Title title={t("login-page")} />
       {state.loading && (
         <div
           aria-live="assertive"
@@ -634,14 +636,14 @@ function Login() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
                 <div>
                   <form onSubmit={handleSubmit} aria-label="Login Form">
-                    <h1 className="text-[30px] mt-6">Welcome Back!</h1>
+                    <h1 className="text-[30px] mt-6">{t("welcome")}</h1>
                     <fieldset>
                       <legend className="text-[12px] text-[#878787]">
-                        Login to your account
+                        {t("Login-to-your-account")}
                       </legend>
                       <div className="w-full px-6 py-3 my-1 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                         <label className="block text-xs" htmlFor="email">
-                          Email
+                          {t("email")}
                         </label>
                         <input
                           id="email"
@@ -657,7 +659,7 @@ function Login() {
                         {!isLoginSSO && (
                           <>
                             <label className="block text-xs" htmlFor="password">
-                              Password
+                              {t("password")}
                             </label>
                             <div className="relative">
                               <input
@@ -690,7 +692,7 @@ function Login() {
                             to="/forgetpassword"
                             className="text-[13px] op-link op-link-primary underline-offset-1 focus:outline-none ml-1"
                           >
-                            Forgot Password?
+                            {t("forgot-password")}
                           </NavLink>
                         </div>
                       </div>
@@ -701,7 +703,7 @@ function Login() {
                         className="op-btn op-btn-primary"
                         disabled={state.loading}
                       >
-                        {state.loading ? "Loading..." : "Login"}
+                        {state.loading ? t("loading") : t("login")}
                       </button>
                       {isEnableSubscription && (
                         <button
@@ -716,13 +718,13 @@ function Login() {
                             )
                           }
                         >
-                          Create Account
+                          {t("create-account")}
                         </button>
                       )}
                     </div>
                   </form>
                   {(appInfo.googleClietId || isEnableSubscription) && (
-                    <div className="op-divider my-4 text-sm">OR</div>
+                    <div className="op-divider my-4 text-sm">{t("or")}</div>
                   )}
                   <div className="flex flex-col justify-center items-center gap-y-3">
                     {/* {appInfo?.fbAppId && (
@@ -746,7 +748,7 @@ function Login() {
                         className="cursor-pointer border-[1px] border-gray-300 rounded px-[40px] py-2 font-semibold text-sm hover:border-[#d2e3fc] hover:bg-[#ecf3feb7]"
                         onClick={() => handleSignInWithSSO()}
                       >
-                        Sign in with SSO
+                        {t("sign-SSO")}
                       </div>
                     )}
                   </div>
@@ -778,7 +780,8 @@ function Login() {
                   style={{ display: "flex" }}
                   className="block text-xs text-gray-700 font-semibold"
                 >
-                  Company <span className="text-[red] text-[13px]">*</span>
+                  {t("company")}{" "}
+                  <span className="text-[red] text-[13px]">*</span>
                 </label>
                 <input
                   type="text"
@@ -800,7 +803,7 @@ function Login() {
                   style={{ display: "flex" }}
                   className="block text-xs text-gray-700 font-semibold"
                 >
-                  Job Title
+                  {t("job-title")}
                   <span className="text-[red] text-[13px]">*</span>
                 </label>
                 <input
@@ -823,14 +826,14 @@ function Login() {
                   className="op-btn op-btn-primary"
                   onClick={(e) => handleSubmitbtn(e)}
                 >
-                  Login
+                  {t("login")}
                 </button>
                 <button
                   type="button"
                   className="op-btn op-btn-ghost"
                   onClick={logOutUser}
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
               </div>
             </form>

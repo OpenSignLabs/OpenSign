@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 
 const Menu = ({ item, isOpen, closeSidebar }) => {
+  const { t } = useTranslation();
   return (
     <li key={item.title} role="none" className="my-0.5">
       <NavLink
@@ -20,7 +22,7 @@ const Menu = ({ item, isOpen, closeSidebar }) => {
         role="menuitem"
       >
         <i className={`${item.icon} text-[18px]`} aria-hidden="true"></i>
-        <span className="ml-3 lg:ml-4">{item.title}</span>
+        <span className="ml-3 lg:ml-4">{t(`sidebar.${item.title}`)}</span>
       </NavLink>
     </li>
   );

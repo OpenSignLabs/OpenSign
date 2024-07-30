@@ -27,8 +27,10 @@ import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
 import Select from "react-select";
 import SubscribeCard from "./SubscribeCard";
+import { useTranslation } from "react-i18next";
 
 const ReportTable = (props) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const isDashboard =
@@ -1071,7 +1073,7 @@ const ReportTable = (props) => {
         )}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
-            {props.ReportName}{" "}
+            {t(`report-name.${props.ReportName}`)}
             {props.report_help && (
               <span className="text-xs md:text-[13px] font-normal">
                 <Tooltip message={props.report_help} />
@@ -1104,7 +1106,7 @@ const ReportTable = (props) => {
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (
                   <React.Fragment key={index}>
-                    <th className="px-4 py-2">{item}</th>
+                    <th className="px-4 py-2">{t(`report-heading.${item}`)}</th>
                   </React.Fragment>
                 ))}
                 {props.ReportName === "Templates" && isEnableSubscription && (

@@ -13,8 +13,10 @@ import { showTenant } from "../redux/reducers/ShowTenant";
 import { isEnableSubscription } from "../constant/const";
 import { getAppLogo, openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 const Signup = () => {
   const { width } = useWindowSize();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -322,7 +324,7 @@ const Signup = () => {
           <Loader />
         </div>
       )}
-      <Title title={"Signup page"} />
+      <Title title={t("signup-page")} />
       {appInfo && appInfo.applogo ? (
         <div className="md:p-10 lg:p-16">
           <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
@@ -334,11 +336,12 @@ const Signup = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
               <div>
                 <form onSubmit={handleSubmit}>
-                  <h2 className="text-[30px] mt-6">Create Account !</h2>
+                  <h2 className="text-[30px] mt-6">{t("create-account")}!</h2>
                   <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                     <div className="px-6 py-4 text-xs">
                       <label className="block ">
-                        Name <span className="text-[red] text-[13px]">*</span>
+                        {t("name")}{" "}
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         type="text"
@@ -349,7 +352,8 @@ const Signup = () => {
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Email <span className="text-[red] text-[13px]">*</span>
+                        {t("email")}{" "}
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         id="email"
@@ -363,7 +367,8 @@ const Signup = () => {
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Phone <span className="text-[red] text-[13px]">*</span>
+                        {t("phone")}{" "}
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         type="tel"
@@ -374,7 +379,7 @@ const Signup = () => {
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Company{" "}
+                        {t("company")}{" "}
                         <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
@@ -386,7 +391,7 @@ const Signup = () => {
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Job Title{" "}
+                        {t("job-title")}{" "}
                         <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
@@ -398,7 +403,7 @@ const Signup = () => {
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Password{" "}
+                        {t("password")}{" "}
                         <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <div className="relative">
@@ -428,16 +433,16 @@ const Signup = () => {
                               lengthValid ? "text-green-600" : "text-red-600"
                             }`}
                           >
-                            {lengthValid ? "✓" : "✗"} Password should be 8
-                            characters long
+                            {lengthValid ? "✓" : "✗"}
+                            {t("password-length")}
                           </p>
                           <p
                             className={`${
                               caseDigitValid ? "text-green-600" : "text-red-600"
                             }`}
                           >
-                            {caseDigitValid ? "✓" : "✗"} Password should contain
-                            uppercase letter, lowercase letter, digit
+                            {caseDigitValid ? "✓" : "✗"}
+                            {t("password-case")}
                           </p>
                           <p
                             className={`${
@@ -446,8 +451,8 @@ const Signup = () => {
                                 : "text-red-600"
                             }`}
                           >
-                            {specialCharValid ? "✓" : "✗"} Password should
-                            contain special character
+                            {specialCharValid ? "✓" : "✗"}{" "}
+                            {t("password-special-char")}
                           </p>
                         </div>
                       )}
@@ -464,7 +469,7 @@ const Signup = () => {
                           className="text-xs cursor-pointer ml-1 mb-0"
                           htmlFor="termsandcondition"
                         >
-                          I agree to the
+                          {t("agreee")}
                         </label>
                         <span
                           className="underline cursor-pointer ml-1"
@@ -474,7 +479,7 @@ const Signup = () => {
                             )
                           }
                         >
-                          Terms of Service
+                          {t("term")}
                         </span>
                         <span>.</span>
                       </div>
@@ -486,7 +491,7 @@ const Signup = () => {
                       className="op-btn op-btn-primary"
                       disabled={state.loading}
                     >
-                      {state.loading ? "Loading..." : "Register"}
+                      {state.loading ? t("loading") : t("register")}
                     </button>
                     <button
                       type="button"
@@ -496,7 +501,7 @@ const Signup = () => {
                         navigate(location.search ? "/" + location.search : "/")
                       }
                     >
-                      Login
+                      {t("login")}
                     </button>
                   </div>
                 </form>

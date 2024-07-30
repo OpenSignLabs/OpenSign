@@ -1,5 +1,5 @@
 {
-    "create account": "Créer un compte",
+    "create-account": "Créer un compte",
     "login": "se connecter",
     "language":"Langue",
     "name":"Nom",
@@ -15,6 +15,111 @@
     "Ascending":"Ascendant",
     "Action":"Action",
     "add":"ajouter",
-    "add-new-folder":"add new folder"
-  }
+    "add-new-folder":"add new folder",
+    "disable-documentId":"Désactiver l'ID de document",
+    "edit":"Modifier",
+    "change-password":"Changer le mot de passe",
+    "save":"Sauvegarder",
+    "cancel":"Annuler",
+    "upgrade-now":"Mettre à jour maintenant",
+    "user":"Utilisateur",
+    "public-profile-help":"Il s'agit de votre URL publique. Copiez-le ou partagez-le avec le signataire et vous pourrez voir tous vos modèles définis publiquement.",
+    "tagline-help":"Ce slogan apparaîtra sur votre profil public OpenSign par exemple. https://opensign.me/alex",
+    "welcome":"Content de te revoir!",
+    "Login-to-your-account" :"Connectez-vous à votre compte",
+    "password" :"Mot de passe",
+    "forgot-password":"Mot de passe oublié?",
+    "loading":"Chargement...",
+    "sign-SSO":"Connectez-vous avec SSO",
+    "login-page":"Page de connexion",
+    "or":"OU",
+    "signup-page":"Page d'inscription",
+    "password-length":"Le mot de passe doit être 8 Longs caractères",
+    "password-case":"Le mot de passe doit contenir lettre majuscule, lettre minuscule, chiffre",
+    "password-special-char":"Le mot de passe doit contenir un caractère spécial",
+    "agreee":"je suis d'accord avec le",
+    "term":"Conditions d'utilisation",
+    "register" :"Registre",
+    "sidebar": {
+    "Dashboard": "Tableau de bord",
+    "Sign yourself": "Signez-vous",
+    "Request signatures":"Demander des signatures",
+    "Templates":"Modèles",
+    "Templates-Children":{
+    "Create template":"Créer un modèle",
+       "Manage templates": "Gérer les modèles"
+    },
+    "OpenSign™ Drive":"Lecteur OpenSign™",
+    "Reports":"Rapports",
+    "Reports-Children"  :{
+      "Need your sign": "Besoin de votre signe",
+      "In Progress": "En cours",
+      "Completed":"Complété",
+      "Drafts": "Brouillons",
+      "Declined": "Diminué",
+      "Expired":"Expiré",
+      "Contactbook":"Carnet de contacts"
+    },
+    "Settings": "Paramètres",
+    "Settings-Children":{
+     "My Signature": "Ma signature",
+    "API Token":"Jeton API",
+    "Webhook":"Webhook"
+      }
+    },
+    "dashboard-card":{
+    "Need your Signature":"Besoin de votre signature",
+    "Out for signatures":"En quête de signatures"
+      },
+   "report-name":{
+      "Draft Documents":"Projets de documents",
+      "Need your sign":"Besoin de votre signe",
+      "In-progress documents":"Documents en cours",
+      "Completed Documents":"Documents complétés",
+      "Declined Documents":"Documents refusés",
+      "Expired Documents":"Documents expirés",
+      "Recently sent for signatures":"Récemment envoyé pour signature",
+      "Recent signature requests":"Demandes de signature récentes",
+      "Drafts":"Brouillons",
+      "Contactbook":"Carnet de contacts",
+      "Templates":"Modèles"
+    },
+    "report-heading":{
+      "Sr.No":"Sr. Non",
+      "Title":"Titre",
+      "Email":"E-mail",
+      "Phone":"Téléphone",
+      "File":"Déposer",
+      "Owner":"Propriétaire",
+      "Signers":"Signataires",
+      "Note": "Note", 
+      "Folder":"Dossier",
+      "Reason": "Raison"
+      },
+      "form-name":{
+        "Sign Yourself":"Signez-vous",
+        "Request Signatures":"Demander des signatures",
+        "New Template":"Nouveau modèle"
+      },
+      "file-type":"pdf, png, jpg, jpeg",
+      "docx":"docx",
+      "file-selected":"fichier sélectionné",
+      "template-title":"Titre du modèle",
+      "document-title":"Titre du document",
+      "description":"Description",
+      "time-to-complete":"Temps de réalisation (jours)",
+      "send-in-order":"Envoyer dans la commande",
+      "send-in-order-help":{
+        "p1":"Choisissez la manière dont vous souhaitez que les demandes de signature soient envoyées aux signataires du document :",
+        "p2":"La sélection de cette option enverra initialement la demande de signature au premier signataire. Une fois que le premier signataire a terminé sa partie, le prochain signataire de la séquence recevra la demande. Ce processus se poursuit jusqu'à ce que tous les signataires aient signé le document. Cette méthode garantit que le document est signé dans un ordre spécifique.",
+        "p3":"La sélection de cette option enverra les liens de signature à tous les signataires simultanément. Chaque signataire peut signer le document à sa convenance, que d'autres signataires aient ou non complété leur signature. Cette méthode est plus rapide mais n’impose aucun ordre de signature entre les participants.",
+        "p4":"Sélectionnez l'option qui correspond le mieux aux besoins de votre traitement de documents."
+      },
+     "no":"Non",
+     "auto-reminder":"Rappel automatique",
+     "remind-once":"Rappeler une fois tous les (jours)",
+     "next":"suivant"
+
+
+}
   
