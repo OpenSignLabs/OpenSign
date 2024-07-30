@@ -10,7 +10,7 @@ const buttonList = [
     icon: "fa-light fa-pen-nib"
   },
   {
-    label: "Request signature",
+    label: "Request signatures",
     redirectId: "8mZzFxbG1z",
     redirectType: "Form",
     icon: "fa-light fa-paper-plane"
