@@ -95,8 +95,17 @@
       "Note": "Note", 
       "Folder": "Folder",
       "Reason":  "Reason"
-
-    },
+      },
+      "report-help":{
+        "Draft Documents": "These are documents you have started but have not finalized for sending.",
+        "Need your sign":"This is a list of documents that are waiting for your signature",
+        "In-progress documents": "This is a list of documents you've sent to other parties for signature.",
+        "Completed Documents":"This is a list of documents that have been signed by all parties.",
+        "Declined Documents": "This is a list of documents that have been declined by one of the signers.",
+        "Expired Documents":"This is a list of documents that have reached their expiration date.",
+        "Contactbook":"This is a list of contacts/signers added by you. These will appear as suggestions when you try to add signers to a new document.",
+        "Templates" :"This is a list of templates that are available to you for creating documents. You can click the 'use' button to create a new document using a template, modify the document & add signers in the next step."
+        },
     "form-name":{
       "Sign Yourself":"Sign Yourself",
       "Request Signatures":"Request Signatures",
@@ -119,7 +128,63 @@
     "no":"No",
     "auto-reminder":"Auto reminder",
     "remind-once":" Remind once in every (Days)",
-    "next":"Next"
+    "next":"Next",
+    "select-folder":"Select Folder",
+    "OpenSign-drive":"OpenSign™ Drive",
+    "select-folder-help" :"If you do not select a folder, your signed document will be saved in the Main OpenSign drive folder.",
+    "no-data":"No data found",
+    "save-here":"Save Here",
+    "back":"Back",
+    "add-folder":"Add folder",
+    "create-folder":"Create Folder",
+    "parent-folder":"Parent Folder",
+    "create":"Create",
+    "Signers":"Signers",
+    "signers-help":"Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed.",
+    "add-signer":"Add Signer",
+    "contact-not-found":"Contact not found",
+    "add-yourself":"Add Yourself",
+    "submit":"Submit",
+    "reset":"Reset",
+    "my-signature":"My Signature",
+    "signature":"Signature",
+    "upload-image":" Upload image",
+    "clear":"Clear",
+     "upload-signature/Image":"Please upload signature/Image",
+     "initials":"Initials",
+      "API" :"API",
+      "api-token":"API Token",
+     "regenerate-token":"Regenerate Token",
+     "generate-token":"Generate Token",
+     "view-docs":"View Docs",
+     "generate-token-alert" :"Are you sure you want to regenerate token it will expire old token?",
+     "yes":"Yes",
+     "copied":"Copied",
+     "wrong-mssg":"Something went wrong.",
+     "token-generated":"Token generated successfully.",
+     "webhook":"Webhook",
+     "update-webhook":"Update Webhook",
+     "add-webhook":"Add Webhook",
+     "webhook-added" :"Webhook added successfully.",
+    "document-signature":{
+      "loader":" This might take some time",
+      "pages":"Pages",
+      "document-signed":"Document signed",
+      "close":"Close",
+      "validation-alert":"Validation alert",
+      "validate-alert-mssg" :" The input does not meet the criteria set by the regular expression.",
+      "otp-verification":"OTP verification",
+      "enter-otp":"Enter OTP",
+      "verify":"Verify",
+      "resend":"Resend",
+      "verify-email":"Please verify your email !",
+      "send-otp":" Send OTP",
+      "otp-placeholder":"Enter OTP received over email",
+      "loading-doc":"Loading Document.."
+     }
+    
+    
+    
   
  
  

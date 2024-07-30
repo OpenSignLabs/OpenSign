@@ -1,4 +1,4 @@
-{
+ {
     "create-account": "Créer un compte",
     "login": "se connecter",
     "language":"Langue",
@@ -96,6 +96,16 @@
       "Folder":"Dossier",
       "Reason": "Raison"
       },
+      "report-help":{
+        "Draft Documents": "Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi.",
+        "Need your sign": "Voici une liste de documents qui attendent votre signature",
+        "In-progress documents": "Il s'agit d'une liste de documents que vous avez envoyés à d'autres parties pour signature.",
+        "Completed Documents": "Il s'agit d'une liste de documents signés par toutes les parties.",
+        "Declined Documents": "Il s'agit d'une liste de documents qui ont été refusés par l'un des signataires.",
+        "Expired Documents": "Il s'agit d'une liste de documents qui ont atteint leur date d'expiration.",
+        "Contactbook": "Il s'agit d'une liste de contacts/signataires que vous avez ajoutés. Ceux-ci apparaîtront sous forme de suggestions lorsque vous tenterez d'ajouter des signataires à un nouveau document.",
+        "Templates" : "Il s'agit d'une liste de modèles à votre disposition pour créer des documents. Vous pouvez cliquer sur le bouton 'Utiliser' pour créer un nouveau document à l'aide d'un modèle, modifier le document et ajouter des signataires à l'étape suivante."
+        },
       "form-name":{
         "Sign Yourself":"Signez-vous",
         "Request Signatures":"Demander des signatures",
@@ -118,8 +128,62 @@
      "no":"Non",
      "auto-reminder":"Rappel automatique",
      "remind-once":"Rappeler une fois tous les (jours)",
-     "next":"suivant"
+     "next":"Suivant",
+     "select-folder" :"Sélectionner le dossier",
+     "OpenSign-drive":"Lecteur OpenSign™",
+     "select-folder-help" :"Si vous ne sélectionnez pas de dossier, votre document signé sera enregistré dans le dossier du lecteur principal OpenSign.",
+     "no-data"  :"Aucune donnée disponible",
+     "save-here":"Enregistrer ici",
+     "back" :"Dos",
+     "add-folder" :"Ajouter le dossier",
+      "create-folder":"Créer le dossier",
+      "parent-folder" :"Dossier parent",
+      "create":"Créer",
+      "Signers" :"Signataires",
+      "signers-help" :"Commencez à saisir le nom d'un contact pour voir les signataires suggérés par vos contacts enregistrés ou en ajouter de nouveaux. Organisez l'ordre de signature en ajoutant des signataires dans l'ordre souhaité. Utilisez le bouton « + » pour inclure les signataires et le « x » pour les supprimer. Chaque signataire recevra un e-mail invité à signer le document dans l'ordre indiqué.",
+     "add-signer":"Ajouter un signataire",
+     "contact-not-found" :"Contact introuvable",
+     "add-yourself"  :"Ajoutez-vous",
+     "submit" :"Soumettre",
+     "reset" :"Réinitialiser",
+     "my-signature"  :"Ma signature",
+     "signature":"Signature",
+     "upload-image" :"Télécharger une image",
+     "clear" :"clair",
+     "upload-signature/Image" :"Veuillez télécharger la signature/l'image",
+     "initials" :"Initiales",
+     "API" :"API",
+     "api-token":"Jeton API",
+     "regenerate-token":"Régénérer le jeton",
+     "generate-token" :"Générer un jeton",
+     "view-docs" :"Afficher les documents" ,
+     "generate-token-alert"  :"Êtes-vous sûr de vouloir régénérer le jeton, il expirera à l'ancienne jeton?",
+     "yes" :"Oui",
+     "copied" :"Copié",
+     "wrong-mssg"  :"Quelque chose s'est mal passé.",
+     "token-generated"  :"Jeton généré avec succès.",
+     "webhook":"Webhook",
+     "update-webhook" :"Mettre à jour le webhook",
+     "add-webhook" :"Ajouter un webhook",
+     "webhook-added" :"Webhook ajouté avec succès.",
 
+      "document-signature":{
+      "loader":"Cela pourrait prendre un certain temps",
+      "pages":"Pages",
+      "document-signed":"Document signé",
+      "close":"Close",
+      "validation-alert":"Alerte de validation",
+      "validate-alert-mssg" :"L'entrée ne répond pas aux critères définis par l'expression régulière.",
+      "otp-verification":"Vérification OTP",
+      "enter-otp":"Entrez OTP",
+      "verify":"Vérifier",
+      "resend":"Renvoyer",
+      "verify-email":"Veuillez vérifier votre email!",
+      "send-otp":"Envoyer OTP",
+      "otp-placeholder":"Saisissez l'OTP reçu par e-mail",
+      "loading-doc":"Chargement du document.."
+     }
+    
 
 }
   

@@ -406,7 +406,10 @@ function UserProfile() {
                     onChange={(e) => SetName(e.target.value)}
                   />
                 ) : (
-                  <span>{localStorage.getItem("username")}</span>
+                  <span>
+                    {/* {localStorage.getItem("username")} */}
+                    <p>{t("greeting", { name })}</p>
+                  </span>
                 )}
               </li>
               <li

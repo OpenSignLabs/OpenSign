@@ -1,12 +1,14 @@
 import React from "react";
 import Loader from "../../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 function VerifyEmail(props) {
+  const { t } = useTranslation();
   return (
     <dialog className="op-modal op-modal-open absolute z-[1999]">
       <div className="md:w-[40%] w-[80%] op-modal-box p-0 overflow-y-auto hide-scrollbar text-sm">
         <h3 className="font-bold text-lg pt-[15px] px-[20px] text-base-content">
-          OTP verification
+          {t("document-signature.otp-verification")}
         </h3>
         {props.isVerifyModal ? (
           <form
@@ -16,26 +18,26 @@ function VerifyEmail(props) {
             }}
           >
             <div className="px-6 py-3 text-base-content">
-              <label className="mb-2">Enter OTP</label>
+              <label className="mb-2">{t("enter-otp")}</label>
               <input
                 required
                 type="tel"
                 pattern="[0-9]{4}"
                 className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
-                placeholder="Enter OTP received over email"
+                placeholder={t("otp-placeholder")}
                 value={props.otp}
                 onChange={(e) => props.setOtp(e.target.value)}
               />
             </div>
             <div className="px-6 my-3">
               <button type="submit" className="op-btn op-btn-primary">
-                Verify
+                {t("document-signature.verify")}
               </button>
               <button
                 className="op-btn op-btn-secondary ml-2"
                 onClick={(e) => props.handleResend(e)}
               >
-                Resend
+                {t("document-signature.resend")}
               </button>
             </div>
           </form>
@@ -45,7 +47,7 @@ function VerifyEmail(props) {
           </div>
         ) : (
           <div className="px-6 py-3 text-base-content">
-            <p className="mb-2 text-sm">Please verify your email !</p>
+            <p className="mb-2 text-sm">{t("verify-email")}</p>
             <div className="px-0 mt-3">
               <button
                 className="op-btn op-btn-primary"
@@ -54,7 +56,7 @@ function VerifyEmail(props) {
                   props.handleVerifyBtn();
                 }}
               >
-                Send OTP
+                {t("document-signature.send-otp")}
               </button>
             </div>
           </div>

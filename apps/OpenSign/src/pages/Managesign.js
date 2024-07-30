@@ -7,7 +7,9 @@ import Parse from "parse";
 import { SaveFileSize } from "../constant/saveFileSize";
 import Alert from "../primitives/Alert";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 const ManageSign = () => {
+  const { t } = useTranslation();
   const [penColor, setPenColor] = useState("blue");
   const [initialPen, setInitialPen] = useState("blue");
   const [image, setImage] = useState();
@@ -245,12 +247,12 @@ const ManageSign = () => {
       <div className="relative w-full">
         <div className="ml-[5px] my-[20px] md:m-[20px]">
           <div className="text-[20px] font-semibold m-[10px] md:m-0 mb-2">
-            My Signature
+            {t("my-signature")}
           </div>
           <div className="flex flex-col md:flex-row gap-0 md:gap-[12px]">
             <div className="relative">
               <span className="font-medium select-none flex mb-[10px] pl-[10px]">
-                Signature
+                {t("signature")}
               </span>
               <input
                 type="file"
@@ -330,14 +332,14 @@ const ManageSign = () => {
                         className="op-link"
                         onClick={() => handleUploadBtn()}
                       >
-                        Upload image
+                        {t("upload-image")}
                       </div>
                       <div
                         type="button"
                         className="op-link"
                         onClick={() => handleClear()}
                       >
-                        Clear
+                        {t("clear")}
                       </div>
                     </div>
                   </div>
@@ -345,14 +347,14 @@ const ManageSign = () => {
                 {warning && (
                   <span className="customwarning signWarning text-[12px] w-[220px] md:w-[300px]">
                     <i className="fa-light fa-exclamation-circle text-[#fab005] text-[15px] mr-[4px]"></i>
-                    Please upload signature/Image
+                    {t("upload-signature/Image")}
                   </span>
                 )}
               </div>
             </div>
             <div className="relative">
               <span className="font-medium select-none flex mb-[10px] pl-[10px]">
-                Initials
+                {t("initials")}
               </span>
               <div>
                 {isInitials ? (
@@ -425,7 +427,7 @@ const ManageSign = () => {
                       className="op-link text-sm md:text-base mr-1"
                       onClick={() => handleClearInitials()}
                     >
-                      Clear
+                      {t("clear")}
                     </div>
                   </div>
                 </div>
@@ -437,7 +439,7 @@ const ManageSign = () => {
               className="op-btn op-btn-primary"
               onClick={(e) => handleSubmit(e)}
             >
-              save
+              {t("save")}
             </button>
           </div>
         </div>
