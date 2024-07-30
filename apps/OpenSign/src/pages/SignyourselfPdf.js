@@ -51,8 +51,10 @@ import TextFontSetting from "../components/pdf/TextFontSetting";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
+  const { t } = useTranslation();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [isSignPad, setIsSignPad] = useState(false);
   const [allPages, setAllPages] = useState(null);
@@ -1175,7 +1177,7 @@ function SignYourSelf() {
             <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-center bg-[#e6f2f2] bg-opacity-80">
               <Loader />
               <span style={{ fontSize: "13px", fontWeight: "bold" }}>
-                This might take some time
+                {t("document-signature.loader")}
               </span>
             </div>
           )}
@@ -1249,7 +1251,7 @@ function SignYourSelf() {
                 {/* this modal is used show this document is already sign */}
                 <ModalUi
                   isOpen={showAlreadySignDoc.status}
-                  title={"Document signed"}
+                  title={t("document-signature.document-signed")}
                   handleClose={() => {
                     setShowAlreadySignDoc({ status: false });
                   }}
@@ -1262,7 +1264,7 @@ function SignYourSelf() {
                       className="op-btn op-btn-ghost shadow-md"
                       onClick={() => setShowAlreadySignDoc({ status: false })}
                     >
-                      Close
+                      {t("close")}
                     </button>
                   </div>
                 </ModalUi>
@@ -1417,15 +1419,13 @@ function SignYourSelf() {
       )}
       <ModalUi
         isOpen={validateAlert}
-        title={"Validation alert"}
+        title={t("validation-alert")}
         handleClose={() => {
           setValidateAlert(false);
         }}
       >
         <div className="p-[20px] h-full">
-          <p>
-            The input does not meet the criteria set by the regular expression.
-          </p>
+          <p>{t("document-signature.validate-alert-mssg")}</p>
 
           <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
           <button
@@ -1433,7 +1433,7 @@ function SignYourSelf() {
             type="button"
             className="op-btn op-btn-ghost shadow-md"
           >
-            Close
+            {t("close")}
           </button>
         </div>
       </ModalUi>

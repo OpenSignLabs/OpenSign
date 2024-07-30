@@ -1076,7 +1076,7 @@ const ReportTable = (props) => {
             {t(`report-name.${props.ReportName}`)}
             {props.report_help && (
               <span className="text-xs md:text-[13px] font-normal">
-                <Tooltip message={props.report_help} />
+                <Tooltip message={t(`report-help.${props.ReportName}`)} />
               </span>
             )}
           </div>

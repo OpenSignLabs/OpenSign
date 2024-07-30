@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const AddSigner = (props) => {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -214,14 +216,14 @@ const AddSigner = (props) => {
               className="op-checkbox op-checkbox-sm"
             />
             <label htmlFor="addYourself" className="ml-2 mb-0">
-              Add Yourself
+              {t("add-yourself")}
             </label>
           </div>
         )}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="name" className="block text-xs font-semibold">
-              Name
+              {t("name")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
@@ -236,7 +238,7 @@ const AddSigner = (props) => {
           </div>
           <div className="mb-3">
             <label htmlFor="email" className="block text-xs font-semibold">
-              Email
+              {t("email")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
@@ -251,7 +253,7 @@ const AddSigner = (props) => {
           </div>
           <div className="mb-3">
             <label htmlFor="phone" className="block text-xs font-semibold">
-              Phone
+              {t("phone")}
             </label>
             <input
               type="text"
@@ -264,14 +266,14 @@ const AddSigner = (props) => {
           </div>
           <div className="mt-4 flex gap-x-2 justify-start">
             <button type="submit" className="op-btn op-btn-primary">
-              Submit
+              {t("submit")}
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
               className="op-btn op-btn-secondary"
             >
-              Reset
+              {t("reset")}
             </button>
           </div>
         </form>
