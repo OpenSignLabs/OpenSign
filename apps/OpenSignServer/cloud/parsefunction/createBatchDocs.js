@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 
-const serverUrl = process.env.SERVER_URL;
+const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const appId = process.env.APP_ID;
 
 async function sendMail(document, sessionToken) {
