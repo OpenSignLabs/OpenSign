@@ -27,6 +27,7 @@ const refreshAccessToken = async refreshToken => {
 
 // Function to create a raw email message
 const makeEmail = async (to, from, subject, html, url, pdfName) => {
+  const protocol = new URL(process.env.SERVER_URL);
   const htmlContent = html;
   const boundary = 'boundary_' + Date.now().toString(16);
   let str;
@@ -35,7 +36,7 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
     let Pdf = fs.createWriteStream('test.pdf');
     const writeToLocalDisk = () => {
       return new Promise((resolve, reject) => {
-        if (useLocal !== 'true') {
+        if (useLocal !== 'true' && protocol.hostname !== 'localhost') {
           https.get(url, async function (response) {
             response.pipe(Pdf);
             response.on('end', () => resolve('success'));
