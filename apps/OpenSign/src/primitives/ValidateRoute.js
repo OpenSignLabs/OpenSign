@@ -20,15 +20,21 @@ const ValidateRoute = () => {
     })();
   }, []);
   const handlelogout = async () => {
-    try {
-      // if (Parse?.User?.current()) {
-      //   Parse?.User?.logOut();
-      // }
-      localStorage.removeItem("accesstoken");
-    } catch (err) {
-      console.log("err ", err);
-      localStorage.removeItem("accesstoken");
-    }
+    let appdata = localStorage.getItem("userSettings");
+    let applogo = localStorage.getItem("appLogo");
+    let defaultmenuid = localStorage.getItem("defaultmenuid");
+    let PageLanding = localStorage.getItem("PageLanding");
+    let baseUrl = localStorage.getItem("baseUrl");
+    let appid = localStorage.getItem("parseAppId");
+
+    localStorage.clear();
+
+    localStorage.setItem("appLogo", applogo);
+    localStorage.setItem("defaultmenuid", defaultmenuid);
+    localStorage.setItem("PageLanding", PageLanding);
+    localStorage.setItem("userSettings", appdata);
+    localStorage.setItem("baseUrl", baseUrl);
+    localStorage.setItem("parseAppId", appid);
   };
   return <div>{<Outlet />}</div>;
 };

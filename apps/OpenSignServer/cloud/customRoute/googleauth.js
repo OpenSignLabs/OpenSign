@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 const appId = process.env.APP_ID;
-const serverUrl = process.env.SERVER_URL;
+const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 export default async function gooogleauth(request, response) {
   const code = request.body.code;
   const baseUrl = new URL(process.env.SERVER_URL);

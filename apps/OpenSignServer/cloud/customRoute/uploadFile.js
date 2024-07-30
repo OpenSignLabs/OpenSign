@@ -3,7 +3,7 @@ import multer from 'multer';
 import multerS3 from 'multer-s3';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
-import { useLocal } from '../../Utils.js';
+import { cloudServerUrl, useLocal } from '../../Utils.js';
 dotenv.config();
 
 function sanitizeFileName(fileName) {
@@ -49,7 +49,7 @@ async function uploadFile(req, res) {
     const DO_SECRET_ACCESS_KEY = process.env.DO_SECRET_ACCESS_KEY;
     const DO_SPACE = process.env.DO_SPACE;
 
-    const parseBaseUrl = process.env.SERVER_URL;
+    const parseBaseUrl = cloudServerUrl; //process.env.SERVER_URL;
     const parseAppId = process.env.APP_ID;
     let fileStorage;
     if (useLocal === 'true') {
