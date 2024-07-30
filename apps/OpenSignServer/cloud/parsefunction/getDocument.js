@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 
 export default async function getDocument(request) {
-  const serverUrl = process.env.SERVER_URL;
+  const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const docId = request.params.docId;
 
   try {

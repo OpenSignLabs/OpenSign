@@ -1,10 +1,11 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { cloudServerUrl } from '../../../../Utils.js';
 dotenv.config();
 export default async function getTemplatetList(request, response) {
   const reqToken = request.headers['x-api-token'];
   const appId = process.env.APP_ID;
-  const serverUrl = process.env.SERVER_URL;
+  const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   if (!reqToken) {
     return response.status(400).json({ error: 'Please Provide API Token' });
   }

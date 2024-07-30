@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 export default async function saveSubscription(request) {
-  const serverUrl = process.env.SERVER_URL;
+  const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const appId = process.env.APP_ID;
   const subscription = request.params.subscription;
   const SubscriptionId = subscription.data.subscription.subscription_id;
