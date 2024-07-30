@@ -7,6 +7,7 @@ import { smtpenable, smtpsecure, updateMailCount, useLocal } from '../../Utils.j
 import sendMailGmailProvider from './sendMailGmailProvider.js';
 import { createTransport } from 'nodemailer';
 async function sendMailProvider(req) {
+  const protocol = new URL(process.env.SERVER_URL);
   try {
     let transporterSMTP;
     let mailgunClient;
@@ -33,7 +34,7 @@ async function sendMailProvider(req) {
       let Pdf = fs.createWriteStream('test.pdf');
       const writeToLocalDisk = () => {
         return new Promise((resolve, reject) => {
-          if (useLocal !== 'true') {
+          if (useLocal !== 'true' && protocol.hostname !== 'localhost') {
             https.get(req.params.url, async function (response) {
               response.pipe(Pdf);
               response.on('end', () => resolve('success'));
