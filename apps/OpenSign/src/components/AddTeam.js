@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import Title from "./Title";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const AddTeam = (props) => {
+  const { t } = useTranslation();
   const [formdata, setFormdata] = useState({
     name: "",
     team: ""
@@ -140,7 +142,7 @@ const AddTeam = (props) => {
               htmlFor="name"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Name
+              {t("name")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
@@ -157,7 +159,7 @@ const AddTeam = (props) => {
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Parent Team
+              {t("report-heading.Parent Team")}
             </label>
             <select
               value={formdata.team}
@@ -175,14 +177,14 @@ const AddTeam = (props) => {
           </div>
           <div className="flex items-center mt-3 gap-2 text-white">
             <button type="submit" className="op-btn op-btn-primary">
-              Submit
+              {t("submit")}
             </button>
             <div
               type="button"
               onClick={() => handleReset()}
               className="op-btn op-btn-secondary"
             >
-              Reset
+              {t("reset")}
             </div>
           </div>
         </form>

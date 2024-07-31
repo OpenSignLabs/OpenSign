@@ -75,10 +75,10 @@ function GenerateToken() {
           setIsAlert({ type: "success", msg: t("token-generated") });
         } else {
           console.error("Error while generating Token");
-          setIsAlert({ type: "danger", msg: t("wrong-mssg") });
+          setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         }
       } catch (error) {
-        setIsAlert({ type: "danger", msg: t("wrong-mssg") });
+        setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         console.log("while generating Token", error);
       } finally {
         setIsLoader(false);

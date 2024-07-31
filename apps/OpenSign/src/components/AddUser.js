@@ -4,6 +4,7 @@ import Title from "./Title";
 import Loader from "../primitives/Loader";
 import { copytoData } from "../constant/Utils";
 import { isEnableSubscription } from "../constant/const";
+import { useTranslation } from "react-i18next";
 function generatePassword(length) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -17,6 +18,7 @@ function generatePassword(length) {
 }
 
 const AddUser = (props) => {
+  const { t } = useTranslation();
   const [formdata, setFormdata] = useState({
     name: "",
     phone: "",
@@ -260,7 +262,7 @@ const AddUser = (props) => {
               htmlFor="name"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Name
+              {t("name")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
@@ -277,7 +279,7 @@ const AddUser = (props) => {
               htmlFor="email"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Email
+              {t("email")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
@@ -294,7 +296,7 @@ const AddUser = (props) => {
               htmlFor="email"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Password
+              {t("password")}
             </label>
             <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
               <div className="break-all">{formdata?.password}</div>
@@ -304,7 +306,7 @@ const AddUser = (props) => {
               ></i>
             </div>
             <div className="text-[12px] ml-2 mb-0 text-[red] select-none">
-              Password will only be generated once; make sure to copy it.
+              {t("password-generateed")}
             </div>
           </div>
           <div className="mb-3">
@@ -312,7 +314,7 @@ const AddUser = (props) => {
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Phone
+              {t("phone")}
               {/* <span className="text-[red] text-[13px]"> *</span> */}
             </label>
             <input

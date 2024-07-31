@@ -1,6 +1,8 @@
 import React from "react";
 import "../../styles/signature.css";
+import { useTranslation } from "react-i18next";
 function Signedby({ pdfDetails }) {
+  const { t } = useTranslation();
   const getFirstLetter = (name) => {
     const firstLetter = name.charAt(0);
     return firstLetter;
@@ -9,7 +11,7 @@ function Signedby({ pdfDetails }) {
   return (
     <div className="hidden md:block w-full h-full bg-base-100">
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
-        Signed By
+        {t("signed-by")}
       </div>
       <div className="mt-[2px] bg-base-100">
         <div className="bg-[#93a3db] rounded-xl mx-1 flex flex-row items-center py-[10px]">

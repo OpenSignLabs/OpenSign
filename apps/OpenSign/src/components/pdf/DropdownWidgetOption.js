@@ -3,7 +3,9 @@ import { isEnableSubscription } from "../../constant/const";
 import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
 import Upgrade from "../../primitives/Upgrade";
+import { useTranslation } from "react-i18next";
 function DropdownWidgetOption(props) {
+  const { t } = useTranslation();
   const [dropdownOptionList, setDropdownOptionList] = useState([
     "option-1",
     "option-2"
@@ -155,7 +157,8 @@ function DropdownWidgetOption(props) {
         >
           <div>
             <label className="text-[13px] font-semibold">
-              Name<span className="text-[red] text-[13px]"> *</span>
+              {t("name")}
+              <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
               required
@@ -166,7 +169,7 @@ function DropdownWidgetOption(props) {
             />
 
             <label className="text-[13px] font-semibold mt-[5px]">
-              Options
+              {t("options")}
             </label>
             <div className="flex flex-col">
               {dropdownOptionList.map((option, index) => (
@@ -222,7 +225,7 @@ function DropdownWidgetOption(props) {
                           !props.isSubscribe ? "text-[gray]" : ""
                         } text-[13px] font-semibold`}
                       >
-                        Minimun check
+                        {t("minimun-check")}
                       </label>
                       {!props.isSubscribe && isEnableSubscription && (
                         <Upgrade />
@@ -245,7 +248,7 @@ function DropdownWidgetOption(props) {
                           !props.isSubscribe ? "text-[gray]" : ""
                         } text-[13px] font-semibold`}
                       >
-                        Maximum check
+                        {t("maximum-check")}
                       </label>
                       <input
                         required
@@ -268,7 +271,7 @@ function DropdownWidgetOption(props) {
             {["dropdown", radioButtonWidget].includes(props.type) && (
               <>
                 <label className="text-[13px] font-semibold mt-[5px]">
-                  Default value
+                  {t("default-value")}
                 </label>
                 <select
                   onChange={(e) => setDefaultValue(e.target.value)}
@@ -278,7 +281,7 @@ function DropdownWidgetOption(props) {
                   placeholder="select default value"
                 >
                   <option value="" disabled hidden className="text-[13px]">
-                    Select...
+                    {t("select")}...
                   </option>
                   {dropdownOptionList.map((data, ind) => {
                     return (
@@ -325,7 +328,7 @@ function DropdownWidgetOption(props) {
                       onChange={(e) => setIsReadOnly(e.target.checked)}
                     />
                     <label className="ml-1 mb-0" htmlFor="isreadonly">
-                      Is read only
+                      {t("read-only")}
                     </label>
                   </div>
                 )}
@@ -339,7 +342,7 @@ function DropdownWidgetOption(props) {
                   />
 
                   <label className="ml-1 mb-0" htmlFor="ishidelabel">
-                    Hide labels
+                    {t("hide-labels")}
                   </label>
                 </div>
               </div>
@@ -358,7 +361,7 @@ function DropdownWidgetOption(props) {
             type="submit"
             className="op-btn op-btn-primary"
           >
-            Save
+            {t("save")}
           </button>
           {props.currWidgetsDetails?.options?.values?.length > 0 && (
             <button
@@ -369,7 +372,7 @@ function DropdownWidgetOption(props) {
                 resetState();
               }}
             >
-              Cancel
+              {t("cancel")}
             </button>
           )}
         </form>

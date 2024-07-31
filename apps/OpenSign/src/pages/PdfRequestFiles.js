@@ -46,8 +46,10 @@ import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
+import { useTranslation } from "react-i18next";
 
 function PdfRequestFiles(props) {
+  const { t } = useTranslation();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
   const [unsignedSigners, setUnSignedSigners] = useState([]);
@@ -71,7 +73,7 @@ function PdfRequestFiles(props) {
   const [tourStatus, setTourStatus] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
@@ -1608,13 +1610,13 @@ function PdfRequestFiles(props) {
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
       {isSubscriptionExpired ? (
         <ModalUi
-          title={"Subscription Expired"}
+          title={t("subscription-expired")}
           isOpen={isSubscriptionExpired}
           showClose={false}
         >
           <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
             <p className="text-sm md:text-lg font-normal">
-              Owner&apos;s subscription has expired.
+              {t("owner-subscription-expired")}
             </p>
           </div>
         </ModalUi>
@@ -1630,7 +1632,7 @@ function PdfRequestFiles(props) {
                 <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                   <Loader />
                   <span className="text-[13px] text-base-content">
-                    This might take some time
+                    {t("loading-mssg")}
                   </span>
                 </div>
               )}
@@ -1657,7 +1659,7 @@ function PdfRequestFiles(props) {
                   requestSignTourFunction()}
                 <ModalUi
                   isOpen={isAlert.isShow}
-                  title={"Alert message"}
+                  title={t("alert-message")}
                   handleClose={() => {
                     setIsAlert({
                       isShow: false,
@@ -1678,7 +1680,7 @@ function PdfRequestFiles(props) {
                       type="button"
                       className="op-btn op-btn-primary"
                     >
-                      Ok
+                      {t("ok")}
                     </button>
                   </div>
                 </ModalUi>
@@ -1697,14 +1699,13 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg="Document decline"
+                  headMsg={t("document-decline")}
                   bodyMssg={
                     isDecline.currnt === "Sure"
-                      ? "Are you sure want to decline this document ?"
+                      ? t("decline-alert-2")
                       : isDecline.currnt === "YouDeclined"
-                        ? "You have declined this document!"
-                        : isDecline.currnt === "another" &&
-                          "You can not sign this document as it has been declined/revoked."
+                        ? t("decline-alert-1")
+                        : isDecline.currnt === "another" && t("decline-alert-3")
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
@@ -1740,9 +1741,7 @@ function PdfRequestFiles(props) {
                     {isOtp ? (
                       <form onSubmit={VerifyOTP}>
                         <div className="flex flex-col gap-2">
-                          <span>
-                            You will get a verification code via email
-                          </span>
+                          <span>{t("get-otp-alert")}</span>
                           <label className="op-input op-input-bordered flex items-center gap-2 ">
                             <input
                               type="number"

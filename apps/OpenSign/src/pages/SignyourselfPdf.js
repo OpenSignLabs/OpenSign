@@ -87,9 +87,9 @@ function SignYourSelf() {
   const [validateAlert, setValidateAlert] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
-  const [handleError, setHandleError] = useState();
+  const [handleError, setHandleError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [signTour, setSignTour] = useState(true);
   const { docId } = useParams();
@@ -219,12 +219,12 @@ function SignYourSelf() {
         //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
         const arrayBuffer = await convertPdfArrayBuffer(url);
         if (arrayBuffer === "Error") {
-          setHandleError("Error: Something went wrong!");
+          setHandleError(t("something-went-wrong-mssg"));
         } else {
           setPdfArrayBuffer(arrayBuffer);
         }
       } else {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
@@ -236,7 +236,7 @@ function SignYourSelf() {
         setPdfUrl(documentData[0].SignedUrl);
         const alreadySign = {
           status: true,
-          mssg: "Congratulations! 🎉 This document has been successfully signed by you!"
+          mssg: t("document-signed-alert")
         };
         if (showComplete) {
           setShowAlreadySignDoc(alreadySign);
@@ -255,10 +255,10 @@ function SignYourSelf() {
       const loadObj = {
         isLoad: false
       };
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading(loadObj);
     } else {
-      setHandleError("No Data Found!");
+      setHandleError(t("no-data-avaliable"));
       const loadObj = {
         isLoad: false
       };
@@ -292,7 +292,7 @@ function SignYourSelf() {
         const loadObj = {
           isLoad: false
         };
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
         setIsLoading(loadObj);
       });
     const contractUsersRes = await contractUsers(jsonSender.email);
@@ -300,7 +300,7 @@ function SignYourSelf() {
       const loadObj = {
         isLoad: false
       };
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading(loadObj);
     } else if (contractUsersRes[0] && contractUsersRes.length > 0) {
       setActiveMailAdapter(contractUsersRes[0]?.active_mail_adapter);
@@ -344,7 +344,7 @@ function SignYourSelf() {
           setCheckTourStatus(true);
         }
       } else {
-        setHandleError("No Data Found!");
+        setHandleError(t("no-data-avaliable"));
       }
       const loadObj = {
         isLoad: false
@@ -580,7 +580,7 @@ function SignYourSelf() {
     setOtpLoader(true);
     await handleSendOTP(Parse.User.current().getEmail());
     setOtpLoader(false);
-    alert("OTP sent on you email");
+    alert(t("otp-sent-alert"));
   };
   //`handleVerifyEmail` function is used to verify email with otp
   const handleVerifyEmail = async (e) => {
@@ -630,7 +630,7 @@ function SignYourSelf() {
           setIsEmailVerified(isEmailVerified);
         }
       } catch (e) {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
     }
     if (isEmailVerified) {
@@ -668,17 +668,15 @@ function SignYourSelf() {
         }
         if (xyPostion.length === 0 || !isSignatureExist) {
           setIsAlert({
-            header: "Fields required",
+            header: t("fields-required"),
             isShow: true,
-            alertMessage:
-              "Please ensure there's at least one signature widget added"
+            alertMessage: t("signature-widget-alert-1")
           });
           return;
         } else if (showAlert) {
           setIsAlert({
             isShow: true,
-            alertMessage:
-              "Please ensure all field is accurately filled and meets all requirements."
+            alertMessage: t("signature-widget-alert-2")
           });
           return;
         } else {
@@ -713,13 +711,13 @@ function SignYourSelf() {
             if (err && err.message.includes("is encrypted.")) {
               setIsAlert({
                 isShow: true,
-                alertMessage: `Currently encrypted pdf files are not supported.`
+                alertMessage: t("encrypted-pdf-alert")
               });
             } else {
               console.log("err in signing", err);
               setIsAlert({
                 isShow: true,
-                alertMessage: `Something went wrong.`
+                alertMessage: t("something-went-wrong-mssg")
               });
             }
           }
@@ -729,7 +727,7 @@ function SignYourSelf() {
         setIsUiLoading(false);
         setIsAlert({
           isShow: true,
-          alertMessage: "something went wrong, please try again later."
+          alertMessage: t("something-went-wrong-mssg")
         });
       }
     }
@@ -740,7 +738,7 @@ function SignYourSelf() {
     const getIsSubscribe = await checkIsSubscribed();
     const tenantDetails = await getTenantDetails(jsonSender.objectId);
     if (tenantDetails && tenantDetails === "user does not exist!") {
-      alert("User does not exist");
+      alert(t("user-not-exist"));
     } else {
       if (
         tenantDetails?.CompletionBody &&
@@ -771,6 +769,7 @@ function SignYourSelf() {
         base64Sign = await fetchImageBase64(base64Sign);
       } catch (e) {
         console.log("error", e);
+        alert(t("something-went-wrong-mssg"));
       }
     }
     //change image width and height to 104/44 in png base64
@@ -805,6 +804,7 @@ function SignYourSelf() {
       })
       .catch((err) => {
         console.log("axois err ", err);
+        alert(t("something-went-wrong-mssg"));
       });
   };
 
@@ -1056,6 +1056,7 @@ function SignYourSelf() {
         })
         .catch((err) => {
           console.log("axois err ", err);
+          alert(t("something-went-wrong-mssg"));
         });
     }
   };
@@ -1177,7 +1178,7 @@ function SignYourSelf() {
             <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-center bg-[#e6f2f2] bg-opacity-80">
               <Loader />
               <span style={{ fontSize: "13px", fontWeight: "bold" }}>
-                {t("document-signature.loader")}
+                {t("loader")}
               </span>
             </div>
           )}
@@ -1235,7 +1236,7 @@ function SignYourSelf() {
               <div className=" w-full md:w-[95%] ">
                 <ModalUi
                   isOpen={isAlert.isShow}
-                  title={isAlert?.header || "Alert"}
+                  title={isAlert?.header || t("alert")}
                   handleClose={() => {
                     setIsAlert({
                       isShow: false,
@@ -1251,7 +1252,7 @@ function SignYourSelf() {
                 {/* this modal is used show this document is already sign */}
                 <ModalUi
                   isOpen={showAlreadySignDoc.status}
-                  title={t("document-signature.document-signed")}
+                  title={t("document-signed")}
                   handleClose={() => {
                     setShowAlreadySignDoc({ status: false });
                   }}
@@ -1270,7 +1271,7 @@ function SignYourSelf() {
                 </ModalUi>
                 <DropdownWidgetOption
                   type="checkbox"
-                  title="Checkbox"
+                  title={t("checkbox")}
                   showDropdown={isCheckbox}
                   setShowDropdown={setIsCheckbox}
                   handleSaveWidgetsOptions={handleSaveWidgetsOptions}
@@ -1425,7 +1426,7 @@ function SignYourSelf() {
         }}
       >
         <div className="p-[20px] h-full">
-          <p>{t("document-signature.validate-alert-mssg")}</p>
+          <p>{t("validate-alert-mssg")}</p>
 
           <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
           <button

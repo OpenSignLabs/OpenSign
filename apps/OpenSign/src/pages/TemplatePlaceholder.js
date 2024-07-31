@@ -40,7 +40,9 @@ import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import Parse from "parse";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
+import { useTranslation } from "react-i18next";
 const TemplatePlaceholder = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const isHeader = useSelector((state) => state.showHeader);
   const { templateId } = useParams();
@@ -61,7 +63,7 @@ const TemplatePlaceholder = () => {
   const [isSubscribe, setIsSubscribe] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
   const [handleError, setHandleError] = useState();
   const [currentEmail, setCurrentEmail] = useState();
@@ -300,10 +302,10 @@ const TemplatePlaceholder = () => {
         const loadObj = {
           isLoad: false
         };
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
         setIsLoading(loadObj);
       } else {
-        setHandleError("No Data Found!");
+        setHandleError(t("no-data-avaliable"));
         const loadObj = {
           isLoad: false
         };
@@ -312,9 +314,9 @@ const TemplatePlaceholder = () => {
     } catch (err) {
       console.log("err ", err);
       if (err?.response?.data?.code === 101) {
-        setHandleError("Error: Template not found!");
+        setHandleError(t("no-data-avaliable"));
       } else {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
     }
     const res = await contractUsers(jsonSender.email);
@@ -339,10 +341,10 @@ const TemplatePlaceholder = () => {
       const loadObj = {
         isLoad: false
       };
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading(loadObj);
     } else if (res.length === 0) {
-      setHandleError("No Data Found!");
+      setHandleError(t("no-data-avaliable"));
       const loadObj = {
         isLoad: false
       };
@@ -730,7 +732,7 @@ const TemplatePlaceholder = () => {
     if (signersdata?.length) {
       const loadObj = {
         isLoad: true,
-        message: "This might take some time"
+        message: t("loading-mssg")
       };
       setIsLoading(loadObj);
       setIsSendAlert(false);
@@ -905,7 +907,7 @@ const TemplatePlaceholder = () => {
       });
       setIsCreateDoc(false);
     } else {
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsCreateDoc(false);
     }
   };
@@ -1321,35 +1323,30 @@ const TemplatePlaceholder = () => {
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
                   <ModalUi
                     isOpen={isSendAlert}
-                    title={"Fields required"}
+                    title={t("fields-required")}
                     handleClose={() => setIsSendAlert(false)}
                   >
                     <div className="h-full p-[20px]">
-                      <p>
-                        Please add at least one signature field for all roles.
-                      </p>
+                      <p>{t("template-signature-field")}</p>
                     </div>
                   </ModalUi>
                   <ModalUi
                     isOpen={!IsReceipent}
-                    title={"Roles"}
+                    title={t("roles")}
                     handleClose={() => setIsReceipent(true)}
                   >
                     <div className="h-full p-[20px] text-center font-medium">
-                      <p>Please add roles first</p>
+                      <p>{t("template-role-alert")}</p>
                     </div>
                   </ModalUi>
                   {/* this modal is used show send mail  message and after send mail success message */}
                   <ModalUi
                     isOpen={isCreateDocModal}
-                    title={"Create Document"}
+                    title={t("create-document")}
                     handleClose={() => setIsCreateDocModal(false)}
                   >
                     <div className="h-full p-[20px]">
-                      <p>
-                        Do you want to create a document using the template you
-                        just created ?
-                      </p>
+                      <p>{t("template-created-alert")}</p>
                       <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                       {currentEmail.length > 0 && (
                         <>
@@ -1360,7 +1357,7 @@ const TemplatePlaceholder = () => {
                             type="button"
                             className="op-btn op-btn-primary"
                           >
-                            Yes
+                            {t("yes")}
                           </button>
                           <button
                             onClick={() => {
@@ -1370,7 +1367,7 @@ const TemplatePlaceholder = () => {
                             type="button"
                             className="op-btn op-btn-secondary ml-2"
                           >
-                            No
+                            {t("no")}
                           </button>
                         </>
                       )}
@@ -1379,13 +1376,13 @@ const TemplatePlaceholder = () => {
                   {isCreateDoc && <LoaderWithMsg isLoading={isLoading} />}
                   <ModalUi
                     isOpen={isShowEmail}
-                    title={"signers alert"}
+                    title={t("signers-alert")}
                     handleClose={() => {
                       setIsShowEmail(false);
                     }}
                   >
                     <div className="h-full p-[20px]">
-                      <p>Please select signer for add placeholder!</p>
+                      <p>{t("template-creation-alert-1")}</p>
                       <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                       <button
                         onClick={() => {
@@ -1394,13 +1391,13 @@ const TemplatePlaceholder = () => {
                         type="button"
                         className="op-btn op-btn-primary"
                       >
-                        Ok
+                        {t("ok")}
                       </button>
                     </div>
                   </ModalUi>
                   <DropdownWidgetOption
                     type={radioButtonWidget}
-                    title="Radio group"
+                    title={t("radio-group")}
                     showDropdown={isRadio}
                     setShowDropdown={setIsRadio}
                     handleSaveWidgetsOptions={handleSaveWidgetsOptions}
@@ -1411,7 +1408,7 @@ const TemplatePlaceholder = () => {
                   />
                   <DropdownWidgetOption
                     type="checkbox"
-                    title="Checkbox"
+                    title={t("checkbox")}
                     showDropdown={isCheckbox}
                     setShowDropdown={setIsCheckbox}
                     handleSaveWidgetsOptions={handleSaveWidgetsOptions}
@@ -1422,7 +1419,7 @@ const TemplatePlaceholder = () => {
                   />
                   <DropdownWidgetOption
                     type="dropdown"
-                    title="Dropdown options"
+                    title={t("dropdown-options")}
                     showDropdown={showDropdown}
                     setShowDropdown={setShowDropdown}
                     handleSaveWidgetsOptions={handleSaveWidgetsOptions}
@@ -1444,7 +1441,7 @@ const TemplatePlaceholder = () => {
                   />
                   {/* pdf header which contain funish back button */}
                   <Header
-                    completeBtnTitle={"Next"}
+                    completeBtnTitle={t("next")}
                     isPlaceholder={true}
                     pageNumber={pageNumber}
                     allPages={allPages}
@@ -1541,7 +1538,7 @@ const TemplatePlaceholder = () => {
                     handleDeleteUser={handleDeleteUser}
                     handleRoleChange={handleRoleChange}
                     handleOnBlur={handleOnBlur}
-                    title={"Roles"}
+                    title={t("roles")}
                     initial={true}
                     isTemplateFlow={true}
                     sendInOrder={pdfDetails[0].SendinOrder}
@@ -1570,7 +1567,7 @@ const TemplatePlaceholder = () => {
                       handleDeleteUser={handleDeleteUser}
                       handleRoleChange={handleRoleChange}
                       handleOnBlur={handleOnBlur}
-                      title={"Roles"}
+                      title={t("roles")}
                       sendInOrder={pdfDetails[0]?.SendinOrder}
                       setSignersData={setSignersData}
                       blockColor={blockColor}
@@ -1590,7 +1587,7 @@ const TemplatePlaceholder = () => {
                         isDragStamp={isDragStamp}
                         isSignYourself={false}
                         addPositionOfSignature={addPositionOfSignature}
-                        title={"Roles"}
+                        title={t("roles")}
                         initial={true}
                         isTemplateFlow={true}
                       />
@@ -1601,7 +1598,6 @@ const TemplatePlaceholder = () => {
             </div>
           </div>
         )}
-
         <div data-tut="reactourAddbtn--observe">
           <AddRoleModal
             isModalRole={isModalRole}
@@ -1622,7 +1618,7 @@ const TemplatePlaceholder = () => {
           />
         </div>
         <ModalUi
-          title={"Edit Template"}
+          title={t("edit-template")}
           isOpen={isEditTemplate}
           handleClose={handleEditTemplateModal}
         >

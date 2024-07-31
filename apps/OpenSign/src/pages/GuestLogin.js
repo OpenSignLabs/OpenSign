@@ -7,8 +7,10 @@ import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 function GuestLogin() {
+  const { t } = useTranslation();
   const { id, userMail, contactBookId, base64url } = useParams();
   const navigate = useNavigate();
   const [email, setEmail] = useState(userMail);
@@ -198,7 +200,7 @@ function GuestLogin() {
                 <div className="w-full md:w-[50%] text-base-content">
                   <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
                   <legend className="text-[12px] text-[#878787] mt-2 mb-1">
-                    Verification code is sent to your email
+                    {t("guest-email-alert")}
                   </legend>
                   <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
                     <input

@@ -10,6 +10,7 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Tour from "reactour";
 import axios from "axios";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const DriveBody = React.lazy(
   () => import("../components/opensigndrive/DriveBody")
@@ -22,6 +23,7 @@ const AppLoader = () => {
   );
 };
 function Opensigndrive() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [isList, setIsList] = useState(false);
@@ -37,7 +39,7 @@ function Opensigndrive() {
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
   const [docId, setDocId] = useState();
   const [handleError, setHandleError] = useState("");
@@ -126,7 +128,7 @@ function Opensigndrive() {
       checkTourStatus();
     }
     if (!disbaleLoading) {
-      setIsLoading({ isLoad: true, message: "This might take some time" });
+      setIsLoading({ isLoad: true, message: t("loading-mssg") });
     }
     try {
       const driveDetails = await getDrive(docId, skip, limit);

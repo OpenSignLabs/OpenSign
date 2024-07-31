@@ -8,7 +8,7 @@ function VerifyEmail(props) {
     <dialog className="op-modal op-modal-open absolute z-[1999]">
       <div className="md:w-[40%] w-[80%] op-modal-box p-0 overflow-y-auto hide-scrollbar text-sm">
         <h3 className="font-bold text-lg pt-[15px] px-[20px] text-base-content">
-          {t("document-signature.otp-verification")}
+          {t("otp-verification")}
         </h3>
         {props.isVerifyModal ? (
           <form
@@ -31,13 +31,13 @@ function VerifyEmail(props) {
             </div>
             <div className="px-6 my-3">
               <button type="submit" className="op-btn op-btn-primary">
-                {t("document-signature.verify")}
+                {t("verify")}
               </button>
               <button
                 className="op-btn op-btn-secondary ml-2"
                 onClick={(e) => props.handleResend(e)}
               >
-                {t("document-signature.resend")}
+                {t("resend")}
               </button>
             </div>
           </form>
@@ -56,7 +56,7 @@ function VerifyEmail(props) {
                   props.handleVerifyBtn();
                 }}
               >
-                {t("document-signature.send-otp")}
+                {t("send-otp")}
               </button>
             </div>
           </div>

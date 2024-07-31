@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import Loader from "./Loader";
+import { useTranslation } from "react-i18next";
 const AddContact = (props) => {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -148,7 +150,7 @@ const AddContact = (props) => {
     } catch (err) {
       // console.log("err", err);
       setIsLoader(false);
-      alert("something went wrong!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
 
@@ -175,7 +177,7 @@ const AddContact = (props) => {
         </div>
       )}
       <div className="w-full mx-auto p-[8px]">
-        <div className="text-[14px] font-[700]">Add Contact</div>
+        <div className="text-[14px] font-[700]">{t("add-contact")}</div>
         {isUserExist && (
           <div className="mb-[0.75rem] flex items-center mt-1">
             <input
@@ -189,14 +191,14 @@ const AddContact = (props) => {
               htmlFor="addYourself"
               className="ml-[0.5rem] text-base-content mb-0"
             >
-              Add Yourself
+              {t("add-yourself")}
             </label>
           </div>
         )}
         <form className="text-base-content" onSubmit={handleSubmit}>
           <div className="mb-[0.75rem]">
             <label htmlFor="name" className="text-[13px]">
-              Name
+              {t("name")}
               <span className="text-[13px] text-[red]"> *</span>
             </label>
             <input
@@ -211,7 +213,7 @@ const AddContact = (props) => {
           </div>
           <div className="mb-[0.75rem]">
             <label htmlFor="email" className="text-[13px]">
-              Email
+              {t("email")}
               <span className="text-[13px] text-[red]"> *</span>
             </label>
             <input
@@ -226,7 +228,7 @@ const AddContact = (props) => {
           </div>
           <div className="mb-[0.75rem]">
             <label htmlFor="phone" className="text-[13px]">
-              Phone
+              {t("phone")}
             </label>
             <input
               type="text"
@@ -240,14 +242,14 @@ const AddContact = (props) => {
 
           <div className="mt-6 flex justify-start gap-2">
             <button type="submit" className="op-btn op-btn-primary">
-              Submit
+              {t("submit")}
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
               className="op-btn op-btn-secondary"
             >
-              Reset
+              {t("reset")}
             </button>
           </div>
         </form>

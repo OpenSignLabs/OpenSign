@@ -71,10 +71,10 @@ function Webhook() {
           setIsAlert({ type: "success", msg: t("webhook-added") });
         } else {
           console.error("Error while generating webhook");
-          setIsAlert({ type: "danger", msg: t("wrong-mssg") });
+          setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         }
       } catch (error) {
-        setIsAlert({ type: "danger", msg: t("wrong-mssg") });
+        setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         console.log("err while generating webhook", error);
       } finally {
         setIsLoader(false);
