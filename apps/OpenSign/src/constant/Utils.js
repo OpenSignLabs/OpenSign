@@ -1979,6 +1979,20 @@ export const handleSendOTP = async (email) => {
     alert(error.message);
   }
 };
+export const fetchUrl = async (url, pdfName) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      alert("something went wrong, please try again later.");
+      throw new Error("Network response was not ok");
+    }
+    const blob = await response.blob();
+    saveAs(blob, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+  } catch (error) {
+    alert("something went wrong, please try again later.");
+    console.error("Error downloading the file:", error);
+  }
+};
 //handle download signed pdf
 export const handleDownloadPdf = async (
   pdfDetails,
@@ -2001,7 +2015,7 @@ export const handleDownloadPdf = async (
       }
     );
     const url = axiosRes.data.result;
-    saveAs(url, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
+    await fetchUrl(url, pdfName);
     setIsDownloading("");
   } catch (err) {
     console.log("err in getsignedurl", err);

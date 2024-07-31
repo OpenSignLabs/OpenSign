@@ -2,6 +2,7 @@ import axios from 'axios';
 import { google } from 'googleapis';
 import fs from 'node:fs';
 import https from 'https';
+import http from 'http';
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 // Function to create a Gmail client
@@ -26,6 +27,7 @@ const refreshAccessToken = async refreshToken => {
 
 // Function to create a raw email message
 const makeEmail = async (to, from, subject, html, url, pdfName) => {
+  const protocol = new URL(process.env.SERVER_URL);
   const htmlContent = html;
   const boundary = 'boundary_' + Date.now().toString(16);
   let str;
@@ -34,10 +36,17 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
     let Pdf = fs.createWriteStream('test.pdf');
     const writeToLocalDisk = () => {
       return new Promise((resolve, reject) => {
-        https.get(url, async function (response) {
-          response.pipe(Pdf);
-          response.on('end', () => resolve('success'));
-        });
+        if (useLocal !== 'true' && protocol.hostname !== 'localhost') {
+          https.get(url, async function (response) {
+            response.pipe(Pdf);
+            response.on('end', () => resolve('success'));
+          });
+        } else {
+          http.get(url, async function (response) {
+            response.pipe(Pdf);
+            response.on('end', () => resolve('success'));
+          });
+        }
       });
     };
     // `writeToLocalDisk` is used to create pdf file from doc url
@@ -130,7 +139,7 @@ export default async function sendMailGmailProvider(_extRes, template) {
           raw: email,
         },
       });
-    //   console.log('response ', response);
+      //   console.log('response ', response);
 
       return { code: 200, message: 'Email sent successfully' };
     } catch (error) {

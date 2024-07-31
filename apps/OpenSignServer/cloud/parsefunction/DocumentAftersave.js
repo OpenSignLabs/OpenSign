@@ -4,7 +4,8 @@ async function DocumentAftersave(request) {
       console.log('new entry is insert in contracts_Document');
       const createdAt = request.object.get('createdAt');
       const Folder = request.object.get('Type');
-      const ip = request?.headers?.['x-real-ip'] || request.object?.get('OriginIp') || '';
+      const ip = request?.headers?.['x-real-ip'] || '';
+      const originIp = request?.object?.get('OriginIp') || '';
       if (createdAt && Folder === undefined) {
         // console.log("IN If condition")
         const TimeToCompleteDays = request.object.get('TimeToCompleteDays') || 15;
@@ -13,7 +14,9 @@ async function DocumentAftersave(request) {
         const documentQuery = new Parse.Query('contracts_Document');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
-        updateQuery.set('OriginIp', ip);
+        if (!originIp) {
+          updateQuery.set('OriginIp', ip);
+        }
         const AutoReminder = request?.object?.get('AutomaticReminders') || false;
         if (AutoReminder) {
           const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
@@ -29,7 +32,9 @@ async function DocumentAftersave(request) {
         const documentQuery = new Parse.Query('contracts_Document');
         const updateQuery = await documentQuery.get(request.object.id, { useMasterKey: true });
         updateQuery.set('ExpiryDate', ExpiryDate);
-        updateQuery.set('OriginIp', ip);
+        if (!originIp) {
+          updateQuery.set('OriginIp', ip);
+        }
         const AutoReminder = request?.object?.get('AutomaticReminders') || false;
         if (AutoReminder) {
           const RemindOnceInEvery = request?.object?.get('RemindOnceInEvery') || 5;
