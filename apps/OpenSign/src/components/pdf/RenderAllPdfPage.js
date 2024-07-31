@@ -69,14 +69,14 @@ function RenderAllPdfPage({
   return (
     <div ref={pageContainer} className="hidden w-[20%] bg-base-100 md:block">
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
-        {t("document-signature.pages")}
+        {t("pages")}
       </div>
       <div
         className={`flex h-[90%] flex-col items-center m-2  
          autoSignScroll hide-scrollbar max-h-[100vh] `}
       >
         <Document
-          loading={t("document-signature.loading-doc")}
+          loading={t("loading-doc")}
           onLoadSuccess={onDocumentLoad}
           file={signPdfUrl}
         >

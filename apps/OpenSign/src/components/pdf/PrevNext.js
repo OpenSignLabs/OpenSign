@@ -1,6 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 function PrevNext({ pageNumber, allPages, changePage }) {
+  const { t } = useTranslation();
   //for go to previous page
   function previousPage() {
     changePage(-1);
@@ -20,10 +22,10 @@ function PrevNext({ pageNumber, allPages, changePage }) {
         <span className="block lg:hidden">
           <i className="fa-light fa-backward" aria-hidden="true"></i>
         </span>
-        <span className="lg:block hidden 2xl:text-[30px]">Prev</span>
+        <span className="lg:block hidden 2xl:text-[30px]">{t("prev")}</span>
       </button>
       <span className="text-xs text-base-content font-medium mx-2 2xl:text-[30px]">
-        {pageNumber || (allPages ? 1 : "--")} of {allPages || "--"}
+        {pageNumber || (allPages ? 1 : "--")} {t("of")} {allPages || "--"}
       </span>
       <button
         className="op-btn op-btn-neutral op-btn-xs md:op-btn-sm font-semibold text-xs"
@@ -33,7 +35,7 @@ function PrevNext({ pageNumber, allPages, changePage }) {
         <span className="block lg:hidden">
           <i className="fa-light fa-forward" aria-hidden="true"></i>
         </span>
-        <span className="lg:block hidden 2xl:text-[30px]">Next</span>
+        <span className="lg:block hidden 2xl:text-[30px]">{t("next")}</span>
       </button>
     </div>
   );

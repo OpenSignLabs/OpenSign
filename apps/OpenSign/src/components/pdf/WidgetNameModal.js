@@ -7,8 +7,10 @@ import Upgrade from "../../primitives/Upgrade";
 import { isEnableSubscription } from "../../constant/const";
 import Tooltip from "../../primitives/Tooltip";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
+import { useTranslation } from "react-i18next";
 
 const WidgetNameModal = (props) => {
+  const { t } = useTranslation();
   const [formdata, setFormdata] = useState({
     name: "",
     defaultValue: "",
@@ -104,7 +106,7 @@ const WidgetNameModal = (props) => {
     <ModalUi
       isOpen={props.isOpen}
       handleClose={props.handleClose && props.handleClose}
-      title={"Widget info"}
+      title={t("widget-info")}
     >
       <form
         onSubmit={handleSubmit}
@@ -114,7 +116,7 @@ const WidgetNameModal = (props) => {
       >
         <div className="mb-[0.75rem] text-[13px]">
           <label htmlFor="name">
-            Name
+            {t("name")}
             <span className="text-[red]"> *</span>
           </label>
           <input
@@ -138,7 +140,7 @@ const WidgetNameModal = (props) => {
                         : ""
                     } text-[13px]`}
                   >
-                    Validation
+                    {t("validation")}
                   </label>
                   <Tooltip
                     url={"https://www.w3schools.com/jsref/jsref_obj_regexp.asp"}
@@ -192,7 +194,7 @@ const WidgetNameModal = (props) => {
             )}
             <div className="mb-[0.75rem]">
               <label htmlFor="name" className="text-[13px]">
-                Default value
+                {t("default-value")}
               </label>
               <input
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
@@ -216,7 +218,7 @@ const WidgetNameModal = (props) => {
                     className="fa-light fa-exclamation-circle text-[15px]"
                     style={{ color: "#fab005" }}
                   ></i>
-                  invalid default value
+                  {t("invalid-default-value")}
                 </div>
               )}
             </div>
@@ -247,7 +249,7 @@ const WidgetNameModal = (props) => {
         {props.defaultdata?.type === textInputWidget && (
           <div className="mb-[0.75rem]">
             <label htmlFor="hint" className="text-[13px]">
-              Hint
+              {t("hint")}
             </label>
             <input
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
@@ -283,7 +285,7 @@ const WidgetNameModal = (props) => {
               })}
             </select>
             <div className="flex flex-row gap-1 items-center ml-4">
-              <span>color: </span>
+              <span>{t("color")}: </span>
               <select
                 value={
                   props.fontColor ||
@@ -316,7 +318,7 @@ const WidgetNameModal = (props) => {
 
         <div className="h-[1px] w-full mb-[16px] bg-[#b7b3b3]"></div>
         <button type="submit" className="op-btn op-btn-primary">
-          Save
+          {t("save")}
         </button>
       </form>
     </ModalUi>

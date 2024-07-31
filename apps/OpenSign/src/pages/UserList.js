@@ -11,9 +11,11 @@ import SubscribeCard from "../primitives/SubscribeCard";
 import { isEnableSubscription } from "../constant/const";
 import { checkIsSubscribedTeam } from "../constant/Utils";
 import Title from "../components/Title";
+import { useTranslation } from "react-i18next";
 const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Team", "Active"];
 // const actions = [];
 const UserList = () => {
+  const { t } = useTranslation();
   const [userList, setUserList] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
   const [isModal, setIsModal] = useState(false);
@@ -110,7 +112,7 @@ const UserList = () => {
       setUserList(_userRes);
     } catch (err) {
       console.log("Err in fetch userlist", err);
-      setIsAlert({ type: "danger", msg: "Something went wrong." });
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
     } finally {
       setTimeout(() => {
         setIsAlert({ type: "success", msg: "" });
@@ -166,10 +168,11 @@ const UserList = () => {
         await extUser.save();
         setIsAlert({
           type: !IsDisabled === true ? "danger" : "success",
-          msg: !IsDisabled === true ? "User deactivated." : "User activated."
+          msg:
+            !IsDisabled === true ? t("user-deactivated") : t("user-activated")
         });
       } catch (err) {
-        setIsAlert({ type: "danger", msg: "something went wrong." });
+        setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         console.log("err in disable team", err);
       } finally {
         setIsActLoader({});
@@ -204,9 +207,9 @@ const UserList = () => {
               )}
               <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
                 <div className="font-light">
-                  Users{" "}
+                  {t("report-name.Users")}
                   <span className="text-xs md:text-[13px] font-normal">
-                    <Tooltip message={"users from Teams"} />
+                    <Tooltip message={t("users-from-teams")} />
                   </span>
                 </div>
                 <div
@@ -222,7 +225,9 @@ const UserList = () => {
                     <tr className="border-y-[1px]">
                       {heading?.map((item, index) => (
                         <React.Fragment key={index}>
-                          <th className="px-4 py-2">{item}</th>
+                          <th className="px-4 py-2">
+                            {t(`report-heading.${item}`)}
+                          </th>
                         </React.Fragment>
                       ))}
                     </tr>
@@ -261,16 +266,16 @@ const UserList = () => {
                                 {isActiveModal[item.objectId] && (
                                   <ModalUi
                                     isOpen
-                                    title={"User status"}
+                                    title={t("user-status")}
                                     handleClose={handleClose}
                                   >
                                     <div className="m-[20px]">
                                       <div className="text-lg font-normal text-black">
-                                        Are you sure you want to{" "}
+                                        {t("are-you-sure")}{" "}
                                         {item?.IsDisabled
-                                          ? "activate"
-                                          : "deactivate"}{" "}
-                                        this user?
+                                          ? t("activate")
+                                          : t("deactivate")}{" "}
+                                        {t("this-user")}?
                                       </div>
                                       <hr className="bg-[#ccc] mt-4 " />
                                       <div className="flex items-center mt-3 gap-2 text-white">
@@ -280,13 +285,13 @@ const UserList = () => {
                                           }
                                           className="op-btn op-btn-primary"
                                         >
-                                          Yes
+                                          {t("yes")}
                                         </button>
                                         <button
                                           onClick={handleClose}
                                           className="op-btn op-btn-secondary"
                                         >
-                                          No
+                                          {t("no")}
                                         </button>
                                       </div>
                                     </div>
@@ -311,12 +316,12 @@ const UserList = () => {
                         {isDeleteModal[item.objectId] && (
                           <ModalUi
                             isOpen
-                            title={"Delete User"}
+                            title={t("delete-user")}
                             handleClose={handleClose}
                           >
                             <div className="m-[20px]">
                               <div className="text-lg font-normal text-black">
-                                Are you sure you want to delete this user?
+                                  {t( "are-you-sure")} {t("delete")}    {t("this-user")}?
                               </div>
                               <hr className="bg-[#ccc] mt-4 " />
                               <div className="flex items-center mt-3 gap-2 text-white">
@@ -324,13 +329,13 @@ const UserList = () => {
                                   onClick={() => handleDelete(item)}
                                   className="op-btn op-btn-primary"
                                 >
-                                  Yes
+                                  {t("yes")}
                                 </button>
                                 <button
                                   onClick={handleClose}
                                   className="op-btn op-btn-secondary"
                                 >
-                                  No
+                                  {('no)}
                                 </button>
                               </div>
                             </div>
@@ -350,7 +355,7 @@ const UserList = () => {
                     onClick={() => paginateBack()}
                     className="op-join-item op-btn op-btn-sm"
                   >
-                    Prev
+                    {t("prev")}
                   </button>
                 )}
                 {pageNumbers.map((x, i) => (
@@ -370,7 +375,7 @@ const UserList = () => {
                     onClick={() => paginateFront()}
                     className="op-join-item op-btn op-btn-sm"
                   >
-                    Next
+                    {t("next")}
                   </button>
                 )}
               </div>
@@ -387,11 +392,13 @@ const UserList = () => {
                       alt="img"
                     />
                   </div>
-                  <div className="text-sm font-semibold">No Data Available</div>
+                  <div className="text-sm font-semibold">
+                    {t("no-data-avaliable")}
+                  </div>
                 </div>
               )}
               <ModalUi
-                title={"Add User"}
+                title={t("add-user")}
                 isOpen={isModal}
                 handleClose={handleFormModal}
               >
@@ -408,7 +415,9 @@ const UserList = () => {
                 <h1 className="text-[60px] lg:text-[120px] font-semibold">
                   404
                 </h1>
-                <p className="text-[30px] lg:text-[50px]">Page Not Found</p>
+                <p className="text-[30px] lg:text-[50px]">
+                  {t("page-not-found")}
+                </p>
               </div>
             </div>
           )}

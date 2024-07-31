@@ -169,17 +169,17 @@ const AddSigner = (props) => {
             }
           }
         } else {
-          alert("Contact already exist!");
+          alert(t("add-signer-alert"));
           setIsLoader(false);
         }
       } catch (err) {
         console.log("err in fetch contact", err);
         setIsLoader(false);
-        alert("something went wrong, please try again later");
+        alert(t("something-went-wrong-mssg"));
       }
     } else {
       setIsLoader(false);
-      alert("something went wrong, please try again later");
+      alert(t("something-went-wrong-mssg"));
     }
   };
 

@@ -8,8 +8,10 @@ import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import ModalUi from "../../primitives/ModalUi";
 import FolderModal from "../shared/fields/FolderModal";
+import { useTranslation } from "react-i18next";
 
 function DriveBody(props) {
+  const { t } = useTranslation();
   const [rename, setRename] = useState("");
   const [renameValue, setRenameValue] = useState("");
   const inputRef = useRef(null);
@@ -42,7 +44,7 @@ function DriveBody(props) {
     props.setFolderName((prev) => [...prev, folderData]);
     props.setIsLoading({
       isLoad: true,
-      message: "This might take some time"
+      message: t("loading-mssg")
     });
     props.setDocId(data.objectId);
     props.setPdfData([]);

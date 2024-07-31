@@ -53,8 +53,10 @@ import Loader from "../primitives/Loader";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
 import LottieWithLoader from "../primitives/DotLottieReact";
+import { useTranslation } from "react-i18next";
 
 function PlaceHolderSign() {
+  const { t } = useTranslation();
   const editorRef = useRef();
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -78,7 +80,7 @@ function PlaceHolderSign() {
   const [fontColor, setFontColor] = useState();
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
   const [handleError, setHandleError] = useState();
   const [currentId, setCurrentId] = useState("");
@@ -268,7 +270,7 @@ function PlaceHolderSign() {
       //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
       const arrayBuffer = await convertPdfArrayBuffer(url);
       if (arrayBuffer === "Error") {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       } else {
         setPdfArrayBuffer(arrayBuffer);
       }
@@ -395,10 +397,10 @@ function PlaceHolderSign() {
       const loadObj = {
         isLoad: false
       };
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading(loadObj);
     } else {
-      setHandleError("No Data Found!");
+      setHandleError(t("no-data-avaliable"));
       const loadObj = {
         isLoad: false
       };
@@ -410,7 +412,7 @@ function PlaceHolderSign() {
       const loadObj = {
         isLoad: false
       };
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading(loadObj);
     } else if (res.length && res[0]?.objectId) {
       setActiveMailAdapter(res[0]?.active_mail_adapter);
@@ -433,7 +435,7 @@ function PlaceHolderSign() {
       };
       setIsLoading(loadObj);
     } else if (res.length === 0) {
-      setHandleError("No Data Found!");
+      setHandleError(t("no-data-avaliable"));
       const loadObj = {
         isLoad: false
       };
@@ -1064,7 +1066,7 @@ function PlaceHolderSign() {
         >
           {copied && (
             <Alert type="success">
-              <div className="ml-3">Copied</div>
+              <div className="ml-3">{t("copied")}</div>
             </Alert>
           )}
           <span className="w-[220px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis  ">
@@ -1077,12 +1079,12 @@ function PlaceHolderSign() {
               className="flex flex-row items-center op-link op-link-primary"
             >
               <i className="fa-light fa-link" aria-hidden="true"></i>
-              <span className=" hidden md:block ml-1 ">Copy link</span>
+              <span className=" hidden md:block ml-1 ">{t("copy-link")}</span>
             </button>
             <RWebShare
               data={{
                 url: data.url,
-                title: "Sign url"
+                title: t("sign-url")
               }}
             >
               <i className="fa-light fa-share-from-square op-link op-link-secondary no-underline"></i>
@@ -1705,7 +1707,7 @@ function PlaceHolderSign() {
               <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                 <Loader />
                 <span className="text-[13px] text-base-content">
-                  This might take some time
+                  {t("loading-mssg")}
                 </span>
               </div>
             )}
@@ -1757,29 +1759,21 @@ function PlaceHolderSign() {
                     title={
                       isSendAlert.mssg === "sure" ||
                       isSendAlert.mssg === textWidget
-                        ? "Fields required"
-                        : isSendAlert.mssg === "confirm" && "Send Mail"
+                        ? t("fields-required")
+                        : isSendAlert.mssg === "confirm" && t("send-mail")
                     }
                     handleClose={() => setIsSendAlert({})}
                   >
                     <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px] text-base-content">
                       {isSendAlert.mssg === "sure" ? (
-                        <span>
-                          Please ensure there&apos;s at least one signature
-                          widget added for all recipients.
-                        </span>
+                        <span>{t("placeholder-alert-1")}</span>
                       ) : isSendAlert.mssg === textWidget ? (
-                        <p>
-                          Please confirm that you have filled the text field.
-                        </p>
+                        <p>{t("placeholder-alert-2")}</p>
                       ) : (
                         isSendAlert.mssg === "confirm" && (
                           <>
                             {!isCustomize && (
-                              <span>
-                                Are you sure you want to send out this document
-                                for signatures?
-                              </span>
+                              <span>{t("placeholder-alert-3")}</span>
                             )}
                             {isCustomize && isSubscribe && (
                               <>
@@ -1797,7 +1791,7 @@ function PlaceHolderSign() {
                                     setRequestSubject(defaultSubject);
                                   }}
                                 >
-                                  <span>Reset to default</span>
+                                  <span>{t("reset-to-default")}</span>
                                 </div>
                               </>
                             )}
@@ -1807,14 +1801,14 @@ function PlaceHolderSign() {
                                   onClick={() => sendEmailToSigners()}
                                   className="op-btn op-btn-primary font-[500] text-sm shadow"
                                 >
-                                  Send
+                                  {t("send")}
                                 </button>
                                 {isCustomize && (
                                   <button
                                     onClick={() => setIsCustomize(false)}
                                     className="op-btn op-btn-ghost font-[500] text-sm"
                                   >
-                                    Close
+                                    {t("close")}
                                   </button>
                                 )}
                               </div>
@@ -1823,13 +1817,13 @@ function PlaceHolderSign() {
                                   className="op-link op-link-accent text-sm"
                                   onClick={() => setIsCustomize(!isCustomize)}
                                 >
-                                  Cutomize Email
+                                  {t("cutomize-email")}
                                 </span>
                               )}
                               {!isSubscribe && isEnableSubscription && (
                                 <div className="mt-2">
                                   <Upgrade
-                                    message="Upgrade to customize Email"
+                                    message={t("upgrade-to-customize-email")}
                                     newWindow={true}
                                   />
                                 </div>
@@ -1842,7 +1836,7 @@ function PlaceHolderSign() {
                         <>
                           <div className="flex justify-center items-center mt-3">
                             <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
-                            <span className="ml-[5px] mr-[5px]">or</span>
+                            <span className="ml-[5px] mr-[5px]">{t("or")}</span>
                             <span className="h-[1px] w-[20%] bg-[#ccc]"></span>
                           </div>
                           <div className="mt-3 mb-3">{handleShareList()}</div>
@@ -1854,7 +1848,7 @@ function PlaceHolderSign() {
                   {/* this modal is used show send mail  message and after send mail success message */}
                   <ModalUi
                     isOpen={isSend}
-                    title={"Mails Sent"}
+                    title={t("Mails Sent")}
                     handleClose={() => {
                       setIsSend(false);
                       setSignerPos([]);
@@ -1865,15 +1859,11 @@ function PlaceHolderSign() {
                       {mailStatus === "success" ? (
                         <div className="text-center mb-[10px]">
                           <LottieWithLoader />
-                          <p>
-                            You have successfully sent mails to all recipients!
-                          </p>
-                          {isCurrUser && (
-                            <p>Do you want to sign documents right now ?</p>
-                          )}
+                          <p>{t("placeholder-alert-4")}</p>
+                          {isCurrUser && <p>{t("placeholder-alert-5")}</p>}
                         </div>
                       ) : (
-                        <p>Please setup mail adapter to send mail!</p>
+                        <p>{t("placeholder-alert-6")}</p>
                       )}
                       {!mailStatus && (
                         <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
@@ -1893,7 +1883,7 @@ function PlaceHolderSign() {
                             type="button"
                             className="op-btn op-btn-primary mr-1"
                           >
-                            Yes
+                            {t("yes")}
                           </button>
                         )}
 
@@ -1906,20 +1896,20 @@ function PlaceHolderSign() {
                           type="button"
                           className="op-btn op-btn-ghost"
                         >
-                          {isCurrUser ? "No" : "Close"}
+                          {isCurrUser ? t("no") : t("close")}
                         </button>
                       </div>
                     </div>
                   </ModalUi>
                   <ModalUi
                     isOpen={isShowEmail}
-                    title={"signers alert"}
+                    title={t("signers-alert")}
                     handleClose={() => {
                       setIsShowEmail(false);
                     }}
                   >
                     <div className="h-[100%] p-[20px]">
-                      <p>Please select signer for add placeholder!</p>
+                      <p>{t("placeholder-alert-7")}</p>
                       <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
                       <button
                         onClick={() => {
@@ -1928,7 +1918,7 @@ function PlaceHolderSign() {
                         type="button"
                         className="op-btn op-btn-primary"
                       >
-                        Ok
+                        {t("ok")}
                       </button>
                     </div>
                   </ModalUi>
@@ -1948,7 +1938,7 @@ function PlaceHolderSign() {
                   />
                   <DropdownWidgetOption
                     type={radioButtonWidget}
-                    title="Radio group"
+                    title={t("radio-group")}
                     showDropdown={isRadio}
                     setShowDropdown={setIsRadio}
                     handleSaveWidgetsOptions={handleSaveWidgetsOptions}
@@ -1959,7 +1949,7 @@ function PlaceHolderSign() {
                   />
                   <DropdownWidgetOption
                     type="checkbox"
-                    title="Checkbox"
+                    title={t("checkbox")}
                     showDropdown={isCheckbox}
                     setShowDropdown={setIsCheckbox}
                     handleSaveWidgetsOptions={handleSaveWidgetsOptions}
@@ -1970,7 +1960,7 @@ function PlaceHolderSign() {
                   />
                   <DropdownWidgetOption
                     type="dropdown"
-                    title="Dropdown options"
+                    title={t("dropdown-options")}
                     showDropdown={showDropdown}
                     setShowDropdown={setShowDropdown}
                     handleSaveWidgetsOptions={handleSaveWidgetsOptions}
@@ -2137,7 +2127,7 @@ function PlaceHolderSign() {
 
         <ModalUi
           isOpen={isAlreadyPlace.status}
-          title={"Document Alert"}
+          title={t("document-alert")}
           showClose={false}
         >
           <div className="h-[100%] p-[20px]">
@@ -2148,7 +2138,7 @@ function PlaceHolderSign() {
               type="button"
               className="op-btn op-btn-primary"
             >
-              View
+              {t("view")}
             </button>
           </div>
         </ModalUi>

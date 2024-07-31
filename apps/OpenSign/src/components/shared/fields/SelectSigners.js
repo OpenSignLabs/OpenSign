@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import Parse from "parse";
 import AsyncSelect from "react-select/async";
+import { useTranslation } from "react-i18next";
 
 const SelectSigners = (props) => {
+  const { t } = useTranslation();
   const [userList, setUserList] = useState([]);
   const [selected, setSelected] = useState();
   const [userData, setUserData] = useState({});
@@ -71,13 +73,15 @@ const SelectSigners = (props) => {
     <div className="h-full px-[20px] py-[10px] text-base-content">
       <div className="w-full mx-auto p-[8px]">
         <div className="mb-0">
-          <label className="text-[14px] font-bold">Choose from contacts</label>
+          <label className="text-[14px] font-bold">
+            {t("choose-from-contacts")}
+          </label>
           <AsyncSelect
             cacheOptions
             defaultOptions
             value={selected}
-            loadingMessage={() => "Loading..."}
-            noOptionsMessage={() => "Contact not found"}
+            loadingMessage={() => t("loading")}
+            noOptionsMessage={() => t("contact-not-found")}
             loadOptions={loadOptions}
             onChange={handleOptions}
             unstyled
@@ -102,11 +106,11 @@ const SelectSigners = (props) => {
             isError ? "text-[red]" : "text-transparent"
           } text-[11px] ml-[6px] my-[2px]`}
         >
-          Please select signer
+          {t("select-signer")}
         </p>
         <div>
           <button className="op-btn op-btn-primary" onClick={() => handleAdd()}>
-            Submit
+            {t("submit")}
           </button>
         </div>
       </div>
