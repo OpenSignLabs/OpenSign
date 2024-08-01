@@ -215,7 +215,7 @@ function SignPad({
       : fontSelect
         ? fontSelect
         : "Fasthand";
-    const fontSizeValue = isInitial ? "60px" : "40px";
+    const fontSizeValue = isInitial ? "20px" : "40px";
     //creating span for getting text content width
     const span = document.createElement("span");
     span.textContent = textContent;
@@ -229,7 +229,7 @@ function SignPad({
     // Draw the text content on the canvas
     const ctx = canvasElement.getContext("2d");
     const pixelRatio = window.devicePixelRatio || 1;
-    const addExtraWidth = isInitial ? 20 : 50;
+    const addExtraWidth = isInitial ? 10 : 50;
     const width = span.offsetWidth + addExtraWidth;
     const height = span.offsetHeight;
     setTextWidth(width);
