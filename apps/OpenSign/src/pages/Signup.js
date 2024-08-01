@@ -71,7 +71,7 @@ const Signup = () => {
       }
     } catch (err) {
       console.log("err in free subscribe", err.message);
-      alert("Somenthing went wrong, please try again later!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
   const handleSubmit = (event) => {
@@ -138,7 +138,7 @@ const Signup = () => {
               const res = await Parse.Cloud.run("getUserDetails", params);
               // console.log("Res ", res);
               if (res) {
-                alert("User already exists with this username!");
+                alert(t("user-already-exist-name"));
                 setState({ loading: false });
               } else {
                 // console.log("state.email ", email);
@@ -146,9 +146,7 @@ const Signup = () => {
                   await Parse.User.requestPasswordReset(email).then(
                     async function (res1) {
                       if (res1.data === undefined) {
-                        alert(
-                          "Verification mail has been sent to your E-mail!"
-                        );
+                        alert(t("verification-code-sent"));
                       }
                     }
                   );
@@ -235,14 +233,14 @@ const Signup = () => {
                       navigate(`/subscription`, { replace: true });
                     }
                   } else {
-                    alert("Registered user successfully");
+                    alert(t("registered-user-successfully"));
                     navigate(`/${menu.pageType}/${menu.pageId}`);
                   }
                 } else {
                   setState({
                     loading: false,
                     alertType: "danger",
-                    alertMsg: "Role not found."
+                    alertMsg: t("role-not-found")
                   });
                   setTimeout(() => {
                     setState({ loading: false, alertMsg: "" });
@@ -252,7 +250,7 @@ const Signup = () => {
                 setState({
                   loading: false,
                   alertType: "danger",
-                  alertMsg: "You don't have access, please contact the admin."
+                  alertMsg: t("do-not-access-contact-admin")
                 });
                 setTimeout(() => {
                   setState({ loading: false, alertMsg: "" });
@@ -265,7 +263,7 @@ const Signup = () => {
             setState({
               loading: false,
               alertType: "danger",
-              alertMsg: "You don't have access, please contact the admin."
+              alertMsg: t("do-not-access-contact-admin")
             });
             setTimeout(() => {
               setState({ loading: false, alertMsg: "" });

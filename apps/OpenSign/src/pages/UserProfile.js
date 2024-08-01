@@ -94,7 +94,7 @@ function UserProfile() {
           setIsLoader(false);
         }
       } catch (e) {
-        alert("something went wrong!");
+        alert(t("something-went-wrong-mssg"));
       }
     }
   };
@@ -148,14 +148,14 @@ function UserProfile() {
                   Name: res.name,
                   Phone: res?.phone || ""
                 });
-                alert("Profile updated successfully.");
+                alert(t("profile-update-alert"));
                 setEditMode(false);
                 setIsLoader(false);
                 //navigate("/dashboard/35KBoSgoAK");
               }
             },
             (error) => {
-              alert("Something went wrong.");
+              alert(t("something-went-wrong-mssg"));
               console.error("Error while updating tour", error);
               setIsLoader(false);
             }
@@ -290,7 +290,7 @@ function UserProfile() {
     setOtpLoader(true);
     await handleSendOTP();
     setOtpLoader(false);
-    alert("OTP sent on you email");
+    alert(t("otp-sent-alert"));
   };
   //function to handle onchange username and restrict 6-characters username for free users
   const handleOnchangeUserName = (e) => {

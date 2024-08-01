@@ -247,7 +247,7 @@ function Login() {
       }
     } catch (err) {
       console.log("err in free subscribe", err.message);
-      alert("Somenthing went wrong, please try again later!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
   const thirdpartyLoginfn = async (sessionToken) => {
@@ -551,7 +551,7 @@ function Login() {
         payload &&
         payload.message.replace(/ /g, "_") === "Internal_server_err"
       ) {
-        alert("Internal server error !");
+        alert(t("server-error"));
       }
     } else {
       setState({
@@ -601,7 +601,7 @@ function Login() {
           "_self"
         );
       } else {
-        alert("Please provide email.");
+        alert(t("provide-email"));
       }
     }
   };
@@ -772,7 +772,11 @@ function Login() {
               </Alert>
             )}
           </div>
-          <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>
+          <ModalUi
+            isOpen={isModal}
+            title={t("additional-info")}
+            showClose={false}
+          >
             <form className="px-4 py-3 text-base-content">
               <div className="mb-3">
                 <label

@@ -70,7 +70,7 @@ const AddUser = (props) => {
     setIsLoader(true);
     const res = await checkUserExist();
     if (res) {
-      props.setIsAlert({ type: "danger", msg: "User already exist." });
+      props.setIsAlert({ type: "danger", msg: t("user-already-exist") });
       setIsLoader(false);
       setTimeout(() => {
         props.setIsAlert({ type: "success", msg: "" });
@@ -217,7 +217,10 @@ const AddUser = (props) => {
       } catch (err) {
         console.log("err", err);
         setIsLoader(false);
-        props.setIsAlert({ type: "danger", msg: "something went wrong." });
+        props.setIsAlert({
+          type: "danger",
+          msg: t("something-went-wrong-mssg")
+        });
       } finally {
         setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500);
       }
@@ -243,7 +246,7 @@ const AddUser = (props) => {
 
   const copytoclipboard = (text) => {
     copytoData(text);
-    props.setIsAlert({ type: "success", msg: "Copied" });
+    props.setIsAlert({ type: "success", msg: t("copied") });
     setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500); // Reset copied state after 1.5 seconds
   };
   return (

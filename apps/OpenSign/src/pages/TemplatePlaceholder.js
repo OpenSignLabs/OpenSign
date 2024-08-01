@@ -778,7 +778,7 @@ const TemplatePlaceholder = () => {
         setIsLoading(loadObj);
       } catch (e) {
         setIsLoading(false);
-        alert("Something went wrong, please try again later.");
+        alert(t("something-went-wrong-mssg"));
         console.log("error", e);
       }
     } else {
@@ -796,7 +796,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourAddbtn"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking "Add role" button will allow you to add various signer roles. You can attach users to each role in subsequent steps.`}
+          message={t("tour-mssg.template-placeholder-1")}
           isChecked={handleDontShow}
         />
       ),
@@ -808,7 +808,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourFirst"]',
       content: () => (
         <TourContentWithBtn
-          message={`Once roles are added, select a role from list to add a place-holder where he is supposed to sign. The placeholder will appear in the same colour as the role name once you drop it on the document.`}
+          message={t("tour-mssg.template-placeholder-2")}
           isChecked={handleDontShow}
         />
       ),
@@ -820,7 +820,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="addWidgets"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag or click on a field to add it to the document.`}
+          message={t("tour-mssg.template-placeholder-3")}
           isChecked={handleDontShow}
         />
       ),
@@ -831,7 +831,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="reactourThird"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag the placeholder for a role anywhere on the document.Remember, it will appear in the same colour as the name of the recipient for easy reference.`}
+          message={t("tour-mssg.template-placeholder-4")}
           isChecked={handleDontShow}
         />
       ),
@@ -842,7 +842,7 @@ const TemplatePlaceholder = () => {
       selector: '[data-tut="headerArea"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking ‘Next’ will store the current template. After saving, you’ll be prompted to create a new document from this template if you wish.`}
+          message={t("tour-mssg.template-placeholder-5")}
           isChecked={handleDontShow}
         />
       ),

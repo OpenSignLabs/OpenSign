@@ -8,8 +8,10 @@ import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const SSOVerify = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -120,16 +122,16 @@ const SSOVerify = () => {
         } catch (err) {
           console.log("error in usersignup", err);
           localStorage.removeItem("accesstoken");
-          alert("Something went wrong.");
+          alert(t("something-went-wrong-mssg"));
           setIsLoader(false);
         }
       } else {
         localStorage.removeItem("accesstoken");
-        alert("Internal server error.");
+        alert(t("server-error"));
         setIsLoader(false);
       }
     } else {
-      alert("Please fill required details correctly.");
+      alert(t("filed-required-correctly"));
       setIsLoader(false);
     }
   };
@@ -207,19 +209,15 @@ const SSOVerify = () => {
                     }
                   }
                 } else {
-                  alert(
-                    "Error: You don't have access, please contact the admin."
-                  );
-                  setMessage(
-                    "Error: You don't have access, please contact the admin."
-                  );
+                  alert(t("do-not-access-contact-admin"));
+                  setMessage(t("do-not-access-contact-admin"));
                 }
               }
             })
             .catch((error) => {
               console.error("Err in fetch extuser", error);
-              alert("user not exist.");
-              setMessage("Error: User not exist.");
+              alert(t("user-not-exist"));
+              setMessage(t("user-not-exist"));
             });
         } catch (err) {
           console.log("err in getuserdetails", err);
@@ -265,7 +263,7 @@ const SSOVerify = () => {
           >
             <div className="mb-3">
               <label htmlFor="Company" className="block text-xs font-semibold">
-                Phone <span className="text-[13px] text-[red]">*</span>
+                {t("phone")} <span className="text-[13px] text-[red]">*</span>
               </label>
               <input
                 type="tel"
@@ -287,7 +285,7 @@ const SSOVerify = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="Company" className="block text-xs font-semibold">
-                Company <span className="text-[13px] text-[red]">*</span>
+                {t("company")} <span className="text-[13px] text-[red]">*</span>
               </label>
               <input
                 type="text"
@@ -306,7 +304,7 @@ const SSOVerify = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="JobTitle" className="block text-xs font-semibold">
-                Job Title
+                {t("job-title")}
                 <span className="text-[13px] text-[red]">*</span>
               </label>
               <input
@@ -326,14 +324,14 @@ const SSOVerify = () => {
             </div>
             <div className="mt-4">
               <button type="submit" className="op-btn op-btn-primary">
-                Login
+                {t("login")}
               </button>
               <button
                 type="button"
                 className="op-btn op-btn-ghost ml-2"
                 onClick={handleCloseModal}
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
           </form>

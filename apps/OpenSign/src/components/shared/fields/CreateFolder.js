@@ -62,7 +62,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       }
       const templExist = await exsitQuery.first();
       if (templExist) {
-        setAlert({ type: "danger", message: "Folder already exist!" });
+        setAlert({ type: "danger", message: t("folder-already-exist") });
         setIsAlert(true);
         setTimeout(() => {
           setIsAlert(false);
@@ -87,7 +87,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
           handleLoader(false);
           setAlert({
             type: "success",
-            message: "Folder created successfully!"
+            message: t("folder-created-successfully")
           });
           setIsAlert(true);
           setTimeout(() => {
@@ -100,7 +100,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       }
     } else {
       handleLoader(false);
-      setAlert({ type: "info", message: "Please fill folder name" });
+      setAlert({ type: "info", message: t("fill-folder-name") });
       setIsAlert(true);
       setTimeout(() => {
         setIsAlert(false);

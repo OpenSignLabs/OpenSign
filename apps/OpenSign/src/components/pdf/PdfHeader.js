@@ -164,7 +164,7 @@ function Header({
                         onClick={() => handleDeclinePdfAlert()}
                         className="text-[red] border-none font-[650] text-[14px] mr-2"
                       >
-                        Decline
+                        {t("decline")}
                       </div>
                     )}
                     {isPlaceholder ? (
@@ -179,7 +179,7 @@ function Header({
                         } op-link no-underline font-[650] text-[14px]`}
                         data-tut="headerArea"
                       >
-                        {completeBtnTitle ? completeBtnTitle : "Send"}
+                        {completeBtnTitle ? completeBtnTitle : t("send")}
                       </div>
                     ) : (
                       <div
@@ -465,18 +465,14 @@ function Header({
         isOpen={isDownloading === "certificate"}
         title={
           isDownloading === "certificate"
-            ? "Generating certificate"
-            : "PDF Download"
+            ? t("generating-certificate")
+            : t("pdf-download")
         }
         handleClose={() => setIsDownloading("")}
       >
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
           {isDownloading === "certificate"}{" "}
-          <p>
-            Your completion certificate is being generated. Please wait
-            momentarily. If the download doesn&apos;t start shortly, click the
-            button again.
-          </p>
+          <p>{t("generate-certificate-alert")}</p>
         </div>
       </ModalUi>
     </div>
