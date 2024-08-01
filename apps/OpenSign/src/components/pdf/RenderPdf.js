@@ -579,7 +579,7 @@ function RenderPdf({
             {/* this component for render pdf document is in middle of the component */}
             <Document
               onLoadError={() => {
-                pdfLoad(false);
+                setPdfLoad(false);
               }}
               loading={"Loading Document.."}
               onLoadSuccess={pageDetails}

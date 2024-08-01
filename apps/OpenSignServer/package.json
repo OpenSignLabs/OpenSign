@@ -58,7 +58,8 @@
     "prettier": "^3.3.3"
   },
   "overrides": {
-    "ws": "$ws"
+    "ws": "$ws",
+    "parse": "$parse"
   },
   "engines": {
     "node": ">=12.22.10 <21"
