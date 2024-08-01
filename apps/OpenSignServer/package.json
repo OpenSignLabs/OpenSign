@@ -44,7 +44,8 @@
     "parse-server": "^7.2.0",
     "parse-server-api-mail-adapter": "^4.0.0",
     "pdf-lib": "^1.17.1",
-    "posthog-node": "^4.0.1"
+    "posthog-node": "^4.0.1",
+    "ws": "^8.18.0"
   },
   "type": "module",
   "devDependencies": {
@@ -55,6 +56,9 @@
     "nodemon": "^3.1.4",
     "nyc": "^17.0.0",
     "prettier": "^3.3.3"
+  },
+  "overrides": {
+    "ws": "$ws"
   },
   "engines": {
     "node": ">=12.22.10 <21"
