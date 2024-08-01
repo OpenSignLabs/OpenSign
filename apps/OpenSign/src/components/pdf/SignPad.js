@@ -98,7 +98,6 @@ function SignPad({
               } else {
                 if (isTab === "type") {
                   setIsSignImg("");
-                  onSaveSign(null, false, textWidth, textHeight);
                   onSaveSign(
                     null,
                     false,
@@ -216,11 +215,11 @@ function SignPad({
       : fontSelect
         ? fontSelect
         : "Fasthand";
-
+    const fontSizeValue = isInitial ? "60px" : "40px";
     //creating span for getting text content width
     const span = document.createElement("span");
     span.textContent = textContent;
-    span.style.font = `40px ${fontfamily}`; // here put your text size and font family
+    span.style.font = `${fontSizeValue} ${fontfamily}`; // here put your text size and font family
     span.style.color = color ? color : penColor;
     span.style.display = "hidden";
     document.body.appendChild(span); // Replace 'container' with the ID of the container element
@@ -230,7 +229,7 @@ function SignPad({
     // Draw the text content on the canvas
     const ctx = canvasElement.getContext("2d");
     const pixelRatio = window.devicePixelRatio || 1;
-    const addExtraWidth = isInitial ? 0 : 50;
+    const addExtraWidth = isInitial ? 20 : 50;
     const width = span.offsetWidth + addExtraWidth;
     const height = span.offsetHeight;
     setTextWidth(width);
