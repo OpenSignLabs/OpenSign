@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import SignatureCanvas from "react-signature-canvas";
-
 function SignPad({
   isSignPad,
   isStamp,
@@ -99,7 +98,12 @@ function SignPad({
               } else {
                 if (isTab === "type") {
                   setIsSignImg("");
-                  onSaveSign(null, false, textWidth, textHeight);
+                  onSaveSign(
+                    null,
+                    false,
+                    !isInitial && textWidth > 150 ? 150 : textWidth,
+                    !isInitial && textHeight > 35 ? 35 : textHeight
+                  );
                 } else {
                   setIsSignImg("");
                   canvasRef.current.clear();
@@ -211,11 +215,11 @@ function SignPad({
       : fontSelect
         ? fontSelect
         : "Fasthand";
-
+    const fontSizeValue = "40px";
     //creating span for getting text content width
     const span = document.createElement("span");
     span.textContent = textContent;
-    span.style.font = `20px ${fontfamily}`; // here put your text size and font family
+    span.style.font = `${fontSizeValue} ${fontfamily}`; // here put your text size and font family
     span.style.color = color ? color : penColor;
     span.style.display = "hidden";
     document.body.appendChild(span); // Replace 'container' with the ID of the container element
@@ -225,7 +229,8 @@ function SignPad({
     // Draw the text content on the canvas
     const ctx = canvasElement.getContext("2d");
     const pixelRatio = window.devicePixelRatio || 1;
-    const width = span.offsetWidth;
+    const addExtraWidth = isInitial ? 10 : 50;
+    const width = span.offsetWidth + addExtraWidth;
     const height = span.offsetHeight;
     setTextWidth(width);
     setTextHeight(height);
