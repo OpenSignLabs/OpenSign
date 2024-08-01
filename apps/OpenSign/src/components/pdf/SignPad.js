@@ -101,8 +101,8 @@ function SignPad({
                   onSaveSign(
                     null,
                     false,
-                    textWidth > 150 ? 150 : textWidth,
-                    textHeight > 35 ? 35 : textHeight
+                    !isInitial && textWidth > 150 ? 150 : textWidth,
+                    !isInitial && textHeight > 35 ? 35 : textHeight
                   );
                 } else {
                   setIsSignImg("");
@@ -215,7 +215,7 @@ function SignPad({
       : fontSelect
         ? fontSelect
         : "Fasthand";
-    const fontSizeValue = isInitial ? "20px" : "40px";
+    const fontSizeValue = "40px";
     //creating span for getting text content width
     const span = document.createElement("span");
     span.textContent = textContent;
