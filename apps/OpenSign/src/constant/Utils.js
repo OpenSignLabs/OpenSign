@@ -598,7 +598,7 @@ export const signPdfFun = async (
         console.log("error", e);
       }
     }
-    //change image width and height to 104/44 in png base64
+    //change image width and height to 100/40 in png base64
     const getNewse64 = await changeImageWH(base64Sign);
     //remove suffiix of base64
     const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
@@ -1238,9 +1238,8 @@ export const changeImageWH = async (base64Image) => {
       const ctx = canvas.getContext("2d");
       canvas.width = newWidth;
       canvas.height = newHeight;
-      ctx.imageSmoothingEnabled = false;
       ctx.drawImage(img, 0, 0, newWidth, newHeight);
-      const resizedBase64 = canvas.toDataURL("image/png", 1);
+      const resizedBase64 = canvas.toDataURL("image/png", 1.0);
       resolve(resizedBase64);
     };
     img.onerror = (error) => {
