@@ -46,7 +46,7 @@
     "redux-thunk": "^3.1.0",
     "regex-parser": "^2.3.0",
     "serve": "^14.2.3",
-    "styled-components": "^4.4.1",
+    "styled-components": "^5.3.0",
     "web-vitals": "^4.2.2",
     "ws": "^8.18.0"
   },
@@ -101,7 +101,7 @@
     "daisyui": "^4.12.10",
     "dotenv": "^16.4.5",
     "dotenv-webpack": "^8.1.0",
-    "eslint": "^9.8.0",
+    "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.34.3",
     "lint-staged": "^15.2.7",
