@@ -10,12 +10,6 @@ import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
 import { useTranslation } from "react-i18next";
-const tourSteps = [
-  {
-    selector: '[data-tut="apisubscribe"]',
-    content: "Upgrade now to generate API token"
-  }
-];
 
 function GenerateToken() {
   const { t } = useTranslation();
@@ -31,7 +25,12 @@ function GenerateToken() {
     fetchToken();
     // eslint-disable-next-line
   }, []);
-
+  const tourSteps = [
+    {
+      selector: '[data-tut="apisubscribe"]',
+      content: t("tour-mssg.generate-token")
+    }
+  ];
   const fetchToken = async () => {
     try {
       if (isEnableSubscription) {

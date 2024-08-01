@@ -11,12 +11,7 @@ import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
 import { useTranslation } from "react-i18next";
-const tourSteps = [
-  {
-    selector: '[data-tut="webhooksubscribe"]',
-    content: "Upgrade now to set webhook"
-  }
-];
+
 function Webhook() {
   const { t } = useTranslation();
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -32,7 +27,12 @@ function Webhook() {
     fetchWebhook();
     // eslint-disable-next-line
   }, []);
-
+  const tourSteps = [
+    {
+      selector: '[data-tut="webhooksubscribe"]',
+      content: t("tour-mssg.webhook-1")
+    }
+  ];
   const fetchWebhook = async () => {
     const email = Parse.User.current().getEmail();
     if (isEnableSubscription) {

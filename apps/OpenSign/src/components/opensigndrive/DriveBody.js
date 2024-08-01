@@ -92,7 +92,7 @@ function DriveBody(props) {
           console.log("Err ", err);
           props.setIsAlert({
             isShow: true,
-            alertMessage: "something went wrong"
+            alertMessage: t("something-went-wrong-mssg")
           });
         });
     }
@@ -193,7 +193,7 @@ function DriveBody(props) {
         console.log("Err ", err);
         props.setIsAlert({
           isShow: true,
-          alertMessage: "something went wrong"
+          alertMessage: t("something-went-wrong-mssg")
         });
       });
   };
@@ -260,7 +260,7 @@ function DriveBody(props) {
 
       setIsOpenMoveModal(false);
     } else {
-      alert("folder already exist!");
+      alert(t("folder-already-exist!"));
       setIsOpenMoveModal(false);
     }
   };
@@ -505,7 +505,9 @@ function DriveBody(props) {
                         className="ContextMenuItem"
                       >
                         <i className={menu.icon}></i>
-                        <span className="ml-[8px]">{menu.type}</span>
+                        <span className="ml-[8px]">
+                          {t(`context-menu${menu.type}`)}
+                        </span>
                       </ContextMenu.Item>
                     );
                   })}

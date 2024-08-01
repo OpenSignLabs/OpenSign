@@ -111,9 +111,7 @@ const Forms = (props) => {
       if (typeof files[0] !== "undefined") {
         const mb = Math.round(files[0].size / Math.pow(1024, 2));
         if (mb > maxFileSize) {
-          alert(
-            `The selected file size is too large. Please select a file less than ${maxFileSize} MB`
-          );
+          alert(`${t("file-alert-1")} ${maxFileSize} MB`);
           setFileUpload("");
           e.target.value = "";
           return;
@@ -294,7 +292,7 @@ const Forms = (props) => {
           }
         }
       } else {
-        alert("Please select file.");
+        alert(t("file-alert-2"));
         return false;
       }
     } catch (error) {
@@ -346,9 +344,7 @@ const Forms = (props) => {
 
     if (mb > maxFileSize) {
       setTimeout(() => {
-        alert(
-          `The selected file size is too large. Please select a file less than ${maxFileSize} MB`
-        );
+        alert(`${t("file-alert-1")}${maxFileSize} MB`);
       }, 500);
       return;
     } else {
@@ -446,7 +442,7 @@ const Forms = (props) => {
         setIsSubmit(false);
       }
     } else {
-      alert("Please wait while the document is being uploaded.");
+      alert(t("file-alert-3"));
     }
   };
 
@@ -571,7 +567,7 @@ const Forms = (props) => {
       {isAlert && (
         <Alert type={isErr ? "danger" : "success"}>
           {isErr
-            ? "Something went wrong please try again!"
+            ? t("something-went-wrong-mssg")
             : `${props.msgVar} created successfully!`}
         </Alert>
       )}
@@ -584,12 +580,12 @@ const Forms = (props) => {
           <ModalUi
             isOpen={isPassword}
             handleClose={() => handeCloseModal()}
-            title={"Enter Pdf Password"}
+            title={t("enter-pdf-password")}
           >
             <form onSubmit={handlePasswordSubmit}>
               <div className="px-6 pt-3 pb-2">
                 <label className="mb-2 text-xs text-base-content">
-                  Password
+                  {t("password")}
                 </label>
                 <input
                   type="text"
@@ -607,12 +603,12 @@ const Forms = (props) => {
                       : "text-transparent pointer-events-none"
                   } ml-2 text-[11px] `}
                 >
-                  Please provide correct password
+                  {t("correct-password")}
                 </p>
               </div>
               <div className="px-6 mb-3">
                 <button type="submit" className="op-btn op-btn-primary">
-                  Submit
+                  {t("submit")}
                 </button>
               </div>
             </form>
@@ -635,7 +631,7 @@ const Forms = (props) => {
             {isDecrypting && (
               <div className="flex items-center gap-x-2">
                 <span className="text-base-content text-sm">
-                  Decrypting pdf please wait...
+                  {t("decrypting-pdf")}
                 </span>
               </div>
             )}
@@ -775,11 +771,11 @@ const Forms = (props) => {
                         <p className="p-[5px]">
                           <ol className="list-disc">
                             <li>
-                              <span className="font-bold">Yes:</span>
+                              <span className="font-bold">{t("yes")}:</span>
                               <span>{t("send-in-order-help.p2")}</span>
                             </li>
                             <li>
-                              <span className="font-bold">No: </span>
+                              <span className="font-bold">{t("no")}: </span>
                               <span>{t("send-in-order-help.p3")}</span>
                             </li>
                           </ol>
@@ -797,7 +793,7 @@ const Forms = (props) => {
                       checked={formData.SendinOrder === "true"}
                       onChange={handleStrInput}
                     />
-                    <div className="text-center">Yes</div>
+                    <div className="text-center">{t("yes")}</div>
                   </div>
                   <div className="flex items-center gap-2 ml-2 mb-1">
                     <input

@@ -192,7 +192,7 @@ function PlaceHolderSign() {
       try {
         const tenantDetails = await getTenantDetails(user?.objectId);
         if (tenantDetails && tenantDetails === "user does not exist!") {
-          alert("User does not exist");
+          alert(t("user-not-exist"));
         } else if (tenantDetails) {
           const defaultRequestBody = `<p>Hi {{receiver_name}},</p><br><p>We hope this email finds you well. {{sender_name}}&nbsp;has requested you to review and sign&nbsp;{{document_title}}.</p><p>Your signature is crucial to proceed with the next steps as it signifies your agreement and authorization.</p><br><p>{{signing_url}}</p><br><p>If you have any questions or need further clarification regarding the document or the signing process,  please contact the sender.</p><br><p>Thanks</p><p> Team OpenSign™</p><br>`;
           if (tenantDetails?.RequestBody) {
@@ -215,10 +215,10 @@ function PlaceHolderSign() {
           }
         }
       } catch (e) {
-        alert("User does not exist");
+        alert(t("user-not-exist"));
       }
     } else {
-      alert("User does not exist");
+      alert(t("user-not-exist"));
     }
   };
 
@@ -297,32 +297,29 @@ function PlaceHolderSign() {
           // If document is completed
           setIsAlreadyPlace({
             status: true,
-            message: "This document has been signed by all Signers."
+            message: t("document-signed-alert-5")
           });
         } else if (declined) {
           // If document has been declined
           setIsAlreadyPlace({
             status: true,
-            message:
-              "This document has been declined by one or more recipient(s)."
+            message: t("document-signed-alert-6")
           });
         } else if (currDate > expireUpdateDate) {
           // If document has expired
           setIsAlreadyPlace({
             status: true,
-            message: "This Document is no longer available."
+            message: t("document-signed-alert-7")
           });
         } else {
           // If document is dispatched for signing
           setIsAlreadyPlace({
             status: true,
-            message: "The document has already been dispatched for signing."
+            message: t("document-signed-alert-8")
           });
         }
       }
-
       setPdfDetails(documentData);
-
       if (documentData[0].Signers && documentData[0].Signers.length > 0) {
         const currEmail = documentData[0].ExtUserPtr.Email;
         setCurrentId(currEmail);
@@ -914,20 +911,18 @@ function PlaceHolderSign() {
       }
       if (!signatureExist) {
         isSignatureExist = false;
-        const alert = {
-          mssg: "sure",
+        setIsSendAlert({
+          mssg: t("sure"),
           alert: true
-        };
-        setIsSendAlert(alert);
+        });
       }
     }
 
     if (getPrefill && isLabel) {
-      const alert = {
+      setIsSendAlert({
         mssg: textWidget,
         alert: true
-      };
-      setIsSendAlert(alert);
+      });
     } else if (isSignatureExist) {
       if (filterPrefill.length === signersdata.length) {
         const IsSignerNotExist = filterPrefill?.filter((x) => !x.signerObjId);
@@ -940,11 +935,10 @@ function PlaceHolderSign() {
           saveDocumentDetails();
         }
       } else {
-        const alert = {
-          mssg: "sure",
+        setIsSendAlert({
+          mssg: t("sure"),
           alert: true
-        };
-        setIsSendAlert(alert);
+        });
       }
     }
   };
@@ -1028,11 +1022,11 @@ function PlaceHolderSign() {
         })
         .catch((err) => {
           console.log("axois err ", err);
-          alert("something went wrong");
+          alert(t("something-went-wrong-mssg"));
         });
     } catch (e) {
       console.log("error", e);
-      alert("something went wrong");
+      alert(t("something-went-wrong-mssg"));
     }
   };
 
@@ -1266,7 +1260,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="recipientArea"]',
       content: () => (
         <TourContentWithBtn
-          message={`Select a recipient from this list to add a place-holder where he is supposed to sign.The placeholder will appear in the same colour as the recipient name once you drop it on the document.`}
+          message={t("tour-mssg.placeholder-sign-1")}
           isChecked={handleDontShow}
         />
       ),
@@ -1277,7 +1271,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="addRecipient"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking "Add recipients" button will allow you to add more signers.`}
+          message={t("tour-mssg.placeholder-sign-3")}
           isChecked={handleDontShow}
         />
       ),
@@ -1288,7 +1282,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="addWidgets"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag or click on a field to add it to the document.`}
+          message={t("tour-mssg.placeholder-sign-3")}
           isChecked={handleDontShow}
         />
       ),
@@ -1299,7 +1293,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="pdfArea"]',
       content: () => (
         <TourContentWithBtn
-          message={`The PDF content area already displays the template's existing placeholders. For your convenience, these placeholders will match the color of the recipient's name, making them easily identifiable.`}
+          message={t("tour-mssg.placeholder-sign-4")}
           isChecked={handleDontShow}
         />
       ),
@@ -1311,7 +1305,7 @@ function PlaceHolderSign() {
       selector: '[data-tut="headerArea"]',
       content: () => (
         <TourContentWithBtn
-          message={`Clicking "Send" will save the document. In the next step you can customize the emails to be sent out to the recipients or copy the signing links and share those with the recipients yourself.`}
+          message={t("tour-mssg.placeholder-sign-5")}
           isChecked={handleDontShow}
         />
       ),

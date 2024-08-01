@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Parse from "parse";
 import { Navigate } from "react-router-dom";
 import Title from "../components/Title";
+import { useTranslation } from "react-i18next";
 
 function ChangePassword() {
+  const { t } = useTranslation();
   const [currentpassword, setCurrentPassword] = useState("");
   const [newpassword, setnewpassword] = useState("");
   const [confirmpassword, setconfirmpassword] = useState("");
@@ -27,23 +29,23 @@ function ChangePassword() {
                       await Parse.User.become(_user.sessionToken);
                       localStorage.setItem("accesstoken", _user.sessionToken);
                     }
-                    alert("Password updated successfully.");
+                    alert(t("password-update-alert-1"));
                   })
                   .catch((error) => {
                     console.log("err", error);
-                    alert("Something went wrong.");
+                    alert(t("something-went-wrong-mssg"));
                   });
               });
             } else {
-              alert("Your current password is missing or incorrect.");
+              alert(t("password-update-alert-2"));
             }
           })
           .catch((error) => {
-            alert("Your current password is missing or incorrect.");
+            alert(t("password-update-alert-3"));
             console.error("Error while logging in user", error);
           });
       } else {
-        alert("Your password and confirmation password do not match.");
+        alert(t("password-update-alert-4"));
       }
     } catch (error) {
       console.log("err", error);
@@ -56,13 +58,13 @@ function ChangePassword() {
     <div className="w-full bg-base-100 text-base-content shadow rounded-box p-2">
       <Title title="Change Password" />
       <div className="text-xl font-bold border-b-[1px] border-gray-300">
-        Change Password
+        {t("change-password")}
       </div>
       <div className="m-2">
         <form onSubmit={handleSubmit} className=" flex flex-col gap-y-2">
           <div>
             <label htmlFor="currentpassword" className="block text-xs ml-1">
-              Current Password
+              {t("current-password")}
             </label>
             <input
               type="password"
@@ -76,7 +78,7 @@ function ChangePassword() {
           </div>
           <div>
             <label htmlFor="newpassword" className="text-xs block ml-1">
-              New Password
+              {t("new-password")}
             </label>
             <input
               type="password"
@@ -90,7 +92,7 @@ function ChangePassword() {
           </div>
           <div>
             <label htmlFor="newpassword" className="text-xs block ml-1">
-              Confirm Password
+              {t("confirm-password")}
             </label>
             <input
               type="password"
@@ -106,7 +108,7 @@ function ChangePassword() {
             type="submit"
             className="op-btn op-btn-primary shadow-md mt-2"
           >
-            Change Password
+            {t("change-password")}
           </button>
         </form>
       </div>

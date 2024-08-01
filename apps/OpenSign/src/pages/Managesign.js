@@ -189,7 +189,7 @@ const ManageSign = () => {
         setIsLoader(false);
         setIsAlert({
           type: "success",
-          message: "Signature saved successfully."
+          message: t("signature-saved-alert")
         });
         setTimeout(() => setIsAlert({}), 2000);
         return res;
@@ -213,7 +213,7 @@ const ManageSign = () => {
         setIsLoader(false);
         setIsAlert({
           type: "success",
-          message: "Signature saved successfully."
+          message: t("signature-saved-alert")
         });
         setTimeout(() => setIsAlert({}), 2000);
         return res;

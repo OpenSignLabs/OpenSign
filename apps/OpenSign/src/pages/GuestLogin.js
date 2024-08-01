@@ -89,7 +89,7 @@ function GuestLogin() {
         setEnterOtp(true);
       }
     } catch (error) {
-      alert("something went wrong!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
 
@@ -119,10 +119,10 @@ function GuestLogin() {
         };
         let user = await axios.post(url, body, { headers: headers });
         if (user.data.result === "Invalid Otp") {
-          alert("Invalid Otp");
+          alert(t("invalid-otp"));
           setLoading(false);
         } else if (user.data.result === "user not found!") {
-          alert("User not found!");
+          alert(t("user-not-found"));
           setLoading(false);
         } else {
           let _user = user.data.result;
@@ -158,7 +158,7 @@ function GuestLogin() {
         console.log("err ", error);
       }
     } else {
-      alert("Please Enter OTP!");
+      alert(t("enter-otp-alert"));
     }
   };
   const handleUserData = async (e) => {
@@ -173,7 +173,7 @@ function GuestLogin() {
       await SendOtp();
     } catch (err) {
       setLoading(false);
-      alert("something went wron, please try agian later.");
+      alert(t("something-went-wrong-mssg"));
       console.log("Err in link ext contact", err);
     }
   };
@@ -198,7 +198,7 @@ function GuestLogin() {
             <>
               {!EnterOTP ? (
                 <div className="w-full md:w-[50%] text-base-content">
-                  <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
+                  <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
                   <legend className="text-[12px] text-[#878787] mt-2 mb-1">
                     {t("guest-email-alert")}
                   </legend>
@@ -217,7 +217,7 @@ function GuestLogin() {
                       onClick={(e) => handleSendOTPBtn(e)}
                       disabled={loading}
                     >
-                      {loading ? "Loading..." : "Get verification code"}
+                      {loading ? t("loading") : t("get-verification-code")}
                     </button>
                   </div>
                 </div>
@@ -226,12 +226,12 @@ function GuestLogin() {
                   className="w-full md:w-[50%] text-base-content"
                   onSubmit={VerifyOTP}
                 >
-                  <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
+                  <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
                   <legend className="text-[12px] text-[#878787] mt-2">
-                    You will get a verification code via Email
+                    {t("get-verification-code-2")}
                   </legend>
                   <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
-                    <p className="text-sm">Enter Verification Code</p>
+                    <p className="text-sm">{t("enter-verification-code")}</p>
                     <input
                       type="number"
                       className="mt-2 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
@@ -246,7 +246,7 @@ function GuestLogin() {
                       type="submit"
                       disabled={loading}
                     >
-                      {loading ? "Loading..." : "Verify"}
+                      {loading ? t("loading") : t("verify")}
                     </button>
                   </div>
                 </form>
@@ -254,9 +254,9 @@ function GuestLogin() {
             </>
           ) : (
             <div className="w-full md:w-[50%] text-base-content">
-              <h1 className="text-2xl md:text-[30px]">Welcome</h1>
+              <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
               <legend className="text-[12px] text-[#878787] mt-2">
-                Provide your details
+                {t("provide-your-details")}
               </legend>
               <form
                 className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md"
@@ -267,7 +267,7 @@ function GuestLogin() {
                     htmlFor="name"
                     className="block text-xs text-gray-700 font-semibold"
                   >
-                    Name
+                    {t("name")}
                     <span className="text-[red] text-[13px]"> *</span>
                   </label>
                   <input
@@ -285,7 +285,7 @@ function GuestLogin() {
                     htmlFor="email"
                     className="block text-xs text-gray-700 font-semibold"
                   >
-                    Email
+                    {t("email")}
                     <span className="text-[red] text-[13px]"> *</span>
                   </label>
                   <input
@@ -303,7 +303,7 @@ function GuestLogin() {
                     htmlFor="phone"
                     className="block text-xs text-gray-700 font-semibold"
                   >
-                    Phone
+                    {t("phone")}
                   </label>
                   <input
                     type="text"
@@ -320,7 +320,7 @@ function GuestLogin() {
                     className="op-btn op-btn-primary"
                     disabled={loading}
                   >
-                    {loading ? "Loading..." : "Next"}
+                    {loading ? t("loading") : t("next")}
                   </button>
                 </div>
               </form>

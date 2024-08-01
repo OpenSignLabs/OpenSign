@@ -997,7 +997,7 @@ function SignYourSelf() {
       selector: '[data-tut="addWidgets"]',
       content: () => (
         <TourContentWithBtn
-          message={`Select and drag your preferred widgets onto the PDF to customize your document before signing. Choose the perfect spots for each modification to tailor the document to your needs.`}
+          message={t("tour-mssg.signyour-self-2")}
           isChecked={handleDontShow}
         />
       ),
@@ -1008,7 +1008,7 @@ function SignYourSelf() {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag and drop anywhere in this area. You can resize and move it later.`}
+          message={t("tour-mssg.signyour-self-2")}
           isChecked={handleDontShow}
         />
       ),

@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { useScript } from "../hook/useScript";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
-
+import { useTranslation } from "react-i18next";
 /*
  * `GoogleSignInBtn`as it's name indicates it render google sign in button
  * and in this `useScript` in which we have created for generate google sign button
@@ -17,6 +17,7 @@ const GoogleSignInBtn = ({
   thirdpartyLoader,
   setThirdpartyLoader
 }) => {
+  const { t } = useTranslation();
   const [isModal, setIsModal] = useState(false);
   const googleBtn = useRef();
   const [userDetails, setUserDetails] = useState({
@@ -162,10 +163,10 @@ const GoogleSignInBtn = ({
         payload &&
         payload.message.replace(/ /g, "_") === "Internal_server_err"
       ) {
-        alert("Internal server error !");
+        alert(t("server-error"));
       }
     } else {
-      alert("Please fill required details!");
+      alert(t("fill-required-details!"));
     }
   };
   const handleCloseModal = () => {
@@ -196,11 +197,11 @@ const GoogleSignInBtn = ({
         </div>
       )}
       <div ref={googleBtn} className="text-sm"></div>
-      <ModalUi showClose={false} isOpen={isModal} title="Sign up form">
+      <ModalUi showClose={false} isOpen={isModal} title={t("sign-up-form")}>
         <form className="px-4 py-3 text-base-content">
           <div className="mb-3">
             <label htmlFor="Phone" className="block text-xs font-semibold">
-              Phone <span className="text-[13px] text-[red]">*</span>
+              {t("phone")} <span className="text-[13px] text-[red]">*</span>
             </label>
             <input
               type="tel"
@@ -218,7 +219,7 @@ const GoogleSignInBtn = ({
           </div>
           <div className="mb-3">
             <label htmlFor="Company" className="block text-xs font-semibold">
-              Company <span className="text-[13px] text-[red]">*</span>
+              {t("company")} <span className="text-[13px] text-[red]">*</span>
             </label>
             <input
               type="text"
@@ -236,7 +237,7 @@ const GoogleSignInBtn = ({
           </div>
           <div className="mb-3">
             <label htmlFor="JobTitle" className="block text-xs font-semibold">
-              Job Title <span className="text-[13px] text-[red]">*</span>
+              {t("job-title")} <span className="text-[13px] text-[red]">*</span>
             </label>
             <input
               type="text"
@@ -258,14 +259,14 @@ const GoogleSignInBtn = ({
               className="op-btn op-btn-primary"
               onClick={() => handleSubmitbtn()}
             >
-              Sign up
+              {t("sign-up")}
             </button>
             <button
               type="button"
               className="op-btn op-btn-ghost"
               onClick={handleCloseModal}
             >
-              Cancel
+              {t("cancel")}
             </button>
           </div>
         </form>

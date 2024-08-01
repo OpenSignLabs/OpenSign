@@ -8,8 +8,10 @@ import { appInfo } from "../constant/appinfo";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const PgSignUp = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -168,11 +170,11 @@ const PgSignUp = () => {
     } catch (error) {
       console.log("err ", error);
       if (error.message === "Account already exists for this username.") {
-        alert("Account already exists!");
+        alert(t("account-already-exists"));
         navigate("/", { replace: true });
       } else {
         setIsLoader(false);
-        alert("Something went wrong, please try again later!");
+        alert(t("something-went-wrong-mssg"));
       }
     }
   };
@@ -262,7 +264,7 @@ const PgSignUp = () => {
               localStorage.setItem("defaultmenuid", menu.menuId);
               localStorage.setItem("pageType", menu.pageType);
               setIsLoader(false);
-              alert("Registered user successfully");
+              alert(t("registered-user-successfully"));
               const redirectUrl =
                 location?.state?.from || `/${menu.pageType}/${menu.pageId}`;
               // Redirect to the appropriate URL after successful login
@@ -294,15 +296,15 @@ const PgSignUp = () => {
           >
             <div className="p-[16px]">
               <h1 className="text-2xl md:text-3xl font-bold">
-                Choose Password
+                {t("choose-password")}
               </h1>
               <hr className="border-[1px] border-[#cecece] mb-[5px]" />
               <label htmlFor="password">
-                <b className="text-[13px]">Password</b>
+                <b className="text-[13px]">{t("password")}</b>
               </label>
               <input
                 type="password"
-                placeholder="Enter Password"
+                placeholder={t("enter-password")}
                 name="password"
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.password}
@@ -310,11 +312,11 @@ const PgSignUp = () => {
                 required
               />
               <label htmlFor="confirmPassword">
-                <b className="text-[13px]">Confirm Password</b>
+                <b className="text-[13px]">{t("confirm-password")}</b>
               </label>
               <input
                 type="password"
-                placeholder="Confirm Password"
+                placeholder={t("confirm-password")}
                 name="confirmPassword"
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 style={{
@@ -344,24 +346,21 @@ const PgSignUp = () => {
                       lengthValid ? "text-green-600" : "text-red-600"
                     }`}
                   >
-                    {lengthValid ? "✓" : "✗"} Password should be 8 characters
-                    long
+                    {lengthValid ? "✓" : "✗"} {t("password-length")}
                   </p>
                   <p
                     className={`${
                       caseDigitValid ? "text-green-600" : "text-red-600"
                     }`}
                   >
-                    {caseDigitValid ? "✓" : "✗"} Password should contain
-                    uppercase letter, lowercase letter, digit
+                    {caseDigitValid ? "✓" : "✗"} {t("password-case")}
                   </p>
                   <p
                     className={`${
                       specialCharValid ? "text-green-600" : "text-red-600"
                     }`}
                   >
-                    {specialCharValid ? "✓" : "✗"} Password should contain
-                    special character
+                    {specialCharValid ? "✓" : "✗"} {t("password-special-char")}
                   </p>
                 </div>
               )}
@@ -369,7 +368,7 @@ const PgSignUp = () => {
                 type="submit"
                 className="op-btn op-btn-primary w-full mt-[8px]"
               >
-                Submit
+                {t("submit")}
               </button>
             </div>
           </form>
