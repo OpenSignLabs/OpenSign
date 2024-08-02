@@ -710,7 +710,7 @@ function SignYourSelf() {
             setIsUiLoading(false);
             if (err && err.message.includes("is encrypted.")) {
               setIsAlert({
-                header: "Error",
+                header: t("error"),
                 isShow: true,
                 alertMessage: t("encrypted-pdf-alert")
               });
@@ -721,13 +721,13 @@ function SignYourSelf() {
                 "PKCS#12 MAC could not be verified. Invalid password?"
               ) {
                 setIsAlert({
-                  header: "Error",
+                  header: t("error"),
                   isShow: true,
-                  alertMessage: `PFX file password is invalid.`
+                  alertMessage: t("encrypted-pdf-alert-1")
                 });
               } else {
                 setIsAlert({
-                  header: "Error",
+                  header: t("error"),
                   isShow: true,
                   alertMessage: t("something-went-wrong-mssg")
                 });
@@ -739,7 +739,7 @@ function SignYourSelf() {
         console.log("err in embedselfsign ", err);
         setIsUiLoading(false);
         setIsAlert({
-          header: "Error",
+          header: t("error"),
           isShow: true,
           alertMessage: t("something-went-wrong-mssg")
         });
