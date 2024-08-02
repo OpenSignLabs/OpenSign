@@ -820,8 +820,8 @@ function PdfRequestFiles(props) {
             setWidgetsTour(true);
           } else {
             setIsUiLoading(true);
-
-            const pngUrl = checkUser[0].placeHolder;
+            // `widgets` is Used to return widgets details with page number of current user
+            const widgets = checkUser?.[0]?.placeHolder;
             let pdfArrBuffer;
             //`contractDocument` function used to get updated SignedUrl
             //resolved issue of sign document by multiple signers simultaneously
@@ -859,14 +859,14 @@ function PdfRequestFiles(props) {
               }
               //embed multi signature in pdf
               const pdfBytes = await multiSignEmbed(
-                pngUrl,
+                widgets,
                 pdfDoc,
                 isSignYourSelfFlow,
                 scale,
                 pdfOriginalWH,
                 containerWH
               );
-              //  console.log("pdfte", pdfBytes);
+              // console.log("pdfte", pdfBytes);
               //get ExistUserPtr object id of user class to get tenantDetails
               const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
               //get ExistUserPtr email to get userDetails
@@ -875,178 +875,166 @@ function PdfRequestFiles(props) {
               let activeMailAdapter = "";
               if (res === "Error: Something went wrong!") {
                 setHandleError(t("something-went-wrong-mssg"));
-                setIsLoading({
-                  isLoad: false
-                });
+                setIsLoading({ isLoad: false });
               } else if (!res || res?.length === 0) {
                 activeMailAdapter = "";
               } else if (res[0] && res.length) {
                 activeMailAdapter = res[0]?.active_mail_adapter;
               }
               //function for call to embed signature in pdf and get digital signature pdf
-              try {
-                const res = await signPdfFun(
-                  pdfBytes,
-                  documentId,
-                  signerObjectId,
-                  setIsAlert,
-                  objectId,
-                  isSubscribed,
-                  activeMailAdapter,
-                  pngUrl
+              const resSign = await signPdfFun(
+                pdfBytes,
+                documentId,
+                signerObjectId,
+                objectId,
+                isSubscribed,
+                activeMailAdapter,
+                widgets
+              );
+              if (resSign && resSign.status === "success") {
+                setPdfUrl(res.data);
+                setIsSigned(true);
+                setSignedSigners([]);
+                setUnSignedSigners([]);
+                getDocumentDetails(true);
+                const index = pdfDetails?.[0].Signers.findIndex(
+                  (x) => x.Email === currentUser?.email
                 );
-                if (res && res.status === "success") {
-                  setPdfUrl(res.data);
-                  setIsSigned(true);
-                  setSignedSigners([]);
-                  setUnSignedSigners([]);
-                  getDocumentDetails(true);
-                  const index = pdfDetails?.[0].Signers.findIndex(
-                    (x) => x.Email === currentUser?.email
-                  );
-                  const newIndex = index + 1;
-                  const usermail = {
-                    Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
-                  };
-                  const user = usermail?.Email
-                    ? usermail
-                    : pdfDetails?.[0]?.Signers[newIndex];
-                  if (sendmail !== "false" && sendInOrder) {
-                    const requestBody = pdfDetails?.[0]?.RequestBody;
-                    const requestSubject = pdfDetails?.[0]?.RequestSubject;
-                    if (user) {
-                      const expireDate = pdfDetails?.[0].ExpiryDate.iso;
-                      const newDate = new Date(expireDate);
-                      const localExpireDate = newDate.toLocaleDateString(
-                        "en-US",
-                        {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric"
-                        }
-                      );
-                      let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
-                      let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
-                      const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
-
-                      try {
-                        const imgPng =
-                          "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
-                        let url = `${localStorage.getItem(
-                          "baseUrl"
-                        )}functions/sendmailv3`;
-                        const headers = {
-                          "Content-Type": "application/json",
-                          "X-Parse-Application-Id":
-                            localStorage.getItem("parseAppId"),
-                          sessionToken: localStorage.getItem("accesstoken")
-                        };
-                        const objectId = user?.objectId;
-                        const hostUrl = window.location.origin;
-                        //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
-                        let encodeBase64;
-                        if (objectId) {
-                          encodeBase64 = btoa(
-                            `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
-                          );
-                        } else {
-                          encodeBase64 = btoa(
-                            `${pdfDetails?.[0].objectId}/${user.Email}`
-                          );
-                        }
-                        const hostPublicUrl = isStaging
-                          ? "https://staging-app.opensignlabs.com"
-                          : "https://app.opensignlabs.com";
-                        let signPdf = props?.templateId
-                          ? `${hostPublicUrl}/login/${encodeBase64}`
-                          : `${hostUrl}/login/${encodeBase64}`;
-                        const openSignUrl =
-                          "https://www.opensignlabs.com/contact-us";
-                        const orgName = pdfDetails[0]?.ExtUserPtr.Company
-                          ? pdfDetails[0].ExtUserPtr.Company
-                          : "";
-                        const themeBGcolor = themeColor;
-                        let replaceVar;
-                        if (requestBody && requestSubject && isSubscribed) {
-                          const replacedRequestBody = requestBody.replace(
-                            /"/g,
-                            "'"
-                          );
-                          const htmlReqBody =
-                            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
-                            replacedRequestBody +
-                            "</body> </html>";
-
-                          const variables = {
-                            document_title: pdfDetails?.[0].Name,
-                            sender_name: senderName,
-                            sender_mail: senderEmail,
-                            sender_phone: senderPhone,
-                            receiver_name: user.Name,
-                            receiver_email: user.Email,
-                            receiver_phone: user.Phone,
-                            expiry_date: localExpireDate,
-                            company_name: orgName,
-                            signing_url: `<a href=${signPdf}>Sign here</a>`
-                          };
-                          replaceVar = replaceMailVaribles(
-                            requestSubject,
-                            htmlReqBody,
-                            variables
-                          );
-                        }
-
-                        let params = {
-                          mailProvider: activeMailAdapter,
-                          extUserId: extUserId,
-                          recipient: user.Email,
-                          subject: requestSubject
-                            ? replaceVar?.subject
-                            : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
-                          from: senderEmail,
-                          html: requestBody
-                            ? replaceVar?.body
-                            : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
-                              imgPng +
-                              " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
-                              themeBGcolor +
-                              ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
-                              pdfDetails?.[0].ExtUserPtr.Name +
-                              " has requested you to review and sign <strong> " +
-                              pdfDetails?.[0].Name +
-                              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
-                              senderEmail +
-                              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
-                              orgName +
-                              "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
-                              localExpireDate +
-                              "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
-                              signPdf +
-                              "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
-                              senderEmail +
-                              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
-                              openSignUrl +
-                              " target=_blank>here</a>.</p> </div></div></body> </html>"
-                        };
-                        await axios.post(url, params, {
-                          headers: headers
-                        });
-                      } catch (error) {
-                        console.log("error", error);
+                const newIndex = index + 1;
+                const usermail = {
+                  Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
+                };
+                const user = usermail?.Email
+                  ? usermail
+                  : pdfDetails?.[0]?.Signers[newIndex];
+                if (sendmail !== "false" && sendInOrder) {
+                  const requestBody = pdfDetails?.[0]?.RequestBody;
+                  const requestSubject = pdfDetails?.[0]?.RequestSubject;
+                  if (user) {
+                    const expireDate = pdfDetails?.[0].ExpiryDate.iso;
+                    const newDate = new Date(expireDate);
+                    const localExpireDate = newDate.toLocaleDateString(
+                      "en-US",
+                      {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
                       }
+                    );
+                    let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
+                    let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
+                    const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
+
+                    try {
+                      const imgPng =
+                        "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
+                      let url = `${localStorage.getItem(
+                        "baseUrl"
+                      )}functions/sendmailv3`;
+                      const headers = {
+                        "Content-Type": "application/json",
+                        "X-Parse-Application-Id":
+                          localStorage.getItem("parseAppId"),
+                        sessionToken: localStorage.getItem("accesstoken")
+                      };
+                      const objectId = user?.objectId;
+                      const hostUrl = window.location.origin;
+                      //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
+                      let encodeBase64;
+                      if (objectId) {
+                        encodeBase64 = btoa(
+                          `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
+                        );
+                      } else {
+                        encodeBase64 = btoa(
+                          `${pdfDetails?.[0].objectId}/${user.Email}`
+                        );
+                      }
+                      const hostPublicUrl = isStaging
+                        ? "https://staging-app.opensignlabs.com"
+                        : "https://app.opensignlabs.com";
+                      let signPdf = props?.templateId
+                        ? `${hostPublicUrl}/login/${encodeBase64}`
+                        : `${hostUrl}/login/${encodeBase64}`;
+                      const openSignUrl =
+                        "https://www.opensignlabs.com/contact-us";
+                      const orgName = pdfDetails[0]?.ExtUserPtr.Company
+                        ? pdfDetails[0].ExtUserPtr.Company
+                        : "";
+                      const themeBGcolor = themeColor;
+                      let replaceVar;
+                      if (requestBody && requestSubject && isSubscribed) {
+                        const replacedRequestBody = requestBody.replace(
+                          /"/g,
+                          "'"
+                        );
+                        const htmlReqBody =
+                          "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+                          replacedRequestBody +
+                          "</body> </html>";
+
+                        const variables = {
+                          document_title: pdfDetails?.[0].Name,
+                          sender_name: senderName,
+                          sender_mail: senderEmail,
+                          sender_phone: senderPhone,
+                          receiver_name: user.Name,
+                          receiver_email: user.Email,
+                          receiver_phone: user.Phone,
+                          expiry_date: localExpireDate,
+                          company_name: orgName,
+                          signing_url: `<a href=${signPdf}>Sign here</a>`
+                        };
+                        replaceVar = replaceMailVaribles(
+                          requestSubject,
+                          htmlReqBody,
+                          variables
+                        );
+                      }
+
+                      let params = {
+                        mailProvider: activeMailAdapter,
+                        extUserId: extUserId,
+                        recipient: user.Email,
+                        subject: requestSubject
+                          ? replaceVar?.subject
+                          : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
+                        from: senderEmail,
+                        html: requestBody
+                          ? replaceVar?.body
+                          : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+                            imgPng +
+                            " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+                            themeBGcolor +
+                            ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+                            pdfDetails?.[0].ExtUserPtr.Name +
+                            " has requested you to review and sign <strong> " +
+                            pdfDetails?.[0].Name +
+                            "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+                            senderEmail +
+                            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+                            orgName +
+                            "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+                            localExpireDate +
+                            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+                            signPdf +
+                            "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+                            senderEmail +
+                            " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+                            openSignUrl +
+                            " target=_blank>here</a>.</p> </div></div></body> </html>"
+                      };
+                      await axios.post(url, params, {
+                        headers: headers
+                      });
+                    } catch (error) {
+                      console.log("error", error);
                     }
                   }
-                } else {
-                  setIsAlert({
-                    isShow: true,
-                    alertMessage: t("something-went-wrong-mssg")
-                  });
                 }
-              } catch (err) {
-                setIsAlert({
-                  isShow: true,
-                  alertMessage: t("something-went-wrong-mssg")
-                });
+              } else {
+                setIsUiLoading(false);
+                setIsAlert({ isShow: true, alertMessage: resSign.message });
               }
             } catch (err) {
               setIsUiLoading(false);
@@ -1659,25 +1647,18 @@ function PdfRequestFiles(props) {
                 <ModalUi
                   isOpen={isAlert.isShow}
                   title={t("alert-message")}
-                  handleClose={() => {
-                    setIsAlert({
-                      isShow: false,
-                      alertMessage: ""
-                    });
-                  }}
+                  handleClose={() =>
+                    setIsAlert({ isShow: false, alertMessage: "" })
+                  }
                 >
                   <div className="h-full p-[20px]">
                     <p>{isAlert.alertMessage}</p>
-                    <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                     <button
-                      onClick={() => {
-                        setIsAlert({
-                          isShow: false,
-                          alertMessage: ""
-                        });
-                      }}
+                      onClick={() =>
+                        setIsAlert({ isShow: false, alertMessage: "" })
+                      }
                       type="button"
-                      className="op-btn op-btn-primary"
+                      className="op-btn op-btn-primary mt-3 px-4"
                     >
                       {t("ok")}
                     </button>

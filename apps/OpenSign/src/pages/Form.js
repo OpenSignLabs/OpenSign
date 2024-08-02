@@ -643,9 +643,9 @@ const Forms = (props) => {
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               {fileupload.length > 0 ? (
-                <div className="flex gap-2 justify-center items-center">
+                <div className="flex gap-1 justify-center items-center">
                   <div className="flex justify-between items-center op-input op-input-bordered op-input-sm w-full h-full text-[13px]">
-                    <div className="break-all">
+                    <div className="break-all cursor-default">
                       {t("file-selected")}: {getFileName(fileupload)}
                     </div>
                     <div
@@ -663,7 +663,7 @@ const Forms = (props) => {
                   )}
                 </div>
               ) : (
-                <div className="flex gap-2 justify-center items-center ">
+                <div className="flex gap-1 justify-center items-center">
                   <input
                     type="file"
                     className="op-file-input op-file-input-bordered op-file-input-sm focus:outline-none hover:border-base-content w-full text-xs"

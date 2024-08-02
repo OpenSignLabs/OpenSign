@@ -506,7 +506,7 @@ function DriveBody(props) {
                       >
                         <i className={menu.icon}></i>
                         <span className="ml-[8px]">
-                          {t(`context-menu${menu.type}`)}
+                          {t(`context-menu.${menu.type}`)}
                         </span>
                       </ContextMenu.Item>
                     );
@@ -518,18 +518,26 @@ function DriveBody(props) {
         </HoverCard.Trigger>
         <HoverCard.Portal>
           <HoverCard.Content className="HoverCardContent" sideOffset={5}>
-            <strong className="text-[13px]">Title: </strong>
+            <strong className="text-[13px]">
+              {t("report-heading.Title")}:{" "}
+            </strong>
             <span className="text-[12px] font-medium mb-0"> {data.Name}</span>
             <br />
-            <strong className="text-[13px]">Status: </strong>
+            <strong className="text-[13px]">
+              {t("report-heading.Status")}:{" "}
+            </strong>
             <span className="text-[12px] font-medium"> {status}</span>
             <br />
-            <strong className="text-[13px]">Created Date: </strong>
+            <strong className="text-[13px]">
+              {t("report-heading.created-date")}:{" "}
+            </strong>
             <span className="text-[12px] font-medium">{createddate}</span>
             <br />
             {signerExist && (
               <>
-                <strong className="text-[13px]">Signers: </strong>
+                <strong className="text-[13px]">
+                  {t("report-heading.Signers")}:{" "}
+                </strong>
                 {signersName()}
               </>
             )}
@@ -549,11 +557,11 @@ function DriveBody(props) {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Created Date</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th>{t("report-heading.Name")}</th>
+                <th>{t("report-heading.created-date")}</th>
+                <th>{t("report-heading.Type")}</th>
+                <th>{t("report-heading.Status")}</th>
+                <th>{t("action")}</th>
               </tr>
             </thead>
             <tbody>
@@ -586,25 +594,25 @@ function DriveBody(props) {
       )}
       <ModalUi
         isOpen={isDeleteDoc}
-        title={"Delete Document"}
+        title={t("delete-document")}
         handleClose={() => setIsDeleteDoc(false)}
       >
         <div className="h-full p-[20px] text-base-content">
-          <p>Are you sure you want to delete this document?</p>
+          <p>{t("delete-document-alert")}</p>
           <div className="h-[1px] w-full bg-[#9f9f9f] my-[15px]"></div>
           <button
             onClick={() => handleDeleteDocument(selectDoc)}
             type="button"
             className="op-btn op-btn-primary mr-2"
           >
-            Yes
+            {t("yes")}
           </button>
           <button
             onClick={() => setIsDeleteDoc(false)}
             type="button"
             className="op-btn op-btn-neutral"
           >
-            No
+            {t("no")}
           </button>
         </div>
       </ModalUi>

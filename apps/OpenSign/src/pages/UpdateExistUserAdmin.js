@@ -65,7 +65,7 @@ const UpdateExistUserAdmin = () => {
   };
   return (
     <div className="h-screen flex justify-center">
-      <Title title={t("add-admin")} />
+      <Title title="Add admin" />
       {isAlert.msg && (
         <Alert type={isAlert.type}>
           <div className="ml-3">{isAlert.msg}</div>

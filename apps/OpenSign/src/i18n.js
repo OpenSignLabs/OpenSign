@@ -5,11 +5,16 @@ import LanguageDetector from "i18next-browser-languagedetector";
 
 i18n
   .use(Backend)
-  .use(LanguageDetector)
+  .use(LanguageDetector) // Use LanguageDetector directly without creating an instance
   .use(initReactI18next)
   .init({
-    lng: "en", // Set English as the default language
     fallbackLng: "en", // Fallback to English if no other language is detected
+    detection: {
+      // Order and from where user language should be detected
+      order: ["navigator", "htmlTag", "path", "subdomain"],
+      // Cache user language on
+      caches: ["localStorage", "cookie"]
+    },
     debug: true,
     interpolation: {
       escapeValue: false // Not needed for react as it escapes by default

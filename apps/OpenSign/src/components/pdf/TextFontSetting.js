@@ -1,19 +1,21 @@
 import React from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
+import { useTranslation } from "react-i18next";
 
 function TextFontSetting(props) {
+  const { t } = useTranslation();
   return (
     <ModalUi
       headerColor={"#dc3545"}
       isOpen={props.isTextSetting}
       reduceWidth={"max-w-[350px]"}
-      title={"Text field"}
+      title={t("text-field")}
       handleClose={() => props.setIsTextSetting(false)}
     >
       <div className="h-full p-[20px]">
         <div className="flex items-center">
-          <span>Font size:</span>
+          <span>{t("font-size")} :</span>
           <select
             className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
             value={
@@ -32,7 +34,7 @@ function TextFontSetting(props) {
             })}
           </select>
           <div className="flex flex-row gap-1 items-center ml-4">
-            <span>color: </span>
+            <span>{t("color")}: </span>
             <select
               value={
                 props.fontColor ||
@@ -67,7 +69,7 @@ function TextFontSetting(props) {
           type="button"
           className="op-btn op-btn-primary mt-2"
         >
-          save
+          {t("save")}
         </button>
       </div>
     </ModalUi>

@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 
 function UserProfile() {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   let UserProfile = JSON.parse(localStorage.getItem("UserInformation"));
   let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -53,11 +53,6 @@ function UserProfile() {
     extendUser && extendUser?.[0]?.Tagline
   );
   const [isTeam, setIsTeam] = useState(false);
-  const languages = [
-    { value: "en", text: "English" },
-    { value: "fr", text: "French" }
-  ];
-  const [lang, setLang] = useState("en");
 
   useEffect(() => {
     getUserDetail();
@@ -311,12 +306,7 @@ function UserProfile() {
     setJobTitle(extendUser?.[0]?.JobTitle);
     setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
   };
-  // This function put query that helps to
-  // change the language
-  const handleChangeLang = (e) => {
-    setLang(e.target.value);
-    i18n.changeLanguage(e.target.value);
-  };
+
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -374,29 +364,6 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">{t("language")}:</span>{" "}
-                <select
-                  value={lang}
-                  onChange={handleChangeLang}
-                  className="select select-bordered w-[30%] border-[1px] rounded-lg p-2 max-w-xs"
-                >
-                  <option disabled selected>
-                    select
-                  </option>
-                  {languages.map((item) => {
-                    return (
-                      <option key={item.value} value={item.value}>
-                        {item.text}
-                      </option>
-                    );
-                  })}
-                </select>
-              </li>
-              <li
-                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
-                  editmode ? "py-1.5" : "py-2"
-                }`}
-              >
                 <span className="font-semibold">{t("name")}:</span>{" "}
                 {editmode ? (
                   <input
@@ -406,10 +373,7 @@ function UserProfile() {
                     onChange={(e) => SetName(e.target.value)}
                   />
                 ) : (
-                  <span>
-                    {/* {localStorage.getItem("username")} */}
-                    <p>{t("greeting", { name })}</p>
-                  </span>
+                  <span>{localStorage.getItem("username")}</span>
                 )}
               </li>
               <li

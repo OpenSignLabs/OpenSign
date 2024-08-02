@@ -35,9 +35,14 @@
     "save":"Sauvegarder",
     "cancel":"Annuler",
     "upgrade-now":"Mettre à jour maintenant",
+    "upgrade-to" :"Mettre à niveau vers",
     "pro":"PRO",
+    "plan":"Plan",
+    "subscribe-card-plan":"Signez 100 documents à l'aide de l'API. Seulement 0,15 $/doc par la suite.",
+    "tour-content":"Ne montre plus ça",
      "team":"ÉQUIPE",
      "docs":"Documents",
+     "session-expired" :"Votre session a expiré.",
     "user":"Utilisateur",
     "public-profile-help":"Il s'agit de votre URL publique. Copiez-le ou partagez-le avec le signataire et vous pourrez voir tous vos modèles définis publiquement.",
     "tagline-help":"Ce slogan apparaîtra sur votre profil public OpenSign par exemple. https://opensign.me/alex",
@@ -121,7 +126,10 @@
       "Active":"Actif",
       "Role":"Rôle",
       "Team":"Équipe",
-      "Name":"Nom"
+      "Name":"Nom",
+      "Status":"Statut",
+      "created-date":"Date de création",
+      "Type":"Taper"
       },
       "btnLabel":{
       "sign":"signe",
@@ -331,6 +339,11 @@
       "signature-tab":"Signature",
       "your-signature" :"Votre signature",
       "copy-to-all-pages" :"Copier sur toutes les pages",
+      "contact-delete-alert" :"Êtes-vous sûr de vouloir supprimer ce contact ?",
+      "reset-password" :"Le lien de réinitialisation du mot de passe a été envoyé à votre identifiant de messagerie",
+       "reset-password-alert-2" :"Veuillez configurer l'adaptateur de messagerie",
+      "reset-password-alert-3"  :"Réinitialisez votre mot de passe",
+       "faild-animation"  :"Échec du chargement de l'animation",
       "apply" :"Appliquer",
       "copy-type":{
         "All pages":"Toutes les pages",
@@ -493,6 +506,20 @@
      "master-key"  :"La clef maitresse",
      "profile-update-alert" :"Mise à jour du profil réussie.",
      "date":"Date",
+     "report-not-found" :"Rapport introuvable",
+     "please-wait" :"S'il vous plaît, attendez",
+     "select-foler":"Sélectionner le dossier",
+     "generated-on" :"Généré le",
+     "text-field" :"Champ de texte",
+     "font-size" :"Taille de police",
+     "all-right" :"Tous droits réservés",
+     "version" :"version",
+     "social-media":{
+         "github":"Github",
+         "linked-in":"LinkedIn",
+         "twitter":"Twitter",
+         "discord":"Discorde"
+         },
      "tour-mssg":{
       "home-layout-1":"Vous vous êtes connecté avec succès ! Jetons un coup d'oeil.",
       "home-layout-2": "Pour télécharger des documents à auto-signature ou pour demander la signature d'autres personnes, sélectionnez simplement les boutons correspondants.",
@@ -523,8 +550,12 @@
      "template-placeholder-3":"Faites glisser ou cliquez sur un champ pour l'ajouter au document.",
      "template-placeholder-4":"Faites glisser l'espace réservé pour un rôle n'importe où sur le document. N'oubliez pas qu'il apparaîtra dans la même couleur que le nom du destinataire pour une référence facile.",
      "template-placeholder-5":"Cliquer sur 'Suivant' stockera le modèle actuel. Après l'enregistrement, vous serez invité à créer un nouveau document à partir de ce modèle si vous le souhaitez.",
-      "webhook-1":"Mettez à niveau maintenant pour définir le webhook"
-           
+     "webhook-1":"Mettez à niveau maintenant pour définir le webhook",
+     "Need your Signature":"En cliquant sur cette carte, vous accéderez à la liste des documents en attente de révision.",
+     "Out for signatures":"En cliquant sur cette carte, vous accéderez à une liste de documents en attente de signature.",
+     "Recent signature requests": "Voici une liste de documents qui attendent votre signature.",
+     "Recently sent for signatures":"Il s'agit d'une liste de documents que vous avez envoyés à d'autres parties pour signature.",
+     "Drafts":"Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi."
 
    }
      

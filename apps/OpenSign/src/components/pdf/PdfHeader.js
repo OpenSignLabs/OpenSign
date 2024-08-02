@@ -419,19 +419,17 @@ function Header({
               </button>
             </div>
           ) : isPublicTemplate ? (
-            <>
-              <div className="flex">
-                <button
-                  type="button"
-                  className="op-btn op-btn-primary op-btn-sm  shadow"
-                  onClick={() => {
-                    embedWidgetsData();
-                  }}
-                >
-                  {t("sign-now")}
-                </button>
-              </div>
-            </>
+            <div className="flex">
+              <button
+                type="button"
+                className="op-btn op-btn-primary op-btn-sm  shadow"
+                onClick={() => {
+                  embedWidgetsData();
+                }}
+              >
+                {t("sign-now")}
+              </button>
+            </div>
           ) : (
             <div className="flex">
               <button
