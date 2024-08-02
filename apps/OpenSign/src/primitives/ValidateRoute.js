@@ -4,18 +4,20 @@ import { Outlet } from "react-router-dom";
 const ValidateRoute = () => {
   useEffect(() => {
     (async () => {
-      try {
-        // Use the session token to validate the user
-        const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(Parse?.User?.current()?.id, {
-          sessionToken: localStorage.getItem("accesstoken")
-        });
-        if (!user) {
+      if (localStorage.getItem("accesstoken")) {
+        try {
+          // Use the session token to validate the user
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(Parse?.User?.current()?.id, {
+            sessionToken: localStorage.getItem("accesstoken")
+          });
+          if (!user) {
+            handlelogout();
+          }
+        } catch (error) {
+          console.log("err in validate route", error);
           handlelogout();
         }
-      } catch (error) {
-        console.log("err in validate route", error);
-        handlelogout();
       }
     })();
   }, []);
