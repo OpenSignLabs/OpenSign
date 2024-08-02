@@ -1317,7 +1317,7 @@ const TemplatePlaceholder = () => {
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}
                 />
-                <div className=" w-full md:w-[95%] ">
+                <div className="w-full md:w-[95%]">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
                   <ModalUi
                     isOpen={isSendAlert}
@@ -1354,9 +1354,7 @@ const TemplatePlaceholder = () => {
                       {currentEmail.length > 0 && (
                         <>
                           <button
-                            onClick={() => {
-                              handleCreateDocModal();
-                            }}
+                            onClick={() => handleCreateDocModal()}
                             type="button"
                             className="op-btn op-btn-primary"
                           >
@@ -1379,18 +1377,14 @@ const TemplatePlaceholder = () => {
                   {isCreateDoc && <LoaderWithMsg isLoading={isLoading} />}
                   <ModalUi
                     isOpen={isShowEmail}
-                    title={"signers alert"}
-                    handleClose={() => {
-                      setIsShowEmail(false);
-                    }}
+                    title={"Signers alert"}
+                    handleClose={() => setIsShowEmail(false)}
                   >
                     <div className="h-full p-[20px]">
                       <p>Please select signer for add placeholder!</p>
                       <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                       <button
-                        onClick={() => {
-                          setIsShowEmail(false);
-                        }}
+                        onClick={() => setIsShowEmail(false)}
                         type="button"
                         className="op-btn op-btn-primary"
                       >
@@ -1439,7 +1433,6 @@ const TemplatePlaceholder = () => {
                     allPages={allPages}
                     pageNumber={pageNumber}
                     signKey={signKey}
-                    // signerObjId={signerObjId}
                     Id={uniqueId}
                   />
                   {/* pdf header which contain funish back button */}
@@ -1551,9 +1544,7 @@ const TemplatePlaceholder = () => {
                   />
                 </div>
               ) : (
-                <div
-                  className={`w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar`}
-                >
+                <div className="w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar">
                   <div className={`max-h-screen`}>
                     <SignerListPlace
                       isMailSend={isMailSend}
@@ -1601,7 +1592,6 @@ const TemplatePlaceholder = () => {
             </div>
           </div>
         )}
-
         <div data-tut="reactourAddbtn--observe">
           <AddRoleModal
             isModalRole={isModalRole}
