@@ -1,4 +1,4 @@
----
+<img width="947" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/ac7be428-837c-4278-934f-86ce549f49e4">---
 sidebar_position: 1
 title: Sign yourself
 ---
@@ -20,7 +20,7 @@ After login, you will be directed to the OpenSign dashboard. From the left-side 
 - **[1] Title** *(Required)*: Enter a title for your document. This will help you identify it later in OpenSign™.
 - **[2] Note**: Provide an optional note for further context about the document.
 
-<img width="918" alt="OpenSign_Signyourself" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/OpenSign_SignYourself.png" />
+<img width="918" alt="OpenSign_Signyourself" src="https://github.com/user-attachments/assets/41c0f460-23b6-4ab0-befd-7fba8e845c23" />
 
 ### Step 3: Document Organization
 
@@ -57,7 +57,7 @@ In the "Draw Signature" popup, you have three options available:
      - **Image** : After dragging and dropping the image widget, the "Upload Image" popup will appear, allowing you to upload an image from your file explorer. Once the image is uploaded, it will be displayed on the document. Additionally, there is an option to duplicate the image.
      - **Email**: Once you drop the email widget, you can edit the email. Customization options such as setting the color or font are also provided. Additionally, there is a copy option available to duplicate the widget.
 
-<img width="918" alt="OpenSign_Widgets" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/OpenSign_Widgets.png" />
+<img width="918" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/b73ef535-245c-43c8-98eb-cb43e4720bc5" />
 
 ### Step 5: Finalizing the Process:
 - **Finish**: After adding the widgets and signatures, click the "Finish" button. This will create a digitally signed document.
@@ -66,7 +66,7 @@ In the "Draw Signature" popup, you have three options available:
 After finishing the document, a "Successfully Signed!" popup will appear, offering options to print, download, or send the document via email. 
 In the "Add Email Address" text field, enter the email address you want to send the document to, then click the "Send" button to receive a copy of the signed document.
 
-<img width="918" alt="OpenSign_sendEmail" src="https://github.com/OpenSignLabs/OpenSign/assets/5486116/OpenSign_Final.png" />
+<img width="918" alt="OpenSign_sendEmail" src="https://github.com/user-attachments/assets/7ec61f70-3ffe-4c7e-b911-843919c6d25d" />
 
 ## Additional Information
 
