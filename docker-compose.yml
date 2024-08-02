@@ -1,6 +1,6 @@
 services:
   server:
-    image: opensign/opensignserver:staging
+    image: opensign/opensignserver:docker_beta
     container_name: OpenSignServer-container
     ports:
       - "8080:8080"
@@ -22,7 +22,7 @@ services:
     networks:
       - app-network
   client:
-    image: opensign/opensign:staging
+    image: opensign/opensign:docker_beta
     container_name: OpenSign-container
     env_file: .env
     depends_on:
