@@ -710,15 +710,28 @@ function SignYourSelf() {
             setIsUiLoading(false);
             if (err && err.message.includes("is encrypted.")) {
               setIsAlert({
+                header: "Error",
                 isShow: true,
                 alertMessage: `Currently encrypted pdf files are not supported.`
               });
             } else {
-              console.log("err in signing", err);
-              setIsAlert({
-                isShow: true,
-                alertMessage: `Something went wrong.`
-              });
+              console.log("err in signing", err.message);
+              if (
+                err.message ===
+                "PKCS#12 MAC could not be verified. Invalid password?"
+              ) {
+                setIsAlert({
+                  header: "Error",
+                  isShow: true,
+                  alertMessage: `PFX file password is invalid.`
+                });
+              } else {
+                setIsAlert({
+                  header: "Error",
+                  isShow: true,
+                  alertMessage: `Something went wrong.`
+                });
+              }
             }
           }
         }
@@ -726,6 +739,7 @@ function SignYourSelf() {
         console.log("err in embedselfsign ", err);
         setIsUiLoading(false);
         setIsAlert({
+          header: "Error",
           isShow: true,
           alertMessage: "something went wrong, please try again later."
         });
@@ -776,34 +790,19 @@ function SignYourSelf() {
     //remove suffiix of base64
     const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
 
-    let singleSign = {
+    const params = {
       pdfFile: base64Url,
       docId: documentId,
       isCustomCompletionMail: isCustomCompletionMail,
       mailProvider: activeMailAdapter,
       signature: suffixbase64
     };
-
-    await axios
-      .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          // sessionToken: localStorage.getItem("accesstoken")
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-        }
-      })
-      .then((Listdata) => {
-        const json = Listdata.data;
-
-        setPdfUrl(json.result.data);
-        if (json.result.data) {
-          getDocumentDetails(false);
-        }
-      })
-      .catch((err) => {
-        console.log("axois err ", err);
-      });
+    const resSignPdf = await Parse.Cloud.run("signPdf", params);
+    if (resSignPdf) {
+      const signedpdf = JSON.parse(JSON.stringify(resSignPdf));
+      setPdfUrl(signedpdf);
+      getDocumentDetails(false);
+    }
   };
 
   //function for save x and y position and show signature  tab on that position
@@ -1230,16 +1229,13 @@ function SignYourSelf() {
                 setZoomPercent={setZoomPercent}
                 zoomPercent={zoomPercent}
               />
-              <div className=" w-full md:w-[95%] ">
+              <div className="w-full md:w-[95%]">
                 <ModalUi
                   isOpen={isAlert.isShow}
                   title={isAlert?.header || "Alert"}
-                  handleClose={() => {
-                    setIsAlert({
-                      isShow: false,
-                      alertMessage: ""
-                    });
-                  }}
+                  handleClose={() =>
+                    setIsAlert({ isShow: false, alertMessage: "" })
+                  }
                 >
                   <div className="p-[20px] h-full">
                     <p>{isAlert.alertMessage}</p>
