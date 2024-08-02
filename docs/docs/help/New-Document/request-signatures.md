@@ -140,8 +140,8 @@ After finishing the document creation, a 'Send Mail' popup will appear, offering
 ### Step 12: Email OTP verification
 Once the email is received, the signer can click the 'Sign Here' button. This will open the email verification page. After clicking the 'Get Verification Code' button, an OTP (one-time password) will be sent to the signer’s email address. Enter the received OTP into the verification textbox and click the 'Verify' button.
 
-<img width="350" align="left" alt="OpenSign send OTP" src="https://github.com/user-attachments/assets/b82c796a-98e3-4296-bde1-fe86b1b993ad">
-<img width="350" align="left" alt="OpenSign verify otp" src="https://github.com/user-attachments/assets/63cf4b75-9d47-4630-a83c-e916a5c13b3c">
+<img width="350" align="left" alt="OpenSign send OTP" src="https://github.com/user-attachments/assets/b82c796a-98e3-4296-bde1-fe86b1b993ad" />
+<img width="350" align="left" alt="OpenSign verify otp" src="https://github.com/user-attachments/assets/63cf4b75-9d47-4630-a83c-e916a5c13b3c" />
 <br> <br> <br><br> <br> <br><br>
 
 ### Step 13: Finalizing the Process:
@@ -152,7 +152,7 @@ After filling out all assigned widgets, click the 'Finish' button. Once the docu
    - The signer has the option of downloading or printing the signed document. He will also obtain the completion certificate if he is the final signer.  
 
    - If there are more than one signer, the document will be immediately sent to the next signer. Once all signers have finished their signatures, they can download and print the signed document as well as the completion certificate.
-<img width="800" alt="OpenSignFinalStep" src="https://github.com/user-attachments/assets/f4783aa0-2879-4ec2-9ddc-16d59f3a1fc0">
+<img width="800" alt="OpenSignFinalStep" src="https://github.com/user-attachments/assets/f4783aa0-2879-4ec2-9ddc-16d59f3a1fc0" />
 
 ## Additional Information
 - All fields marked with an asterisk (*) must be completed before the document can be submitted.
