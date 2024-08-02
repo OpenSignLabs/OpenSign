@@ -20,6 +20,7 @@ import SSOVerify from "./pages/SSOVerify";
 import Loader from "./primitives/Loader";
 import TeamList from "./pages/TeamList";
 import UserList from "./pages/UserList";
+import { serverUrl_fn } from "./constant/appinfo";
 const DebugPdf = lazy(() => import("./pages/DebugPdf"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const GuestLogin = lazy(() => import("./pages/GuestLogin"));
@@ -53,9 +54,7 @@ function App() {
     const appId = process.env.REACT_APP_APPID
       ? process.env.REACT_APP_APPID
       : "opensign";
-    const baseurl = process.env.REACT_APP_SERVERURL
-      ? process.env.REACT_APP_SERVERURL
-      : window.location.origin + "/api/app";
+    const baseurl = serverUrl_fn();
     try {
       localStorage.setItem("baseUrl", `${baseurl}/`);
       localStorage.setItem("parseAppId", appId);

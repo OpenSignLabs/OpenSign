@@ -92,7 +92,7 @@ export const config = {
   cloud: function () {
     import('./cloud/main.js');
   },
-  appId: process.env.APP_ID || 'myAppId',
+  appId: process.env.APP_ID || 'opensign',
   logLevel: ['error'],
   maxLimit: 500,
   maxUploadSize: '30mb',
