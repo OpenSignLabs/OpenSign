@@ -5,5 +5,6 @@ build:
 	HOST=${HOST} docker compose up --build --force-recreate
 
 run:
+	@echo "Building with HOST=${HOST}"
 	cp .env.local_dev .env
 	docker compose up -d
