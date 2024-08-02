@@ -6,8 +6,10 @@ import { useDispatch } from "react-redux";
 import { saveTourSteps } from "../redux/reducers/TourStepsReducer";
 import dashboardJson from "../json/dashboardJson";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -40,7 +42,7 @@ const Dashboard = () => {
         .map((col) => {
           return {
             selector: `[data-tut=${col.widget.data.tourSection}]`,
-            content: col.widget.data.tourMessage,
+            content: t(`tour-mssg.${col.widget.data.label}`),
             position: "top"
             // style: { backgroundColor: "#abd4d2" },
           };

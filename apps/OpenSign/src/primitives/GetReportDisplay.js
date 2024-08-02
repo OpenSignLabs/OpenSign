@@ -1137,7 +1137,7 @@ const ReportTable = (props) => {
                               <button
                                 key={index}
                                 onClick={() => handleActionBtn(act, item)}
-                                title={act.hoverLabel}
+                                title={t(`btnLabel.${act.hoverLabel}`)}
                                 className={`${
                                   act?.btnColor ? act.btnColor : ""
                                 } op-btn op-btn-sm`}
@@ -1153,7 +1153,7 @@ const ReportTable = (props) => {
                             >
                               <div className="m-[20px]">
                                 <div className="text-lg font-normal text-black">
-                                  Are you sure you want to delete this contact?
+                                  {t("contact-delete-alert")}
                                 </div>
                                 <hr className="bg-[#ccc] mt-4 " />
                                 <div className="flex items-center mt-3 gap-2 text-white">
@@ -1161,13 +1161,13 @@ const ReportTable = (props) => {
                                     onClick={() => handleDelete(item)}
                                     className="op-btn op-btn-primary"
                                   >
-                                    Yes
+                                    {t("yes")}
                                   </button>
                                   <button
                                     onClick={handleClose}
                                     className="op-btn op-btn-secondary"
                                   >
-                                    No
+                                    {t("no")}
                                   </button>
                                 </div>
                               </div>
@@ -1363,7 +1363,7 @@ const ReportTable = (props) => {
                                         onClick={() =>
                                           handleActionBtn(act, item)
                                         }
-                                        title={t(`btnLabel.${act.btnLabel}`)}
+                                        title={t(`btnLabel.${act.hoverLabel}`)}
                                         className={
                                           act.action !== "option"
                                             ? `${

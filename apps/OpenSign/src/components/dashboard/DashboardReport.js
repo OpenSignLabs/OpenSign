@@ -4,7 +4,9 @@ import ReportTable from "../../primitives/GetReportDisplay";
 import reportJson from "../../json/ReportJson";
 import axios from "axios";
 import Loader from "../../primitives/Loader";
+import { useTranslation } from "react-i18next";
 function DashboardReport(props) {
+  const { t } = useTranslation();
   // console.log("props ", props)
   const [List, setList] = useState([]);
   const [isLoader, setIsLoader] = useState(true);
@@ -141,7 +143,7 @@ function DashboardReport(props) {
           ) : (
             <div className="flex items-center justify-center h-[100px] w-full bg-white rounded">
               <div className="text-center">
-                <p className="text-xl text-black">Report Not Found</p>
+                <p className="text-xl text-black">{t("report-not-found")}</p>
               </div>
             </div>
           )}

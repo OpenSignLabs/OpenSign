@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { cloudServerUrl } from '../../Utils.js';
 export default async function callWebhook(request) {
   const event = request.params.event;
   const body = request.params.body;
   const docId = body.objectId;
   const contactId = request.params.contactId;
-  const serverUrl = process.env.SERVER_URL;
+  const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
   const appId = process.env.APP_ID;
   const userRes = await axios.get(serverUrl + '/users/me', {
     headers: {

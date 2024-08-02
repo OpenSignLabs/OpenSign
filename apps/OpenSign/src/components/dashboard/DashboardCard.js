@@ -341,6 +341,7 @@ const DashboardCard = (props) => {
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
+
         <div className="font-medium">
           <div className="text-base lg:text-lg">
             {t(`dashboard-card.${props.Label}`)}
@@ -354,7 +355,8 @@ const DashboardCard = (props) => {
         <Tooltip
           id={props.Label}
           iconColor={"white"}
-          message={props?.Data?.tourMessage}
+          message={t(`tour-mssg.${props.Label}`)}
+          // {props?.Data?.tourMessage}
         />
       </div>
     </div>

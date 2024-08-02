@@ -54,7 +54,7 @@ export default function DropboxChooser({ children, onSuccess, onCancel }) {
   return (
     <div onClick={handleChoose}>
       {children || (
-        <button className="px-2 py-[2px] text-2xl rounded border-[1px] text-blue-400 border-gray-300 w-full">
+        <button className="cursor-pointer op-input op-input-bordered focus:outline-none hover:border-base-content max-h-[35px] max-w-[45px] flex justify-center items-center">
           <i className="fa-brands fa-dropbox"></i>
         </button>
       )}

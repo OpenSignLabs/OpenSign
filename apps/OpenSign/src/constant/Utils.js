@@ -549,20 +549,17 @@ export const signPdfFun = async (
   base64Url,
   documentId,
   signerObjectId,
-  setIsAlert,
   objectId,
   isSubscribed,
   activeMailAdapter,
-  xyPosition
+  widgets
 ) => {
-  let singleSign,
-    isCustomCompletionMail = false;
-
+  let isCustomCompletionMail = false;
   try {
     //get tenant details
     const tenantDetails = await getTenantDetails(objectId);
     if (tenantDetails && tenantDetails === "user does not exist!") {
-      alert("User does not exist");
+      return { status: "error", message: "User does not exist." };
     } else {
       if (
         tenantDetails?.CompletionBody &&
@@ -576,7 +573,7 @@ export const signPdfFun = async (
     // below for loop is used to get first signature of user to send if to signpdf
     // for adding it in completion certificate
     let getSignature;
-    for (let item of xyPosition) {
+    for (let item of widgets) {
       if (!getSignature) {
         const typeExist = item.pos.some((data) => data?.type);
         if (typeExist) {
@@ -595,14 +592,15 @@ export const signPdfFun = async (
         base64Sign = await fetchImageBase64(base64Sign);
       } catch (e) {
         console.log("error", e);
+        return { status: "error", message: "something went wrong." };
       }
     }
-    //change image width and height to 104/44 in png base64
+    //change image width and height to 100/40 in png base64
     const getNewse64 = await changeImageWH(base64Sign);
     //remove suffiix of base64
     const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
 
-    singleSign = {
+    const params = {
       mailProvider: activeMailAdapter,
       pdfFile: base64Url,
       docId: documentId,
@@ -610,34 +608,25 @@ export const signPdfFun = async (
       isCustomCompletionMail: isCustomCompletionMail,
       signature: suffixbase64
     };
-    const response = await axios
-      .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          //  sessionToken: localStorage.getItem("accesstoken")
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-        }
-      })
-      .then((Listdata) => {
-        const json = Listdata.data;
-        const res = json.result;
-        return res;
-      })
-      .catch((err) => {
-        console.log("Err in signPdf cloud function ", err);
-        setIsAlert({
-          isShow: true,
-          alertMessage: "something went wrong"
-        });
-      });
-
-    return response;
+    const resSignPdf = await Parse.Cloud.run("signPdf", params);
+    if (resSignPdf) {
+      const signedPdf = JSON.parse(JSON.stringify(resSignPdf));
+      return signedPdf;
+    }
   } catch (e) {
-    setIsAlert({
-      isShow: true,
-      alertMessage: "something went wrong"
-    });
+    console.log("Err in signPdf cloud function ", e.message);
+    if (e && e?.message?.includes("is encrypted.")) {
+      return {
+        status: "error",
+        message: "Currently encrypted pdf files are not supported."
+      };
+    } else if (
+      e.message === "PKCS#12 MAC could not be verified. Invalid password?"
+    ) {
+      return { status: "error", message: "PFX file password is invalid." };
+    } else {
+      return { status: "error", message: "something went wrong." };
+    }
   }
 };
 
@@ -1237,9 +1226,8 @@ export const changeImageWH = async (base64Image) => {
       const ctx = canvas.getContext("2d");
       canvas.width = newWidth;
       canvas.height = newHeight;
-      ctx.imageSmoothingEnabled = false;
       ctx.drawImage(img, 0, 0, newWidth, newHeight);
-      const resizedBase64 = canvas.toDataURL("image/png", 1);
+      const resizedBase64 = canvas.toDataURL("image/png", 1.0);
       resolve(resizedBase64);
     };
     img.onerror = (error) => {
@@ -1259,14 +1247,14 @@ const calculateFontSize = (position, containerScale, signyourself) => {
 };
 //function for embed multiple signature using pdf-lib
 export const multiSignEmbed = async (
-  xyPositionArray,
+  widgets,
   pdfDoc,
   signyourself,
   scale,
   pdfOriginalWH,
   containerWH
 ) => {
-  for (let item of xyPositionArray) {
+  for (let item of widgets) {
     const containerScale = getContainerScale(
       pdfOriginalWH,
       item?.pageNumber,

@@ -251,7 +251,7 @@ const AddAdmin = () => {
   };
   return (
     <div className="h-screen flex justify-center">
-      <Title title={t("add-admin")} />
+      <Title title="Add admin" />
       {state.loading ? (
         <div className="text-[grey] flex justify-center items-center text-lg md:text-2xl">
           <Loader />

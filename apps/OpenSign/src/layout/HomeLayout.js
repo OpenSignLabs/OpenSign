@@ -300,7 +300,7 @@ const HomeLayout = () => {
           <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
             <p className="text-xl font-medium">Your session has expired.</p>
             <button onClick={handleLoginBtn} className="op-btn op-btn-neutral">
-              Login
+              {t("login")}
             </button>
           </div>
         </ModalUi>

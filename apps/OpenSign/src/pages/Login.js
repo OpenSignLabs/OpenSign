@@ -17,6 +17,7 @@ import { showTenant } from "../redux/reducers/ShowTenant";
 import { fetchSubscription, getAppLogo, openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import SelectLanguage from "../components/pdf/SelectLanguage";
 function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -605,9 +606,10 @@ function Login() {
       }
     }
   };
+
   return (
     <div>
-      <Title title={t("login-page")} />
+      <Title title="Login Page" />
       {state.loading && (
         <div
           aria-live="assertive"
@@ -766,6 +768,7 @@ function Login() {
                 )}
               </div>
             </div>
+            <SelectLanguage />
             {state.alertMsg && (
               <Alert type={state.alertType}>
                 <div className="ml-3">{state.alertMsg}</div>

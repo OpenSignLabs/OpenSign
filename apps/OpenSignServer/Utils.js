@@ -4,8 +4,9 @@ dotenv.config();
 
 const appId = process.env.APP_ID;
 const serverUrl = process.env.SERVER_URL;
+export const cloudServerUrl = 'http://localhost:8080/app';
 export function customAPIurl() {
-  const url = new URL(process.env.SERVER_URL);
+  const url = new URL(cloudServerUrl);
   return url.pathname === '/api/app' ? url.origin + '/api' : url.origin;
 }
 

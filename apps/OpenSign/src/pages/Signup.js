@@ -14,6 +14,7 @@ import { isEnableSubscription } from "../constant/const";
 import { getAppLogo, openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import SelectLanguage from "../components/pdf/SelectLanguage";
 const Signup = () => {
   const { width } = useWindowSize();
   const { t } = useTranslation();
@@ -322,7 +323,7 @@ const Signup = () => {
           <Loader />
         </div>
       )}
-      <Title title={t("signup-page")} />
+      <Title title="Signup page" />
       {appInfo && appInfo.applogo ? (
         <div className="md:p-10 lg:p-16">
           <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
@@ -513,6 +514,7 @@ const Signup = () => {
               )}
             </div>
           </div>
+          <SelectLanguage />
           <Alert type={state.alertType}>{state.alertMsg}</Alert>
         </div>
       ) : (
