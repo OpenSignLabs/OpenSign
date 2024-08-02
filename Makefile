@@ -1,7 +1,8 @@
 build:
+	@echo "Building with HOST=${HOST}"
 	cp .env.local_dev .env
 	cd apps/OpenSign && cp ../../.env.local_dev .env && npm install && npm run build
-	docker compose up --build --force-recreate
+	HOST=${HOST} docker compose up --build --force-recreate
 
 run:
 	cp .env.local_dev .env
