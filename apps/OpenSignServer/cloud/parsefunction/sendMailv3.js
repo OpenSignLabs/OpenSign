@@ -7,7 +7,6 @@ import { smtpenable, smtpsecure, updateMailCount, useLocal } from '../../Utils.j
 import sendMailGmailProvider from './sendMailGmailProvider.js';
 import { createTransport } from 'nodemailer';
 async function sendMailProvider(req) {
-  const publicUrl = new URL(process.env.SERVER_URL);
   const mailgunApiKey = process.env.MAILGUN_API_KEY;
   try {
     let transporterSMTP;
@@ -40,17 +39,12 @@ async function sendMailProvider(req) {
               response.on('end', () => resolve('success'));
             });
           } else {
-            if (publicUrl.protocol === 'http:') {
-              http.get(req.params.url, async function (response) {
-                response.pipe(Pdf);
-                response.on('end', () => resolve('success'));
-              });
-            } else {
-              https.get(req.params.url, async function (response) {
-                response.pipe(Pdf);
-                response.on('end', () => resolve('success'));
-              });
-            }
+            const path = new URL(req.params.url)?.pathname;
+            const localurl = 'http://localhost:8080' + path;
+            http.get(localurl, async function (response) {
+              response.pipe(Pdf);
+              response.on('end', () => resolve('success'));
+            });
           }
         });
       };
