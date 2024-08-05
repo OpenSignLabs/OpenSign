@@ -43,17 +43,12 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
             response.on('end', () => resolve('success'));
           });
         } else {
-          if (publicUrl.protocol === 'http:') {
-            http.get(url, async function (response) {
-              response.pipe(Pdf);
-              response.on('end', () => resolve('success'));
-            });
-          } else {
-            https.get(url, async function (response) {
-              response.pipe(Pdf);
-              response.on('end', () => resolve('success'));
-            });
-          }
+          const path = new URL(url)?.pathname;
+          const localurl = 'http://localhost:8080' + path;
+          http.get(localurl, async function (response) {
+            response.pipe(Pdf);
+            response.on('end', () => resolve('success'));
+          });
         }
       });
     };
