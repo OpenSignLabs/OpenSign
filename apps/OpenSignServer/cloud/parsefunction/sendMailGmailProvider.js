@@ -38,18 +38,18 @@ const makeEmail = async (to, from, subject, html, url, pdfName) => {
     const writeToLocalDisk = () => {
       return new Promise((resolve, reject) => {
         if (useLocal !== 'true') {
-          https.get(req.params.url, async function (response) {
+          https.get(url, async function (response) {
             response.pipe(Pdf);
             response.on('end', () => resolve('success'));
           });
         } else {
           if (publicUrl.protocol === 'http:') {
-            http.get(req.params.url, async function (response) {
+            http.get(url, async function (response) {
               response.pipe(Pdf);
               response.on('end', () => resolve('success'));
             });
           } else {
-            https.get(req.params.url, async function (response) {
+            https.get(url, async function (response) {
               response.pipe(Pdf);
               response.on('end', () => resolve('success'));
             });
