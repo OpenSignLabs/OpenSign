@@ -57,10 +57,10 @@ export const saveFileUsage = async (size, fileUrl, userId) => {
         const res = await tenantCredits.first({ useMasterKey: true });
         if (res) {
           const response = JSON.parse(JSON.stringify(res));
-          const size = response?.usedStorage ? response.usedStorage + size : size;
+          const usedStorage = response?.usedStorage ? response.usedStorage + size : size;
           const updateCredit = new Parse.Object('partners_TenantCredits');
           updateCredit.id = res.id;
-          updateCredit.set('usedStorage', size);
+          updateCredit.set('usedStorage', usedStorage);
           await updateCredit.save(null, { useMasterKey: true });
         } else {
           const newCredit = new Parse.Object('partners_TenantCredits');
