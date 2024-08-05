@@ -34,16 +34,23 @@ async function sendMailProvider(req) {
       let Pdf = fs.createWriteStream('test.pdf');
       const writeToLocalDisk = () => {
         return new Promise((resolve, reject) => {
-          if (useLocal !== 'true' && publicUrl.protocol !== 'http:') {
+          if (useLocal !== 'true') {
             https.get(req.params.url, async function (response) {
               response.pipe(Pdf);
               response.on('end', () => resolve('success'));
             });
           } else {
-            http.get(req.params.url, async function (response) {
-              response.pipe(Pdf);
-              response.on('end', () => resolve('success'));
-            });
+            if (publicUrl.protocol === 'http:') {
+              http.get(req.params.url, async function (response) {
+                response.pipe(Pdf);
+                response.on('end', () => resolve('success'));
+              });
+            } else {
+              https.get(req.params.url, async function (response) {
+                response.pipe(Pdf);
+                response.on('end', () => resolve('success'));
+              });
+            }
           }
         });
       };
