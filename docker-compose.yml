@@ -6,7 +6,6 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
-    env_file: .env
     environment:
       - NODE_ENV=production
       - SERVER_URL=${HOST:-https://localhost:3001/app}
@@ -36,7 +35,6 @@ services:
   client:
     image: opensign/opensign:docker_beta
     container_name: OpenSign-container
-    env_file: .env
     depends_on:
       - server
     ports:
