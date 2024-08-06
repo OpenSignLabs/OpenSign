@@ -42,7 +42,7 @@ const Dashboard = () => {
         .map((col) => {
           return {
             selector: `[data-tut=${col.widget.data.tourSection}]`,
-            content: t(`tour-mssg.${col.widget.data.label}`),
+            content: t(`tour-mssg.${col.widget.label}`),
             position: "top"
             // style: { backgroundColor: "#abd4d2" },
           };

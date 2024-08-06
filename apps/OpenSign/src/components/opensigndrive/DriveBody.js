@@ -350,7 +350,7 @@ function DriveBody(props) {
           </td>
           <td>{createddate}</td>
           <td>Pdf</td>
-          <td>{status}</td>
+          <td>{t(`drive-document-status.${status}`)}</td>
           <td>
             <i
               onClick={(e) => {
@@ -526,7 +526,9 @@ function DriveBody(props) {
             <strong className="text-[13px]">
               {t("report-heading.Status")}:{" "}
             </strong>
-            <span className="text-[12px] font-medium"> {status}</span>
+            <span className="text-[12px] font-medium">
+              {t(`drive-document-status.${status}`)}
+            </span>
             <br />
             <strong className="text-[13px]">
               {t("report-heading.created-date")}:{" "}

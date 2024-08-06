@@ -19,10 +19,9 @@ function PrevNext({ pageNumber, allPages, changePage }) {
         disabled={pageNumber <= 1}
         onClick={previousPage}
       >
-        <span className="block lg:hidden">
+        <span className="block">
           <i className="fa-light fa-backward" aria-hidden="true"></i>
         </span>
-        <span className="lg:block hidden 2xl:text-[30px]">{t("prev")}</span>
       </button>
       <span className="text-xs text-base-content font-medium mx-2 2xl:text-[30px]">
         {pageNumber || (allPages ? 1 : "--")} {t("of")} {allPages || "--"}
@@ -32,10 +31,9 @@ function PrevNext({ pageNumber, allPages, changePage }) {
         disabled={pageNumber >= allPages}
         onClick={nextPage}
       >
-        <span className="block lg:hidden">
+        <span className="block">
           <i className="fa-light fa-forward" aria-hidden="true"></i>
         </span>
-        <span className="lg:block hidden 2xl:text-[30px]">{t("next")}</span>
       </button>
     </div>
   );

@@ -8,6 +8,7 @@ import { appInfo } from "../constant/appinfo";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import SelectLanguage from "../components/pdf/SelectLanguage";
 
 function GuestLogin() {
   const { t } = useTranslation();
@@ -181,153 +182,156 @@ function GuestLogin() {
     setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   return (
-    <div className="p-[2rem]">
-      {isLoading ? (
-        <div className="flex flex-col justify-center items-center h-[100vh]">
-          <Loader />
-          <span className="text-[13px] text-[gray]">{isLoading.message}</span>
-        </div>
-      ) : (
-        <div className="m-1 md:m-2 p-[30px] text-base-content bg-base-100 op-card shadow-md">
-          <div className="md:w-[250px] md:h-[66px] inline-block overflow-hidden mt-2 mb-11">
-            {appLogo && (
-              <img src={appLogo} className="object-contain" alt="logo" />
-            )}
+    <div className="p-14">
+      <div>
+        {isLoading ? (
+          <div className="flex flex-col justify-center items-center h-[100vh]">
+            <Loader />
+            <span className="text-[13px] text-[gray]">{isLoading.message}</span>
           </div>
-          {contactId ? (
-            <>
-              {!EnterOTP ? (
-                <div className="w-full md:w-[50%] text-base-content">
-                  <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
-                  <legend className="text-[12px] text-[#878787] mt-2 mb-1">
-                    {t("guest-email-alert")}
-                  </legend>
-                  <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
+        ) : (
+          <div className="m-1 md:m-2 p-[30px] text-base-content bg-base-100 op-card shadow-md">
+            <div className="md:w-[250px] md:h-[66px] inline-block overflow-hidden mt-2 mb-11">
+              {appLogo && (
+                <img src={appLogo} className="object-contain" alt="logo" />
+              )}
+            </div>
+            {contactId ? (
+              <>
+                {!EnterOTP ? (
+                  <div className="w-full md:w-[50%] text-base-content">
+                    <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
+                    <legend className="text-[12px] text-[#878787] mt-2 mb-1">
+                      {t("guest-email-alert")}
+                    </legend>
+                    <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
+                      <input
+                        type="email"
+                        name="mobile"
+                        value={email}
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full disabled:text-[#5c5c5c] text-xs"
+                        disabled
+                      />
+                    </div>
+                    <div className="mt-3">
+                      <button
+                        className="op-btn op-btn-primary"
+                        onClick={(e) => handleSendOTPBtn(e)}
+                        disabled={loading}
+                      >
+                        {loading ? t("loading") : t("get-verification-code")}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <form
+                    className="w-full md:w-[50%] text-base-content"
+                    onSubmit={VerifyOTP}
+                  >
+                    <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
+                    <legend className="text-[12px] text-[#878787] mt-2">
+                      {t("get-verification-code-2")}
+                    </legend>
+                    <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
+                      <p className="text-sm">{t("enter-verification-code")}</p>
+                      <input
+                        type="number"
+                        className="mt-2 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        name="OTP"
+                        value={OTP}
+                        onChange={(e) => setOTP(e.target.value)}
+                      />
+                    </div>
+                    <div className="mt-2.5">
+                      <button
+                        className="op-btn op-btn-primary"
+                        type="submit"
+                        disabled={loading}
+                      >
+                        {loading ? t("loading") : t("verify")}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </>
+            ) : (
+              <div className="w-full md:w-[50%] text-base-content">
+                <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
+                <legend className="text-[12px] text-[#878787] mt-2">
+                  {t("provide-your-details")}
+                </legend>
+                <form
+                  className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md"
+                  onSubmit={handleUserData}
+                >
+                  <div className="mb-2">
+                    <label
+                      htmlFor="name"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("name")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={contact.name}
+                      onChange={handleInputChange}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      disabled={loading}
+                      required
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("email")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
                     <input
                       type="email"
-                      name="mobile"
-                      value={email}
-                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full disabled:text-[#5c5c5c] text-xs"
+                      name="email"
+                      value={contact.email}
+                      onChange={handleInputChange}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      required
                       disabled
                     />
                   </div>
-                  <div className="mt-3">
-                    <button
-                      className="op-btn op-btn-primary"
-                      onClick={(e) => handleSendOTPBtn(e)}
-                      disabled={loading}
+                  <div className="mt-2.5">
+                    <label
+                      htmlFor="phone"
+                      className="block text-xs text-gray-700 font-semibold"
                     >
-                      {loading ? t("loading") : t("get-verification-code")}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <form
-                  className="w-full md:w-[50%] text-base-content"
-                  onSubmit={VerifyOTP}
-                >
-                  <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
-                  <legend className="text-[12px] text-[#878787] mt-2">
-                    {t("get-verification-code-2")}
-                  </legend>
-                  <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
-                    <p className="text-sm">{t("enter-verification-code")}</p>
+                      {t("phone")}
+                    </label>
                     <input
-                      type="number"
-                      className="mt-2 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                      name="OTP"
-                      value={OTP}
-                      onChange={(e) => setOTP(e.target.value)}
+                      type="text"
+                      name="phone"
+                      value={contact.phone}
+                      onChange={handleInputChange}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      disabled={loading}
                     />
                   </div>
-                  <div className="mt-2.5">
+                  <div className="mt-2 flex justify-start">
                     <button
-                      className="op-btn op-btn-primary"
                       type="submit"
+                      className="op-btn op-btn-primary"
                       disabled={loading}
                     >
-                      {loading ? t("loading") : t("verify")}
+                      {loading ? t("loading") : t("next")}
                     </button>
                   </div>
                 </form>
-              )}
-            </>
-          ) : (
-            <div className="w-full md:w-[50%] text-base-content">
-              <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
-              <legend className="text-[12px] text-[#878787] mt-2">
-                {t("provide-your-details")}
-              </legend>
-              <form
-                className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md"
-                onSubmit={handleUserData}
-              >
-                <div className="mb-2">
-                  <label
-                    htmlFor="name"
-                    className="block text-xs text-gray-700 font-semibold"
-                  >
-                    {t("name")}
-                    <span className="text-[red] text-[13px]"> *</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={contact.name}
-                    onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                    disabled={loading}
-                    required
-                  />
-                </div>
-                <div className="mb-2">
-                  <label
-                    htmlFor="email"
-                    className="block text-xs text-gray-700 font-semibold"
-                  >
-                    {t("email")}
-                    <span className="text-[red] text-[13px]"> *</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={contact.email}
-                    onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                    required
-                    disabled
-                  />
-                </div>
-                <div className="mt-2.5">
-                  <label
-                    htmlFor="phone"
-                    className="block text-xs text-gray-700 font-semibold"
-                  >
-                    {t("phone")}
-                  </label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={contact.phone}
-                    onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                    disabled={loading}
-                  />
-                </div>
-                <div className="mt-2 flex justify-start">
-                  <button
-                    type="submit"
-                    className="op-btn op-btn-primary"
-                    disabled={loading}
-                  >
-                    {loading ? t("loading") : t("next")}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-        </div>
-      )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <SelectLanguage />
     </div>
   );
 }
