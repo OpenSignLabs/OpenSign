@@ -16,7 +16,7 @@ const listItemStyle = {
 };
 
 const PlanSubscriptions = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [yearlyVisible, setYearlyVisible] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
@@ -61,8 +61,14 @@ const PlanSubscriptions = () => {
     phone;
   useEffect(() => {
     setIsLoader(false);
+    detectLanguage();
     // eslint-disable-next-line
   }, []);
+  const detectLanguage = () => {
+    const detectedLanguage = i18n.language || "en";
+    i18n.changeLanguage(detectedLanguage);
+    localStorage.setItem("i18nextLng", detectedLanguage);
+  };
 
   const handleFreePlan = async (item) => {
     if (item.url) {
