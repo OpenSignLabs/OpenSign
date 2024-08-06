@@ -34,7 +34,7 @@
     "react-quill": "^2.0.0",
     "react-redux": "^9.1.2",
     "react-rnd": "^10.4.11",
-    "react-router-dom": "^6.25.1",
+    "react-router-dom": "^6.26.0",
     "react-scripts": "5.0.1",
     "react-scrollbars-custom": "^4.1.1",
     "react-select": "^5.8.0",
