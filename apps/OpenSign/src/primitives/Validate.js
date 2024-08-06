@@ -10,26 +10,27 @@ const Validate = () => {
   const [isUserValid, setIsUserValid] = useState(true);
   useEffect(() => {
     (async () => {
-      try {
-        const userDetails = JSON.parse(
-          localStorage.getItem(
-            `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-          )
-        );
-
-        // Use the session token to validate the user
-        const userQuery = new Parse.Query(Parse.User);
-        const user = await userQuery.get(userDetails?.objectId, {
-          sessionToken: localStorage.getItem("accesstoken")
-        });
-        if (user) {
-          setIsUserValid(true);
-        } else {
+      if (localStorage.getItem("accesstoken")) {
+        try {
+          const userDetails = JSON.parse(
+            localStorage.getItem(
+              `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+            )
+          );
+          // Use the session token to validate the user
+          const userQuery = new Parse.Query(Parse.User);
+          const user = await userQuery.get(userDetails?.objectId, {
+            sessionToken: localStorage.getItem("accesstoken")
+          });
+          if (user) {
+            setIsUserValid(true);
+          } else {
+            setIsUserValid(false);
+          }
+        } catch (error) {
+          // Session token is invalid or there was an error
           setIsUserValid(false);
         }
-      } catch (error) {
-        // Session token is invalid or there was an error
-        setIsUserValid(false);
       }
     })();
 

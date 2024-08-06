@@ -47,16 +47,11 @@ function Login() {
   const [isLoginSSO, setIsLoginSSO] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("accesstoken")) {
-      setState({ ...state, loading: true });
-      GetLoginData();
-    }
-    dispatch(fetchAppInfo());
-    saveLogo();
+    checkUserExt();
     // eslint-disable-next-line
   }, []);
 
-  const saveLogo = async () => {
+  const checkUserExt = async () => {
     const app = await getAppLogo();
     if (!isEnableSubscription && app?.user === "not_exist") {
       navigate("/addadmin");
@@ -66,6 +61,11 @@ function Login() {
     } else {
       setImage(appInfo?.applogo || undefined);
     }
+    if (localStorage.getItem("accesstoken")) {
+      setState({ ...state, loading: true });
+      GetLoginData();
+    }
+    dispatch(fetchAppInfo());
   };
   const handleChange = (event) => {
     const { name, value } = event.target;
