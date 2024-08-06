@@ -192,7 +192,7 @@ function Opensigndrive() {
         setTourData(tourConfigs);
       }
       if (!docId) {
-        setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
+        setFolderName([{ name: t("OpenSign-drive"), objectId: "" }]);
       }
     } catch (e) {
       setIsAlert({

@@ -240,7 +240,9 @@ const WidgetNameModal = (props) => {
                       formdata.status.toLowerCase() === data.toLowerCase()
                     }
                   />
-                  <div className="text-[13px] font-medium">{data}</div>
+                  <div className="text-[13px] font-medium">
+                    {t(`widget-status.${data}`)}
+                  </div>
                 </div>
               );
             })}
@@ -268,7 +270,7 @@ const WidgetNameModal = (props) => {
           "email"
         ].includes(props.defaultdata?.type) && (
           <div className="flex items-center mb-[0.75rem]">
-            <span>Font size:</span>
+            <span>{t("font-size")}:</span>
             <select
               className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               value={
@@ -298,7 +300,7 @@ const WidgetNameModal = (props) => {
                 {fontColorArr.map((color, ind) => {
                   return (
                     <option value={color} key={ind}>
-                      {color}
+                      {t(`color-type.${color}`)}
                     </option>
                   );
                 })}

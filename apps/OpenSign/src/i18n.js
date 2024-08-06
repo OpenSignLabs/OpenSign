@@ -11,9 +11,9 @@ i18n
     fallbackLng: "en", // Fallback to English if no other language is detected
     detection: {
       // Order and from where user language should be detected
-      order: ["navigator", "htmlTag", "path", "subdomain"],
+      order: ["localStorage", "navigator", "htmlTag", "path", "subdomain"],
       // Cache user language on
-      caches: ["localStorage", "cookie"]
+      caches: ["localStorage"]
     },
     debug: true,
     interpolation: {

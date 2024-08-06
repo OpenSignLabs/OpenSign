@@ -38,6 +38,7 @@
     "upgrade-to":"Upgrade to",
     "plan":"Plan",
     "subscribe-card-plan":"Sign 100 docs using API. Only $0.15/doc after that.",
+    "user-name-limit-char":"To have a username less than 8 character please subscribe",
     "tour-content":"Don't show this again",
     "pro":"PRO",
     "team":"TEAM",
@@ -181,6 +182,13 @@
     "next":"Next",
     "select-folder":"Select Folder",
     "OpenSign-drive":"OpenSign™ Drive",
+    "drive-document-status":{
+    "Completed":"Completed",
+    "Declined":"Declined",
+    "Draft":"Draft",
+    "Expired":"Expired",
+    "In Progress":"In Progress"
+    },
     "select-folder-help" :"If you do not select a folder, your signed document will be saved in the Main OpenSign drive folder.",
     "no-data":"No data found",
     "save-here":"Save Here",
@@ -296,6 +304,7 @@
     "enter-otp":"Enter OTP",
     "verify":"Verify",
     "resend":"Resend",
+    
     "verify-email":"Please verify your email !",
     "send-otp":" Send OTP",
     "otp-placeholder":"Enter OTP received over email",
@@ -332,9 +341,17 @@
       "email-mssg":" Recipients added here will get a copy of the signed document.",
       "email-error-1":" please provide correct email address",
       "email-error-2" :"You can only send to ten recipients at a time.",
+      "Email-verified-alert-1":"Email is verified.",
+      "Email-verified-alert-2" :"Email is already verified.",
       "upload-stamp-image":"Upload stamp image",
       "draw":"Draw",
       "type":"Type",
+      "color-type":{
+        "red":"red",
+        "blue":"blue",
+        "black":"black",
+        "yellow":"yellow"
+      },
       "my-initials":"My Initials",
       "upload":"Upload",
       "initial-teb":"Initials",
@@ -516,6 +533,10 @@
       "generated-on":"Generated On",
       "text-field":"Text field",
       "font-size":"Font size",
+      "widget-status":{
+        "Required":"Required",
+        "Optional":"Optional"
+      },
       "all-right":"All Rights Reserved",
       "version":"version",
       "social-media":{

@@ -912,7 +912,7 @@ function PlaceHolderSign() {
       if (!signatureExist) {
         isSignatureExist = false;
         setIsSendAlert({
-          mssg: t("sure"),
+          mssg: "sure",
           alert: true
         });
       }
@@ -936,7 +936,7 @@ function PlaceHolderSign() {
         }
       } else {
         setIsSendAlert({
-          mssg: t("sure"),
+          mssg: "sure",
           alert: true
         });
       }

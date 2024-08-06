@@ -72,7 +72,7 @@ function ChangePassword() {
               value={currentpassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               className="op-input op-input-bordered op-input-sm text-xs w-full"
-              placeholder="Current Password"
+              placeholder={t("current-password")}
               required
             />
           </div>
@@ -86,7 +86,7 @@ function ChangePassword() {
               value={newpassword}
               onChange={(e) => setnewpassword(e.target.value)}
               className="op-input op-input-bordered op-input-sm text-xs w-full"
-              placeholder="New Password"
+              placeholder={t("new-password")}
               required
             />
           </div>
@@ -100,7 +100,7 @@ function ChangePassword() {
               className="op-input op-input-bordered op-input-sm text-xs w-full"
               value={confirmpassword}
               onChange={(e) => setconfirmpassword(e.target.value)}
-              placeholder="Confirm Password"
+              placeholder={t("confirm-password")}
               required
             />
           </div>

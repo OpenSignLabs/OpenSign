@@ -17,7 +17,7 @@ import { showHeader } from "../redux/reducers/showHeader";
 import { useTranslation } from "react-i18next";
 
 const HomeLayout = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -34,6 +34,12 @@ const HomeLayout = () => {
   const [, setCookie] = useCookies(["accesstoken", "main_Domain"]);
 
   const tenantId = localStorage.getItem("TenantId");
+
+  useEffect(() => {
+    const language = localStorage.getItem("i18nextLng");
+    i18n.changeLanguage(language);
+  }, []);
+
   useEffect(() => {
     if (!tenantId) {
       setIsUserValid(false);

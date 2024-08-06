@@ -17,6 +17,7 @@ import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import SelectLanguage from "../components/pdf/SelectLanguage";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -164,38 +165,43 @@ function UserProfile() {
 
   //  `updateExtUser` is used to update user details in extended class
   const updateExtUser = async (obj) => {
-    const extData = JSON.parse(localStorage.getItem("Extand_Class"));
-    const ExtUserId = extData[0].objectId;
-    const body = {
-      Phone: obj?.Phone || "",
-      Name: obj.Name,
-      HeaderDocId: isDisableDocId,
-      JobTitle: jobTitle,
-      Company: company,
-      UserName: publicUserName || "",
-      Tagline: tagLine || ""
-    };
+    try {
+      const extData = JSON.parse(localStorage.getItem("Extand_Class"));
+      const ExtUserId = extData[0].objectId;
+      const body = {
+        Phone: obj?.Phone || "",
+        Name: obj.Name,
+        HeaderDocId: isDisableDocId,
+        JobTitle: jobTitle,
+        Company: company,
+        UserName: publicUserName || "",
+        Tagline: tagLine || "",
+        Language: obj?.language || ""
+      };
 
-    await axios.put(
-      parseBaseUrl + "classes/contracts_Users/" + ExtUserId,
-      body,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": parseAppId,
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+      await axios.put(
+        parseBaseUrl + "classes/contracts_Users/" + ExtUserId,
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": parseAppId,
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
-      }
-    );
-    const res = await Parse.Cloud.run("getUserDetails", {
-      email: extData[0].Email
-    });
+      );
+      const res = await Parse.Cloud.run("getUserDetails", {
+        email: extData[0].Email
+      });
 
-    const json = JSON.parse(JSON.stringify([res]));
-    const extRes = JSON.stringify(json);
-    localStorage.setItem("Extand_Class", extRes);
-    previousPublicUserName.current = publicUserName;
-    // console.log("updateRes ", updateRes);
+      const json = JSON.parse(JSON.stringify([res]));
+      const extRes = JSON.stringify(json);
+      localStorage.setItem("Extand_Class", extRes);
+      previousPublicUserName.current = publicUserName;
+      // console.log("updateRes ", updateRes);
+    } catch (e) {
+      console.log("error in save data in contracts_Users class");
+    }
   };
   // file upload function
   const fileUpload = async (file) => {
@@ -267,11 +273,12 @@ function UserProfile() {
       });
       if (resEmail?.message === "Email is verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-1"));
       } else if (resEmail?.message === "Email is already verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-2"));
       }
       setOtp("");
-      alert(resEmail.message);
       setIsVerifyModal(false);
     } catch (error) {
       alert(error.message);
@@ -359,6 +366,17 @@ function UserProfile() {
               </div>
             </div>
             <ul className="w-full flex flex-col p-2 text-sm">
+              <li
+                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                  editmode ? "py-1.5" : "py-2"
+                }`}
+              >
+                <span className="font-semibold">{t("language")}:</span>{" "}
+                <SelectLanguage
+                  isProfile={true}
+                  updateExtUser={updateExtUser}
+                />
+              </li>
               <li
                 className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
                   editmode ? "py-1.5" : "py-2"
@@ -590,7 +608,7 @@ function UserProfile() {
           {isVerifyModal && (
             <ModalUi
               isOpen
-              title={"OTP verification"}
+              title={t("otp-verification")}
               handleClose={handleCloseVerifyModal}
             >
               {otpLoader ? (
@@ -600,26 +618,26 @@ function UserProfile() {
               ) : (
                 <form onSubmit={(e) => handleVerifyEmail(e)}>
                   <div className="px-6 py-3 text-base-content">
-                    <label className="mb-2">Enter OTP</label>
+                    <label className="mb-2">{t("enter-otp")}</label>
                     <input
                       required
                       type="tel"
                       pattern="[0-9]{4}"
                       className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
-                      placeholder="Enter OTP received over email"
+                      placeholder={t("otp-placeholder")}
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                     />
                   </div>
                   <div className="px-6 mb-3">
                     <button type="submit" className="op-btn op-btn-primary">
-                      Verify
+                      {t("verify")}
                     </button>
                     <button
                       className="op-btn op-btn-secondary ml-2"
                       onClick={(e) => handleResend(e)}
                     >
-                      Resend
+                      {t("resend")}
                     </button>
                   </div>
                 </form>
@@ -639,11 +657,10 @@ function UserProfile() {
 
                   <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
                     <div className="op-card-body">
-                      <h2 className="op-card-title">Upgrade to Plan</h2>
-                      <p>
-                        To have a username less than 8 character please
-                        subscribe
-                      </p>
+                      <h2 className="op-card-title">
+                        {t("upgrade-to")} {t("plan")}
+                      </h2>
+                      <p>{t("user-name-limit-char")}</p>
                       <div className="op-card-actions justify-end">
                         <button
                           onClick={() => navigate("/subscription")}

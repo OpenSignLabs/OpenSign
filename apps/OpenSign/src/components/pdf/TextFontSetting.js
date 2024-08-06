@@ -47,7 +47,7 @@ function TextFontSetting(props) {
               {fontColorArr.map((color, ind) => {
                 return (
                   <option value={color} key={ind}>
-                    {color}
+                    {t(`color-type.${color}`)}
                   </option>
                 );
               })}

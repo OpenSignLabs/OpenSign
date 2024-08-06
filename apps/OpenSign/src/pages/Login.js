@@ -19,7 +19,7 @@ import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 function Login() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -115,8 +115,14 @@ function Login() {
                         `/${menu.pageType}/${menu.pageId}`;
                       let _role = _currentRole.replace("contracts_", "");
                       localStorage.setItem("_user_role", _role);
+                      const checkLanguage = extUser?.get("Language");
+                      if (checkLanguage) {
+                        checkLanguage && i18n.changeLanguage(checkLanguage);
+                      }
+
                       const results = [extUser];
                       const extUser_str = JSON.stringify(results);
+
                       localStorage.setItem("Extand_Class", extUser_str);
                       const extInfo = JSON.parse(JSON.stringify(extUser));
                       localStorage.setItem("userEmail", extInfo.Email);
