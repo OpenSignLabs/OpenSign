@@ -23,17 +23,12 @@ const DashboardCard = (props) => {
           sessionToken: localStorage.getItem("accesstoken")
         };
         let body = {};
-        let currentUser;
-        let currentUser1 = Parse.User.current();
-        currentUser = currentUser1.id;
         let res;
         if (localStorage.getItem("Extand_Class")) {
           let data = JSON.parse(localStorage.getItem("Extand_Class"));
           res = data[0];
         } else {
-          res = await Parse.Cloud.run("getUserDetails", {
-            email: currentUser.get("email")
-          });
+          res = await Parse.Cloud.run("getUserDetails");
           if (res) res = res.toJSON();
         }
         if (res) {
@@ -94,9 +89,7 @@ const DashboardCard = (props) => {
             let data = JSON.parse(localStorage.getItem("Extand_Class"));
             resr = data[0];
           } else {
-            resr = await Parse.Cloud.run("getUserDetails", {
-              email: currentUser.get("email")
-            });
+            resr = await Parse.Cloud.run("getUserDetails");
             if (resr) resr = resr.toJSON();
           }
 
@@ -218,15 +211,12 @@ const DashboardCard = (props) => {
 
         if (restr.includes("#")) {
           try {
-            const currentUser = Parse.User.current();
             let res;
             if (localStorage.getItem("Extand_Class")) {
               let data = JSON.parse(localStorage.getItem("Extand_Class"));
               res = data[0];
             } else {
-              let resr = await Parse.Cloud.run("getUserDetails", {
-                email: currentUser.get("email")
-              });
+              let resr = await Parse.Cloud.run("getUserDetails");
               if (res) res = resr.toJSON();
             }
 
