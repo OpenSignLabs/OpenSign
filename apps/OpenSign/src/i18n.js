@@ -10,12 +10,13 @@ i18n
   .init({
     fallbackLng: "en", // Fallback to English if no other language is detected
     detection: {
-      // Order and from where user language should be detected
+      // Specifies the default language to fall back to if the detected language is not available.
       order: ["localStorage", "navigator"],
-      // Cache user language on
+      // Defines where the detected language should be cached.
       caches: ["localStorage"]
     },
-    debug: true,
+    //Enables debug mode, which outputs detailed logs to the console about the translation process.
+    debug: false,
     interpolation: {
       escapeValue: false // Not needed for react as it escapes by default
     },
