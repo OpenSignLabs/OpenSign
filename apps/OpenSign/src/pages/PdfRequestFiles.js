@@ -553,13 +553,8 @@ function PdfRequestFiles(props) {
         setRequestSignTour(true);
       } else {
         //else condition to check current user exist in contracts_Users class and check tour message status
-        //if not then check user exist in contracts_Contactbook class and check tour message status
-        const localuser = localStorage.getItem(
-          `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-        );
-        const currentUser = JSON.parse(localuser);
-        const currentUserEmail = currentUser.email;
-        const res = await contractUsers(currentUserEmail);
+        //if not then check user exist in contracts_Contactbook class and check tour message statu
+        const res = await contractUsers();
         if (res === "Error: Something went wrong!") {
           setHandleError(t("something-went-wrong-mssg"));
         } else if (res[0] && res?.length) {
@@ -871,8 +866,7 @@ function PdfRequestFiles(props) {
               //get ExistUserPtr object id of user class to get tenantDetails
               const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
               //get ExistUserPtr email to get userDetails
-              const currentUserEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
-              const res = await contractUsers(currentUserEmail);
+              const res = await contractUsers();
               let activeMailAdapter = "";
               if (res === "Error: Something went wrong!") {
                 setHandleError(t("something-went-wrong-mssg"));
@@ -1548,7 +1542,8 @@ function PdfRequestFiles(props) {
         } else {
           let _user = user.data.result;
           const parseId = localStorage.getItem("parseAppId");
-          const contractUserDetails = await contractUsers(_user.email);
+          await Parse.User.become(_user.sessionToken);
+          const contractUserDetails = await contractUsers();
           localStorage.setItem("UserInformation", JSON.stringify(_user));
           localStorage.setItem(
             `Parse/${parseId}/currentUser`,

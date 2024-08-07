@@ -324,9 +324,7 @@ function UserProfile() {
       ) : (
         <div className="flex justify-center items-center w-full relative">
           {userNameError && (
-            <div
-              className={`z-[1000] fixed top-[50%] transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]`}
-            >
+            <div className="z-[1000] fixed top-[50%] transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]">
               {userNameError}
             </div>
           )}

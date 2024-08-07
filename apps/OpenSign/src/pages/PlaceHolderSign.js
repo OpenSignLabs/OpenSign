@@ -403,8 +403,7 @@ function PlaceHolderSign() {
       };
       setIsLoading(loadObj);
     }
-    const currentUserEmail = documentData[0]?.ExtUserPtr?.Email;
-    const res = await contractUsers(currentUserEmail);
+    const res = await contractUsers();
     if (res === "Error: Something went wrong!") {
       const loadObj = {
         isLoad: false

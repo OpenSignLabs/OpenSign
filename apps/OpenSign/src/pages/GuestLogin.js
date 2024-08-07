@@ -132,8 +132,9 @@ function GuestLogin() {
           setLoading(false);
         } else {
           let _user = user.data.result;
+          await Parse.User.become(_user.sessionToken);
           const parseId = localStorage.getItem("parseAppId");
-          const contractUserDetails = await contractUsers(_user.email);
+          const contractUserDetails = await contractUsers();
           localStorage.setItem("UserInformation", JSON.stringify(_user));
           localStorage.setItem(
             `Parse/${parseId}/currentUser`,

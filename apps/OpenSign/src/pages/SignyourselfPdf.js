@@ -295,7 +295,7 @@ function SignYourSelf() {
         setHandleError(t("something-went-wrong-mssg"));
         setIsLoading(loadObj);
       });
-    const contractUsersRes = await contractUsers(jsonSender.email);
+    const contractUsersRes = await contractUsers();
     if (contractUsersRes === "Error: Something went wrong!") {
       const loadObj = {
         isLoad: false

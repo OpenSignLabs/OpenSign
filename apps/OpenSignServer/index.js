@@ -17,7 +17,7 @@ import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
 import { app as v1 } from './cloud/customRoute/v1/apiV1.js';
 import { PostHog } from 'posthog-node';
-import { smtpenable, smtpsecure, useLocal } from './Utils.js';
+import { cloudServerUrl, smtpenable, smtpsecure, useLocal } from './Utils.js';
 import { SSOAuth } from './auth/authadapter.js';
 let fsAdapter;
 if (useLocal !== 'true') {
@@ -98,9 +98,9 @@ export const config = {
   maxUploadSize: '30mb',
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
   masterKeyIps: ['0.0.0.0/0', '::/0'], // '::1'
-  serverURL: 'http://localhost:8080/app', // Don't forget to change to https if needed
+  serverURL: cloudServerUrl, // Don't forget to change to https if needed
   verifyUserEmails: false,
-  publicServerURL: process.env.SERVER_URL || 'http://localhost:8080/app',
+  publicServerURL: process.env.SERVER_URL || cloudServerUrl,
   // Your apps name. This will appear in the subject and body of the emails that are sent.
   appName: 'Opensign',
   allowClientClassCreation: false,
@@ -219,8 +219,8 @@ if (!process.env.TESTING) {
     // console.log('isWindows', isWindows);
 
     const migrate = isWindows
-      ? `set APPLICATION_ID=${process.env.APP_ID}&& set SERVER_URL=http://localhost:8080/app&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
-      : `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=http://localhost:8080/app MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
+      ? `set APPLICATION_ID=${process.env.APP_ID}&& set SERVER_URL=${cloudServerUrl}&& set MASTER_KEY=${process.env.MASTER_KEY}&& npx parse-dbtool migrate`
+      : `APPLICATION_ID=${process.env.APP_ID} SERVER_URL=${cloudServerUrl} MASTER_KEY=${process.env.MASTER_KEY} npx parse-dbtool migrate`;
     exec(migrate, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error: ${error.message}`);
