@@ -3,8 +3,9 @@ export default async function saveSubscription(request, response) {
   const body = request.body;
   const Email = request.body.data.subscription.customer.email;
   const Next_billing_date = request.body.data.subscription.next_billing_at;
-  const planCode = request.body.data.subscription.plan.plan_code
-
+  const planCode = request.body.data.subscription.plan.plan_code;
+  const addons = request.body?.data?.subscription?.addons || [];
+  const existAddon = addons.reduce((acc, curr) => acc + curr.quantity, 1);
   try {
     const extUserCls = new Parse.Query('contracts_Users');
     extUserCls.equalTo('Email', Email);
@@ -24,6 +25,7 @@ export default async function saveSubscription(request, response) {
         updateSubscription.set('SubscriptionDetails', body);
         updateSubscription.set('Next_billing_date', new Date(Next_billing_date));
         updateSubscription.set('PlanCode', planCode);
+        updateSubscription.set('AllowedUsers', parseInt(existAddon));
         await updateSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'update subscription!' });
       } else {
@@ -47,6 +49,7 @@ export default async function saveSubscription(request, response) {
         });
         createSubscription.set('Next_billing_date', new Date(Next_billing_date));
         createSubscription.set('PlanCode', planCode);
+        createSubscription.set('AllowedUsers', parseInt(existAddon));
         await createSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'create subscription!' });
       }

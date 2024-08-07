@@ -757,9 +757,7 @@ function Login() {
               </div>
             </div>
             {state.alertMsg && (
-              <Alert type={state.alertType}>
-                <div className="ml-3">{state.alertMsg}</div>
-              </Alert>
+              <Alert type={state.alertType}>{state.alertMsg}</Alert>
             )}
           </div>
           <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>

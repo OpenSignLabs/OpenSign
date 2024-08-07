@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import Title from "./Title";
 import Loader from "../primitives/Loader";
-import { copytoData } from "../constant/Utils";
+import { copytoData, fetchSubscriptionInfo } from "../constant/Utils";
 import { isEnableSubscription } from "../constant/const";
+import ModalUi from "../primitives/ModalUi";
 function generatePassword(length) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -25,8 +26,21 @@ const AddUser = (props) => {
     password: "",
     role: ""
   });
+  const [amount, setAmount] = useState({
+    quantity: 1,
+    price: 0,
+    totalPrice: 0
+  });
+  const [planInfo, setPlanInfo] = useState({
+    priceperUser: 0,
+    price: 0,
+    totalPrice: 0
+  });
+  const [isFormLoader, setIsFormLoader] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
   const [teamList, setTeamList] = useState([]);
+  const [allowedUser, setAllowedUser] = useState(0);
+  const [err, setErr] = useState("");
   const role = ["OrgAdmin", "Editor", "User"];
 
   useEffect(() => {
@@ -34,6 +48,39 @@ const AddUser = (props) => {
   }, []);
 
   const getTeamList = async () => {
+    if (isEnableSubscription) {
+      const extUser =
+        localStorage.getItem("Extand_Class") &&
+        JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+      try {
+        setIsLoader(true);
+        const resSub = await fetchSubscriptionInfo();
+        if (!resSub.error) {
+          setPlanInfo((prev) => ({
+            ...prev,
+            priceperUser: resSub.price,
+            totalPrice: resSub.totalPrice
+          }));
+          setAmount((prev) => ({
+            ...prev,
+            price: resSub.price,
+            totalPrice: resSub.price + resSub.totalPrice
+          }));
+          const res = await Parse.Cloud.run("allowedusers", {
+            tenantId: extUser?.TenantId?.objectId
+          });
+          setAllowedUser(res);
+        } else {
+          setAllowedUser(0);
+        }
+      } catch (err) {
+        setAllowedUser(0);
+        console.log("Err in alloweduser", err);
+        setErr(err.message);
+      } finally {
+        setIsLoader(false);
+      }
+    }
     setFormdata((prev) => ({ ...prev, password: generatePassword(12) }));
     const teamRes = await Parse.Cloud.run("getteams", { active: true });
     if (teamRes.length > 0) {
@@ -48,7 +95,9 @@ const AddUser = (props) => {
   };
   const checkUserExist = async () => {
     try {
-      const res = await Parse.Cloud.run("getUserDetails");
+      const res = await Parse.Cloud.run("getUserDetails", {
+        email: formdata.email
+      });
       if (res) {
         return true;
       } else {
@@ -63,11 +112,11 @@ const AddUser = (props) => {
     e.preventDefault();
     e.stopPropagation();
     const localUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
-    setIsLoader(true);
+    setIsFormLoader(true);
     const res = await checkUserExist();
     if (res) {
       props.setIsAlert({ type: "danger", msg: "User already exist." });
-      setIsLoader(false);
+      setIsFormLoader(false);
       setTimeout(() => {
         props.setIsAlert({ type: "success", msg: "" });
       }, 1000);
@@ -153,14 +202,8 @@ const AddUser = (props) => {
               props.handleUserData(parseData);
             }
 
-            setIsLoader(false);
-            setFormdata({
-              name: "",
-              email: "",
-              phone: "",
-              team: "",
-              role: ""
-            });
+            setIsFormLoader(false);
+            setFormdata({ name: "", email: "", phone: "", team: "", role: "" });
           }
         } catch (err) {
           console.log("err ", err);
@@ -200,19 +243,13 @@ const AddUser = (props) => {
               }
               props.handleUserData(parseData);
             }
-            setIsLoader(false);
-            setFormdata({
-              name: "",
-              email: "",
-              phone: "",
-              team: "",
-              role: ""
-            });
+            setIsFormLoader(false);
+            setFormdata({ name: "", email: "", phone: "", team: "", role: "" });
           }
         }
       } catch (err) {
         console.log("err", err);
-        setIsLoader(false);
+        setIsFormLoader(false);
         props.setIsAlert({ type: "danger", msg: "something went wrong." });
       } finally {
         setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500);
@@ -222,13 +259,7 @@ const AddUser = (props) => {
 
   // Define a function to handle the "add yourself" checkbox
   const handleReset = () => {
-    setFormdata({
-      name: "",
-      email: "",
-      phone: "",
-      team: "",
-      role: ""
-    });
+    setFormdata({ name: "", email: "", phone: "", team: "", role: "" });
     if (props.closePopup) {
       props.closePopup();
     }
@@ -242,154 +273,254 @@ const AddUser = (props) => {
     props.setIsAlert({ type: "success", msg: "Copied" });
     setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500); // Reset copied state after 1.5 seconds
   };
+  const handlePricePerUser = (e) => {
+    const quantity = e.target.value;
+    const price = e.target?.value > 0 ? planInfo.priceperUser * quantity : 0;
+    const totalprice = price + planInfo.totalPrice;
+    setAmount((prev) => ({
+      ...prev,
+      quantity: quantity,
+      price: price,
+      totalPrice: totalprice
+    }));
+  };
+  const handleAddOnSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsFormLoader(true);
+    const extUser =
+      localStorage.getItem("Extand_Class") &&
+      JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+    try {
+      const resAddon = await Parse.Cloud.run("buyaddon", {
+        users: amount.quantity,
+        tenantId: extUser?.TenantId?.objectId
+      });
+      if (resAddon) {
+        setAllowedUser(amount.quantity);
+      }
+    } catch (err) {
+      console.log("Err in buy addon", err);
+      props.setIsAlert({ type: "danger", msg: "something went wrong." });
+    } finally {
+      setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 2000);
+      setIsFormLoader(false);
+    }
+  };
   return (
-    <div className="shadow-md rounded-box my-[1px] p-3 bg-[#ffffff]">
-      <Title title={"Add User"} />
-      {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50 rounded-box">
-          <Loader />
-        </div>
-      )}
-      <div className="w-full mx-auto">
-        <form onSubmit={handleSubmit}>
-          {/* <h1 className="text-[20px] font-semibold mb-4">Add User</h1> */}
-          <div className="mb-3">
-            <label
-              htmlFor="name"
-              className="block text-xs text-gray-700 font-semibold"
-            >
-              Name
-              <span className="text-[red] text-[13px]"> *</span>
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formdata.name}
-              onChange={(e) => handleChange(e)}
-              required
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-            />
+    <ModalUi
+      isOpen={props.isOpen}
+      title={allowedUser > 0 ? "Add User" : "Add Seats"}
+      handleClose={props.closePopup}
+    >
+      <div className="shadow-md rounded-box my-[1px] p-3 bg-base-100 relative">
+        <Title title="Add User" />
+        {isFormLoader && (
+          <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
+            <Loader />
           </div>
-          <div className="mb-3">
-            <label
-              htmlFor="email"
-              className="block text-xs text-gray-700 font-semibold"
-            >
-              Email
-              <span className="text-[red] text-[13px]"> *</span>
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formdata.email}
-              onChange={(e) => handleChange(e)}
-              required
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-            />
+        )}
+        {!isLoader ? (
+          <>
+            {err ? (
+              <div className="flex justify-center items-center h-[70px] text-[18px]">
+                {err}
+              </div>
+            ) : (
+              <div className="w-full mx-auto">
+                {!isEnableSubscription || allowedUser > 0 ? (
+                  <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="name"
+                        className="block text-xs text-gray-700 font-semibold"
+                      >
+                        Name
+                        <span className="text-[red] text-[13px]"> *</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formdata.name}
+                        onChange={(e) => handleChange(e)}
+                        required
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="email"
+                        className="block text-xs text-gray-700 font-semibold"
+                      >
+                        Email
+                        <span className="text-[red] text-[13px]"> *</span>
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formdata.email}
+                        onChange={(e) => handleChange(e)}
+                        required
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="email"
+                        className="block text-xs text-gray-700 font-semibold"
+                      >
+                        Password
+                      </label>
+                      <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
+                        <div className="break-all">{formdata?.password}</div>
+                        <i
+                          onClick={() => copytoclipboard(formdata?.password)}
+                          className="fa-light fa-copy rounded-full hover:bg-base-300 p-[8px] cursor-pointer "
+                        ></i>
+                      </div>
+                      <div className="text-[12px] ml-2 mb-0 text-[red] select-none">
+                        Password will only be generated once; make sure to copy
+                        it.
+                      </div>
+                    </div>
+                    <div className="mb-3">
+                      <label
+                        htmlFor="phone"
+                        className="block text-xs text-gray-700 font-semibold"
+                      >
+                        Phone
+                        {/* <span className="text-[red] text-[13px]"> *</span> */}
+                      </label>
+                      <input
+                        type="text"
+                        name="phone"
+                        placeholder="optional"
+                        value={formdata.phone}
+                        onChange={(e) => handleChange(e)}
+                        // required
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      />
+                    </div>
+                    {isEnableSubscription && (
+                      <div className="mb-3">
+                        <label
+                          htmlFor="phone"
+                          className="block text-xs text-gray-700 font-semibold"
+                        >
+                          Team<span className="text-[red] text-[13px]"> *</span>
+                        </label>
+                        <select
+                          value={formdata.team}
+                          onChange={(e) => handleChange(e)}
+                          name="team"
+                          className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          required
+                        >
+                          <option defaultValue={""} value={""}>
+                            select
+                          </option>
+                          {teamList.length > 0 &&
+                            teamList.map((x) => (
+                              <option key={x.objectId} value={x.objectId}>
+                                {x.Name}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
+                    <div className="mb-3">
+                      <label
+                        htmlFor="phone"
+                        className="block text-xs text-gray-700 font-semibold"
+                      >
+                        Role<span className="text-[red] text-[13px]"> *</span>
+                      </label>
+                      <select
+                        value={formdata.role}
+                        onChange={(e) => handleChange(e)}
+                        name="role"
+                        className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        required
+                      >
+                        <option defaultValue={""} value={""}>
+                          select
+                        </option>
+                        {role.length > 0 &&
+                          role.map((x) => (
+                            <option key={x} value={x}>
+                              {x}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center mt-3 gap-2 text-white">
+                      <button type="submit" className="op-btn op-btn-primary">
+                        Submit
+                      </button>
+                      <div
+                        type="button"
+                        onClick={() => handleReset()}
+                        className="op-btn op-btn-secondary"
+                      >
+                        Cancel
+                      </div>
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={handleAddOnSubmit}>
+                    <p className="flex justify-center text-center mx-2 mb-3 text-base font-medium">
+                      You have reached the limit for creating users. Please
+                      purchase the add-on.
+                    </p>
+                    <div className="mb-3 flex justify-between">
+                      <label
+                        htmlFor="quantity"
+                        className="block text-xs text-gray-700 font-semibold"
+                      >
+                        Quantity of user
+                        <span className="text-[red] text-[13px]"> *</span>
+                      </label>
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={amount.quantity}
+                        onChange={(e) => handlePricePerUser(e)}
+                        className="w-1/4 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
+                        required
+                      />
+                    </div>
+                    <div className="mb-3 flex justify-between">
+                      <label className="block text-xs text-gray-700 font-semibold">
+                        Price (1 * {planInfo.priceperUser})
+                      </label>
+                      <div className="w-1/4 flex justify-center items-center text-sm">
+                        {amount.price}
+                      </div>
+                    </div>
+                    <hr className="text-base-content mb-3" />
+                    <div className=" flex justify-between">
+                      <label className="block text-sm text-gray-700 font-semibold">
+                        Total price for next time
+                      </label>
+                      <div className="w-1/4 flex justify-center items-center text-sm font-semibold">
+                        {amount.totalPrice}
+                      </div>
+                    </div>
+                    <button className="op-btn op-btn-primary w-full mt-2">
+                      Proceed
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="w-full h-[200px] inset-0 flex justify-center items-center z-50">
+            <Loader />
           </div>
-          <div className="mb-3">
-            <label
-              htmlFor="email"
-              className="block text-xs text-gray-700 font-semibold"
-            >
-              Password
-            </label>
-            <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
-              <div className="break-all">{formdata?.password}</div>
-              <i
-                onClick={() => copytoclipboard(formdata?.password)}
-                className="fa-light fa-copy rounded-full hover:bg-base-300 p-[8px] cursor-pointer "
-              ></i>
-            </div>
-            <div className="text-[12px] ml-2 mb-0 text-[red] select-none">
-              Password will only be generated once; make sure to copy it.
-            </div>
-          </div>
-          <div className="mb-3">
-            <label
-              htmlFor="phone"
-              className="block text-xs text-gray-700 font-semibold"
-            >
-              Phone
-              {/* <span className="text-[red] text-[13px]"> *</span> */}
-            </label>
-            <input
-              type="text"
-              name="phone"
-              placeholder="optional"
-              value={formdata.phone}
-              onChange={(e) => handleChange(e)}
-              // required
-              className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-            />
-          </div>
-          {isEnableSubscription && (
-            <div className="mb-3">
-              <label
-                htmlFor="phone"
-                className="block text-xs text-gray-700 font-semibold"
-              >
-                Team<span className="text-[red] text-[13px]"> *</span>
-              </label>
-              <select
-                value={formdata.team}
-                onChange={(e) => handleChange(e)}
-                name="team"
-                className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
-                required
-              >
-                <option defaultValue={""} value={""}>
-                  select
-                </option>
-                {teamList.length > 0 &&
-                  teamList.map((x) => (
-                    <option key={x.objectId} value={x.objectId}>
-                      {x.Name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
-          <div className="mb-3">
-            <label
-              htmlFor="phone"
-              className="block text-xs text-gray-700 font-semibold"
-            >
-              Role<span className="text-[red] text-[13px]"> *</span>
-            </label>
-            <select
-              value={formdata.role}
-              onChange={(e) => handleChange(e)}
-              name="role"
-              className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
-              required
-            >
-              <option defaultValue={""} value={""}>
-                select
-              </option>
-              {role.length > 0 &&
-                role.map((x) => (
-                  <option key={x} value={x}>
-                    {x}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div className="flex items-center mt-3 gap-2 text-white">
-            <button type="submit" className="op-btn op-btn-primary">
-              Submit
-            </button>
-            <div
-              type="button"
-              onClick={() => handleReset()}
-              className="op-btn op-btn-secondary"
-            >
-              Cancel
-            </div>
-          </div>
-        </form>
+        )}
       </div>
-    </div>
+    </ModalUi>
   );
 };
 

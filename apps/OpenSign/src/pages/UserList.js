@@ -197,11 +197,7 @@ const UserList = () => {
         <>
           {isAdmin ? (
             <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
-              {isAlert.msg && (
-                <Alert type={isAlert.type}>
-                  <div className="ml-3">{isAlert.msg}</div>
-                </Alert>
-              )}
+              {isAlert.msg && <Alert type={isAlert.type}>{isAlert.msg}</Alert>}
               <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
                 <div className="font-light">
                   Users{" "}
@@ -390,17 +386,13 @@ const UserList = () => {
                   <div className="text-sm font-semibold">No Data Available</div>
                 </div>
               )}
-              <ModalUi
-                title={"Add User"}
+
+              <AddUser
                 isOpen={isModal}
-                handleClose={handleFormModal}
-              >
-                <AddUser
-                  setIsAlert={setIsAlert}
-                  handleUserData={handleUserData}
-                  closePopup={handleFormModal}
-                />
-              </ModalUi>
+                setIsAlert={setIsAlert}
+                handleUserData={handleUserData}
+                closePopup={handleFormModal}
+              />
             </div>
           ) : (
             <div className="flex items-center justify-center h-screen w-full bg-base-100 text-base-content rounded-box">
