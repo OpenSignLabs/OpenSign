@@ -73,9 +73,7 @@ const PgSignUp = () => {
           if (res) {
             localStorage.removeItem("userDetails");
             try {
-              const extUser = await Parse.Cloud.run("getUserDetails", {
-                email: userDetails.email
-              });
+              const extUser = await Parse.Cloud.run("getUserDetails");
               const userRole = extUser?.get("UserRole");
               const _currentRole = userRole;
               const _role = _currentRole.replace("contracts_", "");
@@ -232,10 +230,7 @@ const PgSignUp = () => {
       // Check extended class user role and tenentId
       try {
         const userSettings = appInfo.settings;
-        const currentUser = Parse.User.current();
-        const extUser = await Parse.Cloud.run("getUserDetails", {
-          email: currentUser.get("email")
-        });
+        const extUser = await Parse.Cloud.run("getUserDetails");
         if (extUser) {
           const IsDisabled = extUser?.get("IsDisabled") || false;
           if (!IsDisabled) {

@@ -34,14 +34,12 @@ function Webhook() {
     }
   ];
   const fetchWebhook = async () => {
-    const email = Parse.User.current().getEmail();
     if (isEnableSubscription) {
       const getIsSubscribe = await checkIsSubscribed();
       setIsSubscribe(getIsSubscribe);
     }
-    const params = { email: email };
     try {
-      const extRes = await Parse.Cloud.run("getUserDetails", params);
+      const extRes = await Parse.Cloud.run("getUserDetails");
       if (extRes) {
         setWebhook(extRes.get("Webhook"));
       }

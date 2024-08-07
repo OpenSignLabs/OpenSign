@@ -127,10 +127,10 @@ const AddTeam = (props) => {
   };
 
   return (
-    <div className="shadow-md rounded-box my-[1px] p-3 bg-[#ffffff]">
+    <div className="shadow-md rounded-box my-[1px] p-3 bg-base-100 relative">
       <Title title="Add Team" />
       {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50 rounded-box">
+        <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
           <Loader />
         </div>
       )}

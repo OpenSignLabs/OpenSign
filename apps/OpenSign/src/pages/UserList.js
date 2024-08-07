@@ -224,11 +224,9 @@ const UserList = () => {
                   <thead className="text-[14px]">
                     <tr className="border-y-[1px]">
                       {heading?.map((item, index) => (
-                        <React.Fragment key={index}>
-                          <th className="px-4 py-2">
-                            {t(`report-heading.${item}`)}
-                          </th>
-                        </React.Fragment>
+                        <th key={index} className="px-4 py-2">
+                          {t(`report-heading.${item}`)}
+                        </th>
                       ))}
                     </tr>
                   </thead>

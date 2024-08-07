@@ -172,10 +172,7 @@ const AddAdmin = () => {
       // Check extended class user role and tenentId
       try {
         const userSettings = appInfo.settings;
-        const currentUser = Parse.User.current();
-        const extUser = await Parse.Cloud.run("getUserDetails", {
-          email: currentUser.get("email")
-        });
+        const extUser = await Parse.Cloud.run("getUserDetails");
         if (extUser) {
           const IsDisabled = extUser?.get("IsDisabled") || false;
           if (!IsDisabled) {
