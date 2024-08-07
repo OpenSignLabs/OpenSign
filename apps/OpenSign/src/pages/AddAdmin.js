@@ -297,6 +297,7 @@ const AddAdmin = () => {
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -313,6 +314,7 @@ const AddAdmin = () => {
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -328,6 +330,7 @@ const AddAdmin = () => {
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -343,6 +346,7 @@ const AddAdmin = () => {
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -358,6 +362,7 @@ const AddAdmin = () => {
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -375,6 +380,7 @@ const AddAdmin = () => {
                         onInvalid={(e) =>
                           e.target.setCustomValidity(t("input-required"))
                         }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <span
@@ -424,6 +430,7 @@ const AddAdmin = () => {
                         onInvalid={(e) =>
                           e.target.setCustomValidity(t("input-required"))
                         }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <label

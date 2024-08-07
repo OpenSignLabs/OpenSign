@@ -665,6 +665,7 @@ function Login() {
                           onInvalid={(e) =>
                             e.target.setCustomValidity(t("input-required"))
                           }
+                          onInput={(e) => e.target.setCustomValidity("")}
                         />
                         <hr className="my-1 border-none" />
                         {!isLoginSSO && (
@@ -688,6 +689,7 @@ function Login() {
                                     t("input-required")
                                   )
                                 }
+                                onInput={(e) => e.target.setCustomValidity("")}
                                 required
                               />
                               <span
@@ -818,6 +820,7 @@ function Login() {
                   onInvalid={(e) =>
                     e.target.setCustomValidity(t("input-required"))
                   }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
               </div>
@@ -844,6 +847,7 @@ function Login() {
                   onInvalid={(e) =>
                     e.target.setCustomValidity(t("input-required"))
                   }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
               </div>

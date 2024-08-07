@@ -207,6 +207,7 @@ const AddContact = (props) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
@@ -223,6 +224,7 @@ const AddContact = (props) => {
               value={email}
               onChange={(e) => setEmail(e.target.value?.toLowerCase())}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs lowercase"

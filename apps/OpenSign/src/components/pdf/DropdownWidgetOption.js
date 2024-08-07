@@ -162,6 +162,7 @@ function DropdownWidgetOption(props) {
             </label>
             <input
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
               defaultValue={dropdownName}
               value={dropdownName}
@@ -203,6 +204,7 @@ function DropdownWidgetOption(props) {
                     onInvalid={(e) =>
                       e.target.setCustomValidity(t("input-required"))
                     }
+                    onInput={(e) => e.target.setCustomValidity("")}
                     required
                     className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     type="text"
@@ -238,6 +240,7 @@ function DropdownWidgetOption(props) {
                         onInvalid={(e) =>
                           e.target.setCustomValidity(t("input-required"))
                         }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                         defaultValue={0}
                         value={minCount}
@@ -261,6 +264,7 @@ function DropdownWidgetOption(props) {
                         onInvalid={(e) =>
                           e.target.setCustomValidity(t("input-required"))
                         }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                         defaultValue={0}
                         value={maxCount}

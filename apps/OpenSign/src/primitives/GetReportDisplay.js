@@ -1815,6 +1815,9 @@ const ReportTable = (props) => {
                                                   t("input-required")
                                                 )
                                               }
+                                              onInput={(e) =>
+                                                e.target.setCustomValidity("")
+                                              }
                                               required
                                             />
                                           </div>

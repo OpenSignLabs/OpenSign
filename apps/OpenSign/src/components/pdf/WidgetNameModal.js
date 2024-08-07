@@ -125,6 +125,7 @@ const WidgetNameModal = (props) => {
             value={formdata.name}
             onChange={(e) => handleChange(e)}
             onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+            onInput={(e) => e.target.setCustomValidity("")}
             required
           />
         </div>

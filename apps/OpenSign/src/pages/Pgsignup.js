@@ -307,6 +307,7 @@ const PgSignUp = () => {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
               <label htmlFor="confirmPassword">
@@ -329,6 +330,7 @@ const PgSignUp = () => {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
               <div

@@ -1727,6 +1727,7 @@ function PdfRequestFiles(props) {
                               onInvalid={(e) =>
                                 e.target.setCustomValidity(t("input-required"))
                               }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               value={otp}
                               onChange={(e) => setOtp(e.target.value)}
@@ -1775,6 +1776,7 @@ function PdfRequestFiles(props) {
                               onInvalid={(e) =>
                                 e.target.setCustomValidity(t("input-required"))
                               }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               disabled={loading}
                             />
@@ -1799,6 +1801,7 @@ function PdfRequestFiles(props) {
                               onInvalid={(e) =>
                                 e.target.setCustomValidity(t("input-required"))
                               }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               disabled={loading}
                             />

@@ -74,6 +74,7 @@ function ChangePassword() {
               className="op-input op-input-bordered op-input-sm text-xs w-full"
               placeholder={t("current-password")}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
             />
           </div>
@@ -89,6 +90,7 @@ function ChangePassword() {
               className="op-input op-input-bordered op-input-sm text-xs w-full"
               placeholder={t("new-password")}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
             />
           </div>
@@ -104,6 +106,7 @@ function ChangePassword() {
               onChange={(e) => setconfirmpassword(e.target.value)}
               placeholder={t("confirm-password")}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
             />
           </div>
