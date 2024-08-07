@@ -105,6 +105,7 @@ function Login() {
             await Parse.Cloud.run("getUserDetails")
               .then(async (extUser) => {
                 if (extUser) {
+                  console.log("extUser", extUser, extUser?.get("IsDisabled"));
                   const IsDisabled = extUser?.get("IsDisabled") || false;
                   if (!IsDisabled) {
                     const userRole = extUser?.get("UserRole");
@@ -614,7 +615,7 @@ function Login() {
 
   return (
     <div>
-      <Title title="Login Page" />
+      <Title title={"Login Page"} />
       {state.loading && (
         <div
           aria-live="assertive"
