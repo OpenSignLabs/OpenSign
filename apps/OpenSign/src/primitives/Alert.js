@@ -20,7 +20,7 @@ const Alert = ({ children, type }) => {
     children && (
       <div className="z-[1000] fixed top-20 left-1/2 transform -translate-x-1/2 text-sm">
         <div className={`op-alert ${textcolor}`}>
-          <span>{children}</span>
+          <span className="ml-3">{children}</span>
         </div>
       </div>
     )

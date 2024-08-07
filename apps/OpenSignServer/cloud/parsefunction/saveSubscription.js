@@ -32,6 +32,8 @@ export default async function saveSubscription(request) {
           objectId: extUser.get('TenantId').id,
         });
         const subscription = await subcriptionCls.first({ useMasterKey: true });
+        const addons = subscription?.data?.subscription?.addons || [];
+        const existAddon = addons.reduce((acc, curr) => acc + curr.quantity, 1);
         if (subscription) {
           const updateSubscription = new Parse.Object('contracts_Subscriptions');
           updateSubscription.id = subscription.id;
@@ -39,6 +41,7 @@ export default async function saveSubscription(request) {
           updateSubscription.set('SubscriptionDetails', body);
           updateSubscription.set('Next_billing_date', new Date(Next_billing_date));
           updateSubscription.set('PlanCode', planCode);
+          updateSubscription.set('AllowedUsers', parseInt(existAddon));
           await updateSubscription.save(null, { useMasterKey: true });
           return { status: 'update subscription!' };
         } else {
@@ -62,6 +65,7 @@ export default async function saveSubscription(request) {
           });
           createSubscription.set('Next_billing_date', new Date(Next_billing_date));
           createSubscription.set('PlanCode', planCode);
+          createSubscription.set('AllowedUsers', parseInt(existAddon));
           await createSubscription.save(null, { useMasterKey: true });
           return { status: 'create subscription!' };
         }

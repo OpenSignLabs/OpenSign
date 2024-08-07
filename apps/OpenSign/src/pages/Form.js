@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { formJson } from "../json/FormJson";
-import AddUser from "../components/AddUser";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import Parse from "parse";
 import DropboxChooser from "../components/shared/fields/DropboxChoose";
@@ -24,15 +23,11 @@ import Loader from "../primitives/Loader";
 function Form() {
   const { id } = useParams();
 
-  if (id === "lM0xRnM3iE") {
-    return <AddUser />;
+  const config = formJson[id];
+  if (config) {
+    return <Forms {...config} />;
   } else {
-    const config = formJson[id];
-    if (config) {
-      return <Forms {...config} />;
-    } else {
-      return <PageNotFound prefix={"Form"} />;
-    }
+    return <PageNotFound prefix={"Form"} />;
   }
 }
 

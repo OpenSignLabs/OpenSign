@@ -63,6 +63,49 @@ export async function fetchSubscription(
     return { plan: "", billingDate: "" };
   }
 }
+
+export async function fetchSubscriptionInfo() {
+  try {
+    const Extand_Class = localStorage.getItem("Extand_Class");
+    const extClass = Extand_Class && JSON.parse(Extand_Class);
+    // console.log("extClass ", extClass);
+    if (extClass && extClass.length > 0) {
+      const extUser = extClass[0].objectId;
+      const baseURL = localStorage.getItem("baseUrl");
+      const url = `${baseURL}functions/getsubscriptions`;
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: localStorage.getItem("accesstoken")
+      };
+      const params = { extUserId: extUser };
+      const tenatRes = await axios.post(url, params, { headers: headers });
+
+      const price =
+        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
+          ?.plan?.price;
+      const totalPrice =
+        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
+          ?.amount;
+      const planId =
+        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
+          ?.subscription_id;
+      const plan_code =
+        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
+          ?.plan?.plan_code;
+      return {
+        status: "success",
+        price: price,
+        totalPrice: totalPrice,
+        planId: planId,
+        plan_code: plan_code
+      };
+    }
+  } catch (err) {
+    console.log("Err in fetch subscription", err);
+    return { status: "error", error: err };
+  }
+}
 //function to get subcripition details from subscription class
 export async function checkIsSubscribed() {
   try {

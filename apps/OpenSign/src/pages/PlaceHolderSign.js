@@ -1061,11 +1061,7 @@ function PlaceHolderSign() {
           className="flex flex-row justify-between items-center mb-1"
           key={ind}
         >
-          {copied && (
-            <Alert type="success">
-              <div className="ml-3">Copied</div>
-            </Alert>
-          )}
+          {copied && <Alert type="success">Copied</Alert>}
           <span className="w-[220px] md:w-[300px] whitespace-nowrap overflow-hidden text-ellipsis  ">
             {data.signerEmail}
           </span>

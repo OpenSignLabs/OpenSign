@@ -99,11 +99,7 @@ function GenerateToken() {
   return (
     <React.Fragment>
       <Title title={"API Token"} />
-      {isAlert.msg && (
-        <Alert type={isAlert.type}>
-          <div className="ml-3">{isAlert.msg}</div>
-        </Alert>
-      )}
+      {isAlert.msg && <Alert type={isAlert.type}>{isAlert.msg}</Alert>}
       {isLoader ? (
         <div className="flex justify-center items-center h-screen">
           <Loader />
