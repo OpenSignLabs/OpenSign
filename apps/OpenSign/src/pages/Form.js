@@ -597,6 +597,7 @@ const Forms = (props) => {
                   onInvalid={(e) =>
                     e.target.setCustomValidity(t("input-required"))
                   }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
                 <p
@@ -680,6 +681,7 @@ const Forms = (props) => {
                     onInvalid={(e) =>
                       e.target.setCustomValidity(t("input-required"))
                     }
+                    onInput={(e) => e.target.setCustomValidity("")}
                     required
                   />
                   {process.env.REACT_APP_DROPBOX_API_KEY && (
@@ -706,6 +708,7 @@ const Forms = (props) => {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
             </div>
@@ -740,6 +743,7 @@ const Forms = (props) => {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
             </div>
@@ -765,6 +769,7 @@ const Forms = (props) => {
                   onInvalid={(e) =>
                     e.target.setCustomValidity(t("input-required"))
                   }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
               </div>
@@ -866,6 +871,7 @@ const Forms = (props) => {
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                   </div>

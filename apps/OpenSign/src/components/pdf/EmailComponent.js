@@ -250,6 +250,7 @@ function EmailComponent({
                     onInvalid={(e) =>
                       e.target.setCustomValidity(t("input-required"))
                     }
+                    onInput={(e) => e.target.setCustomValidity("")}
                     required
                   />
                 )}
@@ -267,6 +268,7 @@ function EmailComponent({
                   onInvalid={(e) =>
                     e.target.setCustomValidity(t("input-required"))
                   }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
               </div>

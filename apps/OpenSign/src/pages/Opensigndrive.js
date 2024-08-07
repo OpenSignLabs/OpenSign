@@ -572,6 +572,7 @@ function Opensigndrive() {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
                 className="op-input op-input-bordered op-input-sm"
                 type="text"

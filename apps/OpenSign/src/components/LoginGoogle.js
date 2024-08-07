@@ -217,6 +217,7 @@ const GoogleSignInBtn = ({
                 })
               }
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
             />
           </div>
@@ -236,6 +237,7 @@ const GoogleSignInBtn = ({
                 })
               }
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
             />
           </div>
@@ -255,6 +257,7 @@ const GoogleSignInBtn = ({
                 })
               }
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
             />
           </div>

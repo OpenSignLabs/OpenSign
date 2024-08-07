@@ -288,6 +288,7 @@ function GuestLogin() {
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                   </div>

@@ -277,6 +277,7 @@ const SSOVerify = () => {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
               <p className="text-[10px] text-[red] ml-2">
@@ -302,6 +303,7 @@ const SSOVerify = () => {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
             </div>
@@ -325,6 +327,7 @@ const SSOVerify = () => {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
             </div>

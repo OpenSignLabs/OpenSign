@@ -272,6 +272,7 @@ const AddUser = (props) => {
               value={formdata.name}
               onChange={(e) => handleChange(e)}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
@@ -290,6 +291,7 @@ const AddUser = (props) => {
               value={formdata.email}
               onChange={(e) => handleChange(e)}
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
@@ -346,6 +348,7 @@ const AddUser = (props) => {
                 onInvalid={(e) =>
                   e.target.setCustomValidity(t("input-required"))
                 }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               >
                 <option defaultValue={""} value={""}>
@@ -373,6 +376,7 @@ const AddUser = (props) => {
               name="role"
               className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
             >
               <option defaultValue={""} value={""}>

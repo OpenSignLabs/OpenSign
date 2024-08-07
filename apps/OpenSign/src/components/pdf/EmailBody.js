@@ -16,6 +16,7 @@ export function EmailBody(props) {
         <input
           required
           onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+          onInput={(e) => e.target.setCustomValidity("")}
           value={props.requestSubject}
           onChange={(e) => props.setRequestSubject(e.target.value)}
           placeholder='${senderName} has requested you to sign "${documentName}"'

@@ -621,6 +621,7 @@ function UserProfile() {
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                       type="tel"
                       pattern="[0-9]{4}"

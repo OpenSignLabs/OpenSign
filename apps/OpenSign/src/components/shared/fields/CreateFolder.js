@@ -135,6 +135,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+            onInput={(e) => e.target.setCustomValidity("")}
             required
           />
         </div>
