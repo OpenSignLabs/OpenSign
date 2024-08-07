@@ -1813,6 +1813,11 @@ const ReportTable = (props) => {
                                                   item
                                                 )
                                               }
+                                              onInvalid={(e) =>
+                                                e.target.setCustomValidity(
+                                                  t("input-required")
+                                                )
+                                              }
                                               required
                                             />
                                           </div>

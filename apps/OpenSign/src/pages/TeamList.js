@@ -366,6 +366,11 @@ const TeamList = () => {
                                           onChange={(e) =>
                                             handleEditChange(e, item)
                                           }
+                                          onInvalid={(e) =>
+                                            e.target.setCustomValidity(
+                                              t("input-required")
+                                            )
+                                          }
                                           required
                                         />
                                         <button

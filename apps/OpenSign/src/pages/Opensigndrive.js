@@ -572,6 +572,9 @@ function Opensigndrive() {
                 <span className="text-[red]">*</span>
               </label>
               <input
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
                 className="op-input op-input-bordered op-input-sm"
                 type="text"

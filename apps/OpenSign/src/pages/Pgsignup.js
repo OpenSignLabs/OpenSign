@@ -309,6 +309,9 @@ const PgSignUp = () => {
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.password}
                 onChange={handlePassowordChange}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
               />
               <label htmlFor="confirmPassword">
@@ -328,6 +331,9 @@ const PgSignUp = () => {
                 }}
                 value={formData.confirmPassword}
                 onChange={handleConFirmPassowordChange}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
               />
               <div

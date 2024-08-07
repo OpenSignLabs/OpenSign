@@ -233,6 +233,7 @@ const AddSigner = (props) => {
               onChange={(e) => setName(e.target.value)}
               required
               disabled={addYourself}
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
@@ -247,6 +248,7 @@ const AddSigner = (props) => {
               value={email}
               onChange={(e) => setEmail(e.target.value?.toLowerCase())}
               required
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />

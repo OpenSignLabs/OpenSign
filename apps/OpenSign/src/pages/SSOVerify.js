@@ -277,6 +277,9 @@ const SSOVerify = () => {
                   })
                 }
                 disabled={isLoader}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
               />
               <p className="text-[10px] text-[red] ml-2">
@@ -299,6 +302,9 @@ const SSOVerify = () => {
                   })
                 }
                 disabled={isLoader}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
               />
             </div>
@@ -319,6 +325,9 @@ const SSOVerify = () => {
                   })
                 }
                 disabled={isLoader}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
               />
             </div>

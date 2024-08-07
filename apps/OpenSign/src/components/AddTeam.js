@@ -150,6 +150,7 @@ const AddTeam = (props) => {
               name="name"
               value={formdata.name}
               onChange={(e) => handleChange(e)}
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />

@@ -8,13 +8,14 @@ import {
   checkIsSubscribed,
   checkIsSubscribedTeam,
   getAppLogo,
-  openInNewTab
+  openInNewTab,
+  saveLanguageInLocal
 } from "../constant/Utils";
 import { isEnableSubscription, isStaging } from "../constant/const";
 import { useTranslation } from "react-i18next";
 
 const Header = ({ showSidebar }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
   let username = localStorage.getItem("username");
@@ -69,7 +70,7 @@ const Header = ({ showSidebar }) => {
     let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
-
+    saveLanguageInLocal(i18n);
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);

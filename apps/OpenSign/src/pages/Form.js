@@ -594,6 +594,9 @@ const Forms = (props) => {
                   onChange={(e) => handleStrInput(e)}
                   className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
                   placeholder="Enter pdf password"
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
                   required
                 />
                 <p
@@ -674,6 +677,9 @@ const Forms = (props) => {
                         ? "application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
                         : "application/pdf,image/png,image/jpeg"
                     }
+                    onInvalid={(e) =>
+                      e.target.setCustomValidity(t("input-required"))
+                    }
                     required
                   />
                   {process.env.REACT_APP_DROPBOX_API_KEY && (
@@ -697,6 +703,9 @@ const Forms = (props) => {
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Name}
                 onChange={(e) => handleStrInput(e)}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
               />
             </div>
@@ -728,6 +737,9 @@ const Forms = (props) => {
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Note}
                 onChange={(e) => handleStrInput(e)}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
               />
             </div>
@@ -750,6 +762,9 @@ const Forms = (props) => {
                   className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                   value={formData.TimeToCompleteDays}
                   onChange={(e) => handleStrInput(e)}
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
                   required
                 />
               </div>
@@ -848,6 +863,9 @@ const Forms = (props) => {
                       name="remindOnceInEvery"
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       onChange={handleStrInput}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                   </div>

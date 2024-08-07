@@ -134,6 +134,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
             required
           />
         </div>
