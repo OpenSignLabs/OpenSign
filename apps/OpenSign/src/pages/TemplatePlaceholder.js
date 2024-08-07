@@ -153,14 +153,6 @@ const TemplatePlaceholder = () => {
   const [fontColor, setFontColor] = useState();
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
-  const senderUser =
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    ) &&
-    localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    );
-  const jsonSender = JSON.parse(senderUser);
 
   useEffect(() => {
     fetchTemplate();
@@ -317,7 +309,7 @@ const TemplatePlaceholder = () => {
         setHandleError("Error: Something went wrong!");
       }
     }
-    const res = await contractUsers(jsonSender.email);
+    const res = await contractUsers();
     if (res[0] && res.length) {
       setSignerUserId(res[0].objectId);
       setCurrentEmail(res[0].Email);
@@ -1544,8 +1536,8 @@ const TemplatePlaceholder = () => {
                   />
                 </div>
               ) : (
-                <div className="w-[23%] bg-[#FFFFFF] min-h-screen overflow-y-auto hide-scrollbar">
-                  <div className={`max-h-screen`}>
+                <div className="w-[23%] bg-base-100 min-h-screen overflow-y-auto hide-scrollbar">
+                  <div className="max-h-screen">
                     <SignerListPlace
                       isMailSend={isMailSend}
                       signerPos={signerPos}

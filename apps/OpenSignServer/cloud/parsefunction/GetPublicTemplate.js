@@ -22,11 +22,16 @@ async function GetPublicTemplate(request) {
         templatQuery.notEqualTo('IsArchive', true);
         const getTemplate = await templatQuery.find({ useMasterKey: true });
 
-        const extend_Res = await Parse.Cloud.run('getUserDetails', {
-          email: user.get('email'),
-        });
-        if (extend_Res) {
-          return { template: getTemplate, user: user, extend_User: extend_Res };
+        const extcls = new Parse.Query('contracts_Users');
+        extcls.equalTo('email', user.get('email'));
+        const res = await extcls.first({ useMasterKey: true });
+        if (res) {
+          const _res = JSON.parse(JSON.stringify(_res));
+          return {
+            template: getTemplate,
+            user: user,
+            extend_User: { Tagline: _res?.Tagline || '', SearchIndex: _res?.SearchIndex || '' },
+          };
         } else {
           throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'Template not found');
         }
