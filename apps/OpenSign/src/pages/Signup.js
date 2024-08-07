@@ -11,13 +11,17 @@ import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { isEnableSubscription } from "../constant/const";
-import { getAppLogo, openInNewTab } from "../constant/Utils";
+import {
+  getAppLogo,
+  openInNewTab,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 const Signup = () => {
   const { width } = useWindowSize();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -52,7 +56,7 @@ const Signup = () => {
     let userSettings = localStorage.getItem("userSettings");
 
     localStorage.clear();
-
+    saveLanguageInLocal(i18n);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
     localStorage.setItem("appLogo", applogo);
@@ -347,6 +351,9 @@ const Signup = () => {
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                       />
                       <hr className="my-2 border-none" />
@@ -362,6 +369,9 @@ const Signup = () => {
                         onChange={(e) =>
                           setEmail(e.target.value?.toLowerCase())
                         }
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                       />
                       <hr className="my-2 border-none" />
@@ -374,6 +384,9 @@ const Signup = () => {
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                       />
                       <hr className="my-2 border-none" />
@@ -386,6 +399,9 @@ const Signup = () => {
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                       />
                       <hr className="my-2 border-none" />
@@ -398,6 +414,9 @@ const Signup = () => {
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                       />
                       <hr className="my-2 border-none" />
@@ -412,6 +431,9 @@ const Signup = () => {
                           name="password"
                           value={password}
                           onChange={(e) => handlePasswordChange(e)}
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
                           required
                         />
                         <span
@@ -462,6 +484,9 @@ const Signup = () => {
                           id="termsandcondition"
                           checked={isAuthorize}
                           onChange={(e) => setIsAuthorize(e.target.checked)}
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
                           required
                         />
                         <label

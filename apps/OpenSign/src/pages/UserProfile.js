@@ -620,6 +620,9 @@ function UserProfile() {
                   <div className="px-6 py-3 text-base-content">
                     <label className="mb-2">{t("enter-otp")}</label>
                     <input
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                       type="tel"
                       pattern="[0-9]{4}"

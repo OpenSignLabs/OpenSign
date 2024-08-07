@@ -161,6 +161,9 @@ const LoginFacebook = ({
                           Phone: e.target.value
                         })
                       }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                   </div>
@@ -179,6 +182,9 @@ const LoginFacebook = ({
                           ...userDetails,
                           Company: e.target.value
                         })
+                      }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
                       }
                       required
                     />

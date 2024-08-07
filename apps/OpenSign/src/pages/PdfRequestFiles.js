@@ -1048,7 +1048,7 @@ function PdfRequestFiles(props) {
                 console.log("err in request signing", err);
                 setIsAlert({
                   isShow: true,
-                  alertMessage: `Something went wrong.`
+                  alertMessage: t("something-went-wrong-mssg")
                 });
               }
             }
@@ -1729,6 +1729,9 @@ function PdfRequestFiles(props) {
                               name="otp"
                               className="grow"
                               placeholder="Enter Verification Code"
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
                               required
                               value={otp}
                               onChange={(e) => setOtp(e.target.value)}
@@ -1774,6 +1777,9 @@ function PdfRequestFiles(props) {
                               value={contact.name}
                               onChange={handleInputChange}
                               placeholder="name"
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
                               required
                               disabled={loading}
                             />
@@ -1795,6 +1801,9 @@ function PdfRequestFiles(props) {
                               value={contact.email}
                               onChange={handleInputChange}
                               placeholder="Email"
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
                               required
                               disabled={loading}
                             />

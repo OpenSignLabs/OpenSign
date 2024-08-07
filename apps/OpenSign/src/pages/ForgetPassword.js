@@ -109,6 +109,9 @@ function ForgotPassword() {
                       className="op-input op-input-bordered op-input-sm w-full"
                       value={state.email}
                       onChange={handleChange}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                     <hr className="my-2 border-none" />

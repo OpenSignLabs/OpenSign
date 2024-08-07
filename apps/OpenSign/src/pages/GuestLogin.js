@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { isEnableSubscription } from "../constant/const";
-import { contractUsers, getAppLogo } from "../constant/Utils";
+import {
+  contractUsers,
+  getAppLogo,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 import Parse from "parse";
@@ -11,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 
 function GuestLogin() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id, userMail, contactBookId, base64url } = useParams();
   const navigate = useNavigate();
   const [email, setEmail] = useState(userMail);
@@ -43,6 +47,7 @@ function GuestLogin() {
     }
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
     const parseId = appInfo.appId;
     const newServer = `${appInfo.baseUrl}/`;
     localStorage.setItem("baseUrl", newServer);
@@ -207,7 +212,7 @@ function GuestLogin() {
                     <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
                       <input
                         type="email"
-                        name="mobile"
+                        name="email"
                         value={email}
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full disabled:text-[#5c5c5c] text-xs"
                         disabled
@@ -279,6 +284,9 @@ function GuestLogin() {
                       onChange={handleInputChange}
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       disabled={loading}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                   </div>

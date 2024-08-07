@@ -5,6 +5,7 @@ import { useScript } from "../hook/useScript";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import { saveLanguageInLocal } from "../constant/Utils";
 /*
  * `GoogleSignInBtn`as it's name indicates it render google sign in button
  * and in this `useScript` in which we have created for generate google sign button
@@ -17,7 +18,7 @@ const GoogleSignInBtn = ({
   thirdpartyLoader,
   setThirdpartyLoader
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isModal, setIsModal] = useState(false);
   const googleBtn = useRef();
   const [userDetails, setUserDetails] = useState({
@@ -57,6 +58,7 @@ const GoogleSignInBtn = ({
     let userSettings = localStorage.getItem("userSettings");
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
 
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
@@ -181,7 +183,7 @@ const GoogleSignInBtn = ({
     let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
-
+    saveLanguageInLocal(i18n);
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);
@@ -214,6 +216,7 @@ const GoogleSignInBtn = ({
                   Phone: e.target.value
                 })
               }
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               required
             />
           </div>
@@ -232,6 +235,7 @@ const GoogleSignInBtn = ({
                   Company: e.target.value
                 })
               }
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               required
             />
           </div>
@@ -250,6 +254,7 @@ const GoogleSignInBtn = ({
                   Destination: e.target.value
                 })
               }
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               required
             />
           </div>

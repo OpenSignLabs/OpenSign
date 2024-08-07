@@ -247,6 +247,9 @@ function EmailComponent({
                     onChange={handleEmailValue}
                     onKeyDown={handleEnterPress}
                     onBlur={() => emailValue && handleEnterPress("add")}
+                    onInvalid={(e) =>
+                      e.target.setCustomValidity(t("input-required"))
+                    }
                     required
                   />
                 )}
@@ -261,6 +264,9 @@ function EmailComponent({
                   onKeyDown={handleEnterPress}
                   placeholder="Add an email address and hit enter"
                   onBlur={() => emailValue && handleEnterPress("add")}
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
                   required
                 />
               </div>

@@ -161,6 +161,7 @@ function DropdownWidgetOption(props) {
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               required
               defaultValue={dropdownName}
               value={dropdownName}
@@ -199,6 +200,9 @@ function DropdownWidgetOption(props) {
                     />
                   )}
                   <input
+                    onInvalid={(e) =>
+                      e.target.setCustomValidity(t("input-required"))
+                    }
                     required
                     className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                     type="text"
@@ -231,6 +235,9 @@ function DropdownWidgetOption(props) {
                         <Upgrade />
                       )}
                       <input
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                         defaultValue={0}
                         value={minCount}
@@ -251,6 +258,9 @@ function DropdownWidgetOption(props) {
                         {t("maximum-check")}
                       </label>
                       <input
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                         defaultValue={0}
                         value={maxCount}

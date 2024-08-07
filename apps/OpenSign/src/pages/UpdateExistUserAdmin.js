@@ -122,6 +122,9 @@ const UpdateExistUserAdmin = () => {
                           email: e.target.value?.toLowerCase()
                         }))
                       }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -138,6 +141,9 @@ const UpdateExistUserAdmin = () => {
                           ...prev,
                           masterkey: e.target.value
                         }))
+                      }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
                       }
                       required
                     />

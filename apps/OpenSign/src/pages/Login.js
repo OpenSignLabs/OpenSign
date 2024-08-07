@@ -14,10 +14,16 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
-import { fetchSubscription, getAppLogo, openInNewTab } from "../constant/Utils";
+import {
+  fetchSubscription,
+  getAppLogo,
+  openInNewTab,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
+
 function Login() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -584,6 +590,7 @@ function Login() {
     let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
 
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("defaultmenuid", defaultmenuid);
@@ -662,6 +669,9 @@ function Login() {
                           value={state.email}
                           onChange={handleChange}
                           required
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
                         />
                         <hr className="my-1 border-none" />
                         {!isLoginSSO && (
@@ -680,6 +690,11 @@ function Login() {
                                 value={state.password}
                                 autoComplete="current-password"
                                 onChange={handleChange}
+                                onInvalid={(e) =>
+                                  e.target.setCustomValidity(
+                                    t("input-required")
+                                  )
+                                }
                                 required
                               />
                               <span
@@ -807,6 +822,9 @@ function Login() {
                       Company: e.target.value
                     })
                   }
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
                   required
                 />
               </div>
@@ -829,6 +847,9 @@ function Login() {
                       ...userDetails,
                       Destination: e.target.value
                     })
+                  }
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
                   }
                   required
                 />

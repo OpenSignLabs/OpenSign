@@ -2242,3 +2242,9 @@ export const getContainerScale = (pdfOriginalWH, pageNumber, containerWH) => {
   const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
   return containerScale;
 };
+
+//function to get current laguage and set it in local
+export const saveLanguageInLocal = (i18n) => {
+  const detectedLanguage = i18n.language || "en";
+  localStorage.setItem("i18nextLng", detectedLanguage);
+};

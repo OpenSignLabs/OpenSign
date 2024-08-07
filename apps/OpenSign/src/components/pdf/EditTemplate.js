@@ -80,6 +80,7 @@ const EditTemplate = ({ template, onSuccess }) => {
               name="Name"
               value={formData.Name}
               onChange={(e) => handleStrInput(e)}
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
@@ -174,6 +175,9 @@ const EditTemplate = ({ template, onSuccess }) => {
                 name="RemindOnceInEvery"
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 onChange={handleStrInput}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
                 required
               />
             </div>

@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
 import { NavLink, useNavigate } from "react-router-dom";
-import { getAppLogo, openInNewTab } from "../constant/Utils";
+import {
+  getAppLogo,
+  openInNewTab,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import Loader from "../primitives/Loader";
@@ -10,7 +14,7 @@ import Title from "../components/Title";
 import { useTranslation } from "react-i18next";
 
 const AddAdmin = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
@@ -63,6 +67,7 @@ const AddAdmin = () => {
     const userSettings = localStorage.getItem("userSettings");
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
     localStorage.setItem("appLogo", applogo);
@@ -292,6 +297,9 @@ const AddAdmin = () => {
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -305,6 +313,9 @@ const AddAdmin = () => {
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={email}
                       onChange={(e) => setEmail(e.target.value?.toLowerCase())}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -317,6 +328,9 @@ const AddAdmin = () => {
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -329,6 +343,9 @@ const AddAdmin = () => {
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -341,6 +358,9 @@ const AddAdmin = () => {
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
                       required
                     />
                     <hr className="my-2 border-none" />
@@ -355,6 +375,9 @@ const AddAdmin = () => {
                         name="password"
                         value={password}
                         onChange={(e) => handlePasswordChange(e)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                       />
                       <span
@@ -401,6 +424,9 @@ const AddAdmin = () => {
                         id="termsandcondition"
                         checked={isAuthorize}
                         onChange={(e) => setIsAuthorize(e.target.checked)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
                         required
                       />
                       <label
