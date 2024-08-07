@@ -526,10 +526,7 @@ const ReportTable = (props) => {
   };
 
   async function checkTourStatus() {
-    const currentUser = Parse.User.current();
-    const cloudRes = await Parse.Cloud.run("getUserDetails", {
-      email: currentUser.get("email")
-    });
+    const cloudRes = await Parse.Cloud.run("getUserDetails");
     const res = { data: cloudRes.toJSON() };
     if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
       const tourStatus = res.data.TourStatus;

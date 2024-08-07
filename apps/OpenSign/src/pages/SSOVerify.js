@@ -149,10 +149,7 @@ const SSOVerify = () => {
         // Check extended class user role and tenentId
         try {
           const userSettings = appInfo.settings;
-          const currentUser = Parse.User.current();
-          await Parse.Cloud.run("getUserDetails", {
-            email: currentUser.get("email")
-          })
+          await Parse.Cloud.run("getUserDetails")
             .then(async (extUser) => {
               if (extUser) {
                 const IsDisabled = extUser?.get("IsDisabled") || false;
