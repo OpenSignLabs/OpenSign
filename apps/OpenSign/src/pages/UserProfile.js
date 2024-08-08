@@ -10,12 +10,13 @@ import Tooltip from "../primitives/Tooltip";
 import { isEnableSubscription } from "../constant/const";
 import {
   checkIsSubscribed,
-  checkIsSubscribedTeam,
-  handleSendOTP
+  handleSendOTP,
+  openInNewTab
 } from "../constant/Utils";
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
+import { paidUrl, validplan } from "../json/plansArr";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ function UserProfile() {
   const [tagLine, setTagLine] = useState(
     extendUser && extendUser?.[0]?.Tagline
   );
-  const [isTeam, setIsTeam] = useState(false);
+  const [isPlan, setIsPlan] = useState({ plan: "", isValid: false });
   useEffect(() => {
     getUserDetail();
   }, []);
@@ -61,10 +62,9 @@ function UserProfile() {
     const jsonSender = JSON.parse(extClass);
     const HeaderDocId = jsonSender[0]?.HeaderDocId;
     if (isEnableSubscription) {
-      const getIsSubscribe = await checkIsSubscribed();
-      const getIsTeam = await checkIsSubscribedTeam();
-      setIsSubscribe(getIsSubscribe);
-      setIsTeam(getIsTeam);
+      const subscribe = await checkIsSubscribed();
+      setIsSubscribe(subscribe.isValid);
+      setIsPlan(subscribe);
     }
     if (HeaderDocId) {
       setIsDisableDocId(HeaderDocId);
@@ -184,9 +184,7 @@ function UserProfile() {
         }
       }
     );
-    const res = await Parse.Cloud.run("getUserDetails", {
-      email: extData[0].Email
-    });
+    const res = await Parse.Cloud.run("getUserDetails");
 
     const json = JSON.parse(JSON.stringify([res]));
     const extRes = JSON.stringify(json);
@@ -302,6 +300,14 @@ function UserProfile() {
     setCompany(extendUser && extendUser?.[0]?.Company);
     setJobTitle(extendUser?.[0]?.JobTitle);
     setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
+  };
+  const handlePaidRoute = () => {
+    const route = paidUrl(isPlan.plan);
+    if (route === "/subscription") {
+      navigate(route);
+    } else {
+      openInNewTab(route, "_self");
+    }
   };
   return (
     <React.Fragment>
@@ -516,7 +522,9 @@ function UserProfile() {
                   <div className="flex justify-between items-center py-2">
                     <span
                       className={
-                        isTeam ? "font-semibold" : "font-semibold text-gray-300"
+                        validplan[isPlan.plan]
+                          ? "font-semibold"
+                          : "font-semibold text-gray-300"
                       }
                     >
                       Disable DocumentId :{" "}
@@ -525,17 +533,21 @@ function UserProfile() {
                           "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
                         }
                       />
-                      {!isTeam && isEnableSubscription && <Upgrade />}
+                      {!validplan[isPlan.plan] && isEnableSubscription && (
+                        <Upgrade />
+                      )}
                     </span>
                     <label
                       className={`${
-                        isTeam
+                        validplan[isPlan.plan]
                           ? `${editmode ? "cursor-pointer" : ""}`
                           : "pointer-events-none opacity-50"
                       } relative block items-center mb-0`}
                     >
                       <input
-                        disabled={isTeam ? false : true}
+                        disabled={
+                          validplan[isPlan.plan] && editmode ? false : true
+                        }
                         type="checkbox"
                         className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
                         checked={isDisableDocId}
@@ -640,7 +652,7 @@ function UserProfile() {
                       </p>
                       <div className="op-card-actions justify-end">
                         <button
-                          onClick={() => navigate("/subscription")}
+                          onClick={() => handlePaidRoute()}
                           className="op-btn op-btn-accent"
                         >
                           Upgrade Now

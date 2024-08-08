@@ -3,11 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
 import { isEnableSubscription } from "../constant/const";
-import { fetchSubscription } from "../constant/Utils";
+import { fetchSubscription, openInNewTab } from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
+import { paidUrl } from "../json/plansArr";
 
 const SSOVerify = () => {
   const location = useLocation();
@@ -46,6 +47,14 @@ const SSOVerify = () => {
     } catch (err) {
       setMessage("Error: " + err.message);
       console.log("err", err.message);
+    }
+  };
+  const handlePaidRoute = (plan) => {
+    const route = paidUrl(plan);
+    if (route === "/subscription") {
+      navigate(route);
+    } else {
+      openInNewTab(route, "_self");
     }
   };
   const checkExtUser = async (ssosign) => {
@@ -194,10 +203,10 @@ const SSOVerify = () => {
                           localStorage.removeItem("userDetails");
                           navigate(redirectUrl);
                         } else {
-                          navigate(`/subscription`, { replace: true });
+                          handlePaidRoute(plan);
                         }
                       } else {
-                        navigate(`/subscription`, { replace: true });
+                        handlePaidRoute(plan);
                       }
                     } else {
                       navigate(redirectUrl);

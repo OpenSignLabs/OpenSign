@@ -75,7 +75,7 @@ export default async function Buyaddon(request) {
           updateSub.set('SubscriptionDetails', userData.data);
           updateSub.set('AllowedUsers', allowedUsers);
           const resupdateSub = await updateSub.save(null, { useMasterKey: true });
-          return 'success';
+          return { status: 'success', addon: allowedUsers };
         } else {
           throw new Parse.Error('400', 'Invalid access token.');
         }

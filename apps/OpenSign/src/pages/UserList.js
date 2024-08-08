@@ -9,8 +9,9 @@ import Tooltip from "../primitives/Tooltip";
 import AddUser from "../components/AddUser";
 import SubscribeCard from "../primitives/SubscribeCard";
 import { isEnableSubscription } from "../constant/const";
-import { checkIsSubscribedTeam } from "../constant/Utils";
+import { checkIsSubscribed } from "../constant/Utils";
 import Title from "../components/Title";
+import { validplan } from "../json/plansArr";
 const heading = ["Sr.No", "Name", "Email", "Phone", "Role", "Team", "Active"];
 // const actions = [];
 const UserList = () => {
@@ -24,7 +25,7 @@ const UserList = () => {
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isActiveModal, setIsActiveModal] = useState({});
   const [isActLoader, setIsActLoader] = useState({});
-  const [isSubscribe, setIsSubscribe] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: false });
   const [isAdmin, setIsAdmin] = useState(false);
   const recordperPage = 10;
   const startIndex = (currentPage - 1) * recordperPage; // user per page
@@ -88,10 +89,10 @@ const UserList = () => {
     try {
       setIsLoader(true);
       if (isEnableSubscription) {
-        const getIsSubscribe = await checkIsSubscribedTeam();
-        setIsSubscribe(getIsSubscribe);
+        const subscribe = await checkIsSubscribed();
+        setIsSubscribe(subscribe);
       } else {
-        setIsSubscribe(true);
+        setIsSubscribe({ plan: "teams-yearly", isValid: true });
       }
       const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       if (extUser) {
@@ -193,7 +194,7 @@ const UserList = () => {
           <Loader />
         </div>
       )}
-      {isSubscribe && !isLoader && (
+      {validplan[isSubscribe.plan] && !isLoader && (
         <>
           {isAdmin ? (
             <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
@@ -406,9 +407,13 @@ const UserList = () => {
           )}
         </>
       )}
-      {!isSubscribe && isEnableSubscription && !isLoader && (
+      {!validplan[isSubscribe.plan] && isEnableSubscription && !isLoader && (
         <div data-tut="apisubscribe">
-          <SubscribeCard plan={"TEAMS"} price={"20"} />
+          <SubscribeCard
+            plan={"TEAMS"}
+            price={"20"}
+            plan_code={isSubscribe.plan}
+          />
         </div>
       )}
     </div>

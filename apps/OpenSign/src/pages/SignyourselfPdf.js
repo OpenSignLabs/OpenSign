@@ -757,7 +757,7 @@ function SignYourSelf() {
       if (
         tenantDetails?.CompletionBody &&
         tenantDetails?.CompletionSubject &&
-        getIsSubscribe
+        getIsSubscribe.isValid
       ) {
         isCustomCompletionMail = true;
       }
