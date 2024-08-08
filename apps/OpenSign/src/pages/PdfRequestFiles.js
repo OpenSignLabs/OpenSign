@@ -46,8 +46,10 @@ import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
+import { useTranslation } from "react-i18next";
 
 function PdfRequestFiles(props) {
+  const { t } = useTranslation();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
   const [unsignedSigners, setUnSignedSigners] = useState([]);
@@ -71,7 +73,7 @@ function PdfRequestFiles(props) {
   const [tourStatus, setTourStatus] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
@@ -189,7 +191,7 @@ function PdfRequestFiles(props) {
     const currentUser = JSON.parse(localuser);
     await handleSendOTP(currentUser?.email);
     setOtpLoader(false);
-    alert("OTP sent on you email");
+    alert(t("otp-sent-alert"));
   };
   //`handleVerifyEmail` function is used to verify email with otp
   const handleVerifyEmail = async (e) => {
@@ -206,11 +208,12 @@ function PdfRequestFiles(props) {
       });
       if (resEmail?.message === "Email is verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-1"));
       } else if (resEmail?.message === "Email is already verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-2"));
       }
       setOtp("");
-      alert(resEmail.message);
       setIsVerifyModal(false);
       //handleRecipientSign();
     } catch (error) {
@@ -316,12 +319,12 @@ function PdfRequestFiles(props) {
         (documentData.result && documentData.result.error)
       ) {
         console.log("err in get template details ");
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
         setIsLoading({
           isLoad: false
         });
       } else {
-        setHandleError("No Data Found!");
+        setHandleError(t("no-data"));
         setIsLoading({
           isLoad: false
         });
@@ -329,9 +332,9 @@ function PdfRequestFiles(props) {
     } catch (err) {
       console.log("err in get template details ", err);
       if (err?.response?.data?.code === 101) {
-        setHandleError("Error: Template not found!");
+        setHandleError(t("error-template"));
       } else {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
     }
   };
@@ -406,8 +409,7 @@ function PdfRequestFiles(props) {
         }, 5000);
         setIsCompleted({
           isModal: true,
-          message:
-            "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
+          message: t("document-signed-alert-1")
         });
       } else {
         if (currUserId) {
@@ -554,7 +556,7 @@ function PdfRequestFiles(props) {
         //if not then check user exist in contracts_Contactbook class and check tour message statu
         const res = await contractUsers();
         if (res === "Error: Something went wrong!") {
-          setHandleError("Error: Something went wrong!");
+          setHandleError(t("something-went-wrong-mssg"));
         } else if (res[0] && res?.length) {
           setContractName("_Users");
           currUserId = res[0].objectId;
@@ -570,7 +572,7 @@ function PdfRequestFiles(props) {
         } else if (res?.length === 0) {
           const res = await contactBook(currUserId);
           if (res === "Error: Something went wrong!") {
-            setHandleError("Error: Something went wrong!");
+            setHandleError(t("something-went-wrong-mssg"));
           } else if (res[0] && res.length) {
             setContractName("_Contactbook");
             const objectId = res[0].objectId;
@@ -584,7 +586,7 @@ function PdfRequestFiles(props) {
               setRequestSignTour(checkTourRequest[0]?.requestSign || false);
             }
           } else if (res.length === 0) {
-            setHandleError("Error: User does not exist!");
+            setHandleError(t("user-not-exist"));
           }
         }
       }
@@ -593,13 +595,13 @@ function PdfRequestFiles(props) {
       documentData === "Error: Something went wrong!" ||
       (documentData.result && documentData.result.error)
     ) {
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading({
         isLoad: false
       });
       console.log("err in  getDocument cloud function ");
     } else {
-      setHandleError("No Data Found!");
+      setHandleError(t("no-data"));
       setIsUiLoading({
         isLoad: false
       });
@@ -635,7 +637,7 @@ function PdfRequestFiles(props) {
       })
       .catch((err) => {
         console.log("Err in contracts_Signature class", err);
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
         setIsLoading({
           isLoad: false
         });
@@ -825,7 +827,7 @@ function PdfRequestFiles(props) {
               //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
               const arrayBuffer = await convertPdfArrayBuffer(url);
               if (arrayBuffer === "Error") {
-                setHandleError("Error: invalid document!");
+                setHandleError(t("invalid-document"));
               } else {
                 pdfArrBuffer = arrayBuffer;
               }
@@ -833,9 +835,9 @@ function PdfRequestFiles(props) {
               documentData === "Error: Something went wrong!" ||
               (documentData.result && documentData.result.error)
             ) {
-              setHandleError("Error: Something went wrong!");
+              setHandleError(t("something-went-wrong-mssg"));
             } else {
-              setHandleError("Document not Found!");
+              setHandleError(t("document-not-found"));
             }
 
             // Load a PDFDocument from the existing PDF bytes
@@ -867,7 +869,7 @@ function PdfRequestFiles(props) {
               const res = await contractUsers();
               let activeMailAdapter = "";
               if (res === "Error: Something went wrong!") {
-                setHandleError("Error: Something went wrong!");
+                setHandleError(t("something-went-wrong-mssg"));
                 setIsLoading({ isLoad: false });
               } else if (!res || res?.length === 0) {
                 activeMailAdapter = "";
@@ -1034,13 +1036,13 @@ function PdfRequestFiles(props) {
               if (err && err.message.includes("is encrypted.")) {
                 setIsAlert({
                   isShow: true,
-                  alertMessage: `Currently encrypted pdf files are not supported.`
+                  alertMessage: t("encrypted-pdf-not-support")
                 });
               } else {
                 console.log("err in request signing", err);
                 setIsAlert({
                   isShow: true,
-                  alertMessage: `Something went wrong.`
+                  alertMessage: t("something-went-wrong-mssg")
                 });
               }
             }
@@ -1049,7 +1051,7 @@ function PdfRequestFiles(props) {
         } else {
           setIsAlert({
             isShow: true,
-            alertMessage: "something went wrong"
+            alertMessage: t("something-went-wrong-mssg")
           });
         }
       } catch (err) {
@@ -1057,7 +1059,7 @@ function PdfRequestFiles(props) {
         setIsUiLoading(false);
         setIsAlert({
           isShow: true,
-          alertMessage: "something went wrong, please try again later."
+          alertMessage: t("something-went-wrong-mssg")
         });
       }
     } else {
@@ -1073,7 +1075,7 @@ function PdfRequestFiles(props) {
         }
       } catch (e) {
         console.log("error in save user's emailVerified in user class");
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
     }
   }
@@ -1361,7 +1363,7 @@ function PdfRequestFiles(props) {
         selector: '[data-tut="reactourFirst"]',
         content: () => (
           <TourContentWithBtn
-            message={`List of signers who still need to sign the document .`}
+            message={t("tour-mssg.pdf-request-file-1")}
             isChecked={handleDontShow}
           />
         ),
@@ -1372,7 +1374,7 @@ function PdfRequestFiles(props) {
         selector: '[data-tut="pdfArea"]',
         content: () => (
           <TourContentWithBtn
-            message={`Click any of the placeholders appearing on the document to sign. You will then see options to draw your signature, type it, or upload an image .`}
+            message={t("tour-mssg.pdf-request-file-2")}
             isChecked={handleDontShow}
           />
         ),
@@ -1383,7 +1385,7 @@ function PdfRequestFiles(props) {
         selector: '[data-tut="reactourFifth"]',
         content: () => (
           <TourContentWithBtn
-            message={`Click the Back, Decline, or Finish buttons to navigate your document. Use the ellipsis menu for additional options, including the Download button .`}
+            message={t("tour-mssg.pdf-request-file-3")}
             isChecked={handleDontShow}
           />
         ),
@@ -1395,7 +1397,7 @@ function PdfRequestFiles(props) {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`List of signers who have already signed the document .`}
+          message={t("tour-mssg.pdf-request-file-4")}
           isChecked={handleDontShow}
         />
       ),
@@ -1413,7 +1415,7 @@ function PdfRequestFiles(props) {
       selector: '[data-tut="reactourThird"]',
       content: () => (
         <TourContentWithBtn
-          message={`You can click "Auto Sign All" to automatically sign at all the locations meant to be signed by you. Make sure that you review the document properly before you click this button .`}
+          message={t("tour-mssg.pdf-request-file-5")}
           isChecked={handleDontShow}
         />
       ),
@@ -1473,7 +1475,7 @@ function PdfRequestFiles(props) {
         await SendOtp();
       } else {
         console.log("error in public-sign to create user details");
-        alert("something went wrong");
+        alert(t("something-went-wrong-mssg"));
       }
     } catch (e) {
       console.log("e", e);
@@ -1506,7 +1508,7 @@ function PdfRequestFiles(props) {
       }
     } catch (error) {
       console.log("error in verify otp in public-sign", error);
-      alert("something went wrong!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
 
@@ -1532,10 +1534,10 @@ function PdfRequestFiles(props) {
         };
         let user = await axios.post(url, body, { headers: headers });
         if (user.data.result === "Invalid Otp") {
-          alert("Invalid Otp");
+          alert(t("invalid-otp"));
           setLoading(false);
         } else if (user.data.result === "user not found!") {
-          alert("User not found!");
+          alert(t("user-not-found"));
           setLoading(false);
         } else {
           let _user = user.data.result;
@@ -1571,7 +1573,7 @@ function PdfRequestFiles(props) {
         console.log("err ", error);
       }
     } else {
-      alert("Please Enter OTP!");
+      alert(t("enter-otp-alert"));
     }
   };
   const handleCloseOtp = () => {
@@ -1591,13 +1593,13 @@ function PdfRequestFiles(props) {
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
       {isSubscriptionExpired ? (
         <ModalUi
-          title={"Subscription Expired"}
+          title={t("subscription-expired")}
           isOpen={isSubscriptionExpired}
           showClose={false}
         >
           <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
             <p className="text-sm md:text-lg font-normal">
-              Owner&apos;s subscription has expired.
+              {t("owner-subscription-expired")}
             </p>
           </div>
         </ModalUi>
@@ -1613,7 +1615,7 @@ function PdfRequestFiles(props) {
                 <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                   <Loader />
                   <span className="text-[13px] text-base-content">
-                    This might take some time
+                    {t("loading-mssg")}
                   </span>
                 </div>
               )}
@@ -1640,7 +1642,7 @@ function PdfRequestFiles(props) {
                   requestSignTourFunction()}
                 <ModalUi
                   isOpen={isAlert.isShow}
-                  title={"Alert"}
+                  title={t("alert-message")}
                   handleClose={() =>
                     setIsAlert({ isShow: false, alertMessage: "" })
                   }
@@ -1654,7 +1656,7 @@ function PdfRequestFiles(props) {
                       type="button"
                       className="op-btn op-btn-primary mt-3 px-4"
                     >
-                      Ok
+                      {t("ok")}
                     </button>
                   </div>
                 </ModalUi>
@@ -1673,14 +1675,13 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg="Document decline"
+                  headMsg={t("document-decline")}
                   bodyMssg={
                     isDecline.currnt === "Sure"
-                      ? "Are you sure want to decline this document ?"
+                      ? t("decline-alert-2")
                       : isDecline.currnt === "YouDeclined"
-                        ? "You have declined this document!"
-                        : isDecline.currnt === "another" &&
-                          "You can not sign this document as it has been declined/revoked."
+                        ? t("decline-alert-1")
+                        : isDecline.currnt === "another" && t("decline-alert-3")
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
@@ -1716,15 +1717,17 @@ function PdfRequestFiles(props) {
                     {isOtp ? (
                       <form onSubmit={VerifyOTP}>
                         <div className="flex flex-col gap-2">
-                          <span>
-                            You will get a verification code via email
-                          </span>
+                          <span>{t("get-otp-alert")}</span>
                           <label className="op-input op-input-bordered flex items-center gap-2 ">
                             <input
                               type="number"
                               name="otp"
                               className="grow"
                               placeholder="Enter Verification Code"
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               value={otp}
                               onChange={(e) => setOtp(e.target.value)}
@@ -1770,6 +1773,10 @@ function PdfRequestFiles(props) {
                               value={contact.name}
                               onChange={handleInputChange}
                               placeholder="name"
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               disabled={loading}
                             />
@@ -1791,6 +1798,10 @@ function PdfRequestFiles(props) {
                               value={contact.email}
                               onChange={handleInputChange}
                               placeholder="Email"
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               disabled={loading}
                             />
@@ -1840,7 +1851,7 @@ function PdfRequestFiles(props) {
                 </ModalUi>
                 <ModalUi
                   isOpen={defaultSignAlert.isShow}
-                  title={"Auto sign"}
+                  title={t("auto-sign-all")}
                   handleClose={() =>
                     setDefaultSignAlert({ isShow: false, alertMessage: "" })
                   }
@@ -1855,7 +1866,7 @@ function PdfRequestFiles(props) {
                           type="button"
                           className="op-btn op-btn-primary"
                         >
-                          Yes
+                          {t("yes")}
                         </button>
                         <button
                           onClick={() =>
@@ -1867,7 +1878,7 @@ function PdfRequestFiles(props) {
                           type="button"
                           className="op-btn op-btn-secondary"
                         >
-                          Close
+                          {t("close")}
                         </button>
                       </>
                     ) : (
@@ -1878,7 +1889,7 @@ function PdfRequestFiles(props) {
                         type="button"
                         className="op-btn op-btn-primary"
                       >
-                        Ok
+                        {t("ok")}
                       </button>
                     )}
                   </div>
@@ -1910,7 +1921,7 @@ function PdfRequestFiles(props) {
                     {/* this modal is used show this document is already sign */}
                     <ModalUi
                       isOpen={isCompleted.isModal}
-                      title={"Document signed"}
+                      title={t("document-signed")}
                       handleClose={() => {
                         setIsCompleted((prev) => ({ ...prev, isModal: false }));
                       }}
@@ -1924,10 +1935,7 @@ function PdfRequestFiles(props) {
                           <p>{isCompleted?.message}</p>
                         ) : (
                           <div className="px-[15px]">
-                            <span>
-                              Congratulations! 🎉 This document has been
-                              successfully signed by all participants!
-                            </span>
+                            <span>{t("document-signed-alert-4")}</span>
                           </div>
                         )}
                         {!isCompleted?.message && (
@@ -1943,7 +1951,9 @@ function PdfRequestFiles(props) {
                                 className="fa-light fa-print"
                                 aria-hidden="true"
                               ></i>
-                              <span className="hidden lg:block">Print</span>
+                              <span className="hidden lg:block">
+                                {t("print")}
+                              </span>
                             </button>
                             <button
                               type="button"
@@ -1960,7 +1970,7 @@ function PdfRequestFiles(props) {
                                 aria-hidden="true"
                               ></i>
                               <span className="hidden lg:block">
-                                Certificate
+                                {t("certificate")}
                               </span>
                             </button>
                             <button
@@ -1978,7 +1988,9 @@ function PdfRequestFiles(props) {
                                 className="fa-light fa-download"
                                 aria-hidden="true"
                               ></i>
-                              <span className="hidden lg:block">Download</span>
+                              <span className="hidden lg:block">
+                                {t("download")}
+                              </span>
                             </button>
                           </div>
                         )}
@@ -1993,18 +2005,14 @@ function PdfRequestFiles(props) {
                       isOpen={isDownloading === "certificate"}
                       title={
                         isDownloading === "certificate"
-                          ? "Generating certificate"
-                          : "PDF Download"
+                          ? t("generating-certificate")
+                          : t("pdf-download")
                       }
                       handleClose={() => setIsDownloading("")}
                     >
                       <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
                         {isDownloading === "certificate"}{" "}
-                        <p>
-                          Your completion certificate is being generated. Please
-                          wait momentarily. If the download doesn&apos;t start
-                          shortly, click the button again.
-                        </p>
+                        <p>{t("generate-certificate-alert")}</p>
                       </div>
                     </ModalUi>
                     {/* this component is used for signature pad modal */}
@@ -2110,7 +2118,7 @@ function PdfRequestFiles(props) {
                           data-tut="reactourSecond"
                           className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
                         >
-                          <span> Signed by</span>
+                          <span>{t("signed-by")}</span>
                         </div>
                         <div className="mt-[2px]">
                           {signedSigners.map((obj, ind) => {
@@ -2135,7 +2143,7 @@ function PdfRequestFiles(props) {
                           data-tut="reactourFirst"
                           className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
                         >
-                          <span>Yet to sign</span>
+                          <span>{t("yet-to-sign")}</span>
                         </div>
                         <div className="mt-[5px]">
                           {unsignedSigners.map((obj, ind) => {
@@ -2170,23 +2178,20 @@ function PdfRequestFiles(props) {
           )}
           <ModalUi
             isOpen={validateAlert}
-            title={"Validation alert"}
+            title={t("validation-alert")}
             handleClose={() => {
               setValidateAlert(false);
             }}
           >
             <div className="h-[100%] p-[20px]">
-              <p>
-                The input does not meet the criteria set by the regular
-                expression.
-              </p>
+              <p>{t("validation-alert-1")}</p>
               <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
               <button
                 onClick={() => setValidateAlert(false)}
                 type="button"
                 className="op-btn op-btn-ghost"
               >
-                Close
+                {t("close")}
               </button>
             </div>
           </ModalUi>

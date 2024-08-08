@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from "react";
+import { useTranslation } from "react-i18next";
 const DashboardButton = lazy(() => import("./DashboardButton"));
 const DashboardCard = lazy(() => import("./DashboardCard"));
 const DashboardReport = lazy(() => import("./DashboardReport"));
@@ -10,13 +11,14 @@ const buttonList = [
     icon: "fa-light fa-pen-nib"
   },
   {
-    label: "Request signature",
+    label: "Request signatures",
     redirectId: "8mZzFxbG1z",
     redirectType: "Form",
     icon: "fa-light fa-paper-plane"
   }
 ];
 const GetDashboard = (props) => {
+  const { t } = useTranslation();
   const Button = ({ label, redirectId, redirectType, icon }) => (
     <DashboardButton
       Icon={icon}
@@ -37,7 +39,7 @@ const GetDashboard = (props) => {
             <Suspense
               fallback={
                 <div className="h-[150px] w-full flex justify-center items-center">
-                  loading...
+                  {t("loading")}
                 </div>
               }
             >

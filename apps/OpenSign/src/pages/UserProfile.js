@@ -16,9 +16,12 @@ import {
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
+import SelectLanguage from "../components/pdf/SelectLanguage";
 
 function UserProfile() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   let UserProfile = JSON.parse(localStorage.getItem("UserInformation"));
   let extendUser = JSON.parse(localStorage.getItem("Extand_Class"));
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
@@ -51,6 +54,7 @@ function UserProfile() {
     extendUser && extendUser?.[0]?.Tagline
   );
   const [isTeam, setIsTeam] = useState(false);
+
   useEffect(() => {
     getUserDetail();
   }, []);
@@ -86,7 +90,7 @@ function UserProfile() {
           setIsLoader(false);
         }
       } catch (e) {
-        alert("something went wrong!");
+        alert(t("something-went-wrong-mssg"));
       }
     }
   };
@@ -140,14 +144,14 @@ function UserProfile() {
                   Name: res.name,
                   Phone: res?.phone || ""
                 });
-                alert("Profile updated successfully.");
+                alert(t("profile-update-alert"));
                 setEditMode(false);
                 setIsLoader(false);
                 //navigate("/dashboard/35KBoSgoAK");
               }
             },
             (error) => {
-              alert("Something went wrong.");
+              alert(t("something-went-wrong-mssg"));
               console.error("Error while updating tour", error);
               setIsLoader(false);
             }
@@ -161,38 +165,43 @@ function UserProfile() {
 
   //  `updateExtUser` is used to update user details in extended class
   const updateExtUser = async (obj) => {
-    const extData = JSON.parse(localStorage.getItem("Extand_Class"));
-    const ExtUserId = extData[0].objectId;
-    const body = {
-      Phone: obj?.Phone || "",
-      Name: obj.Name,
-      HeaderDocId: isDisableDocId,
-      JobTitle: jobTitle,
-      Company: company,
-      UserName: publicUserName || "",
-      Tagline: tagLine || ""
-    };
+    try {
+      const extData = JSON.parse(localStorage.getItem("Extand_Class"));
+      const ExtUserId = extData[0].objectId;
+      const body = {
+        Phone: obj?.Phone || "",
+        Name: obj.Name,
+        HeaderDocId: isDisableDocId,
+        JobTitle: jobTitle,
+        Company: company,
+        UserName: publicUserName || "",
+        Tagline: tagLine || "",
+        Language: obj?.language || ""
+      };
 
-    await axios.put(
-      parseBaseUrl + "classes/contracts_Users/" + ExtUserId,
-      body,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": parseAppId,
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+      await axios.put(
+        parseBaseUrl + "classes/contracts_Users/" + ExtUserId,
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Parse-Application-Id": parseAppId,
+            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+          }
         }
-      }
-    );
-    const res = await Parse.Cloud.run("getUserDetails", {
-      email: extData[0].Email
-    });
+      );
+      const res = await Parse.Cloud.run("getUserDetails", {
+        email: extData[0].Email
+      });
 
-    const json = JSON.parse(JSON.stringify([res]));
-    const extRes = JSON.stringify(json);
-    localStorage.setItem("Extand_Class", extRes);
-    previousPublicUserName.current = publicUserName;
-    // console.log("updateRes ", updateRes);
+      const json = JSON.parse(JSON.stringify([res]));
+      const extRes = JSON.stringify(json);
+      localStorage.setItem("Extand_Class", extRes);
+      previousPublicUserName.current = publicUserName;
+      // console.log("updateRes ", updateRes);
+    } catch (e) {
+      console.log("error in save data in contracts_Users class");
+    }
   };
   // file upload function
   const fileUpload = async (file) => {
@@ -264,11 +273,12 @@ function UserProfile() {
       });
       if (resEmail?.message === "Email is verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-1"));
       } else if (resEmail?.message === "Email is already verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-2"));
       }
       setOtp("");
-      alert(resEmail.message);
       setIsVerifyModal(false);
     } catch (error) {
       alert(error.message);
@@ -282,7 +292,7 @@ function UserProfile() {
     setOtpLoader(true);
     await handleSendOTP();
     setOtpLoader(false);
-    alert("OTP sent on you email");
+    alert(t("otp-sent-alert"));
   };
   //function to handle onchange username and restrict 6-characters username for free users
   const handleOnchangeUserName = (e) => {
@@ -303,6 +313,7 @@ function UserProfile() {
     setJobTitle(extendUser?.[0]?.JobTitle);
     setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
   };
+
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -358,7 +369,18 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">Name:</span>{" "}
+                <span className="font-semibold">{t("language")}:</span>{" "}
+                <SelectLanguage
+                  isProfile={true}
+                  updateExtUser={updateExtUser}
+                />
+              </li>
+              <li
+                className={`flex justify-between items-center border-t-[1px] border-gray-300 break-all ${
+                  editmode ? "py-1.5" : "py-2"
+                }`}
+              >
+                <span className="font-semibold">{t("name")}:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
@@ -375,7 +397,7 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">Phone:</span>{" "}
+                <span className="font-semibold">{t("phone")}:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
@@ -388,7 +410,7 @@ function UserProfile() {
                 )}
               </li>
               <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                <span className="font-semibold">Email:</span>{" "}
+                <span className="font-semibold">{t("email")}:</span>{" "}
                 <span>{UserProfile && UserProfile.email}</span>
               </li>
               <li
@@ -396,7 +418,7 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">Company:</span>{" "}
+                <span className="font-semibold">{t("company")}:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
@@ -413,7 +435,7 @@ function UserProfile() {
                   editmode ? "py-1.5" : "py-2"
                 }`}
               >
-                <span className="font-semibold">Job title:</span>{" "}
+                <span className="font-semibold">{t("job-title")}:</span>{" "}
                 {editmode ? (
                   <input
                     type="text"
@@ -426,7 +448,7 @@ function UserProfile() {
                 )}
               </li>
               <li className="flex justify-between items-center border-t-[1px] border-gray-300 py-2 break-all">
-                <span className="font-semibold">Is Email verified:</span>{" "}
+                <span className="font-semibold">{t("is-email-verified")}:</span>{" "}
                 <span>
                   {isEmailVerified ? (
                     "Verified"
@@ -448,10 +470,10 @@ function UserProfile() {
                 <>
                   <li className="flex md:flex-row flex-col md:justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
                     <span className="font-semibold flex gap-1">
-                      Public profile :{" "}
+                      {t("public-profile")} :{" "}
                       <Tooltip
                         maxWidth="max-w-[250px]"
-                        message={`This is your public URL. Copy or share it with the signer, and you will be able to see all your publicly set templates.`}
+                        message={t("public-profile-help")}
                       />
                     </span>
                     <div className="flex md:flex-row flex-col md:items-center">
@@ -484,10 +506,10 @@ function UserProfile() {
                   </li>
                   <li className="flex md:flex-row flex-col md:justify-between md:items-center border-t-[1px] border-gray-300 py-2 break-all">
                     <span className="font-semibold flex gap-1">
-                      Tagline :{" "}
+                      {t("tagline")} :{" "}
                       <Tooltip
                         maxWidth="max-w-[250px]"
-                        message={`This Tagline will appear on your OpenSign public profile for ex. https://opensign.me/alex`}
+                        message={t("tagline-help")}
                       />
                     </span>
                     <div className="flex md:flex-row flex-col md:items-center">
@@ -519,7 +541,7 @@ function UserProfile() {
                         isTeam ? "font-semibold" : "font-semibold text-gray-300"
                       }
                     >
-                      Disable DocumentId :{" "}
+                      {t("disable-documentId")} :{" "}
                       <Tooltip
                         url={
                           "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
@@ -566,7 +588,7 @@ function UserProfile() {
                 }}
                 className="op-btn op-btn-primary"
               >
-                {editmode ? "Save" : "Edit"}
+                {editmode ? t("save") : t("edit")}
               </button>
               <button
                 type="button"
@@ -577,14 +599,14 @@ function UserProfile() {
                   editmode ? "op-btn-ghost" : "op-btn-secondary"
                 }`}
               >
-                {editmode ? "Cancel" : "Change Password"}
+                {editmode ? t("cancel") : t("change-password")}
               </button>
             </div>
           </div>
           {isVerifyModal && (
             <ModalUi
               isOpen
-              title={"OTP verification"}
+              title={t("otp-verification")}
               handleClose={handleCloseVerifyModal}
             >
               {otpLoader ? (
@@ -594,26 +616,30 @@ function UserProfile() {
               ) : (
                 <form onSubmit={(e) => handleVerifyEmail(e)}>
                   <div className="px-6 py-3 text-base-content">
-                    <label className="mb-2">Enter OTP</label>
+                    <label className="mb-2">{t("enter-otp")}</label>
                     <input
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                       type="tel"
                       pattern="[0-9]{4}"
                       className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
-                      placeholder="Enter OTP received over email"
+                      placeholder={t("otp-placeholder")}
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
                     />
                   </div>
                   <div className="px-6 mb-3">
                     <button type="submit" className="op-btn op-btn-primary">
-                      Verify
+                      {t("verify")}
                     </button>
                     <button
                       className="op-btn op-btn-secondary ml-2"
                       onClick={(e) => handleResend(e)}
                     >
-                      Resend
+                      {t("resend")}
                     </button>
                   </div>
                 </form>
@@ -633,17 +659,16 @@ function UserProfile() {
 
                   <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
                     <div className="op-card-body">
-                      <h2 className="op-card-title">Upgrade to Plan</h2>
-                      <p>
-                        To have a username less than 8 character please
-                        subscribe
-                      </p>
+                      <h2 className="op-card-title">
+                        {t("upgrade-to")} {t("plan")}
+                      </h2>
+                      <p>{t("user-name-limit-char")}</p>
                       <div className="op-card-actions justify-end">
                         <button
                           onClick={() => navigate("/subscription")}
                           className="op-btn op-btn-accent"
                         >
-                          Upgrade Now
+                          {t("upgrade-now")}
                         </button>
                       </div>
                     </div>

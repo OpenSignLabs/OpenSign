@@ -27,8 +27,10 @@ import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
 import Select from "react-select";
 import SubscribeCard from "./SubscribeCard";
+import { useTranslation } from "react-i18next";
 
 const ReportTable = (props) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const isDashboard =
@@ -302,7 +304,7 @@ const ReportTable = (props) => {
                 setIsAlert(true);
                 setAlertMsg({
                   type: "danger",
-                  message: "Something went wrong, Please try again later!"
+                  message: t("something-went-wrong-mssg")
                 });
                 setTimeout(() => setIsAlert(false), 1500);
                 setActLoader({});
@@ -314,7 +316,7 @@ const ReportTable = (props) => {
             setIsAlert(true);
             setAlertMsg({
               type: "danger",
-              message: "Something went wrong, Please try again later!"
+              message: t("something-went-wrong-mssg")
             });
             setTimeout(() => setIsAlert(false), 1500);
             setActLoader({});
@@ -324,7 +326,7 @@ const ReportTable = (props) => {
           setIsAlert(true);
           setAlertMsg({
             type: "danger",
-            message: "Something went wrong, Please try again later!"
+            message: t("something-went-wrong-mssg")
           });
           setTimeout(() => setIsAlert(false), 1500);
           setActLoader({});
@@ -414,7 +416,7 @@ const ReportTable = (props) => {
         setIsAlert(true);
         setAlertMsg({
           type: "success",
-          message: "Record deleted successfully!"
+          message: t("record-delete-alert")
         });
         setTimeout(() => setIsAlert(false), 1500);
         const upldatedList = props.List.filter(
@@ -427,7 +429,7 @@ const ReportTable = (props) => {
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
-        message: "Something went wrong, Please try again later!"
+        message: t("something-went-wrong-mssg")
       });
       setTimeout(() => setIsAlert(false), 1500);
       setActLoader({});
@@ -503,7 +505,7 @@ const ReportTable = (props) => {
           setIsAlert(true);
           setAlertMsg({
             type: "success",
-            message: "Record revoked successfully!"
+            message: t("record-revoke-alert")
           });
           setTimeout(() => setIsAlert(false), 1500);
           const upldatedList = props.List.filter(
@@ -518,7 +520,7 @@ const ReportTable = (props) => {
         setIsAlert(true);
         setAlertMsg({
           type: "danger",
-          message: "Something went wrong, Please try again later!"
+          message: t("something-went-wrong-mssg")
         });
         setTimeout(() => setIsAlert(false), 1500);
         setActLoader({});
@@ -602,7 +604,7 @@ const ReportTable = (props) => {
         setActLoader({});
       } catch (err) {
         console.log("err in getsignedurl", err);
-        alert("something went wrong, please try again later.");
+        alert(t("something-went-wrong-mssg"));
         setActLoader({});
       }
     }
@@ -735,12 +737,12 @@ const ReportTable = (props) => {
       const res = await axios.post(url, params, { headers: headers });
       if (res?.data?.result?.status === "success") {
         setIsAlert(true);
-        setAlertMsg({ type: "success", message: "Mail sent successfully." });
+        setAlertMsg({ type: "success", message: t("mail-sent-alert") });
       } else {
         setIsAlert(true);
         setAlertMsg({
           type: "danger",
-          message: "Something went wrong, please try again later!"
+          message: t("something-went-wrong-mssg")
         });
       }
     } catch (err) {
@@ -748,7 +750,7 @@ const ReportTable = (props) => {
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
-        message: "Something went wrong, please try again later!"
+        message: t("something-went-wrong-mssg")
       });
     } finally {
       setTimeout(() => setIsAlert(false), 1500);
@@ -789,20 +791,20 @@ const ReportTable = (props) => {
       if (count > 1) {
         setAlertMsg({
           type: "success",
-          message: count + " Document sent successfully!"
+          message: count + t("document-sent-alert")
         });
         setTimeout(() => setIsAlert(false), 1500);
       } else {
         setAlertMsg({
           type: "success",
-          message: count + " Document sent successfully!"
+          message: count + t("document-sent-alert")
         });
         setTimeout(() => setIsAlert(false), 1500);
       }
     } else {
       setAlertMsg({
         type: "danger",
-        message: "Something went wrong, Please try again later!"
+        message: t("something-went-wrong-mssg")
       });
       setTimeout(() => setIsAlert(false), 1500);
     }
@@ -839,7 +841,7 @@ const ReportTable = (props) => {
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
-        message: "Something went wrong, Please try again later!"
+        message: t("something-went-wrong-mssg")
       });
       setTimeout(() => setIsAlert(false), 1500);
     }
@@ -863,7 +865,7 @@ const ReportTable = (props) => {
           if (props.isPublic[item.objectId]) {
             setAlertMsg({
               type: "success",
-              message: "You have successfully made the template public."
+              message: t("template-public-alert-1")
             });
             setIsCelebration(true);
             setTimeout(() => {
@@ -875,7 +877,7 @@ const ReportTable = (props) => {
           } else {
             setAlertMsg({
               type: "success",
-              message: "You have successfully made the template private."
+              message: t("template-public-alert-2")
             });
             setSelectedPublicRole("");
           }
@@ -892,7 +894,7 @@ const ReportTable = (props) => {
         setIsAlert(true);
         setAlertMsg({
           type: "danger",
-          message: "Something went wrong, Please try again later!"
+          message: t("something-went-wrong-mssg")
         });
         setTimeout(() => setIsAlert(false), 1500);
         props.setIsPublic((prevStates) => ({
@@ -904,7 +906,7 @@ const ReportTable = (props) => {
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
-        message: "You need to select a role for the public signers."
+        message: t("template-public-alert-3")
       });
       setTimeout(() => setIsAlert(false), 1500);
     }
@@ -958,8 +960,7 @@ const ReportTable = (props) => {
             setIsAlert(true);
             setAlertMsg({
               type: "danger",
-              message:
-                " Please ensure there's at least one signature widget added for all signers."
+              message: t("template-public-alert-4")
             });
             setTimeout(() => setIsAlert(false), 5000);
           }
@@ -967,8 +968,7 @@ const ReportTable = (props) => {
           setIsAlert(true);
           setAlertMsg({
             type: "danger",
-            message:
-              "Since this template has send-in-order enabled, the public role must be positioned at the top."
+            message: t("template-public-alert-5")
           });
           setTimeout(() => setIsAlert(false), 5000);
         }
@@ -976,8 +976,7 @@ const ReportTable = (props) => {
         setIsAlert(true);
         setAlertMsg({
           type: "danger",
-          message:
-            "Please attach signers to all roles except for the public role user."
+          message: t("template-public-alert-6")
         });
         setTimeout(() => setIsAlert(false), 5000);
       }
@@ -985,8 +984,7 @@ const ReportTable = (props) => {
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
-        message:
-          "Please assign at least one public role to make this template public."
+        message: t("template-public-alert-7")
       });
       setTimeout(() => setIsAlert(false), 5000);
     }
@@ -999,7 +997,7 @@ const ReportTable = (props) => {
     setIsAlert(true);
     setAlertMsg({
       type: "success",
-      message: "Copied."
+      message: t("copied")
     });
     setTimeout(() => setIsAlert(false), 1500);
   };
@@ -1028,14 +1026,14 @@ const ReportTable = (props) => {
         setIsAlert(true);
         setAlertMsg({
           type: "success",
-          message: "Template Shared successfully."
+          message: t("template-share-alert")
         });
       }
     } catch (err) {
       setIsAlert(true);
       setAlertMsg({
         type: "danger",
-        message: "Something went wrong, Please try again later."
+        message: t("something-went-wrong-mssg")
       });
     } finally {
       setActLoader({});
@@ -1068,10 +1066,10 @@ const ReportTable = (props) => {
         )}
         <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
           <div className="font-light">
-            {props.ReportName}{" "}
+            {t(`report-name.${props.ReportName}`)}
             {props.report_help && (
               <span className="text-xs md:text-[13px] font-normal">
-                <Tooltip message={props.report_help} />
+                <Tooltip message={t(`report-help.${props.ReportName}`)} />
               </span>
             )}
           </div>
@@ -1101,15 +1099,15 @@ const ReportTable = (props) => {
               <tr className="border-y-[1px]">
                 {props.heading?.map((item, index) => (
                   <React.Fragment key={index}>
-                    <th className="px-4 py-2">{item}</th>
+                    <th className="px-4 py-2">{t(`report-heading.${item}`)}</th>
                   </React.Fragment>
                 ))}
                 {props.ReportName === "Templates" && isEnableSubscription && (
-                  <th className="px-4 py-2">Public</th>
+                  <th className="px-4 py-2">{t("public")}</th>
                 )}
                 {props.actions?.length > 0 && (
                   <th className="px-4 py-2 text-transparent pointer-events-none">
-                    Action
+                    {t("action")}
                   </th>
                 )}
               </tr>
@@ -1136,7 +1134,7 @@ const ReportTable = (props) => {
                               <button
                                 key={index}
                                 onClick={() => handleActionBtn(act, item)}
-                                title={act.hoverLabel}
+                                title={t(`btnLabel.${act.hoverLabel}`)}
                                 className={`${
                                   act?.btnColor ? act.btnColor : ""
                                 } op-btn op-btn-sm`}
@@ -1152,7 +1150,7 @@ const ReportTable = (props) => {
                             >
                               <div className="m-[20px]">
                                 <div className="text-lg font-normal text-black">
-                                  Are you sure you want to delete this contact?
+                                  {t("contact-delete-alert")}
                                 </div>
                                 <hr className="bg-[#ccc] mt-4 " />
                                 <div className="flex items-center mt-3 gap-2 text-white">
@@ -1160,13 +1158,13 @@ const ReportTable = (props) => {
                                     onClick={() => handleDelete(item)}
                                     className="op-btn op-btn-primary"
                                   >
-                                    Yes
+                                    {t("yes")}
                                   </button>
                                   <button
                                     onClick={handleClose}
                                     className="op-btn op-btn-secondary"
                                   >
-                                    No
+                                    {t("no")}
                                   </button>
                                 </div>
                               </div>
@@ -1200,16 +1198,16 @@ const ReportTable = (props) => {
                         )}
                         {props.heading.includes("Folder") && (
                           <td className="px-4 py-2">
-                            {item?.Folder?.Name || "OpenSign™ Drive"}
+                            {item?.Folder?.Name || t("OpenSign™ Drive")}
                           </td>
                         )}
                         <td className="px-4 py-2">
                           <button
                             onClick={() => handleDownload(item)}
                             className="op-link op-link-primary"
-                            title={"Download"}
+                            title={t("download")}
                           >
-                            {item?.URL ? "Download" : "-"}
+                            {item?.URL ? t("download") : "-"}
                           </button>
                         </td>
                         <td className="px-4 py-2">
@@ -1221,7 +1219,7 @@ const ReportTable = (props) => {
                               onClick={() => handleViewSigners(item)}
                               className="op-link op-link-primary"
                             >
-                              View
+                              {t("view")}
                             </button>
                           ) : (
                             "-"
@@ -1255,8 +1253,8 @@ const ReportTable = (props) => {
                                   isOpen
                                   title={
                                     props.isPublic[item.objectId]
-                                      ? "Make template public"
-                                      : "Make template private"
+                                      ? t("make-template-public")
+                                      : t("make-template-private")
                                   }
                                   handleClose={() => {
                                     setIsMakePublicModal({});
@@ -1272,13 +1270,13 @@ const ReportTable = (props) => {
                                     <div className="font-normal text-black">
                                       <p className="text-lg">
                                         {props.isPublic[item.objectId]
-                                          ? `Are you sure you want to make this template public?`
-                                          : `Are you sure you want to make this template private? This will remove it from your public profile.`}
+                                          ? t("make-template-public-alert")
+                                          : t("make-template-private-alert")}
                                       </p>
                                       {props.isPublic[item.objectId] && (
                                         <div className="flex mt-2 gap-2 md:items-center">
                                           <p className="text-[15px]">
-                                            Public role :{" "}
+                                            {t("public-role")} :{" "}
                                           </p>
 
                                           <input
@@ -1296,13 +1294,13 @@ const ReportTable = (props) => {
                                         }
                                         className="op-btn op-btn-primary"
                                       >
-                                        Submit
+                                        {t("submit")}
                                       </button>
                                       <button
                                         onClick={() => handleClose(item)}
                                         className="op-btn op-btn-secondary"
                                       >
-                                        Cancel
+                                        {t("cancel")}
                                       </button>
                                     </div>
                                   </div>
@@ -1311,7 +1309,7 @@ const ReportTable = (props) => {
                               {isPublicProfile[item.objectId] && (
                                 <ModalUi
                                   isOpen
-                                  title={"Public URL"}
+                                  title={t("public-url")}
                                   handleClose={() => {
                                     setIsPublicProfile({});
                                   }}
@@ -1319,15 +1317,10 @@ const ReportTable = (props) => {
                                   <div className="m-[20px]">
                                     {publicUserName ? (
                                       <div className="font-normal text-black">
-                                        <p>
-                                          Here’s your public URL: Copy it or
-                                          share it with the signer, and you will
-                                          be able to see all your publicly set
-                                          templates.
-                                        </p>
+                                        <p>{t("public-url-copy-mssg")}</p>
                                         <div className=" flex items-center gap-3 mt-2  p-[2px] ">
                                           <span className="font-bold">
-                                            Public URL :
+                                            {t("public-url")}:
                                           </span>
                                           <span
                                             onClick={() => copytoProfileLink()}
@@ -1337,16 +1330,12 @@ const ReportTable = (props) => {
                                       </div>
                                     ) : (
                                       <div className="font-normal text-black">
-                                        <p>
-                                          Please add your public URL, and you
-                                          will be able to make a public
-                                          template.
-                                        </p>
+                                        <p>{t("add-public-url-alert")}</p>
                                         <button
                                           className="mt-3 op-btn op-btn-primary"
                                           onClick={() => navigate("/profile")}
                                         >
-                                          Add
+                                          {t("add")}
                                         </button>
                                       </div>
                                     )}
@@ -1371,7 +1360,7 @@ const ReportTable = (props) => {
                                         onClick={() =>
                                           handleActionBtn(act, item)
                                         }
-                                        title={act.hoverLabel}
+                                        title={t(`btnLabel.${act.hoverLabel}`)}
                                         className={
                                           act.action !== "option"
                                             ? `${
@@ -1385,7 +1374,7 @@ const ReportTable = (props) => {
                                         <i className={act.btnIcon}></i>
                                         {act.btnLabel && (
                                           <span className="uppercase font-medium">
-                                            {act.btnLabel}
+                                            {t(`btnLabel.${act.btnLabel}`)}
                                           </span>
                                         )}
                                         {isOption[item.objectId] &&
@@ -1400,7 +1389,9 @@ const ReportTable = (props) => {
                                                       item
                                                     )
                                                   }
-                                                  title={subact.hoverLabel}
+                                                  title={t(
+                                                    `btnLabel.${subact.btnLabel}`
+                                                  )}
                                                 >
                                                   <span>
                                                     <i
@@ -1408,7 +1399,9 @@ const ReportTable = (props) => {
                                                     ></i>
                                                     {subact.btnLabel && (
                                                       <span className="text-[13px] capitalize font-medium">
-                                                        {subact.btnLabel}
+                                                        {t(
+                                                          `btnLabel.${subact.btnLabel}`
+                                                        )}
                                                       </span>
                                                     )}
                                                   </span>
@@ -1425,7 +1418,7 @@ const ReportTable = (props) => {
                                     data-tut={act?.selector}
                                     key={index}
                                     onClick={() => handleActionBtn(act, item)}
-                                    title={act.hoverLabel}
+                                    title={t(`btnLabel.${act.hoverLabel}`)}
                                     className={
                                       act.action !== "option"
                                         ? `${
@@ -1437,7 +1430,7 @@ const ReportTable = (props) => {
                                     <i className={act.btnIcon}></i>
                                     {act.btnLabel && (
                                       <span className="uppercase font-medium">
-                                        {act.btnLabel}
+                                        {t(`btnLabel.${act.btnLabel}`)}
                                       </span>
                                     )}
                                     {isOption[item.objectId] &&
@@ -1449,7 +1442,9 @@ const ReportTable = (props) => {
                                               onClick={() =>
                                                 handleActionBtn(subact, item)
                                               }
-                                              title={subact.hoverLabel}
+                                              title={t(
+                                                `btnLabel.${subact.hoverLabel}`
+                                              )}
                                             >
                                               <span>
                                                 <i
@@ -1457,7 +1452,9 @@ const ReportTable = (props) => {
                                                 ></i>
                                                 {subact.btnLabel && (
                                                   <span className="text-[13px] capitalize font-medium">
-                                                    {subact.btnLabel}
+                                                    {t(
+                                                      `btnLabel.${subact.btnLabel}`
+                                                    )}
                                                   </span>
                                                 )}
                                               </span>
@@ -1483,17 +1480,13 @@ const ReportTable = (props) => {
                                           ✕
                                         </div>
                                         <div className="text-base-content text-base text-center">
-                                          You cannot share a template if any
-                                          roles already have contacts assigned.
-                                          Please remove all contact assignments
-                                          from the roles before sharing the
-                                          template.
+                                          {t("share-with-alert")}
                                         </div>
                                       </div>
                                     ) : (
                                       <>
                                         <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-                                          Share with
+                                          {t("share-with")}
                                         </h3>
                                         <div
                                           className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
@@ -1517,7 +1510,7 @@ const ReportTable = (props) => {
                                             closeMenuOnSelect
                                             required={true}
                                             noOptionsMessage={() =>
-                                              "Team not found"
+                                              t("team-not-found")
                                             }
                                             unstyled
                                             classNames={{
@@ -1539,7 +1532,7 @@ const ReportTable = (props) => {
                                             }}
                                           />
                                           <button className="op-btn op-btn-primary ml-[10px] my-3">
-                                            Submit
+                                            {t("submit")}
                                           </button>
                                         </form>
                                       </>
@@ -1563,7 +1556,7 @@ const ReportTable = (props) => {
                                 {isSubscribe && !isEnableSubscription && (
                                   <>
                                     <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-                                      Share with
+                                      {t("share-with")}
                                     </h3>
                                     <div
                                       className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
@@ -1580,7 +1573,7 @@ const ReportTable = (props) => {
                                       onClick={(e) => handleShareWith(e, item)}
                                       className="op-btn op-btn-primary ml-[10px] my-3"
                                     >
-                                      Submit
+                                      {t("submit")}
                                     </button>
                                   </>
                                 )}
@@ -1593,7 +1586,7 @@ const ReportTable = (props) => {
                               showHeader={
                                 props.ReportName === "Templates" && true
                               }
-                              title={"Signers"}
+                              title={t("signers")}
                               reduceWidth={"md:max-w-[450px]"}
                               handleClose={() => setIsViewShare({})}
                             >
@@ -1610,13 +1603,13 @@ const ReportTable = (props) => {
                                   <tr>
                                     {props.ReportName === "Templates" && (
                                       <th className="p-2 pl-3 w-[30%]">
-                                        Roles
+                                        {t("roles")}
                                       </th>
                                     )}
                                     <th className="pl-3 py-2">
                                       {props.ReportName === "Templates"
-                                        ? "Email"
-                                        : "Signers"}
+                                        ? t("email")
+                                        : t("signers")}
                                     </th>
                                   </tr>
                                 </thead>
@@ -1642,12 +1635,12 @@ const ReportTable = (props) => {
                           {isDeleteModal[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={"Delete Document"}
+                              title={t("delete-document")}
                               handleClose={handleClose}
                             >
                               <div className="m-[20px]">
                                 <div className="text-lg font-normal text-black">
-                                  Are you sure you want to delete this document?
+                                  {t("delete-document-alert")}
                                 </div>
                                 <hr className="bg-[#ccc] mt-4" />
                                 <div className="flex items-center mt-3 gap-2 text-white">
@@ -1655,13 +1648,13 @@ const ReportTable = (props) => {
                                     onClick={() => handleDelete(item)}
                                     className="op-btn op-btn-primary"
                                   >
-                                    Yes
+                                    {t("yes")}
                                   </button>
                                   <button
                                     onClick={handleClose}
                                     className="op-btn op-btn-secondary"
                                   >
-                                    No
+                                    {t("no")}
                                   </button>
                                 </div>
                               </div>
@@ -1670,7 +1663,7 @@ const ReportTable = (props) => {
                           {isBulkSend[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={"Quick send"}
+                              title={t("quick-send")}
                               handleClose={() => setIsBulkSend({})}
                             >
                               {isLoader[item.objectId] ? (
@@ -1689,7 +1682,7 @@ const ReportTable = (props) => {
                           {isShare[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={"Copy link"}
+                              title={t("copy-link")}
                               handleClose={() => {
                                 setIsShare({});
                                 setActLoader({});
@@ -1714,7 +1707,7 @@ const ReportTable = (props) => {
                                       >
                                         <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
                                           <i className="fa-light fa-share-from-square"></i>{" "}
-                                          Share
+                                          {t("btnLabel.Share")}
                                         </button>
                                       </RWebShare>
                                       <button
@@ -1723,8 +1716,8 @@ const ReportTable = (props) => {
                                       >
                                         <i className="fa-light fa-link"></i>{" "}
                                         {copied[share.email]
-                                          ? "Copied"
-                                          : "Copy"}
+                                          ? t("copied")
+                                          : t("copy")}
                                       </button>
                                     </div>
                                   </div>
@@ -1735,12 +1728,12 @@ const ReportTable = (props) => {
                           {isRevoke[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={"Revoke document"}
+                              title={t("revoke-document")}
                               handleClose={handleClose}
                             >
                               <div className="m-[20px]">
                                 <div className="text-sm md:text-lg font-normal text-black">
-                                  Are you sure you want to revoke this document?
+                                  {t("revoke-document-alert")}
                                 </div>
                                 <div className="mt-2">
                                   <textarea
@@ -1756,13 +1749,13 @@ const ReportTable = (props) => {
                                     onClick={() => handleRevoke(item)}
                                     className="op-btn op-btn-primary px-6"
                                   >
-                                    Yes
+                                    {t("yes")}
                                   </button>
                                   <button
                                     onClick={handleClose}
                                     className="op-btn op-btn-secondary px-6"
                                   >
-                                    No
+                                    {t("no")}
                                   </button>
                                 </div>
                               </div>
@@ -1771,7 +1764,7 @@ const ReportTable = (props) => {
                           {isResendMail[item.objectId] && (
                             <ModalUi
                               isOpen
-                              title={"Resend Mail"}
+                              title={t("resend-mail")}
                               handleClose={() => {
                                 setIsResendMail({});
                                 setIsNextStep({});
@@ -1797,9 +1790,7 @@ const ReportTable = (props) => {
                                           <div className="absolute right-5 text-xs z-40">
                                             <Tooltip
                                               id={`${user.Id}_help`}
-                                              message={
-                                                "You can use following variables which will get replaced with their actual values:- {{document_title}}, {{sender_name}}, {{sender_mail}}, {{sender_phone}}, {{receiver_name}}, {{receiver_email}}, {{receiver_phone}}, {{expiry_date}}, {{company_name}}, {{signing_url}}."
-                                              }
+                                              message={t("resend-mail-help")}
                                             />
                                           </div>
                                           <div>
@@ -1807,7 +1798,7 @@ const ReportTable = (props) => {
                                               className="text-xs ml-1"
                                               htmlFor="mailsubject"
                                             >
-                                              Subject{" "}
+                                              {t("subject")}{" "}
                                             </label>
                                             <input
                                               id="mailsubject"
@@ -1819,6 +1810,14 @@ const ReportTable = (props) => {
                                                   item
                                                 )
                                               }
+                                              onInvalid={(e) =>
+                                                e.target.setCustomValidity(
+                                                  t("input-required")
+                                                )
+                                              }
+                                              onInput={(e) =>
+                                                e.target.setCustomValidity("")
+                                              }
                                               required
                                             />
                                           </div>
@@ -1827,7 +1826,7 @@ const ReportTable = (props) => {
                                               className="text-xs ml-1"
                                               htmlFor="mailbody"
                                             >
-                                              Body{" "}
+                                              {t("body")}{" "}
                                             </label>
                                             <EditorToolbar containerId="toolbar1" />
                                             <ReactQuill
@@ -1846,7 +1845,7 @@ const ReportTable = (props) => {
                                             type="submit"
                                             className="op-btn op-btn-primary"
                                           >
-                                            Resend
+                                            {t("resend")}
                                           </button>
                                         </form>
                                       </div>
@@ -1884,7 +1883,7 @@ const ReportTable = (props) => {
               onClick={() => paginateBack()}
               className="op-join-item op-btn op-btn-sm"
             >
-              Prev
+              {t("prev")}
             </button>
           )}
           {pageNumbers.map((x, i) => (
@@ -1904,7 +1903,7 @@ const ReportTable = (props) => {
               onClick={() => paginateFront()}
               className="op-join-item op-btn op-btn-sm"
             >
-              Next
+              {t("next")}
             </button>
           )}
         </div>
@@ -1921,11 +1920,13 @@ const ReportTable = (props) => {
                 alt="img"
               />
             </div>
-            <div className="text-sm font-semibold">No Data Available</div>
+            <div className="text-sm font-semibold">
+              {t("no-data-avaliable")}
+            </div>
           </div>
         )}
         <ModalUi
-          title={"Add Contact"}
+          title={t("add-contact")}
           isOpen={isContactform}
           handleClose={handleContactFormModal}
         >
