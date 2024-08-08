@@ -114,7 +114,7 @@
       "Users":"Utilisateurs"
     },
     "report-heading":{
-      "Sr.No":"Numéro du document",
+      "Sr.No":"Sr. Non",
       "Title":"Titre",
       "Email":"E-mail",
       "Phone":"Téléphone",
@@ -128,7 +128,7 @@
       "Active":"Actif",
       "Role":"Rôle",
       "Team":"Équipe",
-      "Name":"Nom et Prénom",
+      "Name":"Nom",
       "Status":"Statut",
       "created-date":"Date de création",
       "Type":"Saisir"
@@ -579,8 +579,9 @@
      "Recent signature requests": "Voici une liste de documents qui attendent votre signature.",
      "Recently sent for signatures":"Il s'agit d'une liste de documents que vous avez envoyés à d'autres parties pour signature.",
      "Drafts":"Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi."
-
-   }
+    },
+   "enter-email-plaholder":"Ajoutez une adresse email et appuyez sur Entrée",
+   "success-email-alert" :"E-mail envoyé avec succès!"
      
     
   

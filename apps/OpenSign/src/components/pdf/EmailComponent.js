@@ -1,13 +1,7 @@
 import React, { useState } from "react";
-import { saveAs } from "file-saver";
 import axios from "axios";
-import {
-  getBase64FromUrl,
-  handleDownloadPdf,
-  handleToPrint
-} from "../../constant/Utils";
+import { handleDownloadPdf, handleToPrint } from "../../constant/Utils";
 import { themeColor, emailRegex } from "../../constant/const";
-import printModule from "print-js";
 import Loader from "../../primitives/Loader";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
@@ -239,7 +233,7 @@ function EmailComponent({
                   className="p-[10px] pb-[20px] rounded w-full text-[15px] outline-none bg-transparent border-[1.5px] op-border-primary"
                   onChange={handleEmailValue}
                   onKeyDown={handleEnterPress}
-                  placeholder="Add an email address and hit enter"
+                  placeholder={t("enter-email-plaholder")}
                   onBlur={() => emailValue && handleEnterPress("add")}
                   onInvalid={(e) =>
                     e.target.setCustomValidity(t("input-required"))

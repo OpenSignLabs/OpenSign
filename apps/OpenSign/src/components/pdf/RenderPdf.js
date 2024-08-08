@@ -9,6 +9,7 @@ import {
 } from "../../constant/Utils";
 import Placeholder from "./Placeholder";
 import Alert from "../../primitives/Alert";
+import { useTranslation } from "react-i18next";
 
 function RenderPdf({
   pageNumber,
@@ -63,6 +64,7 @@ function RenderPdf({
   ispublicTemplate,
   handleUserDetails
 }) {
+  const { t } = useTranslation();
   const isMobile = window.innerWidth < 767;
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
@@ -249,7 +251,9 @@ function RenderPdf({
   };
   return (
     <>
-      {successEmail && <Alert type={"success"}>Email sent successfully!</Alert>}
+      {successEmail && (
+        <Alert type={"success"}>{t("success-email-alert")}</Alert>
+      )}
       {isMobile ? (
         <div
           data-tut="reactourForth"

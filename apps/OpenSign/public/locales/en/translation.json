@@ -580,11 +580,9 @@
         "Recent signature requests": "This is a list of documents that are waiting for your signature.",
         "Recently sent for signatures":"This is a list of documents you've sent to other parties for signature.",
         "Drafts":"This are documents you have started but have not finalized for sending."
-
-
-              
-
-      }
+         },
+        "enter-email-plaholder":"Add an email address and hit enter",
+        "success-email-alert":"Email sent successfully!"
        
      
           

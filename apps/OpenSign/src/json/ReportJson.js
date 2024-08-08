@@ -10,7 +10,7 @@ export default function reportJson(id) {
     "Owner",
     "Signers"
   ];
-  const contactbook = ["Sr.No", "Title", "Email", "Phone"];
+  const contactbook = ["Sr.No", "Name", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
   const templateReport = ["Sr.No", "Title", "File", "Owner", "Signers"];
   switch (id) {
