@@ -29,7 +29,7 @@
      },
     "action":"Action",
     "add":"Add",
-    "add-new-folder":"ajouter un nouveau dossier",
+    "add-new-folder":"Add a new folder",
     "disable-documentId":"Disable DocumentId",
     "edit":"Edit",
     "change-password":"Change Password",
@@ -125,7 +125,7 @@
       "Share with team":"Share with team",
       "Share":"Share",
       "View":"View",
-      "option":"option"
+      "option":"Option"
        },
     "report-heading":{
       "Sr.No":"Sr.No",
@@ -146,7 +146,6 @@
       "Status":"Status",
       "created-date":"Created Date",
       "Type":"Type"
-       
       },
       "report-help":{
         "Draft Documents": "These are documents you have started but have not finalized for sending.",
@@ -305,7 +304,6 @@
     "enter-otp":"Enter OTP",
     "verify":"Verify",
     "resend":"Resend",
-    
     "verify-email":"Please verify your email !",
     "send-otp":" Send OTP",
     "otp-placeholder":"Enter OTP received over email",
@@ -370,7 +368,7 @@
         "All pages but last":"All pages but last",
         "All pages but first":"All pages but first"
       },
-      "options":"options",
+      "options":"Options",
       "minimun-check":"Minimun check",
       "maximum-check":"Maximum check",
       "default-value":"Default value",
