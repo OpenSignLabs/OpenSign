@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { openInNewTab } from "../../constant/Utils";
+import { useTranslation } from "react-i18next";
 
 const DashboardButton = (props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   function openReport() {
     if (props.Data && props.Data.Redirect_type) {
@@ -35,7 +37,9 @@ const DashboardButton = (props) => {
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
-        <div className=" text-lg ml-3 text-base-content">{props.Label}</div>
+        <div className=" text-lg ml-3 text-base-content">
+          {t(`sidebar.${props.Label}`)}
+        </div>
       </div>
     </div>
   );

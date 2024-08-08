@@ -19,9 +19,7 @@ const dashboardJson = [
             key: "count",
             Redirect_type: "Report",
             Redirect_id: "4Hhwbp482K",
-            tourSection: "tourcard1",
-            tourMessage:
-              "Clicking on this card will take you to the list of documents awaiting your review."
+            tourSection: "tourcard1"
           }
         }
       },
@@ -42,9 +40,7 @@ const dashboardJson = [
             key: "count",
             Redirect_type: "Report",
             Redirect_id: "1MwEuxLEkF",
-            tourSection: "tourcard2",
-            tourMessage:
-              "Clicking on this card will take you to a list of documents awaiting signature."
+            tourSection: "tourcard2"
           }
         }
       },
@@ -53,10 +49,9 @@ const dashboardJson = [
         widget: {
           type: "report",
           reportId: "5Go51Q7T8r",
+          label: "Recent signature requests",
           data: {
-            tourSection: "tourreport1",
-            tourMessage:
-              "This is a list of documents that are waiting for your signature."
+            tourSection: "tourreport1"
           }
         }
       },
@@ -65,10 +60,9 @@ const dashboardJson = [
         widget: {
           type: "report",
           reportId: "d9k3UfYHBc",
+          label: "Recently sent for signatures",
           data: {
-            tourSection: "tourreport2",
-            tourMessage:
-              "This is a list of documents you've sent to other parties for signature."
+            tourSection: "tourreport2"
           }
         }
       },
@@ -77,10 +71,9 @@ const dashboardJson = [
         widget: {
           type: "report",
           reportId: "kC5mfynCi4",
+          label: "Drafts",
           data: {
-            tourSection: "tourreport3",
-            tourMessage:
-              "This are documents you have started but have not finalized for sending."
+            tourSection: "tourreport3"
           }
         }
       }

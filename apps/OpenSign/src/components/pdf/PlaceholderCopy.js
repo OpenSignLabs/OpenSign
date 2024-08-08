@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import ModalUi from "../../primitives/ModalUi";
 import { randomId, textWidget } from "../../constant/Utils";
+import { useTranslation } from "react-i18next";
 
 function PlaceholderCopy(props) {
+  const { t } = useTranslation();
   const copyType = ["All pages", "All pages but last", "All pages but first"];
   const [selectCopyType, setSelectCopyType] = useState("");
   //function for get copy placeholder position
@@ -188,7 +190,7 @@ function PlaceholderCopy(props) {
   return (
     <ModalUi
       isOpen={props.isPageCopy}
-      title={"Copy to all pages"}
+      title={t("copy-to-all-pages")}
       handleClose={() => handleUniqueId()}
     >
       <div className="h-full p-[20px] text-base-content">
@@ -203,8 +205,7 @@ function PlaceholderCopy(props) {
                   onChange={() => setSelectCopyType(data)}
                   checked={selectCopyType === data}
                 />
-
-                {data}
+                {t(`copy-type.${data}`)}
               </label>
             </div>
           );
@@ -220,14 +221,14 @@ function PlaceholderCopy(props) {
           disabled={!selectCopyType}
           className="op-btn op-btn-primary"
         >
-          Apply
+          {t("apply")}
         </button>
         <button
           type="button"
           className="op-btn op-btn-ghost"
           onClick={() => handleUniqueId()}
         >
-          Cancel
+          {t("cancel")}
         </button>
       </div>
     </ModalUi>

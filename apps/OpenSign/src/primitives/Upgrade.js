@@ -1,7 +1,9 @@
 import React from "react";
 import { openInNewTab } from "../constant/Utils";
+import { useTranslation } from "react-i18next";
 
 function Upgrade({ message }) {
+  const { t } = useTranslation();
   return (
     <sup>
       <span
@@ -11,7 +13,7 @@ function Upgrade({ message }) {
         }}
         className="op-link op-link-accent text-sm"
       >
-        {message ? message : "Upgrade now"}
+        {message ? message : t("upgrade-now")}
       </span>
     </sup>
   );

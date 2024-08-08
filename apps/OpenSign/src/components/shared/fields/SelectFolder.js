@@ -3,8 +3,10 @@ import Parse from "parse";
 import CreateFolder from "./CreateFolder";
 import ModalUi from "../../../primitives/ModalUi";
 import Tooltip from "../../../primitives/Tooltip";
+import { useTranslation } from "react-i18next";
 
 const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
+  const { t } = useTranslation();
   const [isOpen, SetIsOpen] = useState(false);
   const [clickFolder, setClickFolder] = useState("");
   const [selectFolder, setSelectedFolder] = useState({});
@@ -169,7 +171,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
     <div className="text-xs mt-2 ">
       <div>
         <label className="block">
-          Select Folder
+          {t("select-folder")}
           {required && <span className="text-red-500 text-[13px]">*</span>}
         </label>
       </div>
@@ -192,12 +194,12 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
               <p>
                 {selectFolder && selectFolder.Name
                   ? selectFolder.Name
-                  : "OpenSign™ Drive"}
+                  : t("OpenSign-drive")}
               </p>
               <div className="text-black text-sm">
                 <i
                   className="fa-light fa-pencil cursor-pointer"
-                  title="Select Folder"
+                  title={t("select-folder")}
                   aria-hidden="true"
                 ></i>
               </div>
@@ -208,15 +210,11 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
           </div>
         </div>
         <div className="absolute top-2 right-1 cursor-pointer">
-          <Tooltip
-            message={
-              "If you do not select a folder, your signed document will be saved in the Main OpenSign drive folder."
-            }
-          />
+          <Tooltip message={t("select-folder-help")} />
         </div>
       </div>
       <ModalUi
-        title={"Select Folder"}
+        title={t("select-folder")}
         isOpen={isOpen}
         handleClose={handleCancel}
       >
@@ -227,7 +225,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
               title="OpenSign™ Drive"
               onClick={(e) => removeTabListItem(e)}
             >
-              OpenSign™ Drive /{" "}
+              {t("OpenSign-drive")} /{" "}
             </span>
             {tabList &&
               tabList.map((tab, i) => (
@@ -283,7 +281,7 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
                   ))
                 : !isLoader && (
                     <div className="text-base-content text-center my-2">
-                      No data found
+                      {t("no-data")}
                     </div>
                   )}
             </div>
@@ -305,27 +303,28 @@ const SelectFolder = ({ required, onSuccess, folderCls, isReset }) => {
         <div className="flex justify-between items-center py-[.75rem] px-[1.25rem]">
           <div
             className="op-btn op-btn-seconday op-btn-sm"
-            title="Save Here"
+            title={t("save-here")}
             onClick={handleCreate}
           >
             {isAdd ? (
               <>
                 <i className="fa-light fa-arrow-left" aria-hidden="true"></i>
-                <span className="text-xs">Back</span>
+                <span className="text-xs">{t("back")}</span>
               </>
             ) : (
               <>
                 <i className="fa-light fa-square-plus" aria-hidden="true"></i>
-                <span className="">Add folder</span>
+                <span className="">{t("add-folder")}</span>
               </>
             )}
           </div>
           <div
             className="op-btn op-btn-primary op-btn-sm"
-            title="Save Here"
+            title={t("save-here")}
             onClick={handleSubmit}
           >
-            <i className="fa-light fa-save" aria-hidden="true"></i>Save here
+            <i className="fa-light fa-save" aria-hidden="true"></i>
+            {t("save-here")}
           </div>
         </div>
       </ModalUi>

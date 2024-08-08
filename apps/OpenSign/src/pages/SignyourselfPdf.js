@@ -51,8 +51,10 @@ import TextFontSetting from "../components/pdf/TextFontSetting";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
+  const { t } = useTranslation();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [isSignPad, setIsSignPad] = useState(false);
   const [allPages, setAllPages] = useState(null);
@@ -85,9 +87,9 @@ function SignYourSelf() {
   const [validateAlert, setValidateAlert] = useState(false);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
-  const [handleError, setHandleError] = useState();
+  const [handleError, setHandleError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [signTour, setSignTour] = useState(true);
   const { docId } = useParams();
@@ -217,12 +219,12 @@ function SignYourSelf() {
         //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
         const arrayBuffer = await convertPdfArrayBuffer(url);
         if (arrayBuffer === "Error") {
-          setHandleError("Error: Something went wrong!");
+          setHandleError(t("something-went-wrong-mssg"));
         } else {
           setPdfArrayBuffer(arrayBuffer);
         }
       } else {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
       isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
       if (isCompleted) {
@@ -234,7 +236,7 @@ function SignYourSelf() {
         setPdfUrl(documentData[0].SignedUrl);
         const alreadySign = {
           status: true,
-          mssg: "Congratulations! 🎉 This document has been successfully signed by you!"
+          mssg: t("document-signed-alert")
         };
         if (showComplete) {
           setShowAlreadySignDoc(alreadySign);
@@ -253,10 +255,10 @@ function SignYourSelf() {
       const loadObj = {
         isLoad: false
       };
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading(loadObj);
     } else {
-      setHandleError("No Data Found!");
+      setHandleError(t("no-data-avaliable"));
       const loadObj = {
         isLoad: false
       };
@@ -290,7 +292,7 @@ function SignYourSelf() {
         const loadObj = {
           isLoad: false
         };
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
         setIsLoading(loadObj);
       });
     const contractUsersRes = await contractUsers();
@@ -298,7 +300,7 @@ function SignYourSelf() {
       const loadObj = {
         isLoad: false
       };
-      setHandleError("Error: Something went wrong!");
+      setHandleError(t("something-went-wrong-mssg"));
       setIsLoading(loadObj);
     } else if (contractUsersRes[0] && contractUsersRes.length > 0) {
       setActiveMailAdapter(contractUsersRes[0]?.active_mail_adapter);
@@ -342,7 +344,7 @@ function SignYourSelf() {
           setCheckTourStatus(true);
         }
       } else {
-        setHandleError("No Data Found!");
+        setHandleError(t("no-data-avaliable"));
       }
       const loadObj = {
         isLoad: false
@@ -578,7 +580,7 @@ function SignYourSelf() {
     setOtpLoader(true);
     await handleSendOTP(Parse.User.current().getEmail());
     setOtpLoader(false);
-    alert("OTP sent on you email");
+    alert(t("otp-sent-alert"));
   };
   //`handleVerifyEmail` function is used to verify email with otp
   const handleVerifyEmail = async (e) => {
@@ -591,11 +593,12 @@ function SignYourSelf() {
       });
       if (resEmail?.message === "Email is verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-1"));
       } else if (resEmail?.message === "Email is already verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-2"));
       }
       setOtp("");
-      alert(resEmail.message);
       setIsVerifyModal(false);
       // handleRecipientSign();
     } catch (error) {
@@ -628,7 +631,7 @@ function SignYourSelf() {
           setIsEmailVerified(isEmailVerified);
         }
       } catch (e) {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
     }
     if (isEmailVerified) {
@@ -666,17 +669,15 @@ function SignYourSelf() {
         }
         if (xyPostion.length === 0 || !isSignatureExist) {
           setIsAlert({
-            header: "Fields required",
+            header: t("fields-required"),
             isShow: true,
-            alertMessage:
-              "Please ensure there's at least one signature widget added"
+            alertMessage: t("signature-widget-alert-1")
           });
           return;
         } else if (showAlert) {
           setIsAlert({
             isShow: true,
-            alertMessage:
-              "Please ensure all field is accurately filled and meets all requirements."
+            alertMessage: t("signature-widget-alert-2")
           });
           return;
         } else {
@@ -710,9 +711,9 @@ function SignYourSelf() {
             setIsUiLoading(false);
             if (err && err.message.includes("is encrypted.")) {
               setIsAlert({
-                header: "Error",
+                header: t("error"),
                 isShow: true,
-                alertMessage: `Currently encrypted pdf files are not supported.`
+                alertMessage: t("encrypted-pdf-alert")
               });
             } else {
               console.log("err in signing", err.message);
@@ -721,15 +722,15 @@ function SignYourSelf() {
                 "PKCS#12 MAC could not be verified. Invalid password?"
               ) {
                 setIsAlert({
-                  header: "Error",
+                  header: t("error"),
                   isShow: true,
-                  alertMessage: `PFX file password is invalid.`
+                  alertMessage: t("encrypted-pdf-alert-1")
                 });
               } else {
                 setIsAlert({
-                  header: "Error",
+                  header: t("error"),
                   isShow: true,
-                  alertMessage: `Something went wrong.`
+                  alertMessage: t("something-went-wrong-mssg")
                 });
               }
             }
@@ -739,9 +740,9 @@ function SignYourSelf() {
         console.log("err in embedselfsign ", err);
         setIsUiLoading(false);
         setIsAlert({
-          header: "Error",
+          header: t("error"),
           isShow: true,
-          alertMessage: "something went wrong, please try again later."
+          alertMessage: t("something-went-wrong-mssg")
         });
       }
     }
@@ -752,7 +753,7 @@ function SignYourSelf() {
     const getIsSubscribe = await checkIsSubscribed();
     const tenantDetails = await getTenantDetails(jsonSender.objectId);
     if (tenantDetails && tenantDetails === "user does not exist!") {
-      alert("User does not exist");
+      alert(t("user-not-exist"));
     } else {
       if (
         tenantDetails?.CompletionBody &&
@@ -783,6 +784,7 @@ function SignYourSelf() {
         base64Sign = await fetchImageBase64(base64Sign);
       } catch (e) {
         console.log("error", e);
+        alert(t("something-went-wrong-mssg"));
       }
     }
     //change image width and height to 100/40 in png base64
@@ -994,7 +996,7 @@ function SignYourSelf() {
       selector: '[data-tut="addWidgets"]',
       content: () => (
         <TourContentWithBtn
-          message={`Select and drag your preferred widgets onto the PDF to customize your document before signing. Choose the perfect spots for each modification to tailor the document to your needs.`}
+          message={t("tour-mssg.signyour-self-2")}
           isChecked={handleDontShow}
         />
       ),
@@ -1005,7 +1007,7 @@ function SignYourSelf() {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`Drag and drop anywhere in this area. You can resize and move it later.`}
+          message={t("tour-mssg.signyour-self-2")}
           isChecked={handleDontShow}
         />
       ),
@@ -1053,6 +1055,7 @@ function SignYourSelf() {
         })
         .catch((err) => {
           console.log("axois err ", err);
+          alert(t("something-went-wrong-mssg"));
         });
     }
   };
@@ -1174,7 +1177,7 @@ function SignYourSelf() {
             <div className="absolute h-[100vh] w-full z-[999] flex flex-col justify-center items-center bg-[#e6f2f2] bg-opacity-80">
               <Loader />
               <span style={{ fontSize: "13px", fontWeight: "bold" }}>
-                This might take some time
+                {t("loader")}
               </span>
             </div>
           )}
@@ -1232,7 +1235,7 @@ function SignYourSelf() {
               <div className="w-full md:w-[95%]">
                 <ModalUi
                   isOpen={isAlert.isShow}
-                  title={isAlert?.header || "Alert"}
+                  title={isAlert?.header || t("alert")}
                   handleClose={() =>
                     setIsAlert({ isShow: false, alertMessage: "" })
                   }
@@ -1245,7 +1248,7 @@ function SignYourSelf() {
                 {/* this modal is used show this document is already sign */}
                 <ModalUi
                   isOpen={showAlreadySignDoc.status}
-                  title={"Document signed"}
+                  title={t("document-signed")}
                   handleClose={() => {
                     setShowAlreadySignDoc({ status: false });
                   }}
@@ -1258,13 +1261,13 @@ function SignYourSelf() {
                       className="op-btn op-btn-ghost shadow-md"
                       onClick={() => setShowAlreadySignDoc({ status: false })}
                     >
-                      Close
+                      {t("close")}
                     </button>
                   </div>
                 </ModalUi>
                 <DropdownWidgetOption
                   type="checkbox"
-                  title="Checkbox"
+                  title={t("checkbox")}
                   showDropdown={isCheckbox}
                   setShowDropdown={setIsCheckbox}
                   handleSaveWidgetsOptions={handleSaveWidgetsOptions}
@@ -1413,15 +1416,13 @@ function SignYourSelf() {
       )}
       <ModalUi
         isOpen={validateAlert}
-        title={"Validation alert"}
+        title={t("validation-alert")}
         handleClose={() => {
           setValidateAlert(false);
         }}
       >
         <div className="p-[20px] h-full">
-          <p>
-            The input does not meet the criteria set by the regular expression.
-          </p>
+          <p>{t("validate-alert-mssg")}</p>
 
           <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
           <button
@@ -1429,7 +1430,7 @@ function SignYourSelf() {
             type="button"
             className="op-btn op-btn-ghost shadow-md"
           >
-            Close
+            {t("close")}
           </button>
         </div>
       </ModalUi>

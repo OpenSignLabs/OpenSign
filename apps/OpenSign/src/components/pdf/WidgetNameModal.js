@@ -7,8 +7,10 @@ import Upgrade from "../../primitives/Upgrade";
 import { isEnableSubscription } from "../../constant/const";
 import Tooltip from "../../primitives/Tooltip";
 import { fontColorArr, fontsizeArr } from "../../constant/Utils";
+import { useTranslation } from "react-i18next";
 
 const WidgetNameModal = (props) => {
+  const { t } = useTranslation();
   const [formdata, setFormdata] = useState({
     name: "",
     defaultValue: "",
@@ -104,7 +106,7 @@ const WidgetNameModal = (props) => {
     <ModalUi
       isOpen={props.isOpen}
       handleClose={props.handleClose && props.handleClose}
-      title={"Widget info"}
+      title={t("widget-info")}
     >
       <form
         onSubmit={handleSubmit}
@@ -114,7 +116,7 @@ const WidgetNameModal = (props) => {
       >
         <div className="mb-[0.75rem] text-[13px]">
           <label htmlFor="name">
-            Name
+            {t("name")}
             <span className="text-[red]"> *</span>
           </label>
           <input
@@ -122,6 +124,8 @@ const WidgetNameModal = (props) => {
             name="name"
             value={formdata.name}
             onChange={(e) => handleChange(e)}
+            onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+            onInput={(e) => e.target.setCustomValidity("")}
             required
           />
         </div>
@@ -138,7 +142,7 @@ const WidgetNameModal = (props) => {
                         : ""
                     } text-[13px]`}
                   >
-                    Validation
+                    {t("validation")}
                   </label>
                   <Tooltip
                     url={"https://www.w3schools.com/jsref/jsref_obj_regexp.asp"}
@@ -192,7 +196,7 @@ const WidgetNameModal = (props) => {
             )}
             <div className="mb-[0.75rem]">
               <label htmlFor="name" className="text-[13px]">
-                Default value
+                {t("default-value")}
               </label>
               <input
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
@@ -216,7 +220,7 @@ const WidgetNameModal = (props) => {
                     className="fa-light fa-exclamation-circle text-[15px]"
                     style={{ color: "#fab005" }}
                   ></i>
-                  invalid default value
+                  {t("invalid-default-value")}
                 </div>
               )}
             </div>
@@ -238,7 +242,9 @@ const WidgetNameModal = (props) => {
                       formdata.status.toLowerCase() === data.toLowerCase()
                     }
                   />
-                  <div className="text-[13px] font-medium">{data}</div>
+                  <div className="text-[13px] font-medium">
+                    {t(`widget-status.${data}`)}
+                  </div>
                 </div>
               );
             })}
@@ -247,7 +253,7 @@ const WidgetNameModal = (props) => {
         {props.defaultdata?.type === textInputWidget && (
           <div className="mb-[0.75rem]">
             <label htmlFor="hint" className="text-[13px]">
-              Hint
+              {t("hint")}
             </label>
             <input
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
@@ -266,7 +272,7 @@ const WidgetNameModal = (props) => {
           "email"
         ].includes(props.defaultdata?.type) && (
           <div className="flex items-center mb-[0.75rem]">
-            <span>Font size:</span>
+            <span>{t("font-size")}:</span>
             <select
               className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               value={
@@ -283,7 +289,7 @@ const WidgetNameModal = (props) => {
               })}
             </select>
             <div className="flex flex-row gap-1 items-center ml-4">
-              <span>color: </span>
+              <span>{t("color")}: </span>
               <select
                 value={
                   props.fontColor ||
@@ -296,7 +302,7 @@ const WidgetNameModal = (props) => {
                 {fontColorArr.map((color, ind) => {
                   return (
                     <option value={color} key={ind}>
-                      {color}
+                      {t(`color-type.${color}`)}
                     </option>
                   );
                 })}
@@ -316,7 +322,7 @@ const WidgetNameModal = (props) => {
 
         <div className="h-[1px] w-full mb-[16px] bg-[#b7b3b3]"></div>
         <button type="submit" className="op-btn op-btn-primary">
-          Save
+          {t("save")}
         </button>
       </form>
     </ModalUi>

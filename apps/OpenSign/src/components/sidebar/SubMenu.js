@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 
 const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
+  const { t } = useTranslation();
   const { title, icon, children } = item;
   return (
     <li role="none" className="my-0.5">
@@ -14,7 +16,7 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
       >
         <i className={`${icon} text-[18px]`}></i>
         <div className="flex justify-between items-center w-full">
-          <span className="ml-3 lg:ml-4">{title}</span>
+          <span className="ml-3 lg:ml-4">{t(`sidebar.${item.title}`)}</span>
           <i
             className={`${
               submenuOpen[item.title]
@@ -48,7 +50,9 @@ const Submenu = ({ item, closeSidebar, toggleSubmenu, submenuOpen }) => {
                   className={`${childItem.icon} text-[18px]`}
                   aria-hidden="true"
                 ></i>
-                <span className="ml-3 lg:ml-4">{childItem.title}</span>
+                <span className="ml-3 lg:ml-4">
+                  {t(`sidebar.${item.title}-Children.${childItem.title}`)}
+                </span>
               </NavLink>
             </li>
           ))}

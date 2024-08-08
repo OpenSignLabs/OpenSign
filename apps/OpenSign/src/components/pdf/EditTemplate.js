@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { checkIsSubscribed, getFileName } from "../../constant/Utils";
 import Upgrade from "../../primitives/Upgrade";
 import { isEnableSubscription } from "../../constant/const";
+import { useTranslation } from "react-i18next";
 // import SelectFolder from "../../premitives/SelectFolder";
 
 const EditTemplate = ({ template, onSuccess }) => {
+  const { t } = useTranslation();
   // const [folder, setFolder] = useState({ ObjectId: "", Name: "" });
   const [formData, setFormData] = useState({
     Name: template?.Name || "",
@@ -62,7 +64,7 @@ const EditTemplate = ({ template, onSuccess }) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-[0.35rem]">
             <label htmlFor="name" className="text-[13px]">
-              File
+              {t("report-heading.File")}
             </label>
             <div className="op-input op-input-bordered op-input-sm focus:outline-none py-2 font-semibold w-full text-xs">
               {getFileName(template.URL)}
@@ -70,7 +72,7 @@ const EditTemplate = ({ template, onSuccess }) => {
           </div>
           <div className="mb-[0.35rem]">
             <label htmlFor="name" className="text-[13px]">
-              Name
+              {t("name")}
               <span className="text-[13px] text-[red]"> *</span>
             </label>
             <input
@@ -78,13 +80,15 @@ const EditTemplate = ({ template, onSuccess }) => {
               name="Name"
               value={formData.Name}
               onChange={(e) => handleStrInput(e)}
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="mb-[0.35rem]">
             <label htmlFor="Note" className="text-[13px]">
-              Note
+              {t("report-heading.Note")}
             </label>
             <input
               type="text"
@@ -97,7 +101,7 @@ const EditTemplate = ({ template, onSuccess }) => {
           </div>
           <div className="mb-[0.35rem]">
             <label htmlFor="Description" className="text-[13px]">
-              Description
+              {t("description")}
             </label>
             <input
               type="text"
@@ -109,7 +113,7 @@ const EditTemplate = ({ template, onSuccess }) => {
             />
           </div>
           <div className="mb-[0.35rem]">
-            <label className="text-[13px]">Send In Order</label>
+            <label className="text-[13px]">{t("send-in-order")}</label>
             <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
               <input
                 type="radio"
@@ -119,7 +123,7 @@ const EditTemplate = ({ template, onSuccess }) => {
                 checked={formData.SendinOrder === "true"}
                 onChange={handleStrInput}
               />
-              <div className="text-[12px]">Yes</div>
+              <div className="text-[12px]">{t("yes")}</div>
             </div>
             <div className="flex items-center gap-[8px] ml-[8px] mb-[5px]">
               <input
@@ -130,7 +134,7 @@ const EditTemplate = ({ template, onSuccess }) => {
                 checked={formData.SendinOrder === "false"}
                 onChange={handleStrInput}
               />
-              <div className="text-[12px]">No</div>
+              <div className="text-[12px]">{t("no")}</div>
             </div>
           </div>
           {isEnableSubscription && (
@@ -140,7 +144,8 @@ const EditTemplate = ({ template, onSuccess }) => {
                   isSubscribe ? "font-semibold" : "font-semibold text-gray-300"
                 }
               >
-                Auto reminder{"  "}
+                {t("auto-reminder")}
+                {"  "}
                 {!isSubscribe && isEnableSubscription && <Upgrade />}
               </span>
               <label
@@ -162,7 +167,7 @@ const EditTemplate = ({ template, onSuccess }) => {
           {isSubscribe && formData?.AutomaticReminders === true && (
             <div className="text-xs mt-2">
               <label className="block">
-                Remind once in every (Days)
+                {t("remind-once")}
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               <input
@@ -171,13 +176,17 @@ const EditTemplate = ({ template, onSuccess }) => {
                 name="RemindOnceInEvery"
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 onChange={handleStrInput}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
             </div>
           )}
           <div className="mt-[1rem] flex justify-start">
             <button type="submit" className="op-btn op-btn-primary">
-              Submit
+              {t("submit")}
             </button>
           </div>
         </form>

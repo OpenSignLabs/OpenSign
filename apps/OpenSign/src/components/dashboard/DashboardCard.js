@@ -4,9 +4,11 @@ import Parse from "parse";
 import getReplacedHashQuery from "../../constant/getReplacedHashQuery";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../../primitives/Tooltip";
+import { useTranslation } from "react-i18next";
 
 const DashboardCard = (props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [response, setresponse] = useState("");
@@ -311,6 +313,7 @@ const DashboardCard = (props) => {
       }
     }
   }
+
   return (
     <div
       onClick={() => openReport()}
@@ -328,8 +331,11 @@ const DashboardCard = (props) => {
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
+
         <div className="font-medium">
-          <div className="text-base lg:text-lg"> {props.Label}</div>
+          <div className="text-base lg:text-lg">
+            {t(`dashboard-card.${props.Label}`)}
+          </div>
           <div className="text-2xl font-light">
             {loading ? <div className="loader-01"></div> : setFormat(response)}
           </div>
@@ -339,7 +345,8 @@ const DashboardCard = (props) => {
         <Tooltip
           id={props.Label}
           iconColor={"white"}
-          message={props?.Data?.tourMessage}
+          message={t(`tour-mssg.${props.Label}`)}
+          // {props?.Data?.tourMessage}
         />
       </div>
     </div>
