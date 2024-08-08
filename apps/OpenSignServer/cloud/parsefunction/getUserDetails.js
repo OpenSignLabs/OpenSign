@@ -4,11 +4,11 @@ async function getUserDetails(request) {
     try {
       const userId = request.params.userId;
       const userQuery = new Parse.Query('contracts_Users');
-      if (request?.user) {
+      if (reqEmail) {
+        userQuery.equalTo('Email', reqEmail);
+      } else {
         const email = request.user.get('email');
         userQuery.equalTo('Email', email);
-      } else {
-        userQuery.equalTo('Email', reqEmail);
       }
       userQuery.include('TenantId');
       userQuery.include('UserId');
