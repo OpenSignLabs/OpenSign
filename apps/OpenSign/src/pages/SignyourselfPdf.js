@@ -33,7 +33,8 @@ import {
   fetchImageBase64,
   changeImageWH,
   handleSendOTP,
-  getContainerScale
+  getContainerScale,
+  getDefaultSignature
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -205,131 +206,91 @@ function SignYourSelf() {
   }, [divRef.current, isHeader]);
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
-    let isCompleted;
-    //getting document details
-    const documentData = await contractDocument(documentId);
+    try {
+      let isCompleted;
+      //getting document details
+      const documentData = await contractDocument(documentId);
 
-    if (documentData && documentData.length > 0) {
-      setPdfDetails(documentData);
-      setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
-      const url = documentData[0] && documentData[0]?.URL;
-      if (url) {
-        //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-        const arrayBuffer = await convertPdfArrayBuffer(url);
-        if (arrayBuffer === "Error") {
+      if (documentData && documentData.length > 0) {
+        setPdfDetails(documentData);
+        setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
+        const url = documentData[0] && documentData[0]?.URL;
+        if (url) {
+          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+          const arrayBuffer = await convertPdfArrayBuffer(url);
+          if (arrayBuffer === "Error") {
+            setHandleError("Error: Something went wrong!");
+          } else {
+            setPdfArrayBuffer(arrayBuffer);
+          }
+        } else {
           setHandleError("Error: Something went wrong!");
-        } else {
-          setPdfArrayBuffer(arrayBuffer);
         }
-      } else {
-        setHandleError("Error: Something went wrong!");
-      }
-      isCompleted = documentData[0].IsCompleted && documentData[0].IsCompleted;
-      if (isCompleted) {
-        setIsCelebration(true);
-        setTimeout(() => {
-          setIsCelebration(false);
-        }, 5000);
-        setIsCompleted(true);
-        setPdfUrl(documentData[0].SignedUrl);
-        const alreadySign = {
-          status: true,
-          mssg: "Congratulations! 🎉 This document has been successfully signed by you!"
-        };
-        if (showComplete) {
-          setShowAlreadySignDoc(alreadySign);
-        } else {
-          setIsUiLoading(false);
-          setIsSignPad(false);
-          setIsEmail(true);
-          setXyPostion([]);
-          setSignBtnPosition([]);
-        }
-      }
-    } else if (
-      documentData === "Error: Something went wrong!" ||
-      (documentData.result && documentData.result.error)
-    ) {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
-      setIsLoading(loadObj);
-    } else {
-      setHandleError("No Data Found!");
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
-    }
-    await axios
-      .get(
-        `${localStorage.getItem(
-          "baseUrl"
-        )}classes/contracts_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
-          jsonSender.objectId
-        }"}}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        isCompleted =
+          documentData[0].IsCompleted && documentData[0].IsCompleted;
+        if (isCompleted) {
+          setIsCelebration(true);
+          setTimeout(() => {
+            setIsCelebration(false);
+          }, 5000);
+          setIsCompleted(true);
+          setPdfUrl(documentData[0].SignedUrl);
+          const alreadySign = {
+            status: true,
+            mssg: "Congratulations! 🎉 This document has been successfully signed by you!"
+          };
+          if (showComplete) {
+            setShowAlreadySignDoc(alreadySign);
+          } else {
+            setIsUiLoading(false);
+            setIsSignPad(false);
+            setIsEmail(true);
+            setXyPostion([]);
+            setSignBtnPosition([]);
           }
         }
-      )
-      .then((Listdata) => {
-        const json = Listdata.data;
-        const res = json.results;
-        if (res[0] && res.length > 0) {
-          setDefaultSignImg(res[0].ImageURL);
-          setMyInitial(res[0]?.Initials);
-        }
-      })
-      .catch((err) => {
-        console.log("Err ", err);
+      } else if (
+        documentData === "Error: Something went wrong!" ||
+        (documentData.result && documentData.result.error)
+      ) {
         const loadObj = {
           isLoad: false
         };
         setHandleError("Error: Something went wrong!");
         setIsLoading(loadObj);
-      });
-    const contractUsersRes = await contractUsers();
-    if (contractUsersRes === "Error: Something went wrong!") {
-      const loadObj = {
-        isLoad: false
-      };
-      setHandleError("Error: Something went wrong!");
-      setIsLoading(loadObj);
-    } else if (contractUsersRes[0] && contractUsersRes.length > 0) {
-      setActiveMailAdapter(contractUsersRes[0]?.active_mail_adapter);
-      setContractName("_Users");
-      setSignerUserId(contractUsersRes[0].objectId);
-      const tourstatuss =
-        contractUsersRes[0].TourStatus && contractUsersRes[0].TourStatus;
-      if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
-        setTourStatus(tourstatuss);
-        const checkTourRecipients = tourstatuss.filter(
-          (data) => data.signyourself
-        );
-        if (checkTourRecipients && checkTourRecipients.length > 0) {
-          setCheckTourStatus(checkTourRecipients[0].signyourself);
-        }
       } else {
-        setCheckTourStatus(true);
+        setHandleError("No Data Found!");
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
       }
-      const loadObj = {
-        isLoad: false
-      };
-      setIsLoading(loadObj);
-    } else if (contractUsersRes.length === 0) {
-      const contractContactBook = await contactBook(jsonSender.objectId);
-      if (contractContactBook && contractContactBook.length > 0) {
-        setContractName("_Contactbook");
-        setSignerUserId(contractContactBook[0].objectId);
-        const tourstatuss =
-          contractContactBook[0].TourStatus &&
-          contractContactBook[0].TourStatus;
 
+      //function to get default signatur eof current user from `contracts_Signature` class
+      const defaultSignRes = await getDefaultSignature(jsonSender.objectId);
+      console.log("defaultSignRes", defaultSignRes);
+      if (defaultSignRes?.status === "success") {
+        setDefaultSignImg(defaultSignRes?.res?.defaultSignature);
+        setMyInitial(defaultSignRes?.res?.defaultInitial);
+      } else if (defaultSignRes?.status === "error") {
+        setHandleError("Error: Something went wrong!");
+        setIsLoading({
+          isLoad: false
+        });
+      }
+      const contractUsersRes = await contractUsers();
+      if (contractUsersRes === "Error: Something went wrong!") {
+        const loadObj = {
+          isLoad: false
+        };
+        setHandleError("Error: Something went wrong!");
+        setIsLoading(loadObj);
+      } else if (contractUsersRes[0] && contractUsersRes.length > 0) {
+        setActiveMailAdapter(contractUsersRes[0]?.active_mail_adapter);
+        setContractName("_Users");
+        setSignerUserId(contractUsersRes[0].objectId);
+        const tourstatuss =
+          contractUsersRes[0].TourStatus && contractUsersRes[0].TourStatus;
         if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
           setTourStatus(tourstatuss);
           const checkTourRecipients = tourstatuss.filter(
@@ -341,15 +302,47 @@ function SignYourSelf() {
         } else {
           setCheckTourStatus(true);
         }
-      } else {
-        setHandleError("No Data Found!");
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
+      } else if (contractUsersRes.length === 0) {
+        const contractContactBook = await contactBook(jsonSender.objectId);
+        if (contractContactBook && contractContactBook.length > 0) {
+          setContractName("_Contactbook");
+          setSignerUserId(contractContactBook[0].objectId);
+          const tourstatuss =
+            contractContactBook[0].TourStatus &&
+            contractContactBook[0].TourStatus;
+
+          if (tourstatuss && tourstatuss.length > 0 && !isCompleted) {
+            setTourStatus(tourstatuss);
+            const checkTourRecipients = tourstatuss.filter(
+              (data) => data.signyourself
+            );
+            if (checkTourRecipients && checkTourRecipients.length > 0) {
+              setCheckTourStatus(checkTourRecipients[0].signyourself);
+            }
+          } else {
+            setCheckTourStatus(true);
+          }
+        } else {
+          setHandleError("No Data Found!");
+        }
+        const loadObj = {
+          isLoad: false
+        };
+        setIsLoading(loadObj);
       }
-      const loadObj = {
+    } catch (err) {
+      console.log("Error: error in getDocumentDetails", err);
+      setHandleError("Error: Something went wrong!");
+      setIsLoading({
         isLoad: false
-      };
-      setIsLoading(loadObj);
+      });
     }
   };
+
   const getWidgetValue = (type) => {
     switch (type) {
       case "name":
@@ -1310,12 +1303,12 @@ function SignYourSelf() {
                   isEmail={isEmail}
                   pdfUrl={pdfUrl}
                   setIsEmail={setIsEmail}
-                  pdfName={pdfDetails[0] && pdfDetails[0].Name}
                   setSuccessEmail={setSuccessEmail}
                   sender={jsonSender}
                   setIsAlert={setIsAlert}
                   extUserId={extUserId}
                   activeMailAdapter={activeMailAdapter}
+                  pdfDetails={pdfDetails}
                 />
                 {/* pdf header which contain funish back button */}
                 <Header
