@@ -582,7 +582,11 @@
         "Drafts":"This are documents you have started but have not finalized for sending."
          },
         "enter-email-plaholder":"Add an email address and hit enter",
-        "success-email-alert":"Email sent successfully!"
+        "success-email-alert":"Email sent successfully!",
+        "expired-doc-title":"Expired Document",
+        "expired-on-mssg" :"This document expired on {{expiredDate}} and is no longer available to sign.",
+        "signature-validate-alert":"Please confirm that you have selected at least {{minRequiredCount}} checkboxes.",
+        "signature-validate-alert-2" :"Ensure this field is accurately filled and meets all requirements."
        
      
           
