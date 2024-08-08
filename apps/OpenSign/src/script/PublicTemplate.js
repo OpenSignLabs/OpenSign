@@ -18,11 +18,9 @@ const PublicScriptFileWrapper = ({ initialProps }) => {
   return <PdfRequestFiles {...props} />;
 };
 
-const appId =
-  //"legadranaxn";
-  "opensign";
-const serverUrl = "http://localhost:8080/app";
-//"https://app.opensignlabs.com/api/app";
+const appId = "legadranaxn";
+// "opensign";
+const serverUrl = "https://app.opensignlabs.com/api/app";
 // "https://staging-app.opensignlabs.com/api/app";
 localStorage.setItem("baseUrl", `${serverUrl}/`);
 localStorage.setItem("parseAppId", appId);
