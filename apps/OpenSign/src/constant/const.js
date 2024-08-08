@@ -9,5 +9,5 @@ export const isEnableSubscription =
   process.env.REACT_APP_ENABLE_SUBSCRIPTION?.toLowerCase() === "true"
     ? true
     : false;
-export const isStaging = "http://localhost:3001";
-// window.location.origin === "https://staging-app.opensignlabs.com";
+export const isStaging =
+  window.location.origin === "https://staging-app.opensignlabs.com";
