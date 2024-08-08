@@ -56,6 +56,8 @@ export async function fetchSubscription(
     } else {
       plan = tenatRes.data?.result?.result?.PlanCode;
       billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
+      const allowedUsers = tenatRes.data?.result?.result?.AllowedUsers || 0;
+      localStorage.setItem("allowedUsers", allowedUsers);
     }
     return { plan, billingDate, status };
   } catch (err) {
@@ -93,12 +95,14 @@ export async function fetchSubscriptionInfo() {
       const plan_code =
         tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
           ?.plan?.plan_code;
+      const totalAllowedUser = tenatRes.data?.result?.result?.AllowedUsers || 0;
       return {
         status: "success",
         price: price,
         totalPrice: totalPrice,
         planId: planId,
-        plan_code: plan_code
+        plan_code: plan_code,
+        totalAllowedUser: totalAllowedUser
       };
     }
   } catch (err) {
@@ -111,41 +115,22 @@ export async function checkIsSubscribed() {
   try {
     const res = await fetchSubscription();
     if (res.plan === "freeplan") {
-      return false;
-    } else if (res.billingDate) {
-      if (new Date(res.billingDate) > new Date()) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } catch (err) {
-    console.log("Err in fetch subscription", err);
-    return false;
-  }
-}
-
-//function to get subcripition details from subscription class
-export async function checkIsSubscribedTeam() {
-  try {
-    const res = await fetchSubscription();
-    if (res.plan === "freeplan") {
-      return false;
+      return { plan: res.plan, isValid: false };
     } else if (res.billingDate) {
       const plan = validplan[res.plan] || false;
       if (plan && new Date(res.billingDate) > new Date()) {
-        return true;
+        return { plan: res.plan, isValid: true };
+      } else if (new Date(res.billingDate) > new Date()) {
+        return { plan: res.plan, isValid: true };
       } else {
-        return false;
+        return { plan: res.plan, isValid: false };
       }
     } else {
-      return false;
+      return { plan: res.plan, isValid: false };
     }
   } catch (err) {
     console.log("Err in fetch subscription", err);
-    return false;
+    return { plan: "no-plan", isValid: false };
   }
 }
 

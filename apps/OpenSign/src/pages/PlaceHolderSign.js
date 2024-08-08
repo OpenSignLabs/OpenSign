@@ -34,7 +34,8 @@ import {
   copytoData,
   fetchSubscription,
   convertPdfArrayBuffer,
-  getContainerScale
+  getContainerScale,
+  openInNewTab
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -53,6 +54,7 @@ import Loader from "../primitives/Loader";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
 import LottieWithLoader from "../primitives/DotLottieReact";
+import { paidUrl } from "../json/plansArr";
 
 function PlaceHolderSign() {
   const editorRef = useRef();
@@ -240,22 +242,29 @@ function PlaceHolderSign() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
-
+  const handleNavigation = (plan) => {
+    const route = paidUrl(plan);
+    if (route === "/subscription") {
+      navigate(route);
+    } else {
+      openInNewTab(route, "_self");
+    }
+  };
   async function checkIsSubscribed() {
     const res = await fetchSubscription();
-    const freeplan = res.plan;
+    const plan = res.plan;
     const billingDate = res.billingDate;
-    if (freeplan === "freeplan") {
+    if (plan === "freeplan") {
       return true;
     } else if (billingDate) {
       if (new Date(billingDate) > new Date()) {
         setIsSubscribe(true);
         return true;
       } else {
-        navigate(`/subscription`);
+        handleNavigation(plan);
       }
     } else {
-      navigate(`/subscription`);
+      handleNavigation(plan);
     }
   }
   //function for get document details

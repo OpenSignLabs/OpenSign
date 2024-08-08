@@ -34,7 +34,8 @@ const AddUser = (props) => {
   const [planInfo, setPlanInfo] = useState({
     priceperUser: 0,
     price: 0,
-    totalPrice: 0
+    totalPrice: 0,
+    totalAllowedUser: 0
   });
   const [isFormLoader, setIsFormLoader] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
@@ -59,7 +60,8 @@ const AddUser = (props) => {
           setPlanInfo((prev) => ({
             ...prev,
             priceperUser: resSub.price,
-            totalPrice: resSub.totalPrice
+            totalPrice: resSub.totalPrice,
+            totalAllowedUser: resSub.totalAllowedUser
           }));
           setAmount((prev) => ({
             ...prev,
@@ -297,7 +299,10 @@ const AddUser = (props) => {
         tenantId: extUser?.TenantId?.objectId
       });
       if (resAddon) {
-        setAllowedUser(amount.quantity);
+        const _resAddon = JSON.parse(JSON.stringify(resAddon));
+        if (_resAddon.status === "success") {
+          setAllowedUser(_resAddon.addon);
+        }
       }
     } catch (err) {
       console.log("Err in buy addon", err);
@@ -330,6 +335,16 @@ const AddUser = (props) => {
               <div className="w-full mx-auto">
                 {!isEnableSubscription || allowedUser > 0 ? (
                   <form onSubmit={handleSubmit}>
+                    <p className="flex justify-center mb-1">
+                      Remaining users{" "}
+                      <span
+                        className={`${
+                          allowedUser < 2 ? "op-text-accent" : "op-text-primary"
+                        } font-medium ml-1`}
+                      >
+                        {allowedUser} of {planInfo.totalAllowedUser}
+                      </span>
+                    </p>
                     <div className="mb-3">
                       <label
                         htmlFor="name"
@@ -468,9 +483,8 @@ const AddUser = (props) => {
                   </form>
                 ) : (
                   <form onSubmit={handleAddOnSubmit}>
-                    <p className="flex justify-center text-center mx-2 mb-3 text-base font-medium">
-                      You have reached the limit for creating users. Please
-                      purchase the add-on.
+                    <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
+                      Please purchase add-on users.
                     </p>
                     <div className="mb-3 flex justify-between">
                       <label
@@ -494,7 +508,7 @@ const AddUser = (props) => {
                         Price (1 * {planInfo.priceperUser})
                       </label>
                       <div className="w-1/4 flex justify-center items-center text-sm">
-                        {amount.price}
+                        USD {amount.price}
                       </div>
                     </div>
                     <hr className="text-base-content mb-3" />
@@ -503,7 +517,7 @@ const AddUser = (props) => {
                         Total price for next time
                       </label>
                       <div className="w-1/4 flex justify-center items-center text-sm font-semibold">
-                        {amount.totalPrice}
+                        USD {amount.totalPrice}
                       </div>
                     </div>
                     <button className="op-btn op-btn-primary w-full mt-2">
