@@ -25,7 +25,6 @@ function RenderPdf({
   setSignKey,
   pdfDetails,
   xyPostion,
-  pdfUrl,
   pageDetails,
   pdfRequest,
   signerObjectId,

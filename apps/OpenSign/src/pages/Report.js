@@ -98,9 +98,10 @@ const Report = () => {
             json.actions.map((data) => {
               const newConfig = {
                 selector: `[data-tut="${data?.selector}"]`,
+
                 content: () => (
                   <TourContentWithBtn
-                    message={data?.message}
+                    message={t(`tour-mssg.${data?.action}`)}
                     isChecked={handleDontShow}
                   />
                 ),
