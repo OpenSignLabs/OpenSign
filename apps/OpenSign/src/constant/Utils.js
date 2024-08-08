@@ -439,7 +439,7 @@ export const resizeBorderExtraWidth = () => {
   return 20;
 };
 
-export async function getBase64FromUrl(url) {
+export async function getBase64FromUrl(url, autosign) {
   const data = await fetch(url);
   const blob = await data.blob();
   return new Promise((resolve) => {
@@ -447,8 +447,12 @@ export async function getBase64FromUrl(url) {
     reader.readAsDataURL(blob);
     reader.onloadend = function () {
       const pdfBase = this.result;
-      const suffixbase64 = pdfBase.split(",").pop();
-      resolve(suffixbase64);
+      if (autosign) {
+        resolve(pdfBase);
+      } else {
+        const suffixbase64 = pdfBase.split(",").pop();
+        resolve(suffixbase64);
+      }
     };
   });
 }
@@ -2229,4 +2233,43 @@ export const getContainerScale = (pdfOriginalWH, pageNumber, containerWH) => {
 export const saveLanguageInLocal = (i18n) => {
   const detectedLanguage = i18n.language || "en";
   localStorage.setItem("i18nextLng", detectedLanguage);
+};
+//function to get default signatur eof current user from `contracts_Signature` class
+export const getDefaultSignature = async (objectId) => {
+  try {
+    const result = await axios.get(
+      `${localStorage.getItem(
+        "baseUrl"
+      )}classes/contracts_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${objectId}"}}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
+        }
+      }
+    );
+    const res = result.data?.results;
+    if (res[0] && res.length > 0) {
+      const defaultSignature = res[0]?.ImageURL
+        ? await getBase64FromUrl(res[0]?.ImageURL, true)
+        : "";
+      const defaultInitial = res[0]?.Initials
+        ? await getBase64FromUrl(res[0]?.Initials, true)
+        : "";
+
+      return {
+        status: "success",
+        res: {
+          defaultSignature: defaultSignature,
+          defaultInitial: defaultInitial
+        }
+      };
+    }
+  } catch (err) {
+    console.log("Error: error in fetch data in contracts_Signature", err);
+    return {
+      status: "error"
+    };
+  }
 };
