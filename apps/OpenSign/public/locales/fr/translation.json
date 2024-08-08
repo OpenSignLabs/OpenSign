@@ -114,7 +114,7 @@
       "Users":"Utilisateurs"
     },
     "report-heading":{
-      "Sr.No":"Sr. Non",
+      "Sr.No":"Numéro",
       "Title":"Titre",
       "Email":"E-mail",
       "Phone":"Téléphone",
@@ -566,6 +566,9 @@
      "placeholder-sign-4":"La zone de contenu PDF affiche déjà les espaces réservés existants du modèle. Pour votre commodité, ces espaces réservés correspondront à la couleur du nom du destinataire, ce qui les rendra facilement identifiables.",
      "placeholder-sign-5":"Cliquer sur 'Envoyer' enregistrera le document. À l'étape suivante, vous pourrez personnaliser les e-mails à envoyer aux destinataires ou copier les liens de signature et les partager vous-même avec les destinataires.",
      "report-1":"Cliquez sur le bouton 'Ajouter' pour créer un nouveau modèle. Les modèles sont des documents réutilisables conçus pour générer rapidement de nouveaux documents avec la même structure et différents signataires. Par exemple, un modèle RH pour l'intégration peut avoir des rôles prédéfinis tels que 'Responsable RH' et ' Nouvel employé'. Chaque fois que vous utilisez le modèle, vous pouvez attribuer le rôle 'Nouvel employé' à différents membres du personnel entrants, tandis que le rôle 'Responsable RH' reste constant, facilitant ainsi un processus d'intégration fluide pour chaque recrue",
+     "redirect":"Cliquez sur le bouton 'Utiliser' pour créer un nouveau document à partir d'un modèle existant.",
+     "bulksend":"Pour créer et envoyer rapidement plusieurs documents à l'aide d'un modèle existant, cliquez sur le bouton 'Envoi rapide'.",
+     "option": "Ce menu révèle plus d'options telles que Modifier et Supprimer. Utilisez le bouton « Modifier » pour ajouter des rôles de signataire, modifier les champs et mettre à jour votre modèle. Les modifications s'appliqueront à tous les futurs documents créés à partir de ce modèle mais n'affecteront pas les documents existants. Utilisez le bouton Supprimer, vous pouvez supprimer le modèle ",
      "signyour-self-1": "Sélectionnez et faites glisser vos widgets préférés sur le PDF pour personnaliser votre document avant de le signer. Choisissez les endroits parfaits pour chaque modification afin d'adapter le document à vos besoins.",
      "signyour-self-2":"Faites glisser et déposer n'importe où dans cette zone. Vous pourrez la redimensionner et la déplacer plus tard.",
      "template-placeholder-1":"Cliquer sur le bouton 'Ajouter un rôle' vous permettra d'ajouter différents rôles de signataire. Vous pourrez attacher des utilisateurs à chaque rôle dans les étapes suivantes.",
