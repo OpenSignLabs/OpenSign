@@ -398,7 +398,7 @@ function RenderPdf({
               onLoadError={() => {
                 setPdfLoad(false);
               }}
-              loading={"Loading Document.."}
+              loading={t("loading-doc")}
               onLoadSuccess={pageDetails}
               // ref={pdfRef}'
               onClick={() => {
@@ -406,13 +406,7 @@ function RenderPdf({
                   setSelectWidgetId("");
                 }
               }}
-              file={
-                pdfUrl
-                  ? pdfUrl
-                  : pdfDetails[0] && pdfDetails[0].SignedUrl
-                    ? pdfDetails[0].SignedUrl
-                    : pdfDetails[0].URL
-              }
+              file={pdfDetails[0]?.SignedUrl || pdfDetails[0]?.URL}
             >
               <Page
                 key={index}
@@ -585,7 +579,7 @@ function RenderPdf({
               onLoadError={() => {
                 setPdfLoad(false);
               }}
-              loading={"Loading Document.."}
+              loading={t("loading-doc")}
               onLoadSuccess={pageDetails}
               onClick={() => {
                 if (setSelectWidgetId) {
@@ -593,13 +587,7 @@ function RenderPdf({
                 }
               }}
               // ref={pdfRef}
-              file={
-                pdfUrl
-                  ? pdfUrl
-                  : pdfDetails[0] && pdfDetails[0].SignedUrl
-                    ? pdfDetails[0].SignedUrl
-                    : pdfDetails[0].URL
-              }
+              file={pdfDetails[0]?.SignedUrl || pdfDetails[0].URL}
             >
               <Page
                 key={index}

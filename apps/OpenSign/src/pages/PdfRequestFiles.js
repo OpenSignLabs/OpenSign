@@ -619,10 +619,10 @@ function PdfRequestFiles(props) {
         setMyInitial(defaultSignRes?.res?.defaultInitial);
       } else if (defaultSignRes?.status === "error") {
         setHandleError("Error: Something went wrong!");
-        setIsLoading({
-          isLoad: false
-        });
       }
+      setIsLoading({
+        isLoad: false
+      });
     } catch (err) {
       console.log("Error: error in getDocumentDetails", err);
       setHandleError("Error: Something went wrong!");
@@ -631,6 +631,7 @@ function PdfRequestFiles(props) {
       });
     }
   };
+
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
     //for emailVerified data checking first in localstorage
@@ -1077,8 +1078,8 @@ function PdfRequestFiles(props) {
     {
       selector: '[data-tut="IsSigned"]',
       content: minRequiredCount
-        ? `Please confirm that you have selected at least ${minRequiredCount} checkboxes.`
-        : "Ensure this field is accurately filled and meets all requirements.",
+        ? t("signature-validate-alert", { minRequiredCount })
+        : t("signature-validate-alert-2"),
       position: "top",
       style: { fontSize: "13px" }
     }
@@ -1678,8 +1679,8 @@ function PdfRequestFiles(props) {
                 {/* this modal is used for show expired alert */}
                 <PdfDeclineModal
                   show={isExpired}
-                  headMsg="Document expired"
-                  bodyMssg={`This document expired on ${expiredDate} and is no longer available to sign.`}
+                  headMsg={t("expired-doc-title")}
+                  bodyMssg={t("expired-on-mssg", { expiredDate })}
                 />
                 {!isEmailVerified && (
                   <VerifyEmail
