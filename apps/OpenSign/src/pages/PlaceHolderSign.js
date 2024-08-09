@@ -215,8 +215,6 @@ function PlaceHolderSign() {
       alert(t("user-not-exist"));
     }
   };
-
-  console.log("default body", defaultBody);
   useEffect(() => {
     const updateSize = () => {
       if (divRef.current) {
