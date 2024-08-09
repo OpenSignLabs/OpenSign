@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import Parse from "parse";
 import { Outlet } from "react-router-dom";
+import { saveLanguageInLocal } from "../constant/Utils";
+import { useTranslation } from "react-i18next";
 const ValidateRoute = () => {
+  const { i18n } = useTranslation();
   useEffect(() => {
     (async () => {
       if (localStorage.getItem("accesstoken")) {
@@ -30,6 +33,7 @@ const ValidateRoute = () => {
     let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
 
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("defaultmenuid", defaultmenuid);

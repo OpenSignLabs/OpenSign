@@ -163,4 +163,12 @@ const plans = [
   }
 ];
 
+export const validplan = {
+  "team-weekly": true,
+  "team-yearly": true,
+  "teams-monthly": true,
+  "teams-yearly": true,
+  "enterprise-monthly": true,
+  "enterprise-yearly": true
+};
 export default plans;

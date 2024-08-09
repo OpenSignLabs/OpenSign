@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../styles/signature.css";
+import { useTranslation } from "react-i18next";
 
 function CustomModal({
   show,
@@ -9,6 +10,7 @@ function CustomModal({
   declineDoc,
   setIsDecline
 }) {
+  const { t } = useTranslation();
   const [reason, setReason] = useState("");
   return (
     show && (
@@ -41,7 +43,7 @@ function CustomModal({
                     declineDoc(reason);
                   }}
                 >
-                  Yes
+                  {t("yes")}
                 </button>
                 <button
                   type="button"
@@ -51,7 +53,7 @@ function CustomModal({
                     setIsDecline({ isDeclined: false });
                   }}
                 >
-                  Close
+                  {t("close")}
                 </button>
               </div>
             </>

@@ -6,6 +6,7 @@ import Title from "../components/Title";
 import Parse from "parse";
 import { openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 const listItemStyle = {
   paddingLeft: "20px", // Add padding to create space for the image
   backgroundImage: `url(${checkmark})`, // Set your image as the list style image
@@ -15,6 +16,7 @@ const listItemStyle = {
 };
 
 const PlanSubscriptions = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [yearlyVisible, setYearlyVisible] = useState(true);
   const [isLoader, setIsLoader] = useState(true);
@@ -59,8 +61,14 @@ const PlanSubscriptions = () => {
     phone;
   useEffect(() => {
     setIsLoader(false);
+    detectLanguage();
     // eslint-disable-next-line
   }, []);
+  const detectLanguage = () => {
+    const detectedLanguage = i18n.language || "en";
+    i18n.changeLanguage(detectedLanguage);
+    localStorage.setItem("i18nextLng", detectedLanguage);
+  };
 
   const handleFreePlan = async (item) => {
     if (item.url) {
@@ -76,7 +84,7 @@ const PlanSubscriptions = () => {
         const res = await Parse.Cloud.run("freesubscription", params);
         if (res.status === "success" && res.result === "already subscribed!") {
           setIsLoader(false);
-          alert("You have already subscribed to plan!");
+          alert(t("subscribed-alert"));
         } else if (res.status === "success") {
           setIsLoader(false);
           navigate("/");
@@ -87,7 +95,7 @@ const PlanSubscriptions = () => {
       } catch (err) {
         setIsLoader(false);
         console.log("err in free subscribe", err.message);
-        alert("Somenthing went wrong, please try again later!");
+        alert(t("something-went-wrong-mssg"));
       }
     }
   };
@@ -111,14 +119,14 @@ const PlanSubscriptions = () => {
                   role="tab"
                   className={`${!yearlyVisible ? "op-tab-active" : ""} op-tab`}
                 >
-                  Monthly
+                  {t("monthly")}
                 </a>
                 <a
                   onClick={() => setYearlyVisible(true)}
                   role="tab"
                   className={`${yearlyVisible ? "op-tab-active" : ""} op-tab`}
                 >
-                  Yearly (upto 66% off)
+                  {t("yearly-upto")}
                 </a>
               </div>
               <ul className="op-card flex flex-col md:flex-row h-full bg-base-100 justify-center shadow-lg">
@@ -170,7 +178,9 @@ const PlanSubscriptions = () => {
                           )}
                         </span>
                         <p className="font-semibold pt-2 text-sm">
-                          {yearlyVisible ? "Billed Yearly" : "Billed Monthly"}
+                          {yearlyVisible
+                            ? t("billed-yearly")
+                            : t("billed-monthly")}
                         </p>
                         <div className="max-w-[250px] h-[40px] text-center text-sm my-2">
                           <div
@@ -228,7 +238,7 @@ const PlanSubscriptions = () => {
             </div>
             <div className="flex flex-col justify-center items-center">
               <h3 className="text-[#002862] mt-1 mb-2">
-                Host it yourself for free
+                {t("plansubscription-1")}
               </h3>
               <div
                 className="op-btn op-btn-primary w-[200px]"
@@ -236,7 +246,7 @@ const PlanSubscriptions = () => {
                   openInNewTab("https://github.com/OpenSignLabs/OpenSign")
                 }
               >
-                Visit Github
+                {t("visit-github")}
               </div>
             </div>
           </div>

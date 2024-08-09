@@ -6,6 +6,7 @@ import Parse from "parse";
 import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
+import { validplan } from "../json/plansArr";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -90,13 +91,7 @@ export async function checkIsSubscribedTeam() {
     if (res.plan === "freeplan") {
       return false;
     } else if (res.billingDate) {
-      const plan =
-        res.plan === "team-weekly" ||
-        res.plan === "team-yearly" ||
-        res.plan === "teams-monthly" ||
-        res.plan === "teams-yearly" ||
-        res.plan === "enterprise-monthly" ||
-        res.plan === "enterprise-yearly";
+      const plan = validplan[res.plan] || false;
       if (plan && new Date(res.billingDate) > new Date()) {
         return true;
       } else {
@@ -192,32 +187,19 @@ export const pdfNewWidthFun = (divRef) => {
 };
 
 //`contractUsers` function is used to get contract_User details
-export const contractUsers = async (email) => {
-  const data = {
-    email: email
-  };
-  const userDetails = await axios
-    .post(`${localStorage.getItem("baseUrl")}functions/getUserDetails`, data, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-        sessionToken: localStorage.getItem("accesstoken")
-      }
-    })
-    .then((Listdata) => {
-      const json = Listdata.data;
-      let data = [];
-      if (json && json.result) {
-        data.push(json.result);
-      }
-      return data;
-    })
-    .catch((err) => {
-      console.log("Err in getUserDetails cloud function", err);
-      return "Error: Something went wrong!";
-    });
-
-  return userDetails;
+export const contractUsers = async () => {
+  try {
+    const userDetails = await Parse.Cloud.run("getUserDetails");
+    let data = [];
+    if (userDetails) {
+      const json = JSON.parse(JSON.stringify(userDetails));
+      data.push(json);
+    }
+    return data;
+  } catch (err) {
+    console.log("Err in getUserDetails cloud function", err);
+    return "Error: Something went wrong!";
+  }
 };
 
 //function for resize image and update width and height for mulitisigners
@@ -271,7 +253,6 @@ export const handleImageResize = (
     }
   }
 };
-
 export const widgets = [
   {
     type: "signature",
@@ -401,14 +382,14 @@ export const addWidgetOptions = (type) => {
       return {};
   }
 };
-export const getWidgetType = (item) => {
+export const getWidgetType = (item, widgetName) => {
   return (
     <div className="op-btn w-fit md:w-[100%] op-btn-primary op-btn-outline op-btn-sm focus:outline-none outline outline-[1.5px] ml-[6px] md:ml-0 p-0 overflow-hidden">
       <div className="w-full h-full flex md:justify-between items-center">
         <div className="flex justify-start items-center text-[13px] ml-1">
           {!isMobile && <i className="fa-light fa-grip-vertical ml-[3px]"></i>}
           <span className="md:inline-block text-center text-[15px] ml-[5px] font-semibold pr-1 md:pr-0">
-            {item.type}
+            {widgetName}
           </span>
         </div>
         <div className="text-[20px] op-btn op-btn-primary rounded-none w-[40px] h-full flex justify-center items-center">
@@ -2242,4 +2223,10 @@ export const getContainerScale = (pdfOriginalWH, pageNumber, containerWH) => {
   );
   const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
   return containerScale;
+};
+
+//function to get current laguage and set it in local
+export const saveLanguageInLocal = (i18n) => {
+  const detectedLanguage = i18n.language || "en";
+  localStorage.setItem("i18nextLng", detectedLanguage);
 };

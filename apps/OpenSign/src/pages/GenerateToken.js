@@ -9,14 +9,10 @@ import Tooltip from "../primitives/Tooltip";
 import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
-const tourSteps = [
-  {
-    selector: '[data-tut="apisubscribe"]',
-    content: "Upgrade now to generate API token"
-  }
-];
+import { useTranslation } from "react-i18next";
 
 function GenerateToken() {
+  const { t } = useTranslation();
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [apiToken, SetApiToken] = useState("");
@@ -29,7 +25,12 @@ function GenerateToken() {
     fetchToken();
     // eslint-disable-next-line
   }, []);
-
+  const tourSteps = [
+    {
+      selector: '[data-tut="apisubscribe"]',
+      content: t("tour-mssg.generate-token")
+    }
+  ];
   const fetchToken = async () => {
     try {
       if (isEnableSubscription) {
@@ -70,13 +71,13 @@ function GenerateToken() {
         const res = await axios.post(url, {}, { headers: headers });
         if (res) {
           SetApiToken(res.data.result.token);
-          setIsAlert({ type: "success", msg: "Token generated successfully." });
+          setIsAlert({ type: "success", msg: t("token-generated") });
         } else {
           console.error("Error while generating Token");
-          setIsAlert({ type: "danger", msg: "Something went wrong." });
+          setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         }
       } catch (error) {
-        setIsAlert({ type: "danger", msg: "Something went wrong." });
+        setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         console.log("while generating Token", error);
       } finally {
         setIsLoader(false);
@@ -89,7 +90,7 @@ function GenerateToken() {
 
   const copytoclipboard = (text) => {
     copytoData(text);
-    setIsAlert({ type: "success", msg: "Copied" });
+    setIsAlert({ type: "success", msg: t("copied") });
     setTimeout(() => {
       setIsAlert({ type: "success", msg: "" });
     }, 1500); // Reset copied state after 1.5 seconds
@@ -112,7 +113,7 @@ function GenerateToken() {
         <>
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box mb-3">
             <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
-              OpenSign™ API{" "}
+              OpenSign™ {t("API")}{" "}
               <Tooltip
                 url={
                   "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
@@ -123,7 +124,7 @@ function GenerateToken() {
             <ul className="w-full flex flex-col p-2 text-sm">
               <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
                 <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5">
-                  <span className="ml-1">API Token:</span>{" "}
+                  <span className="ml-1">{t("api-token")}:</span>{" "}
                   <span
                     id="token"
                     className={`${
@@ -150,7 +151,7 @@ function GenerateToken() {
                   onClick={apiToken ? handleModal : handleSubmit}
                   className="op-btn op-btn-primary"
                 >
-                  {apiToken ? "Regenerate Token" : "Generate Token"}
+                  {apiToken ? t("regenerate-token") : t("generate-token")}
                 </button>
               </li>
             </ul>
@@ -164,18 +165,17 @@ function GenerateToken() {
                 }
                 className="op-btn op-btn-secondary mt-2 mb-3 px-8"
               >
-                View Docs
+                {t("view-docs")}
               </button>
             </div>
             <ModalUi
               isOpen={isModal}
-              title={apiToken ? "Regenerate Token" : "Generate Token"}
+              title={apiToken ? t("regenerate-token") : t("generate-token")}
               handleClose={handleModal}
             >
               <div className="m-[20px]">
                 <div className="text-lg font-normal text-base-content">
-                  Are you sure you want to regenerate token it will expire old
-                  token?
+                  {t("generate-token-alert")}
                 </div>
                 <hr className="bg-[#ccc] mt-4" />
                 <div className="flex items-center mt-3 gap-2 text-white">
@@ -183,13 +183,13 @@ function GenerateToken() {
                     onClick={handleSubmit}
                     className="op-btn op-btn-primary ml-[2px]"
                   >
-                    Yes
+                    {t("yes")}
                   </button>
                   <button
                     onClick={handleModal}
                     className="op-btn op-btn-secondary"
                   >
-                    No
+                    {t("no")}
                   </button>
                 </div>
               </div>

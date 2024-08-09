@@ -9,6 +9,7 @@ import "../../styles/signature.css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import ModalUi from "../../primitives/ModalUi";
 import Loader from "../../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 function Header({
   isPdfRequestFiles,
@@ -35,6 +36,7 @@ function Header({
   setIsEditTemplate,
   isPublicTemplate
 }) {
+  const { t } = useTranslation();
   const filterPrefill =
     signerPos && signerPos?.filter((data) => data.Role !== "prefill");
   const isMobile = window.innerWidth < 767;
@@ -97,7 +99,7 @@ function Header({
                           className="fa-light fa-arrow-down mr-[3px]"
                           aria-hidden="true"
                         ></i>
-                        Download
+                        {t("download")}
                       </div>
                     </DropdownMenu.Item>
                     {isCompleted && (
@@ -115,7 +117,7 @@ function Header({
                             className="fa-light fa-award mr-[3px]"
                             aria-hidden="true"
                           ></i>
-                          Certificate
+                          {t("certificate")}
                         </div>
                       </DropdownMenu.Item>
                     )}
@@ -129,7 +131,7 @@ function Header({
                             className="fa-light fa-envelope mr-[3px]"
                             aria-hidden="true"
                           ></i>
-                          Mail
+                          {t("mail")}
                         </div>
                       </DropdownMenu.Item>
                     )}
@@ -144,7 +146,7 @@ function Header({
                           className="fa-light fa-print mr-[3px]"
                           aria-hidden="true"
                         ></i>
-                        Print
+                        {t("print")}
                       </div>
                     </DropdownMenu.Item>
                   </DropdownMenu.Content>
@@ -162,7 +164,7 @@ function Header({
                         onClick={() => handleDeclinePdfAlert()}
                         className="text-[red] border-none font-[650] text-[14px] mr-2"
                       >
-                        Decline
+                        {t("decline")}
                       </div>
                     )}
                     {isPlaceholder ? (
@@ -177,7 +179,7 @@ function Header({
                         } op-link no-underline font-[650] text-[14px]`}
                         data-tut="headerArea"
                       >
-                        {completeBtnTitle ? completeBtnTitle : "Send"}
+                        {completeBtnTitle ? completeBtnTitle : t("send")}
                       </div>
                     ) : (
                       <div
@@ -191,7 +193,7 @@ function Header({
                         }}
                         className="border-none font-[650] text-[14px] op-link op-link-primary no-underline"
                       >
-                        Finish
+                        {t("finish")}
                       </div>
                     )}
                     <DropdownMenu.Root>
@@ -222,7 +224,7 @@ function Header({
                               className="fa-light fa-arrow-down mr-[3px]"
                               aria-hidden="true"
                             ></i>
-                            <span className="font-[500]">Download</span>
+                            <span className="font-[500]">{t("download")}</span>
                           </DropdownMenu.Item>
                         </DropdownMenu.Content>
                       </DropdownMenu.Portal>
@@ -249,13 +251,14 @@ function Header({
                     <div>
                       {filterPrefill.length === 0 ? (
                         <span className="text-[13px] text-[#f5405e]">
-                          Add {signersdata.length - filterPrefill.length}{" "}
-                          recipients signature
+                          {t("add")} {signersdata.length - filterPrefill.length}{" "}
+                          {t("recipients")} {t("widgets-name.signature")}
                         </span>
                       ) : (
                         <span className="text-[13px] text-[#f5405e]">
-                          Add {signersdata.length - filterPrefill.length} more
-                          recipients signature
+                          {t("add")} {signersdata.length - filterPrefill.length}{" "}
+                          {t("more")}
+                          {t("recipients")} {t("widgets-name.signature")}
                         </span>
                       )}
                     </div>
@@ -275,7 +278,7 @@ function Header({
                   type="button"
                   className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
                 >
-                  Back
+                  {t("back")}
                 </button>
                 <button
                   disabled={isMailSend && true}
@@ -286,8 +289,8 @@ function Header({
                   {completeBtnTitle
                     ? completeBtnTitle
                     : isMailSend
-                      ? "Sent"
-                      : "Send"}
+                      ? t("sent")
+                      : t("send")}
                 </button>
               </div>
             </>
@@ -303,7 +306,7 @@ function Header({
                     className="fa-light fa-print py-[3px]"
                     aria-hidden="true"
                   ></i>
-                  <span className="hidden lg:block">Print</span>
+                  <span className="hidden lg:block">{t("print")}</span>
                 </button>
                 {isCompleted && (
                   <button
@@ -317,7 +320,7 @@ function Header({
                       className="fa-light fa-award py-[3px]"
                       aria-hidden="true"
                     ></i>
-                    <span className="hidden lg:block">Certificate</span>
+                    <span className="hidden lg:block">{t("certificate")}</span>
                   </button>
                 )}
                 <button
@@ -331,7 +334,7 @@ function Header({
                     className="fa-light fa-download py-[3px]"
                     aria-hidden="true"
                   ></i>
-                  <span className="hidden lg:block">Download</span>
+                  <span className="hidden lg:block">{t("download")}</span>
                 </button>
               </div>
             ) : (
@@ -341,7 +344,7 @@ function Header({
                   type="button"
                   className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
                 >
-                  Back
+                  {t("back")}
                 </button>
                 {currentSigner && (
                   <>
@@ -349,14 +352,14 @@ function Header({
                       className="op-btn op-btn-secondary op-btn-sm mr-[3px] shadow"
                       onClick={() => handleDeclinePdfAlert()}
                     >
-                      Decline
+                      {t("decline")}
                     </button>
                     <button
                       type="button"
                       className="op-btn op-btn-primary op-btn-sm mr-[3px] shadow"
                       onClick={() => embedWidgetsData()}
                     >
-                      Finish
+                      {t("finish")}
                     </button>
                     <button
                       type="button"
@@ -366,7 +369,7 @@ function Header({
                       }
                     >
                       <i className="fa-light fa-arrow-down font-semibold lg:hidden"></i>
-                      <span className="hidden lg:block">Download</span>
+                      <span className="hidden lg:block">{t("download")}</span>
                     </button>
                   </>
                 )}
@@ -383,7 +386,9 @@ function Header({
                   className="op-btn op-btn-secondary op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
                 >
                   <i className="fa-light fa-award" aria-hidden="true"></i>
-                  <span className="hidden lg:block ml-1">Certificate</span>
+                  <span className="hidden lg:block ml-1">
+                    {t("certificate")}
+                  </span>
                 </button>
               )}
               <button
@@ -392,7 +397,7 @@ function Header({
                 className="op-btn op-btn-neutral op-btn-sm gap-0 font-medium text-[12px] mr-[3px] shadow"
               >
                 <i className="fa-light fa-print" aria-hidden="true"></i>
-                <span className="hidden lg:block ml-1">Print</span>
+                <span className="hidden lg:block ml-1">{t("print")}</span>
               </button>
               <button
                 type="button"
@@ -402,7 +407,7 @@ function Header({
                 }
               >
                 <i className="fa-light fa-download" aria-hidden="true"></i>
-                <span className="hidden lg:block ml-1">Download</span>
+                <span className="hidden lg:block ml-1">{t("download")}</span>
               </button>
               <button
                 type="button"
@@ -410,7 +415,7 @@ function Header({
                 onClick={() => setIsEmail(true)}
               >
                 <i className="fa-light fa-envelope" aria-hidden="true"></i>
-                <span className="hidden lg:block ml-1">Mail</span>
+                <span className="hidden lg:block ml-1">{t("mail")}</span>
               </button>
             </div>
           ) : isPublicTemplate ? (
@@ -418,9 +423,11 @@ function Header({
               <button
                 type="button"
                 className="op-btn op-btn-primary op-btn-sm  shadow"
-                onClick={() => embedWidgetsData()}
+                onClick={() => {
+                  embedWidgetsData();
+                }}
               >
-                Sign Now
+                {t("sign-now")}
               </button>
             </div>
           ) : (
@@ -430,7 +437,7 @@ function Header({
                 type="button"
                 className="op-btn op-btn-ghost op-btn-sm mr-[3px]"
               >
-                Back
+                {t("back")}
               </button>
               <button
                 type="button"
@@ -441,7 +448,7 @@ function Header({
                   }
                 }}
               >
-                Finish
+                {t("finish")}
               </button>
             </div>
           )}
@@ -456,18 +463,14 @@ function Header({
         isOpen={isDownloading === "certificate"}
         title={
           isDownloading === "certificate"
-            ? "Generating certificate"
-            : "PDF Download"
+            ? t("generating-certificate")
+            : t("pdf-download")
         }
         handleClose={() => setIsDownloading("")}
       >
         <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
           {isDownloading === "certificate"}{" "}
-          <p>
-            Your completion certificate is being generated. Please wait
-            momentarily. If the download doesn&apos;t start shortly, click the
-            button again.
-          </p>
+          <p>{t("generate-certificate-alert")}</p>
         </div>
       </ModalUi>
     </div>

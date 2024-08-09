@@ -1,6 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 function PdfZoom(props) {
+  const { t } = useTranslation();
   const onClickZoomIn = () => {
     props.setScale(props.scale + 0.1 * props.scale);
     props.setZoomPercent(props.zoomPercent + 10);
@@ -25,14 +27,14 @@ function PdfZoom(props) {
       <span
         className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px] cursor-pointer"
         onClick={onClickZoomIn}
-        title="Zoom in"
+        title={t("zoom-in")}
       >
         <i className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[30px]"></i>
       </span>
       <span
         className="bg-gray-50 px-[4px] 2xl:px-[15px] 2xl:py-[10px] cursor-pointer"
         onClick={handleReset}
-        title="Reset"
+        title={t("reset")}
       >
         <i className="fa-light fa-magnifying-glass-arrows-rotate text-gray-500 2xl:text-[30px]"></i>
       </span>
@@ -42,7 +44,7 @@ function PdfZoom(props) {
         style={{
           cursor: props.zoomPercent > 0 ? "pointer" : "default"
         }}
-        title="Zoom out"
+        title={t("zoom-out")}
       >
         <i className="fa-light fa-magnifying-glass-minus text-gray-500 2xl:text-[30px]"></i>
       </span>

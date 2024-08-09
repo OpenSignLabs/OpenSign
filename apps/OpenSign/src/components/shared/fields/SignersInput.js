@@ -4,6 +4,7 @@ import AddSigner from "../../AddSigner";
 import Parse from "parse";
 import Tooltip from "../../../primitives/Tooltip";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 function arrayMove(array, from, to) {
   array = array.slice();
   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
@@ -32,6 +33,7 @@ const AddSignerModal = ({ isOpen, children }) => {
  */
 
 const SignersInput = (props) => {
+  const { t } = useTranslation();
   const [state, setState] = useState(undefined);
   // const [editFormData, setEditFormData] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -120,15 +122,10 @@ const SignersInput = (props) => {
   return (
     <div className="text-xs mt-2 ">
       <label className="block relative">
-        Signers
+        {t("signers")}
         {props.required && <span className="text-red-500 text-[13px]">*</span>}
         <span className="absolute ml-1 text-xs z-30">
-          <Tooltip
-            id={"signer-tooltip"}
-            message={
-              "Begin typing a contact's name to see suggested signers from your saved contacts or add new ones. Arrange the signing order by adding signers in the desired sequence. Use the '+' button to include signers and the 'x' to remove them. Each signer will receive an email prompt to sign the document in the order listed."
-            }
-          />
+          <Tooltip id={"signer-tooltip"} message={t("signers-help")} />
         </span>
       </label>
       <div className="flex gap-x-[5px]">
@@ -142,7 +139,7 @@ const SignersInput = (props) => {
             onChange={onChange}
             closeMenuOnSelect={false}
             required={props.required}
-            noOptionsMessage={() => "Contact not found"}
+            noOptionsMessage={() => t("contact-not-found")}
             unstyled
             classNames={{
               control: () =>
@@ -171,7 +168,7 @@ const SignersInput = (props) => {
         </div>
         <AddSignerModal isOpen={modalIsOpen}>
           <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-            Add Signer
+            {t("add-signer")}
           </h3>
           <button
             onClick={handleModalCloseClick}

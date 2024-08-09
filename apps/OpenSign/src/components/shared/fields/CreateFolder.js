@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import Alert from "../../../primitives/Alert";
 import Loader from "../../../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
   const folderPtr = {
@@ -9,6 +10,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
     className: folderCls,
     objectId: parentFolderId
   };
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [folderList, setFolderList] = useState([]);
   const [isAlert, setIsAlert] = useState(false);
@@ -60,7 +62,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       }
       const templExist = await exsitQuery.first();
       if (templExist) {
-        setAlert({ type: "danger", message: "Folder already exist!" });
+        setAlert({ type: "danger", message: t("folder-already-exist") });
         setIsAlert(true);
         setTimeout(() => {
           setIsAlert(false);
@@ -85,7 +87,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
           handleLoader(false);
           setAlert({
             type: "success",
-            message: "Folder created successfully!"
+            message: t("folder-created-successfully")
           });
           setIsAlert(true);
           setTimeout(() => {
@@ -98,7 +100,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
       }
     } else {
       handleLoader(false);
-      setAlert({ type: "info", message: "Please fill folder name" });
+      setAlert({ type: "info", message: t("fill-folder-name") });
       setIsAlert(true);
       setTimeout(() => {
         setIsAlert(false);
@@ -120,20 +122,25 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             <Loader />
           </div>
         )}
-        <h1 className="text-base font-semibold mt-[0.4rem]">Create Folder</h1>
+        <h1 className="text-base font-semibold mt-[0.4rem]">
+          {t("create-folder")}
+        </h1>
         <div className="text-xs mt-2">
           <label className="block">
-            Name<span className="text-red-500 text-[13px]">*</span>
+            {t("name")}
+            <span className="text-red-500 text-[13px]">*</span>
           </label>
           <input
             className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+            onInput={(e) => e.target.setCustomValidity("")}
             required
           />
         </div>
         <div className="text-xs mt-2">
-          <label className="block">Parent Folder</label>
+          <label className="block">{t("parent-folder")}</label>
           <select
             value={selectedParent}
             onChange={handleOptions}
@@ -155,7 +162,7 @@ const CreateFolder = ({ parentFolderId, onSuccess, folderCls }) => {
             className="op-btn op-btn-primary op-btn-sm mt-3"
           >
             <i className="fa-light fa-plus"></i>
-            <span>Create</span>
+            <span>{t("create")}</span>
           </button>
         </div>
       </div>

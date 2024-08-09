@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-
+import { useTranslation } from "react-i18next";
 export default function TourContentWithBtn({ message, isChecked }) {
+  const { t } = useTranslation();
   const [isCheck, setIsCheck] = useState(false);
 
   const handleCheck = () => {
@@ -19,7 +20,7 @@ export default function TourContentWithBtn({ message, isChecked }) {
           checked={isCheck}
           onChange={handleCheck}
         />
-        <span className="#787878 text-[12px]">Don&apos;t show this again</span>
+        <span className="#787878 text-[12px]">{t("tour-content")}</span>
       </label>
     </div>
   );

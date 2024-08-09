@@ -2,13 +2,20 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { isEnableSubscription } from "../constant/const";
-import { contractUsers, getAppLogo } from "../constant/Utils";
+import {
+  contractUsers,
+  getAppLogo,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import logo from "../assets/images/logo.png";
 import { appInfo } from "../constant/appinfo";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
+import SelectLanguage from "../components/pdf/SelectLanguage";
 
 function GuestLogin() {
+  const { t, i18n } = useTranslation();
   const { id, userMail, contactBookId, base64url } = useParams();
   const navigate = useNavigate();
   const [email, setEmail] = useState(userMail);
@@ -40,6 +47,7 @@ function GuestLogin() {
     }
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
     const parseId = appInfo.appId;
     const newServer = `${appInfo.baseUrl}/`;
     localStorage.setItem("baseUrl", newServer);
@@ -87,7 +95,7 @@ function GuestLogin() {
         setEnterOtp(true);
       }
     } catch (error) {
-      alert("something went wrong!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
 
@@ -117,15 +125,16 @@ function GuestLogin() {
         };
         let user = await axios.post(url, body, { headers: headers });
         if (user.data.result === "Invalid Otp") {
-          alert("Invalid Otp");
+          alert(t("invalid-otp"));
           setLoading(false);
         } else if (user.data.result === "user not found!") {
-          alert("User not found!");
+          alert(t("user-not-found"));
           setLoading(false);
         } else {
           let _user = user.data.result;
+          await Parse.User.become(_user.sessionToken);
           const parseId = localStorage.getItem("parseAppId");
-          const contractUserDetails = await contractUsers(_user.email);
+          const contractUserDetails = await contractUsers();
           localStorage.setItem("UserInformation", JSON.stringify(_user));
           localStorage.setItem(
             `Parse/${parseId}/currentUser`,
@@ -156,7 +165,7 @@ function GuestLogin() {
         console.log("err ", error);
       }
     } else {
-      alert("Please Enter OTP!");
+      alert(t("enter-otp-alert"));
     }
   };
   const handleUserData = async (e) => {
@@ -171,7 +180,7 @@ function GuestLogin() {
       await SendOtp();
     } catch (err) {
       setLoading(false);
-      alert("something went wron, please try agian later.");
+      alert(t("something-went-wrong-mssg"));
       console.log("Err in link ext contact", err);
     }
   };
@@ -179,153 +188,160 @@ function GuestLogin() {
     setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   return (
-    <div className="p-[2rem]">
-      {isLoading ? (
-        <div className="flex flex-col justify-center items-center h-[100vh]">
-          <Loader />
-          <span className="text-[13px] text-[gray]">{isLoading.message}</span>
-        </div>
-      ) : (
-        <div className="m-1 md:m-2 p-[30px] text-base-content bg-base-100 op-card shadow-md">
-          <div className="md:w-[250px] md:h-[66px] inline-block overflow-hidden mt-2 mb-11">
-            {appLogo && (
-              <img src={appLogo} className="object-contain" alt="logo" />
-            )}
+    <div className="p-14">
+      <div>
+        {isLoading ? (
+          <div className="flex flex-col justify-center items-center h-[100vh]">
+            <Loader />
+            <span className="text-[13px] text-[gray]">{isLoading.message}</span>
           </div>
-          {contactId ? (
-            <>
-              {!EnterOTP ? (
-                <div className="w-full md:w-[50%] text-base-content">
-                  <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
-                  <legend className="text-[12px] text-[#878787] mt-2 mb-1">
-                    Verification code is sent to your email
-                  </legend>
-                  <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
+        ) : (
+          <div className="m-1 md:m-2 p-[30px] text-base-content bg-base-100 op-card shadow-md">
+            <div className="md:w-[250px] md:h-[66px] inline-block overflow-hidden mt-2 mb-11">
+              {appLogo && (
+                <img src={appLogo} className="object-contain" alt="logo" />
+              )}
+            </div>
+            {contactId ? (
+              <>
+                {!EnterOTP ? (
+                  <div className="w-full md:w-[50%] text-base-content">
+                    <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
+                    <legend className="text-[12px] text-[#878787] mt-2 mb-1">
+                      {t("guest-email-alert")}
+                    </legend>
+                    <div className="p-[20px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md">
+                      <input
+                        type="email"
+                        name="email"
+                        value={email}
+                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full disabled:text-[#5c5c5c] text-xs"
+                        disabled
+                      />
+                    </div>
+                    <div className="mt-3">
+                      <button
+                        className="op-btn op-btn-primary"
+                        onClick={(e) => handleSendOTPBtn(e)}
+                        disabled={loading}
+                      >
+                        {loading ? t("loading") : t("get-verification-code")}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <form
+                    className="w-full md:w-[50%] text-base-content"
+                    onSubmit={VerifyOTP}
+                  >
+                    <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
+                    <legend className="text-[12px] text-[#878787] mt-2">
+                      {t("get-verification-code-2")}
+                    </legend>
+                    <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
+                      <p className="text-sm">{t("enter-verification-code")}</p>
+                      <input
+                        type="number"
+                        className="mt-2 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        name="OTP"
+                        value={OTP}
+                        onChange={(e) => setOTP(e.target.value)}
+                      />
+                    </div>
+                    <div className="mt-2.5">
+                      <button
+                        className="op-btn op-btn-primary"
+                        type="submit"
+                        disabled={loading}
+                      >
+                        {loading ? t("loading") : t("verify")}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </>
+            ) : (
+              <div className="w-full md:w-[50%] text-base-content">
+                <h1 className="text-2xl md:text-[30px]">{t("welcome")}</h1>
+                <legend className="text-[12px] text-[#878787] mt-2">
+                  {t("provide-your-details")}
+                </legend>
+                <form
+                  className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md"
+                  onSubmit={handleUserData}
+                >
+                  <div className="mb-2">
+                    <label
+                      htmlFor="name"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("name")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={contact.name}
+                      onChange={handleInputChange}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      disabled={loading}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
+                      required
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("email")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
                     <input
                       type="email"
-                      name="mobile"
-                      value={email}
-                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full disabled:text-[#5c5c5c] text-xs"
+                      name="email"
+                      value={contact.email}
+                      onChange={handleInputChange}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      required
                       disabled
                     />
                   </div>
-                  <div className="mt-3">
-                    <button
-                      className="op-btn op-btn-primary"
-                      onClick={(e) => handleSendOTPBtn(e)}
-                      disabled={loading}
+                  <div className="mt-2.5">
+                    <label
+                      htmlFor="phone"
+                      className="block text-xs text-gray-700 font-semibold"
                     >
-                      {loading ? "Loading..." : "Get verification code"}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <form
-                  className="w-full md:w-[50%] text-base-content"
-                  onSubmit={VerifyOTP}
-                >
-                  <h1 className="text-2xl md:text-[30px]">Welcome Back!</h1>
-                  <legend className="text-[12px] text-[#878787] mt-2">
-                    You will get a verification code via Email
-                  </legend>
-                  <div className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 op-card my-2 shadow-md">
-                    <p className="text-sm">Enter Verification Code</p>
+                      {t("phone")}
+                    </label>
                     <input
-                      type="number"
-                      className="mt-2 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                      name="OTP"
-                      value={OTP}
-                      onChange={(e) => setOTP(e.target.value)}
+                      type="text"
+                      name="phone"
+                      value={contact.phone}
+                      onChange={handleInputChange}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      disabled={loading}
                     />
                   </div>
-                  <div className="mt-2.5">
+                  <div className="mt-2 flex justify-start">
                     <button
-                      className="op-btn op-btn-primary"
                       type="submit"
+                      className="op-btn op-btn-primary"
                       disabled={loading}
                     >
-                      {loading ? "Loading..." : "Verify"}
+                      {loading ? t("loading") : t("next")}
                     </button>
                   </div>
                 </form>
-              )}
-            </>
-          ) : (
-            <div className="w-full md:w-[50%] text-base-content">
-              <h1 className="text-2xl md:text-[30px]">Welcome</h1>
-              <legend className="text-[12px] text-[#878787] mt-2">
-                Provide your details
-              </legend>
-              <form
-                className="p-[20px] pt-[15px] outline outline-1 outline-slate-300/50 my-2 op-card shadow-md"
-                onSubmit={handleUserData}
-              >
-                <div className="mb-2">
-                  <label
-                    htmlFor="name"
-                    className="block text-xs text-gray-700 font-semibold"
-                  >
-                    Name
-                    <span className="text-[red] text-[13px]"> *</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={contact.name}
-                    onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                    disabled={loading}
-                    required
-                  />
-                </div>
-                <div className="mb-2">
-                  <label
-                    htmlFor="email"
-                    className="block text-xs text-gray-700 font-semibold"
-                  >
-                    Email
-                    <span className="text-[red] text-[13px]"> *</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={contact.email}
-                    onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                    required
-                    disabled
-                  />
-                </div>
-                <div className="mt-2.5">
-                  <label
-                    htmlFor="phone"
-                    className="block text-xs text-gray-700 font-semibold"
-                  >
-                    Phone
-                  </label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={contact.phone}
-                    onChange={handleInputChange}
-                    className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                    disabled={loading}
-                  />
-                </div>
-                <div className="mt-2 flex justify-start">
-                  <button
-                    type="submit"
-                    className="op-btn op-btn-primary"
-                    disabled={loading}
-                  >
-                    {loading ? "Loading..." : "Next"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-        </div>
-      )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <SelectLanguage />
     </div>
   );
 }

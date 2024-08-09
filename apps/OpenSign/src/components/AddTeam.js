@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import Title from "./Title";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const AddTeam = (props) => {
+  const { t } = useTranslation();
   const [formdata, setFormdata] = useState({
     name: "",
     team: ""
@@ -125,10 +127,10 @@ const AddTeam = (props) => {
   };
 
   return (
-    <div className="shadow-md rounded-box my-[1px] p-3 bg-[#ffffff]">
+    <div className="shadow-md rounded-box my-[1px] p-3 bg-base-100 relative">
       <Title title="Add Team" />
       {isLoader && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-30 z-50 rounded-box">
+        <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
           <Loader />
         </div>
       )}
@@ -140,7 +142,7 @@ const AddTeam = (props) => {
               htmlFor="name"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Name
+              {t("name")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
@@ -148,6 +150,8 @@ const AddTeam = (props) => {
               name="name"
               value={formdata.name}
               onChange={(e) => handleChange(e)}
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               required
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
@@ -157,7 +161,7 @@ const AddTeam = (props) => {
               htmlFor="phone"
               className="block text-xs text-gray-700 font-semibold"
             >
-              Parent Team
+              {t("report-heading.Parent Team")}
             </label>
             <select
               value={formdata.team}
@@ -175,14 +179,14 @@ const AddTeam = (props) => {
           </div>
           <div className="flex items-center mt-3 gap-2 text-white">
             <button type="submit" className="op-btn op-btn-primary">
-              Submit
+              {t("submit")}
             </button>
             <div
               type="button"
               onClick={() => handleReset()}
               className="op-btn op-btn-secondary"
             >
-              Reset
+              {t("reset")}
             </div>
           </div>
         </form>

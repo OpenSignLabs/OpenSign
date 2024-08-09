@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 // import FacebookLogin from "react-facebook-login";
 
 const LoginFacebook = ({
@@ -9,6 +10,7 @@ const LoginFacebook = ({
   thirdpartyLoader,
   setThirdpartyLoader
 }) => {
+  const { t } = useTranslation();
   const [isModal, setIsModal] = useState(false);
   const [userDetails, setUserDetails] = useState({
     Phone: "",
@@ -106,10 +108,10 @@ const LoginFacebook = ({
           alert(userSignUp.message);
         }
       } else {
-        alert("Internal server error !");
+        alert(t("server-error"));
       }
     } else {
-      alert("Please fill required details!");
+      alert(t("fill-required-details!"));
     }
   };
   return (
@@ -136,7 +138,7 @@ const LoginFacebook = ({
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Sign up form</h5>
+                <h5 className="modal-title">{t("sign-up-form")}</h5>
                 <span>
                   <span></span>
                 </span>
@@ -145,7 +147,8 @@ const LoginFacebook = ({
                 <form>
                   <div className="form-group">
                     <label htmlFor="Phone" className="col-form-label">
-                      Phone <span className="text-[red] text-[13px]">*</span>
+                      {t("phone")}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="tel"
@@ -158,12 +161,17 @@ const LoginFacebook = ({
                           Phone: e.target.value
                         })
                       }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                   </div>
                   <div className="form-group">
                     <label htmlFor="Company" className="col-form-label">
-                      Company <span className="text-[red] text-[13px]">*</span>
+                      {t("company")}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="text"
@@ -176,6 +184,10 @@ const LoginFacebook = ({
                           Company: e.target.value
                         })
                       }
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                   </div>
@@ -185,14 +197,14 @@ const LoginFacebook = ({
                       onClick={() => handleSubmitbtn()}
                       className="btn btn-info mr-[10px]"
                     >
-                      Sign up
+                      {t("sign-up")}
                     </button>
                     <button
                       type="button"
                       className="btn btn-secondary w-[90px]"
                       onClick={() => setIsModal(false)}
                     >
-                      Cancel
+                      {t("cancel")}
                     </button>
                   </div>
                 </form>
