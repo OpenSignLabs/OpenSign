@@ -113,7 +113,7 @@ function EmailComponent({
   };
   //function for get email value
   const handleEmailValue = (e) => {
-    const value = e.target.value;
+    const value = e.target.value?.toLowerCase()?.replace(/\s/g, "");
     setEmailErr(false);
     setEmailValue(value);
   };

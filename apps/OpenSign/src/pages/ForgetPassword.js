@@ -24,7 +24,10 @@ function ForgotPassword() {
   const [image, setImage] = useState();
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    let { name, value } = event.target;
+    if (name === "email") {
+      value = value?.toLowerCase()?.replace(/\s/g, "");
+    }
     setState({ ...state, [name]: value });
   };
 

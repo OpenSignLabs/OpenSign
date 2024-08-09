@@ -98,7 +98,6 @@ const Report = () => {
             json.actions.map((data) => {
               const newConfig = {
                 selector: `[data-tut="${data?.selector}"]`,
-
                 content: () => (
                   <TourContentWithBtn
                     message={t(`tour-mssg.${data?.action}`)}

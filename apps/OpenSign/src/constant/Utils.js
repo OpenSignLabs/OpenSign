@@ -2237,25 +2237,21 @@ export const saveLanguageInLocal = (i18n) => {
 //function to get default signatur eof current user from `contracts_Signature` class
 export const getDefaultSignature = async (objectId) => {
   try {
-    const result = await axios.get(
-      `${localStorage.getItem(
-        "baseUrl"
-      )}classes/contracts_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${objectId}"}}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-        }
-      }
-    );
-    const res = result.data?.results;
-    if (res[0] && res.length > 0) {
-      const defaultSignature = res[0]?.ImageURL
-        ? await getBase64FromUrl(res[0]?.ImageURL, true)
+    const query = new Parse.Query("contracts_Signature");
+    query.equalTo("UserId", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: objectId
+    });
+
+    const result = await query.first();
+    if (result) {
+      const res = JSON.parse(JSON.stringify(result));
+      const defaultSignature = res?.ImageURL
+        ? await getBase64FromUrl(res?.ImageURL, true)
         : "";
-      const defaultInitial = res[0]?.Initials
-        ? await getBase64FromUrl(res[0]?.Initials, true)
+      const defaultInitial = res?.Initials
+        ? await getBase64FromUrl(res?.Initials, true)
         : "";
 
       return {
