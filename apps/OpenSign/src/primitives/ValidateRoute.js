@@ -23,6 +23,7 @@ const ValidateRoute = () => {
         }
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handlelogout = async () => {
     let appdata = localStorage.getItem("userSettings");

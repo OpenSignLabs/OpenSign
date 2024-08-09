@@ -57,6 +57,7 @@ function UserProfile() {
 
   useEffect(() => {
     getUserDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUserDetail = async () => {

@@ -11,8 +11,7 @@ export const isEnableSubscription =
     : false;
 export const isStaging =
   window.location.origin === "https://staging-app.opensignlabs.com";
-export const isPublic =
-  window.location.origin === "https://opensign.me" ||
-  window.location.origin === "https://staging.opensign.me";
+export const isPublicProduction =
+  window.location.origin === "https://opensign.me";
 export const isPublicStaging =
   window.location.origin === "https://staging.opensign.me";
