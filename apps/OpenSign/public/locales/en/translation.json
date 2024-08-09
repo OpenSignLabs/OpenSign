@@ -91,6 +91,7 @@
      "API Token":"API Token",
      "Webhook":"Webhook",
      "Teams":"Teams",
+     "Team-update-successfully":"Team Updated successfully.",
       "Users":"Users"
       }
     },

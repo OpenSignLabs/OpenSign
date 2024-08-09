@@ -203,7 +203,7 @@ const TeamList = () => {
       const data = { Name: team.Name, TeamId: team.objectId };
       await Parse.Cloud.run("updateteam", data);
       // console.log("updateTeamRes ", updateTeamRes);
-      setIsAlert({ type: "success", msg: t("something-went-wrong-mssg") });
+      setIsAlert({ type: "success", msg: t("Team-update-successfully") });
     } catch (Err) {
       console.log("Err in update team name"), Err;
       setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
