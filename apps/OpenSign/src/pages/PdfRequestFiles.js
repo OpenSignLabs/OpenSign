@@ -1701,7 +1701,7 @@ function PdfRequestFiles(props) {
 
                 <ModalUi
                   isOpen={isPublicContact}
-                  title={isOtp ? "Verify email" : "Contact Details"}
+                  title={isOtp ? t("verify-email-1") : t("contact-details")}
                   handleClose={() => {
                     handleCloseOtp();
                   }}
@@ -1716,7 +1716,7 @@ function PdfRequestFiles(props) {
                               type="number"
                               name="otp"
                               className="grow"
-                              placeholder="Enter Verification Code"
+                              placeholder={t("otp-placeholder")}
                               onInvalid={(e) =>
                                 e.target.setCustomValidity(t("input-required"))
                               }
@@ -1736,13 +1736,13 @@ function PdfRequestFiles(props) {
                                 handleCloseOtp();
                               }}
                             >
-                              Cancel
+                              {t("cancel")}
                             </button>
                             <button
                               className="op-btn op-btn-primary"
                               disabled={loading}
                             >
-                              {loading ? "Loading..." : "Verify"}
+                              {loading ? t("loading") : t("verify")}
                             </button>
                           </div>
                         </div>
@@ -1765,7 +1765,7 @@ function PdfRequestFiles(props) {
                               name="name"
                               value={contact.name}
                               onChange={handleInputChange}
-                              placeholder="name"
+                              placeholder={t("name")}
                               onInvalid={(e) =>
                                 e.target.setCustomValidity(t("input-required"))
                               }
@@ -1790,7 +1790,7 @@ function PdfRequestFiles(props) {
                               name="email"
                               value={contact.email}
                               onChange={handleInputChange}
-                              placeholder="Email"
+                              placeholder={t("email")}
                               onInvalid={(e) =>
                                 e.target.setCustomValidity(t("input-required"))
                               }
@@ -1815,7 +1815,7 @@ function PdfRequestFiles(props) {
                               type="text"
                               name="phone"
                               className="grow"
-                              placeholder="phone"
+                              placeholder={t("phone")}
                               disabled={loading}
                             />
                           </label>
@@ -1828,13 +1828,13 @@ function PdfRequestFiles(props) {
                                 handleCloseOtp();
                               }}
                             >
-                              Close
+                              {t("close")}
                             </button>
                             <button
                               className="op-btn op-btn-primary"
                               disabled={loading}
                             >
-                              {loading ? "Loading..." : "Submit"}
+                              {loading ? t("loading") : t("submit")}
                             </button>
                           </div>
                         </div>
