@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 function SignPad({
   isSignPad,
@@ -22,6 +23,7 @@ function SignPad({
   currWidgetsDetails,
   setCurrWidgetsDetails
 }) {
+  const { t } = useTranslation();
   const [penColor, setPenColor] = useState("blue");
   const allColor = ["blue", "red", "black"];
   const canvasRef = useRef(null);
@@ -81,7 +83,7 @@ function SignPad({
             className="op-btn op-btn-ghost mr-1 mt-[2px]"
             onClick={() => handleClear()}
           >
-            Clear
+            {t("clear")}
           </button>
         )}
         <button
@@ -142,7 +144,7 @@ function SignPad({
                 : true
           }
         >
-          Save
+          {t("save")}
         </button>
       </div>
     );
@@ -306,8 +308,8 @@ function SignPad({
                       <span className="text-base-content font-bold text-lg">
                         {widgetType === "image" ||
                         currWidgetsDetails?.type === "image"
-                          ? "Upload image"
-                          : "Upload stamp image"}
+                          ? t("upload-image")
+                          : t("upload-stamp-image")}
                       </span>
                     ) : (
                       <>
@@ -328,7 +330,7 @@ function SignPad({
                                 : "no-underline"
                             } op-link underline-offset-8 ml-[2px]`}
                           >
-                            Draw
+                            {t("draw")}
                           </span>
                         </div>
                         <div>
@@ -345,7 +347,7 @@ function SignPad({
                                 : "no-underline"
                             } op-link underline-offset-8 ml-[2px]`}
                           >
-                            Upload Image
+                            {t("upload-image")}
                           </span>
                         </div>
                         <div>
@@ -363,7 +365,7 @@ function SignPad({
                                 : "no-underline"
                             } op-link underline-offset-8 ml-[2px]`}
                           >
-                            Type
+                            {t("type")}
                           </span>
                         </div>
                         {!isInitial && defaultSign ? (
@@ -382,7 +384,7 @@ function SignPad({
                                   : "no-underline"
                               } op-link underline-offset-8 ml-[2px]`}
                             >
-                              My Signature
+                              {t("my-signature")}
                             </span>
                           </div>
                         ) : (
@@ -403,7 +405,7 @@ function SignPad({
                                     : "no-underline"
                                 } op-link underline-offset-8 ml-[2px]`}
                               >
-                                My Initials
+                                {t("my-initials")}
                               </span>
                             </div>
                           )
@@ -490,7 +492,7 @@ function SignPad({
                         hidden
                       />
                       <i className="fa-light fa-cloud-upload-alt uploadImgLogo"></i>
-                      <div className="text-[10px]">Upload</div>
+                      <div className="text-[10px]">{t("upload")}</div>
                     </div>
                   </div>
                 ) : (
@@ -527,7 +529,7 @@ function SignPad({
                 <div>
                   <div className="flex justify-between items-center">
                     <span className="mr-[5px] text-[12px]">
-                      {isInitial ? "Initials" : "Signature"}:
+                      {isInitial ? t("initial-teb") : t("signature-tab")}:
                     </span>
                     <input
                       maxLength={isInitial ? 3 : 30}

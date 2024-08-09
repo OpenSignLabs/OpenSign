@@ -8,8 +8,10 @@ import Title from "../components/Title";
 import PageNotFound from "./PageNotFound";
 import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const Report = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [List, setList] = useState([]);
   const [isLoader, setIsLoader] = useState(true);
@@ -83,9 +85,7 @@ const Report = () => {
               selector: "[data-tut=reactourFirst]",
               content: () => (
                 <TourContentWithBtn
-                  message={
-                    "Click the 'Add' button to create a new template. Templates are reusable documents designed to quickly generate new documents with the same structure and varying signers. For example, an HR template for onboarding could have predefined roles like ‘HR Manager’ and ‘New Employee’. Each time you use the template, you can assign the ‘New Employee’ role to different incoming staff members, while the ‘HR Manager’ role remains constant, facilitating a seamless onboarding process for each recruit. "
-                  }
+                  message={t("tour-mssg.report-1")}
                   isChecked={handleDontShow}
                 />
               ),

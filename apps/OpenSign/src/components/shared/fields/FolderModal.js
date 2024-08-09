@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import CreateFolder from "./CreateFolder";
 import ModalUi from "../../../primitives/ModalUi";
+import { useTranslation } from "react-i18next";
 
 const FolderModal = (props) => {
+  const { t } = useTranslation();
   const [clickFolder, setClickFolder] = useState("");
   const [folderList, setFolderList] = useState([]);
   const [tabList, setTabList] = useState([]);
@@ -147,7 +149,7 @@ const FolderModal = (props) => {
   return (
     <div className="text-xs mt-2">
       <ModalUi
-        title={"Select Folder"}
+        title={t("select-foler")}
         isOpen={props.isOpenModal}
         handleClose={handleCancel}
       >
@@ -158,7 +160,7 @@ const FolderModal = (props) => {
               title="OpenSign™ Drive"
               onClick={(e) => removeTabListItem(e)}
             >
-              OpenSign™ Drive /{" "}
+              {t("OpenSign-drive")} /{" "}
             </span>
             {tabList &&
               tabList.map((tab, i) => (
@@ -214,7 +216,7 @@ const FolderModal = (props) => {
                   ))
                 : !isLoader && (
                     <div className="text-base-content text-center my-2">
-                      No data found
+                      {t("no-data")}
                     </div>
                   )}
             </div>
@@ -236,27 +238,28 @@ const FolderModal = (props) => {
         <div className="flex justify-between items-center py-[.75rem] px-[1.25rem]">
           <div
             className="op-btn op-btn-seconday op-btn-sm"
-            title="Save Here"
+            title={t("save-here")}
             onClick={handleCreate}
           >
             {isAdd ? (
               <>
                 <i className="fa-light fa-arrow-left" aria-hidden="true"></i>
-                <span className="text-xs">Back</span>
+                <span className="text-xs">{t("back")}</span>
               </>
             ) : (
               <>
                 <i className="fa-light fa-square-plus" aria-hidden="true"></i>
-                <span className="">Add folder</span>
+                <span className="">{t("add-folder")}</span>
               </>
             )}
           </div>
           <div
             className="op-btn op-btn-primary op-btn-sm"
-            title="Save Here"
+            title={t("save-here")}
             onClick={handleSubmit}
           >
-            <i className="fa-light fa-save" aria-hidden="true"></i>Save here
+            <i className="fa-light fa-save" aria-hidden="true"></i>
+            {t("save-here")}
           </div>
         </div>
       </ModalUi>

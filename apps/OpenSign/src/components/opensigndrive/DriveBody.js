@@ -8,8 +8,10 @@ import Table from "react-bootstrap/Table";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import ModalUi from "../../primitives/ModalUi";
 import FolderModal from "../shared/fields/FolderModal";
+import { useTranslation } from "react-i18next";
 
 function DriveBody(props) {
+  const { t } = useTranslation();
   const [rename, setRename] = useState("");
   const [renameValue, setRenameValue] = useState("");
   const inputRef = useRef(null);
@@ -42,7 +44,7 @@ function DriveBody(props) {
     props.setFolderName((prev) => [...prev, folderData]);
     props.setIsLoading({
       isLoad: true,
-      message: "This might take some time"
+      message: t("loading-mssg")
     });
     props.setDocId(data.objectId);
     props.setPdfData([]);
@@ -90,7 +92,7 @@ function DriveBody(props) {
           console.log("Err ", err);
           props.setIsAlert({
             isShow: true,
-            alertMessage: "something went wrong"
+            alertMessage: t("something-went-wrong-mssg")
           });
         });
     }
@@ -191,7 +193,7 @@ function DriveBody(props) {
         console.log("Err ", err);
         props.setIsAlert({
           isShow: true,
-          alertMessage: "something went wrong"
+          alertMessage: t("something-went-wrong-mssg")
         });
       });
   };
@@ -258,7 +260,7 @@ function DriveBody(props) {
 
       setIsOpenMoveModal(false);
     } else {
-      alert("folder already exist!");
+      alert(t("folder-already-exist!"));
       setIsOpenMoveModal(false);
     }
   };
@@ -348,7 +350,7 @@ function DriveBody(props) {
           </td>
           <td>{createddate}</td>
           <td>Pdf</td>
-          <td>{status}</td>
+          <td>{t(`drive-document-status.${status}`)}</td>
           <td>
             <i
               onClick={(e) => {
@@ -503,7 +505,9 @@ function DriveBody(props) {
                         className="ContextMenuItem"
                       >
                         <i className={menu.icon}></i>
-                        <span className="ml-[8px]">{menu.type}</span>
+                        <span className="ml-[8px]">
+                          {t(`context-menu.${menu.type}`)}
+                        </span>
                       </ContextMenu.Item>
                     );
                   })}
@@ -514,18 +518,28 @@ function DriveBody(props) {
         </HoverCard.Trigger>
         <HoverCard.Portal>
           <HoverCard.Content className="HoverCardContent" sideOffset={5}>
-            <strong className="text-[13px]">Title: </strong>
+            <strong className="text-[13px]">
+              {t("report-heading.Title")}:{" "}
+            </strong>
             <span className="text-[12px] font-medium mb-0"> {data.Name}</span>
             <br />
-            <strong className="text-[13px]">Status: </strong>
-            <span className="text-[12px] font-medium"> {status}</span>
+            <strong className="text-[13px]">
+              {t("report-heading.Status")}:{" "}
+            </strong>
+            <span className="text-[12px] font-medium">
+              {t(`drive-document-status.${status}`)}
+            </span>
             <br />
-            <strong className="text-[13px]">Created Date: </strong>
+            <strong className="text-[13px]">
+              {t("report-heading.created-date")}:{" "}
+            </strong>
             <span className="text-[12px] font-medium">{createddate}</span>
             <br />
             {signerExist && (
               <>
-                <strong className="text-[13px]">Signers: </strong>
+                <strong className="text-[13px]">
+                  {t("report-heading.Signers")}:{" "}
+                </strong>
                 {signersName()}
               </>
             )}
@@ -545,11 +559,11 @@ function DriveBody(props) {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Created Date</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th>{t("report-heading.Name")}</th>
+                <th>{t("report-heading.created-date")}</th>
+                <th>{t("report-heading.Type")}</th>
+                <th>{t("report-heading.Status")}</th>
+                <th>{t("action")}</th>
               </tr>
             </thead>
             <tbody>
@@ -582,25 +596,25 @@ function DriveBody(props) {
       )}
       <ModalUi
         isOpen={isDeleteDoc}
-        title={"Delete Document"}
+        title={t("delete-document")}
         handleClose={() => setIsDeleteDoc(false)}
       >
         <div className="h-full p-[20px] text-base-content">
-          <p>Are you sure you want to delete this document?</p>
+          <p>{t("delete-document-alert")}</p>
           <div className="h-[1px] w-full bg-[#9f9f9f] my-[15px]"></div>
           <button
             onClick={() => handleDeleteDocument(selectDoc)}
             type="button"
             className="op-btn op-btn-primary mr-2"
           >
-            Yes
+            {t("yes")}
           </button>
           <button
             onClick={() => setIsDeleteDoc(false)}
             type="button"
             className="op-btn op-btn-neutral"
           >
-            No
+            {t("no")}
           </button>
         </div>
       </ModalUi>
