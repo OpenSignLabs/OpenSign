@@ -1198,7 +1198,8 @@ const ReportTable = (props) => {
                         )}
                         {props.heading.includes("Folder") && (
                           <td className="px-4 py-2">
-                            {item?.Folder?.Name || t("OpenSign™ Drive")}
+                            {item?.Folder?.Name ||
+                              t("sidebar.OpenSign™ Drive")}
                           </td>
                         )}
                         <td className="px-4 py-2">

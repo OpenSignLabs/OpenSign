@@ -241,7 +241,10 @@ const AddUser = (props) => {
     }
   };
   const handleChange = (e) => {
-    setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormdata((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value?.toLowerCase()?.replace(/\s/g, "")
+    }));
   };
 
   const copytoclipboard = (text) => {

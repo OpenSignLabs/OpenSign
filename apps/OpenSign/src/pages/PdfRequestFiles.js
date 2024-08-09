@@ -1473,7 +1473,11 @@ function PdfRequestFiles(props) {
   };
 
   const handleInputChange = (e) => {
-    setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    let { name, value } = e.target;
+    if (name === "email") {
+      value = value?.toLowerCase()?.replace(/\s/g, "");
+    }
+    setContact({ ...contact, [name]: value });
   };
 
   const SendOtp = async () => {
@@ -1781,7 +1785,7 @@ function PdfRequestFiles(props) {
                               <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                             </svg>
                             <input
-                              type="text"
+                              type="email"
                               className="grow"
                               name="email"
                               value={contact.email}
