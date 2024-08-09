@@ -10,7 +10,7 @@ export default function reportJson(id) {
     "Owner",
     "Signers"
   ];
-  const contactbook = ["Sr.No", "Title", "Email", "Phone"];
+  const contactbook = ["Sr.No", "Name", "Email", "Phone"];
   const dashboardReportHead = ["Title", "File", "Owner", "Signers"];
   const templateReport = ["Sr.No", "Title", "File", "Owner", "Signers"];
   switch (id) {
@@ -325,9 +325,7 @@ export default function reportJson(id) {
           btnIcon: "fa-light fa-plus",
           redirectUrl: "placeHolderSign",
           action: "redirect",
-          selector: "reactourSecond",
-          message:
-            "Click the 'Use' button to create a new document from an existing template. "
+          selector: "reactourSecond"
         },
         {
           btnId: "1631",
@@ -337,9 +335,7 @@ export default function reportJson(id) {
           btnIcon: "fa-light fa-envelope",
           redirectUrl: "",
           action: "bulksend",
-          selector: "tourbulksend",
-          message:
-            "To quickly create and send multiple documents using an existing template, click the 'Quick Send' button."
+          selector: "tourbulksend"
         },
         {
           btnId: "2234",
@@ -349,8 +345,6 @@ export default function reportJson(id) {
           btnIcon: "fa-light fa-ellipsis-vertical fa-lg",
           action: "option",
           selector: "reactourThird",
-          message:
-            "This menu reveals more options such as Edit & Delete. Use the 'Edit' button to add signer roles, modify fields, and update your template. Changes will apply to all future documents created from this template but won’t affect existing documents.Use the Delete button you can delete template. ",
           subaction: [
             {
               btnId: "2434",

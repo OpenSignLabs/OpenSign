@@ -39,6 +39,7 @@ const HomeLayout = () => {
   useEffect(() => {
     const language = localStorage.getItem("i18nextLng");
     i18n.changeLanguage(language);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

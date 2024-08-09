@@ -303,7 +303,9 @@
     "otp-verification":"OTP verification",
     "enter-otp":"Enter OTP",
     "verify":"Verify",
+    "verify-email-1":"Verify email",
     "resend":"Resend",
+    "contact-details":"Contact Details",
     "verify-email":"Please verify your email !",
     "send-otp":" Send OTP",
     "otp-placeholder":"Enter OTP received over email",
@@ -567,6 +569,9 @@
         "placeholder-sign-4":"The PDF content area already displays the template's existing placeholders. For your convenience, these placeholders will match the color of the recipient's name, making them easily identifiable.",
         "placeholder-sign-5":"Clicking 'Send' will save the document. In the next step you can customize the emails to be sent out to the recipients or copy the signing links and share those with the recipients yourself.",
         "report-1":"Click the 'Add' button to create a new template. Templates are reusable documents designed to quickly generate new documents with the same structure and varying signers. For example, an HR template for onboarding could have predefined roles like ‘HR Manager’ and ‘New Employee’. Each time you use the template, you can assign the ‘New Employee’ role to different incoming staff members, while the ‘HR Manager’ role remains constant, facilitating a seamless onboarding process for each recruit. ",
+        "redirect":"Click the 'Use' button to create a new document from an existing template.",
+        "bulksend":"To quickly create and send multiple documents using an existing template, click the 'Quick Send' button.",
+        "option": "This menu reveals more options such as Edit & Delete. Use the 'Edit' button to add signer roles, modify fields, and update your template. Changes will apply to all future documents created from this template but won’t affect existing documents.Use the Delete button you can delete template. ",
         "signyour-self-1":"Select and drag your preferred widgets onto the PDF to customize your document before signing. Choose the perfect spots for each modification to tailor the document to your needs.",
         "signyour-self-2":"Drag and drop anywhere in this area. You can resize and move it later.",
         "template-placeholder-1":"Clicking 'Add role' button will allow you to add various signer roles. You can attach users to each role in subsequent steps.",
@@ -581,6 +586,12 @@
         "Recently sent for signatures":"This is a list of documents you've sent to other parties for signature.",
         "Drafts":"This are documents you have started but have not finalized for sending."
       },
+      "enter-email-plaholder":"Add an email address and hit enter",
+      "success-email-alert":"Email sent successfully!",
+      "expired-doc-title":"Expired Document",
+      "expired-on-mssg" :"This document expired on {{expiredDate}} and is no longer available to sign.",
+      "signature-validate-alert":"Please confirm that you have selected at least {{minRequiredCount}} checkboxes.",
+      "signature-validate-alert-2" :"Ensure this field is accurately filled and meets all requirements.",
       "remaing-users":"Remaining users",
       "Role":"Role",
       "additional-users":"Please purchase add-on users.",
@@ -590,5 +601,13 @@
       "Proceed":"Proceed",
       "Select":"Select",
       "Add-seats":"Add Seats"
+          
+
+   
+
+         
+                        
+
+     
  
 }

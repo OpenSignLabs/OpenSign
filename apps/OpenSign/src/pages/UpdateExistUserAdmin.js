@@ -115,7 +115,9 @@ const UpdateExistUserAdmin = () => {
                       onChange={(e) =>
                         setFormdata((prev) => ({
                           ...prev,
-                          email: e.target.value?.toLowerCase()
+                          email: e.target.value
+                            ?.toLowerCase()
+                            ?.replace(/\s/g, "")
                         }))
                       }
                       onInvalid={(e) =>
