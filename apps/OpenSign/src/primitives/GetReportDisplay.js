@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalUi from "./ModalUi";
 import AddSigner from "../components/AddSigner";
-import { isEnableSubscription } from "../constant/const";
+import { isEnableSubscription, isStaging } from "../constant/const";
 import Alert from "./Alert";
 import Tooltip from "./Tooltip";
 import { RWebShare } from "react-web-share";
@@ -990,9 +990,16 @@ const ReportTable = (props) => {
     }
   };
 
+  const publicUrl = () => {
+    const subDomain = isStaging
+      ? `https://staging.opensign.me/`
+      : `https://opensign.me/`;
+    const url = `${subDomain}${publicUserName}`;
+    return url;
+  };
   // function to copy public profile links
   const copytoProfileLink = () => {
-    const url = `https://opensign.me/${publicUserName}`;
+    const url = publicUrl();
     copytoData(url);
     setIsAlert(true);
     setAlertMsg({
@@ -1326,7 +1333,9 @@ const ReportTable = (props) => {
                                           <span
                                             onClick={() => copytoProfileLink()}
                                             className="underline underline-offset-2 w-[150px] md:w-[350px] whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer"
-                                          >{`https://opensign.me/${publicUserName}`}</span>
+                                          >
+                                            {publicUrl()}
+                                          </span>
                                         </div>
                                       </div>
                                     ) : (
