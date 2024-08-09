@@ -4,11 +4,18 @@ import FullScreenButton from "./FullScreenButton";
 import { useNavigate } from "react-router-dom";
 import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
-import { checkIsSubscribed, getAppLogo, openInNewTab } from "../constant/Utils";
+import {
+  checkIsSubscribed,
+  getAppLogo,
+  openInNewTab,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import { isEnableSubscription, isStaging } from "../constant/const";
 import { paidUrl, validplan } from "../json/plansArr";
+import { useTranslation } from "react-i18next";
 
 const Header = ({ showSidebar }) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { width } = useWindowSize();
   let username = localStorage.getItem("username");
@@ -60,7 +67,7 @@ const Header = ({ showSidebar }) => {
     let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
-
+    saveLanguageInLocal(i18n);
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("defaultmenuid", defaultmenuid);
     localStorage.setItem("PageLanding", PageLanding);
@@ -127,18 +134,18 @@ const Header = ({ showSidebar }) => {
               className="text-xs md:text-sm shadow op-btn op-btn-outline op-btn-sm md:op-btn-md op-btn-accent"
               onClick={() => handleNavigation()}
             >
-              Upgrade Now
+              {t("upgrade-now")}
             </button>
           </div>
         )}
         {isTeam.isValid && !validplan[isTeam.plan] && (
           <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
-            PRO
+            {t("pro")}
           </div>
         )}
         {validplan[isTeam.plan] && (
           <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] text-[13px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
-            TEAM
+            {t("team")}
           </div>
         )}
         <div>
@@ -183,7 +190,7 @@ const Header = ({ showSidebar }) => {
           >
             <li onClick={() => openInNewTab("https://docs.opensignlabs.com")}>
               <span>
-                <i className="fa-light fa-book"></i> Docs
+                <i className="fa-light fa-book"></i> {t("docs")}
               </span>
             </li>
             <li
@@ -193,7 +200,7 @@ const Header = ({ showSidebar }) => {
               }}
             >
               <span>
-                <i className="fa-light fa-user"></i> Profile
+                <i className="fa-light fa-user"></i> {t("profile")}
               </span>
             </li>
             <li
@@ -203,7 +210,7 @@ const Header = ({ showSidebar }) => {
               }}
             >
               <span>
-                <i className="fa-light fa-lock"></i> Change Password
+                <i className="fa-light fa-lock"></i> {t("change-password")}
               </span>
             </li>
             <li
@@ -217,7 +224,8 @@ const Header = ({ showSidebar }) => {
             </li>
             <li onClick={closeDropdown}>
               <span>
-                <i className="fa-light fa-arrow-right-from-bracket"></i> Log Out
+                <i className="fa-light fa-arrow-right-from-bracket"></i>{" "}
+                {t("log-out")}
               </span>
             </li>
           </ul>

@@ -11,13 +11,10 @@ import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
 import { validplan } from "../json/plansArr";
-const tourSteps = [
-  {
-    selector: '[data-tut="webhooksubscribe"]',
-    content: "Upgrade now to set webhook"
-  }
-];
+import { useTranslation } from "react-i18next";
+
 function Webhook() {
+  const { t } = useTranslation();
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [webhook, setWebhook] = useState();
@@ -31,7 +28,12 @@ function Webhook() {
     fetchWebhook();
     // eslint-disable-next-line
   }, []);
-
+  const tourSteps = [
+    {
+      selector: '[data-tut="webhooksubscribe"]',
+      content: t("tour-mssg.webhook-1")
+    }
+  ];
   const fetchWebhook = async () => {
     if (isEnableSubscription) {
       const subscribe = await checkIsSubscribed();
@@ -65,13 +67,13 @@ function Webhook() {
         const res = await axios.post(url, params, { headers: headers });
         if (res.data && res.data.result && res.data.result.Webhook) {
           setWebhook(res.data.result.Webhook);
-          setIsAlert({ type: "success", msg: "Webhook added successfully." });
+          setIsAlert({ type: "success", msg: t("webhook-added") });
         } else {
           console.error("Error while generating webhook");
-          setIsAlert({ type: "danger", msg: "Something went wrong." });
+          setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         }
       } catch (error) {
-        setIsAlert({ type: "danger", msg: "Something went wrong." });
+        setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         console.log("err while generating webhook", error);
       } finally {
         setIsLoader(false);
@@ -106,7 +108,7 @@ function Webhook() {
         <>
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box mb-3">
             <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
-              OpenSign™ Webhook{" "}
+              OpenSign™ {t("webhook")}{" "}
               <Tooltip
                 url={"https://docs.opensignlabs.com/docs/API-docs/get-webhook"}
                 isSubscribe={true}
@@ -115,7 +117,7 @@ function Webhook() {
             <ul className={"w-full flex flex-col p-2 text-sm"}>
               <li className="flex flex-col md:flex-row justify-between items-center border-y-[1px] border-gray-300 break-all py-2">
                 <div className="w-[70%] flex-col md:flex-row flex items-center gap-5">
-                  <span className="">Webhook:</span>{" "}
+                  <span className="">{t("webhook")}:</span>{" "}
                   <span id="token" className=" md:text-end cursor-pointer">
                     {webhook ? webhook : "_____"}
                   </span>
@@ -125,7 +127,7 @@ function Webhook() {
                   onClick={handleModal}
                   className="op-btn op-btn-primary"
                 >
-                  {webhook ? "Update Webhook" : "Add Webhook"}
+                  {webhook ? t("update-webhook") : t("add-webhook")}
                 </button>
               </li>
             </ul>
@@ -139,7 +141,7 @@ function Webhook() {
                 }
                 className="op-btn op-btn-secondary mt-2 mb-3 px-7"
               >
-                View Docs
+                {t("view-docs")}
               </button>
             </div>
             <ModalUi
@@ -150,7 +152,7 @@ function Webhook() {
               {error && <Alert type="danger">{error}</Alert>}
               <div className="m-[20px]">
                 <div className="text-lg font-normal text-base-content">
-                  <label className="text-sm ml-2">Webhook</label>
+                  <label className="text-sm ml-2">{t("webhook")}</label>
                   <input
                     value={webhook}
                     onChange={(e) => setWebhook(e.target.value)}
@@ -164,13 +166,13 @@ function Webhook() {
                     onClick={handleSubmit}
                     className="op-btn op-btn-primary ml-[2px]"
                   >
-                    Yes
+                    {t("yes")}
                   </button>
                   <button
                     onClick={handleModal}
                     className="op-btn op-btn-secondary"
                   >
-                    No
+                    {t("no")}
                   </button>
                 </div>
               </div>

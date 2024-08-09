@@ -12,6 +12,7 @@ import { checkIsSubscribed } from "../constant/Utils";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Title from "../components/Title";
 import { validplan } from "../json/plansArr";
+import { useTranslation } from "react-i18next";
 
 const heading = ["Sr.No", "Name", "Parent Team", "Active"];
 const actions = [
@@ -26,6 +27,7 @@ const actions = [
 ];
 
 const TeamList = () => {
+  const { t } = useTranslation();
   const recordperPage = 10;
   const [teamList, setTeamList] = useState([]);
   const [isLoader, setIsLoader] = useState(false);
@@ -121,7 +123,7 @@ const TeamList = () => {
       }
     } catch (err) {
       console.log("Err in fetch teamlist", err);
-      setIsAlert({ type: "danger", msg: "Something went wrong." });
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
     } finally {
       setTimeout(() => {
         setIsAlert({ type: "success", msg: "" });
@@ -170,10 +172,10 @@ const TeamList = () => {
         // console.log("teamRes ", teamRes);
         setIsAlert({
           type: !IsActive === false ? "danger" : "success",
-          msg: !IsActive === false ? "Team disabled." : "Team enabled."
+          msg: !IsActive === false ? t("team-disabled") : t("team-enabled")
         });
       } catch (err) {
-        setIsAlert({ type: "danger", msg: "something went wrong." });
+        setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
         console.log("err in disable team", err);
       } finally {
         setIsActLoader({});
@@ -201,10 +203,10 @@ const TeamList = () => {
       const data = { Name: team.Name, TeamId: team.objectId };
       await Parse.Cloud.run("updateteam", data);
       // console.log("updateTeamRes ", updateTeamRes);
-      setIsAlert({ type: "success", msg: "Team Update successfully." });
+      setIsAlert({ type: "success", msg: t("something-went-wrong-mssg") });
     } catch (Err) {
       console.log("Err in update team name"), Err;
-      setIsAlert({ type: "danger", msg: "Something went wrong." });
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
     } finally {
       setIsActLoader({});
       setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500);
@@ -230,9 +232,9 @@ const TeamList = () => {
               {isAlert.msg && <Alert type={isAlert.type}>{isAlert.msg}</Alert>}
               <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
                 <div className="font-light">
-                  Teams{" "}
+                  {t("report-name.Teams")}
                   <span className="text-xs md:text-[13px] font-normal">
-                    <Tooltip message={"Teams"} />
+                    <Tooltip message={t("report-heading.Team")} />
                   </span>
                 </div>
                 <div
@@ -248,7 +250,9 @@ const TeamList = () => {
                     <tr className="border-y-[1px]">
                       {heading?.map((item, index) => (
                         <React.Fragment key={index}>
-                          <th className="px-4 py-2">{item}</th>
+                          <th className="px-4 py-2">
+                            {t(`report-heading.${item}`)}
+                          </th>
                         </React.Fragment>
                       ))}
                     </tr>
@@ -283,16 +287,16 @@ const TeamList = () => {
                                   {isActiveModal[item.objectId] && (
                                     <ModalUi
                                       isOpen
-                                      title={"Team status"}
+                                      title={t("Team status")}
                                       handleClose={handleClose}
                                     >
                                       <div className="m-[20px]">
                                         <div className="text-lg font-normal text-black">
-                                          Are you sure you want to{" "}
+                                          {t("are-you-sure")}{" "}
                                           {item?.IsActive
-                                            ? "disable"
-                                            : "enable"}{" "}
-                                          this team?
+                                            ? t("disable")
+                                            : t("enable")}{" "}
+                                          {t("this-team")}
                                         </div>
                                         <hr className="bg-[#ccc] mt-4 " />
                                         <div className="flex items-center mt-3 gap-2 text-white">
@@ -302,13 +306,13 @@ const TeamList = () => {
                                             }
                                             className="op-btn op-btn-primary"
                                           >
-                                            Yes
+                                            {t("yes")}
                                           </button>
                                           <button
                                             onClick={handleClose}
                                             className="op-btn op-btn-secondary"
                                           >
-                                            No
+                                            {t("no")}
                                           </button>
                                         </div>
                                       </div>
@@ -338,7 +342,7 @@ const TeamList = () => {
                                   {isEditModal[item.objectId] && (
                                     <ModalUi
                                       isOpen
-                                      title={"Edit Team"}
+                                      title={t("edit-team")}
                                       handleClose={handleClose}
                                     >
                                       <form
@@ -348,7 +352,7 @@ const TeamList = () => {
                                         }
                                       >
                                         <label className="text-xs font-semibold text-base-content ml-1">
-                                          Name of Team{" "}
+                                          {t("name-of-team")}{" "}
                                           <span className="text-[red] text-[13px]">
                                             *
                                           </span>
@@ -359,13 +363,21 @@ const TeamList = () => {
                                           onChange={(e) =>
                                             handleEditChange(e, item)
                                           }
+                                          onInvalid={(e) =>
+                                            e.target.setCustomValidity(
+                                              t("input-required")
+                                            )
+                                          }
+                                          onInput={(e) =>
+                                            e.target.setCustomValidity("")
+                                          }
                                           required
                                         />
                                         <button
                                           type="submit"
                                           className="op-btn op-btn-primary mt-3"
                                         >
-                                          Save
+                                          {t("save")}
                                         </button>
                                       </form>
                                     </ModalUi>
@@ -386,7 +398,7 @@ const TeamList = () => {
                     onClick={() => paginateBack()}
                     className="op-join-item op-btn op-btn-sm"
                   >
-                    Prev
+                    {t("prev")}
                   </button>
                 )}
                 {pageNumbers.map((x, i) => (
@@ -406,7 +418,7 @@ const TeamList = () => {
                     onClick={() => paginateFront()}
                     className="op-join-item op-btn op-btn-sm"
                   >
-                    Next
+                    {t("next")}
                   </button>
                 )}
               </div>
@@ -423,11 +435,13 @@ const TeamList = () => {
                       alt="img"
                     />
                   </div>
-                  <div className="text-sm font-semibold">No Data Available</div>
+                  <div className="text-sm font-semibold">
+                    {t("no-data-avaliable")}
+                  </div>
                 </div>
               )}
               <ModalUi
-                title={"Add Team"}
+                title={t("add-team")}
                 isOpen={isModal}
                 handleClose={handleFormModal}
               >
@@ -444,7 +458,9 @@ const TeamList = () => {
                 <h1 className="text-[60px] lg:text-[120px] font-semibold">
                   404
                 </h1>
-                <p className="text-[30px] lg:text-[50px]">Page Not Found</p>
+                <p className="text-[30px] lg:text-[50px]">
+                  {t("page-not-found")}
+                </p>
               </div>
             </div>
           )}

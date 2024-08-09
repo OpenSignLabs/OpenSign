@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import Package from "../../package.json";
 import axios from "axios";
 import { openInNewTab } from "../constant/Utils";
+import { useTranslation } from "react-i18next";
 const Footer = () => {
+  const { t } = useTranslation();
   const [showButton, setShowButton] = useState(false);
   const [version, setVersion] = useState("");
   useEffect(() => {
@@ -48,9 +50,10 @@ const Footer = () => {
       <footer className="op-footer op-footer-center py-3 bg-base-300 text-base-content text-center text-[13px]">
         <aside>
           <p>
-            All Rights Reserved &copy; {new Date().getFullYear()} &nbsp;
+            {t("all-right")} &copy; {new Date().getFullYear()} &nbsp;
             <span onClick={openUrl} className="hover:underline cursor-pointer">
-              {appName} ( version: {version ? version : `${Package.version} `})
+              {appName} ( {t("version")}:{" "}
+              {version ? version : `${Package.version} `})
             </span>
           </p>
         </aside>

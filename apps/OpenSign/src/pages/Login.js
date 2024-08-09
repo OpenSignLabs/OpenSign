@@ -14,10 +14,19 @@ import Alert from "../primitives/Alert";
 import { appInfo } from "../constant/appinfo";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
-import { fetchSubscription, getAppLogo, openInNewTab } from "../constant/Utils";
+import {
+  fetchSubscription,
+  getAppLogo,
+  openInNewTab,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { paidUrl } from "../json/plansArr";
+import { useTranslation } from "react-i18next";
+import SelectLanguage from "../components/pdf/SelectLanguage";
+
 function Login() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -104,6 +113,7 @@ function Login() {
             await Parse.Cloud.run("getUserDetails")
               .then(async (extUser) => {
                 if (extUser) {
+                  // console.log("extUser", extUser, extUser?.get("IsDisabled"));
                   const IsDisabled = extUser?.get("IsDisabled") || false;
                   if (!IsDisabled) {
                     const userRole = extUser?.get("UserRole");
@@ -117,8 +127,14 @@ function Login() {
                         `/${menu.pageType}/${menu.pageId}`;
                       let _role = _currentRole.replace("contracts_", "");
                       localStorage.setItem("_user_role", _role);
+                      const checkLanguage = extUser?.get("Language");
+                      if (checkLanguage) {
+                        checkLanguage && i18n.changeLanguage(checkLanguage);
+                      }
+
                       const results = [extUser];
                       const extUser_str = JSON.stringify(results);
+
                       localStorage.setItem("Extand_Class", extUser_str);
                       const extInfo = JSON.parse(JSON.stringify(extUser));
                       localStorage.setItem("userEmail", extInfo.Email);
@@ -250,7 +266,7 @@ function Login() {
       }
     } catch (err) {
       console.log("err in free subscribe", err.message);
-      alert("Somenthing went wrong, please try again later!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
   const thirdpartyLoginfn = async (sessionToken) => {
@@ -549,7 +565,7 @@ function Login() {
         payload &&
         payload.message.replace(/ /g, "_") === "Internal_server_err"
       ) {
-        alert("Internal server error !");
+        alert(t("server-error"));
       }
     } else {
       setState({
@@ -575,6 +591,7 @@ function Login() {
     let appid = localStorage.getItem("parseAppId");
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
 
     localStorage.setItem("appLogo", applogo);
     localStorage.setItem("defaultmenuid", defaultmenuid);
@@ -599,10 +616,11 @@ function Login() {
           "_self"
         );
       } else {
-        alert("Please provide email.");
+        alert(t("provide-email"));
       }
     }
   };
+
   return (
     <div>
       <Title title={"Login Page"} />
@@ -634,14 +652,14 @@ function Login() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
                 <div>
                   <form onSubmit={handleSubmit} aria-label="Login Form">
-                    <h1 className="text-[30px] mt-6">Welcome Back!</h1>
+                    <h1 className="text-[30px] mt-6">{t("welcome")}</h1>
                     <fieldset>
                       <legend className="text-[12px] text-[#878787]">
-                        Login to your account
+                        {t("Login-to-your-account")}
                       </legend>
                       <div className="w-full px-6 py-3 my-1 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                         <label className="block text-xs" htmlFor="email">
-                          Email
+                          {t("email")}
                         </label>
                         <input
                           id="email"
@@ -652,12 +670,16 @@ function Login() {
                           value={state.email}
                           onChange={handleChange}
                           required
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
+                          onInput={(e) => e.target.setCustomValidity("")}
                         />
                         <hr className="my-1 border-none" />
                         {!isLoginSSO && (
                           <>
                             <label className="block text-xs" htmlFor="password">
-                              Password
+                              {t("password")}
                             </label>
                             <div className="relative">
                               <input
@@ -670,6 +692,12 @@ function Login() {
                                 value={state.password}
                                 autoComplete="current-password"
                                 onChange={handleChange}
+                                onInvalid={(e) =>
+                                  e.target.setCustomValidity(
+                                    t("input-required")
+                                  )
+                                }
+                                onInput={(e) => e.target.setCustomValidity("")}
                                 required
                               />
                               <span
@@ -690,7 +718,7 @@ function Login() {
                             to="/forgetpassword"
                             className="text-[13px] op-link op-link-primary underline-offset-1 focus:outline-none ml-1"
                           >
-                            Forgot Password?
+                            {t("forgot-password")}
                           </NavLink>
                         </div>
                       </div>
@@ -701,7 +729,7 @@ function Login() {
                         className="op-btn op-btn-primary"
                         disabled={state.loading}
                       >
-                        {state.loading ? "Loading..." : "Login"}
+                        {state.loading ? t("loading") : t("login")}
                       </button>
                       {isEnableSubscription && (
                         <button
@@ -716,13 +744,13 @@ function Login() {
                             )
                           }
                         >
-                          Create Account
+                          {t("create-account")}
                         </button>
                       )}
                     </div>
                   </form>
                   {(appInfo.googleClietId || isEnableSubscription) && (
-                    <div className="op-divider my-4 text-sm">OR</div>
+                    <div className="op-divider my-4 text-sm">{t("or")}</div>
                   )}
                   <div className="flex flex-col justify-center items-center gap-y-3">
                     {/* {appInfo?.fbAppId && (
@@ -746,7 +774,7 @@ function Login() {
                         className="cursor-pointer border-[1px] border-gray-300 rounded px-[40px] py-2 font-semibold text-sm hover:border-[#d2e3fc] hover:bg-[#ecf3feb7]"
                         onClick={() => handleSignInWithSSO()}
                       >
-                        Sign in with SSO
+                        {t("sign-SSO")}
                       </div>
                     )}
                   </div>
@@ -764,11 +792,16 @@ function Login() {
                 )}
               </div>
             </div>
+            <SelectLanguage />
             {state.alertMsg && (
               <Alert type={state.alertType}>{state.alertMsg}</Alert>
             )}
           </div>
-          <ModalUi isOpen={isModal} title="Additional Info" showClose={false}>
+          <ModalUi
+            isOpen={isModal}
+            title={t("additional-info")}
+            showClose={false}
+          >
             <form className="px-4 py-3 text-base-content">
               <div className="mb-3">
                 <label
@@ -776,7 +809,8 @@ function Login() {
                   style={{ display: "flex" }}
                   className="block text-xs text-gray-700 font-semibold"
                 >
-                  Company <span className="text-[red] text-[13px]">*</span>
+                  {t("company")}{" "}
+                  <span className="text-[red] text-[13px]">*</span>
                 </label>
                 <input
                   type="text"
@@ -789,6 +823,10 @@ function Login() {
                       Company: e.target.value
                     })
                   }
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
               </div>
@@ -798,7 +836,7 @@ function Login() {
                   style={{ display: "flex" }}
                   className="block text-xs text-gray-700 font-semibold"
                 >
-                  Job Title
+                  {t("job-title")}
                   <span className="text-[red] text-[13px]">*</span>
                 </label>
                 <input
@@ -812,6 +850,10 @@ function Login() {
                       Destination: e.target.value
                     })
                   }
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
               </div>
@@ -821,14 +863,14 @@ function Login() {
                   className="op-btn op-btn-primary"
                   onClick={(e) => handleSubmitbtn(e)}
                 >
-                  Login
+                  {t("login")}
                 </button>
                 <button
                   type="button"
                   className="op-btn op-btn-ghost"
                   onClick={logOutUser}
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
               </div>
             </form>

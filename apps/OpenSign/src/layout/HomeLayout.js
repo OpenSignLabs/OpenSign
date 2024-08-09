@@ -15,8 +15,10 @@ import { fetchSubscription, openInNewTab } from "../constant/Utils";
 import Loader from "../primitives/Loader";
 import { showHeader } from "../redux/reducers/showHeader";
 import { paidUrl } from "../json/plansArr";
+import { useTranslation } from "react-i18next";
 
 const HomeLayout = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -33,6 +35,12 @@ const HomeLayout = () => {
   const [, setCookie] = useCookies(["accesstoken", "main_Domain"]);
 
   const tenantId = localStorage.getItem("TenantId");
+
+  useEffect(() => {
+    const language = localStorage.getItem("i18nextLng");
+    i18n.changeLanguage(language);
+  }, []);
+
   useEffect(() => {
     if (!tenantId) {
       setIsUserValid(false);
@@ -158,20 +166,20 @@ const HomeLayout = () => {
       setTourConfigs([
         {
           selector: '[data-tut="reactourFirst"]',
-          content: `You have logged in successfully! Let's take a look.`,
+          content: t("tour-mssg.home-layout-1"),
           position: "top"
           // style: { backgroundColor: "#abd4d2" },
         },
         {
           selector: '[data-tut="tourbutton"]',
-          content: `To upload documents for self-signing or to request others’ signatures, simply select the respective buttons.`,
+          content: t("tour-mssg.home-layout-2"),
           position: "top"
           // style: { backgroundColor: "#abd4d2" },
         },
         ...resArr,
         {
           selector: '[data-tut="reactourLast"]',
-          content: `You are ready to start using OpenSign! If you need support feel free to contact us.`,
+          content: t("tour-mssg.home-layout-3"),
           position: "top"
           // style: { backgroundColor: "#abd4d2" },
         }
@@ -303,7 +311,7 @@ const HomeLayout = () => {
           <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
             <p className="text-xl font-medium">Your session has expired.</p>
             <button onClick={handleLoginBtn} className="op-btn op-btn-neutral">
-              Login
+              {t("login")}
             </button>
           </div>
         </ModalUi>
