@@ -7,7 +7,7 @@ import Title from "../components/Title";
 import sanitizeFileName from "../primitives/sanitizeFileName";
 import axios from "axios";
 import Tooltip from "../primitives/Tooltip";
-import { isEnableSubscription } from "../constant/const";
+import { isEnableSubscription, isStaging } from "../constant/const";
 import {
   checkIsSubscribed,
   checkIsSubscribedTeam,
@@ -476,7 +476,9 @@ function UserProfile() {
                       />
                     </span>
                     <div className="flex md:flex-row flex-col md:items-center">
-                      <span className="mb-1 md:mb-1">opensign.me/</span>
+                      <span className="mb-1 md:mb-1">
+                        {isStaging ? "staging.opensign.me/" : " opensign.me/"}
+                      </span>
                       {editmode ? (
                         <input
                           maxLength={40}
