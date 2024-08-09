@@ -97,6 +97,7 @@ const TeamList = () => {
   const pageNumbers = getPaginationRange();
   useEffect(() => {
     fetchTeamList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   async function fetchTeamList() {
     try {
