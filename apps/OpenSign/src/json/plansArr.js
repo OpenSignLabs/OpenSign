@@ -3,6 +3,7 @@ import { isStaging } from "../constant/const";
 const plans = [
   {
     planName: "OPENSIGN™ FREE",
+    code: { monthly: "freeplan", yearly: "freeplan" },
     img: "free.png",
     currency: "",
     monthlyPrice: "Free",
@@ -52,6 +53,9 @@ const plans = [
   },
   {
     planName: "OPENSIGN™ PROFESSIONAL",
+    code: isStaging
+      ? { monthly: "pro-weekly", yearly: "pro-yearly" }
+      : { monthly: "professional-monthly", yearly: "professional-yearly" },
     img: "professional.png",
     currency: "$",
     monthlyPrice: "29.99",
@@ -98,6 +102,7 @@ const plans = [
   },
   {
     planName: "OPENSIGN™ TEAMS",
+    code: { monthly: "teams-monthly", yearly: "teams-yearly" },
     img: "teams.png",
     currency: "$",
     monthlyPrice: `39.99<sup style="font-size: 17px;">/user</sup>`,
@@ -206,7 +211,9 @@ export const paidUrl = (plan) => {
         : "";
     const phone =
       user && user.phone ? "&mobile=" + encodeURIComponent(user.phone) : "";
-    const allowedUsers = localStorage.getItem("allowedUsers");
+    const allowedUsers = localStorage.getItem("allowedUsers")
+      ? localStorage.getItem("allowedUsers") - 1
+      : "";
     const quantity = allowedUsers
       ? `addon_code%5B0%5D=extra-teams-users-${period}&addon_quantity%5B0%5D=${allowedUsers}&`
       : "";
