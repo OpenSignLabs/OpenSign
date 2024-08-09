@@ -248,7 +248,7 @@ const AddSigner = (props) => {
               id="email"
               value={email}
               onChange={(e) =>
-                setEmail(e.target.value?.toLowerCase?.replace(/\s/g, ""))
+                setEmail(e.target.value?.toLowerCase()?.replace(/\s/g, ""))
               }
               required
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
