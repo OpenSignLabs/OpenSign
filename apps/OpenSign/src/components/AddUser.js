@@ -240,10 +240,14 @@ const AddUser = (props) => {
       props.closePopup();
     }
   };
-  const handleChange = (e) => {
+  const handleChange = (event) => {
+    let { name, value } = event.target;
+    if (name === "email") {
+      value = value?.toLowerCase()?.replace(/\s/g, "");
+    }
     setFormdata((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value?.toLowerCase()?.replace(/\s/g, "")
+      [name]: value
     }));
   };
 
