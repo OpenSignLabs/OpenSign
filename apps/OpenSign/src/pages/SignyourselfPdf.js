@@ -269,7 +269,6 @@ function SignYourSelf() {
       }
       //function to get default signatur eof current user from `contracts_Signature` class
       const defaultSignRes = await getDefaultSignature(jsonSender.objectId);
-      console.log("defaultSignRes", defaultSignRes);
       if (defaultSignRes?.status === "success") {
         setDefaultSignImg(defaultSignRes?.res?.defaultSignature);
         setMyInitial(defaultSignRes?.res?.defaultInitial);
