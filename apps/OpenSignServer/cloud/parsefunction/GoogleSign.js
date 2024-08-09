@@ -21,36 +21,45 @@ export default async function GoogleSign(request) {
   const userEmail = request.params.Gmail;
   const phone = request.params?.Phone || '';
   const name = request.params.Name;
+  const extUserId = request.params?.extUserId || '';
   const authData = { google: { id: userGoogleId, id_token: userTokenId } };
   const userQuery = new Parse.Query(Parse.User);
   userQuery.equalTo('email', userEmail);
   const res = await userQuery.first({ useMasterKey: true });
   if (res) {
-    try {
-      const SignIn = await axios.put(
-        serverUrl + '/users/' + res.id,
-        { authData: authData },
-        {
-          headers: {
-            'X-Parse-Application-Id': APPID,
-            'X-Parse-Master-key': masterKEY,
-          },
-        }
-      );
+    if (extUserId) {
+      const userQuery = new Parse.Query('contracts_Users');
+      const resExtUser = await userQuery.get(extUserId, { useMasterKey: true });
+      const _resExtUser = JSON.parse(JSON.stringify(resExtUser));
+      try {
+        const SignIn = await axios.put(
+          serverUrl + '/users/' + res.id,
+          { authData: authData },
+          {
+            headers: {
+              'X-Parse-Application-Id': APPID,
+              'X-Parse-Master-key': masterKEY,
+            },
+          }
+        );
 
-      if (SignIn.data) {
-        // console.log("google Sign in", SignIn);
-        const sessiontoken = SignIn.data.sessionToken;
-        console.log('Google sessiontoken', sessiontoken);
-        return {
-          email: userEmail,
-          message: 'User Sign In',
-          sessiontoken: sessiontoken,
-        };
+        if (SignIn.data) {
+          // console.log("google Sign in", SignIn);
+          const sessiontoken = SignIn.data.sessionToken;
+          return {
+            email: userEmail,
+            phone: _resExtUser?.Phone || '',
+            company: _resExtUser?.Company,
+            message: 'User Sign In',
+            sessiontoken: sessiontoken,
+          };
+        }
+      } catch (err) {
+        console.log('err in user google sign in', err);
+        return { message: 'Internal server error' };
       }
-    } catch (err) {
-      console.log('err in user google sign in', err);
-      return { message: 'Internal server error' };
+    } else {
+      return { message: 'Internal server err' };
     }
   } else {
     // console.log("in sign up condition");

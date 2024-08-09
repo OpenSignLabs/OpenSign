@@ -77,10 +77,7 @@ const GoogleSignInBtn = ({
       const data = jwtDecode(response.credential);
       // console.log("data ", data);
       if (data.sub && data.email) {
-        const details = {
-          Email: data.email,
-          Name: data.name
-        };
+        const details = { Email: data.email, Name: data.name };
         setUserDetails({ ...userDetails, ...details });
         const Gdetails = {
           Id: data.sub,
@@ -94,26 +91,18 @@ const GoogleSignInBtn = ({
     }
   };
   const checkExtUser = async (details) => {
-    // const extUser = new Parse.Query("contracts_Users");
-    // extUser.equalTo("Email", details.Gmail);
-    // const extRes = await extUser.first();
     const params = { email: details.Gmail };
     const extRes = await Parse.Cloud.run("getUserDetails", params);
-    // console.log("extRes ", extRes);
     if (extRes) {
-      const params = { ...details, Phone: extRes?.get("Phone") || "" };
+      // const params = { ...details, Phone: extRes?.get("Phone") || "" };
+      const params = { ...details, extUserId: extRes.objectId };
       const payload = await Parse.Cloud.run("googlesign", params);
-      // console.log("payload ", payload);
       if (payload && payload.sessiontoken) {
-        // setThirdpartyLoader(true);
-        // const billingDate =
-        //   extRes.get("Next_billing_date") && extRes.get("Next_billing_date");
-        // console.log("billingDate expired", billingDate > new Date());
         const LocalUserDetails = {
           name: details.Name,
           email: details.Gmail,
-          phone: extRes?.get("Phone") || "",
-          company: extRes.get("Company")
+          phone: payload?.phone || "",
+          company: payload.company
         };
         localStorage.setItem("userDetails", JSON.stringify(LocalUserDetails));
         thirdpartyLoginfn(payload.sessiontoken);
