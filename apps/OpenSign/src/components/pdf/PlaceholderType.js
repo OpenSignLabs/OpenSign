@@ -14,12 +14,15 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/signature.css";
 import RegexParser from "regex-parser";
 import { emailRegex } from "../../constant/const";
+import { useTranslation } from "react-i18next";
 const textWidgetCls =
   "w-full h-full md:min-w-full md:min-h-full z-[999] text-[12px] rounded-[2px] border-[1px] border-[#007bff] overflow-hidden resize-none outline-none text-base-content item-center whitespace-pre-wrap bg-white";
 const selectWidgetCls =
   "w-full h-full absolute left-0 top-0 border-[1px] border-[#007bff] rounded-[2px] focus:outline-none text-base-content";
 function PlaceholderType(props) {
+  const { t } = useTranslation();
   const type = props?.pos?.type;
+  const widgetTypeTraslation = t(`widgets-name.${props?.pos?.type}`);
   const [selectOption, setSelectOption] = useState("");
   const [validatePlaceholder, setValidatePlaceholder] = useState("");
   const inputRef = useRef(null);
@@ -311,7 +314,7 @@ function PlaceholderType(props) {
             props?.handleUserName(
               props?.data?.Id,
               props?.data?.Role,
-              props?.pos?.type
+              widgetTypeTraslation
             )}
         </div>
       );
@@ -329,7 +332,7 @@ function PlaceholderType(props) {
             props?.handleUserName(
               props?.data?.Id,
               props?.data?.Role,
-              props?.pos?.type
+              widgetTypeTraslation
             )}
         </div>
       );
@@ -424,7 +427,7 @@ function PlaceholderType(props) {
             overflow: "hidden"
           }}
         >
-          <span>{type}</span>
+          <span>{widgetTypeTraslation}</span>
         </div>
       );
     case "dropdown":
@@ -461,7 +464,9 @@ function PlaceholderType(props) {
         </select>
       ) : (
         <div className="text-[12px] overflow-hidden">
-          {props.pos?.options?.name ? props.pos.options.name : type}
+          {props.pos?.options?.name
+            ? props.pos.options.name
+            : widgetTypeTraslation}
         </div>
       );
     case "initials":
@@ -478,7 +483,7 @@ function PlaceholderType(props) {
             props?.handleUserName(
               props?.data?.Id,
               props?.data?.Role,
-              props?.pos?.type
+              widgetTypeTraslation
             )}
         </div>
       );
@@ -524,7 +529,7 @@ function PlaceholderType(props) {
             overflow: "hidden"
           }}
         >
-          <span>{type}</span>
+          <span>{widgetTypeTraslation}</span>
         </div>
       );
     case "company":
@@ -568,7 +573,7 @@ function PlaceholderType(props) {
             fontFamily: "Arial, sans-serif"
           }}
         >
-          <span>{type}</span>
+          <span>{widgetTypeTraslation}</span>
         </div>
       );
     case "job title":
@@ -612,7 +617,7 @@ function PlaceholderType(props) {
             overflow: "hidden"
           }}
         >
-          <span>{type}</span>
+          <span>{widgetTypeTraslation}</span>
         </div>
       );
     case "date":
@@ -699,7 +704,7 @@ function PlaceholderType(props) {
             props?.handleUserName(
               props?.data?.Id,
               props?.data?.Role,
-              props?.pos?.type
+              widgetTypeTraslation
             )}
         </div>
       );
@@ -746,7 +751,7 @@ function PlaceholderType(props) {
             overflow: "hidden"
           }}
         >
-          <span>{type}</span>
+          <span>{widgetTypeTraslation}</span>
         </div>
       );
     case radioButtonWidget:

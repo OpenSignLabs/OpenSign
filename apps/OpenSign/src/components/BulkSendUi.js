@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import SuggestionInput from "./shared/fields/SuggestionInput";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const BulkSendUi = (props) => {
+  const { t } = useTranslation();
   const [forms, setForms] = useState([]);
   const [formId, setFormId] = useState(2);
   const formRef = useRef(null);
@@ -96,7 +98,7 @@ const BulkSendUi = (props) => {
       setScrollOnNextUpdate(true);
     } else {
       // If the limit has been reached, throw an error with the appropriate message
-      alert("Quick send reached limit.");
+      alert(t("quick-send-alert-4"));
     }
   };
 
@@ -244,36 +246,32 @@ const BulkSendUi = (props) => {
                     onClick={handleAddForm}
                     className="op-btn op-btn-primary focus:outline-none"
                   >
-                    <i className="fa-light fa-plus"></i> <span>Add new</span>
+                    <i className="fa-light fa-plus"></i>{" "}
+                    <span>{t("add-new")}</span>
                   </button>
                   <button
                     type="submit"
                     className="op-btn op-btn-secondary focus:outline-none"
                   >
                     <i className="fa-light fa-paper-plane"></i>{" "}
-                    <span>Send</span>
+                    <span>{t("send")}</span>
                   </button>
                 </div>
               </form>
             ) : (
               <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
-                All roles in this document are currently linked to contacts. To
-                &apos;quick send&apos; copies of this template to multiple
-                signers, please ensure that at least one role is not linked to
-                any contact.
+                {t("quick-send-alert-1")}
               </div>
             )}
           </>
         ) : (
           <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
-            Please ensure there&#39;s at least one signature widget added for
-            all recipients.
+            {t("quick-send-alert-2")}
           </div>
         )
       ) : (
         <div className="text-black p-3 bg-white w-full text-sm md:text-base flex justify-center items-center">
-          Please add at least one role to this template in order to &apos;quick
-          send&apos; copies of it to multiple signers.
+          {t("quick-send-alert-3")}
         </div>
       )}
     </>

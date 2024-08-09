@@ -1,7 +1,10 @@
 import React from "react";
 import { getWidgetType } from "../../constant/Utils";
+import { useTranslation } from "react-i18next";
 
 function WidgetList(props) {
+  const { t } = useTranslation();
+
   return props.updateWidgets.map((item, ind) => {
     return (
       <div className="2xl:p-3 mb-[5px]" key={ind}>
@@ -25,7 +28,7 @@ function WidgetList(props) {
           onMouseDown={() => props?.handleMouseLeave()}
           onTouchStart={props?.handleDivClick}
         >
-          {item.ref && getWidgetType(item)}
+          {item.ref && getWidgetType(item, t(`widgets-name.${item.type}`))}
         </div>
       </div>
     );

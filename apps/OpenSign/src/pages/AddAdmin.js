@@ -2,13 +2,19 @@ import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import { appInfo } from "../constant/appinfo";
 import { NavLink, useNavigate } from "react-router-dom";
-import { getAppLogo, openInNewTab } from "../constant/Utils";
+import {
+  getAppLogo,
+  openInNewTab,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import { useDispatch } from "react-redux";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import Loader from "../primitives/Loader";
 import Title from "../components/Title";
+import { useTranslation } from "react-i18next";
 
 const AddAdmin = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
@@ -40,10 +46,10 @@ const AddAdmin = () => {
     try {
       const app = await getAppLogo();
       if (app?.user === "exist") {
-        setErrMsg("Admin already exist.");
+        setErrMsg(t("admin-already-exist"));
       }
     } catch (err) {
-      setErrMsg("Something went wrong.");
+      setErrMsg(t("something-went-wrong-mssg"));
       console.log("err in check user exist", err);
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
@@ -61,6 +67,7 @@ const AddAdmin = () => {
     const userSettings = localStorage.getItem("userSettings");
 
     localStorage.clear();
+    saveLanguageInLocal(i18n);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
     localStorage.setItem("appLogo", applogo);
@@ -124,7 +131,7 @@ const AddAdmin = () => {
           const res = await Parse.Cloud.run("getUserDetails", params);
           // console.log("Res ", res);
           if (res) {
-            alert("User already exists with this username!");
+            alert(t("already-exists-this-username"));
             setState({ loading: false });
           } else {
             // console.log("state.email ", email);
@@ -132,7 +139,7 @@ const AddAdmin = () => {
               await Parse.User.requestPasswordReset(email).then(
                 async function (res) {
                   if (res.data === undefined) {
-                    alert("Verification mail has been sent to your E-mail!");
+                    alert(t("verification-code-sent"));
                   }
                 }
               );
@@ -196,27 +203,27 @@ const AddAdmin = () => {
               setState({
                 loading: false,
                 alertType: "success",
-                alertMsg: "Registered user successfully."
+                alertMsg: t("registered-user-successfully")
               });
               navigate(`/${menu.pageType}/${menu.pageId}`);
             } else {
               setState({
                 loading: false,
                 alertType: "danger",
-                alertMsg: "Role not found."
+                alertMsg: t("role-not-found")
               });
             }
           } else {
             setState({
               loading: false,
               alertType: "danger",
-              alertMsg: "You don't have access, please contact the admin."
+              alertMsg: t("do-not-access")
             });
           }
         }
       } catch (error) {
         console.log("error in fetch extuser", error);
-        const msg = error.message || "Something went wrong.";
+        const msg = error.message || t("something-went-wrong-mssg");
         setState({ loading: false, alertType: "danger", alertMsg: msg });
       } finally {
         setTimeout(() => setState({ loading: false, alertMsg: "" }), 2000);
@@ -246,7 +253,7 @@ const AddAdmin = () => {
   };
   return (
     <div className="h-screen flex justify-center">
-      <Title title={"Add admin"} />
+      <Title title="Add admin" />
       {state.loading ? (
         <div className="text-[grey] flex justify-center items-center text-lg md:text-2xl">
           <Loader />
@@ -262,7 +269,7 @@ const AddAdmin = () => {
               <form onSubmit={handleSubmit}>
                 <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                   <h2 className="text-[30px] text-center mt-3 font-medium">
-                    Opensign Setup
+                    {t("opensign-setup")}
                   </h2>
                   <NavLink
                     to="https://discord.com/invite/xe9TDuyAyj"
@@ -270,7 +277,7 @@ const AddAdmin = () => {
                     rel="noopener noreferrer"
                     className="text-center text-sm mt-1 text-[blue] cursor-pointer"
                   >
-                    Join our discord server
+                    {t("join-discord")}
                     <i
                       aria-hidden="true"
                       className="fa-brands fa-discord ml-1"
@@ -279,18 +286,24 @@ const AddAdmin = () => {
                   </NavLink>
                   <div className="px-6 py-3 text-xs">
                     <label className="block ">
-                      Name <span className="text-[red] text-[13px]">*</span>
+                      {t("name")}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="text"
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
                     <label>
-                      Email <span className="text-[red] text-[13px]">*</span>
+                      {"email"}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       id="email"
@@ -298,33 +311,47 @@ const AddAdmin = () => {
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={email}
                       onChange={(e) => setEmail(e.target.value?.toLowerCase())}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
                     <label>
-                      Phone <span className="text-[red] text-[13px]">*</span>
+                      {t("phone")}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="tel"
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
                     <label>
-                      Company <span className="text-[red] text-[13px]">*</span>
+                      {t("company")}{" "}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
                       type="text"
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
                     <label>
-                      Job Title{" "}
+                      {t("job-title")}{" "}
                       <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <input
@@ -332,11 +359,16 @@ const AddAdmin = () => {
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                     <hr className="my-2 border-none" />
                     <label>
-                      Password <span className="text-[red] text-[13px]">*</span>
+                      {t("password")}
+                      <span className="text-[red] text-[13px]">*</span>
                     </label>
                     <div className="relative">
                       <input
@@ -345,6 +377,10 @@ const AddAdmin = () => {
                         name="password"
                         value={password}
                         onChange={(e) => handlePasswordChange(e)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <span
@@ -365,24 +401,22 @@ const AddAdmin = () => {
                             lengthValid ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {lengthValid ? "✓" : "✗"} Password should be 8
-                          characters long
+                          {lengthValid ? "✓" : "✗"} {t("password-length")}
                         </p>
                         <p
                           className={`${
                             caseDigitValid ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {caseDigitValid ? "✓" : "✗"} Password should contain
-                          uppercase letter, lowercase letter, digit
+                          {caseDigitValid ? "✓" : "✗"} {t("password-case")}
                         </p>
                         <p
                           className={`${
                             specialCharValid ? "text-green-600" : "text-red-600"
                           }`}
                         >
-                          {specialCharValid ? "✓" : "✗"} Password should contain
-                          special character
+                          {specialCharValid ? "✓" : "✗"}{" "}
+                          {t("password-special-char")}
                         </p>
                       </div>
                     )}
@@ -393,13 +427,17 @@ const AddAdmin = () => {
                         id="termsandcondition"
                         checked={isAuthorize}
                         onChange={(e) => setIsAuthorize(e.target.checked)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <label
                         className="text-xs cursor-pointer ml-1 mb-0"
                         htmlFor="termsandcondition"
                       >
-                        I agree to the
+                        {t("agreee")}
                       </label>
                       <span
                         className="underline cursor-pointer ml-1"
@@ -409,7 +447,7 @@ const AddAdmin = () => {
                           )
                         }
                       >
-                        Terms of Service
+                        {t("term")}
                       </span>
                       <span>.</span>
                     </div>
@@ -425,7 +463,7 @@ const AddAdmin = () => {
                         className="text-xs cursor-pointer ml-1 mb-0"
                         htmlFor="termsandcondition"
                       >
-                        Subscribe to OpenSign newsletter
+                        {t("subscribe-to-opensign")}
                       </label>
                     </div>
                   </div>
@@ -435,7 +473,7 @@ const AddAdmin = () => {
                       className="op-btn op-btn-primary w-full"
                       disabled={state.loading}
                     >
-                      {state.loading ? "Loading..." : "Next"}
+                      {state.loading ? t("loading") : t("next")}
                     </button>
                   </div>
                 </div>

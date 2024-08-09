@@ -18,6 +18,7 @@ import ModalUi from "../primitives/ModalUi";
 import { Tooltip } from "react-tooltip";
 import Upgrade from "../primitives/Upgrade";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -32,6 +33,7 @@ function Form() {
 }
 
 const Forms = (props) => {
+  const { t } = useTranslation();
   const maxFileSize = 20;
   const abortController = new AbortController();
   const inputFileRef = useRef(null);
@@ -104,9 +106,7 @@ const Forms = (props) => {
       if (typeof files[0] !== "undefined") {
         const mb = Math.round(files[0].size / Math.pow(1024, 2));
         if (mb > maxFileSize) {
-          alert(
-            `The selected file size is too large. Please select a file less than ${maxFileSize} MB`
-          );
+          alert(`${t("file-alert-1")} ${maxFileSize} MB`);
           setFileUpload("");
           e.target.value = "";
           return;
@@ -287,7 +287,7 @@ const Forms = (props) => {
           }
         }
       } else {
-        alert("Please select file.");
+        alert(t("file-alert-2"));
         return false;
       }
     } catch (error) {
@@ -339,9 +339,7 @@ const Forms = (props) => {
 
     if (mb > maxFileSize) {
       setTimeout(() => {
-        alert(
-          `The selected file size is too large. Please select a file less than ${maxFileSize} MB`
-        );
+        alert(`${t("file-alert-1")}${maxFileSize} MB`);
       }, 500);
       return;
     } else {
@@ -439,7 +437,7 @@ const Forms = (props) => {
         setIsSubmit(false);
       }
     } else {
-      alert("Please wait while the document is being uploaded.");
+      alert(t("file-alert-3"));
     }
   };
 
@@ -564,7 +562,7 @@ const Forms = (props) => {
       {isAlert && (
         <Alert type={isErr ? "danger" : "success"}>
           {isErr
-            ? "Something went wrong please try again!"
+            ? t("something-went-wrong-mssg")
             : `${props.msgVar} created successfully!`}
         </Alert>
       )}
@@ -577,12 +575,12 @@ const Forms = (props) => {
           <ModalUi
             isOpen={isPassword}
             handleClose={() => handeCloseModal()}
-            title={"Enter Pdf Password"}
+            title={t("enter-pdf-password")}
           >
             <form onSubmit={handlePasswordSubmit}>
               <div className="px-6 pt-3 pb-2">
                 <label className="mb-2 text-xs text-base-content">
-                  Password
+                  {t("password")}
                 </label>
                 <input
                   type="text"
@@ -591,6 +589,10 @@ const Forms = (props) => {
                   onChange={(e) => handleStrInput(e)}
                   className="w-full op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
                   placeholder="Enter pdf password"
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
                 <p
@@ -600,18 +602,20 @@ const Forms = (props) => {
                       : "text-transparent pointer-events-none"
                   } ml-2 text-[11px] `}
                 >
-                  Please provide correct password
+                  {t("correct-password")}
                 </p>
               </div>
               <div className="px-6 mb-3">
                 <button type="submit" className="op-btn op-btn-primary">
-                  Submit
+                  {t("submit")}
                 </button>
               </div>
             </form>
           </ModalUi>
           <form onSubmit={handleSubmit}>
-            <h1 className="text-[20px] font-semibold mb-4">{props?.title}</h1>
+            <h1 className="text-[20px] font-semibold mb-4">
+              {t(`form-name.${props?.title}`)}
+            </h1>
             {fileload && (
               <div className="flex items-center gap-x-2">
                 <div className="h-2 rounded-full w-[200px] md:w-[400px] bg-gray-200">
@@ -626,13 +630,13 @@ const Forms = (props) => {
             {isDecrypting && (
               <div className="flex items-center gap-x-2">
                 <span className="text-base-content text-sm">
-                  Decrypting pdf please wait...
+                  {t("decrypting-pdf")}
                 </span>
               </div>
             )}
             <div className="text-xs">
               <label className="block">
-                {`File (pdf, png, jpg, jpeg${
+                {`${t("report-heading.File")} (${t("file-type")} ${
                   isEnableSubscription ? ", docx)" : ")"
                 }`}
                 <span className="text-red-500 text-[13px]">*</span>
@@ -641,7 +645,7 @@ const Forms = (props) => {
                 <div className="flex gap-1 justify-center items-center">
                   <div className="flex justify-between items-center op-input op-input-bordered op-input-sm w-full h-full text-[13px]">
                     <div className="break-all cursor-default">
-                      file selected: {getFileName(fileupload)}
+                      {t("file-selected")}: {getFileName(fileupload)}
                     </div>
                     <div
                       onClick={() => setFileUpload("")}
@@ -669,6 +673,10 @@ const Forms = (props) => {
                         ? "application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
                         : "application/pdf,image/png,image/jpeg"
                     }
+                    onInvalid={(e) =>
+                      e.target.setCustomValidity(t("input-required"))
+                    }
+                    onInput={(e) => e.target.setCustomValidity("")}
                     required
                   />
                   {process.env.REACT_APP_DROPBOX_API_KEY && (
@@ -683,8 +691,8 @@ const Forms = (props) => {
             <div className="text-xs mt-2">
               <label className="block">
                 {props.title === "New Template"
-                  ? "Template Title"
-                  : "Document Title"}
+                  ? t("template-title")
+                  : t("document-title")}
                 <span className="text-red-500 text-[13px]">*</span>
               </label>
               <input
@@ -692,12 +700,16 @@ const Forms = (props) => {
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Name}
                 onChange={(e) => handleStrInput(e)}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
             </div>
             {props.title === "New Template" && (
               <div className="text-xs mt-2">
-                <label className="block">Description</label>
+                <label className="block">{t("description")}</label>
                 <input
                   name="Description"
                   className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
@@ -715,13 +727,18 @@ const Forms = (props) => {
             )}
             <div className="text-xs mt-2">
               <label className="block">
-                Note<span className="text-red-500 text-[13px]">*</span>
+                {t("report-heading.Note")}
+                <span className="text-red-500 text-[13px]">*</span>
               </label>
               <input
                 name="Note"
                 className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                 value={formData.Note}
                 onChange={(e) => handleStrInput(e)}
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
               />
             </div>
@@ -735,7 +752,7 @@ const Forms = (props) => {
             {props.title === "Request Signatures" && (
               <div className="text-xs mt-2">
                 <label className="block">
-                  Time To Complete (Days)
+                  {t("time-to-complete")}
                   <span className="text-red-500 text-[13px]">*</span>
                 </label>
                 <input
@@ -744,6 +761,10 @@ const Forms = (props) => {
                   className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                   value={formData.TimeToCompleteDays}
                   onChange={(e) => handleStrInput(e)}
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(t("input-required"))
+                  }
+                  onInput={(e) => e.target.setCustomValidity("")}
                   required
                 />
               </div>
@@ -752,7 +773,7 @@ const Forms = (props) => {
               <>
                 <div className="text-xs mt-2">
                   <label className="block">
-                    Send In Order
+                    {t("send-in-order")}
                     <a data-tooltip-id="sendInOrder-tooltip" className="ml-1">
                       <sup>
                         <i className="fa-light fa-question rounded-full border-[#33bbff] text-[#33bbff] text-[13px] border-[1px] py-[1.5px] px-[4px]"></i>
@@ -760,44 +781,21 @@ const Forms = (props) => {
                     </a>
                     <Tooltip id="sendInOrder-tooltip" className="z-50">
                       <div className="max-w-[200px] md:max-w-[450px]">
-                        <p className="font-bold">Send in Order</p>
-                        <p>
-                          Choose how you want the signing requests to be sent to
-                          the document signers:
-                        </p>
+                        <p className="font-bold">{t("send-in-order")}</p>
+                        <p>{t("send-in-order-help.p1")}</p>
                         <p className="p-[5px]">
                           <ol className="list-disc">
                             <li>
-                              <span className="font-bold">Yes:</span>
-                              <span>
-                                Selecting this option will send the signing
-                                request to the first signer initially. Once the
-                                first signer completes their part, the next
-                                signer in the sequence will receive the request.
-                                This process continues until all signers have
-                                signed the document. This method ensures that
-                                the document is signed in a specific order.
-                              </span>
+                              <span className="font-bold">{t("yes")}:</span>
+                              <span>{t("send-in-order-help.p2")}</span>
                             </li>
                             <li>
-                              <span className="font-bold">No: </span>
-                              <span>
-                                Selecting this option will send the signing
-                                links to all signers simultaneously. Every
-                                signer can sign the document at their
-                                convenience, regardless of whether other signers
-                                have completed their signatures. This method is
-                                faster but does not enforce any signing order
-                                among the participants.
-                              </span>
+                              <span className="font-bold">{t("no")}: </span>
+                              <span>{t("send-in-order-help.p3")}</span>
                             </li>
                           </ol>
                         </p>
-
-                        <p>
-                          Select the option that best suits the needs of your
-                          document processing.
-                        </p>
+                        <p>{t("send-in-order-help.p4")}</p>
                       </div>
                     </Tooltip>
                   </label>
@@ -810,7 +808,7 @@ const Forms = (props) => {
                       checked={formData.SendinOrder === "true"}
                       onChange={handleStrInput}
                     />
-                    <div className="text-center">Yes</div>
+                    <div className="text-center">{t("yes")}</div>
                   </div>
                   <div className="flex items-center gap-2 ml-2 mb-1">
                     <input
@@ -821,7 +819,7 @@ const Forms = (props) => {
                       checked={formData.SendinOrder === "false"}
                       onChange={handleStrInput}
                     />
-                    <div className="text-center">No</div>
+                    <div className="text-center">{t("no")}</div>
                   </div>
                 </div>
                 {isEnableSubscription && (
@@ -833,7 +831,8 @@ const Forms = (props) => {
                           : "font-semibold text-gray-300"
                       }
                     >
-                      Auto reminder{"  "}
+                      {t("auto-reminder")}
+                      {"  "}
                       {!isSubscribe && isEnableSubscription && <Upgrade />}
                     </span>
                     <label
@@ -855,7 +854,7 @@ const Forms = (props) => {
                 {formData?.autoreminder === true && (
                   <div className="text-xs mt-2">
                     <label className="block">
-                      Remind once in every (Days)
+                      {t("remind-once")}
                       <span className="text-red-500 text-[13px]">*</span>
                     </label>
                     <input
@@ -864,6 +863,10 @@ const Forms = (props) => {
                       name="remindOnceInEvery"
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       onChange={handleStrInput}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
                       required
                     />
                   </div>
@@ -878,13 +881,13 @@ const Forms = (props) => {
                 type="submit"
                 disabled={isSubmit}
               >
-                Next
+                {t("next")}
               </button>
               <div
                 className="op-btn op-btn-ghost"
                 onClick={() => handleCancel()}
               >
-                Cancel
+                {t("cancel")}
               </div>
             </div>
           </form>

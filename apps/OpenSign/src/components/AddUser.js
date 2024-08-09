@@ -5,6 +5,7 @@ import Loader from "../primitives/Loader";
 import { copytoData, fetchSubscriptionInfo } from "../constant/Utils";
 import { isEnableSubscription } from "../constant/const";
 import ModalUi from "../primitives/ModalUi";
+import { useTranslation } from "react-i18next";
 function generatePassword(length) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -18,6 +19,7 @@ function generatePassword(length) {
 }
 
 const AddUser = (props) => {
+  const { t } = useTranslation();
   const [formdata, setFormdata] = useState({
     name: "",
     phone: "",
@@ -117,7 +119,7 @@ const AddUser = (props) => {
     setIsFormLoader(true);
     const res = await checkUserExist();
     if (res) {
-      props.setIsAlert({ type: "danger", msg: "User already exist." });
+      props.setIsAlert({ type: "danger", msg: t("user-already-exist") });
       setIsFormLoader(false);
       setTimeout(() => {
         props.setIsAlert({ type: "success", msg: "" });
@@ -252,7 +254,10 @@ const AddUser = (props) => {
       } catch (err) {
         console.log("err", err);
         setIsFormLoader(false);
-        props.setIsAlert({ type: "danger", msg: "something went wrong." });
+        props.setIsAlert({
+          type: "danger",
+          msg: t("something-went-wrong-mssg")
+        });
       } finally {
         setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500);
       }
@@ -272,7 +277,7 @@ const AddUser = (props) => {
 
   const copytoclipboard = (text) => {
     copytoData(text);
-    props.setIsAlert({ type: "success", msg: "Copied" });
+    props.setIsAlert({ type: "success", msg: t("copied") });
     setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1500); // Reset copied state after 1.5 seconds
   };
   const handlePricePerUser = (e) => {
@@ -306,7 +311,10 @@ const AddUser = (props) => {
       }
     } catch (err) {
       console.log("Err in buy addon", err);
-      props.setIsAlert({ type: "danger", msg: "something went wrong." });
+      props.setIsAlert({
+        type: "danger",
+        msg: t("something-went-wrong-mssg")
+      });
     } finally {
       setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 2000);
       setIsFormLoader(false);
@@ -315,11 +323,11 @@ const AddUser = (props) => {
   return (
     <ModalUi
       isOpen={props.isOpen}
-      title={allowedUser > 0 ? "Add User" : "Add Seats"}
+      title={allowedUser > 0 ? t("add-user") : "Add Seats"}
       handleClose={props.closePopup}
     >
       <div className="shadow-md rounded-box my-[1px] p-3 bg-base-100 relative">
-        <Title title="Add User" />
+        <Title title={t("add-user")} />
         {isFormLoader && (
           <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
             <Loader />
@@ -350,7 +358,7 @@ const AddUser = (props) => {
                         htmlFor="name"
                         className="block text-xs text-gray-700 font-semibold"
                       >
-                        Name
+                        {t("name")}
                         <span className="text-[red] text-[13px]"> *</span>
                       </label>
                       <input
@@ -358,6 +366,10 @@ const AddUser = (props) => {
                         name="name"
                         value={formdata.name}
                         onChange={(e) => handleChange(e)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       />
@@ -367,7 +379,7 @@ const AddUser = (props) => {
                         htmlFor="email"
                         className="block text-xs text-gray-700 font-semibold"
                       >
-                        Email
+                        {t("email")}
                         <span className="text-[red] text-[13px]"> *</span>
                       </label>
                       <input
@@ -376,15 +388,16 @@ const AddUser = (props) => {
                         value={formdata.email}
                         onChange={(e) => handleChange(e)}
                         required
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       />
                     </div>
                     <div className="mb-3">
-                      <label
-                        htmlFor="email"
-                        className="block text-xs text-gray-700 font-semibold"
-                      >
-                        Password
+                      <label className="block text-xs text-gray-700 font-semibold">
+                        {t("password")}
                       </label>
                       <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
                         <div className="break-all">{formdata?.password}</div>
@@ -394,8 +407,7 @@ const AddUser = (props) => {
                         ></i>
                       </div>
                       <div className="text-[12px] ml-2 mb-0 text-[red] select-none">
-                        Password will only be generated once; make sure to copy
-                        it.
+                        {t("password-generateed")}
                       </div>
                     </div>
                     <div className="mb-3">
@@ -403,7 +415,7 @@ const AddUser = (props) => {
                         htmlFor="phone"
                         className="block text-xs text-gray-700 font-semibold"
                       >
-                        Phone
+                        {t("phone")}
                         {/* <span className="text-[red] text-[13px]"> *</span> */}
                       </label>
                       <input
@@ -425,10 +437,14 @@ const AddUser = (props) => {
                           Team<span className="text-[red] text-[13px]"> *</span>
                         </label>
                         <select
+                          name="team"
                           value={formdata.team}
                           onChange={(e) => handleChange(e)}
-                          name="team"
                           className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
+                          onInput={(e) => e.target.setCustomValidity("")}
                           required
                         >
                           <option defaultValue={""} value={""}>
@@ -455,6 +471,10 @@ const AddUser = (props) => {
                         onChange={(e) => handleChange(e)}
                         name="role"
                         className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       >
                         <option defaultValue={""} value={""}>
