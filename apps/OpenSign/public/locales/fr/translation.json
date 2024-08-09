@@ -42,7 +42,7 @@
     "subscribe-card-plan":"Signez 100 documents à l'aide de l'API. Seulement 0,15 $/doc par la suite.",
     "user-name-limit-char" :"Pour avoir un nom d'utilisateur de moins de 8 caractères s'il vous plaît s'abonner",
     "tour-content":"Ne plus afficher",
-     "team":"ÉQUIPE",
+     "team":"Équipe",
      "docs":"Documents",
      "session-expired" :"Votre session a expiré.",
     "user":"Utilisateur",
@@ -114,7 +114,7 @@
       "Users":"Utilisateurs"
     },
     "report-heading":{
-      "Sr.No":"Numéro du document",
+      "Sr.No":"Numéro",
       "Title":"Titre",
       "Email":"E-mail",
       "Phone":"Téléphone",
@@ -580,12 +580,15 @@
      "Recently sent for signatures":"Il s'agit d'une liste de documents que vous avez envoyés à d'autres parties pour signature.",
      "Drafts":"Il s'agit de documents que vous avez commencés mais que vous n'avez pas finalisés pour envoi."
 
-   }
-     
-    
-  
-
-      
-
+   },
+    "remaing-users":"Utilisateurs restants",
+    "Role":"Rôle",
+    "additional-users":"Veuillez acheter des utilisateurs supplémentaires.",
+    "Quantity-of-users":"Quantité d'utilisateurs",
+    "Price":"Prix",
+    "Total-price-for-next-time":"Prix ​​total pour la prochaine fois",
+    "Proceed":"Procéder",
+    "Select":"sélectionner",
+    "Add-seats":"Ajouter des sièges"
 }
   

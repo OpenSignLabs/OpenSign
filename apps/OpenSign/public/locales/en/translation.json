@@ -580,20 +580,15 @@
         "Recent signature requests": "This is a list of documents that are waiting for your signature.",
         "Recently sent for signatures":"This is a list of documents you've sent to other parties for signature.",
         "Drafts":"This are documents you have started but have not finalized for sending."
-
-
-              
-
-      }
-       
-     
-          
-
-   
-
-         
-                        
-
-     
+      },
+      "remaing-users":"Remaining users",
+      "Role":"Role",
+      "additional-users":"Please purchase add-on users.",
+      "Quantity-of-users":"Quantity of users",
+      "Price":"Price",
+      "Total-price-for-next-time":"Total price for next time",
+      "Proceed":"Proceed",
+      "Select":"Select",
+      "Add-seats":"Add Seats"
  
 }

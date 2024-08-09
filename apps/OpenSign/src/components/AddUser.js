@@ -323,7 +323,7 @@ const AddUser = (props) => {
   return (
     <ModalUi
       isOpen={props.isOpen}
-      title={allowedUser > 0 ? t("add-user") : "Add Seats"}
+      title={allowedUser > 0 ? t("add-user") : t("Add-seats")}
       handleClose={props.closePopup}
     >
       <div className="shadow-md rounded-box my-[1px] p-3 bg-base-100 relative">
@@ -344,7 +344,7 @@ const AddUser = (props) => {
                 {!isEnableSubscription || allowedUser > 0 ? (
                   <form onSubmit={handleSubmit}>
                     <p className="flex justify-center mb-1">
-                      Remaining users{" "}
+                      {t("remaing-users")}{" "}
                       <span
                         className={`${
                           allowedUser < 2 ? "op-text-accent" : "op-text-primary"
@@ -434,7 +434,8 @@ const AddUser = (props) => {
                           htmlFor="phone"
                           className="block text-xs text-gray-700 font-semibold"
                         >
-                          Team<span className="text-[red] text-[13px]"> *</span>
+                          {t("team")}
+                          <span className="text-[red] text-[13px]"> *</span>
                         </label>
                         <select
                           name="team"
@@ -448,7 +449,7 @@ const AddUser = (props) => {
                           required
                         >
                           <option defaultValue={""} value={""}>
-                            select
+                            {t("Select")}
                           </option>
                           {teamList.length > 0 &&
                             teamList.map((x) => (
@@ -464,7 +465,8 @@ const AddUser = (props) => {
                         htmlFor="phone"
                         className="block text-xs text-gray-700 font-semibold"
                       >
-                        Role<span className="text-[red] text-[13px]"> *</span>
+                        {t("Role")}
+                        <span className="text-[red] text-[13px]"> *</span>
                       </label>
                       <select
                         value={formdata.role}
@@ -478,7 +480,7 @@ const AddUser = (props) => {
                         required
                       >
                         <option defaultValue={""} value={""}>
-                          select
+                          {t("Select")}
                         </option>
                         {role.length > 0 &&
                           role.map((x) => (
@@ -490,28 +492,28 @@ const AddUser = (props) => {
                     </div>
                     <div className="flex items-center mt-3 gap-2 text-white">
                       <button type="submit" className="op-btn op-btn-primary">
-                        Submit
+                        {t("submit")}
                       </button>
                       <div
                         type="button"
                         onClick={() => handleReset()}
                         className="op-btn op-btn-secondary"
                       >
-                        Cancel
+                        {t("cancel")}
                       </div>
                     </div>
                   </form>
                 ) : (
                   <form onSubmit={handleAddOnSubmit}>
                     <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
-                      Please purchase add-on users.
+                      {t("additional-users")}
                     </p>
                     <div className="mb-3 flex justify-between">
                       <label
                         htmlFor="quantity"
                         className="block text-xs text-gray-700 font-semibold"
                       >
-                        Quantity of user
+                        {t("Quantity-of-users")}
                         <span className="text-[red] text-[13px]"> *</span>
                       </label>
                       <input
@@ -525,7 +527,7 @@ const AddUser = (props) => {
                     </div>
                     <div className="mb-3 flex justify-between">
                       <label className="block text-xs text-gray-700 font-semibold">
-                        Price (1 * {planInfo.priceperUser})
+                        {t("Price")} (1 * {planInfo.priceperUser})
                       </label>
                       <div className="w-1/4 flex justify-center items-center text-sm">
                         USD {amount.price}
@@ -534,14 +536,14 @@ const AddUser = (props) => {
                     <hr className="text-base-content mb-3" />
                     <div className=" flex justify-between">
                       <label className="block text-sm text-gray-700 font-semibold">
-                        Total price for next time
+                        {t("Total-price-for-next-time")}
                       </label>
                       <div className="w-1/4 flex justify-center items-center text-sm font-semibold">
                         USD {amount.totalPrice}
                       </div>
                     </div>
                     <button className="op-btn op-btn-primary w-full mt-2">
-                      Proceed
+                      {t("Proceed")}
                     </button>
                   </form>
                 )}
