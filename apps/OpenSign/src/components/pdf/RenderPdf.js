@@ -9,6 +9,7 @@ import {
 } from "../../constant/Utils";
 import Placeholder from "./Placeholder";
 import Alert from "../../primitives/Alert";
+import { useTranslation } from "react-i18next";
 
 function RenderPdf({
   pageNumber,
@@ -24,7 +25,6 @@ function RenderPdf({
   setSignKey,
   pdfDetails,
   xyPostion,
-  pdfUrl,
   pageDetails,
   pdfRequest,
   signerObjectId,
@@ -63,6 +63,7 @@ function RenderPdf({
   ispublicTemplate,
   handleUserDetails
 }) {
+  const { t } = useTranslation();
   const isMobile = window.innerWidth < 767;
   //check isGuestSigner is present in local if yes than handle login flow header in mobile view
   const isGuestSigner = localStorage.getItem("isGuestSigner");
@@ -249,7 +250,9 @@ function RenderPdf({
   };
   return (
     <>
-      {successEmail && <Alert type={"success"}>Email sent successfully!</Alert>}
+      {successEmail && (
+        <Alert type={"success"}>{t("success-email-alert")}</Alert>
+      )}
       {isMobile ? (
         <div
           data-tut="reactourForth"
@@ -394,7 +397,7 @@ function RenderPdf({
               onLoadError={() => {
                 setPdfLoad(false);
               }}
-              loading={"Loading Document.."}
+              loading={t("loading-doc")}
               onLoadSuccess={pageDetails}
               // ref={pdfRef}'
               onClick={() => {
@@ -402,13 +405,7 @@ function RenderPdf({
                   setSelectWidgetId("");
                 }
               }}
-              file={
-                pdfUrl
-                  ? pdfUrl
-                  : pdfDetails[0] && pdfDetails[0].SignedUrl
-                    ? pdfDetails[0].SignedUrl
-                    : pdfDetails[0].URL
-              }
+              file={pdfDetails[0]?.SignedUrl || pdfDetails[0]?.URL}
             >
               <Page
                 key={index}
@@ -581,7 +578,7 @@ function RenderPdf({
               onLoadError={() => {
                 setPdfLoad(false);
               }}
-              loading={"Loading Document.."}
+              loading={t("loading-doc")}
               onLoadSuccess={pageDetails}
               onClick={() => {
                 if (setSelectWidgetId) {
@@ -589,13 +586,7 @@ function RenderPdf({
                 }
               }}
               // ref={pdfRef}
-              file={
-                pdfUrl
-                  ? pdfUrl
-                  : pdfDetails[0] && pdfDetails[0].SignedUrl
-                    ? pdfDetails[0].SignedUrl
-                    : pdfDetails[0].URL
-              }
+              file={pdfDetails[0]?.SignedUrl || pdfDetails[0].URL}
             >
               <Page
                 key={index}
