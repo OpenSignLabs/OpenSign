@@ -467,7 +467,7 @@ export const resizeBorderExtraWidth = () => {
   return 20;
 };
 
-export async function getBase64FromUrl(url) {
+export async function getBase64FromUrl(url, autosign) {
   const data = await fetch(url);
   const blob = await data.blob();
   return new Promise((resolve) => {
@@ -475,8 +475,12 @@ export async function getBase64FromUrl(url) {
     reader.readAsDataURL(blob);
     reader.onloadend = function () {
       const pdfBase = this.result;
-      const suffixbase64 = pdfBase.split(",").pop();
-      resolve(suffixbase64);
+      if (autosign) {
+        resolve(pdfBase);
+      } else {
+        const suffixbase64 = pdfBase.split(",").pop();
+        resolve(suffixbase64);
+      }
     };
   });
 }
@@ -2257,4 +2261,39 @@ export const getContainerScale = (pdfOriginalWH, pageNumber, containerWH) => {
 export const saveLanguageInLocal = (i18n) => {
   const detectedLanguage = i18n.language || "en";
   localStorage.setItem("i18nextLng", detectedLanguage);
+};
+//function to get default signatur eof current user from `contracts_Signature` class
+export const getDefaultSignature = async (objectId) => {
+  try {
+    const query = new Parse.Query("contracts_Signature");
+    query.equalTo("UserId", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: objectId
+    });
+
+    const result = await query.first();
+    if (result) {
+      const res = JSON.parse(JSON.stringify(result));
+      const defaultSignature = res?.ImageURL
+        ? await getBase64FromUrl(res?.ImageURL, true)
+        : "";
+      const defaultInitial = res?.Initials
+        ? await getBase64FromUrl(res?.Initials, true)
+        : "";
+
+      return {
+        status: "success",
+        res: {
+          defaultSignature: defaultSignature,
+          defaultInitial: defaultInitial
+        }
+      };
+    }
+  } catch (err) {
+    console.log("Error: error in fetch data in contracts_Signature", err);
+    return {
+      status: "error"
+    };
+  }
 };

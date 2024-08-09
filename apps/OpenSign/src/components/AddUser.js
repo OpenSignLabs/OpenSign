@@ -271,8 +271,15 @@ const AddUser = (props) => {
       props.closePopup();
     }
   };
-  const handleChange = (e) => {
-    setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (event) => {
+    let { name, value } = event.target;
+    if (name === "email") {
+      value = value?.toLowerCase()?.replace(/\s/g, "");
+    }
+    setFormdata((prev) => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const copytoclipboard = (text) => {

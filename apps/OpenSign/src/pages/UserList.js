@@ -86,6 +86,7 @@ const UserList = () => {
   const pageNumbers = getPaginationRange();
   useEffect(() => {
     fetchUserList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   async function fetchUserList() {
     try {

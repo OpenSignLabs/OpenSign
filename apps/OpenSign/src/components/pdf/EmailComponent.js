@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { saveAs } from "file-saver";
 import axios from "axios";
-import { getBase64FromUrl } from "../../constant/Utils";
+import { handleDownloadPdf, handleToPrint } from "../../constant/Utils";
 import { themeColor, emailRegex } from "../../constant/const";
-import printModule from "print-js";
 import Loader from "../../primitives/Loader";
 import ModalUi from "../../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
@@ -13,7 +11,7 @@ function EmailComponent({
   pdfUrl,
   setIsEmail,
   setSuccessEmail,
-  pdfName,
+  pdfDetails,
   sender,
   setIsAlert,
   extUserId,
@@ -24,10 +22,12 @@ function EmailComponent({
   const [emailValue, setEmailValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailErr, setEmailErr] = useState(false);
+  const [isDownloading, setIsDownloading] = useState("");
+  const isAndroid = /Android/i.test(navigator.userAgent);
   //function for send email
   const sendEmail = async () => {
+    const pdfName = pdfDetails[0]?.Name;
     setIsLoading(true);
-
     let sendMail;
     for (let i = 0; i < emailList.length; i++) {
       try {
@@ -113,7 +113,7 @@ function EmailComponent({
   };
   //function for get email value
   const handleEmailValue = (e) => {
-    const value = e.target.value;
+    const value = e.target.value?.toLowerCase()?.replace(/\s/g, "");
     setEmailErr(false);
     setEmailValue(value);
   };
@@ -140,43 +140,6 @@ function EmailComponent({
       }
     }
   };
-
-  // function for print signed pdf
-  const handleToPrint = async (event) => {
-    event.preventDefault();
-
-    const pdf = await getBase64FromUrl(pdfUrl);
-    const isAndroidDevice = navigator.userAgent.match(/Android/i);
-    const isAppleDevice =
-      (/iPad|iPhone|iPod/.test(navigator.platform) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) &&
-      !window.MSStream;
-    if (isAndroidDevice || isAppleDevice) {
-      const byteArray = Uint8Array.from(
-        atob(pdf)
-          .split("")
-          .map((char) => char.charCodeAt(0))
-      );
-      const blob = new Blob([byteArray], { type: "application/pdf" });
-      const blobUrl = URL.createObjectURL(blob);
-      window.open(blobUrl, "_blank");
-    } else {
-      printModule({ printable: pdf, type: "pdf", base64: true });
-    }
-  };
-
-  //handle download signed pdf
-  const handleDownloadPdf = () => {
-    saveAs(pdfUrl, `${sanitizeFileName(pdfName)}_signed_by_OpenSign™.pdf`);
-  };
-
-  const sanitizeFileName = (pdfName) => {
-    // Replace spaces with underscore
-    return pdfName.replace(/ /g, "_");
-  };
-
-  const isAndroid = /Android/i.test(navigator.userAgent);
-
   return (
     <div>
       {/* isEmail */}
@@ -190,6 +153,11 @@ function EmailComponent({
               </span>
             </div>
           )}
+          {isDownloading === "pdf" && (
+            <div className="fixed z-[200] inset-0 flex justify-center items-center bg-black bg-opacity-30">
+              <Loader />
+            </div>
+          )}
           <div className="flex justify-between items-center py-[10px] px-[20px] border-b-[1px] border-base-content">
             <span className="text-base-content font-semibold">
               {t("successfully-signed")}
@@ -197,7 +165,7 @@ function EmailComponent({
             <div className="flex flex-row">
               {!isAndroid && (
                 <button
-                  onClick={handleToPrint}
+                  onClick={(e) => handleToPrint(e, pdfUrl, setIsDownloading)}
                   className="op-btn op-btn-neutral op-btn-sm text-[15px]"
                 >
                   <i className="fa-light fa-print" aria-hidden="true"></i>
@@ -206,7 +174,9 @@ function EmailComponent({
               )}
               <button
                 className="op-btn op-btn-primary op-btn-sm text-[15px] ml-2"
-                onClick={() => handleDownloadPdf()}
+                onClick={() =>
+                  handleDownloadPdf(pdfDetails, pdfUrl, setIsDownloading)
+                }
               >
                 <i className="fa-light fa-download" aria-hidden="true"></i>
                 {t("download")}
@@ -263,7 +233,7 @@ function EmailComponent({
                   className="p-[10px] pb-[20px] rounded w-full text-[15px] outline-none bg-transparent border-[1.5px] op-border-primary"
                   onChange={handleEmailValue}
                   onKeyDown={handleEnterPress}
-                  placeholder="Add an email address and hit enter"
+                  placeholder={t("enter-email-plaholder")}
                   onBlur={() => emailValue && handleEnterPress("add")}
                   onInvalid={(e) =>
                     e.target.setCustomValidity(t("input-required"))
