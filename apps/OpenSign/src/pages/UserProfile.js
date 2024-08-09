@@ -190,9 +190,7 @@ function UserProfile() {
           }
         }
       );
-      const res = await Parse.Cloud.run("getUserDetails", {
-        email: extData[0].Email
-      });
+      const res = await Parse.Cloud.run("getUserDetails");
 
       const json = JSON.parse(JSON.stringify([res]));
       const extRes = JSON.stringify(json);
