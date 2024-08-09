@@ -222,7 +222,9 @@ const AddContact = (props) => {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value?.toLowerCase())}
+              onChange={(e) =>
+                setEmail(e.target.value?.toLowerCase()?.replace(/\s/g, ""))
+              }
               onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
               onInput={(e) => e.target.setCustomValidity("")}
               required

@@ -310,7 +310,11 @@ const AddAdmin = () => {
                       type="email"
                       className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value?.toLowerCase())}
+                      onChange={(e) =>
+                        setEmail(
+                          e.target.value?.toLowerCase()?.replace(/\s/g, "")
+                        )
+                      }
                       onInvalid={(e) =>
                         e.target.setCustomValidity(t("input-required"))
                       }
