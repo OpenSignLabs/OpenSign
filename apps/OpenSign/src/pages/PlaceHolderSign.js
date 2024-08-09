@@ -194,6 +194,8 @@ function PlaceHolderSign() {
         const defaultSubject = `{{sender_name}} has requested you to sign {{document_title}}`;
         setDefaultBody(defaultRequestBody);
         setDefaultSubject(defaultSubject);
+        setRequestBody(defaultRequestBody);
+        setRequestSubject(defaultSubject);
         const tenantDetails = await getTenantDetails(user?.objectId);
         if (tenantDetails && tenantDetails === "user does not exist!") {
           alert(t("user-not-exist"));
@@ -201,9 +203,6 @@ function PlaceHolderSign() {
           if (tenantDetails?.RequestBody) {
             setRequestBody(tenantDetails?.RequestBody);
             setRequestSubject(tenantDetails?.RequestSubject);
-          } else {
-            setRequestBody(defaultRequestBody);
-            setRequestSubject(defaultSubject);
           }
         }
       } catch (e) {
@@ -213,6 +212,7 @@ function PlaceHolderSign() {
       alert(t("user-not-exist"));
     }
   };
+
   useEffect(() => {
     const updateSize = () => {
       if (divRef.current) {
@@ -1763,10 +1763,8 @@ function PlaceHolderSign() {
                               <>
                                 <EmailBody
                                   editorRef={editorRef}
-                                  requestBody={requestBody || defaultBody}
-                                  requestSubject={
-                                    requestSubject || defaultSubject
-                                  }
+                                  requestBody={requestBody}
+                                  requestSubject={requestSubject}
                                   handleOnchangeRequest={handleOnchangeRequest}
                                   setRequestSubject={setRequestSubject}
                                 />
