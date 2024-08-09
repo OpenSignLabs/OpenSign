@@ -91,6 +91,7 @@
     "API Token":"Jeton API",
     "Webhook":"Webhook",
     "Teams":"Équipe",
+    "Team-update-successfully":"Équipe mise à jour avec succès.",
     "Users":"Utilisateurs"
       }
     },
