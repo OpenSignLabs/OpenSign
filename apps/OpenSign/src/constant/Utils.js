@@ -7,6 +7,7 @@ import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
 import { validplan } from "../json/plansArr";
+import fontkit from "@pdf-lib/fontkit";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -15,6 +16,12 @@ export const isTabAndMobile = window.innerWidth < 1023;
 export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
+export const fileasbytes = async (filepath) => {
+  const response = await fetch(filepath); // Adjust the path accordingly
+  const arrayBuffer = await response.arrayBuffer();
+  return new Uint8Array(arrayBuffer);
+};
+
 export const openInNewTab = (url, target) => {
   if (target) {
     window.open(url, target, "noopener,noreferrer");
@@ -1025,8 +1032,11 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
 
 //function for embed document id
 export const embedDocId = async (pdfDoc, documentId, allPages) => {
+  // `fontBytes` is used to embed custom font in pdf
+  const fontBytes = await fileasbytes("/font/times.ttf");
+  pdfDoc.registerFontkit(fontkit);
+  const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let i = 0; i < allPages; i++) {
-    const font = await pdfDoc.embedFont("Helvetica");
     const fontSize = 10;
     const textContent = documentId && `OpenSign™ DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
@@ -1240,6 +1250,10 @@ export const multiSignEmbed = async (
   pdfOriginalWH,
   containerWH
 ) => {
+  // `fontBytes` is used to embed custom font in pdf
+  const fontBytes = await fileasbytes("/font/times.ttf");
+  pdfDoc.registerFontkit(fontkit);
+  const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let item of widgets) {
     const containerScale = getContainerScale(
       pdfOriginalWH,
@@ -1343,7 +1357,6 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        const font = await pdfDoc.embedFont("Helvetica");
         let checkboxOptionGapFromTop, isCheck;
         let y = yPos(position);
         const optionsFontSize = 13;
@@ -1404,7 +1417,6 @@ export const multiSignEmbed = async (
           });
         }
       } else if (widgetTypeExist) {
-        const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = calculateFontSize(
           position,
           containerScale,
@@ -1523,7 +1535,6 @@ export const multiSignEmbed = async (
         dropdown.addToPage(page, dropdownOption);
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
-        const font = await pdfDoc.embedFont("Helvetica");
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
         let radioOptionGapFromTop;
