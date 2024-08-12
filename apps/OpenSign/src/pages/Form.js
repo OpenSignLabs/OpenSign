@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { formJson } from "../json/FormJson";
 import AddUser from "../components/AddUser";
-import sanitizeFileName from "../primitives/sanitizeFileName";
 import Parse from "parse";
 import DropboxChooser from "../components/shared/fields/DropboxChoose";
 import Alert from "../primitives/Alert";
@@ -20,6 +19,19 @@ import { Tooltip } from "react-tooltip";
 import Upgrade from "../primitives/Upgrade";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+
+// `generatePdfName` is used to generate file name
+function generatePdfName(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 // `Form` render all type of Form on this basis of their provided in path
 function Form() {
@@ -133,9 +145,8 @@ const Forms = (props) => {
                 // console.log("err ", err);
                 try {
                   setIsDecrypting(true);
-                  const fileName = files?.[0].name;
                   const size = files?.[0].size;
-                  const name = sanitizeFileName(fileName);
+                  const name = generatePdfName(16);
                   const url = "https://ai.nxglabs.in/decryptpdf"; //"https://ai.nxglabs.in/decryptpdf"; //
                   let formData = new FormData();
                   formData.append("file", files[0]);
@@ -226,9 +237,8 @@ const Forms = (props) => {
                 useObjectStreams: false
               });
               setfileload(true);
-              const fileName = files[0].name;
               const size = files[0].size;
-              const name = sanitizeFileName(fileName);
+              const name = generatePdfName(16);
               const pdfName = `${name?.split(".")[0]}.pdf`;
               const parseFile = new Parse.File(
                 pdfName,
@@ -303,9 +313,8 @@ const Forms = (props) => {
 
   const handleFileUpload = async (file) => {
     setfileload(true);
-    const fileName = file.name;
     const size = file.size;
-    const name = sanitizeFileName(fileName);
+    const name = generatePdfName(16);
     const pdfFile = file;
     const parseFile = new Parse.File(name, pdfFile);
 
@@ -348,8 +357,7 @@ const Forms = (props) => {
       }, 500);
       return;
     } else {
-      const name = sanitizeFileName(file.name);
-
+      const name = generatePdfName(16);
       const parseFile = new Parse.File(name, { uri: url });
 
       try {
@@ -436,9 +444,7 @@ const Forms = (props) => {
         setIsErr(true);
       } finally {
         setIsAlert(true);
-        setTimeout(() => {
-          setIsAlert(false);
-        }, 1000);
+        setTimeout(() => setIsAlert(false), 1000);
         setIsSubmit(false);
       }
     } else {
@@ -490,9 +496,8 @@ const Forms = (props) => {
     setIsPassword(false);
     setfileload(true);
     try {
-      const fileName = formData?.file?.name;
       const size = formData?.file?.size;
-      const name = sanitizeFileName(fileName);
+      const name = generatePdfName(16);
       const url = "https://ai.nxglabs.in/decryptpdf"; //
       let Data = new FormData();
       Data.append("file", formData?.file);
