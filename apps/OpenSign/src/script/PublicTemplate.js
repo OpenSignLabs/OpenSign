@@ -6,7 +6,7 @@ import { pdfjs } from "react-pdf";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 import "../index.css";
-import "../i18n";
+import "./i18n";
 import { isPublicStaging } from "../constant/const";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
