@@ -1212,8 +1212,8 @@ export const fetchImageBase64 = async (imageUrl) => {
 };
 //function for select image and upload image
 export const changeImageWH = async (base64Image) => {
-  const newWidth = 100;
-  const newHeight = 40;
+  const newWidth = 300;
+  const newHeight = 120;
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = base64Image;
