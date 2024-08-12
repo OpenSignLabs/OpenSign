@@ -2,7 +2,7 @@ name: ci
 on:
   push:
     branches:
-      - 'docker_beta'
+      - 'main'
 
 jobs:
   docker:
