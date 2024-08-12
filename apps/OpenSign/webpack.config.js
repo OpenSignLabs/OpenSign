@@ -3,8 +3,6 @@ const Dotenv = require("dotenv-webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); //used to clean directory
 const TerserPlugin = require("terser-webpack-plugin"); //used to minify and optimize JavaScript files
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); //used to extract css file into separate files
-const CopyPlugin = require("copy-webpack-plugin"); // CopyPlugin is a Webpack plugin used to copy files and directories from a source location to a destination location during the build process.
-const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin"); //It helps reduce the size of your JSON files by removing unnecessary whitespace, comments, and other redundant data.
 const isProduction = process.env.NODE_ENV;
 module.exports = {
   mode: isProduction ? "production" : "development",
@@ -47,14 +45,6 @@ module.exports = {
             }
           }
         ]
-      },
-      {
-        test: /\.json$/i,
-        include: path.resolve(__dirname, "public/locales"),
-        type: "asset/resource",
-        generator: {
-          filename: "locales/[path][name][ext]"
-        }
       }
     ]
   },
@@ -70,20 +60,11 @@ module.exports = {
             filename: "public-template.bundle.css"
           })
         ]
-      : []),
-    new CopyPlugin({
-      patterns: [
-        {
-          context: path.resolve(__dirname, "public/locales"),
-          from: "**/*.json",
-          to: path.resolve(__dirname, "public/static/locales/[path][name][ext]")
-        }
-      ]
-    })
+      : [])
   ],
   optimization: {
     minimize: isProduction ? true : false,
-    minimizer: [new TerserPlugin(), new JsonMinimizerPlugin()]
+    minimizer: [new TerserPlugin()]
   },
   devtool: isProduction ? "source-map" : "inline-source-map"
 };
