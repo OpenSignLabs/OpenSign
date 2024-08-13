@@ -3,13 +3,12 @@ const Dotenv = require("dotenv-webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin"); //used to clean directory
 const TerserPlugin = require("terser-webpack-plugin"); //used to minify and optimize JavaScript files
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); //used to extract css file into separate files
-
 const isProduction = process.env.NODE_ENV;
 module.exports = {
   mode: isProduction ? "production" : "development",
   entry: "./src/script/PublicTemplate.js",
   output: {
-    path: path.resolve(__dirname, "public", "static", "js"),
+    path: path.resolve(__dirname, "public/static/js"),
     filename: "public-template.bundle.js",
     libraryTarget: "umd",
     umdNamedDefine: true,
