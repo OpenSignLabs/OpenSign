@@ -5,11 +5,21 @@ import ReactPlayer from 'react-player';
 
 ## Steps to run OpenSign™ with docker on Linux/MacOS/linux/Windows:
   1. Firstly, install Docker and ensure it is running before proceeding to the next steps. Make sure that you have NodeJS & GIT installed on your machine.
-  2. Now, open the terminal and type the following command: 
-  
+  2. Now, open the terminal and type the following command:
+
+Command for linux/MacOS  
 ```
 export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
 ```
+Command for Windows (Powershell)
+```
+$env:HOST_URL="https://opensign.yourdomain.com"; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml -OutFile docker-compose.yml; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile -OutFile Caddyfile; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev -OutFile .env.local_dev; Rename-Item -Path .env.local_dev -NewName .env.prod; docker compose up --force-recreate
+```
+ Command for windows (CMD)
+```
+set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && rename .env.local_dev .env.prod && docker compose up --force-recreate
+```
+
   and Hit Enter start the containers automatically. Make sure that you replace the host URL with your subdomain from where OpenSign will be accessible. You need to point the subdomain to the server you are running these commands by adding the necessary A record to your DNS.
 
 *Note: If you wish to incorporate our latest features into your Docker container, follow the steps again after stopping existing containers.* 
@@ -30,7 +40,7 @@ Add below Environment Varaibles to the ".env.prod" file that is automatically cr
 | SERVER_URL  | http://localhost:8080/app  | Set it to the URL from where APIs will be accessible to the NodeJS functions, for local development it should be localhost:8080/app (use your local port number instead) |
 | DO_SPACE  | DOSPACENAME  | Digital ocean space name or AWS S3 bucket name for uploading documents |
 | DO_ENDPOINT  | ams3.digitaloceanspaces.com  | Digital ocean spaces endpoint or AWS S3 endpoint for uploading documents |
-| DO_BASEURL  | https://DOSPACENAME.ams3.digitaloceanspaces.com  | Digital ocean baseurl or AWS S3 base URL |
+| DO_BASEURL  | https://dospace.ams3.digitaloceanspaces.com  | Digital ocean baseurl or AWS S3 base URL |
 | DO_ACCESS_KEY_ID  | YOUR_S3_ACCESS_ID  | Digital ocean spaces access key ID or AWS s3 Access key ID for uploading the docs |
 | DO_SECRET_ACCESS_KEY  | YOUR_S3_ACCESS_KEY  | Digital ocean spaces secret access key or AWS s3 secret access key for uploading the docs |
 | DO_REGION  | YOUR_S3_REGION  | Digital ocean spaces region or AWS s3 region |
