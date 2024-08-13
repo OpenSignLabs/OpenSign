@@ -206,7 +206,6 @@ function UserProfile() {
       const extRes = JSON.stringify(json);
       localStorage.setItem("Extand_Class", extRes);
       previousPublicUserName.current = publicUserName;
-      // console.log("updateRes ", updateRes);
     } catch (e) {
       console.log("error in save data in contracts_Users class");
     }
