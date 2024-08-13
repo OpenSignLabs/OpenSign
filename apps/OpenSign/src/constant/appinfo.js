@@ -1,10 +1,23 @@
 import logo from "../assets/images/logo.png";
+import { isEnableSubscription } from "./const";
+
+export function serverUrl_fn() {
+  let baseUrl;
+  if (isEnableSubscription) {
+    baseUrl = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : window.location.origin + "/api/app";
+  } else {
+    baseUrl = process.env.REACT_APP_SERVERURL
+      ? process.env.REACT_APP_SERVERURL
+      : window.location.origin + "/app";
+  }
+  return baseUrl;
+}
 export const appInfo = {
   applogo: logo,
   appId: process.env.REACT_APP_APPID ? process.env.REACT_APP_APPID : "opensign",
-  baseUrl: process.env.REACT_APP_SERVERURL
-    ? process.env.REACT_APP_SERVERURL
-    : window.location.origin + "/api/app",
+  baseUrl: serverUrl_fn(),
   defaultRole: "contracts_User",
   fbAppId: process.env.REACT_APP_FBAPPID
     ? `${process.env.REACT_APP_FBAPPID}`

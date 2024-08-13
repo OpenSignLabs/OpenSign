@@ -75,7 +75,13 @@ Welcome to OpenSign, the premier open source docusign alternative - document e-s
 
 ### Installation
 
-Please refer to the [Installation Guide](INSTALLATION.md) for detailed instructions on how to install OpenSign on your system.
+The simplest way to install OpenSign on your own server is using official docker images by running the following command -
+``` 
+export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
+```
+Make sure that you have `Docker` and `git` installed before you run this command -
+
+Please refer to the [Installation Guide](https://docs.opensignlabs.com/docs/self-host/docker/run-locally/) for detailed instructions on how to install OpenSign on your system.
 
 ---
 

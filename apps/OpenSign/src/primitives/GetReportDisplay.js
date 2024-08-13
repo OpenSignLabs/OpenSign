@@ -27,6 +27,7 @@ import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
 import Select from "react-select";
 import SubscribeCard from "./SubscribeCard";
+import { serverUrl_fn } from "../constant/appinfo";
 import { useTranslation } from "react-i18next";
 
 const ReportTable = (props) => {
@@ -395,9 +396,7 @@ const ReportTable = (props) => {
       Templates: "contracts_Template"
     };
     try {
-      const serverUrl = process.env.REACT_APP_SERVERURL
-        ? process.env.REACT_APP_SERVERURL
-        : window.location.origin + "/api/app";
+      const serverUrl = serverUrl_fn()
       const cls = clsObj[props.ReportName] || "contracts_Document";
       const url = serverUrl + `/classes/${cls}/`;
       const body =
@@ -475,7 +474,7 @@ const ReportTable = (props) => {
   };
 
   const copytoclipboard = (share) => {
-    navigator.clipboard.writeText(share.url);
+    copytoData(share.url);
     setCopied({ ...copied, [share.email]: true });
   };
   //function to handle revoke/decline docment
@@ -919,7 +918,7 @@ const ReportTable = (props) => {
   const handlePublicChange = async (e, item) => {
     const getPlaceholder = item?.Placeholders;
     //checking index for public role
-    const getIndex = getPlaceholder.findIndex((obj) => !obj.signerObjId);
+    const getIndex = getPlaceholder?.findIndex((obj) => !obj?.signerObjId);
     //conditon to check empty role is exist or not
     if (getPlaceholder && getPlaceholder.length > 0 && getIndex >= 0) {
       const signers = item?.Signers;
