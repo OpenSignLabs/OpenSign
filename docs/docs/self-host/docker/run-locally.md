@@ -22,10 +22,7 @@ Add below Environment Varaibles to the ".env.prod" file that is automatically cr
 | Environment Varibale  | Value | Description |
 | ------------- | ------------- | ------------- |
 | PUBLIC_URL  | http://localhost:3001  | Set it to the URL form where the app home page will be accessed |
-| GENERATE_SOURCEMAP  | false | Set it to true if you want to generate the Sourcemap for debugging |
-| REACT_APP_SERVERURL  | http://localhost:3001/app  | Set it to the URL from where APIs will be accessible, for local development it should be localhost:8080/app (use your local port number instead) |
-| REACT_APP_APPID  | opensignstgn  | A 12 character long random app identifier. The value of this should be same as APP_ID which is a variable used by backend API. |
-| APP_ID  | opensignstgn  | A 12 character long random app identifier. The value of this should be same as REACT_APP_APPID which is a variable used by Frontend React App. |
+| APP_ID  | opensign  | A 12 character long random app identifier. The value of this should be same as REACT_APP_APPID which is a variable used by Frontend React App. |
 | appName  | open_sign_server  | Name of the app. It will be visible in the verification emails sent out. |
 | MASTER_KEY  | XnAadwKxxByMr  | A 12 character long random secret key that allows access to all the data. It is used in Parse dashboard config to view all the data in the database. |
 | MONGODB_URI  | mongodb://mongo-container:27017/OpenSignDB  | Mongodb URI to connect to |
