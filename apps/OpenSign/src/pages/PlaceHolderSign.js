@@ -1677,6 +1677,15 @@ function PlaceHolderSign() {
     setSignerPos(updatePlaceholderUser);
     setIsMailSend(false);
   };
+  const handleCloseSendmailModal = () => {
+    setIsSendAlert({});
+    if (isSendAlert.mssg === "confirm") {
+      setIsAlreadyPlace({
+        status: true,
+        message: t("document-signed-alert-8")
+      });
+    }
+  };
   return (
     <>
       <Title title={state?.title ? state.title : "New Document"} />
@@ -1746,7 +1755,7 @@ function PlaceHolderSign() {
                         ? t("fields-required")
                         : isSendAlert.mssg === "confirm" && t("send-mail")
                     }
-                    handleClose={() => setIsSendAlert({})}
+                    handleClose={() => handleCloseSendmailModal()}
                   >
                     <div className="max-h-96 overflow-y-scroll scroll-hide p-[20px] text-base-content">
                       {isSendAlert.mssg === "sure" ? (

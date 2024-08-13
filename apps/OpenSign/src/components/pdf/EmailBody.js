@@ -1,7 +1,7 @@
 import React from "react";
 import Tooltip from "../../primitives/Tooltip";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
+import "../../styles/quill.css";
 import EditorToolbar, { module1, formats } from "./EditorToolbar";
 import { useTranslation } from "react-i18next";
 
@@ -25,15 +25,12 @@ export function EmailBody(props) {
         <label className="text-sm ml-2 mt-3">
           {t("body")} <Tooltip message={t("email-body")} />
         </label>
-        <div className="px-3 py-2 w-full focus:outline-none text-xs">
+        <div className="px-1 py-2 w-full focus:outline-none text-xs">
           <EditorToolbar containerId="toolbar1" />
           <ReactQuill
             theme="snow"
             value={props.requestBody}
-            // value={typedText}
             placeholder={t("email-placeholder")}
-            // readOnly={loading}
-            // onChangeSelection={handleTextSelection} // Listen for text selection
             ref={props.editorRef}
             modules={module1}
             formats={formats}

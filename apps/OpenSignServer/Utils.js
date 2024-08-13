@@ -1,9 +1,6 @@
-import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const appId = process.env.APP_ID;
-const serverUrl = process.env.SERVER_URL;
 export const cloudServerUrl = 'http://localhost:8080/app';
 export function customAPIurl() {
   const url = new URL(cloudServerUrl);
@@ -38,17 +35,12 @@ export function replaceMailVaribles(subject, body, variables) {
       replacedBody = replacedBody.replace(regex, variables[variable]);
     }
   }
-
-  const result = {
-    subject: replacedSubject,
-    body: replacedBody,
-  };
+  const result = { subject: replacedSubject, body: replacedBody };
   return result;
 }
 
-export const saveFileUsage = async (size, imageUrl, userId) => {
+export const saveFileUsage = async (size, fileUrl, userId) => {
   //checking server url and save file's size
-
   try {
     const tenantQuery = new Parse.Query('partners_Tenant');
     tenantQuery.equalTo('UserId', {
@@ -58,53 +50,28 @@ export const saveFileUsage = async (size, imageUrl, userId) => {
     });
     const tenant = await tenantQuery.first();
     if (tenant) {
-      const tenantPtr = {
-        __type: 'Pointer',
-        className: 'partners_Tenant',
-        objectId: tenant.id,
-      };
-      const _tenantPtr = JSON.stringify(tenantPtr);
+      const tenantPtr = { __type: 'Pointer', className: 'partners_Tenant', objectId: tenant.id };
       try {
-        const res = await axios.get(
-          `${serverUrl}/classes/partners_TenantCredits?where={"PartnersTenant":${_tenantPtr}}`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Parse-Application-Id': appId,
-            },
-          }
-        );
-        const response = res.data.results;
-
-        let data;
-        // console.log("response", response);
-        if (response && response.length > 0) {
-          data = {
-            usedStorage: response[0].usedStorage ? response[0].usedStorage + size : size,
-          };
-          await axios.put(
-            `${serverUrl}/classes/partners_TenantCredits/${response[0].objectId}`,
-            data,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'X-Parse-Application-Id': appId,
-              },
-            }
-          );
+        const tenantCredits = new Parse.Query('partners_TenantCredits');
+        tenantCredits.equalTo('PartnersTenant', tenantPtr);
+        const res = await tenantCredits.first({ useMasterKey: true });
+        if (res) {
+          const response = JSON.parse(JSON.stringify(res));
+          const usedStorage = response?.usedStorage ? response.usedStorage + size : size;
+          const updateCredit = new Parse.Object('partners_TenantCredits');
+          updateCredit.id = res.id;
+          updateCredit.set('usedStorage', usedStorage);
+          await updateCredit.save(null, { useMasterKey: true });
         } else {
-          data = { usedStorage: size, PartnersTenant: tenantPtr };
-          await axios.post(`${serverUrl}/classes/partners_TenantCredits`, data, {
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Parse-Application-Id': appId,
-            },
-          });
+          const newCredit = new Parse.Object('partners_TenantCredits');
+          newCredit.set('usedStorage', size);
+          newCredit.set('PartnersTenant', tenantPtr);
+          await newCredit.save(null, { useMasterKey: true });
         }
       } catch (err) {
         console.log('err in save usage', err);
       }
-      saveDataFile(size, imageUrl, tenantPtr);
+      saveDataFile(size, fileUrl, tenantPtr);
     }
   } catch (err) {
     console.log('err in fetch tenant Id', err);
@@ -112,21 +79,13 @@ export const saveFileUsage = async (size, imageUrl, userId) => {
 };
 
 //function for save fileUrl and file size in particular client db class partners_DataFiles
-const saveDataFile = async (size, imageUrl, tenantPtr) => {
-  const data = {
-    FileUrl: imageUrl,
-    FileSize: size,
-    TenantPtr: tenantPtr,
-  };
-
-  // console.log("data save",file, data)
+const saveDataFile = async (size, fileUrl, tenantPtr) => {
   try {
-    await axios.post(`${serverUrl}/classes/partners_DataFiles`, data, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Parse-Application-Id': appId,
-      },
-    });
+    const newDataFiles = new Parse.Object('partners_DataFiles');
+    newDataFiles.set('FileUrl', fileUrl);
+    newDataFiles.set('FileSize', size);
+    newDataFiles.set('TenantPtr', tenantPtr);
+    await newDataFiles.save(null, { useMasterKey: true });
   } catch (err) {
     console.log('error in save usage ', err);
   }
