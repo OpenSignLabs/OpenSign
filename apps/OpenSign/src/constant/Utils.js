@@ -1033,7 +1033,9 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
 //function for embed document id
 export const embedDocId = async (pdfDoc, documentId, allPages) => {
   // `fontBytes` is used to embed custom font in pdf
-  const fontBytes = await fileasbytes("/font/times.ttf");
+  const fontBytes = await fileasbytes(
+    "https://cdn.opensignlabs.com/webfonts/times.ttf"
+  );
   pdfDoc.registerFontkit(fontkit);
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let i = 0; i < allPages; i++) {
@@ -1251,7 +1253,9 @@ export const multiSignEmbed = async (
   containerWH
 ) => {
   // `fontBytes` is used to embed custom font in pdf
-  const fontBytes = await fileasbytes("/font/times.ttf");
+  const fontBytes = await fileasbytes(
+    "https://cdn.opensignlabs.com/webfonts/times.ttf"
+  );
   pdfDoc.registerFontkit(fontkit);
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let item of widgets) {
@@ -1919,14 +1923,14 @@ export function replaceMailVaribles(subject, body, variables) {
   return result;
 }
 
-export const copytoData = (text) => {
+export const copytoData = (url) => {
   // navigator.clipboard.writeText(text);
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(url);
   } else {
     // Fallback for browsers that don't support navigator.clipboard
     const textArea = document.createElement("textarea");
-    textArea.value = text;
+    textArea.value = url;
     document.body.appendChild(textArea);
     textArea.select();
     document.execCommand("copy");
