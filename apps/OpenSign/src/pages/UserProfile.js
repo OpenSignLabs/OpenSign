@@ -341,10 +341,7 @@ function UserProfile() {
       ) : (
         <div className="flex justify-center items-center w-full relative">
           {isAlert && (
-            <Alert
-              className="z-[1000] fixed top-[10%] transform text-sm py-[.75rem] px-[1.25rem]"
-              type={isAlert.type}
-            >
+            <Alert className="z-[1000] fixed top-[10%]" type={isAlert.type}>
               {isAlert.message}
             </Alert>
           )}
