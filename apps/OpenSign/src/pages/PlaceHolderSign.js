@@ -1684,7 +1684,12 @@ function PlaceHolderSign() {
   };
   const handleCloseSendmailModal = () => {
     setIsSendAlert({});
-    setIsAlreadyPlace({ status: true, message: t("document-signed-alert-8") });
+    if (isSendAlert.mssg === "confirm") {
+      setIsAlreadyPlace({
+        status: true,
+        message: t("document-signed-alert-8")
+      });
+    }
   };
   return (
     <>
