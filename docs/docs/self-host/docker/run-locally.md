@@ -1,5 +1,5 @@
 ---
-title: Localhost OpenSign™ Setup with Docker on Linux/MacOS
+title: Self-host OpenSign™ with Docker on Linux/MacOS/Windows
 ---
 import ReactPlayer from 'react-player';
 
@@ -7,30 +7,15 @@ import ReactPlayer from 'react-player';
   1. Firstly, install Docker and ensure it is running before proceeding to the next steps. Make sure that you have NodeJS & GIT installed on your machine.
   2. Now, open the terminal and type the following command: 
   ```
-  git clone https://github.com/OpenSignLabs/OpenSign.git
-  ```
-  and Hit Enter to clone the OpenSign project locally.
-  
-  3. Then, navigate to the project directory with the command:
-  ```
-  cd OpenSign
-  ```
-  Hit Enter to access the OpenSign project in the terminal.
-  
-  4. Execute the following command to build the container image:
-  ```
-  make build
-  ```
- This will initiate the process of creating the container image. It may take some time to complete.
- 
-  5. For subsequent runs, open Docker and start the OpenSign container by clicking on the play button in the actions panel.
+export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate  ```
+  and Hit Enter start the containers automatically. Make sure that you replace the host URL with your subdomain from where OpenSign will be accessible. You need to point the subdomain to the server you are running these commands by adding the necessary A record to your DNS.
 
-*Note: If you wish to incorporate our latest features into your Docker container, delete the existing OpenSign container and follow the steps again.* 
+*Note: If you wish to incorporate our latest features into your Docker container, follow the steps again after stopping existing containers.* 
 
 ## Information About ENV variables which are used to setup OpenSign™ with Docker on Localhost
 To set up OpenSign™ locally using Docker, the following prerequisites are required: 
 
-Environment Varaibles:
+Add below Environment Varaibles to the ".env.prod" file that is automatically created in order to personalize your installation:
 
 | Environment Varibale  | Value | Description |
 | ------------- | ------------- | ------------- |
