@@ -379,7 +379,17 @@ function PlaceholderType(props) {
                   }}
                 />
                 {!props.pos.options?.isHideLabel && (
-                  <label className="text-xs mb-0 text-center">{data}</label>
+                  <label
+                    style={{
+                      fontSize: props.pos.options?.fontSize
+                        ? props.pos.options?.fontSize + "px"
+                        : "12px",
+                      color: props.pos.options?.fontColor || "black"
+                    }}
+                    className="text-xs mb-0 text-center"
+                  >
+                    {data}
+                  </label>
                 )}
               </div>
             );
@@ -433,6 +443,12 @@ function PlaceholderType(props) {
     case "dropdown":
       return props.data?.signerObjId === props.signerObjId ? (
         <select
+          style={{
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
+          }}
           className={`${selectWidgetCls} text-[12px] bg-inherit`}
           id="myDropdown"
           value={selectOption}
@@ -450,20 +466,47 @@ function PlaceholderType(props) {
           }}
         >
           {/* Default/Title option */}
-          <option value="" disabled hidden>
+          <option
+            style={{
+              fontSize: props.pos.options?.fontSize
+                ? props.pos.options?.fontSize + "px"
+                : "12px",
+              color: props.pos.options?.fontColor || "black"
+            }}
+            value=""
+            disabled
+            hidden
+          >
             {props?.pos?.options?.name}
           </option>
 
           {props.pos?.options?.values?.map((data, ind) => {
             return (
-              <option key={ind} value={data}>
+              <option
+                style={{
+                  fontSize: props.pos.options?.fontSize
+                    ? props.pos.options?.fontSize + "px"
+                    : "12px",
+                  color: props.pos.options?.fontColor || "black"
+                }}
+                key={ind}
+                value={data}
+              >
                 {data}
               </option>
             );
           })}
         </select>
       ) : (
-        <div className="text-[12px] overflow-hidden">
+        <div
+          style={{
+            fontSize: props.pos.options?.fontSize
+              ? props.pos.options?.fontSize + "px"
+              : "12px",
+            color: props.pos.options?.fontColor || "black"
+          }}
+          className=" overflow-hidden"
+        >
           {props.pos?.options?.name
             ? props.pos.options.name
             : widgetTypeTraslation}
@@ -778,7 +821,17 @@ function PlaceholderType(props) {
                   }}
                 />
                 {!props.pos.options?.isHideLabel && (
-                  <label className="text-xs mb-0">{data}</label>
+                  <label
+                    style={{
+                      fontSize: props.pos.options?.fontSize
+                        ? props.pos.options?.fontSize + "px"
+                        : "12px",
+                      color: props.pos.options?.fontColor || "black"
+                    }}
+                    className="text-xs mb-0"
+                  >
+                    {data}
+                  </label>
                 )}
               </div>
             );

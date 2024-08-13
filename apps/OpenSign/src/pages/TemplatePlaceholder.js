@@ -1089,7 +1089,13 @@ const TemplatePlaceholder = () => {
                     status: status,
                     defaultValue: defaultValue,
                     isReadOnly: isReadOnly || false,
-                    isHideLabel: isHideLabel || false
+                    isHideLabel: isHideLabel || false,
+                    fontSize:
+                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontColor:
+                      fontColor ||
+                      currWidgetsDetails?.options?.fontColor ||
+                      "black"
                   }
                 };
               }
@@ -1121,7 +1127,13 @@ const TemplatePlaceholder = () => {
                     },
                     isReadOnly: isReadOnly || false,
                     defaultValue: defaultValue,
-                    isHideLabel: isHideLabel || false
+                    isHideLabel: isHideLabel || false,
+                    fontSize:
+                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontColor:
+                      fontColor ||
+                      currWidgetsDetails?.options?.fontColor ||
+                      "black"
                   }
                 };
               }
@@ -1133,7 +1145,13 @@ const TemplatePlaceholder = () => {
                   name: dropdownName,
                   status: status,
                   values: dropdownOptions,
-                  defaultValue: defaultValue
+                  defaultValue: defaultValue,
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black"
                 }
               };
             }
@@ -1160,6 +1178,8 @@ const TemplatePlaceholder = () => {
         }
       }
     }
+    setFontSize();
+    setFontColor();
   };
 
   const handleWidgetdefaultdata = (defaultdata) => {
@@ -1391,6 +1411,10 @@ const TemplatePlaceholder = () => {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
                     isSubscribe={isSubscribe}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                    fontColor={fontColor}
+                    setFontColor={setFontColor}
                   />
                   <DropdownWidgetOption
                     type="checkbox"
@@ -1402,6 +1426,10 @@ const TemplatePlaceholder = () => {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
                     isSubscribe={isSubscribe}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                    fontColor={fontColor}
+                    setFontColor={setFontColor}
                   />
                   <DropdownWidgetOption
                     type="dropdown"
@@ -1413,6 +1441,10 @@ const TemplatePlaceholder = () => {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
                     isSubscribe={isSubscribe}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                    fontColor={fontColor}
+                    setFontColor={setFontColor}
                   />
                   <PlaceholderCopy
                     isPageCopy={isPageCopy}
