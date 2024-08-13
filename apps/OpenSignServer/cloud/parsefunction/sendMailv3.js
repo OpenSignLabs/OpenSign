@@ -7,7 +7,7 @@ import { smtpenable, smtpsecure, updateMailCount, useLocal } from '../../Utils.j
 import sendMailGmailProvider from './sendMailGmailProvider.js';
 import { createTransport } from 'nodemailer';
 async function sendMailProvider(req) {
-  const protocol = new URL(process.env.SERVER_URL);
+  const mailgunApiKey = process.env.MAILGUN_API_KEY;
   try {
     let transporterSMTP;
     let mailgunClient;
@@ -23,24 +23,25 @@ async function sendMailProvider(req) {
         },
       });
     } else {
-      const mailgun = new Mailgun(formData);
-      mailgunClient = mailgun.client({
-        username: 'api',
-        key: process.env.MAILGUN_API_KEY,
-      });
-      mailgunDomain = process.env.MAILGUN_DOMAIN;
+      if (mailgunApiKey) {
+        const mailgun = new Mailgun(formData);
+        mailgunClient = mailgun.client({ username: 'api', key: mailgunApiKey });
+        mailgunDomain = process.env.MAILGUN_DOMAIN;
+      }
     }
     if (req.params.url) {
       let Pdf = fs.createWriteStream('test.pdf');
       const writeToLocalDisk = () => {
         return new Promise((resolve, reject) => {
-          if (useLocal !== 'true' && protocol.hostname !== 'localhost') {
+          if (useLocal !== 'true') {
             https.get(req.params.url, async function (response) {
               response.pipe(Pdf);
               response.on('end', () => resolve('success'));
             });
           } else {
-            http.get(req.params.url, async function (response) {
+            const path = new URL(req.params.url)?.pathname;
+            const localurl = 'http://localhost:8080' + path;
+            http.get(localurl, async function (response) {
               response.pipe(Pdf);
               response.on('end', () => resolve('success'));
             });
@@ -108,20 +109,27 @@ async function sendMailProvider(req) {
             return { status: 'success' };
           }
         } else {
-          const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
-          console.log('Res ', res);
-          if (res.status === 200) {
-            if (req.params?.extUserId) {
-              await updateMailCount(req.params.extUserId);
+          if (mailgunApiKey) {
+            const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
+            console.log('Res ', res);
+            if (res.status === 200) {
+              if (req.params?.extUserId) {
+                await updateMailCount(req.params.extUserId);
+              }
+              try {
+                fs.unlinkSync('./exports/certificate.pdf');
+              } catch (err) {
+                console.log('Err in unlink certificate sendmailv3');
+              }
+              return { status: 'success' };
             }
+          } else {
             try {
               fs.unlinkSync('./exports/certificate.pdf');
             } catch (err) {
               console.log('Err in unlink certificate sendmailv3');
             }
-            return {
-              status: 'success',
-            };
+            return { status: 'error' };
           }
         }
       }
@@ -147,13 +155,17 @@ async function sendMailProvider(req) {
           return { status: 'success' };
         }
       } else {
-        const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
-        console.log('Res ', res);
-        if (res.status === 200) {
-          if (req.params?.extUserId) {
-            await updateMailCount(req.params.extUserId);
+        if (mailgunApiKey) {
+          const res = await mailgunClient.messages.create(mailgunDomain, messageParams);
+          console.log('Res ', res);
+          if (res.status === 200) {
+            if (req.params?.extUserId) {
+              await updateMailCount(req.params.extUserId);
+            }
+            return { status: 'success' };
           }
-          return { status: 'success' };
+        } else {
+          return { status: 'error' };
         }
       }
     }
