@@ -20,11 +20,11 @@ $env:HOST_URL="https://opensign.yourdomain.com"; Invoke-WebRequest -Uri https://
   3. If you want to test it locally, remove `export HOST_URL=https://opensign.yourdomain.com &&` for Linux/MacOS and `$env:HOST_URL="https://opensign.yourdomain.com";` for Windows. Once deployed successfully, follow the steps from the screenshots.
   
   <div>
-    <img width="937" alt="localhost" src="https://github.com/user-attachments/assets/f5de1882-64d0-44ea-86e3-3a7c8405272c">
+    <img width="937" alt="localhost" src="https://github.com/user-attachments/assets/f5de1882-64d0-44ea-86e3-3a7c8405272c"/>
   </div>
 
   <div>
-    <img width="935" alt="proceedtolocalhost" src="https://github.com/user-attachments/assets/33f975b9-4a9a-431e-a869-72e38f3b6754">
+    <img width="935" alt="proceedtolocalhost" src="https://github.com/user-attachments/assets/33f975b9-4a9a-431e-a869-72e38f3b6754"/>
   </div>
 
 
