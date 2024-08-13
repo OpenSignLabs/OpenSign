@@ -1404,7 +1404,7 @@ export const multiSignEmbed = async (
               width: checkboxSize,
               height: checkboxSize
             };
-            checkboxObj = getImagePosition(page, checkboxObj, 1);
+            checkboxObj = getWidgetPosition(page, checkboxObj, 1);
             checkbox.addToPage(page, checkboxObj);
 
             //applied which checkbox should be checked
@@ -1529,10 +1529,10 @@ export const multiSignEmbed = async (
           width: widgetWidth,
           height: widgetHeight
         };
-
-        const dropdownOption = getImagePosition(page, dropdownObj, 1);
-        // page.drawImage(img, imageOptions);
-        dropdown.addToPage(page, dropdownOption);
+        dropdown.defaultUpdateAppearances(font);
+        const dropdownOption = getWidgetPosition(page, dropdownObj, 1);
+        const dropdownSelected = { ...dropdownOption, font: font };
+        dropdown.addToPage(page, dropdownSelected);
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
         const radioRandomId = "radio" + randomId();
@@ -1573,7 +1573,7 @@ export const multiSignEmbed = async (
               height: radioSize
             };
 
-            radioObj = getImagePosition(page, radioObj, 1);
+            radioObj = getWidgetPosition(page, radioObj, 1);
             radioGroup.addOptionToPage(item, page, radioObj);
           });
         }
@@ -1591,7 +1591,7 @@ export const multiSignEmbed = async (
           height: widgetHeight
         };
 
-        const imageOptions = getImagePosition(page, signature, 1);
+        const imageOptions = getWidgetPosition(page, signature, 1);
         page.drawImage(img, imageOptions);
       }
     });
@@ -2194,8 +2194,8 @@ function compensateRotation(
   }
 }
 
-// `getImagePosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
-function getImagePosition(page, image, sizeRatio) {
+// `getWidgetPosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
+function getWidgetPosition(page, image, sizeRatio) {
   let pageWidth;
   // pageHeight;
   if ([90, 270].includes(page.getRotation().angle)) {
