@@ -1033,7 +1033,9 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
 //function for embed document id
 export const embedDocId = async (pdfDoc, documentId, allPages) => {
   // `fontBytes` is used to embed custom font in pdf
-  const fontBytes = await fileasbytes("/font/times.ttf");
+  const fontBytes = await fileasbytes(
+    "https://cdn.opensignlabs.com/webfonts/times.ttf"
+  );
   pdfDoc.registerFontkit(fontkit);
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let i = 0; i < allPages; i++) {
@@ -1212,8 +1214,8 @@ export const fetchImageBase64 = async (imageUrl) => {
 };
 //function for select image and upload image
 export const changeImageWH = async (base64Image) => {
-  const newWidth = 300;
-  const newHeight = 120;
+  const newWidth = 100;
+  const newHeight = 40;
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = base64Image;
@@ -1251,7 +1253,9 @@ export const multiSignEmbed = async (
   containerWH
 ) => {
   // `fontBytes` is used to embed custom font in pdf
-  const fontBytes = await fileasbytes("/font/times.ttf");
+  const fontBytes = await fileasbytes(
+    "https://cdn.opensignlabs.com/webfonts/times.ttf"
+  );
   pdfDoc.registerFontkit(fontkit);
   const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let item of widgets) {
@@ -1404,7 +1408,7 @@ export const multiSignEmbed = async (
               width: checkboxSize,
               height: checkboxSize
             };
-            checkboxObj = getWidgetPosition(page, checkboxObj, 1);
+            checkboxObj = getImagePosition(page, checkboxObj, 1);
             checkbox.addToPage(page, checkboxObj);
 
             //applied which checkbox should be checked
@@ -1529,10 +1533,10 @@ export const multiSignEmbed = async (
           width: widgetWidth,
           height: widgetHeight
         };
-        dropdown.defaultUpdateAppearances(font);
-        const dropdownOption = getWidgetPosition(page, dropdownObj, 1);
-        const dropdownSelected = { ...dropdownOption, font: font };
-        dropdown.addToPage(page, dropdownSelected);
+
+        const dropdownOption = getImagePosition(page, dropdownObj, 1);
+        // page.drawImage(img, imageOptions);
+        dropdown.addToPage(page, dropdownOption);
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
         const radioRandomId = "radio" + randomId();
@@ -1573,7 +1577,7 @@ export const multiSignEmbed = async (
               height: radioSize
             };
 
-            radioObj = getWidgetPosition(page, radioObj, 1);
+            radioObj = getImagePosition(page, radioObj, 1);
             radioGroup.addOptionToPage(item, page, radioObj);
           });
         }
@@ -1591,7 +1595,7 @@ export const multiSignEmbed = async (
           height: widgetHeight
         };
 
-        const imageOptions = getWidgetPosition(page, signature, 1);
+        const imageOptions = getImagePosition(page, signature, 1);
         page.drawImage(img, imageOptions);
       }
     });
@@ -2194,8 +2198,8 @@ function compensateRotation(
   }
 }
 
-// `getWidgetPosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
-function getWidgetPosition(page, image, sizeRatio) {
+// `getImagePosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
+function getImagePosition(page, image, sizeRatio) {
   let pageWidth;
   // pageHeight;
   if ([90, 270].includes(page.getRotation().angle)) {
