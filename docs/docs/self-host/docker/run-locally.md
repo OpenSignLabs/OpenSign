@@ -3,7 +3,7 @@ title: Self-host OpenSign™ with Docker on Linux/MacOS/Windows
 ---
 import ReactPlayer from 'react-player';
 
-## Steps to run OpenSign™ with docker on Linux/MacOS/linux/Windows:
+## Steps to run OpenSign™ with docker on Linux/MacOS/Windows:
   1. Firstly, install Docker and ensure it is running before proceeding to the next steps. Make sure that you have NodeJS & GIT installed on your machine.
   2. Now, open the terminal and type the following command:
 
