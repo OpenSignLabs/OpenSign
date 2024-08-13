@@ -9,13 +9,13 @@ title: Request signatures
 
 The OpenSign™ Request signatures interface is designed to streamline the process of creating, preparing, and sending documents for electronic signature.
 
-<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/94112aec-4581-46a5-8e09-b6fc42e9e72a" />
-
 # How to Create and Send a Document for Signature with OpenSign™
 
 ### Step 1: Begin New Document Creation
 
 - **Navigate to Request Signatures form**: Start by navigating to 'Request Signatures' from the main menu to initiate the creation of a document for signatures.
+  
+<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/94112aec-4581-46a5-8e09-b6fc42e9e72a" />
 
 ### Step 2: Uploading Your Document
 
@@ -106,7 +106,7 @@ Use the option on the right side to add recipients if you need to include additi
  - **Checkbox**: Once you drop the checkbox widget, a popup will open where you can set the checkbox name and options. Additionally, there is few optiona available like you can set Minimum check, maximum check also whether this check box is readonly also hide label option.
      - Add Signer/Change Signer: Clicking the first icon on the CheckBox widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can ducplicate the image widget.
-   - **Dropdown**: Once you drop the dropdown widget, a popup will open where you can set the dropdown name and options. Additionally, there is few option available like you can set default value, also whether this dropdown is required or optional.
+- **Dropdown**: Once you drop the dropdown widget, a popup will open where you can set the dropdown name and options. Additionally, there is few option available like you can set default value, also whether this dropdown is required or optional.
      - Add Signer/Change Signer: Clicking the first icon on the Dropdown widget allows you to change the signer. You can choose from existing signers in the dropdown or add a new signer.
      - Copy : Clicking on this you can ducplicate the image widget.
  - **Radio button**: Once you drop the radio button widget, a popup will open where you can set the radio button name and options. Additionally, there is few option available like you can set default value, also whether this radio button is readonly also hide label option.
@@ -133,9 +133,9 @@ After finishing the document creation, a 'Send Mail' popup will appear, offering
   
   - Share: Use this option to share the document via email, WhatsApp and other Windows apps
     
-  <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/e2344479-daae-43ff-a61a-14ea98b237d6" />
-  
-### Signers Signing Process
+  <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/e2344479-daae-43ff-a61a-14ea98b237d6" />   
+                                                                                                                             
+## Signers Signing Process
 ### Step 12: Email OTP verification
 Once the email is received, the signer can click the 'Sign Here' button. This will open the email verification page. After clicking the 'Get Verification Code' button, an OTP (one-time password) will be sent to the signer’s email address. Enter the received OTP into the verification textbox and click the 'Verify' button.
 
@@ -161,6 +161,6 @@ After filling out all assigned widgets, click the 'Finish' button. Once the docu
 - Ensure that the document format is supported by OpenSign before uploading.
 - Signed documents can be accessed in the designated 'Root' folder or the one you have specified.
 
-For further assistance, contact our customer support team.
+If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
-Experience the ease of document signing with OpenSign!
+Happy signing with OpenSign™!
