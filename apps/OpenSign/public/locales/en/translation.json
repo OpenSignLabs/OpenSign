@@ -592,7 +592,8 @@
         "expired-doc-title":"Expired Document",
         "expired-on-mssg" :"This document expired on {{expiredDate}} and is no longer available to sign.",
         "signature-validate-alert":"Please confirm that you have selected at least {{minRequiredCount}} checkboxes.",
-        "signature-validate-alert-2" :"Ensure this field is accurately filled and meets all requirements."
+        "signature-validate-alert-2" :"Ensure this field is accurately filled and meets all requirements.",
+        "user-name-exist":"user name already exist"
        
      
           
