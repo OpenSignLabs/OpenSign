@@ -16,13 +16,14 @@ import {
 import DragElement from "./components/pdf/DragElement";
 import TagManager from "react-gtm-module";
 import Parse from "parse";
-import './polyfills'
+import "./polyfills";
+import { serverUrl_fn } from "./constant/appinfo";
+import "./i18n";
+
 const appId = process.env.REACT_APP_APPID
   ? process.env.REACT_APP_APPID
   : "opensign";
-const serverUrl = process.env.REACT_APP_SERVERURL
-  ? process.env.REACT_APP_SERVERURL
-  : window.location.origin + "/api/app";
+const serverUrl = serverUrl_fn();
 Parse.initialize(appId);
 Parse.serverURL = serverUrl;
 

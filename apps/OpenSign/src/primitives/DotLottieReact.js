@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Loader from "./Loader";
+import { useTranslation } from "react-i18next";
 
 const LottieWithLoader = () => {
+  const { t } = useTranslation();
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [animationSrc, setAnimationSrc] = useState(null);
@@ -34,7 +36,7 @@ const LottieWithLoader = () => {
           <Loader />
         </div>
       )}
-      {hasError && <div className="error">Failed to load animation</div>}
+      {hasError && <div className="error">{t("faild-animation")}</div>}
       {isLoaded && animationSrc && (
         <DotLottieReact
           src={animationSrc}

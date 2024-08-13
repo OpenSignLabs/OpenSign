@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Parse from "parse";
 import ReactDOM from "react-dom/client";
 import PdfRequestFiles from "../pages/PdfRequestFiles";
@@ -6,6 +6,8 @@ import { pdfjs } from "react-pdf";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 import "../index.css";
+import "./i18n";
+import { isPublicStaging } from "../constant/const";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 // Wrapper component to manage props
@@ -13,15 +15,25 @@ const PublicScriptFileWrapper = ({ initialProps }) => {
   const [props, setProps] = useState(initialProps);
 
   // Make the setProps function globally accessible
-  window.updatePublicTemplateProps = setProps;
+  useEffect(() => {
+    window.updatePublicTemplateProps = setProps;
+
+    return () => {
+      window.updatePublicTemplateProps = undefined;
+    };
+  }, []);
 
   return <PdfRequestFiles {...props} />;
 };
 
-const appId = "legadranaxn";
-// "opensign";
-const serverUrl = "https://app.opensignlabs.com/api/app";
-// "https://staging-app.opensignlabs.com/api/app";
+const appId = isPublicStaging ? "opensign" : "legadranaxn";
+//"opensign"
+
+const serverUrl = isPublicStaging
+  ? "https://staging-app.opensignlabs.com/api/app"
+  : "https://app.opensignlabs.com/api/app";
+//  "https://staging-app.opensignlabs.com/api/app"
+
 localStorage.setItem("baseUrl", `${serverUrl}/`);
 localStorage.setItem("parseAppId", appId);
 Parse.initialize(appId);
@@ -39,7 +51,6 @@ document.head.appendChild(link);
 const tailwindCssLink = document.createElement("link");
 tailwindCssLink.href =
   "https://app.opensignlabs.com/static/js/public-template.bundle.css"; // css bundle file
-// "https://staging-app.opensignlabs.com/static/js/public-template.bundle.css"; // css bundle file
 tailwindCssLink.rel = "stylesheet";
 document.head.appendChild(tailwindCssLink);
 // Create a root and render the wrapper component with initial props

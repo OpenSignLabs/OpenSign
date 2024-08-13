@@ -4,9 +4,11 @@ import Parse from "parse";
 import getReplacedHashQuery from "../../constant/getReplacedHashQuery";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../../primitives/Tooltip";
+import { useTranslation } from "react-i18next";
 
 const DashboardCard = (props) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [parseBaseUrl] = useState(localStorage.getItem("baseUrl"));
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [response, setresponse] = useState("");
@@ -23,17 +25,12 @@ const DashboardCard = (props) => {
           sessionToken: localStorage.getItem("accesstoken")
         };
         let body = {};
-        let currentUser;
-        let currentUser1 = Parse.User.current();
-        currentUser = currentUser1.id;
         let res;
         if (localStorage.getItem("Extand_Class")) {
           let data = JSON.parse(localStorage.getItem("Extand_Class"));
           res = data[0];
         } else {
-          res = await Parse.Cloud.run("getUserDetails", {
-            email: currentUser.get("email")
-          });
+          res = await Parse.Cloud.run("getUserDetails");
           if (res) res = res.toJSON();
         }
         if (res) {
@@ -94,9 +91,7 @@ const DashboardCard = (props) => {
             let data = JSON.parse(localStorage.getItem("Extand_Class"));
             resr = data[0];
           } else {
-            resr = await Parse.Cloud.run("getUserDetails", {
-              email: currentUser.get("email")
-            });
+            resr = await Parse.Cloud.run("getUserDetails");
             if (resr) resr = resr.toJSON();
           }
 
@@ -218,15 +213,12 @@ const DashboardCard = (props) => {
 
         if (restr.includes("#")) {
           try {
-            const currentUser = Parse.User.current();
             let res;
             if (localStorage.getItem("Extand_Class")) {
               let data = JSON.parse(localStorage.getItem("Extand_Class"));
               res = data[0];
             } else {
-              let resr = await Parse.Cloud.run("getUserDetails", {
-                email: currentUser.get("email")
-              });
+              let resr = await Parse.Cloud.run("getUserDetails");
               if (res) res = resr.toJSON();
             }
 
@@ -321,6 +313,7 @@ const DashboardCard = (props) => {
       }
     }
   }
+
   return (
     <div
       onClick={() => openReport()}
@@ -338,8 +331,11 @@ const DashboardCard = (props) => {
             } text-[25px] lg:text-[30px]`}
           ></i>
         </span>
+
         <div className="font-medium">
-          <div className="text-base lg:text-lg"> {props.Label}</div>
+          <div className="text-base lg:text-lg">
+            {t(`dashboard-card.${props.Label}`)}
+          </div>
           <div className="text-2xl font-light">
             {loading ? <div className="loader-01"></div> : setFormat(response)}
           </div>
@@ -349,7 +345,8 @@ const DashboardCard = (props) => {
         <Tooltip
           id={props.Label}
           iconColor={"white"}
-          message={props?.Data?.tourMessage}
+          message={t(`tour-mssg.${props.Label}`)}
+          // {props?.Data?.tourMessage}
         />
       </div>
     </div>

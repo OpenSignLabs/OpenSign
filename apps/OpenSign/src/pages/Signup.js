@@ -11,10 +11,17 @@ import { useDispatch } from "react-redux";
 import { fetchAppInfo } from "../redux/reducers/infoReducer";
 import { showTenant } from "../redux/reducers/ShowTenant";
 import { isEnableSubscription } from "../constant/const";
-import { getAppLogo, openInNewTab } from "../constant/Utils";
+import {
+  getAppLogo,
+  openInNewTab,
+  saveLanguageInLocal
+} from "../constant/Utils";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
+import SelectLanguage from "../components/pdf/SelectLanguage";
 const Signup = () => {
   const { width } = useWindowSize();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -49,7 +56,7 @@ const Signup = () => {
     let userSettings = localStorage.getItem("userSettings");
 
     localStorage.clear();
-
+    saveLanguageInLocal(i18n);
     localStorage.setItem("baseUrl", baseUrl);
     localStorage.setItem("parseAppId", appid);
     localStorage.setItem("appLogo", applogo);
@@ -69,7 +76,7 @@ const Signup = () => {
       }
     } catch (err) {
       console.log("err in free subscribe", err.message);
-      alert("Somenthing went wrong, please try again later!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
   const handleSubmit = (event) => {
@@ -136,7 +143,7 @@ const Signup = () => {
               const res = await Parse.Cloud.run("getUserDetails", params);
               // console.log("Res ", res);
               if (res) {
-                alert("User already exists with this username!");
+                alert(t("user-already-exist-name"));
                 setState({ loading: false });
               } else {
                 // console.log("state.email ", email);
@@ -144,9 +151,7 @@ const Signup = () => {
                   await Parse.User.requestPasswordReset(email).then(
                     async function (res1) {
                       if (res1.data === undefined) {
-                        alert(
-                          "Verification mail has been sent to your E-mail!"
-                        );
+                        alert(t("verification-code-sent"));
                       }
                     }
                   );
@@ -192,10 +197,7 @@ const Signup = () => {
       // Check extended class user role and tenentId
       try {
         const userSettings = appInfo.settings;
-        const currentUser = Parse.User.current();
-        await Parse.Cloud.run("getUserDetails", {
-          email: currentUser.get("email")
-        })
+        await Parse.Cloud.run("getUserDetails")
           .then(async (extUser) => {
             if (extUser) {
               const IsDisabled = extUser?.get("IsDisabled") || false;
@@ -233,14 +235,14 @@ const Signup = () => {
                       navigate(`/subscription`, { replace: true });
                     }
                   } else {
-                    alert("Registered user successfully");
+                    alert(t("registered-user-successfully"));
                     navigate(`/${menu.pageType}/${menu.pageId}`);
                   }
                 } else {
                   setState({
                     loading: false,
                     alertType: "danger",
-                    alertMsg: "Role not found."
+                    alertMsg: t("role-not-found")
                   });
                   setTimeout(() => {
                     setState({ loading: false, alertMsg: "" });
@@ -250,7 +252,7 @@ const Signup = () => {
                 setState({
                   loading: false,
                   alertType: "danger",
-                  alertMsg: "You don't have access, please contact the admin."
+                  alertMsg: t("do-not-access-contact-admin")
                 });
                 setTimeout(() => {
                   setState({ loading: false, alertMsg: "" });
@@ -263,7 +265,7 @@ const Signup = () => {
             setState({
               loading: false,
               alertType: "danger",
-              alertMsg: "You don't have access, please contact the admin."
+              alertMsg: t("do-not-access-contact-admin")
             });
             setTimeout(() => {
               setState({ loading: false, alertMsg: "" });
@@ -322,7 +324,7 @@ const Signup = () => {
           <Loader />
         </div>
       )}
-      <Title title={"Signup page"} />
+      <Title title="Signup page" />
       {appInfo && appInfo.applogo ? (
         <div className="md:p-10 lg:p-16">
           <div className="md:p-4 lg:p-10 p-4 bg-base-100 text-base-content op-card">
@@ -334,22 +336,28 @@ const Signup = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2">
               <div>
                 <form onSubmit={handleSubmit}>
-                  <h2 className="text-[30px] mt-6">Create Account !</h2>
+                  <h2 className="text-[30px] mt-6">{t("create-account")}!</h2>
                   <div className="w-full my-4 op-card bg-base-100 shadow-md outline outline-1 outline-slate-300/50">
                     <div className="px-6 py-4 text-xs">
                       <label className="block ">
-                        Name <span className="text-[red] text-[13px]">*</span>
+                        {t("name")}{" "}
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         type="text"
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Email <span className="text-[red] text-[13px]">*</span>
+                        {t("email")}{" "}
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         id="email"
@@ -357,24 +365,35 @@ const Signup = () => {
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={email}
                         onChange={(e) =>
-                          setEmail(e.target.value?.toLowerCase())
+                          setEmail(
+                            e.target.value?.toLowerCase()?.replace(/\s/g, "")
+                          )
                         }
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Phone <span className="text-[red] text-[13px]">*</span>
+                        {t("phone")}{" "}
+                        <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
                         type="tel"
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Company{" "}
+                        {t("company")}{" "}
                         <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
@@ -382,11 +401,15 @@ const Signup = () => {
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Job Title{" "}
+                        {t("job-title")}{" "}
                         <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <input
@@ -394,11 +417,15 @@ const Signup = () => {
                         className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
+                        onInvalid={(e) =>
+                          e.target.setCustomValidity(t("input-required"))
+                        }
+                        onInput={(e) => e.target.setCustomValidity("")}
                         required
                       />
                       <hr className="my-2 border-none" />
                       <label>
-                        Password{" "}
+                        {t("password")}{" "}
                         <span className="text-[red] text-[13px]">*</span>
                       </label>
                       <div className="relative">
@@ -408,6 +435,10 @@ const Signup = () => {
                           name="password"
                           value={password}
                           onChange={(e) => handlePasswordChange(e)}
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
+                          onInput={(e) => e.target.setCustomValidity("")}
                           required
                         />
                         <span
@@ -428,16 +459,16 @@ const Signup = () => {
                               lengthValid ? "text-green-600" : "text-red-600"
                             }`}
                           >
-                            {lengthValid ? "✓" : "✗"} Password should be 8
-                            characters long
+                            {lengthValid ? "✓" : "✗"}
+                            {t("password-length")}
                           </p>
                           <p
                             className={`${
                               caseDigitValid ? "text-green-600" : "text-red-600"
                             }`}
                           >
-                            {caseDigitValid ? "✓" : "✗"} Password should contain
-                            uppercase letter, lowercase letter, digit
+                            {caseDigitValid ? "✓" : "✗"}
+                            {t("password-case")}
                           </p>
                           <p
                             className={`${
@@ -446,8 +477,8 @@ const Signup = () => {
                                 : "text-red-600"
                             }`}
                           >
-                            {specialCharValid ? "✓" : "✗"} Password should
-                            contain special character
+                            {specialCharValid ? "✓" : "✗"}{" "}
+                            {t("password-special-char")}
                           </p>
                         </div>
                       )}
@@ -458,13 +489,17 @@ const Signup = () => {
                           id="termsandcondition"
                           checked={isAuthorize}
                           onChange={(e) => setIsAuthorize(e.target.checked)}
+                          onInvalid={(e) =>
+                            e.target.setCustomValidity(t("input-required"))
+                          }
+                          onInput={(e) => e.target.setCustomValidity("")}
                           required
                         />
                         <label
                           className="text-xs cursor-pointer ml-1 mb-0"
                           htmlFor="termsandcondition"
                         >
-                          I agree to the
+                          {t("agreee")}
                         </label>
                         <span
                           className="underline cursor-pointer ml-1"
@@ -474,7 +509,7 @@ const Signup = () => {
                             )
                           }
                         >
-                          Terms of Service
+                          {t("term")}
                         </span>
                         <span>.</span>
                       </div>
@@ -486,7 +521,7 @@ const Signup = () => {
                       className="op-btn op-btn-primary"
                       disabled={state.loading}
                     >
-                      {state.loading ? "Loading..." : "Register"}
+                      {state.loading ? t("loading") : t("register")}
                     </button>
                     <button
                       type="button"
@@ -496,7 +531,7 @@ const Signup = () => {
                         navigate(location.search ? "/" + location.search : "/")
                       }
                     >
-                      Login
+                      {t("login")}
                     </button>
                   </div>
                 </form>
@@ -510,6 +545,7 @@ const Signup = () => {
               )}
             </div>
           </div>
+          <SelectLanguage />
           <Alert type={state.alertType}>{state.alertMsg}</Alert>
         </div>
       ) : (

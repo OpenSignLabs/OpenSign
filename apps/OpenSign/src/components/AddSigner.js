@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Parse from "parse";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const AddSigner = (props) => {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -167,17 +169,17 @@ const AddSigner = (props) => {
             }
           }
         } else {
-          alert("Contact already exist!");
+          alert(t("add-signer-alert"));
           setIsLoader(false);
         }
       } catch (err) {
         console.log("err in fetch contact", err);
         setIsLoader(false);
-        alert("something went wrong, please try again later");
+        alert(t("something-went-wrong-mssg"));
       }
     } else {
       setIsLoader(false);
-      alert("something went wrong, please try again later");
+      alert(t("something-went-wrong-mssg"));
     }
   };
 
@@ -214,14 +216,14 @@ const AddSigner = (props) => {
               className="op-checkbox op-checkbox-sm"
             />
             <label htmlFor="addYourself" className="ml-2 mb-0">
-              Add Yourself
+              {t("add-yourself")}
             </label>
           </div>
         )}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="name" className="block text-xs font-semibold">
-              Name
+              {t("name")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
@@ -231,27 +233,33 @@ const AddSigner = (props) => {
               onChange={(e) => setName(e.target.value)}
               required
               disabled={addYourself}
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="mb-3">
             <label htmlFor="email" className="block text-xs font-semibold">
-              Email
+              {t("email")}
               <span className="text-[red] text-[13px]"> *</span>
             </label>
             <input
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value?.toLowerCase())}
+              onChange={(e) =>
+                setEmail(e.target.value?.toLowerCase()?.replace(/\s/g, ""))
+              }
               required
+              onInvalid={(e) => e.target.setCustomValidity(t("input-required"))}
+              onInput={(e) => e.target.setCustomValidity("")}
               disabled={addYourself}
               className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
             />
           </div>
           <div className="mb-3">
             <label htmlFor="phone" className="block text-xs font-semibold">
-              Phone
+              {t("phone")}
             </label>
             <input
               type="text"
@@ -264,14 +272,14 @@ const AddSigner = (props) => {
           </div>
           <div className="mt-4 flex gap-x-2 justify-start">
             <button type="submit" className="op-btn op-btn-primary">
-              Submit
+              {t("submit")}
             </button>
             <button
               type="button"
               onClick={() => handleReset()}
               className="op-btn op-btn-secondary"
             >
-              Reset
+              {t("reset")}
             </button>
           </div>
         </form>

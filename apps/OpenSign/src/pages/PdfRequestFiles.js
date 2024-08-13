@@ -30,7 +30,8 @@ import {
   contactBook,
   handleDownloadPdf,
   handleToPrint,
-  handleDownloadCertificate
+  handleDownloadCertificate,
+  getDefaultSignature
 } from "../constant/Utils";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -46,8 +47,10 @@ import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
+import { useTranslation } from "react-i18next";
 
 function PdfRequestFiles(props) {
+  const { t } = useTranslation();
   const [pdfDetails, setPdfDetails] = useState([]);
   const [signedSigners, setSignedSigners] = useState([]);
   const [unsignedSigners, setUnSignedSigners] = useState([]);
@@ -71,7 +74,7 @@ function PdfRequestFiles(props) {
   const [tourStatus, setTourStatus] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
   const [defaultSignImg, setDefaultSignImg] = useState();
   const [isDocId, setIsDocId] = useState(false);
@@ -189,7 +192,7 @@ function PdfRequestFiles(props) {
     const currentUser = JSON.parse(localuser);
     await handleSendOTP(currentUser?.email);
     setOtpLoader(false);
-    alert("OTP sent on you email");
+    alert(t("otp-sent-alert"));
   };
   //`handleVerifyEmail` function is used to verify email with otp
   const handleVerifyEmail = async (e) => {
@@ -206,11 +209,12 @@ function PdfRequestFiles(props) {
       });
       if (resEmail?.message === "Email is verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-1"));
       } else if (resEmail?.message === "Email is already verified.") {
         setIsEmailVerified(true);
+        alert(t("Email-verified-alert-2"));
       }
       setOtp("");
-      alert(resEmail.message);
       setIsVerifyModal(false);
       //handleRecipientSign();
     } catch (error) {
@@ -316,12 +320,12 @@ function PdfRequestFiles(props) {
         (documentData.result && documentData.result.error)
       ) {
         console.log("err in get template details ");
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
         setIsLoading({
           isLoad: false
         });
       } else {
-        setHandleError("No Data Found!");
+        setHandleError(t("no-data"));
         setIsLoading({
           isLoad: false
         });
@@ -329,257 +333,240 @@ function PdfRequestFiles(props) {
     } catch (err) {
       console.log("err in get template details ", err);
       if (err?.response?.data?.code === 101) {
-        setHandleError("Error: Template not found!");
+        setHandleError(t("error-template"));
       } else {
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
     }
   };
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (docId, isNextUser) => {
-    const senderUser = localStorage.getItem(
-      `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-    );
-    const jsonSender = JSON.parse(senderUser);
-    let currUserId;
-    //getting document details
-    const documentData = await contractDocument(documentId || docId);
-    if (documentData && documentData.length > 0) {
-      setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
-      const isCompleted =
-        documentData[0].IsCompleted && documentData[0].IsCompleted;
-      const expireDate = documentData[0].ExpiryDate.iso;
-      const declined = documentData[0].IsDeclined && documentData[0].IsDeclined;
-      const expireUpdateDate = new Date(expireDate).getTime();
-      const currDate = new Date().getTime();
-      const getSigners = documentData[0].Signers;
-      const getCurrentSigner =
-        getSigners &&
-        getSigners.filter(
-          (data) => data.UserId.objectId === jsonSender?.objectId
-        );
+    try {
+      const senderUser = localStorage.getItem(
+        `Parse/${localStorage.getItem("parseAppId")}/currentUser`
+      );
+      const jsonSender = JSON.parse(senderUser);
+      let currUserId;
+      //getting document details
+      const documentData = await contractDocument(documentId || docId);
+      if (documentData && documentData.length > 0) {
+        setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
+        const isCompleted =
+          documentData[0].IsCompleted && documentData[0].IsCompleted;
+        const expireDate = documentData[0].ExpiryDate.iso;
+        const declined =
+          documentData[0].IsDeclined && documentData[0].IsDeclined;
+        const expireUpdateDate = new Date(expireDate).getTime();
+        const currDate = new Date().getTime();
+        const getSigners = documentData[0].Signers;
+        const getCurrentSigner =
+          getSigners &&
+          getSigners.filter(
+            (data) => data.UserId.objectId === jsonSender?.objectId
+          );
 
-      currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
-      if (isEnableSubscription) {
-        await checkIsSubscribed(
-          documentData[0]?.ExtUserPtr?.objectId,
-          currUserId
-        );
-      }
-      if (currUserId) {
-        setSignerObjectId(currUserId);
-      }
-      if (documentData[0].SignedUrl) {
-        setPdfUrl(documentData[0].SignedUrl);
-      } else {
-        setPdfUrl(documentData[0].URL);
-      }
-      if (isCompleted) {
-        setIsSigned(true);
-        const data = {
-          isCertificate: true,
-          isModal: true
-        };
-        setAlreadySign(true);
-        setIsCompleted(data);
-        setIsCelebration(true);
-        setTimeout(() => {
-          setIsCelebration(false);
-        }, 5000);
-      } else if (declined) {
-        const currentDecline = {
-          currnt: "another",
-          isDeclined: true
-        };
-        setIsDecline(currentDecline);
-      } else if (currDate > expireUpdateDate) {
-        const expireDateFormat = moment(new Date(expireDate)).format(
-          "MMM DD, YYYY"
-        );
-        setIsExpired(true);
-        setExpiredDate(expireDateFormat);
-      } // Check if the current signer is not a last signer and handle the complete message.
-      else if (isNextUser) {
-        setIsCelebration(true);
-        setTimeout(() => {
-          setIsCelebration(false);
-        }, 5000);
-        setIsCompleted({
-          isModal: true,
-          message:
-            "You have successfully signed the document. You can download or print a copy of the partially signed document. A copy of the digitally signed document will be sent to the owner over email once it is signed by all signers."
-        });
-      } else {
+        currUserId = getCurrentSigner[0] ? getCurrentSigner[0].objectId : "";
+        if (isEnableSubscription) {
+          await checkIsSubscribed(
+            documentData[0]?.ExtUserPtr?.objectId,
+            currUserId
+          );
+        }
         if (currUserId) {
-          const checkCurrentUser = documentData[0].Placeholders.find(
-            (data) => data?.signerObjId === currUserId
-          );
-          if (checkCurrentUser) {
-            setCurrentSigner(true);
-          }
+          setSignerObjectId(currUserId);
         }
-      }
-      const audittrailData =
-        documentData[0].AuditTrail &&
-        documentData[0].AuditTrail.length > 0 &&
-        documentData[0].AuditTrail.filter((data) => data.Activity === "Signed");
-
-      const checkAlreadySign =
-        documentData[0].AuditTrail &&
-        documentData[0].AuditTrail.length > 0 &&
-        documentData[0].AuditTrail.filter(
-          (data) =>
-            data.UserPtr.objectId === currUserId && data.Activity === "Signed"
-        );
-      if (
-        checkAlreadySign &&
-        checkAlreadySign[0] &&
-        checkAlreadySign.length > 0
-      ) {
-        setAlreadySign(true);
-      } else {
-        const obj = documentData?.[0];
-        setSendInOrder(obj?.SendinOrder || false);
-        if (
-          obj &&
-          obj.Signers &&
-          obj.Signers.length > 0 &&
-          obj.Placeholders &&
-          obj.Placeholders.length > 0
-        ) {
-          const params = {
-            event: "viewed",
-            contactId: currUserId,
-            body: {
-              objectId: documentData?.[0].objectId,
-              file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
-              name: documentData?.[0].Name,
-              note: documentData?.[0].Note || "",
-              description: documentData?.[0].Description || "",
-              signers: documentData?.[0].Signers?.map((x) => ({
-                name: x?.Name,
-                email: x?.Email,
-                phone: x?.Phone
-              })),
-              viewedBy: jsonSender.email,
-              viewedAt: new Date(),
-              createdAt: documentData?.[0].createdAt
-            }
-          };
-
-          try {
-            await axios.post(
-              `${localStorage.getItem("baseUrl")}functions/callwebhook`,
-              params,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-                  sessiontoken: localStorage.getItem("accesstoken")
-                }
-              }
-            );
-          } catch (err) {
-            console.log("Err ", err);
-          }
-        }
-      }
-
-      let signers = [];
-      let unSignedSigner = [];
-
-      const placeholdersOrSigners = [];
-      for (const placeholder of documentData[0].Placeholders) {
-        //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
-        const signerIdExist = placeholder?.signerObjId;
-        if (signerIdExist) {
-          const getSignerData = documentData[0].Signers.find(
-            (data) => data.objectId === placeholder?.signerObjId
-          );
-          placeholdersOrSigners.push(getSignerData);
+        if (documentData[0].SignedUrl) {
+          setPdfUrl(documentData[0].SignedUrl);
         } else {
-          placeholdersOrSigners.push(placeholder);
+          setPdfUrl(documentData[0].URL);
         }
-      }
-      //condition to check already signed document by someone
-      if (audittrailData && audittrailData.length > 0) {
-        setIsDocId(true);
-
-        for (const item of placeholdersOrSigners) {
-          const checkEmail = item?.email;
-          //if email exist then compare user signed by using email else signers objectId
-          const emailOrId = checkEmail ? item.email : item.objectId;
-          //`isSignedSignature` variable to handle break loop whenever it get true
-          let isSignedSignature = false;
-          //checking the signer who signed the document by using audit trail details.
-          //and save signedSigners and unsignedSigners details
-          for (const doc of audittrailData) {
-            const signedExist = checkEmail
-              ? doc?.UserPtr.Email
-              : doc?.UserPtr.objectId;
-
-            if (emailOrId === signedExist) {
-              signers.push({ ...item });
-              isSignedSignature = true;
-              break;
+        if (isCompleted) {
+          setIsSigned(true);
+          const data = {
+            isCertificate: true,
+            isModal: true
+          };
+          setAlreadySign(true);
+          setIsCompleted(data);
+          setIsCelebration(true);
+          setTimeout(() => {
+            setIsCelebration(false);
+          }, 5000);
+        } else if (declined) {
+          const currentDecline = {
+            currnt: "another",
+            isDeclined: true
+          };
+          setIsDecline(currentDecline);
+        } else if (currDate > expireUpdateDate) {
+          const expireDateFormat = moment(new Date(expireDate)).format(
+            "MMM DD, YYYY"
+          );
+          setIsExpired(true);
+          setExpiredDate(expireDateFormat);
+        } // Check if the current signer is not a last signer and handle the complete message.
+        else if (isNextUser) {
+          setIsCelebration(true);
+          setTimeout(() => {
+            setIsCelebration(false);
+          }, 5000);
+          setIsCompleted({
+            isModal: true,
+            message: t("document-signed-alert-1")
+          });
+        } else {
+          if (currUserId) {
+            const checkCurrentUser = documentData[0].Placeholders.find(
+              (data) => data?.signerObjId === currUserId
+            );
+            if (checkCurrentUser) {
+              setCurrentSigner(true);
             }
           }
-          if (!isSignedSignature) {
-            unSignedSigner.push({ ...item });
+        }
+        const audittrailData =
+          documentData[0].AuditTrail &&
+          documentData[0].AuditTrail.length > 0 &&
+          documentData[0].AuditTrail.filter(
+            (data) => data.Activity === "Signed"
+          );
+
+        const checkAlreadySign =
+          documentData[0].AuditTrail &&
+          documentData[0].AuditTrail.length > 0 &&
+          documentData[0].AuditTrail.filter(
+            (data) =>
+              data.UserPtr.objectId === currUserId && data.Activity === "Signed"
+          );
+        if (
+          checkAlreadySign &&
+          checkAlreadySign[0] &&
+          checkAlreadySign.length > 0
+        ) {
+          setAlreadySign(true);
+        } else {
+          const obj = documentData?.[0];
+          setSendInOrder(obj?.SendinOrder || false);
+          if (
+            obj &&
+            obj.Signers &&
+            obj.Signers.length > 0 &&
+            obj.Placeholders &&
+            obj.Placeholders.length > 0
+          ) {
+            const params = {
+              event: "viewed",
+              contactId: currUserId,
+              body: {
+                objectId: documentData?.[0].objectId,
+                file: documentData?.[0]?.SignedUrl || documentData?.[0]?.URL,
+                name: documentData?.[0].Name,
+                note: documentData?.[0].Note || "",
+                description: documentData?.[0].Description || "",
+                signers: documentData?.[0].Signers?.map((x) => ({
+                  name: x?.Name,
+                  email: x?.Email,
+                  phone: x?.Phone
+                })),
+                viewedBy: jsonSender.email,
+                viewedAt: new Date(),
+                createdAt: documentData?.[0].createdAt
+              }
+            };
+
+            try {
+              await axios.post(
+                `${localStorage.getItem("baseUrl")}functions/callwebhook`,
+                params,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    "X-Parse-Application-Id":
+                      localStorage.getItem("parseAppId"),
+                    sessiontoken: localStorage.getItem("accesstoken")
+                  }
+                }
+              );
+            } catch (err) {
+              console.log("Err ", err);
+            }
           }
         }
-        setSignedSigners(signers);
-        setUnSignedSigners(unSignedSigner);
-        setSignerPos(documentData[0].Placeholders);
-      } else {
-        //else condition is show there are no details in audit trail then direct push all signers details
-        //in unsignedsigners array
-        setUnSignedSigners(placeholdersOrSigners);
-        setSignerPos(documentData[0].Placeholders);
-      }
-      setPdfDetails(documentData);
-      //checking if condition current user already sign or owner does not exist as a signer or document has been declined by someone or document has been expired
-      //then stop to display tour message
-      if (
-        (checkAlreadySign &&
-          checkAlreadySign[0] &&
-          checkAlreadySign.length > 0) ||
-        !currUserId ||
-        declined ||
-        currDate > expireUpdateDate
-      ) {
-        setRequestSignTour(true);
-      } else {
-        //else condition to check current user exist in contracts_Users class and check tour message status
-        //if not then check user exist in contracts_Contactbook class and check tour message status
-        const localuser = localStorage.getItem(
-          `Parse/${localStorage.getItem("parseAppId")}/currentUser`
-        );
-        const currentUser = JSON.parse(localuser);
-        const currentUserEmail = currentUser.email;
-        const res = await contractUsers(currentUserEmail);
-        if (res === "Error: Something went wrong!") {
-          setHandleError("Error: Something went wrong!");
-        } else if (res[0] && res?.length) {
-          setContractName("_Users");
-          currUserId = res[0].objectId;
-          setSignerUserId(currUserId);
-          const tourData = res[0].TourStatus && res[0].TourStatus;
-          if (tourData && tourData.length > 0) {
-            const checkTourRequest = tourData.filter(
-              (data) => data?.requestSign
+
+        let signers = [];
+        let unSignedSigner = [];
+
+        const placeholdersOrSigners = [];
+        for (const placeholder of documentData[0].Placeholders) {
+          //`emailExist` variable to handle condition for quick send flow and show unsigned signers list
+          const signerIdExist = placeholder?.signerObjId;
+          if (signerIdExist) {
+            const getSignerData = documentData[0].Signers.find(
+              (data) => data.objectId === placeholder?.signerObjId
             );
-            setTourStatus(tourData);
-            setRequestSignTour(checkTourRequest[0]?.requestSign || false);
+            placeholdersOrSigners.push(getSignerData);
+          } else {
+            placeholdersOrSigners.push(placeholder);
           }
-        } else if (res?.length === 0) {
-          const res = await contactBook(currUserId);
+        }
+        //condition to check already signed document by someone
+        if (audittrailData && audittrailData.length > 0) {
+          setIsDocId(true);
+
+          for (const item of placeholdersOrSigners) {
+            const checkEmail = item?.email;
+            //if email exist then compare user signed by using email else signers objectId
+            const emailOrId = checkEmail ? item.email : item.objectId;
+            //`isSignedSignature` variable to handle break loop whenever it get true
+            let isSignedSignature = false;
+            //checking the signer who signed the document by using audit trail details.
+            //and save signedSigners and unsignedSigners details
+            for (const doc of audittrailData) {
+              const signedExist = checkEmail
+                ? doc?.UserPtr.Email
+                : doc?.UserPtr.objectId;
+
+              if (emailOrId === signedExist) {
+                signers.push({ ...item });
+                isSignedSignature = true;
+                break;
+              }
+            }
+            if (!isSignedSignature) {
+              unSignedSigner.push({ ...item });
+            }
+          }
+          setSignedSigners(signers);
+          setUnSignedSigners(unSignedSigner);
+          setSignerPos(documentData[0].Placeholders);
+        } else {
+          //else condition is show there are no details in audit trail then direct push all signers details
+          //in unsignedsigners array
+          setUnSignedSigners(placeholdersOrSigners);
+          setSignerPos(documentData[0].Placeholders);
+        }
+        setPdfDetails(documentData);
+        //checking if condition current user already sign or owner does not exist as a signer or document has been declined by someone or document has been expired
+        //then stop to display tour message
+        if (
+          (checkAlreadySign &&
+            checkAlreadySign[0] &&
+            checkAlreadySign.length > 0) ||
+          !currUserId ||
+          declined ||
+          currDate > expireUpdateDate
+        ) {
+          setRequestSignTour(true);
+        } else {
+          //else condition to check current user exist in contracts_Users class and check tour message status
+          //if not then check user exist in contracts_Contactbook class and check tour message statu
+          const res = await contractUsers();
           if (res === "Error: Something went wrong!") {
-            setHandleError("Error: Something went wrong!");
-          } else if (res[0] && res.length) {
-            setContractName("_Contactbook");
-            const objectId = res[0].objectId;
-            setSignerUserId(objectId);
+            setHandleError(t("something-went-wrong-mssg"));
+          } else if (res[0] && res?.length) {
+            setContractName("_Users");
+            currUserId = res[0].objectId;
+            setSignerUserId(currUserId);
             const tourData = res[0].TourStatus && res[0].TourStatus;
             if (tourData && tourData.length > 0) {
               const checkTourRequest = tourData.filter(
@@ -588,64 +575,63 @@ function PdfRequestFiles(props) {
               setTourStatus(tourData);
               setRequestSignTour(checkTourRequest[0]?.requestSign || false);
             }
-          } else if (res.length === 0) {
-            setHandleError("Error: User does not exist!");
+          } else if (res?.length === 0) {
+            const res = await contactBook(currUserId);
+            if (res === "Error: Something went wrong!") {
+              setHandleError(t("something-went-wrong-mssg"));
+            } else if (res[0] && res.length) {
+              setContractName("_Contactbook");
+              const objectId = res[0].objectId;
+              setSignerUserId(objectId);
+              const tourData = res[0].TourStatus && res[0].TourStatus;
+              if (tourData && tourData.length > 0) {
+                const checkTourRequest = tourData.filter(
+                  (data) => data?.requestSign
+                );
+                setTourStatus(tourData);
+                setRequestSignTour(checkTourRequest[0]?.requestSign || false);
+              }
+            } else if (res.length === 0) {
+              setHandleError(t("user-not-exist"));
+            }
           }
         }
+        setIsUiLoading(false);
+      } else if (
+        documentData === "Error: Something went wrong!" ||
+        (documentData.result && documentData.result.error)
+      ) {
+        setHandleError(t("something-went-wrong-mssg"));
+        setIsLoading({
+          isLoad: false
+        });
+        console.log("err in  getDocument cloud function ");
+      } else {
+        setHandleError(t("no-data"));
+        setIsUiLoading({
+          isLoad: false
+        });
       }
-      setIsUiLoading(false);
-    } else if (
-      documentData === "Error: Something went wrong!" ||
-      (documentData.result && documentData.result.error)
-    ) {
+      //function to get default signatur eof current user from `contracts_Signature` class
+      const defaultSignRes = await getDefaultSignature(jsonSender.objectId);
+      if (defaultSignRes?.status === "success") {
+        setDefaultSignImg(defaultSignRes?.res?.defaultSignature);
+        setMyInitial(defaultSignRes?.res?.defaultInitial);
+      } else if (defaultSignRes?.status === "error") {
+        setHandleError("Error: Something went wrong!");
+      }
+      setIsLoading({
+        isLoad: false
+      });
+    } catch (err) {
+      console.log("Error: error in getDocumentDetails", err);
       setHandleError("Error: Something went wrong!");
       setIsLoading({
         isLoad: false
       });
-      console.log("err in  getDocument cloud function ");
-    } else {
-      setHandleError("No Data Found!");
-      setIsUiLoading({
-        isLoad: false
-      });
     }
-    await axios
-      .get(
-        `${localStorage.getItem(
-          "baseUrl"
-        )}classes/contracts_Signature?where={"UserId": {"__type": "Pointer","className": "_User", "objectId":"${
-          jsonSender?.objectId
-        }"}}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-            "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-          }
-        }
-      )
-      .then((Listdata) => {
-        const json = Listdata.data;
-        const res = json.results;
-
-        if (res[0] && res.length > 0) {
-          setDefaultSignImg(res[0].ImageURL);
-          setMyInitial(res[0]?.Initials);
-        }
-
-        const loadObj = {
-          isLoad: false
-        };
-        setIsLoading(loadObj);
-      })
-      .catch((err) => {
-        console.log("Err in contracts_Signature class", err);
-        setHandleError("Error: Something went wrong!");
-        setIsLoading({
-          isLoad: false
-        });
-      });
   };
+
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
     //for emailVerified data checking first in localstorage
@@ -819,8 +805,8 @@ function PdfRequestFiles(props) {
             setWidgetsTour(true);
           } else {
             setIsUiLoading(true);
-
-            const pngUrl = checkUser[0].placeHolder;
+            // `widgets` is Used to return widgets details with page number of current user
+            const widgets = checkUser?.[0]?.placeHolder;
             let pdfArrBuffer;
             //`contractDocument` function used to get updated SignedUrl
             //resolved issue of sign document by multiple signers simultaneously
@@ -830,7 +816,7 @@ function PdfRequestFiles(props) {
               //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
               const arrayBuffer = await convertPdfArrayBuffer(url);
               if (arrayBuffer === "Error") {
-                setHandleError("Error: invalid document!");
+                setHandleError(t("invalid-document"));
               } else {
                 pdfArrBuffer = arrayBuffer;
               }
@@ -838,9 +824,9 @@ function PdfRequestFiles(props) {
               documentData === "Error: Something went wrong!" ||
               (documentData.result && documentData.result.error)
             ) {
-              setHandleError("Error: Something went wrong!");
+              setHandleError(t("something-went-wrong-mssg"));
             } else {
-              setHandleError("Document not Found!");
+              setHandleError(t("document-not-found"));
             }
 
             // Load a PDFDocument from the existing PDF bytes
@@ -858,207 +844,194 @@ function PdfRequestFiles(props) {
               }
               //embed multi signature in pdf
               const pdfBytes = await multiSignEmbed(
-                pngUrl,
+                widgets,
                 pdfDoc,
                 isSignYourSelfFlow,
                 scale,
                 pdfOriginalWH,
                 containerWH
               );
-              //  console.log("pdfte", pdfBytes);
+              // console.log("pdfte", pdfBytes);
               //get ExistUserPtr object id of user class to get tenantDetails
               const objectId = pdfDetails?.[0]?.ExtUserPtr?.UserId?.objectId;
               //get ExistUserPtr email to get userDetails
-              const currentUserEmail = pdfDetails?.[0]?.ExtUserPtr?.Email;
-              const res = await contractUsers(currentUserEmail);
+              const res = await contractUsers();
               let activeMailAdapter = "";
               if (res === "Error: Something went wrong!") {
-                setHandleError("Error: Something went wrong!");
-                setIsLoading({
-                  isLoad: false
-                });
+                setHandleError(t("something-went-wrong-mssg"));
+                setIsLoading({ isLoad: false });
               } else if (!res || res?.length === 0) {
                 activeMailAdapter = "";
               } else if (res[0] && res.length) {
                 activeMailAdapter = res[0]?.active_mail_adapter;
               }
               //function for call to embed signature in pdf and get digital signature pdf
-              try {
-                const res = await signPdfFun(
-                  pdfBytes,
-                  documentId,
-                  signerObjectId,
-                  setIsAlert,
-                  objectId,
-                  isSubscribed,
-                  activeMailAdapter,
-                  pngUrl
+              const resSign = await signPdfFun(
+                pdfBytes,
+                documentId,
+                signerObjectId,
+                objectId,
+                isSubscribed,
+                activeMailAdapter,
+                widgets
+              );
+              if (resSign && resSign.status === "success") {
+                setPdfUrl(res.data);
+                setIsSigned(true);
+                setSignedSigners([]);
+                setUnSignedSigners([]);
+                getDocumentDetails(true);
+                const index = pdfDetails?.[0].Signers.findIndex(
+                  (x) => x.Email === currentUser?.email
                 );
-                if (res && res.status === "success") {
-                  setPdfUrl(res.data);
-                  setIsSigned(true);
-                  setSignedSigners([]);
-                  setUnSignedSigners([]);
-                  getDocumentDetails(true);
-                  const index = pdfDetails?.[0].Signers.findIndex(
-                    (x) => x.Email === currentUser?.email
-                  );
-                  const newIndex = index + 1;
-                  const usermail = {
-                    Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
-                  };
-                  const user = usermail?.Email
-                    ? usermail
-                    : pdfDetails?.[0]?.Signers[newIndex];
-                  if (sendmail !== "false" && sendInOrder) {
-                    const requestBody = pdfDetails?.[0]?.RequestBody;
-                    const requestSubject = pdfDetails?.[0]?.RequestSubject;
-                    if (user) {
-                      const expireDate = pdfDetails?.[0].ExpiryDate.iso;
-                      const newDate = new Date(expireDate);
-                      const localExpireDate = newDate.toLocaleDateString(
-                        "en-US",
-                        {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric"
-                        }
-                      );
-                      let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
-                      let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
-                      const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
-
-                      try {
-                        const imgPng =
-                          "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
-                        let url = `${localStorage.getItem(
-                          "baseUrl"
-                        )}functions/sendmailv3`;
-                        const headers = {
-                          "Content-Type": "application/json",
-                          "X-Parse-Application-Id":
-                            localStorage.getItem("parseAppId"),
-                          sessionToken: localStorage.getItem("accesstoken")
-                        };
-                        const objectId = user?.objectId;
-                        const hostUrl = window.location.origin;
-                        //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
-                        let encodeBase64;
-                        if (objectId) {
-                          encodeBase64 = btoa(
-                            `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
-                          );
-                        } else {
-                          encodeBase64 = btoa(
-                            `${pdfDetails?.[0].objectId}/${user.Email}`
-                          );
-                        }
-                        const hostPublicUrl = isStaging
-                          ? "https://staging-app.opensignlabs.com"
-                          : "https://app.opensignlabs.com";
-                        let signPdf = props?.templateId
-                          ? `${hostPublicUrl}/login/${encodeBase64}`
-                          : `${hostUrl}/login/${encodeBase64}`;
-                        const openSignUrl =
-                          "https://www.opensignlabs.com/contact-us";
-                        const orgName = pdfDetails[0]?.ExtUserPtr.Company
-                          ? pdfDetails[0].ExtUserPtr.Company
-                          : "";
-                        const themeBGcolor = themeColor;
-                        let replaceVar;
-                        if (requestBody && requestSubject && isSubscribed) {
-                          const replacedRequestBody = requestBody.replace(
-                            /"/g,
-                            "'"
-                          );
-                          const htmlReqBody =
-                            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
-                            replacedRequestBody +
-                            "</body> </html>";
-
-                          const variables = {
-                            document_title: pdfDetails?.[0].Name,
-                            sender_name: senderName,
-                            sender_mail: senderEmail,
-                            sender_phone: senderPhone,
-                            receiver_name: user.Name,
-                            receiver_email: user.Email,
-                            receiver_phone: user.Phone,
-                            expiry_date: localExpireDate,
-                            company_name: orgName,
-                            signing_url: `<a href=${signPdf}>Sign here</a>`
-                          };
-                          replaceVar = replaceMailVaribles(
-                            requestSubject,
-                            htmlReqBody,
-                            variables
-                          );
-                        }
-
-                        let params = {
-                          mailProvider: activeMailAdapter,
-                          extUserId: extUserId,
-                          recipient: user.Email,
-                          subject: requestSubject
-                            ? replaceVar?.subject
-                            : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
-                          from: senderEmail,
-                          html: requestBody
-                            ? replaceVar?.body
-                            : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
-                              imgPng +
-                              " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
-                              themeBGcolor +
-                              ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
-                              pdfDetails?.[0].ExtUserPtr.Name +
-                              " has requested you to review and sign <strong> " +
-                              pdfDetails?.[0].Name +
-                              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
-                              senderEmail +
-                              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
-                              orgName +
-                              "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
-                              localExpireDate +
-                              "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
-                              signPdf +
-                              "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
-                              senderEmail +
-                              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
-                              openSignUrl +
-                              " target=_blank>here</a>.</p> </div></div></body> </html>"
-                        };
-                        await axios.post(url, params, {
-                          headers: headers
-                        });
-                      } catch (error) {
-                        console.log("error", error);
+                const newIndex = index + 1;
+                const usermail = {
+                  Email: pdfDetails?.[0]?.Placeholders[newIndex]?.email || ""
+                };
+                const user = usermail?.Email
+                  ? usermail
+                  : pdfDetails?.[0]?.Signers[newIndex];
+                if (sendmail !== "false" && sendInOrder) {
+                  const requestBody = pdfDetails?.[0]?.RequestBody;
+                  const requestSubject = pdfDetails?.[0]?.RequestSubject;
+                  if (user) {
+                    const expireDate = pdfDetails?.[0].ExpiryDate.iso;
+                    const newDate = new Date(expireDate);
+                    const localExpireDate = newDate.toLocaleDateString(
+                      "en-US",
+                      {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric"
                       }
+                    );
+                    let senderEmail = pdfDetails?.[0].ExtUserPtr.Email;
+                    let senderPhone = pdfDetails?.[0]?.ExtUserPtr?.Phone;
+                    const senderName = `${pdfDetails?.[0].ExtUserPtr.Name}`;
+
+                    try {
+                      const imgPng =
+                        "https://qikinnovation.ams3.digitaloceanspaces.com/logo.png";
+                      let url = `${localStorage.getItem(
+                        "baseUrl"
+                      )}functions/sendmailv3`;
+                      const headers = {
+                        "Content-Type": "application/json",
+                        "X-Parse-Application-Id":
+                          localStorage.getItem("parseAppId"),
+                        sessionToken: localStorage.getItem("accesstoken")
+                      };
+                      const objectId = user?.objectId;
+                      const hostUrl = window.location.origin;
+                      //encode this url value `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}` to base64 using `btoa` function
+                      let encodeBase64;
+                      if (objectId) {
+                        encodeBase64 = btoa(
+                          `${pdfDetails?.[0].objectId}/${user.Email}/${objectId}`
+                        );
+                      } else {
+                        encodeBase64 = btoa(
+                          `${pdfDetails?.[0].objectId}/${user.Email}`
+                        );
+                      }
+                      const hostPublicUrl = isStaging
+                        ? "https://staging-app.opensignlabs.com"
+                        : "https://app.opensignlabs.com";
+                      let signPdf = props?.templateId
+                        ? `${hostPublicUrl}/login/${encodeBase64}`
+                        : `${hostUrl}/login/${encodeBase64}`;
+                      const openSignUrl =
+                        "https://www.opensignlabs.com/contact-us";
+                      const orgName = pdfDetails[0]?.ExtUserPtr.Company
+                        ? pdfDetails[0].ExtUserPtr.Company
+                        : "";
+                      const themeBGcolor = themeColor;
+                      let replaceVar;
+                      if (requestBody && requestSubject && isSubscribed) {
+                        const replacedRequestBody = requestBody.replace(
+                          /"/g,
+                          "'"
+                        );
+                        const htmlReqBody =
+                          "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /></head><body>" +
+                          replacedRequestBody +
+                          "</body> </html>";
+
+                        const variables = {
+                          document_title: pdfDetails?.[0].Name,
+                          sender_name: senderName,
+                          sender_mail: senderEmail,
+                          sender_phone: senderPhone,
+                          receiver_name: user.Name,
+                          receiver_email: user.Email,
+                          receiver_phone: user.Phone,
+                          expiry_date: localExpireDate,
+                          company_name: orgName,
+                          signing_url: `<a href=${signPdf}>Sign here</a>`
+                        };
+                        replaceVar = replaceMailVaribles(
+                          requestSubject,
+                          htmlReqBody,
+                          variables
+                        );
+                      }
+
+                      let params = {
+                        mailProvider: activeMailAdapter,
+                        extUserId: extUserId,
+                        recipient: user.Email,
+                        subject: requestSubject
+                          ? replaceVar?.subject
+                          : `${pdfDetails?.[0].ExtUserPtr.Name} has requested you to sign "${pdfDetails?.[0].Name}"`,
+                        from: senderEmail,
+                        html: requestBody
+                          ? replaceVar?.body
+                          : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
+                            imgPng +
+                            " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+                            themeBGcolor +
+                            ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+                            pdfDetails?.[0].ExtUserPtr.Name +
+                            " has requested you to review and sign <strong> " +
+                            pdfDetails?.[0].Name +
+                            "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+                            senderEmail +
+                            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+                            orgName +
+                            "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expires on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+                            localExpireDate +
+                            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+                            signPdf +
+                            "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+                            senderEmail +
+                            " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+                            openSignUrl +
+                            " target=_blank>here</a>.</p> </div></div></body> </html>"
+                      };
+                      await axios.post(url, params, {
+                        headers: headers
+                      });
+                    } catch (error) {
+                      console.log("error", error);
                     }
                   }
-                } else {
-                  setIsAlert({
-                    isShow: true,
-                    alertMessage: "something went wrong"
-                  });
                 }
-              } catch (err) {
-                setIsAlert({
-                  isShow: true,
-                  alertMessage: "something went wrong"
-                });
+              } else {
+                setIsUiLoading(false);
+                setIsAlert({ isShow: true, alertMessage: resSign.message });
               }
             } catch (err) {
               setIsUiLoading(false);
               if (err && err.message.includes("is encrypted.")) {
                 setIsAlert({
                   isShow: true,
-                  alertMessage: `Currently encrypted pdf files are not supported.`
+                  alertMessage: t("encrypted-pdf-not-support")
                 });
               } else {
                 console.log("err in request signing", err);
                 setIsAlert({
                   isShow: true,
-                  alertMessage: `Something went wrong.`
+                  alertMessage: t("something-went-wrong-mssg")
                 });
               }
             }
@@ -1067,7 +1040,7 @@ function PdfRequestFiles(props) {
         } else {
           setIsAlert({
             isShow: true,
-            alertMessage: "something went wrong"
+            alertMessage: t("something-went-wrong-mssg")
           });
         }
       } catch (err) {
@@ -1075,7 +1048,7 @@ function PdfRequestFiles(props) {
         setIsUiLoading(false);
         setIsAlert({
           isShow: true,
-          alertMessage: "something went wrong, please try again later."
+          alertMessage: t("something-went-wrong-mssg")
         });
       }
     } else {
@@ -1091,7 +1064,7 @@ function PdfRequestFiles(props) {
         }
       } catch (e) {
         console.log("error in save user's emailVerified in user class");
-        setHandleError("Error: Something went wrong!");
+        setHandleError(t("something-went-wrong-mssg"));
       }
     }
   }
@@ -1105,8 +1078,8 @@ function PdfRequestFiles(props) {
     {
       selector: '[data-tut="IsSigned"]',
       content: minRequiredCount
-        ? `Please confirm that you have selected at least ${minRequiredCount} checkboxes.`
-        : "Ensure this field is accurately filled and meets all requirements.",
+        ? t("signature-validate-alert", { minRequiredCount })
+        : t("signature-validate-alert-2"),
       position: "top",
       style: { fontSize: "13px" }
     }
@@ -1379,7 +1352,7 @@ function PdfRequestFiles(props) {
         selector: '[data-tut="reactourFirst"]',
         content: () => (
           <TourContentWithBtn
-            message={`List of signers who still need to sign the document .`}
+            message={t("tour-mssg.pdf-request-file-1")}
             isChecked={handleDontShow}
           />
         ),
@@ -1390,7 +1363,7 @@ function PdfRequestFiles(props) {
         selector: '[data-tut="pdfArea"]',
         content: () => (
           <TourContentWithBtn
-            message={`Click any of the placeholders appearing on the document to sign. You will then see options to draw your signature, type it, or upload an image .`}
+            message={t("tour-mssg.pdf-request-file-2")}
             isChecked={handleDontShow}
           />
         ),
@@ -1401,7 +1374,7 @@ function PdfRequestFiles(props) {
         selector: '[data-tut="reactourFifth"]',
         content: () => (
           <TourContentWithBtn
-            message={`Click the Back, Decline, or Finish buttons to navigate your document. Use the ellipsis menu for additional options, including the Download button .`}
+            message={t("tour-mssg.pdf-request-file-3")}
             isChecked={handleDontShow}
           />
         ),
@@ -1413,7 +1386,7 @@ function PdfRequestFiles(props) {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`List of signers who have already signed the document .`}
+          message={t("tour-mssg.pdf-request-file-4")}
           isChecked={handleDontShow}
         />
       ),
@@ -1431,7 +1404,7 @@ function PdfRequestFiles(props) {
       selector: '[data-tut="reactourThird"]',
       content: () => (
         <TourContentWithBtn
-          message={`You can click "Auto Sign All" to automatically sign at all the locations meant to be signed by you. Make sure that you review the document properly before you click this button .`}
+          message={t("tour-mssg.pdf-request-file-5")}
           isChecked={handleDontShow}
         />
       ),
@@ -1491,7 +1464,7 @@ function PdfRequestFiles(props) {
         await SendOtp();
       } else {
         console.log("error in public-sign to create user details");
-        alert("something went wrong");
+        alert(t("something-went-wrong-mssg"));
       }
     } catch (e) {
       console.log("e", e);
@@ -1500,7 +1473,11 @@ function PdfRequestFiles(props) {
   };
 
   const handleInputChange = (e) => {
-    setContact((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    let { name, value } = e.target;
+    if (name === "email") {
+      value = value?.toLowerCase()?.replace(/\s/g, "");
+    }
+    setContact({ ...contact, [name]: value });
   };
 
   const SendOtp = async () => {
@@ -1524,7 +1501,7 @@ function PdfRequestFiles(props) {
       }
     } catch (error) {
       console.log("error in verify otp in public-sign", error);
-      alert("something went wrong!");
+      alert(t("something-went-wrong-mssg"));
     }
   };
 
@@ -1550,15 +1527,16 @@ function PdfRequestFiles(props) {
         };
         let user = await axios.post(url, body, { headers: headers });
         if (user.data.result === "Invalid Otp") {
-          alert("Invalid Otp");
+          alert(t("invalid-otp"));
           setLoading(false);
         } else if (user.data.result === "user not found!") {
-          alert("User not found!");
+          alert(t("user-not-found"));
           setLoading(false);
         } else {
           let _user = user.data.result;
           const parseId = localStorage.getItem("parseAppId");
-          const contractUserDetails = await contractUsers(_user.email);
+          await Parse.User.become(_user.sessionToken);
+          const contractUserDetails = await contractUsers();
           localStorage.setItem("UserInformation", JSON.stringify(_user));
           localStorage.setItem(
             `Parse/${parseId}/currentUser`,
@@ -1588,7 +1566,7 @@ function PdfRequestFiles(props) {
         console.log("err ", error);
       }
     } else {
-      alert("Please Enter OTP!");
+      alert(t("enter-otp-alert"));
     }
   };
   const handleCloseOtp = () => {
@@ -1608,13 +1586,13 @@ function PdfRequestFiles(props) {
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
       {isSubscriptionExpired ? (
         <ModalUi
-          title={"Subscription Expired"}
+          title={t("subscription-expired")}
           isOpen={isSubscriptionExpired}
           showClose={false}
         >
           <div className="flex flex-col justify-center items-center py-4 md:py-5 gap-5">
             <p className="text-sm md:text-lg font-normal">
-              Owner&apos;s subscription has expired.
+              {t("owner-subscription-expired")}
             </p>
           </div>
         </ModalUi>
@@ -1630,7 +1608,7 @@ function PdfRequestFiles(props) {
                 <div className="absolute h-[100vh] w-full flex flex-col justify-center items-center z-[999] bg-[#e6f2f2] bg-opacity-80">
                   <Loader />
                   <span className="text-[13px] text-base-content">
-                    This might take some time
+                    {t("loading-mssg")}
                   </span>
                 </div>
               )}
@@ -1657,28 +1635,21 @@ function PdfRequestFiles(props) {
                   requestSignTourFunction()}
                 <ModalUi
                   isOpen={isAlert.isShow}
-                  title={"Alert message"}
-                  handleClose={() => {
-                    setIsAlert({
-                      isShow: false,
-                      alertMessage: ""
-                    });
-                  }}
+                  title={t("alert-message")}
+                  handleClose={() =>
+                    setIsAlert({ isShow: false, alertMessage: "" })
+                  }
                 >
                   <div className="h-full p-[20px]">
                     <p>{isAlert.alertMessage}</p>
-                    <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
                     <button
-                      onClick={() => {
-                        setIsAlert({
-                          isShow: false,
-                          alertMessage: ""
-                        });
-                      }}
+                      onClick={() =>
+                        setIsAlert({ isShow: false, alertMessage: "" })
+                      }
                       type="button"
-                      className="op-btn op-btn-primary"
+                      className="op-btn op-btn-primary mt-3 px-4"
                     >
-                      Ok
+                      {t("ok")}
                     </button>
                   </div>
                 </ModalUi>
@@ -1697,14 +1668,13 @@ function PdfRequestFiles(props) {
                 {/* this modal is used to show decline alert */}
                 <PdfDeclineModal
                   show={isDecline.isDeclined}
-                  headMsg="Document decline"
+                  headMsg={t("document-decline")}
                   bodyMssg={
                     isDecline.currnt === "Sure"
-                      ? "Are you sure want to decline this document ?"
+                      ? t("decline-alert-2")
                       : isDecline.currnt === "YouDeclined"
-                        ? "You have declined this document!"
-                        : isDecline.currnt === "another" &&
-                          "You can not sign this document as it has been declined/revoked."
+                        ? t("decline-alert-1")
+                        : isDecline.currnt === "another" && t("decline-alert-3")
                   }
                   footerMessage={isDecline.currnt === "Sure"}
                   declineDoc={declineDoc}
@@ -1713,8 +1683,8 @@ function PdfRequestFiles(props) {
                 {/* this modal is used for show expired alert */}
                 <PdfDeclineModal
                   show={isExpired}
-                  headMsg="Document expired"
-                  bodyMssg={`This document expired on ${expiredDate} and is no longer available to sign.`}
+                  headMsg={t("expired-doc-title")}
+                  bodyMssg={t("expired-on-mssg", { expiredDate })}
                 />
                 {!isEmailVerified && (
                   <VerifyEmail
@@ -1731,7 +1701,7 @@ function PdfRequestFiles(props) {
 
                 <ModalUi
                   isOpen={isPublicContact}
-                  title={isOtp ? "Verify email" : "Contact Details"}
+                  title={isOtp ? t("verify-email-1") : t("contact-details")}
                   handleClose={() => {
                     handleCloseOtp();
                   }}
@@ -1740,15 +1710,17 @@ function PdfRequestFiles(props) {
                     {isOtp ? (
                       <form onSubmit={VerifyOTP}>
                         <div className="flex flex-col gap-2">
-                          <span>
-                            You will get a verification code via email
-                          </span>
+                          <span>{t("get-otp-alert")}</span>
                           <label className="op-input op-input-bordered flex items-center gap-2 ">
                             <input
                               type="number"
                               name="otp"
                               className="grow"
-                              placeholder="Enter Verification Code"
+                              placeholder={t("otp-placeholder")}
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               value={otp}
                               onChange={(e) => setOtp(e.target.value)}
@@ -1764,13 +1736,13 @@ function PdfRequestFiles(props) {
                                 handleCloseOtp();
                               }}
                             >
-                              Cancel
+                              {t("cancel")}
                             </button>
                             <button
                               className="op-btn op-btn-primary"
                               disabled={loading}
                             >
-                              {loading ? "Loading..." : "Verify"}
+                              {loading ? t("loading") : t("verify")}
                             </button>
                           </div>
                         </div>
@@ -1793,7 +1765,11 @@ function PdfRequestFiles(props) {
                               name="name"
                               value={contact.name}
                               onChange={handleInputChange}
-                              placeholder="name"
+                              placeholder={t("name")}
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               disabled={loading}
                             />
@@ -1809,12 +1785,16 @@ function PdfRequestFiles(props) {
                               <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                             </svg>
                             <input
-                              type="text"
+                              type="email"
                               className="grow"
                               name="email"
                               value={contact.email}
                               onChange={handleInputChange}
-                              placeholder="Email"
+                              placeholder={t("email")}
+                              onInvalid={(e) =>
+                                e.target.setCustomValidity(t("input-required"))
+                              }
+                              onInput={(e) => e.target.setCustomValidity("")}
                               required
                               disabled={loading}
                             />
@@ -1835,7 +1815,7 @@ function PdfRequestFiles(props) {
                               type="text"
                               name="phone"
                               className="grow"
-                              placeholder="phone"
+                              placeholder={t("phone")}
                               disabled={loading}
                             />
                           </label>
@@ -1848,13 +1828,13 @@ function PdfRequestFiles(props) {
                                 handleCloseOtp();
                               }}
                             >
-                              Close
+                              {t("close")}
                             </button>
                             <button
                               className="op-btn op-btn-primary"
                               disabled={loading}
                             >
-                              {loading ? "Loading..." : "Submit"}
+                              {loading ? t("loading") : t("submit")}
                             </button>
                           </div>
                         </div>
@@ -1864,7 +1844,7 @@ function PdfRequestFiles(props) {
                 </ModalUi>
                 <ModalUi
                   isOpen={defaultSignAlert.isShow}
-                  title={"Auto sign"}
+                  title={t("auto-sign-all")}
                   handleClose={() =>
                     setDefaultSignAlert({ isShow: false, alertMessage: "" })
                   }
@@ -1879,7 +1859,7 @@ function PdfRequestFiles(props) {
                           type="button"
                           className="op-btn op-btn-primary"
                         >
-                          Yes
+                          {t("yes")}
                         </button>
                         <button
                           onClick={() =>
@@ -1891,7 +1871,7 @@ function PdfRequestFiles(props) {
                           type="button"
                           className="op-btn op-btn-secondary"
                         >
-                          Close
+                          {t("close")}
                         </button>
                       </>
                     ) : (
@@ -1902,7 +1882,7 @@ function PdfRequestFiles(props) {
                         type="button"
                         className="op-btn op-btn-primary"
                       >
-                        Ok
+                        {t("ok")}
                       </button>
                     )}
                   </div>
@@ -1934,7 +1914,7 @@ function PdfRequestFiles(props) {
                     {/* this modal is used show this document is already sign */}
                     <ModalUi
                       isOpen={isCompleted.isModal}
-                      title={"Document signed"}
+                      title={t("document-signed")}
                       handleClose={() => {
                         setIsCompleted((prev) => ({ ...prev, isModal: false }));
                       }}
@@ -1948,10 +1928,7 @@ function PdfRequestFiles(props) {
                           <p>{isCompleted?.message}</p>
                         ) : (
                           <div className="px-[15px]">
-                            <span>
-                              Congratulations! 🎉 This document has been
-                              successfully signed by all participants!
-                            </span>
+                            <span>{t("document-signed-alert-4")}</span>
                           </div>
                         )}
                         {!isCompleted?.message && (
@@ -1967,7 +1944,9 @@ function PdfRequestFiles(props) {
                                 className="fa-light fa-print"
                                 aria-hidden="true"
                               ></i>
-                              <span className="hidden lg:block">Print</span>
+                              <span className="hidden lg:block">
+                                {t("print")}
+                              </span>
                             </button>
                             <button
                               type="button"
@@ -1984,7 +1963,7 @@ function PdfRequestFiles(props) {
                                 aria-hidden="true"
                               ></i>
                               <span className="hidden lg:block">
-                                Certificate
+                                {t("certificate")}
                               </span>
                             </button>
                             <button
@@ -2002,7 +1981,9 @@ function PdfRequestFiles(props) {
                                 className="fa-light fa-download"
                                 aria-hidden="true"
                               ></i>
-                              <span className="hidden lg:block">Download</span>
+                              <span className="hidden lg:block">
+                                {t("download")}
+                              </span>
                             </button>
                           </div>
                         )}
@@ -2017,18 +1998,14 @@ function PdfRequestFiles(props) {
                       isOpen={isDownloading === "certificate"}
                       title={
                         isDownloading === "certificate"
-                          ? "Generating certificate"
-                          : "PDF Download"
+                          ? t("generating-certificate")
+                          : t("pdf-download")
                       }
                       handleClose={() => setIsDownloading("")}
                     >
                       <div className="p-3 md:p-5 text-[13px] md:text-base text-center text-base-content">
                         {isDownloading === "certificate"}{" "}
-                        <p>
-                          Your completion certificate is being generated. Please
-                          wait momentarily. If the download doesn&apos;t start
-                          shortly, click the button again.
-                        </p>
+                        <p>{t("generate-certificate-alert")}</p>
                       </div>
                     </ModalUi>
                     {/* this component is used for signature pad modal */}
@@ -2134,7 +2111,7 @@ function PdfRequestFiles(props) {
                           data-tut="reactourSecond"
                           className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
                         >
-                          <span> Signed by</span>
+                          <span>{t("signed-by")}</span>
                         </div>
                         <div className="mt-[2px]">
                           {signedSigners.map((obj, ind) => {
@@ -2159,7 +2136,7 @@ function PdfRequestFiles(props) {
                           data-tut="reactourFirst"
                           className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300"
                         >
-                          <span>Yet to sign</span>
+                          <span>{t("yet-to-sign")}</span>
                         </div>
                         <div className="mt-[5px]">
                           {unsignedSigners.map((obj, ind) => {
@@ -2180,7 +2157,6 @@ function PdfRequestFiles(props) {
                     {defaultSignImg && !alreadySign && currentSigner && (
                       <DefaultSignature
                         defaultSignImg={defaultSignImg}
-                        setDefaultSignImg={setDefaultSignImg}
                         userObjectId={signerObjectId}
                         setIsLoading={setIsLoading}
                         xyPostion={signerPos}
@@ -2194,23 +2170,20 @@ function PdfRequestFiles(props) {
           )}
           <ModalUi
             isOpen={validateAlert}
-            title={"Validation alert"}
+            title={t("validation-alert")}
             handleClose={() => {
               setValidateAlert(false);
             }}
           >
             <div className="h-[100%] p-[20px]">
-              <p>
-                The input does not meet the criteria set by the regular
-                expression.
-              </p>
+              <p>{t("validation-alert-1")}</p>
               <div className="h-[1px] bg-[#9f9f9f] w-full my-[15px]"></div>
               <button
                 onClick={() => setValidateAlert(false)}
                 type="button"
                 className="op-btn op-btn-ghost"
               >
-                Close
+                {t("close")}
               </button>
             </div>
           </ModalUi>

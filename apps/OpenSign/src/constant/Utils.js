@@ -6,6 +6,8 @@ import Parse from "parse";
 import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
+import { validplan } from "../json/plansArr";
+import fontkit from "@pdf-lib/fontkit";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -14,6 +16,12 @@ export const isTabAndMobile = window.innerWidth < 1023;
 export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
+export const fileasbytes = async (filepath) => {
+  const response = await fetch(filepath); // Adjust the path accordingly
+  const arrayBuffer = await response.arrayBuffer();
+  return new Uint8Array(arrayBuffer);
+};
+
 export const openInNewTab = (url, target) => {
   if (target) {
     window.open(url, target, "noopener,noreferrer");
@@ -90,13 +98,7 @@ export async function checkIsSubscribedTeam() {
     if (res.plan === "freeplan") {
       return false;
     } else if (res.billingDate) {
-      const plan =
-        res.plan === "team-weekly" ||
-        res.plan === "team-yearly" ||
-        res.plan === "teams-monthly" ||
-        res.plan === "teams-yearly" ||
-        res.plan === "enterprise-monthly" ||
-        res.plan === "enterprise-yearly";
+      const plan = validplan[res.plan] || false;
       if (plan && new Date(res.billingDate) > new Date()) {
         return true;
       } else {
@@ -192,32 +194,19 @@ export const pdfNewWidthFun = (divRef) => {
 };
 
 //`contractUsers` function is used to get contract_User details
-export const contractUsers = async (email) => {
-  const data = {
-    email: email
-  };
-  const userDetails = await axios
-    .post(`${localStorage.getItem("baseUrl")}functions/getUserDetails`, data, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-        sessionToken: localStorage.getItem("accesstoken")
-      }
-    })
-    .then((Listdata) => {
-      const json = Listdata.data;
-      let data = [];
-      if (json && json.result) {
-        data.push(json.result);
-      }
-      return data;
-    })
-    .catch((err) => {
-      console.log("Err in getUserDetails cloud function", err);
-      return "Error: Something went wrong!";
-    });
-
-  return userDetails;
+export const contractUsers = async () => {
+  try {
+    const userDetails = await Parse.Cloud.run("getUserDetails");
+    let data = [];
+    if (userDetails) {
+      const json = JSON.parse(JSON.stringify(userDetails));
+      data.push(json);
+    }
+    return data;
+  } catch (err) {
+    console.log("Err in getUserDetails cloud function", err);
+    return "Error: Something went wrong!";
+  }
 };
 
 //function for resize image and update width and height for mulitisigners
@@ -271,7 +260,6 @@ export const handleImageResize = (
     }
   }
 };
-
 export const widgets = [
   {
     type: "signature",
@@ -401,14 +389,14 @@ export const addWidgetOptions = (type) => {
       return {};
   }
 };
-export const getWidgetType = (item) => {
+export const getWidgetType = (item, widgetName) => {
   return (
     <div className="op-btn w-fit md:w-[100%] op-btn-primary op-btn-outline op-btn-sm focus:outline-none outline outline-[1.5px] ml-[6px] md:ml-0 p-0 overflow-hidden">
       <div className="w-full h-full flex md:justify-between items-center">
         <div className="flex justify-start items-center text-[13px] ml-1">
           {!isMobile && <i className="fa-light fa-grip-vertical ml-[3px]"></i>}
           <span className="md:inline-block text-center text-[15px] ml-[5px] font-semibold pr-1 md:pr-0">
-            {item.type}
+            {widgetName}
           </span>
         </div>
         <div className="text-[20px] op-btn op-btn-primary rounded-none w-[40px] h-full flex justify-center items-center">
@@ -458,7 +446,7 @@ export const resizeBorderExtraWidth = () => {
   return 20;
 };
 
-export async function getBase64FromUrl(url) {
+export async function getBase64FromUrl(url, autosign) {
   const data = await fetch(url);
   const blob = await data.blob();
   return new Promise((resolve) => {
@@ -466,8 +454,12 @@ export async function getBase64FromUrl(url) {
     reader.readAsDataURL(blob);
     reader.onloadend = function () {
       const pdfBase = this.result;
-      const suffixbase64 = pdfBase.split(",").pop();
-      resolve(suffixbase64);
+      if (autosign) {
+        resolve(pdfBase);
+      } else {
+        const suffixbase64 = pdfBase.split(",").pop();
+        resolve(suffixbase64);
+      }
     };
   });
 }
@@ -550,20 +542,17 @@ export const signPdfFun = async (
   base64Url,
   documentId,
   signerObjectId,
-  setIsAlert,
   objectId,
   isSubscribed,
   activeMailAdapter,
-  xyPosition
+  widgets
 ) => {
-  let singleSign,
-    isCustomCompletionMail = false;
-
+  let isCustomCompletionMail = false;
   try {
     //get tenant details
     const tenantDetails = await getTenantDetails(objectId);
     if (tenantDetails && tenantDetails === "user does not exist!") {
-      alert("User does not exist");
+      return { status: "error", message: "User does not exist." };
     } else {
       if (
         tenantDetails?.CompletionBody &&
@@ -577,7 +566,7 @@ export const signPdfFun = async (
     // below for loop is used to get first signature of user to send if to signpdf
     // for adding it in completion certificate
     let getSignature;
-    for (let item of xyPosition) {
+    for (let item of widgets) {
       if (!getSignature) {
         const typeExist = item.pos.some((data) => data?.type);
         if (typeExist) {
@@ -596,14 +585,15 @@ export const signPdfFun = async (
         base64Sign = await fetchImageBase64(base64Sign);
       } catch (e) {
         console.log("error", e);
+        return { status: "error", message: "something went wrong." };
       }
     }
-    //change image width and height to 104/44 in png base64
+    //change image width and height to 100/40 in png base64
     const getNewse64 = await changeImageWH(base64Sign);
     //remove suffiix of base64
     const suffixbase64 = getNewse64 && getNewse64.split(",").pop();
 
-    singleSign = {
+    const params = {
       mailProvider: activeMailAdapter,
       pdfFile: base64Url,
       docId: documentId,
@@ -611,34 +601,25 @@ export const signPdfFun = async (
       isCustomCompletionMail: isCustomCompletionMail,
       signature: suffixbase64
     };
-    const response = await axios
-      .post(`${localStorage.getItem("baseUrl")}functions/signPdf`, singleSign, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
-          //  sessionToken: localStorage.getItem("accesstoken")
-          "X-Parse-Session-Token": localStorage.getItem("accesstoken")
-        }
-      })
-      .then((Listdata) => {
-        const json = Listdata.data;
-        const res = json.result;
-        return res;
-      })
-      .catch((err) => {
-        console.log("Err in signPdf cloud function ", err);
-        setIsAlert({
-          isShow: true,
-          alertMessage: "something went wrong"
-        });
-      });
-
-    return response;
+    const resSignPdf = await Parse.Cloud.run("signPdf", params);
+    if (resSignPdf) {
+      const signedPdf = JSON.parse(JSON.stringify(resSignPdf));
+      return signedPdf;
+    }
   } catch (e) {
-    setIsAlert({
-      isShow: true,
-      alertMessage: "something went wrong"
-    });
+    console.log("Err in signPdf cloud function ", e.message);
+    if (e && e?.message?.includes("is encrypted.")) {
+      return {
+        status: "error",
+        message: "Currently encrypted pdf files are not supported."
+      };
+    } else if (
+      e.message === "PKCS#12 MAC could not be verified. Invalid password?"
+    ) {
+      return { status: "error", message: "PFX file password is invalid." };
+    } else {
+      return { status: "error", message: "something went wrong." };
+    }
   }
 };
 
@@ -1051,8 +1032,13 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
 
 //function for embed document id
 export const embedDocId = async (pdfDoc, documentId, allPages) => {
+  // `fontBytes` is used to embed custom font in pdf
+  const fontBytes = await fileasbytes(
+    "https://cdn.opensignlabs.com/webfonts/times.ttf"
+  );
+  pdfDoc.registerFontkit(fontkit);
+  const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let i = 0; i < allPages; i++) {
-    const font = await pdfDoc.embedFont("Helvetica");
     const fontSize = 10;
     const textContent = documentId && `OpenSign™ DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
@@ -1228,8 +1214,8 @@ export const fetchImageBase64 = async (imageUrl) => {
 };
 //function for select image and upload image
 export const changeImageWH = async (base64Image) => {
-  const newWidth = 100;
-  const newHeight = 40;
+  const newWidth = 300;
+  const newHeight = 120;
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = base64Image;
@@ -1238,9 +1224,8 @@ export const changeImageWH = async (base64Image) => {
       const ctx = canvas.getContext("2d");
       canvas.width = newWidth;
       canvas.height = newHeight;
-      ctx.imageSmoothingEnabled = false;
       ctx.drawImage(img, 0, 0, newWidth, newHeight);
-      const resizedBase64 = canvas.toDataURL("image/png", 1);
+      const resizedBase64 = canvas.toDataURL("image/png", 1.0);
       resolve(resizedBase64);
     };
     img.onerror = (error) => {
@@ -1260,14 +1245,20 @@ const calculateFontSize = (position, containerScale, signyourself) => {
 };
 //function for embed multiple signature using pdf-lib
 export const multiSignEmbed = async (
-  xyPositionArray,
+  widgets,
   pdfDoc,
   signyourself,
   scale,
   pdfOriginalWH,
   containerWH
 ) => {
-  for (let item of xyPositionArray) {
+  // `fontBytes` is used to embed custom font in pdf
+  const fontBytes = await fileasbytes(
+    "https://cdn.opensignlabs.com/webfonts/times.ttf"
+  );
+  pdfDoc.registerFontkit(fontkit);
+  const font = await pdfDoc.embedFont(fontBytes, { subset: true });
+  for (let item of widgets) {
     const containerScale = getContainerScale(
       pdfOriginalWH,
       item?.pageNumber,
@@ -1370,7 +1361,6 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        const font = await pdfDoc.embedFont("Helvetica");
         let checkboxOptionGapFromTop, isCheck;
         let y = yPos(position);
         const optionsFontSize = 13;
@@ -1418,7 +1408,7 @@ export const multiSignEmbed = async (
               width: checkboxSize,
               height: checkboxSize
             };
-            checkboxObj = getImagePosition(page, checkboxObj, 1);
+            checkboxObj = getWidgetPosition(page, checkboxObj, 1);
             checkbox.addToPage(page, checkboxObj);
 
             //applied which checkbox should be checked
@@ -1431,7 +1421,6 @@ export const multiSignEmbed = async (
           });
         }
       } else if (widgetTypeExist) {
-        const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = calculateFontSize(
           position,
           containerScale,
@@ -1544,13 +1533,12 @@ export const multiSignEmbed = async (
           width: widgetWidth,
           height: widgetHeight
         };
-
-        const dropdownOption = getImagePosition(page, dropdownObj, 1);
-        // page.drawImage(img, imageOptions);
-        dropdown.addToPage(page, dropdownOption);
+        dropdown.defaultUpdateAppearances(font);
+        const dropdownOption = getWidgetPosition(page, dropdownObj, 1);
+        const dropdownSelected = { ...dropdownOption, font: font };
+        dropdown.addToPage(page, dropdownSelected);
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
-        const font = await pdfDoc.embedFont("Helvetica");
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
         let radioOptionGapFromTop;
@@ -1589,7 +1577,7 @@ export const multiSignEmbed = async (
               height: radioSize
             };
 
-            radioObj = getImagePosition(page, radioObj, 1);
+            radioObj = getWidgetPosition(page, radioObj, 1);
             radioGroup.addOptionToPage(item, page, radioObj);
           });
         }
@@ -1607,7 +1595,7 @@ export const multiSignEmbed = async (
           height: widgetHeight
         };
 
-        const imageOptions = getImagePosition(page, signature, 1);
+        const imageOptions = getWidgetPosition(page, signature, 1);
         page.drawImage(img, imageOptions);
       }
     });
@@ -1935,14 +1923,14 @@ export function replaceMailVaribles(subject, body, variables) {
   return result;
 }
 
-export const copytoData = (text) => {
+export const copytoData = (url) => {
   // navigator.clipboard.writeText(text);
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(url);
   } else {
     // Fallback for browsers that don't support navigator.clipboard
     const textArea = document.createElement("textarea");
-    textArea.value = text;
+    textArea.value = url;
     document.body.appendChild(textArea);
     textArea.select();
     document.execCommand("copy");
@@ -2210,8 +2198,8 @@ function compensateRotation(
   }
 }
 
-// `getImagePosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
-function getImagePosition(page, image, sizeRatio) {
+// `getWidgetPosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
+function getWidgetPosition(page, image, sizeRatio) {
   let pageWidth;
   // pageHeight;
   if ([90, 270].includes(page.getRotation().angle)) {
@@ -2254,4 +2242,45 @@ export const getContainerScale = (pdfOriginalWH, pageNumber, containerWH) => {
   );
   const containerScale = containerWH?.width / getPdfPageWidth?.width || 1;
   return containerScale;
+};
+
+//function to get current laguage and set it in local
+export const saveLanguageInLocal = (i18n) => {
+  const detectedLanguage = i18n.language || "en";
+  localStorage.setItem("i18nextLng", detectedLanguage);
+};
+//function to get default signatur eof current user from `contracts_Signature` class
+export const getDefaultSignature = async (objectId) => {
+  try {
+    const query = new Parse.Query("contracts_Signature");
+    query.equalTo("UserId", {
+      __type: "Pointer",
+      className: "_User",
+      objectId: objectId
+    });
+
+    const result = await query.first();
+    if (result) {
+      const res = JSON.parse(JSON.stringify(result));
+      const defaultSignature = res?.ImageURL
+        ? await getBase64FromUrl(res?.ImageURL, true)
+        : "";
+      const defaultInitial = res?.Initials
+        ? await getBase64FromUrl(res?.Initials, true)
+        : "";
+
+      return {
+        status: "success",
+        res: {
+          defaultSignature: defaultSignature,
+          defaultInitial: defaultInitial
+        }
+      };
+    }
+  } catch (err) {
+    console.log("Error: error in fetch data in contracts_Signature", err);
+    return {
+      status: "error"
+    };
+  }
 };

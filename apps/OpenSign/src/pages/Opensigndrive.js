@@ -10,6 +10,7 @@ import TourContentWithBtn from "../primitives/TourContentWithBtn";
 import Tour from "reactour";
 import axios from "axios";
 import Loader from "../primitives/Loader";
+import { useTranslation } from "react-i18next";
 
 const DriveBody = React.lazy(
   () => import("../components/opensigndrive/DriveBody")
@@ -22,6 +23,7 @@ const AppLoader = () => {
   );
 };
 function Opensigndrive() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const [isList, setIsList] = useState(false);
@@ -37,7 +39,7 @@ function Opensigndrive() {
   const [tourStatusArr, setTourStatusArr] = useState([]);
   const [isLoading, setIsLoading] = useState({
     isLoad: true,
-    message: "This might take some time"
+    message: t("loading-mssg")
   });
   const [docId, setDocId] = useState();
   const [handleError, setHandleError] = useState("");
@@ -78,7 +80,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourFirst"]',
       content: () => (
         <TourContentWithBtn
-          message={`Click on the breadcrumb links to easily navigate through the folder hierarchy and view the documents within each folder.`}
+          message={t("tour-mssg.opensign-drive-1")}
           isChecked={handleDontShow}
         />
       ),
@@ -89,7 +91,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourSecond"]',
       content: () => (
         <TourContentWithBtn
-          message={`Click the add button to create a new folder or document.`}
+          message={t("tour-mssg.opensign-drive-2")}
           isChecked={handleDontShow}
         />
       ),
@@ -100,7 +102,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourThird"]',
       content: () => (
         <TourContentWithBtn
-          message={`Sort your documents by Date or Name using this menu.`}
+          message={t("tour-mssg.opensign-drive-3")}
           isChecked={handleDontShow}
         />
       ),
@@ -111,7 +113,7 @@ function Opensigndrive() {
       selector: '[data-tut="reactourForth"]',
       content: () => (
         <TourContentWithBtn
-          message={`Click on this menu to display the documents in list view.`}
+          message={t("tour-mssg.opensign-drive-4")}
           isChecked={handleDontShow}
         />
       ),
@@ -126,7 +128,7 @@ function Opensigndrive() {
       checkTourStatus();
     }
     if (!disbaleLoading) {
-      setIsLoading({ isLoad: true, message: "This might take some time" });
+      setIsLoading({ isLoad: true, message: t("loading-mssg") });
     }
     try {
       const driveDetails = await getDrive(docId, skip, limit);
@@ -138,7 +140,7 @@ function Opensigndrive() {
             selector: '[data-tut="reactourFifth"]',
             content: () => (
               <TourContentWithBtn
-                message={`The document list is displayed according to the selected sorting option. Icons next to each document indicate its current status.`}
+                message={t("tour-mssg.opensign-drive-5")}
                 isChecked={handleDontShow}
               />
             ),
@@ -149,7 +151,7 @@ function Opensigndrive() {
             selector: '[data-tut="reactourSixth"]',
             content: () => (
               <TourContentWithBtn
-                message={`Right-click on a document to see options such as Download, Rename, Move, and Delete. Click on the document to open it.`}
+                message={t("tour-mssg.opensign-drive-6")}
                 isChecked={handleDontShow}
               />
             ),
@@ -160,7 +162,7 @@ function Opensigndrive() {
             selector: '[data-tut="reactourSeventh"]',
             content: () => (
               <TourContentWithBtn
-                message={`Right-click on any folder to see options. Choose ‘Rename’ to change the folder’s name or click on the folder to navigate through its contents.`}
+                message={t("tour-mssg.opensign-drive-7")}
                 isChecked={handleDontShow}
               />
             ),
@@ -190,12 +192,12 @@ function Opensigndrive() {
         setTourData(tourConfigs);
       }
       if (!docId) {
-        setFolderName([{ name: "OpenSign™ Drive", objectId: "" }]);
+        setFolderName([{ name: t("OpenSign-drive"), objectId: "" }]);
       }
     } catch (e) {
       setIsAlert({
         isShow: true,
-        alertMessage: "something went wrong"
+        alertMessage: t("something-went-wrong-mssg")
       });
     } finally {
       setLoading(false);
@@ -319,11 +321,11 @@ function Opensigndrive() {
       } catch (e) {
         setIsAlert({
           isShow: true,
-          alertMessage: "something went wrong!"
+          alertMessage: t("something-went-wrong-mssg")
         });
       }
     } else {
-      setError("Please fill out this field");
+      setError(t("fill-field"));
     }
   };
 
@@ -496,10 +498,7 @@ function Opensigndrive() {
   };
   //function to use check tour status of open sign drive
   async function checkTourStatus() {
-    const currentUser = Parse.User.current();
-    const cloudRes = await Parse.Cloud.run("getUserDetails", {
-      email: currentUser.get("email")
-    });
+    const cloudRes = await Parse.Cloud.run("getUserDetails");
     const res = { data: cloudRes.toJSON() };
     if (res.data && res.data.TourStatus && res.data.TourStatus.length > 0) {
       const tourStatus = res.data.TourStatus;
@@ -525,7 +524,7 @@ function Opensigndrive() {
       <Title title={"OpenSign™ Drive"} drive={true} />
       <ModalUi
         isOpen={isAlert.isShow}
-        title={"Alert"}
+        title={t("alert")}
         handleClose={() => {
           setIsAlert({
             isShow: false,
@@ -546,13 +545,13 @@ function Opensigndrive() {
             type="button"
             className="op-btn op-btn-neutral op-btn-sm"
           >
-            Close
+            {t("close")}
           </button>
         </div>
       </ModalUi>
       <ModalUi
         isOpen={isFolder}
-        title={"Add New Folder"}
+        title={t("add-new-folder")}
         handleClose={oncloseFolder}
       >
         <div className="h-full p-[20px] pt-[10px] pb-[15px]">
@@ -566,10 +565,14 @@ function Opensigndrive() {
               className="flex flex-col text-base-content"
             >
               <label className="py-[8px] text-[15px] font-[400] mb-0">
-                Name
+                {t("name")}
                 <span className="text-[red]">*</span>
               </label>
               <input
+                onInvalid={(e) =>
+                  e.target.setCustomValidity(t("input-required"))
+                }
+                onInput={(e) => e.target.setCustomValidity("")}
                 required
                 className="op-input op-input-bordered op-input-sm"
                 type="text"
@@ -580,14 +583,14 @@ function Opensigndrive() {
               <div className="w-full h-[1px] bg-[#9f9f9f] my-[15px]"></div>
               <div className="flex flex-row">
                 <button type="submit" className="op-btn op-btn-primary">
-                  Add
+                  {t("add")}
                 </button>
                 <button
                   type="button"
                   className="op-btn op-btn-ghost ml-1"
                   onClick={oncloseFolder}
                 >
-                  Close
+                  {t("close")}
                 </button>
               </div>
             </form>
@@ -655,21 +658,21 @@ function Opensigndrive() {
                         className="fa-light fa-plus mr-[5px]"
                         aria-hidden="true"
                       ></i>
-                      Create folder
+                      {t("create-folder")}
                     </span>
                     <span
                       className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => navigate("/form/sHAnZphf69")}
                     >
                       <i className="fa-light fa-pen-nib mr-[5px]"></i>
-                      Sign Yourself
+                      {t("form-name.Sign Yourself")}
                     </span>
                     <span
                       className="dropdown-item text-[10px] md:text-[13px]"
                       onClick={() => navigate("/form/8mZzFxbG1z")}
                     >
                       <i className="fa-light fa-file-signature mr-[5px]"></i>
-                      Request Signatures
+                      {t("form-name.Request Signatures")}
                     </span>
                   </div>
                 </div>
@@ -719,7 +722,9 @@ function Opensigndrive() {
                             aria-hidden="true"
                           ></i>
                         )}
-                        <span className="ml-[5px]">{value}</span>
+                        <span className="ml-[5px]">
+                          {t(`sort-order.${value}`)}
+                        </span>
                       </span>
                     );
                   })}
@@ -744,7 +749,9 @@ function Opensigndrive() {
                             aria-hidden="true"
                           ></i>
                         )}
-                        <span className="ml-[5px]">{order}</span>
+                        <span className="ml-[5px]">
+                          {t(`sort-order.${order}`)}
+                        </span>
                       </span>
                     );
                   })}
@@ -781,7 +788,7 @@ function Opensigndrive() {
           {pdfData && pdfData.length === 0 ? (
             <div className="flex justify-center items-center w-full h-[50vh]">
               <span className="text-base-content font-bold">
-                No Data Found!
+                {t("no-data")}
               </span>
             </div>
           ) : (
@@ -803,7 +810,7 @@ function Opensigndrive() {
                   sortingData={sortingData}
                 />
                 {loading && (
-                  <div className="text-center pb-[20px]">Loading...</div>
+                  <div className="text-center pb-[20px]">{t("loading")}</div>
                 )}
               </React.Suspense>
             </div>
