@@ -6,8 +6,10 @@ import ReactPlayer from 'react-player';
 ## Steps to run OpenSign™ with docker on Linux/MacOS/linux/Windows:
   1. Firstly, install Docker and ensure it is running before proceeding to the next steps. Make sure that you have NodeJS & GIT installed on your machine.
   2. Now, open the terminal and type the following command: 
-  ```
-export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate  ```
+  
+```
+export HOST_URL=https://opensign.yourdomain.com && curl --remote-name-all https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && mv .env.local_dev .env.prod && docker compose up --force-recreate
+```
   and Hit Enter start the containers automatically. Make sure that you replace the host URL with your subdomain from where OpenSign will be accessible. You need to point the subdomain to the server you are running these commands by adding the necessary A record to your DNS.
 
 *Note: If you wish to incorporate our latest features into your Docker container, follow the steps again after stopping existing containers.* 
