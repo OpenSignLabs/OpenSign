@@ -9,7 +9,7 @@ title: Request signatures
 
 The OpenSign™ Request signatures interface is designed to streamline the process of creating, preparing, and sending documents for electronic signature.
 
-<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/94112aec-4581-46a5-8e09-b6fc42e9e72a" />
+<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/94112aec-4581-46a5-8e09-b6fc42e9e72a" >
 
 
 # How to Create and Send a Document for Signature with OpenSign™
@@ -52,7 +52,7 @@ Select the option that best suits the needs of your document processing.
 - **Cancel**: If you need to start over or make changes, click this button to clear the form.
 ### Step 9: Document creation 
 
-<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/b4e6f257-e362-46a7-b809-546f0e5999fc" />
+<img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/b4e6f257-e362-46a7-b809-546f0e5999fc" >
 
 - **[1] Add signature widget**: Once your document is loaded in the document creation panel, you'll need to add a signature widget for each signer. OpenSign provides an intuitive interface for this task. Select the signer from the right side panel, click on the signature widget, and position it where the signature is required.
 Use the option on the right side to add recipients if you need to include additional signers. You can place multiple signature widgets for each signer, as required.
@@ -134,14 +134,14 @@ After finishing the document creation, a 'Send Mail' popup will appear, offering
   
   - Share: Use this option to share the document via email, WhatsApp and other Windows apps
     
-  <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/e2344479-daae-43ff-a61a-14ea98b237d6" />
+  <img width="800" alt="request signatures" src="https://github.com/user-attachments/assets/e2344479-daae-43ff-a61a-14ea98b237d6" >
   
 ### Signers Signing Process
 ### Step 12: Email OTP verification
 Once the email is received, the signer can click the 'Sign Here' button. This will open the email verification page. After clicking the 'Get Verification Code' button, an OTP (one-time password) will be sent to the signer’s email address. Enter the received OTP into the verification textbox and click the 'Verify' button.
 
-<img width="350" alt="OpenSign send OTP" src="https://github.com/user-attachments/assets/b82c796a-98e3-4296-bde1-fe86b1b993ad" />
-<img width="350" alt="OpenSign verify otp" src="https://github.com/user-attachments/assets/63cf4b75-9d47-4630-a83c-e916a5c13b3c" />
+<img width="350" alt="OpenSign send OTP" src="https://github.com/user-attachments/assets/b82c796a-98e3-4296-bde1-fe86b1b993ad" >
+<img width="350" alt="OpenSign verify otp" src="https://github.com/user-attachments/assets/63cf4b75-9d47-4630-a83c-e916a5c13b3c" >
 <br>
 
 
@@ -153,7 +153,7 @@ After filling out all assigned widgets, click the 'Finish' button. Once the docu
    - The signer has the option of downloading or printing the signed document. He will also obtain the completion certificate if he is the final signer.  
 
    - If there are more than one signer, the document will be immediately sent to the next signer. Once all signers have finished their signatures, they can download and print the signed document as well as the completion certificate.
-<img width="800" alt="OpenSignFinalStep" src="https://github.com/user-attachments/assets/f4783aa0-2879-4ec2-9ddc-16d59f3a1fc0" />
+<img width="800" alt="OpenSignFinalStep" src="https://github.com/user-attachments/assets/f4783aa0-2879-4ec2-9ddc-16d59f3a1fc0" >
 
 ## Additional Information
 - All fields marked with an asterisk (*) must be completed before the document can be submitted.
