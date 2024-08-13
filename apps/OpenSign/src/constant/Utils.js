@@ -7,6 +7,7 @@ import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
 import printModule from "print-js";
 import { validplan } from "../json/plansArr";
+import fontkit from "@pdf-lib/fontkit";
 
 export const fontsizeArr = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
 export const fontColorArr = ["red", "black", "blue", "yellow"];
@@ -15,6 +16,12 @@ export const isTabAndMobile = window.innerWidth < 1023;
 export const textInputWidget = "text input";
 export const textWidget = "text";
 export const radioButtonWidget = "radio button";
+export const fileasbytes = async (filepath) => {
+  const response = await fetch(filepath); // Adjust the path accordingly
+  const arrayBuffer = await response.arrayBuffer();
+  return new Uint8Array(arrayBuffer);
+};
+
 export const openInNewTab = (url, target) => {
   if (target) {
     window.open(url, target, "noopener,noreferrer");
@@ -1053,8 +1060,11 @@ export const addInitialData = (signerPos, setXyPostion, value, userId) => {
 
 //function for embed document id
 export const embedDocId = async (pdfDoc, documentId, allPages) => {
+  // `fontBytes` is used to embed custom font in pdf
+  const fontBytes = await fileasbytes("/font/times.ttf");
+  pdfDoc.registerFontkit(fontkit);
+  const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let i = 0; i < allPages; i++) {
-    const font = await pdfDoc.embedFont("Helvetica");
     const fontSize = 10;
     const textContent = documentId && `OpenSign™ DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
@@ -1230,8 +1240,8 @@ export const fetchImageBase64 = async (imageUrl) => {
 };
 //function for select image and upload image
 export const changeImageWH = async (base64Image) => {
-  const newWidth = 100;
-  const newHeight = 40;
+  const newWidth = 300;
+  const newHeight = 120;
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = base64Image;
@@ -1268,6 +1278,10 @@ export const multiSignEmbed = async (
   pdfOriginalWH,
   containerWH
 ) => {
+  // `fontBytes` is used to embed custom font in pdf
+  const fontBytes = await fileasbytes("/font/times.ttf");
+  pdfDoc.registerFontkit(fontkit);
+  const font = await pdfDoc.embedFont(fontBytes, { subset: true });
   for (let item of widgets) {
     const containerScale = getContainerScale(
       pdfOriginalWH,
@@ -1371,7 +1385,6 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        const font = await pdfDoc.embedFont("Helvetica");
         let checkboxOptionGapFromTop, isCheck;
         let y = yPos(position);
         const optionsFontSize = 13;
@@ -1419,7 +1432,7 @@ export const multiSignEmbed = async (
               width: checkboxSize,
               height: checkboxSize
             };
-            checkboxObj = getImagePosition(page, checkboxObj, 1);
+            checkboxObj = getWidgetPosition(page, checkboxObj, 1);
             checkbox.addToPage(page, checkboxObj);
 
             //applied which checkbox should be checked
@@ -1432,7 +1445,6 @@ export const multiSignEmbed = async (
           });
         }
       } else if (widgetTypeExist) {
-        const font = await pdfDoc.embedFont("Helvetica");
         const fontSize = calculateFontSize(
           position,
           containerScale,
@@ -1545,13 +1557,12 @@ export const multiSignEmbed = async (
           width: widgetWidth,
           height: widgetHeight
         };
-
-        const dropdownOption = getImagePosition(page, dropdownObj, 1);
-        // page.drawImage(img, imageOptions);
-        dropdown.addToPage(page, dropdownOption);
+        dropdown.defaultUpdateAppearances(font);
+        const dropdownOption = getWidgetPosition(page, dropdownObj, 1);
+        const dropdownSelected = { ...dropdownOption, font: font };
+        dropdown.addToPage(page, dropdownSelected);
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
-        const font = await pdfDoc.embedFont("Helvetica");
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
         let radioOptionGapFromTop;
@@ -1590,7 +1601,7 @@ export const multiSignEmbed = async (
               height: radioSize
             };
 
-            radioObj = getImagePosition(page, radioObj, 1);
+            radioObj = getWidgetPosition(page, radioObj, 1);
             radioGroup.addOptionToPage(item, page, radioObj);
           });
         }
@@ -1608,7 +1619,7 @@ export const multiSignEmbed = async (
           height: widgetHeight
         };
 
-        const imageOptions = getImagePosition(page, signature, 1);
+        const imageOptions = getWidgetPosition(page, signature, 1);
         page.drawImage(img, imageOptions);
       }
     });
@@ -2211,8 +2222,8 @@ function compensateRotation(
   }
 }
 
-// `getImagePosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
-function getImagePosition(page, image, sizeRatio) {
+// `getWidgetPosition` is used to calulcate position of image type widget like x, y, width, height for pdf-lib
+function getWidgetPosition(page, image, sizeRatio) {
   let pageWidth;
   // pageHeight;
   if ([90, 270].includes(page.getRotation().angle)) {

@@ -21,8 +21,8 @@ import EditorToolbar, {
   module1,
   formats
 } from "../components/pdf/EditorToolbar";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
+import "../styles/quill.css";
 import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
 import Select from "react-select";
