@@ -28,6 +28,7 @@ import Loader from "./Loader";
 import Select from "react-select";
 import SubscribeCard from "./SubscribeCard";
 import { validplan } from "../json/plansArr";
+import { serverUrl_fn } from "../constant/appinfo";
 import { useTranslation } from "react-i18next";
 
 const ReportTable = (props) => {
@@ -396,9 +397,7 @@ const ReportTable = (props) => {
       Templates: "contracts_Template"
     };
     try {
-      const serverUrl = process.env.REACT_APP_SERVERURL
-        ? process.env.REACT_APP_SERVERURL
-        : window.location.origin + "/api/app";
+      const serverUrl = serverUrl_fn();
       const cls = clsObj[props.ReportName] || "contracts_Document";
       const url = serverUrl + `/classes/${cls}/`;
       const body =
