@@ -1919,14 +1919,14 @@ export function replaceMailVaribles(subject, body, variables) {
   return result;
 }
 
-export const copytoData = (text) => {
+export const copytoData = (url) => {
   // navigator.clipboard.writeText(text);
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(url);
   } else {
     // Fallback for browsers that don't support navigator.clipboard
     const textArea = document.createElement("textarea");
-    textArea.value = text;
+    textArea.value = url;
     document.body.appendChild(textArea);
     textArea.select();
     document.execCommand("copy");
