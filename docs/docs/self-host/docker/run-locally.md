@@ -15,12 +15,16 @@ Command for Windows (Powershell)
 ```
 $env:HOST_URL="https://opensign.yourdomain.com"; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml -OutFile docker-compose.yml; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile -OutFile Caddyfile; Invoke-WebRequest -Uri https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev -OutFile .env.local_dev; Rename-Item -Path .env.local_dev -NewName .env.prod; docker compose up --force-recreate
 ```
- Command for windows (CMD)
-```
-set HOST_URL=https://opensign.yourdomain.com && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/docker-compose.yml && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/Caddyfile && curl -O https://raw.githubusercontent.com/OpenSignLabs/OpenSign/docker_beta/.env.local_dev && rename .env.local_dev .env.prod && docker compose up --force-recreate
-```
-
   and Hit Enter start the containers automatically. Make sure that you replace the host URL with your subdomain from where OpenSign will be accessible. You need to point the subdomain to the server you are running these commands by adding the necessary A record to your DNS.
+  
+  3. If you want to test it locally, remove `export HOST_URL=https://opensign.yourdomain.com &&` for Linux/MacOS and `$env:HOST_URL="https://opensign.yourdomain.com";` for Windows. Once deployed successfully, follow the steps from the screenshots.
+<div>
+  <img width="937" alt="localhost" src="https://github.com/user-attachments/assets/f5de1882-64d0-44ea-86e3-3a7c8405272c">
+</div>
+<div>
+  <img width="935" alt="proceedtolocalhost" src="https://github.com/user-attachments/assets/33f975b9-4a9a-431e-a869-72e38f3b6754">
+</div>
+
 
 *Note: If you wish to incorporate our latest features into your Docker container, follow the steps again after stopping existing containers.* 
 
