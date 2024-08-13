@@ -591,7 +591,8 @@
    "expired-doc-title" :"Document expiré",
    "expired-on-mssg" :"Ce document a expiré le {{expiredDate}} et n'est plus disponible pour signature.",
    "signature-validate-alert":"Veuillez confirmer que vous avez coché au moins {{minRequiredCount}} cases.",
-    "signature-validate-alert-2" :"Assurez-vous que ce champ est rempli avec précision et répond à toutes les exigences."
+    "signature-validate-alert-2" :"Assurez-vous que ce champ est rempli avec précision et répond à toutes les exigences.",
+   "user-name-exist" :"le nom d'utilisateur existe déjà"
      
     
   
