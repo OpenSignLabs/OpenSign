@@ -1,4 +1,11 @@
-Interface Overview
+---
+sidebar_position: 1
+title: Sign your-self
+---
+
+# Sign your-self using OpenSign™
+
+## Interface Overview
 
 # How to digitally sign a document using OpenSign™ for free?
 
