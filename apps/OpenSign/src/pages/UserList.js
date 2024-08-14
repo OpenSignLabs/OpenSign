@@ -29,6 +29,7 @@ const UserList = () => {
   const [isActLoader, setIsActLoader] = useState({});
   const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: false });
   const [isAdmin, setIsAdmin] = useState(false);
+  const [formHeader, setFormHeader] = useState(t("add-user"));
   const recordperPage = 10;
   const startIndex = (currentPage - 1) * recordperPage; // user per page
 
@@ -393,12 +394,18 @@ const UserList = () => {
                   </div>
                 </div>
               )}
-              <AddUser
+              <ModalUi
                 isOpen={isModal}
-                setIsAlert={setIsAlert}
-                handleUserData={handleUserData}
-                closePopup={handleFormModal}
-              />
+                title={formHeader}
+                handleClose={handleFormModal}
+              >
+                <AddUser
+                  setIsAlert={setIsAlert}
+                  handleUserData={handleUserData}
+                  closePopup={handleFormModal}
+                  setFormHeader={setFormHeader}
+                />
+              </ModalUi>
             </div>
           ) : (
             <div className="flex items-center justify-center h-screen w-full bg-base-100 text-base-content rounded-box">

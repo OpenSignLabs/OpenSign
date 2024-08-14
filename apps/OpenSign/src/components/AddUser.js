@@ -4,7 +4,6 @@ import Title from "./Title";
 import Loader from "../primitives/Loader";
 import { copytoData, fetchSubscriptionInfo } from "../constant/Utils";
 import { isEnableSubscription } from "../constant/const";
-import ModalUi from "../primitives/ModalUi";
 import { useTranslation } from "react-i18next";
 function generatePassword(length) {
   const characters =
@@ -48,6 +47,7 @@ const AddUser = (props) => {
 
   useEffect(() => {
     getTeamList();
+    // eslint-disable-next-line
   }, []);
 
   const getTeamList = async () => {
@@ -73,6 +73,13 @@ const AddUser = (props) => {
           const res = await Parse.Cloud.run("allowedusers", {
             tenantId: extUser?.TenantId?.objectId
           });
+          if (props.setFormHeader) {
+            if (res > 0) {
+              props.setFormHeader(t("add-user"));
+            } else {
+              props.setFormHeader(t("Add-seats"));
+            }
+          }
           setAllowedUser(res);
         } else {
           setAllowedUser(0);
@@ -121,9 +128,7 @@ const AddUser = (props) => {
     if (res) {
       props.setIsAlert({ type: "danger", msg: t("user-already-exist") });
       setIsFormLoader(false);
-      setTimeout(() => {
-        props.setIsAlert({ type: "success", msg: "" });
-      }, 1000);
+      setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 1000);
     } else {
       try {
         const extUser = new Parse.Object("contracts_Users");
@@ -276,10 +281,7 @@ const AddUser = (props) => {
     if (name === "email") {
       value = value?.toLowerCase()?.replace(/\s/g, "");
     }
-    setFormdata((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormdata((prev) => ({ ...prev, [name]: value }));
   };
 
   const copytoclipboard = (text) => {
@@ -313,172 +315,134 @@ const AddUser = (props) => {
       if (resAddon) {
         const _resAddon = JSON.parse(JSON.stringify(resAddon));
         if (_resAddon.status === "success") {
-          setAllowedUser(_resAddon.addon);
+          setAllowedUser(amount.quantity);
+          setPlanInfo((obj) => ({ ...obj, totalAllowedUser: _resAddon.addon }));
         }
       }
     } catch (err) {
       console.log("Err in buy addon", err);
-      props.setIsAlert({
-        type: "danger",
-        msg: t("something-went-wrong-mssg")
-      });
+      props.setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
     } finally {
       setTimeout(() => props.setIsAlert({ type: "success", msg: "" }), 2000);
       setIsFormLoader(false);
     }
   };
   return (
-    <ModalUi
-      isOpen={props.isOpen}
-      title={allowedUser > 0 ? t("add-user") : t("Add-seats")}
-      handleClose={props.closePopup}
-    >
-      <div className="shadow-md rounded-box my-[1px] p-3 bg-base-100 relative">
-        <Title title={t("add-user")} />
-        {isFormLoader && (
-          <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
-            <Loader />
-          </div>
-        )}
-        {!isLoader ? (
-          <>
-            {err ? (
-              <div className="flex justify-center items-center h-[70px] text-[18px]">
-                {err}
-              </div>
-            ) : (
-              <div className="w-full mx-auto">
-                {!isEnableSubscription || allowedUser > 0 ? (
-                  <form onSubmit={handleSubmit}>
-                    <p className="flex justify-center mb-1">
-                      {t("remaing-users")}{" "}
-                      <span
-                        className={`${
-                          allowedUser < 2 ? "op-text-accent" : "op-text-primary"
-                        } font-medium ml-1`}
-                      >
-                        {allowedUser} of {planInfo.totalAllowedUser}
-                      </span>
-                    </p>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="name"
-                        className="block text-xs text-gray-700 font-semibold"
-                      >
-                        {t("name")}
-                        <span className="text-[red] text-[13px]"> *</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formdata.name}
-                        onChange={(e) => handleChange(e)}
-                        onInvalid={(e) =>
-                          e.target.setCustomValidity(t("input-required"))
-                        }
-                        onInput={(e) => e.target.setCustomValidity("")}
-                        required
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                      />
+    <div className="shadow-md rounded-box my-[1px] p-3 bg-base-100 relative">
+      <Title title={t("add-user")} />
+      {isFormLoader && (
+        <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
+          <Loader />
+        </div>
+      )}
+      {!isLoader ? (
+        <>
+          {err ? (
+            <div className="flex justify-center items-center h-[70px] text-[18px]">
+              {err}
+            </div>
+          ) : (
+            <div className="w-full mx-auto">
+              {!isEnableSubscription || allowedUser > 0 ? (
+                <form onSubmit={handleSubmit}>
+                  <p className="flex justify-center mb-1">
+                    {t("remaing-users")}{" "}
+                    <span
+                      className={`${
+                        allowedUser < 2 ? "op-text-accent" : "op-text-primary"
+                      } font-medium ml-1`}
+                    >
+                      {allowedUser} of {planInfo.totalAllowedUser}
+                    </span>
+                  </p>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="name"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("name")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formdata.name}
+                      onChange={(e) => handleChange(e)}
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
+                      required
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="email"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("email")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formdata.email}
+                      onChange={(e) => handleChange(e)}
+                      required
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-xs text-gray-700 font-semibold">
+                      {t("password")}
+                    </label>
+                    <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
+                      <div className="break-all">{formdata?.password}</div>
+                      <i
+                        onClick={() => copytoclipboard(formdata?.password)}
+                        className="fa-light fa-copy rounded-full hover:bg-base-300 p-[8px] cursor-pointer "
+                      ></i>
                     </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="email"
-                        className="block text-xs text-gray-700 font-semibold"
-                      >
-                        {t("email")}
-                        <span className="text-[red] text-[13px]"> *</span>
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formdata.email}
-                        onChange={(e) => handleChange(e)}
-                        required
-                        onInvalid={(e) =>
-                          e.target.setCustomValidity(t("input-required"))
-                        }
-                        onInput={(e) => e.target.setCustomValidity("")}
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                      />
+                    <div className="text-[12px] ml-2 mb-0 text-[red] select-none">
+                      {t("password-generateed")}
                     </div>
-                    <div className="mb-3">
-                      <label className="block text-xs text-gray-700 font-semibold">
-                        {t("password")}
-                      </label>
-                      <div className="flex justify-between items-center op-input op-input-bordered op-input-sm text-base-content w-full h-full text-[13px]">
-                        <div className="break-all">{formdata?.password}</div>
-                        <i
-                          onClick={() => copytoclipboard(formdata?.password)}
-                          className="fa-light fa-copy rounded-full hover:bg-base-300 p-[8px] cursor-pointer "
-                        ></i>
-                      </div>
-                      <div className="text-[12px] ml-2 mb-0 text-[red] select-none">
-                        {t("password-generateed")}
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="phone"
-                        className="block text-xs text-gray-700 font-semibold"
-                      >
-                        {t("phone")}
-                        {/* <span className="text-[red] text-[13px]"> *</span> */}
-                      </label>
-                      <input
-                        type="text"
-                        name="phone"
-                        placeholder="optional"
-                        value={formdata.phone}
-                        onChange={(e) => handleChange(e)}
-                        // required
-                        className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
-                      />
-                    </div>
-                    {isEnableSubscription && (
-                      <div className="mb-3">
-                        <label
-                          htmlFor="phone"
-                          className="block text-xs text-gray-700 font-semibold"
-                        >
-                          {t("team")}
-                          <span className="text-[red] text-[13px]"> *</span>
-                        </label>
-                        <select
-                          name="team"
-                          value={formdata.team}
-                          onChange={(e) => handleChange(e)}
-                          className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
-                          onInvalid={(e) =>
-                            e.target.setCustomValidity(t("input-required"))
-                          }
-                          onInput={(e) => e.target.setCustomValidity("")}
-                          required
-                        >
-                          <option defaultValue={""} value={""}>
-                            {t("Select")}
-                          </option>
-                          {teamList.length > 0 &&
-                            teamList.map((x) => (
-                              <option key={x.objectId} value={x.objectId}>
-                                {x.Name}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                    )}
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="phone"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("phone")}
+                      {/* <span className="text-[red] text-[13px]"> *</span> */}
+                    </label>
+                    <input
+                      type="text"
+                      name="phone"
+                      placeholder="optional"
+                      value={formdata.phone}
+                      onChange={(e) => handleChange(e)}
+                      // required
+                      className="op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content w-full text-xs"
+                    />
+                  </div>
+                  {isEnableSubscription && (
                     <div className="mb-3">
                       <label
                         htmlFor="phone"
                         className="block text-xs text-gray-700 font-semibold"
                       >
-                        {t("Role")}
+                        {t("team")}
                         <span className="text-[red] text-[13px]"> *</span>
                       </label>
                       <select
-                        value={formdata.role}
+                        name="team"
+                        value={formdata.team}
                         onChange={(e) => handleChange(e)}
-                        name="role"
                         className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
                         onInvalid={(e) =>
                           e.target.setCustomValidity(t("input-required"))
@@ -489,81 +453,111 @@ const AddUser = (props) => {
                         <option defaultValue={""} value={""}>
                           {t("Select")}
                         </option>
-                        {role.length > 0 &&
-                          role.map((x) => (
-                            <option key={x} value={x}>
-                              {x}
+                        {teamList.length > 0 &&
+                          teamList.map((x) => (
+                            <option key={x.objectId} value={x.objectId}>
+                              {x.Name}
                             </option>
                           ))}
                       </select>
                     </div>
-                    <div className="flex items-center mt-3 gap-2 text-white">
-                      <button type="submit" className="op-btn op-btn-primary">
-                        {t("submit")}
-                      </button>
-                      <div
-                        type="button"
-                        onClick={() => handleReset()}
-                        className="op-btn op-btn-secondary"
-                      >
-                        {t("cancel")}
-                      </div>
-                    </div>
-                  </form>
-                ) : (
-                  <form onSubmit={handleAddOnSubmit}>
-                    <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
-                      {t("additional-users")}
-                    </p>
-                    <div className="mb-3 flex justify-between">
-                      <label
-                        htmlFor="quantity"
-                        className="block text-xs text-gray-700 font-semibold"
-                      >
-                        {t("Quantity-of-users")}
-                        <span className="text-[red] text-[13px]"> *</span>
-                      </label>
-                      <input
-                        type="number"
-                        name="quantity"
-                        value={amount.quantity}
-                        onChange={(e) => handlePricePerUser(e)}
-                        className="w-1/4 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
-                        required
-                      />
-                    </div>
-                    <div className="mb-3 flex justify-between">
-                      <label className="block text-xs text-gray-700 font-semibold">
-                        {t("Price")} (1 * {planInfo.priceperUser})
-                      </label>
-                      <div className="w-1/4 flex justify-center items-center text-sm">
-                        USD {amount.price}
-                      </div>
-                    </div>
-                    <hr className="text-base-content mb-3" />
-                    <div className=" flex justify-between">
-                      <label className="block text-sm text-gray-700 font-semibold">
-                        {t("Total-price-for-next-time")}
-                      </label>
-                      <div className="w-1/4 flex justify-center items-center text-sm font-semibold">
-                        USD {amount.totalPrice}
-                      </div>
-                    </div>
-                    <button className="op-btn op-btn-primary w-full mt-2">
-                      {t("Proceed")}
+                  )}
+                  <div className="mb-3">
+                    <label
+                      htmlFor="phone"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("Role")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
+                    <select
+                      value={formdata.role}
+                      onChange={(e) => handleChange(e)}
+                      name="role"
+                      className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-full text-xs"
+                      onInvalid={(e) =>
+                        e.target.setCustomValidity(t("input-required"))
+                      }
+                      onInput={(e) => e.target.setCustomValidity("")}
+                      required
+                    >
+                      <option defaultValue={""} value={""}>
+                        {t("Select")}
+                      </option>
+                      {role.length > 0 &&
+                        role.map((x) => (
+                          <option key={x} value={x}>
+                            {x}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div className="flex items-center mt-3 gap-2 text-white">
+                    <button type="submit" className="op-btn op-btn-primary">
+                      {t("submit")}
                     </button>
-                  </form>
-                )}
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="w-full h-[200px] inset-0 flex justify-center items-center z-50">
-            <Loader />
-          </div>
-        )}
-      </div>
-    </ModalUi>
+                    <div
+                      type="button"
+                      onClick={() => handleReset()}
+                      className="op-btn op-btn-secondary"
+                    >
+                      {t("cancel")}
+                    </div>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleAddOnSubmit}>
+                  <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
+                    {t("additional-users")}
+                  </p>
+                  <div className="mb-3 flex justify-between">
+                    <label
+                      htmlFor="quantity"
+                      className="block text-xs text-gray-700 font-semibold"
+                    >
+                      {t("Quantity-of-users")}
+                      <span className="text-[red] text-[13px]"> *</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={amount.quantity}
+                      onChange={(e) => handlePricePerUser(e)}
+                      className="w-1/4 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
+                      required
+                    />
+                  </div>
+                  <div className="mb-3 flex justify-between">
+                    <label className="block text-xs text-gray-700 font-semibold">
+                      {t("Price")} (1 * {planInfo.priceperUser})
+                    </label>
+                    <div className="w-1/4 flex justify-center items-center text-sm">
+                      USD {amount.price}
+                    </div>
+                  </div>
+                  <hr className="text-base-content mb-3" />
+                  <div className=" flex justify-between">
+                    <label className="block text-sm text-gray-700 font-semibold">
+                      {t("Total-price-for-next-time")}
+                    </label>
+                    <div className="w-1/4 flex justify-center items-center text-sm font-semibold">
+                      USD {amount.totalPrice}
+                    </div>
+                  </div>
+                  <button className="op-btn op-btn-primary w-full mt-2">
+                    {t("Proceed")}
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="w-full h-[200px] inset-0 flex justify-center items-center z-50">
+          <Loader />
+        </div>
+      )}
+    </div>
   );
 };
 
