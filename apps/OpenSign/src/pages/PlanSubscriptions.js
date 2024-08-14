@@ -67,9 +67,11 @@ const PlanSubscriptions = () => {
   const handleFreePlan = async (item) => {
     if (item.url) {
       const code = yearlyVisible ? item.code.yearly : item.code.monthly;
-      const allowedUsers = localStorage.getItem("allowedUsers")
-        ? localStorage.getItem("allowedUsers") - 1
-        : "";
+      const allowedUsers =
+        localStorage.getItem("allowedUsers") &&
+        localStorage.getItem("allowedUsers") > 0
+          ? localStorage.getItem("allowedUsers") - 1
+          : "";
       const teamperiod = {
         "team-weekly": "monthly",
         "team-yearly": "yearly",

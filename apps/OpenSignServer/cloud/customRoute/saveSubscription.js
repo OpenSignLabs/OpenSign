@@ -5,7 +5,27 @@ export default async function saveSubscription(request, response) {
   const Next_billing_date = request.body?.data?.subscription?.next_billing_at;
   const planCode = request.body?.data?.subscription?.plan?.plan_code;
   const addons = request.body?.data?.subscription?.addons || [];
-  const existAddon = addons.reduce((acc, curr) => acc + curr.quantity, 1);
+  let existAddon = 0;
+  if (addons?.length > 0) {
+    let allowedUsersMonthly = 0;
+    let allowedUsersYearly = 0;
+    addons?.forEach(item => {
+      if (item.addon_code === 'extra-teams-users-monthly') {
+        allowedUsersMonthly += item.quantity;
+      } else if (item.addon_code === 'extra-teams-users-yearly') {
+        allowedUsersYearly += item.quantity;
+      } else if (item.addon_code === 'extra-users') {
+        allowedUsersMonthly += item.quantity;
+      }
+    });
+    if (allowedUsersMonthly > 0 || allowedUsersYearly > 0) {
+      existAddon = allowedUsersMonthly + allowedUsersYearly + 1;
+    }
+  } else {
+    if (planCode === 'teams-yearly' || planCode === 'teams-monthly' || planCode === 'team-weekly') {
+      existAddon = 1;
+    }
+  }
   try {
     const extUserCls = new Parse.Query('contracts_Users');
     extUserCls.equalTo('Email', Email);
@@ -29,7 +49,9 @@ export default async function saveSubscription(request, response) {
           updateSubscription.unset('Next_billing_date');
         }
         updateSubscription.set('PlanCode', planCode);
-        updateSubscription.set('AllowedUsers', parseInt(existAddon));
+        if (existAddon > 0) {
+          updateSubscription.set('AllowedUsers', parseInt(existAddon));
+        }
         await updateSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'update subscription!' });
       } else {
@@ -57,7 +79,9 @@ export default async function saveSubscription(request, response) {
           createSubscription.unset('Next_billing_date');
         }
         createSubscription.set('PlanCode', planCode);
-        createSubscription.set('AllowedUsers', parseInt(existAddon));
+        if (existAddon > 0) {
+          createSubscription.set('AllowedUsers', parseInt(existAddon));
+        }
         await createSubscription.save(null, { useMasterKey: true });
         return response.status(200).json({ status: 'create subscription!' });
       }
