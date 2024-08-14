@@ -547,7 +547,7 @@ function Placeholder(props) {
               style={{
                 zIndex: "99",
                 top: "-18px",
-                right: props.isPlaceholder ? "50px" : "44px",
+                right: props.isPlaceholder ? "50px" : "30px",
                 color: "#188ae2",
                 fontSize: "14px"
               }}
