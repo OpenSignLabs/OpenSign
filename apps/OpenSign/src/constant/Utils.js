@@ -1567,6 +1567,12 @@ export const multiSignEmbed = async (
         } else if (position?.options?.defaultValue) {
           dropdown.select(position?.options?.defaultValue);
         }
+        // Define the default appearance string
+        // Example format: `/FontName FontSize Tf 0 g` where:
+        // - `/FontName` is the name of the font (e.g., `/Helv` for Helvetica)
+        // - `FontSize` is the size you want to set (e.g., 12)
+        // - `Tf` specifies the font and size
+        // - `0 g` sets the text color to black
         const defaultAppearance = `/Helv ${fontsize} Tf 0 g`;
         // Set the default appearance for the dropdown field
         dropdown.acroField.setDefaultAppearance(defaultAppearance);
