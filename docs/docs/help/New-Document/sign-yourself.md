@@ -1,7 +1,4 @@
-[//]: <> (<img width="947" alt="OpenSign_Widgets" src="https://github.com/user-attachments/assets/ac7be428-837c-4278-934f-86ce549f49e4">)
-sidebar_position: 1
-title: Sign yourself
----
+Interface Overview
 
 # How to digitally sign a document using OpenSign™ for free?
 
