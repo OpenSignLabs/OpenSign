@@ -18,9 +18,7 @@ export default async function ZohoDetails(request) {
   formData.append('redirect_uri', process.env.ZOHO_REDIRECT_URI);
   formData.append('grant_type', 'refresh_token');
 
-  const headers = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-  };
+  const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
   // Make the POST request using Axios
   const res = await axios.post(url, formData, { headers });
   //   console.log("Access Token:", res.data);

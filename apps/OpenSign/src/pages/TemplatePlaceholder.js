@@ -25,7 +25,8 @@ import {
   textInputWidget,
   radioButtonWidget,
   fetchSubscription,
-  getContainerScale
+  getContainerScale,
+  openInNewTab
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -40,6 +41,7 @@ import DropdownWidgetOption from "../components/pdf/DropdownWidgetOption";
 import Parse from "parse";
 import { useSelector } from "react-redux";
 import PdfZoom from "../components/pdf/PdfZoom";
+import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 const TemplatePlaceholder = () => {
   const { t } = useTranslation();
@@ -181,21 +183,30 @@ const TemplatePlaceholder = () => {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
+
+  const handleNavigation = (plan) => {
+    const route = paidUrl(plan);
+    if (route === "/subscription") {
+      navigate(route);
+    } else {
+      openInNewTab(route, "_self");
+    }
+  };
   async function checkIsSubscribed() {
     const res = await fetchSubscription();
-    const freeplan = res.plan;
+    const plan = res.plan;
     const billingDate = res.billingDate;
-    if (freeplan === "freeplan") {
+    if (plan === "freeplan") {
       return true;
     } else if (billingDate) {
       if (new Date(billingDate) > new Date()) {
         setIsSubscribe(true);
         return true;
       } else {
-        navigate(`/subscription`);
+        handleNavigation(plan);
       }
     } else {
-      navigate(`/subscription`);
+      handleNavigation(plan);
     }
   }
   // `fetchTemplate` function in used to get Template from server and setPlaceholder ,setSigner if present

@@ -53,12 +53,6 @@ const PlanSubscriptions = () => {
       ? "&mobile=" + encodeURIComponent(userDetails.phone)
       : "";
 
-  const details =
-    "?shipping_country_code=US&billing_country_code=US&billing_state_code=CA&" +
-    name +
-    email +
-    company +
-    phone;
   useEffect(() => {
     setIsLoader(false);
     detectLanguage();
@@ -72,6 +66,30 @@ const PlanSubscriptions = () => {
 
   const handleFreePlan = async (item) => {
     if (item.url) {
+      const code = yearlyVisible ? item.code.yearly : item.code.monthly;
+      const allowedUsers = localStorage.getItem("allowedUsers")
+        ? localStorage.getItem("allowedUsers") - 1
+        : "";
+      const teamperiod = {
+        "team-weekly": "monthly",
+        "team-yearly": "yearly",
+        "teams-monthly": "monthly",
+        "teams-yearly": "yearly"
+      };
+      const period = teamperiod[code] || "";
+
+      const quantity =
+        allowedUsers && period
+          ? `addon_code%5B0%5D=extra-teams-users-${period}&addon_quantity%5B0%5D=${allowedUsers}&`
+          : "";
+
+      const details =
+        "?shipping_country_code=US&billing_country_code=US&billing_state_code=CA&" +
+        quantity +
+        name +
+        email +
+        company +
+        phone;
       const url = yearlyVisible ? item.yearlyUrl + details : item.url + details;
       if (user) {
         localStorage.setItem("userDetails", JSON.stringify(user));

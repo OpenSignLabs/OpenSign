@@ -215,11 +215,7 @@ const DebugPdf = () => {
   };
   return (
     <div>
-      {copied && (
-        <Alert type="success">
-          <span className="ml-3">Copied</span>
-        </Alert>
-      )}
+      {copied && <Alert type="success">Copied</Alert>}
       <Title title={"Debug Pdf"} />
       {width < 800 ? (
         <HandleError handleError={"Debug PDF only availble for PC"} />

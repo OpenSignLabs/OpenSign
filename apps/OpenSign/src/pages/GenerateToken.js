@@ -9,6 +9,7 @@ import Tooltip from "../primitives/Tooltip";
 import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
+import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 function GenerateToken() {
@@ -18,7 +19,7 @@ function GenerateToken() {
   const [apiToken, SetApiToken] = useState("");
   const [isLoader, setIsLoader] = useState(true);
   const [isModal, setIsModal] = useState(false);
-  const [isSubscribe, setIsSubscribe] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: false });
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isTour, setIsTour] = useState(false);
   useEffect(() => {
@@ -34,8 +35,8 @@ function GenerateToken() {
   const fetchToken = async () => {
     try {
       if (isEnableSubscription) {
-        const getIsSubscribe = await checkIsSubscribed();
-        setIsSubscribe(getIsSubscribe);
+        const subscribe = await checkIsSubscribed();
+        setIsSubscribe(subscribe);
       }
       const url = parseBaseUrl + "functions/getapitoken";
       const headers = {
@@ -56,7 +57,7 @@ function GenerateToken() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isSubscribe && isEnableSubscription) {
+    if (!validplan[isSubscribe.plan] && isEnableSubscription) {
       setIsTour(true);
     } else {
       setIsLoader(true);
@@ -100,11 +101,7 @@ function GenerateToken() {
   return (
     <React.Fragment>
       <Title title={"API Token"} />
-      {isAlert.msg && (
-        <Alert type={isAlert.type}>
-          <div className="ml-3">{isAlert.msg}</div>
-        </Alert>
-      )}
+      {isAlert.msg && <Alert type={isAlert.type}>{isAlert.msg}</Alert>}
       {isLoader ? (
         <div className="flex justify-center items-center h-screen">
           <Loader />
@@ -128,7 +125,7 @@ function GenerateToken() {
                   <span
                     id="token"
                     className={`${
-                      isSubscribe
+                      validplan[isSubscribe.plan]
                         ? ""
                         : "bg-white/20 pointer-events-none select-none"
                     } md:text-end py-2 md:py-0`}
@@ -195,9 +192,9 @@ function GenerateToken() {
               </div>
             </ModalUi>
           </div>
-          {!isSubscribe && isEnableSubscription && (
+          {!validplan[isSubscribe.plan] && isEnableSubscription && (
             <div data-tut="apisubscribe">
-              <SubscribeCard />
+              <SubscribeCard plan_code={isSubscribe.plan} />
             </div>
           )}
         </>

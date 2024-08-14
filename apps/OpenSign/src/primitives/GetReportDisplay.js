@@ -11,7 +11,7 @@ import { RWebShare } from "react-web-share";
 import Tour from "reactour";
 import Parse from "parse";
 import {
-  checkIsSubscribedTeam,
+  checkIsSubscribed,
   copytoData,
   fetchUrl,
   replaceMailVaribles
@@ -27,6 +27,7 @@ import BulkSendUi from "../components/BulkSendUi";
 import Loader from "./Loader";
 import Select from "react-select";
 import SubscribeCard from "./SubscribeCard";
+import { validplan } from "../json/plansArr";
 import { serverUrl_fn } from "../constant/appinfo";
 import { useTranslation } from "react-i18next";
 
@@ -355,10 +356,10 @@ const ReportTable = (props) => {
       handleBulkSend(item);
     } else if (act.action === "sharewith") {
       if (isEnableSubscription) {
-        const getIsSubscribe = await checkIsSubscribedTeam();
-        setIsSubscribe(getIsSubscribe);
+        const subscribe = await checkIsSubscribed();
+        setIsSubscribe(subscribe);
       } else {
-        setIsSubscribe(true);
+        setIsSubscribe({ plan: "teams-yearly", isValid: true });
       }
       if (item?.SharedWith && item?.SharedWith.length > 0) {
         // below code is used to get existing sharewith teams and formated them as per react-select
@@ -396,7 +397,7 @@ const ReportTable = (props) => {
       Templates: "contracts_Template"
     };
     try {
-      const serverUrl = serverUrl_fn()
+      const serverUrl = serverUrl_fn();
       const cls = clsObj[props.ReportName] || "contracts_Document";
       const url = serverUrl + `/classes/${cls}/`;
       const body =
@@ -1478,114 +1479,120 @@ const ReportTable = (props) => {
                           {isShareWith[item.objectId] && (
                             <div className="op-modal op-modal-open">
                               <div className="max-h-90 bg-base-100 w-[95%] md:max-w-[500px] rounded-box relative">
-                                {isSubscribe && isEnableSubscription && (
-                                  <>
-                                    {item?.Signers?.length > 0 ? (
-                                      <div className="h-[150px] flex justify-center items-center mx-2">
-                                        <div
-                                          className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
-                                          onClick={() => setIsShareWith({})}
-                                        >
-                                          ✕
+                                {validplan[isSubscribe.plan] &&
+                                  isEnableSubscription && (
+                                    <>
+                                      {item?.Signers?.length > 0 ? (
+                                        <div className="h-[150px] flex justify-center items-center mx-2">
+                                          <div
+                                            className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                            onClick={() => setIsShareWith({})}
+                                          >
+                                            ✕
+                                          </div>
+                                          <div className="text-base-content text-base text-center">
+                                            {t("share-with-alert")}
+                                          </div>
                                         </div>
-                                        <div className="text-base-content text-base text-center">
-                                          {t("share-with-alert")}
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <>
-                                        <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-                                          {t("share-with")}
-                                        </h3>
-                                        <div
-                                          className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
-                                          onClick={() => setIsShareWith({})}
-                                        >
-                                          ✕
-                                        </div>
-                                        <form
-                                          className="h-full w-full z-[1300] px-2 mt-3"
-                                          onSubmit={(e) =>
-                                            handleShareWith(e, item)
-                                          }
-                                        >
-                                          <Select
-                                            // onSortEnd={onSortEnd}
-                                            distance={4}
-                                            isMulti
-                                            options={teamList}
-                                            value={selectedTeam}
-                                            onChange={onChange}
-                                            closeMenuOnSelect
-                                            required={true}
-                                            noOptionsMessage={() =>
-                                              t("team-not-found")
+                                      ) : (
+                                        <>
+                                          <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                                            {t("share-with")}
+                                          </h3>
+                                          <div
+                                            className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                            onClick={() => setIsShareWith({})}
+                                          >
+                                            ✕
+                                          </div>
+                                          <form
+                                            className="h-full w-full z-[1300] px-2 mt-3"
+                                            onSubmit={(e) =>
+                                              handleShareWith(e, item)
                                             }
-                                            unstyled
-                                            classNames={{
-                                              control: () =>
-                                                "op-input op-input-bordered op-input-sm border-gray-400 focus:outline-none hover:border-base-content w-full h-full text-[11px]",
-                                              valueContainer: () =>
-                                                "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
-                                              multiValue: () =>
-                                                "op-badge op-badge-primary h-full text-[11px]",
-                                              multiValueLabel: () => "mb-[2px]",
-                                              menu: () =>
-                                                "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
-                                              menuList: () =>
-                                                "shadow-md rounded-lg overflow-hidden",
-                                              option: () =>
-                                                "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
-                                              noOptionsMessage: () =>
-                                                "p-2 bg-base-200 rounded-lg m-1 p-2"
-                                            }}
-                                          />
-                                          <button className="op-btn op-btn-primary ml-[10px] my-3">
-                                            {t("submit")}
-                                          </button>
-                                        </form>
-                                      </>
-                                    )}
-                                  </>
-                                )}
-                                {!isSubscribe && isEnableSubscription && (
-                                  <>
-                                    <div
-                                      className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-primary-content absolute right-2 top-2 z-40"
-                                      onClick={() => setIsShareWith({})}
-                                    >
-                                      ✕
-                                    </div>
-                                    <SubscribeCard
-                                      plan={"TEAMS"}
-                                      price={"20"}
-                                    />
-                                  </>
-                                )}
-                                {isSubscribe && !isEnableSubscription && (
-                                  <>
-                                    <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
-                                      {t("share-with")}
-                                    </h3>
-                                    <div
-                                      className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
-                                      onClick={() => setIsShareWith({})}
-                                    >
-                                      ✕
-                                    </div>
-                                    <div className="px-2 mt-3 w-full h-full">
-                                      <div className="op-input op-input-bordered op-input-sm w-full h-full text-[13px] break-all">
-                                        {selectedTeam?.[0]?.label}
+                                          >
+                                            <Select
+                                              // onSortEnd={onSortEnd}
+                                              distance={4}
+                                              isMulti
+                                              options={teamList}
+                                              value={selectedTeam}
+                                              onChange={onChange}
+                                              closeMenuOnSelect
+                                              required={true}
+                                              noOptionsMessage={() =>
+                                                t("team-not-found")
+                                              }
+                                              unstyled
+                                              classNames={{
+                                                control: () =>
+                                                  "op-input op-input-bordered op-input-sm border-gray-400 focus:outline-none hover:border-base-content w-full h-full text-[11px]",
+                                                valueContainer: () =>
+                                                  "flex flex-row gap-x-[2px] gap-y-[2px] md:gap-y-0 w-full my-[2px]",
+                                                multiValue: () =>
+                                                  "op-badge op-badge-primary h-full text-[11px]",
+                                                multiValueLabel: () =>
+                                                  "mb-[2px]",
+                                                menu: () =>
+                                                  "mt-1 shadow-md rounded-lg bg-base-200 text-base-content",
+                                                menuList: () =>
+                                                  "shadow-md rounded-lg overflow-hidden",
+                                                option: () =>
+                                                  "bg-base-200 text-base-content rounded-lg m-1 hover:bg-base-300 p-2",
+                                                noOptionsMessage: () =>
+                                                  "p-2 bg-base-200 rounded-lg m-1 p-2"
+                                              }}
+                                            />
+                                            <button className="op-btn op-btn-primary ml-[10px] my-3">
+                                              {t("submit")}
+                                            </button>
+                                          </form>
+                                        </>
+                                      )}
+                                    </>
+                                  )}
+                                {!validplan[isSubscribe.plan] &&
+                                  isEnableSubscription && (
+                                    <>
+                                      <div
+                                        className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-primary-content absolute right-2 top-2 z-40"
+                                        onClick={() => setIsShareWith({})}
+                                      >
+                                        ✕
                                       </div>
-                                    </div>
-                                    <button
-                                      onClick={(e) => handleShareWith(e, item)}
-                                      className="op-btn op-btn-primary ml-[10px] my-3"
-                                    >
-                                      {t("submit")}
-                                    </button>
-                                  </>
-                                )}
+                                      <SubscribeCard
+                                        plan={"TEAMS"}
+                                        price={"20"}
+                                      />
+                                    </>
+                                  )}
+                                {validplan[isSubscribe.plan] &&
+                                  !isEnableSubscription && (
+                                    <>
+                                      <h3 className="text-base-content font-bold text-lg pt-[15px] px-[20px]">
+                                        {t("share-with")}
+                                      </h3>
+                                      <div
+                                        className="op-btn op-btn-sm op-btn-circle op-btn-ghost text-base-content absolute right-2 top-2 z-40"
+                                        onClick={() => setIsShareWith({})}
+                                      >
+                                        ✕
+                                      </div>
+                                      <div className="px-2 mt-3 w-full h-full">
+                                        <div className="op-input op-input-bordered op-input-sm w-full h-full text-[13px] break-all">
+                                          {selectedTeam?.[0]?.label}
+                                        </div>
+                                      </div>
+                                      <button
+                                        onClick={(e) =>
+                                          handleShareWith(e, item)
+                                        }
+                                        className="op-btn op-btn-primary ml-[10px] my-3"
+                                      >
+                                        {t("submit")}
+                                      </button>
+                                    </>
+                                  )}
                               </div>
                             </div>
                           )}
