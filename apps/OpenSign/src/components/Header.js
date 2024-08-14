@@ -106,7 +106,7 @@ const Header = ({ showSidebar }) => {
   return (
     <div>
       {isEnableSubscription && (
-        <div className="shadow flex justify-center bg-[#CAE4FA] text-[14px] p-1">
+        <div className="shadow py-1 text-center bg-[#CAE4FA] text-[14px] p-1">
           We have introduced 🎉 a public profile signing feature, please attach
           your
           <span
