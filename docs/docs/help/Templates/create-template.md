@@ -151,6 +151,7 @@ Select "Delete." Confirm the deletion.
   - The fields with an asterisk (*) are mandatory.
   - Make sure your document is in PDF, PNG, JPG, JPEG, or DOCX format.
   - You can access your signed documents in the folder you've selected by visiting OpenSign™ Drive anytime. You can also access the documents from reports section.
-  - If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
+
+If you require more help, feel free to reach out to our customer support on support@opensignlabs.com.
 
 Happy signing with OpenSign™!
