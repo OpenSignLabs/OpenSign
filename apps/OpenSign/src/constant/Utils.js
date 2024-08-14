@@ -790,7 +790,9 @@ export const onChangeInput = (
   initial,
   dateFormat,
   isDefaultEmpty,
-  isRadio
+  isRadio,
+  fontSize,
+  fontColor
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
   let filterSignerPos;
@@ -817,6 +819,8 @@ export const onChangeInput = (
                 options: {
                   ...position.options,
                   response: value,
+                  fontSize: fontSize,
+                  fontColor: fontColor,
                   validation: {
                     type: "date-format",
                     format: dateFormat // This indicates the required date format explicitly.
@@ -872,6 +876,8 @@ export const onChangeInput = (
             options: {
               ...positionData.options,
               response: value,
+              fontSize: fontSize,
+              fontColor: fontColor,
               validation: {
                 type: "date-format",
                 format: dateFormat // This indicates the required date format explicitly.
@@ -1407,7 +1413,7 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        let checkboxGapFromTop, isCheck, checkboxOptionGapTop;
+        let checkboxGapFromTop, isCheck;
         let y = yPos(position);
         const optionsFontSize = fontSize || 13;
         const checkboxSize = fontSize;
@@ -1429,10 +1435,8 @@ export const multiSignEmbed = async (
 
             if (ind > 0) {
               y = y + checkboxGapFromTop;
-              checkboxOptionGapTop = checkboxOptionGapTop + fontSize;
             } else {
               checkboxGapFromTop = fontSize + 5 || 26;
-              checkboxOptionGapTop = y - 7;
             }
 
             if (!position?.options?.isHideLabel) {
@@ -1440,7 +1444,7 @@ export const multiSignEmbed = async (
               const optionsPosition = compensateRotation(
                 page.getRotation().angle,
                 xPos(position) + checkboxTextGapFromLeft,
-                checkboxOptionGapTop,
+                y,
                 1,
                 page.getSize(),
                 optionsFontSize,
@@ -1563,7 +1567,10 @@ export const multiSignEmbed = async (
         } else if (position?.options?.defaultValue) {
           dropdown.select(position?.options?.defaultValue);
         }
-        dropdown.setFontSize(12);
+        const defaultAppearance = `/Helv ${fontsize} Tf 0 g`;
+        // Set the default appearance for the dropdown field
+        dropdown.acroField.setDefaultAppearance(defaultAppearance);
+        dropdown.setFontSize(fontsize);
         const dropdownObj = {
           x: xPos(position),
           y: yPos(position),
@@ -1579,16 +1586,16 @@ export const multiSignEmbed = async (
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
         let radioOptionGapFromTop;
-        const optionsFontSize = fontSize || 16;
-        const radioTextGapFromLeft = 20;
-        const radioSize = 18;
+        const optionsFontSize = fontSize || 13;
+        const radioTextGapFromLeft = fontSize + 5 || 20;
+        const radioSize = fontSize;
         let y = yPos(position);
         if (position?.options?.values.length > 0) {
           position?.options?.values.forEach((item, ind) => {
             if (ind > 0) {
               y = y + radioOptionGapFromTop;
             } else {
-              radioOptionGapFromTop = 25;
+              radioOptionGapFromTop = fontSize + 10 || 25;
             }
             if (!position?.options?.isHideLabel) {
               // below line of code is used to embed label with radio button in pdf

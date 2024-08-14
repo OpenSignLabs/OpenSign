@@ -1600,7 +1600,6 @@ function PlaceHolderSign() {
   const handleRecipientSign = () => {
     navigate(`/recipientSignPdf/${documentId}/${currentId}`);
   };
-
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
   };
@@ -2057,6 +2056,10 @@ function PlaceHolderSign() {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
+                        fontSize={fontSize}
+                        setFontSize={setFontSize}
+                        fontColor={fontColor}
+                        setFontColor={setFontColor}
                       />
                     )}
                   </div>

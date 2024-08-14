@@ -1378,6 +1378,10 @@ function SignYourSelf() {
                       handleTextSettingModal={handleTextSettingModal}
                       setScale={setScale}
                       scale={scale}
+                      fontSize={fontSize}
+                      setFontSize={setFontSize}
+                      fontColor={fontColor}
+                      setFontColor={setFontColor}
                     />
                   )}
                 </div>
