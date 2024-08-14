@@ -26,7 +26,7 @@ body {
 .op-bg-info {
   @apply bg-info;
 }
-.op-bg-success{
+.op-bg-success {
   @apply bg-success;
 }
 .op-bg-warning {
@@ -43,14 +43,17 @@ body {
 .op-text-info {
   @apply text-info;
 }
-.op-text-success{
+.op-text-accent {
+  @apply text-accent;
+}
+.op-text-success {
   @apply text-success;
 }
 .op-text-warning {
   @apply text-warning;
 }
-.op-border-primary{
-  @apply border-primary
+.op-border-primary {
+  @apply border-primary;
 }
 /* CSS for scrollbar customization */
 * {
