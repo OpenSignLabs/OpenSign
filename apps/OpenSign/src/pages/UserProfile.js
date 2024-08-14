@@ -10,6 +10,7 @@ import Tooltip from "../primitives/Tooltip";
 import { isEnableSubscription, isStaging } from "../constant/const";
 import {
   checkIsSubscribed,
+  copytoData,
   handleSendOTP,
   openInNewTab
 } from "../constant/Utils";
@@ -19,6 +20,8 @@ import Loader from "../primitives/Loader";
 import { paidUrl, validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
+import { RWebShare } from "react-web-share";
+import Alert from "../primitives/Alert";
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -36,6 +39,7 @@ function UserProfile() {
   const [isDisableDocId, setIsDisableDocId] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
   const [isUpgrade, setIsUpgrade] = useState(false);
+  const [isAlert, setIsAlert] = useState({ type: "success", message: "" });
   const [publicUserName, setPublicUserName] = useState(
     extendUser && extendUser?.[0]?.UserName
   );
@@ -50,12 +54,13 @@ function UserProfile() {
   const [otp, setOtp] = useState("");
   const [otpLoader, setOtpLoader] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const [userNameError, setUserNameError] = useState("");
   const [tagLine, setTagLine] = useState(
     extendUser && extendUser?.[0]?.Tagline
   );
   const [isPlan, setIsPlan] = useState({ plan: "", isValid: false });
-
+  const getPublicUrl = isStaging
+    ? `https://staging.opensign.me/${extendUser?.[0]?.UserName}`
+    : `https://opensign.me/${extendUser?.[0]?.UserName}`;
   useEffect(() => {
     getUserDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,10 +108,8 @@ function UserProfile() {
       });
       if (res) {
         setIsLoader(false);
-        setUserNameError("user name already exist");
-        setTimeout(() => {
-          setUserNameError("");
-        }, 3000);
+        setIsAlert({ type: "danger", message: t("user-name-exist") });
+        setTimeout(() => setIsAlert({}), 3000);
         return res;
       }
     } catch (e) {
@@ -197,7 +200,6 @@ function UserProfile() {
       const extRes = JSON.stringify(json);
       localStorage.setItem("Extand_Class", extRes);
       previousPublicUserName.current = publicUserName;
-      // console.log("updateRes ", updateRes);
     } catch (e) {
       console.log("error in save data in contracts_Users class");
     }
@@ -321,6 +323,12 @@ function UserProfile() {
     }
   };
 
+  const copytoclipboard = () => {
+    copytoData(getPublicUrl);
+    setIsAlert({ type: "success", message: t("copied") });
+    setTimeout(() => setIsAlert({}), 3000);
+  };
+
   return (
     <React.Fragment>
       <Title title={"Profile"} />
@@ -330,10 +338,10 @@ function UserProfile() {
         </div>
       ) : (
         <div className="flex justify-center items-center w-full relative">
-          {userNameError && (
-            <div className="z-[1000] fixed top-[50%] transform border-[1px] text-sm border-[#f0a8a8] bg-[#f4bebe] text-[#c42121] rounded py-[.75rem] px-[1.25rem]">
-              {userNameError}
-            </div>
+          {isAlert.message && (
+            <Alert className="z-[1000] fixed top-[10%]" type={isAlert.type}>
+              {isAlert.message}
+            </Alert>
           )}
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
@@ -484,10 +492,7 @@ function UserProfile() {
                       />
                     </span>
                     <div className="flex md:flex-row flex-col md:items-center">
-                      <span className="mb-1 md:mb-1">
-                        {isStaging ? "staging.opensign.me/" : " opensign.me/"}
-                      </span>
-                      {editmode ? (
+                      {editmode || !extendUser?.[0]?.UserName ? (
                         <input
                           maxLength={40}
                           style={{
@@ -504,12 +509,33 @@ function UserProfile() {
                           className="op-input op-input-bordered focus:outline-none hover:border-base-content op-input-xs"
                         />
                       ) : (
-                        <input
-                          value={extendUser?.[0]?.UserName}
-                          disabled
-                          placeholder="enter user name"
-                          className="op-input op-input-bordered op-input-xs"
-                        />
+                        <div className="flex flex-row gap-1 items-center justify-between md:justify-start">
+                          <span
+                            rel="noreferrer"
+                            target="_blank"
+                            onClick={() => openInNewTab(getPublicUrl)}
+                            className="cursor-pointer underline hover:text-blue-800 w-[200px] md:w-[150px] whitespace-nowrap overflow-hidden text-ellipsis"
+                          >
+                            {isStaging
+                              ? `staging.opensign.me/${extendUser?.[0]?.UserName}`
+                              : `opensign.me/${extendUser?.[0]?.UserName}`}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <RWebShare
+                              data={{ url: getPublicUrl, title: "Sign url" }}
+                            >
+                              <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
+                                <i className="fa-light fa-share-from-square"></i>{" "}
+                              </button>
+                            </RWebShare>
+                            <button
+                              className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm"
+                              onClick={() => copytoclipboard()}
+                            >
+                              <i className="fa-light fa-link"></i>{" "}
+                            </button>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </li>
