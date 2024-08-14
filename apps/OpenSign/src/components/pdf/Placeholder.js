@@ -4,6 +4,8 @@ import PlaceholderBorder from "./PlaceholderBorder";
 import { Rnd } from "react-rnd";
 import {
   defaultWidthHeight,
+  fontColorArr,
+  fontsizeArr,
   getContainerScale,
   handleCopyNextToWidget,
   isTabAndMobile,
@@ -15,6 +17,8 @@ import {
 import PlaceholderType from "./PlaceholderType";
 import moment from "moment";
 import "../../styles/opensigndrive.css";
+import ModalUi from "../../primitives/ModalUi";
+import { useTranslation } from "react-i18next";
 
 const selectFormat = (data) => {
   switch (data) {
@@ -89,9 +93,10 @@ const getDefaultdate = (selectedDate, format = "dd-MM-yyyy") => {
 const getDefaultFormat = (dateFormat) => dateFormat || "MM/dd/yyyy";
 
 function Placeholder(props) {
+  const { t } = useTranslation();
   const [placeholderBorder, setPlaceholderBorder] = useState({ w: 0, h: 0 });
   const [isDraggingEnabled, setDraggingEnabled] = useState(true);
-  const [isShowDateFormat, setIsShowDateFormat] = useState(false);
+  const [isDateModal, setIsDateModal] = useState(false);
   const [containerScale, setContainerScale] = useState();
   const [selectDate, setSelectDate] = useState({
     date:
@@ -199,20 +204,6 @@ function Placeholder(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectDate]);
-
-  //it detect outside click of date dropdown menu
-  useEffect(() => {
-    const closeMenuOnOutsideClick = (e) => {
-      if (isShowDateFormat && !e.target.closest("#menu-container")) {
-        setIsShowDateFormat(!isShowDateFormat);
-      }
-    };
-    document.addEventListener("click", closeMenuOnOutsideClick);
-    return () => {
-      // Cleanup the event listener when the component unmounts
-      document.removeEventListener("click", closeMenuOnOutsideClick);
-    };
-  }, [isShowDateFormat]);
 
   //`handleWidgetIdandPopup` is used to set current widget id and open relative popup
   const handleWidgetIdandPopup = () => {
@@ -430,7 +421,11 @@ function Placeholder(props) {
       props.setXyPostion,
       props.data && props.data.Id,
       false,
-      data?.format
+      data?.format,
+      null,
+      null,
+      props.fontSize || props.pos?.options?.fontSize || "12",
+      props.fontColor || props.pos?.options?.fontColor || "black"
     );
     setSelectDate({ date: date, format: data?.format });
   };
@@ -522,16 +517,10 @@ function Placeholder(props) {
           )}
           {/* setting icon only for date widgets */}
           {props.pos.type === "date" && selectDate && (
-            <div
-              id="menu-container"
-              style={{
-                zIndex: "99",
-                top: "-19px",
-                right: props.isPlaceholder ? "60px" : "44px"
-              }}
-              className={`${isShowDateFormat ? "show" : ""} dropdown icon`}
+            <i
               onClick={(e) => {
-                setIsShowDateFormat(!isShowDateFormat);
+                props.setCurrWidgetsDetails(props.pos);
+                setIsDateModal(!isDateModal);
                 e.stopPropagation();
                 if (props.data) {
                   props.setSignKey(props.pos.key);
@@ -543,8 +532,9 @@ function Placeholder(props) {
                 }
               }}
               onTouchEnd={(e) => {
+                props.setCurrWidgetsDetails(props.pos);
                 e.stopPropagation();
-                setIsShowDateFormat(!isShowDateFormat);
+                setIsDateModal(!isDateModal);
                 if (props.data) {
                   props.setSignKey(props.pos.key);
                   props.setUniqueId(props.data.Id);
@@ -554,44 +544,15 @@ function Placeholder(props) {
                   props.setIsSelectId(checkIndex || 0);
                 }
               }}
-            >
-              <i
-                className="fa-light fa-gear icon"
-                style={{
-                  color: "#188ae2",
-                  fontSize: "14px"
-                }}
-              ></i>
-              <div
-                className={
-                  isShowDateFormat ? "dropdown-menu show" : "dropdown-menu"
-                }
-                aria-labelledby="dropdownMenuButton"
-                aria-expanded={isShowDateFormat ? "true" : "false"}
-              >
-                {dateFormat.map((data, ind) => {
-                  return (
-                    <span
-                      key={ind}
-                      onTouchEnd={(e) => {
-                        e.stopPropagation();
-                        setIsShowDateFormat(!isShowDateFormat);
-                        setSelectDate(data);
-                        handleSaveDate(data);
-                      }}
-                      onClick={() => {
-                        setIsShowDateFormat(!isShowDateFormat);
-                        setSelectDate(data);
-                        handleSaveDate(data);
-                      }}
-                      className="dropdown-item text-[13px]"
-                    >
-                      {data?.date ? data?.date : "nodata"}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
+              style={{
+                zIndex: "99",
+                top: "-18px",
+                right: props.isPlaceholder ? "50px" : "44px",
+                color: "#188ae2",
+                fontSize: "14px"
+              }}
+              className="fa-light fa-gear icon"
+            ></i>
           )}
           {/* copy icon for all widgets */}
           <i
@@ -705,228 +666,323 @@ function Placeholder(props) {
       return "all-scroll";
     }
   };
+
   return (
-    <Rnd
-      id={props.pos.key}
-      data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
-      key={props.pos.key}
-      lockAspectRatio={
-        ![
-          textWidget,
-          "email",
-          "name",
-          "company",
-          "job title",
-          textInputWidget
-        ].includes(props.pos.type) &&
-        (props.pos.Width
-          ? props.pos.Width / props.pos.Height
-          : defaultWidthHeight(props.pos.type).width /
-            defaultWidthHeight(props.pos.type).height)
-      }
-      enableResizing={{
-        top: false,
-        right: false,
-        bottom: false,
-        left: false,
-        topRight: false,
-        bottomRight:
-          props.data && props.isNeedSign
-            ? props.data?.signerObjId === props.signerObjId &&
-              props.pos.type !== "checkbox" &&
-              props.pos.type !== radioButtonWidget
-              ? true
-              : false
-            : props.pos.type !== radioButtonWidget &&
-              props.pos.type !== "checkbox" &&
-              props.pos.key === props.selectWidgetId &&
-              true,
-        bottomLeft: false,
-        topLeft: false
-      }}
-      bounds="parent"
-      className="signYourselfBlock"
-      style={{
-        border: "1px solid #007bff",
-        borderRadius: "2px",
-        textAlign:
-          props.pos.type !== "name" &&
-          props.pos.type !== "company" &&
-          props.pos.type !== "job title" &&
-          "center",
-        cursor: getCursor(),
-        zIndex:
-          props.pos.type === "date"
-            ? props.pos.key === props.selectWidgetId
-              ? 99 + 1
-              : 99
-            : props?.pos?.zIndex
-              ? props.pos.zIndex
-              : "5",
-        background: props.data ? props.data.blockColor : "rgb(203 233 237)"
-      }}
-      onDrag={() => {
-        setDraggingEnabled(true);
-        props.handleTabDrag && props.handleTabDrag(props.pos.key);
-      }}
-      size={{
-        width:
-          props.pos.type === radioButtonWidget || props.pos.type === "checkbox"
-            ? "auto"
-            : props.posWidth(props.pos, props.isSignYourself),
-        height:
-          props.pos.type === radioButtonWidget || props.pos.type === "checkbox"
-            ? "auto"
-            : props.posHeight(props.pos, props.isSignYourself)
-      }}
-      onResizeStart={() => {
-        setDraggingEnabled(true);
-        props.setIsResize && props.setIsResize(true);
-      }}
-      onResizeStop={(e, direction, ref) => {
-        props.setIsResize && props.setIsResize(false);
-        props.handleSignYourselfImageResize &&
-          props.handleSignYourselfImageResize(
-            ref,
-            props.pos.key,
-            props.xyPostion,
-            props.setXyPostion,
-            props.index,
-            containerScale,
-            props.scale,
-            props.data && props.data.Id,
-            props.isResize
-          );
-      }}
-      disableDragging={
-        props.isNeedSign
-          ? true
-          : props.isPlaceholder && ![textWidget].includes(props.pos.type)
-            ? false
-            : !isDraggingEnabled
-      }
-      onDragStop={(event, dragElement) =>
-        props.handleStop &&
-        props.handleStop(event, dragElement, props.data?.Id, props.pos?.key)
-      }
-      position={{
-        x: xPos(props.pos, props.isSignYourself),
-        y: yPos(props.pos, props.isSignYourself)
-      }}
-      onResize={(e, direction, ref) => {
-        setPlaceholderBorder({
-          w: ref.offsetWidth / (props.scale * containerScale),
-          h: ref.offsetHeight / (props.scale * containerScale)
-        });
-      }}
-      onClick={() => handleOnClickPlaceholder()}
-    >
-      {props.isShowBorder &&
-      props.pos.type !== radioButtonWidget &&
-      props.pos.type !== "checkbox" &&
-      props.pos.key === props.selectWidgetId ? (
-        <BorderResize right={-12} top={-11} />
-      ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
-        props.data?.signerObjId === props.signerObjId &&
-        props.pos.type !== radioButtonWidget &&
-        props.pos.type !== "checkbox" ? (
-          <BorderResize />
-        ) : (
-          <></>
-        )
-      ) : (
+    <>
+      <Rnd
+        id={props.pos.key}
+        data-tut={props.pos.key === props.unSignedWidgetId ? "IsSigned" : ""}
+        key={props.pos.key}
+        lockAspectRatio={
+          ![
+            textWidget,
+            "email",
+            "name",
+            "company",
+            "job title",
+            textInputWidget
+          ].includes(props.pos.type) &&
+          (props.pos.Width
+            ? props.pos.Width / props.pos.Height
+            : defaultWidthHeight(props.pos.type).width /
+              defaultWidthHeight(props.pos.type).height)
+        }
+        enableResizing={{
+          top: false,
+          right: false,
+          bottom: false,
+          left: false,
+          topRight: false,
+          bottomRight:
+            props.data && props.isNeedSign
+              ? props.data?.signerObjId === props.signerObjId &&
+                props.pos.type !== "checkbox" &&
+                props.pos.type !== radioButtonWidget
+                ? true
+                : false
+              : props.pos.type !== radioButtonWidget &&
+                props.pos.type !== "checkbox" &&
+                props.pos.key === props.selectWidgetId &&
+                true,
+          bottomLeft: false,
+          topLeft: false
+        }}
+        bounds="parent"
+        className="signYourselfBlock"
+        style={{
+          border: "1px solid #007bff",
+          borderRadius: "2px",
+          textAlign:
+            props.pos.type !== "name" &&
+            props.pos.type !== "company" &&
+            props.pos.type !== "job title" &&
+            "center",
+          cursor: getCursor(),
+          zIndex:
+            props.pos.type === "date"
+              ? props.pos.key === props.selectWidgetId
+                ? 99 + 1
+                : 99
+              : props?.pos?.zIndex
+                ? props.pos.zIndex
+                : "5",
+          background: props.data ? props.data.blockColor : "rgb(203 233 237)"
+        }}
+        onDrag={() => {
+          setDraggingEnabled(true);
+          props.handleTabDrag && props.handleTabDrag(props.pos.key);
+        }}
+        size={{
+          width:
+            props.pos.type === radioButtonWidget ||
+            props.pos.type === "checkbox"
+              ? "auto"
+              : props.posWidth(props.pos, props.isSignYourself),
+          height:
+            props.pos.type === radioButtonWidget ||
+            props.pos.type === "checkbox"
+              ? "auto"
+              : props.posHeight(props.pos, props.isSignYourself)
+        }}
+        onResizeStart={() => {
+          setDraggingEnabled(true);
+          props.setIsResize && props.setIsResize(true);
+        }}
+        onResizeStop={(e, direction, ref) => {
+          props.setIsResize && props.setIsResize(false);
+          props.handleSignYourselfImageResize &&
+            props.handleSignYourselfImageResize(
+              ref,
+              props.pos.key,
+              props.xyPostion,
+              props.setXyPostion,
+              props.index,
+              containerScale,
+              props.scale,
+              props.data && props.data.Id,
+              props.isResize
+            );
+        }}
+        disableDragging={
+          props.isNeedSign
+            ? true
+            : props.isPlaceholder && ![textWidget].includes(props.pos.type)
+              ? false
+              : !isDraggingEnabled
+        }
+        onDragStop={(event, dragElement) =>
+          props.handleStop &&
+          props.handleStop(event, dragElement, props.data?.Id, props.pos?.key)
+        }
+        position={{
+          x: xPos(props.pos, props.isSignYourself),
+          y: yPos(props.pos, props.isSignYourself)
+        }}
+        onResize={(e, direction, ref) => {
+          setPlaceholderBorder({
+            w: ref.offsetWidth / (props.scale * containerScale),
+            h: ref.offsetHeight / (props.scale * containerScale)
+          });
+        }}
+        onClick={() => handleOnClickPlaceholder()}
+      >
+        {props.isShowBorder &&
         props.pos.type !== radioButtonWidget &&
         props.pos.type !== "checkbox" &&
-        props.pos.key === props.selectWidgetId && <BorderResize />
-      )}
+        props.pos.key === props.selectWidgetId ? (
+          <BorderResize right={-12} top={-11} />
+        ) : props.data && props.isNeedSign && props.pos.type !== "checkbox" ? (
+          props.data?.signerObjId === props.signerObjId &&
+          props.pos.type !== radioButtonWidget &&
+          props.pos.type !== "checkbox" ? (
+            <BorderResize />
+          ) : (
+            <></>
+          )
+        ) : (
+          props.pos.type !== radioButtonWidget &&
+          props.pos.type !== "checkbox" &&
+          props.pos.key === props.selectWidgetId && <BorderResize />
+        )}
 
-      {props.isShowBorder && props.pos.key === props.selectWidgetId && (
-        <PlaceholderBorder
-          setDraggingEnabled={setDraggingEnabled}
-          pos={props.pos}
-          isPlaceholder={props.isPlaceholder}
-          getCheckboxRenderWidth={getCheckboxRenderWidth}
-          scale={props.scale}
-          containerScale={containerScale}
-          placeholderBorder={placeholderBorder}
-        />
-      )}
-      {isTabAndMobile ? (
-        <div
-          className="flex items-stretch"
-          style={{
-            left: xPos(props.pos, props.isSignYourself),
-            top: yPos(props.pos, props.isSignYourself),
-            width:
-              props.pos.type === radioButtonWidget ||
-              props.pos.type === "checkbox"
-                ? "auto"
-                : props.posWidth(props.pos, props.isSignYourself),
-            height:
-              props.pos.type === radioButtonWidget ||
-              props.pos.type === "checkbox"
-                ? "auto"
-                : props.posHeight(props.pos, props.isSignYourself),
-            zIndex: "10"
-          }}
-          onTouchEnd={() => handleOnClickPlaceholder()}
-          onClick={() => handleOnClickPlaceholder()}
-        >
-          {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
-
-          <PlaceholderType
-            pos={props.pos}
-            xyPostion={props.xyPostion}
-            index={props.index}
-            setXyPostion={props.setXyPostion}
-            data={props.data}
-            setSignKey={props.setSignKey}
-            isShowDropdown={props?.isShowDropdown}
-            isPlaceholder={props.isPlaceholder}
-            isSignYourself={props.isSignYourself}
-            signerObjId={props.signerObjId}
-            handleUserName={props.handleUserName}
+        {props.isShowBorder && props.pos.key === props.selectWidgetId && (
+          <PlaceholderBorder
             setDraggingEnabled={setDraggingEnabled}
-            pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
-            isNeedSign={props.isNeedSign}
-            setSelectDate={setSelectDate}
-            selectDate={selectDate}
-            setValidateAlert={props.setValidateAlert}
-            setStartDate={setStartDate}
-            startDate={startDate}
-            handleSaveDate={handleSaveDate}
-            xPos={props.xPos}
+            pos={props.pos}
+            isPlaceholder={props.isPlaceholder}
+            getCheckboxRenderWidth={getCheckboxRenderWidth}
+            scale={props.scale}
+            containerScale={containerScale}
+            placeholderBorder={placeholderBorder}
           />
+        )}
+        {isTabAndMobile ? (
+          <div
+            className="flex items-stretch"
+            style={{
+              left: xPos(props.pos, props.isSignYourself),
+              top: yPos(props.pos, props.isSignYourself),
+              width:
+                props.pos.type === radioButtonWidget ||
+                props.pos.type === "checkbox"
+                  ? "auto"
+                  : props.posWidth(props.pos, props.isSignYourself),
+              height:
+                props.pos.type === radioButtonWidget ||
+                props.pos.type === "checkbox"
+                  ? "auto"
+                  : props.posHeight(props.pos, props.isSignYourself),
+              zIndex: "10"
+            }}
+            onTouchEnd={() => handleOnClickPlaceholder()}
+            onClick={() => handleOnClickPlaceholder()}
+          >
+            {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
+
+            <PlaceholderType
+              pos={props.pos}
+              xyPostion={props.xyPostion}
+              index={props.index}
+              setXyPostion={props.setXyPostion}
+              data={props.data}
+              setSignKey={props.setSignKey}
+              isShowDropdown={props?.isShowDropdown}
+              isPlaceholder={props.isPlaceholder}
+              isSignYourself={props.isSignYourself}
+              signerObjId={props.signerObjId}
+              handleUserName={props.handleUserName}
+              setDraggingEnabled={setDraggingEnabled}
+              pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
+              isNeedSign={props.isNeedSign}
+              setSelectDate={setSelectDate}
+              selectDate={selectDate}
+              setValidateAlert={props.setValidateAlert}
+              setStartDate={setStartDate}
+              startDate={startDate}
+              handleSaveDate={handleSaveDate}
+              xPos={props.xPos}
+            />
+          </div>
+        ) : (
+          <>
+            {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
+            <PlaceholderType
+              pos={props.pos}
+              xyPostion={props.xyPostion}
+              index={props.index}
+              setXyPostion={props.setXyPostion}
+              data={props.data}
+              setSignKey={props.setSignKey}
+              isShowDropdown={props?.isShowDropdown}
+              isPlaceholder={props.isPlaceholder}
+              isSignYourself={props.isSignYourself}
+              signerObjId={props.signerObjId}
+              handleUserName={props.handleUserName}
+              setDraggingEnabled={setDraggingEnabled}
+              pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
+              isNeedSign={props.isNeedSign}
+              setSelectDate={setSelectDate}
+              selectDate={selectDate}
+              setValidateAlert={props.setValidateAlert}
+              setStartDate={setStartDate}
+              startDate={startDate}
+              handleSaveDate={handleSaveDate}
+              xPos={props.xPos}
+            />
+          </>
+        )}
+      </Rnd>
+      <ModalUi isOpen={isDateModal} title={t("widget-info")} showClose={false}>
+        <div className="h-[100%] p-[20px]">
+          <div className="flex flex-row items-center">
+            <span>{t("format")} : </span>
+            <div className="flex">
+              <select
+                className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                defaultValue={""}
+                onChange={(e) => {
+                  const selectedIndex = e.target.value;
+                  e.stopPropagation();
+                  setSelectDate(dateFormat[selectedIndex]);
+                }}
+              >
+                <option value="" disabled>
+                  {t("select-date-format")}
+                </option>
+                {dateFormat.map((data, ind) => {
+                  return (
+                    <option className="text-[13px]" value={ind} key={ind}>
+                      {data?.date ? data?.date : "nodata"}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <span className="text-xs text-gray-400 ml-1">
+              {selectDate.format}
+            </span>
+          </div>
+          <div className="flex items-center mt-2">
+            <span>{t("font-size")} :</span>
+            <select
+              className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+              value={
+                props.fontSize ||
+                props.currWidgetsDetails?.options?.fontSize ||
+                "12"
+              }
+              onChange={(e) => props.setFontSize(e.target.value)}
+            >
+              {fontsizeArr.map((size, ind) => {
+                return (
+                  <option className="text-[13px]" value={size} key={ind}>
+                    {size}
+                  </option>
+                );
+              })}
+            </select>
+            <div className="flex flex-row gap-1 items-center ml-4">
+              <span>{t("color")}: </span>
+              <select
+                value={
+                  props.fontColor || props.pos.options?.fontColor || "black"
+                }
+                onChange={(e) => props.setFontColor(e.target.value)}
+                className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+              >
+                {fontColorArr.map((color, ind) => {
+                  return (
+                    <option value={color} key={ind}>
+                      {t(`color-type.${color}`)}
+                    </option>
+                  );
+                })}
+              </select>
+              <span
+                style={{
+                  background: props.fontColor || props.pos.options?.fontColor
+                }}
+                className="w-5 h-[19px] ml-1"
+              ></span>
+            </div>
+          </div>
+
+          <div className="h-[1px] w-full my-[15px] bg-[#9f9f9f]"></div>
+          <button
+            type="button"
+            className="op-btn op-btn-primary"
+            onClick={() => {
+              setIsDateModal(false);
+              handleSaveDate(selectDate);
+              props.setFontColor("");
+              props.setFontSize("");
+            }}
+          >
+            {t("save")}
+          </button>
         </div>
-      ) : (
-        <>
-          {props.pos.key === props.selectWidgetId && <PlaceholderIcon />}
-          <PlaceholderType
-            pos={props.pos}
-            xyPostion={props.xyPostion}
-            index={props.index}
-            setXyPostion={props.setXyPostion}
-            data={props.data}
-            setSignKey={props.setSignKey}
-            isShowDropdown={props?.isShowDropdown}
-            isPlaceholder={props.isPlaceholder}
-            isSignYourself={props.isSignYourself}
-            signerObjId={props.signerObjId}
-            handleUserName={props.handleUserName}
-            setDraggingEnabled={setDraggingEnabled}
-            pdfDetails={props?.pdfDetails && props?.pdfDetails[0]}
-            isNeedSign={props.isNeedSign}
-            setSelectDate={setSelectDate}
-            selectDate={selectDate}
-            setValidateAlert={props.setValidateAlert}
-            setStartDate={setStartDate}
-            startDate={startDate}
-            handleSaveDate={handleSaveDate}
-            xPos={props.xPos}
-          />
-        </>
-      )}
-    </Rnd>
+      </ModalUi>
+    </>
   );
 }
 

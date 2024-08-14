@@ -1528,6 +1528,10 @@ const TemplatePlaceholder = () => {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
+                        fontSize={fontSize}
+                        setFontSize={setFontSize}
+                        fontColor={fontColor}
+                        setFontColor={setFontColor}
                       />
                     )}
                   </div>
