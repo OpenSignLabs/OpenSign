@@ -922,10 +922,10 @@ function Placeholder(props) {
               {selectDate.format}
             </span>
           </div>
-          <div className="flex items-center mt-2">
+          <div className="flex items-center mt-4 md:mt-2">
             <span>{t("font-size")} :</span>
             <select
-              className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+              className="ml-[3px] md:ml:[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               value={
                 props.fontSize ||
                 props.currWidgetsDetails?.options?.fontSize ||
@@ -941,14 +941,14 @@ function Placeholder(props) {
                 );
               })}
             </select>
-            <div className="flex flex-row gap-1 items-center ml-4">
+            <div className="flex flex-row gap-1 items-center ml-2 md:ml-4 ">
               <span>{t("color")}: </span>
               <select
                 value={
                   props.fontColor || props.pos.options?.fontColor || "black"
                 }
                 onChange={(e) => props.setFontColor(e.target.value)}
-                className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                className="ml-[4px] md:ml[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
               >
                 {fontColorArr.map((color, ind) => {
                   return (
@@ -960,7 +960,8 @@ function Placeholder(props) {
               </select>
               <span
                 style={{
-                  background: props.fontColor || props.pos.options?.fontColor
+                  background:
+                    props.fontColor || props.pos.options?.fontColor || "black"
                 }}
                 className="w-5 h-[19px] ml-1"
               ></span>
