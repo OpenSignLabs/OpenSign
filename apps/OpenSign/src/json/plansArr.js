@@ -211,9 +211,11 @@ export const paidUrl = (plan) => {
         : "";
     const phone =
       user && user.phone ? "&mobile=" + encodeURIComponent(user.phone) : "";
-    const allowedUsers = localStorage.getItem("allowedUsers")
-      ? localStorage.getItem("allowedUsers") - 1
-      : "";
+    const allowedUsers =
+      localStorage.getItem("allowedUsers") &&
+      localStorage.getItem("allowedUsers") > 0
+        ? localStorage.getItem("allowedUsers") - 1
+        : "";
     const quantity = allowedUsers
       ? `addon_code%5B0%5D=extra-teams-users-${period}&addon_quantity%5B0%5D=${allowedUsers}&`
       : "";
