@@ -1367,7 +1367,8 @@ export const multiSignEmbed = async (
         }
       };
       const color = position?.options?.fontColor;
-      let updateColorInRgb = getWidgetsFontColor(color);
+      const updateColorInRgb = getWidgetsFontColor(color);
+      const fontSize = parseInt(position?.options?.fontSize);
       const widgetTypeExist = [
         textWidget,
         textInputWidget,
@@ -1380,7 +1381,7 @@ export const multiSignEmbed = async (
       if (position.type === "checkbox") {
         let checkboxOptionGapFromTop, isCheck;
         let y = yPos(position);
-        const optionsFontSize = parseInt(position?.options?.fontSize) || 13;
+        const optionsFontSize = fontSize || 13;
         const checkboxSize = 18;
         const checkboxTextGapFromLeft = 22;
         if (position?.options?.values.length > 0) {
@@ -1413,10 +1414,9 @@ export const multiSignEmbed = async (
                 1,
                 page.getSize(),
                 optionsFontSize,
-                rgb(0, 0, 0),
+                updateColorInRgb,
                 font,
-                page,
-                updateColorInRgb
+                page
               );
               page.drawText(item, optionsPosition);
             }
@@ -1527,14 +1527,12 @@ export const multiSignEmbed = async (
 
         const dropdownRandomId = "dropdown" + randomId();
         const dropdown = form.createDropdown(dropdownRandomId);
-
         dropdown.addOptions(position?.options?.values);
         if (position?.options?.response) {
           dropdown.select(position.options?.response);
         } else if (position?.options?.defaultValue) {
           dropdown.select(position?.options?.defaultValue);
         }
-
         dropdown.setFontSize(12);
         const dropdownObj = {
           x: xPos(position),
@@ -1542,13 +1540,8 @@ export const multiSignEmbed = async (
           width: widgetWidth,
           height: widgetHeight
         };
-
         const dropdownOption = getWidgetPosition(page, dropdownObj, 1);
-        const dropdownSelected = {
-          ...dropdownOption,
-          font: font,
-          textColor: updateColorInRgb
-        };
+        const dropdownSelected = { ...dropdownOption, font: font };
         dropdown.defaultUpdateAppearances(font);
         dropdown.addToPage(page, dropdownSelected);
         dropdown.enableReadOnly();
@@ -1556,7 +1549,7 @@ export const multiSignEmbed = async (
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
         let radioOptionGapFromTop;
-        const optionsFontSize = parseInt(position?.options?.fontSize) || 16;
+        const optionsFontSize = fontSize || 16;
         const radioTextGapFromLeft = 20;
         const radioSize = 18;
         let y = yPos(position);
@@ -1577,10 +1570,9 @@ export const multiSignEmbed = async (
                 1,
                 page.getSize(),
                 optionsFontSize,
-                rgb(0, 0, 0),
+                updateColorInRgb,
                 font,
-                page,
-                updateColorInRgb
+                page
               );
 
               page.drawText(item, optionsPosition);
