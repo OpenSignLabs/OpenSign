@@ -36,13 +36,32 @@ export default async function Buyaddon(request) {
           const price = _resSub?.SubscriptionDetails?.data?.subscription?.plan?.price;
           const plan_code = _resSub?.SubscriptionDetails?.data?.subscription?.plan?.plan_code;
           const addonsArr = _resSub?.SubscriptionDetails?.data?.subscription?.addons || [];
-          const addon = addonsArr.reduce((acc, curr) => acc + curr.quantity, 0);
+          let addon = 0;
+          if (addonsArr?.length > 0) {
+            let allowedUsersMonthly = 0;
+            let allowedUsersYearly = 0;
+            addonsArr?.forEach(item => {
+              if (item.addon_code === 'extra-teams-users-monthly') {
+                allowedUsersMonthly += item.quantity;
+              } else if (item.addon_code === 'extra-teams-users-yearly') {
+                allowedUsersYearly += item.quantity;
+              } else if (item.addon_code === 'extra-users') {
+                allowedUsersMonthly += item.quantity;
+              }
+            });
+            if (allowedUsersMonthly > 0 || allowedUsersYearly > 0) {
+              addon = allowedUsersMonthly + allowedUsersYearly;
+            }
+          }
           const quantity = parseInt(users) + parseInt(addon);
+          const addoncode = plan_code.includes('yearly')
+            ? 'extra-teams-users-yearly'
+            : 'extra-teams-users-monthly';
           const data = JSON.stringify({
             plan: { plan_code: plan_code },
             addons: [
               {
-                addon_code: 'extra-users',
+                addon_code: addoncode,
                 addon_description: 'Extra users',
                 price: price,
                 quantity: quantity,
