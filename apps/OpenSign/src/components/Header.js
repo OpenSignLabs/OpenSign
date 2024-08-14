@@ -6,12 +6,12 @@ import Parse from "parse";
 import { useWindowSize } from "../hook/useWindowSize";
 import {
   checkIsSubscribed,
-  checkIsSubscribedTeam,
   getAppLogo,
   openInNewTab,
   saveLanguageInLocal
 } from "../constant/Utils";
 import { isEnableSubscription, isStaging } from "../constant/const";
+import { paidUrl, validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 const Header = ({ showSidebar }) => {
@@ -22,8 +22,7 @@ const Header = ({ showSidebar }) => {
   const image = localStorage.getItem("profileImg") || dp;
   const [isOpen, setIsOpen] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(true);
-  const [isPro, setIsPro] = useState(false);
-  const [isTeam, setIsTeam] = useState(false);
+  const [isTeam, setIsTeam] = useState({ plan: "", isValid: false });
   const [applogo, setAppLogo] = useState(
     localStorage.getItem("appLogo") || " "
   );
@@ -37,9 +36,8 @@ const Header = ({ showSidebar }) => {
   }, []);
   async function checkSubscription() {
     if (isEnableSubscription) {
-      const getIsSubscribe = await checkIsSubscribed();
-      const getIsTeam = await checkIsSubscribedTeam();
-      if (getIsSubscribe) {
+      const subscribe = await checkIsSubscribed();
+      if (subscribe.isValid) {
         const applogo = await getAppLogo();
         if (applogo?.logo) {
           setAppLogo(applogo?.logo);
@@ -47,9 +45,8 @@ const Header = ({ showSidebar }) => {
           setAppLogo(localStorage.getItem("appLogo") || "");
         }
       }
-      setIsPro(getIsSubscribe);
-      setIsTeam(getIsTeam);
-      setIsSubscribe(getIsSubscribe);
+      setIsTeam(subscribe);
+      setIsSubscribe(subscribe.isValid);
     }
   }
 
@@ -103,6 +100,14 @@ const Header = ({ showSidebar }) => {
       window.open("https://console.opensignlabs.com/");
     }
   };
+  const handleNavigation = () => {
+    const route = paidUrl(isTeam.plan);
+    if (route === "/subscription") {
+      navigate(route);
+    } else {
+      openInNewTab(route, "_self");
+    }
+  };
   return (
     <div className="op-navbar bg-base-100 shadow">
       <div className="flex-none">
@@ -127,18 +132,18 @@ const Header = ({ showSidebar }) => {
           <div>
             <button
               className="text-xs md:text-sm shadow op-btn op-btn-outline op-btn-sm md:op-btn-md op-btn-accent"
-              onClick={() => navigate("/subscription")}
+              onClick={() => handleNavigation()}
             >
               {t("upgrade-now")}
             </button>
           </div>
         )}
-        {!isTeam && isPro && (
+        {isTeam.isValid && !validplan[isTeam.plan] && (
           <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
             {t("pro")}
           </div>
         )}
-        {isTeam && (
+        {validplan[isTeam.plan] && (
           <div className="w-[35px] h-[35px] bg-white rounded-full ring-[1px] text-[13px] ring-offset-2 ring-[#002862] text-[#002862] overflow-hidden font-semibold flex items-center justify-center">
             {t("team")}
           </div>

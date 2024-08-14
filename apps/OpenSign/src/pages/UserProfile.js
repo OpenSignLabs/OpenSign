@@ -10,7 +10,6 @@ import Tooltip from "../primitives/Tooltip";
 import { isEnableSubscription, isStaging } from "../constant/const";
 import {
   checkIsSubscribed,
-  checkIsSubscribedTeam,
   copytoData,
   handleSendOTP,
   openInNewTab
@@ -18,6 +17,7 @@ import {
 import Upgrade from "../primitives/Upgrade";
 import ModalUi from "../primitives/ModalUi";
 import Loader from "../primitives/Loader";
+import { paidUrl, validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 import SelectLanguage from "../components/pdf/SelectLanguage";
 import { RWebShare } from "react-web-share";
@@ -39,7 +39,7 @@ function UserProfile() {
   const [isDisableDocId, setIsDisableDocId] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
   const [isUpgrade, setIsUpgrade] = useState(false);
-  const [isAlert, setIsAlert] = useState({});
+  const [isAlert, setIsAlert] = useState({ type: "success", message: "" });
   const [publicUserName, setPublicUserName] = useState(
     extendUser && extendUser?.[0]?.UserName
   );
@@ -57,7 +57,7 @@ function UserProfile() {
   const [tagLine, setTagLine] = useState(
     extendUser && extendUser?.[0]?.Tagline
   );
-  const [isTeam, setIsTeam] = useState(false);
+  const [isPlan, setIsPlan] = useState({ plan: "", isValid: false });
   const getPublicUrl = isStaging
     ? `https://staging.opensign.me/${extendUser?.[0]?.UserName}`
     : `https://opensign.me/${extendUser?.[0]?.UserName}`;
@@ -72,10 +72,9 @@ function UserProfile() {
     const jsonSender = JSON.parse(extClass);
     const HeaderDocId = jsonSender[0]?.HeaderDocId;
     if (isEnableSubscription) {
-      const getIsSubscribe = await checkIsSubscribed();
-      const getIsTeam = await checkIsSubscribedTeam();
-      setIsSubscribe(getIsSubscribe);
-      setIsTeam(getIsTeam);
+      const subscribe = await checkIsSubscribed();
+      setIsSubscribe(subscribe.isValid);
+      setIsPlan(subscribe);
     }
     if (HeaderDocId) {
       setIsDisableDocId(HeaderDocId);
@@ -109,13 +108,8 @@ function UserProfile() {
       });
       if (res) {
         setIsLoader(false);
-        setIsAlert({
-          type: "danger",
-          message: t("user-name-exist")
-        });
-        setTimeout(() => {
-          setIsAlert({});
-        }, 3000);
+        setIsAlert({ type: "danger", message: t("user-name-exist") });
+        setTimeout(() => setIsAlert({}), 3000);
         return res;
       }
     } catch (e) {
@@ -320,15 +314,19 @@ function UserProfile() {
     setJobTitle(extendUser?.[0]?.JobTitle);
     setIsDisableDocId(extendUser?.[0]?.HeaderDocId);
   };
+  const handlePaidRoute = () => {
+    const route = paidUrl(isPlan.plan);
+    if (route === "/subscription") {
+      navigate(route);
+    } else {
+      openInNewTab(route, "_self");
+    }
+  };
+
   const copytoclipboard = () => {
     copytoData(getPublicUrl);
-    setIsAlert({
-      type: "success",
-      message: t("copied")
-    });
-    setTimeout(() => {
-      setIsAlert({});
-    }, 3000);
+    setIsAlert({ type: "success", message: t("copied") });
+    setTimeout(() => setIsAlert({}), 3000);
   };
 
   return (
@@ -340,12 +338,11 @@ function UserProfile() {
         </div>
       ) : (
         <div className="flex justify-center items-center w-full relative">
-          {isAlert && (
+          {isAlert.message && (
             <Alert className="z-[1000] fixed top-[10%]" type={isAlert.type}>
               {isAlert.message}
             </Alert>
           )}
-
           <div className="bg-base-100 text-base-content flex flex-col justify-center shadow-md rounded-box w-[450px]">
             <div className="flex flex-col justify-center items-center my-4">
               <div className="w-[200px] h-[200px] overflow-hidden rounded-full">
@@ -516,9 +513,7 @@ function UserProfile() {
                           <span
                             rel="noreferrer"
                             target="_blank"
-                            onClick={() => {
-                              openInNewTab(getPublicUrl);
-                            }}
+                            onClick={() => openInNewTab(getPublicUrl)}
                             className="cursor-pointer underline hover:text-blue-800 w-[200px] md:w-[150px] whitespace-nowrap overflow-hidden text-ellipsis"
                           >
                             {isStaging
@@ -527,10 +522,7 @@ function UserProfile() {
                           </span>
                           <div className="flex items-center gap-2">
                             <RWebShare
-                              data={{
-                                url: getPublicUrl,
-                                title: "Sign url"
-                              }}
+                              data={{ url: getPublicUrl, title: "Sign url" }}
                             >
                               <button className="op-btn op-btn-primary op-btn-outline op-btn-xs md:op-btn-sm ">
                                 <i className="fa-light fa-share-from-square"></i>{" "}
@@ -581,7 +573,9 @@ function UserProfile() {
                   <div className="flex justify-between items-center py-2">
                     <span
                       className={
-                        isTeam ? "font-semibold" : "font-semibold text-gray-300"
+                        validplan[isPlan.plan]
+                          ? "font-semibold"
+                          : "font-semibold text-gray-300"
                       }
                     >
                       {t("disable-documentId")} :{" "}
@@ -590,17 +584,21 @@ function UserProfile() {
                           "https://docs.opensignlabs.com/docs/help/Settings/disabledocumentid"
                         }
                       />
-                      {!isTeam && isEnableSubscription && <Upgrade />}
+                      {!validplan[isPlan.plan] && isEnableSubscription && (
+                        <Upgrade />
+                      )}
                     </span>
                     <label
                       className={`${
-                        isTeam
+                        validplan[isPlan.plan]
                           ? `${editmode ? "cursor-pointer" : ""}`
                           : "pointer-events-none opacity-50"
                       } relative block items-center mb-0`}
                     >
                       <input
-                        disabled={isTeam ? false : true}
+                        disabled={
+                          validplan[isPlan.plan] && editmode ? false : true
+                        }
                         type="checkbox"
                         className="op-toggle transition-all checked:[--tglbg:#3368ff] checked:bg-white"
                         checked={isDisableDocId}
@@ -708,7 +706,7 @@ function UserProfile() {
                       <p>{t("user-name-limit-char")}</p>
                       <div className="op-card-actions justify-end">
                         <button
-                          onClick={() => navigate("/subscription")}
+                          onClick={() => handlePaidRoute()}
                           className="op-btn op-btn-accent"
                         >
                           {t("upgrade-now")}
