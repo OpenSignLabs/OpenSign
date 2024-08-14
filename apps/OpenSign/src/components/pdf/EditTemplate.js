@@ -23,8 +23,8 @@ const EditTemplate = ({ template, onSuccess }) => {
   }, []);
   const fetchSubscription = async () => {
     if (isEnableSubscription) {
-      const getIsSubscribe = await checkIsSubscribed();
-      setIsSubscribe(getIsSubscribe);
+      const subscribe = await checkIsSubscribed();
+      setIsSubscribe(subscribe.isValid);
     }
   };
   const handleStrInput = (e) => {

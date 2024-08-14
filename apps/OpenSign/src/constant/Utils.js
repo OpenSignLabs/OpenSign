@@ -63,6 +63,8 @@ export async function fetchSubscription(
     } else {
       plan = tenatRes.data?.result?.result?.PlanCode;
       billingDate = tenatRes.data?.result?.result?.Next_billing_date?.iso;
+      const allowedUsers = tenatRes.data?.result?.result?.AllowedUsers || 0;
+      localStorage.setItem("allowedUsers", allowedUsers);
     }
     return { plan, billingDate, status };
   } catch (err) {
@@ -70,46 +72,72 @@ export async function fetchSubscription(
     return { plan: "", billingDate: "" };
   }
 }
+
+export async function fetchSubscriptionInfo() {
+  try {
+    const Extand_Class = localStorage.getItem("Extand_Class");
+    const extClass = Extand_Class && JSON.parse(Extand_Class);
+    // console.log("extClass ", extClass);
+    if (extClass && extClass.length > 0) {
+      const extUser = extClass[0].objectId;
+      const baseURL = localStorage.getItem("baseUrl");
+      const url = `${baseURL}functions/getsubscriptions`;
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": localStorage.getItem("parseAppId"),
+        sessionToken: localStorage.getItem("accesstoken")
+      };
+      const params = { extUserId: extUser };
+      const tenatRes = await axios.post(url, params, { headers: headers });
+
+      const price =
+        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
+          ?.plan?.price;
+      const totalPrice =
+        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
+          ?.amount;
+      const planId =
+        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
+          ?.subscription_id;
+      const plan_code =
+        tenatRes.data?.result?.result?.SubscriptionDetails?.data?.subscription
+          ?.plan?.plan_code;
+      const totalAllowedUser = tenatRes.data?.result?.result?.AllowedUsers || 0;
+      return {
+        status: "success",
+        price: price,
+        totalPrice: totalPrice,
+        planId: planId,
+        plan_code: plan_code,
+        totalAllowedUser: totalAllowedUser
+      };
+    }
+  } catch (err) {
+    console.log("Err in fetch subscription", err);
+    return { status: "error", error: err };
+  }
+}
 //function to get subcripition details from subscription class
 export async function checkIsSubscribed() {
   try {
     const res = await fetchSubscription();
     if (res.plan === "freeplan") {
-      return false;
-    } else if (res.billingDate) {
-      if (new Date(res.billingDate) > new Date()) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } catch (err) {
-    console.log("Err in fetch subscription", err);
-    return false;
-  }
-}
-
-//function to get subcripition details from subscription class
-export async function checkIsSubscribedTeam() {
-  try {
-    const res = await fetchSubscription();
-    if (res.plan === "freeplan") {
-      return false;
+      return { plan: res.plan, isValid: false };
     } else if (res.billingDate) {
       const plan = validplan[res.plan] || false;
       if (plan && new Date(res.billingDate) > new Date()) {
-        return true;
+        return { plan: res.plan, isValid: true };
+      } else if (new Date(res.billingDate) > new Date()) {
+        return { plan: res.plan, isValid: true };
       } else {
-        return false;
+        return { plan: res.plan, isValid: false };
       }
     } else {
-      return false;
+      return { plan: res.plan, isValid: false };
     }
   } catch (err) {
     console.log("Err in fetch subscription", err);
-    return false;
+    return { plan: "no-plan", isValid: false };
   }
 }
 

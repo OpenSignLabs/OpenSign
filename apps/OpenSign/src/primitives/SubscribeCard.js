@@ -1,10 +1,20 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { paidUrl } from "../json/plansArr";
+import { openInNewTab } from "../constant/Utils";
 
-const SubscribeCard = ({ plan, price }) => {
+const SubscribeCard = ({ plan, price, plan_code }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const handlePaidRoute = () => {
+    const route = paidUrl(plan_code);
+    if (route === "/subscription") {
+      navigate(route);
+    } else {
+      openInNewTab(route, "_self");
+    }
+  };
   return (
     <div className="op-card op-bg-primary text-primary-content w-full shadow-lg">
       <div className="op-card-body">
@@ -16,7 +26,7 @@ const SubscribeCard = ({ plan, price }) => {
         </p>
         <div className="op-card-actions justify-end">
           <button
-            onClick={() => navigate("/subscription")}
+            onClick={() => handlePaidRoute()}
             className="op-btn op-btn-accent"
           >
             {t("upgrade-now")}

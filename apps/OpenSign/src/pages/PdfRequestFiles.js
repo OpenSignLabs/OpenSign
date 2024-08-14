@@ -31,6 +31,7 @@ import {
   handleDownloadPdf,
   handleToPrint,
   handleDownloadCertificate,
+  openInNewTab,
   getDefaultSignature
 } from "../constant/Utils";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
@@ -47,6 +48,7 @@ import { useSelector } from "react-redux";
 import SignerListComponent from "../components/pdf/SignerListComponent";
 import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
+import { paidUrl } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 function PdfRequestFiles(props) {
@@ -232,6 +234,15 @@ function PdfRequestFiles(props) {
     const currentUser = JSON.parse(localuser);
     await handleSendOTP(currentUser?.email);
   };
+
+  const handleNavigation = (plan) => {
+    const route = paidUrl(plan);
+    if (route === "/subscription") {
+      window.location.href = route;
+    } else {
+      openInNewTab(route, "_self");
+    }
+  };
   async function checkIsSubscribed(extUserId, contactId) {
     const isGuestSign = isGuestSignFlow || false;
     const res = await fetchSubscription(extUserId, contactId, isGuestSign);
@@ -248,7 +259,7 @@ function PdfRequestFiles(props) {
         if (isGuestSign) {
           setIsSubscriptionExpired(true);
         } else {
-          window.location.href = "/subscription";
+          handleNavigation(plan);
         }
       }
     } else if (isGuestSign) {
@@ -262,7 +273,7 @@ function PdfRequestFiles(props) {
       if (isGuestSign) {
         setIsSubscriptionExpired(true);
       } else {
-        window.location.href = "/subscription";
+        handleNavigation(res.plan);
       }
     }
   }

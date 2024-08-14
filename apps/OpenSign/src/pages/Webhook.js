@@ -10,6 +10,7 @@ import Tooltip from "../primitives/Tooltip";
 import Loader from "../primitives/Loader";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
+import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 function Webhook() {
@@ -19,7 +20,7 @@ function Webhook() {
   const [webhook, setWebhook] = useState();
   const [isLoader, setIsLoader] = useState(true);
   const [isModal, setIsModal] = useState(false);
-  const [isSubscribe, setIsSubscribe] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: true });
   const [error, setError] = useState("");
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isTour, setIsTour] = useState(false);
@@ -35,8 +36,8 @@ function Webhook() {
   ];
   const fetchWebhook = async () => {
     if (isEnableSubscription) {
-      const getIsSubscribe = await checkIsSubscribed();
-      setIsSubscribe(getIsSubscribe);
+      const subscribe = await checkIsSubscribed();
+      setIsSubscribe(subscribe);
     }
     try {
       const extRes = await Parse.Cloud.run("getUserDetails");
@@ -89,7 +90,7 @@ function Webhook() {
   };
 
   const handleModal = () => {
-    if (!isSubscribe && isEnableSubscription) {
+    if (!validplan[isSubscribe.plan] && isEnableSubscription) {
       setIsTour(true);
     } else {
       setIsModal(!isModal);
@@ -177,9 +178,9 @@ function Webhook() {
               </div>
             </ModalUi>
           </div>
-          {!isSubscribe && isEnableSubscription && (
+          {!validplan[isSubscribe.plan] && isEnableSubscription && (
             <div data-tut="webhooksubscribe">
-              <SubscribeCard />
+              <SubscribeCard plan_code={isSubscribe.plan} />
             </div>
           )}
         </>

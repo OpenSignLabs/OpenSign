@@ -8,9 +8,10 @@ import ModalUi from "../primitives/ModalUi";
 import pad from "../assets/images/pad.svg";
 import AddTeam from "../components/AddTeam";
 import { isEnableSubscription } from "../constant/const";
-import { checkIsSubscribedTeam } from "../constant/Utils";
+import { checkIsSubscribed } from "../constant/Utils";
 import SubscribeCard from "../primitives/SubscribeCard";
 import Title from "../components/Title";
+import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
 
 const heading = ["Sr.No", "Name", "Parent Team", "Active"];
@@ -38,7 +39,7 @@ const TeamList = () => {
   const [isActiveModal, setIsActiveModal] = useState({});
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isActLoader, setIsActLoader] = useState({});
-  const [isSubscribe, setIsSubscribe] = useState(false);
+  const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: false });
   const [isEditModal, setIsEditModal] = useState({});
   const [isAdmin, setIsAdmin] = useState(false);
   const startIndex = (currentPage - 1) * recordperPage; // user per page
@@ -103,8 +104,8 @@ const TeamList = () => {
     try {
       setIsLoader(true);
       if (isEnableSubscription) {
-        const getIsSubscribe = await checkIsSubscribedTeam();
-        setIsSubscribe(getIsSubscribe);
+        const subscribe = await checkIsSubscribed();
+        setIsSubscribe(subscribe);
       }
       const extUser = JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       if (extUser) {
@@ -225,15 +226,11 @@ const TeamList = () => {
           <Loader />
         </div>
       )}
-      {isSubscribe && isEnableSubscription && !isLoader && (
+      {validplan[isSubscribe.plan] && isEnableSubscription && !isLoader && (
         <>
           {isAdmin ? (
             <div className="p-2 w-full bg-base-100 text-base-content op-card shadow-lg">
-              {isAlert.msg && (
-                <Alert type={isAlert.type}>
-                  <div className="ml-3">{isAlert.msg}</div>
-                </Alert>
-              )}
+              {isAlert.msg && <Alert type={isAlert.type}>{isAlert.msg}</Alert>}
               <div className="flex flex-row items-center justify-between my-2 mx-3 text-[20px] md:text-[23px]">
                 <div className="font-light">
                   {t("report-name.Teams")}
@@ -470,9 +467,13 @@ const TeamList = () => {
           )}
         </>
       )}
-      {!isSubscribe && isEnableSubscription && !isLoader && (
+      {!validplan[isSubscribe.plan] && isEnableSubscription && !isLoader && (
         <div data-tut="apisubscribe">
-          <SubscribeCard plan={"TEAMS"} price={"20"} />
+          <SubscribeCard
+            plan={"TEAMS"}
+            price={"20"}
+            plan_code={isSubscribe.plan}
+          />
         </div>
       )}
     </div>
