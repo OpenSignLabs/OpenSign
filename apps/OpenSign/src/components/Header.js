@@ -107,14 +107,14 @@ const Header = ({ showSidebar }) => {
     <div>
       {isEnableSubscription && (
         <div className="shadow py-1 text-center bg-[#CAE4FA] text-[14px] p-1">
-          We have introduced 🎉 a public profile signing feature, please attach
-          your
+          New Feature: Public Profiles are now live! Create and share public
+          templates with ease—
           <span
-            className="underline cursor-pointer text-blue-800 ml-[2px]"
+            className="cursor-pointer font-medium hover:underline"
             onClick={() => navigate("/profile")}
           >
             {" "}
-            public profile URL
+            Setup Now.
           </span>
         </div>
       )}
