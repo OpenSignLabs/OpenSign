@@ -1379,11 +1379,11 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        let checkboxOptionGapFromTop, isCheck;
+        let checkboxGapFromTop, isCheck, checkboxOptionGapTop;
         let y = yPos(position);
         const optionsFontSize = fontSize || 13;
-        const checkboxSize = 18;
-        const checkboxTextGapFromLeft = 22;
+        const checkboxSize = fontSize;
+        const checkboxTextGapFromLeft = fontSize + 5 || 22;
         if (position?.options?.values.length > 0) {
           position?.options?.values.forEach((item, ind) => {
             const checkboxRandomId = "checkbox" + randomId();
@@ -1400,9 +1400,11 @@ export const multiSignEmbed = async (
             const checkbox = form.createCheckBox(checkboxRandomId);
 
             if (ind > 0) {
-              y = y + checkboxOptionGapFromTop;
+              y = y + checkboxGapFromTop;
+              checkboxOptionGapTop = checkboxOptionGapTop + fontSize;
             } else {
-              checkboxOptionGapFromTop = 26;
+              checkboxGapFromTop = fontSize + 5 || 26;
+              checkboxOptionGapTop = y - 7;
             }
 
             if (!position?.options?.isHideLabel) {
@@ -1410,7 +1412,7 @@ export const multiSignEmbed = async (
               const optionsPosition = compensateRotation(
                 page.getRotation().angle,
                 xPos(position) + checkboxTextGapFromLeft,
-                y,
+                checkboxOptionGapTop,
                 1,
                 page.getSize(),
                 optionsFontSize,
