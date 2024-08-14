@@ -110,7 +110,7 @@ const Header = ({ showSidebar }) => {
           New Feature: Public Profiles are now live! Create and share public
           templates with ease—
           <span
-            className="cursor-pointer font-medium hover:underline"
+            className="cursor-pointer font-medium underline text-blue-800"
             onClick={() => navigate("/profile")}
           >
             {" "}
