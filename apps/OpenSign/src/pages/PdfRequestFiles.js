@@ -132,6 +132,9 @@ function PdfRequestFiles(props) {
   const [res, setRes] = useState({});
   const [documentId, setDocumentId] = useState("");
   const [isPublicContact, setIsPublicContact] = useState(false);
+  const [rotateDegree, setRotateDegree] = useState(0);
+  const [pdfRotateBase64, setPdfRotatese64] = useState("");
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
 
@@ -298,6 +301,20 @@ function PdfRequestFiles(props) {
           : [];
 
       if (documentData && documentData.length > 0) {
+        const url =
+          documentData[0] &&
+          (documentData[0]?.SignedUrl || documentData[0]?.URL);
+        if (url) {
+          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+          const arrayBuffer = await convertPdfArrayBuffer(url);
+          if (arrayBuffer === "Error") {
+            setHandleError(t("something-went-wrong-mssg"));
+          } else {
+            setPdfArrayBuffer(arrayBuffer);
+          }
+        } else {
+          setHandleError(t("something-went-wrong-mssg"));
+        }
         setIsPublicTemplate(true);
         const getPublicRole = documentData[0]?.PublicRole[0];
         const getUniqueIdDetails = documentData[0]?.Placeholders.find(
@@ -361,6 +378,20 @@ function PdfRequestFiles(props) {
       //getting document details
       const documentData = await contractDocument(documentId || docId);
       if (documentData && documentData.length > 0) {
+        const url =
+          documentData[0] &&
+          (documentData[0]?.SignedUrl || documentData[0]?.URL);
+        if (url) {
+          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+          const arrayBuffer = await convertPdfArrayBuffer(url);
+          if (arrayBuffer === "Error") {
+            setHandleError(t("something-went-wrong-mssg"));
+          } else {
+            setPdfArrayBuffer(arrayBuffer);
+          }
+        } else {
+          setHandleError(t("something-went-wrong-mssg"));
+        }
         setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
         const isCompleted =
           documentData[0].IsCompleted && documentData[0].IsCompleted;
@@ -643,6 +674,7 @@ function PdfRequestFiles(props) {
     }
   };
 
+  console.log("base64", pdfRotateBase64);
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
     //for emailVerified data checking first in localstorage
@@ -818,30 +850,9 @@ function PdfRequestFiles(props) {
             setIsUiLoading(true);
             // `widgets` is Used to return widgets details with page number of current user
             const widgets = checkUser?.[0]?.placeHolder;
-            let pdfArrBuffer;
-            //`contractDocument` function used to get updated SignedUrl
-            //resolved issue of sign document by multiple signers simultaneously
-            const documentData = await contractDocument(documentId);
-            if (documentData && documentData.length > 0) {
-              const url = documentData[0]?.SignedUrl || documentData[0]?.URL;
-              //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-              const arrayBuffer = await convertPdfArrayBuffer(url);
-              if (arrayBuffer === "Error") {
-                setHandleError(t("invalid-document"));
-              } else {
-                pdfArrBuffer = arrayBuffer;
-              }
-            } else if (
-              documentData === "Error: Something went wrong!" ||
-              (documentData.result && documentData.result.error)
-            ) {
-              setHandleError(t("something-went-wrong-mssg"));
-            } else {
-              setHandleError(t("document-not-found"));
-            }
 
             // Load a PDFDocument from the existing PDF bytes
-            const existingPdfBytes = pdfArrBuffer;
+            const existingPdfBytes = pdfArrayBuffer;
             try {
               const pdfDoc = await PDFDocument.load(existingPdfBytes);
               const isSignYourSelfFlow = false;
@@ -1111,6 +1122,7 @@ function PdfRequestFiles(props) {
   //function for change page
   function changePage(offset) {
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
+    setRotateDegree(0);
   }
 
   //function for image upload or update
@@ -1911,6 +1923,8 @@ function PdfRequestFiles(props) {
                   setPageNumber={setPageNumber}
                   pageNumber={pageNumber}
                   containerWH={containerWH}
+                  setRotateDegree={setRotateDegree}
+                  pdfRotateBase64={pdfRotateBase64}
                 />
                 {/* pdf render view */}
                 <div className=" w-full md:w-[57%] flex mr-4">
@@ -1920,6 +1934,16 @@ function PdfRequestFiles(props) {
                     containerWH={containerWH}
                     setZoomPercent={setZoomPercent}
                     zoomPercent={zoomPercent}
+                    setRotateDegree={setRotateDegree}
+                    rotateDegree={rotateDegree}
+                    file={
+                      pdfDetails[0] &&
+                      (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
+                    }
+                    setPdfArrayBuffer={setPdfArrayBuffer}
+                    setPdfRotatese64={setPdfRotatese64}
+                    pageNumber={pageNumber}
+                    pdfRotateBase64={pdfRotateBase64}
                   />
                   <div className=" w-full md:w-[95%] ">
                     {/* this modal is used show this document is already sign */}
@@ -2108,6 +2132,7 @@ function PdfRequestFiles(props) {
                           uniqueId={uniqueId}
                           ispublicTemplate={isPublicTemplate}
                           handleUserDetails={handleUserDetails}
+                          pdfRotateBase64={pdfRotateBase64}
                         />
                       )}
                     </div>

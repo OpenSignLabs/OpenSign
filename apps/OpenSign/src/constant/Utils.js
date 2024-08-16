@@ -1,7 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 import React from "react";
-import { rgb } from "pdf-lib";
+import { PDFDocument, rgb, degrees } from "pdf-lib";
 import Parse from "parse";
 import { appInfo } from "./appinfo";
 import { saveAs } from "file-saver";
@@ -1629,8 +1629,8 @@ export const multiSignEmbed = async (
     });
   }
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-  //console.log("pdf", pdfBytes);
-  return pdfBytes;
+  console.log("pdf", pdfBytes);
+  //return pdfBytes;
 };
 
 // function for validating URLs
@@ -2170,9 +2170,11 @@ function compensateRotation(
   font,
   page
 ) {
+  // Ensure pageRotation is between 0 and 360 degrees
+  pageRotation = ((pageRotation % 360) + 360) % 360;
   let rotationRads = (pageRotation * Math.PI) / 180;
 
-  //These coords are now from bottom/left
+  // Coordinates are from bottom-left
   let coordsFromBottomLeft = { x: x / scale };
   if (pageRotation === 90 || pageRotation === 270) {
     coordsFromBottomLeft.y = dimensions.width - (y + fontSize) / scale;
@@ -2182,6 +2184,7 @@ function compensateRotation(
 
   let drawX = null;
   let drawY = null;
+
   if (pageRotation === 90) {
     drawX =
       coordsFromBottomLeft.x * Math.cos(rotationRads) -
@@ -2207,8 +2210,8 @@ function compensateRotation(
       coordsFromBottomLeft.x * Math.sin(rotationRads) +
       coordsFromBottomLeft.y * Math.cos(rotationRads) +
       dimensions.height;
-  } else {
-    //no rotation
+  } else if (pageRotation === 0 || pageRotation === 360) {
+    // No rotation or full rotation
     drawX = coordsFromBottomLeft.x;
     drawY = coordsFromBottomLeft.y;
   }
@@ -2312,3 +2315,43 @@ export const getDefaultSignature = async (objectId) => {
     };
   }
 };
+
+//function to rotate pdf page
+export async function rotatePdfPage(
+  url,
+  rotateDegree,
+  pageNumber,
+  pdfRotateBase64
+) {
+  let file;
+  if (pdfRotateBase64) {
+    file = base64ToArrayBuffer(pdfRotateBase64);
+  } else {
+    file = await convertPdfArrayBuffer(pdfRotateBase64 || url);
+  }
+  // Load the existing PDF
+  const pdfDoc = await PDFDocument.load(file);
+  // Get the page according to page number
+  const page = pdfDoc.getPage(pageNumber);
+  // Rotate the page
+  page.setRotation(degrees(rotateDegree));
+  // Serialize the PDFDocument to bytes (a Uint8Array)
+  const base64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+  // console.log("pdfBytes",base64)
+  //convert base64 to arraybuffer
+  const arrayBuffer = base64ToArrayBuffer(base64);
+  return { arrayBuffer: arrayBuffer, base64: base64 };
+}
+function base64ToArrayBuffer(base64) {
+  // Decode the base64 string to a binary string
+  const binaryString = atob(base64);
+  // Create a new ArrayBuffer with the same length as the binary string
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  // Convert the binary string to a byte array
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  // Return the ArrayBuffer
+  return bytes.buffer;
+}

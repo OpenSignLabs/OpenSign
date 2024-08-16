@@ -26,7 +26,8 @@ import {
   radioButtonWidget,
   fetchSubscription,
   getContainerScale,
-  openInNewTab
+  openInNewTab,
+  convertPdfArrayBuffer
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -93,6 +94,9 @@ const TemplatePlaceholder = () => {
   const [isNameModal, setIsNameModal] = useState(false);
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
+  const [rotateDegree, setRotateDegree] = useState(0);
+  const [pdfRotateBase64, setPdfRotatese64] = useState("");
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -230,6 +234,18 @@ const TemplatePlaceholder = () => {
           : [];
 
       if (documentData && documentData.length > 0) {
+        const url = documentData[0] && documentData[0]?.URL;
+        if (url) {
+          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
+          const arrayBuffer = await convertPdfArrayBuffer(url);
+          if (arrayBuffer === "Error") {
+            setHandleError(t("something-went-wrong-mssg"));
+          } else {
+            setPdfArrayBuffer(arrayBuffer);
+          }
+        } else {
+          setHandleError(t("something-went-wrong-mssg"));
+        }
         if (isEnableSubscription) {
           checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
         }
@@ -691,6 +707,7 @@ const TemplatePlaceholder = () => {
   function changePage(offset) {
     setSignBtnPosition([]);
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
+    setRotateDegree(0);
   }
 
   //function for capture position on hover or touch widgets
@@ -1321,6 +1338,16 @@ const TemplatePlaceholder = () => {
                   containerWH={containerWH}
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}
+                  setRotateDegree={setRotateDegree}
+                  rotateDegree={rotateDegree}
+                  file={
+                    pdfDetails[0] &&
+                    (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
+                  }
+                  setPdfArrayBuffer={setPdfArrayBuffer}
+                  setPdfRotatese64={setPdfRotatese64}
+                  pageNumber={pageNumber}
+                  pdfRotateBase64={pdfRotateBase64}
                 />
                 <div className="w-full md:w-[95%]">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
@@ -1496,6 +1523,7 @@ const TemplatePlaceholder = () => {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
+                        pdfRotateBase64={pdfRotateBase64}
                       />
                     )}
                   </div>
