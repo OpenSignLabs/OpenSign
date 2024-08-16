@@ -671,7 +671,6 @@ function PdfRequestFiles(props) {
       });
     }
   };
-
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
     //for emailVerified data checking first in localstorage
