@@ -790,7 +790,9 @@ export const onChangeInput = (
   initial,
   dateFormat,
   isDefaultEmpty,
-  isRadio
+  isRadio,
+  fontSize,
+  fontColor
 ) => {
   const isSigners = xyPostion.some((data) => data.signerPtr);
   let filterSignerPos;
@@ -817,6 +819,8 @@ export const onChangeInput = (
                 options: {
                   ...position.options,
                   response: value,
+                  fontSize: fontSize,
+                  fontColor: fontColor,
                   validation: {
                     type: "date-format",
                     format: dateFormat // This indicates the required date format explicitly.
@@ -872,6 +876,8 @@ export const onChangeInput = (
             options: {
               ...positionData.options,
               response: value,
+              fontSize: fontSize,
+              fontColor: fontColor,
               validation: {
                 type: "date-format",
                 format: dateFormat // This indicates the required date format explicitly.
@@ -1276,6 +1282,21 @@ const calculateFontSize = (position, containerScale, signyourself) => {
     return font / containerScale;
   }
 };
+
+const getWidgetsFontColor = (type) => {
+  switch (type) {
+    case "red":
+      return rgb(1, 0, 0);
+    case "black":
+      return rgb(0, 0, 0);
+    case "blue":
+      return rgb(0, 0, 1);
+    case "yellow":
+      return rgb(0.9, 1, 0);
+    default:
+      return rgb(0, 0, 0);
+  }
+};
 //function for embed multiple signature using pdf-lib
 export const multiSignEmbed = async (
   widgets,
@@ -1384,6 +1405,9 @@ export const multiSignEmbed = async (
           return resizePos;
         }
       };
+      const color = position?.options?.fontColor;
+      const updateColorInRgb = getWidgetsFontColor(color);
+      const fontSize = parseInt(position?.options?.fontSize);
       const widgetTypeExist = [
         textWidget,
         textInputWidget,
@@ -1394,11 +1418,11 @@ export const multiSignEmbed = async (
         "email"
       ].includes(position.type);
       if (position.type === "checkbox") {
-        let checkboxOptionGapFromTop, isCheck;
+        let checkboxGapFromTop, isCheck;
         let y = yPos(position);
-        const optionsFontSize = 13;
-        const checkboxSize = 18;
-        const checkboxTextGapFromLeft = 22;
+        const optionsFontSize = fontSize || 13;
+        const checkboxSize = fontSize;
+        const checkboxTextGapFromLeft = fontSize + 5 || 22;
         if (position?.options?.values.length > 0) {
           position?.options?.values.forEach((item, ind) => {
             const checkboxRandomId = "checkbox" + randomId();
@@ -1415,9 +1439,9 @@ export const multiSignEmbed = async (
             const checkbox = form.createCheckBox(checkboxRandomId);
 
             if (ind > 0) {
-              y = y + checkboxOptionGapFromTop;
+              y = y + checkboxGapFromTop;
             } else {
-              checkboxOptionGapFromTop = 26;
+              checkboxGapFromTop = fontSize + 5 || 26;
             }
 
             if (!position?.options?.isHideLabel) {
@@ -1429,7 +1453,7 @@ export const multiSignEmbed = async (
                 1,
                 page.getSize(),
                 optionsFontSize,
-                rgb(0, 0, 0),
+                updateColorInRgb,
                 font,
                 page
               );
@@ -1460,20 +1484,6 @@ export const multiSignEmbed = async (
           signyourself
         );
         parseInt(fontSize);
-
-        const color = position?.options?.fontColor;
-        let updateColorInRgb;
-        if (color === "red") {
-          updateColorInRgb = rgb(1, 0, 0);
-        } else if (color === "black") {
-          updateColorInRgb = rgb(0, 0, 0);
-        } else if (color === "blue") {
-          updateColorInRgb = rgb(0, 0, 1);
-        } else if (color === "yellow") {
-          updateColorInRgb = rgb(0.9, 1, 0);
-        } else {
-          updateColorInRgb = rgb(0, 0, 0);
-        }
         let textContent;
         if (position?.options?.response) {
           textContent = position.options?.response;
@@ -1552,6 +1562,8 @@ export const multiSignEmbed = async (
           y += 18; // Adjust the line height as needed
         }
       } else if (position.type === "dropdown") {
+        const fontsize = parseInt(position?.options?.fontSize) || 12;
+
         const dropdownRandomId = "dropdown" + randomId();
         const dropdown = form.createDropdown(dropdownRandomId);
         dropdown.addOptions(position?.options?.values);
@@ -1560,31 +1572,41 @@ export const multiSignEmbed = async (
         } else if (position?.options?.defaultValue) {
           dropdown.select(position?.options?.defaultValue);
         }
+        // Define the default appearance string
+        // Example format: `/FontName FontSize Tf 0 g` where:
+        // - `/FontName` is the name of the font (e.g., `/Helv` for Helvetica)
+        // - `FontSize` is the size you want to set (e.g., 12)
+        // - `Tf` specifies the font and size
+        // - `0 g` sets the text color to black
+        const defaultAppearance = `/Helv ${fontsize} Tf 0 g`;
+        // Set the default appearance for the dropdown field
+        dropdown.acroField.setDefaultAppearance(defaultAppearance);
+        dropdown.setFontSize(fontsize);
         const dropdownObj = {
           x: xPos(position),
           y: yPos(position),
           width: widgetWidth,
           height: widgetHeight
         };
-        dropdown.defaultUpdateAppearances(font);
         const dropdownOption = getWidgetPosition(page, dropdownObj, 1);
         const dropdownSelected = { ...dropdownOption, font: font };
+        dropdown.defaultUpdateAppearances(font);
         dropdown.addToPage(page, dropdownSelected);
         dropdown.enableReadOnly();
       } else if (position.type === radioButtonWidget) {
         const radioRandomId = "radio" + randomId();
         const radioGroup = form.createRadioGroup(radioRandomId);
         let radioOptionGapFromTop;
-        const optionsFontSize = 16;
-        const radioTextGapFromLeft = 20;
-        const radioSize = 18;
+        const optionsFontSize = fontSize || 13;
+        const radioTextGapFromLeft = fontSize + 5 || 20;
+        const radioSize = fontSize;
         let y = yPos(position);
         if (position?.options?.values.length > 0) {
           position?.options?.values.forEach((item, ind) => {
             if (ind > 0) {
               y = y + radioOptionGapFromTop;
             } else {
-              radioOptionGapFromTop = 25;
+              radioOptionGapFromTop = fontSize + 10 || 25;
             }
             if (!position?.options?.isHideLabel) {
               // below line of code is used to embed label with radio button in pdf
@@ -1596,7 +1618,7 @@ export const multiSignEmbed = async (
                 1,
                 page.getSize(),
                 optionsFontSize,
-                rgb(0, 0, 0),
+                updateColorInRgb,
                 font,
                 page
               );
