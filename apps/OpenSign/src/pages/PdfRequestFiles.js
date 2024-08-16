@@ -1324,7 +1324,6 @@ function PdfRequestFiles(props) {
   const handleDontShow = (isChecked) => {
     setIsDontShow(isChecked);
   };
-  // console.log("signerpos", signerPos);
   //function to close tour and save tour status
   const closeRequestSignTour = async () => {
     setRequestSignTour(true);
