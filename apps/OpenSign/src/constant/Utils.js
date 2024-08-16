@@ -1656,8 +1656,8 @@ export const multiSignEmbed = async (
     });
   }
   const pdfBytes = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-  console.log("pdf", pdfBytes);
-  //return pdfBytes;
+  //console.log("pdf", pdfBytes);
+  return pdfBytes;
 };
 
 // function for validating URLs
