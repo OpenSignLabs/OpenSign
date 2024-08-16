@@ -917,8 +917,21 @@ const TemplatePlaceholder = () => {
   const handleCreateDocModal = async () => {
     setIsCreateDocModal(false);
     setIsCreateDoc(true);
+    let pdfUrl = pdfDetails[0]?.URL;
+    if (pdfRotateBase64) {
+      try {
+        pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfRotateBase64);
+      } catch (e) {
+        console.log("error to convertBase64ToFile in placeholder flow", e);
+      }
+    }
     // handle create document
-    const res = await createDocument(pdfDetails, signerPos, signersdata);
+    const res = await createDocument(
+      pdfDetails,
+      signerPos,
+      signersdata,
+      pdfUrl
+    );
     if (res.status === "success") {
       navigate(`/placeHolderSign/${res.id}`, {
         state: { title: "Use Template" }

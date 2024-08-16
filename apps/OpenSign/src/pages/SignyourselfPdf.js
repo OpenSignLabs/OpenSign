@@ -795,6 +795,7 @@ function SignYourSelf() {
       const signedpdf = JSON.parse(JSON.stringify(resSignPdf));
       setPdfUrl(signedpdf);
       getDocumentDetails(false);
+      setPdfRotatese64("");
     }
   };
 
