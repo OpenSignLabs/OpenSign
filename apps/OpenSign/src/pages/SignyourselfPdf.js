@@ -123,7 +123,6 @@ function SignYourSelf() {
   const [zoomPercent, setZoomPercent] = useState(0);
   const isHeader = useSelector((state) => state.showHeader);
   const [scale, setScale] = useState(1);
-  const [rotateDegree, setRotateDegree] = useState(0);
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const divRef = useRef(null);
   const nodeRef = useRef(null);
@@ -864,7 +863,6 @@ function SignYourSelf() {
   function changePage(offset) {
     setSignBtnPosition([]);
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
-    setRotateDegree(0);
   }
   //function for image upload or update
   const onImageChange = (event) => {
@@ -1216,7 +1214,6 @@ function SignYourSelf() {
               setSignBtnPosition={setSignBtnPosition}
               pageNumber={pageNumber}
               containerWH={containerWH}
-              setRotateDegree={setRotateDegree}
               pdfRotateBase64={pdfRotateBase64}
             />
             <div className=" w-full md:w-[57%] flex mr-4">
@@ -1226,8 +1223,6 @@ function SignYourSelf() {
                 containerWH={containerWH}
                 setZoomPercent={setZoomPercent}
                 zoomPercent={zoomPercent}
-                setRotateDegree={setRotateDegree}
-                rotateDegree={rotateDegree}
                 file={
                   pdfDetails[0] &&
                   (pdfDetails[0].SignedUrl || pdfDetails[0].URL)

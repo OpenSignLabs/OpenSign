@@ -1071,13 +1071,18 @@ export const embedDocId = async (pdfDoc, documentId, allPages) => {
     const textContent = documentId && `OpenSign™ DocumentId: ${documentId} `;
     const pages = pdfDoc.getPages();
     const page = pages[i];
-    page.drawText(textContent, {
-      x: 10,
-      y: page.getHeight() - 10,
-      size: fontSize,
+    const getObj = compensateRotation(
+      page.getRotation().angle,
+      10,
+      5,
+      1,
+      page.getSize(),
+      fontSize,
+      rgb(0.5, 0.5, 0.5),
       font,
-      color: rgb(0.5, 0.5, 0.5)
-    });
+      page
+    );
+    page.drawText(textContent, getObj);
   }
 };
 
@@ -2324,23 +2329,33 @@ export async function rotatePdfPage(
   pdfRotateBase64
 ) {
   let file;
+
+  //condition to handle pdf base64 in arrayBuffer format
   if (pdfRotateBase64) {
     file = base64ToArrayBuffer(pdfRotateBase64);
   } else {
-    file = await convertPdfArrayBuffer(pdfRotateBase64 || url);
+    //condition to handle pdf url in arrayBuffer format
+    file = await convertPdfArrayBuffer(url);
   }
   // Load the existing PDF
   const pdfDoc = await PDFDocument.load(file);
   // Get the page according to page number
   const page = pdfDoc.getPage(pageNumber);
-  // Rotate the page
-  page.setRotation(degrees(rotateDegree));
-  // Serialize the PDFDocument to bytes (a Uint8Array)
-  const base64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
-  // console.log("pdfBytes",base64)
-  //convert base64 to arraybuffer
-  const arrayBuffer = base64ToArrayBuffer(base64);
-  return { arrayBuffer: arrayBuffer, base64: base64 };
+  //get current page rotation angle
+  const currentRotation = page.getRotation().angle;
+  // Apply the rotation in the counterclockwise direction
+  let newRotation = (currentRotation + rotateDegree) % 360;
+  // Adjust for negative angles to keep within 0-359 range
+  if (newRotation < 0) {
+    newRotation += 360;
+  }
+  page.setRotation(degrees(newRotation));
+  const pdfbase64 = await pdfDoc.saveAsBase64({ useObjectStreams: false });
+  //convert base64 to arraybuffer is used in pdf-lib
+  //pdfbase64 is used to show pdf rotated format
+  const arrayBuffer = base64ToArrayBuffer(pdfbase64);
+  //`base64` is used to show pdf
+  return { arrayBuffer: arrayBuffer, base64: pdfbase64 };
 }
 function base64ToArrayBuffer(base64) {
   // Decode the base64 string to a binary string
@@ -2355,3 +2370,12 @@ function base64ToArrayBuffer(base64) {
   // Return the ArrayBuffer
   return bytes.buffer;
 }
+
+export const convertBase64ToFile = async (pdfName, pdfBase64) => {
+  const fileName = sanitizeFileName(pdfName) + ".pdf";
+  const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
+  // Save the Parse File if needed
+  const pdfData = await pdfFile.save();
+  const pdfUrl = pdfData.url();
+  return pdfUrl;
+};

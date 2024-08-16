@@ -13,7 +13,6 @@ function RenderAllPdfPage({
   signerPos,
   signerObjectId,
   containerWH,
-  setRotateDegree,
   pdfRotateBase64
 }) {
   const { t } = useTranslation();
@@ -91,7 +90,6 @@ function RenderAllPdfPage({
               } border-2   m-[10px] flex justify-center items-center relative`}
               onClick={() => {
                 setPageNumber(index + 1);
-                setRotateDegree(0);
                 if (setSignBtnPosition) {
                   setSignBtnPosition([]);
                 }
