@@ -61,7 +61,8 @@ function RenderPdf({
   scale,
   setIsSelectId,
   ispublicTemplate,
-  handleUserDetails
+  handleUserDetails,
+  pdfRotateBase64
 }) {
   const { t } = useTranslation();
   const isMobile = window.innerWidth < 767;
@@ -248,6 +249,8 @@ function RenderPdf({
       );
     }
   };
+  const pdfDataBase64 = `data:application/pdf;base64,${pdfRotateBase64}`;
+
   return (
     <>
       {successEmail && (
@@ -405,7 +408,11 @@ function RenderPdf({
                   setSelectWidgetId("");
                 }
               }}
-              file={pdfDetails[0]?.SignedUrl || pdfDetails[0]?.URL}
+              file={
+                (pdfRotateBase64 && pdfDataBase64) ||
+                pdfDetails[0]?.SignedUrl ||
+                pdfDetails[0].URL
+              }
             >
               <Page
                 key={index}
@@ -586,9 +593,14 @@ function RenderPdf({
                 }
               }}
               // ref={pdfRef}
-              file={pdfDetails[0]?.SignedUrl || pdfDetails[0].URL}
+              file={
+                (pdfRotateBase64 && pdfDataBase64) ||
+                pdfDetails[0]?.SignedUrl ||
+                pdfDetails[0].URL
+              }
             >
               <Page
+                // rotate={rotateDegree}
                 key={index}
                 width={containerWH.width}
                 scale={scale || 1}

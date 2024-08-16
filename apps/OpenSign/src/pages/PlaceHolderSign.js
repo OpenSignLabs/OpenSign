@@ -141,6 +141,8 @@ function PlaceHolderSign() {
   const [isCustomize, setIsCustomize] = useState(false);
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
+  const [rotateDegree, setRotateDegree] = useState(0);
+  const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
     accept: "BOX",
@@ -805,6 +807,7 @@ function PlaceHolderSign() {
   function changePage(offset) {
     setSignBtnPosition([]);
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
+    setRotateDegree(0);
   }
 
   //function for capture position on hover or touch widgets
@@ -853,7 +856,7 @@ function PlaceHolderSign() {
       });
       const isSignYourSelfFlow = false;
       try {
-        const pdfBytes = await multiSignEmbed(
+        const pdfBase64 = await multiSignEmbed(
           placeholder,
           pdfDoc,
           isSignYourSelfFlow,
@@ -863,18 +866,29 @@ function PlaceHolderSign() {
         );
 
         const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";
-        const pdfFile = new Parse.File(fileName, { base64: pdfBytes });
+        const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
 
         // Save the Parse File if needed
         const pdfData = await pdfFile.save();
         const pdfUrl = pdfData.url();
         const tenantId = localStorage.getItem("TenantId");
-        const buffer = atob(pdfBytes);
+        const buffer = atob(pdfBase64);
         SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
       } catch (e) {
         console.log("error", e);
       }
+    } else if (pdfRotateBase64) {
+      const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";
+      const pdfFile = new Parse.File(fileName, { base64: pdfRotateBase64 });
+
+      // Save the Parse File if needed
+      const pdfData = await pdfFile.save();
+      const pdfUrl = pdfData.url();
+      const tenantId = localStorage.getItem("TenantId");
+      const buffer = atob(pdfRotateBase64);
+      SaveFileSize(buffer.length, pdfUrl, tenantId);
+      return pdfUrl;
     } else {
       return pdfDetails[0].URL;
     }
@@ -1739,6 +1753,8 @@ function PlaceHolderSign() {
                 setPageNumber={setPageNumber}
                 setSignBtnPosition={setSignBtnPosition}
                 pageNumber={pageNumber}
+                setRotateDegree={setRotateDegree}
+                pdfRotateBase64={pdfRotateBase64}
               />
               {/* pdf render view */}
               <div className=" w-full md:w-[57%] flex mr-4">
@@ -1748,6 +1764,16 @@ function PlaceHolderSign() {
                   containerWH={containerWH}
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}
+                  setRotateDegree={setRotateDegree}
+                  rotateDegree={rotateDegree}
+                  file={
+                    pdfDetails[0] &&
+                    (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
+                  }
+                  setPdfArrayBuffer={setPdfArrayBuffer}
+                  setPdfRotatese64={setPdfRotatese64}
+                  pageNumber={pageNumber}
+                  pdfRotateBase64={pdfRotateBase64}
                 />
                 <div className=" w-full md:w-[95%] ">
                   {/* this modal is used show alert set placeholder for all signers before send mail */}
@@ -2025,6 +2051,7 @@ function PlaceHolderSign() {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
+                        pdfRotateBase64={pdfRotateBase64}
                       />
                     )}
                   </div>
