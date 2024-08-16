@@ -27,7 +27,7 @@ import {
   fetchSubscription,
   getContainerScale,
   openInNewTab,
-  convertPdfArrayBuffer
+  convertBase64ToFile
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import "../styles/AddUser.css";
@@ -94,9 +94,7 @@ const TemplatePlaceholder = () => {
   const [isNameModal, setIsNameModal] = useState(false);
   const [isTextSetting, setIsTextSetting] = useState(false);
   const [pdfLoad, setPdfLoad] = useState(false);
-  const [rotateDegree, setRotateDegree] = useState(0);
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
-  const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const color = [
     "#93a3db",
     "#e6c3db",
@@ -234,18 +232,6 @@ const TemplatePlaceholder = () => {
           : [];
 
       if (documentData && documentData.length > 0) {
-        const url = documentData[0] && documentData[0]?.URL;
-        if (url) {
-          //convert document url in array buffer format to use embed widgets in pdf using pdf-lib
-          const arrayBuffer = await convertPdfArrayBuffer(url);
-          if (arrayBuffer === "Error") {
-            setHandleError(t("something-went-wrong-mssg"));
-          } else {
-            setPdfArrayBuffer(arrayBuffer);
-          }
-        } else {
-          setHandleError(t("something-went-wrong-mssg"));
-        }
         if (isEnableSubscription) {
           checkIsSubscribed(documentData[0]?.ExtUserPtr?.Email);
         }
@@ -707,7 +693,6 @@ const TemplatePlaceholder = () => {
   function changePage(offset) {
     setSignBtnPosition([]);
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
-    setRotateDegree(0);
   }
 
   //function for capture position on hover or touch widgets
@@ -748,6 +733,7 @@ const TemplatePlaceholder = () => {
       handleSaveTemplate();
     }
   };
+
   const handleSaveTemplate = async () => {
     if (signersdata?.length) {
       const loadObj = {
@@ -769,6 +755,17 @@ const TemplatePlaceholder = () => {
           }
         });
       }
+      let pdfUrl = pdfDetails[0]?.URL;
+      if (pdfRotateBase64) {
+        try {
+          pdfUrl = await convertBase64ToFile(
+            pdfDetails[0].Name,
+            pdfRotateBase64
+          );
+        } catch (e) {
+          console.log("error to convertBase64ToFile in placeholder flow", e);
+        }
+      }
       try {
         const data = {
           Placeholders: signerPos,
@@ -779,7 +776,8 @@ const TemplatePlaceholder = () => {
           SendinOrder: pdfDetails[0]?.SendinOrder || false,
           AutomaticReminders: pdfDetails[0]?.AutomaticReminders,
           RemindOnceInEvery: parseInt(pdfDetails[0]?.RemindOnceInEvery),
-          NextReminderDate: pdfDetails[0]?.NextReminderDate
+          NextReminderDate: pdfDetails[0]?.NextReminderDate,
+          URL: pdfUrl
         };
         const updateTemplate = new Parse.Object("contracts_Template");
         updateTemplate.id = templateId;
@@ -1338,13 +1336,10 @@ const TemplatePlaceholder = () => {
                   containerWH={containerWH}
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}
-                  setRotateDegree={setRotateDegree}
-                  rotateDegree={rotateDegree}
                   file={
                     pdfDetails[0] &&
                     (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
                   }
-                  setPdfArrayBuffer={setPdfArrayBuffer}
                   setPdfRotatese64={setPdfRotatese64}
                   pageNumber={pageNumber}
                   pdfRotateBase64={pdfRotateBase64}

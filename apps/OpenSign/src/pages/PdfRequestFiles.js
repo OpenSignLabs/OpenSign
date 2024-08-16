@@ -132,8 +132,6 @@ function PdfRequestFiles(props) {
   const [res, setRes] = useState({});
   const [documentId, setDocumentId] = useState("");
   const [isPublicContact, setIsPublicContact] = useState(false);
-  const [rotateDegree, setRotateDegree] = useState(0);
-  const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const divRef = useRef(null);
@@ -674,7 +672,6 @@ function PdfRequestFiles(props) {
     }
   };
 
-  console.log("base64", pdfRotateBase64);
   //function for embed signature or image url in pdf
   async function embedWidgetsData() {
     //for emailVerified data checking first in localstorage
@@ -1122,7 +1119,6 @@ function PdfRequestFiles(props) {
   //function for change page
   function changePage(offset) {
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
-    setRotateDegree(0);
   }
 
   //function for image upload or update
@@ -1923,8 +1919,6 @@ function PdfRequestFiles(props) {
                   setPageNumber={setPageNumber}
                   pageNumber={pageNumber}
                   containerWH={containerWH}
-                  setRotateDegree={setRotateDegree}
-                  pdfRotateBase64={pdfRotateBase64}
                 />
                 {/* pdf render view */}
                 <div className=" w-full md:w-[57%] flex mr-4">
@@ -1934,16 +1928,7 @@ function PdfRequestFiles(props) {
                     containerWH={containerWH}
                     setZoomPercent={setZoomPercent}
                     zoomPercent={zoomPercent}
-                    setRotateDegree={setRotateDegree}
-                    rotateDegree={rotateDegree}
-                    file={
-                      pdfDetails[0] &&
-                      (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
-                    }
-                    setPdfArrayBuffer={setPdfArrayBuffer}
-                    setPdfRotatese64={setPdfRotatese64}
-                    pageNumber={pageNumber}
-                    pdfRotateBase64={pdfRotateBase64}
+                    isDisableRotate={true}
                   />
                   <div className=" w-full md:w-[95%] ">
                     {/* this modal is used show this document is already sign */}
@@ -2132,7 +2117,6 @@ function PdfRequestFiles(props) {
                           uniqueId={uniqueId}
                           ispublicTemplate={isPublicTemplate}
                           handleUserDetails={handleUserDetails}
-                          pdfRotateBase64={pdfRotateBase64}
                         />
                       )}
                     </div>

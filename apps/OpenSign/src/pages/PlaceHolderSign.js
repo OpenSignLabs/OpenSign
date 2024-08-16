@@ -35,7 +35,8 @@ import {
   fetchSubscription,
   convertPdfArrayBuffer,
   getContainerScale,
-  openInNewTab
+  openInNewTab,
+  convertBase64ToFile
 } from "../constant/Utils";
 import RenderPdf from "../components/pdf/RenderPdf";
 import { useNavigate } from "react-router-dom";
@@ -141,7 +142,7 @@ function PlaceHolderSign() {
   const [isCustomize, setIsCustomize] = useState(false);
   const [zoomPercent, setZoomPercent] = useState(0);
   const [scale, setScale] = useState(1);
-  const [rotateDegree, setRotateDegree] = useState(0);
+
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
   const isMobile = window.innerWidth < 767;
   const [, drop] = useDrop({
@@ -807,7 +808,6 @@ function PlaceHolderSign() {
   function changePage(offset) {
     setSignBtnPosition([]);
     setPageNumber((prevPageNumber) => prevPageNumber + offset);
-    setRotateDegree(0);
   }
 
   //function for capture position on hover or touch widgets
@@ -840,11 +840,6 @@ function PlaceHolderSign() {
   const handleMouseLeave = () => {
     setSignBtnPosition([xySignature]);
   };
-
-  function sanitizeFileName(fileName) {
-    // Remove spaces and invalid characters
-    return fileName.replace(/[^a-zA-Z0-9._-]/g, "");
-  }
   //embed prefill label widget data
   const embedPrefilllData = async () => {
     const prefillExist = signerPos.filter((data) => data.Role === "prefill");
@@ -864,31 +859,27 @@ function PlaceHolderSign() {
           pdfOriginalWH,
           containerWH
         );
-
-        const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";
-        const pdfFile = new Parse.File(fileName, { base64: pdfBase64 });
-
-        // Save the Parse File if needed
-        const pdfData = await pdfFile.save();
-        const pdfUrl = pdfData.url();
+        const pdfUrl = await convertBase64ToFile(pdfDetails[0].Name, pdfBase64);
         const tenantId = localStorage.getItem("TenantId");
         const buffer = atob(pdfBase64);
         SaveFileSize(buffer.length, pdfUrl, tenantId);
         return pdfUrl;
       } catch (e) {
-        console.log("error", e);
+        console.log("error to convertBase64ToFile in placeholder flow", e);
       }
     } else if (pdfRotateBase64) {
-      const fileName = sanitizeFileName(pdfDetails[0].Name) + ".pdf";
-      const pdfFile = new Parse.File(fileName, { base64: pdfRotateBase64 });
-
-      // Save the Parse File if needed
-      const pdfData = await pdfFile.save();
-      const pdfUrl = pdfData.url();
-      const tenantId = localStorage.getItem("TenantId");
-      const buffer = atob(pdfRotateBase64);
-      SaveFileSize(buffer.length, pdfUrl, tenantId);
-      return pdfUrl;
+      try {
+        const pdfUrl = await convertBase64ToFile(
+          pdfDetails[0].Name,
+          pdfRotateBase64
+        );
+        const tenantId = localStorage.getItem("TenantId");
+        const buffer = atob(pdfRotateBase64);
+        SaveFileSize(buffer.length, pdfUrl, tenantId);
+        return pdfUrl;
+      } catch (e) {
+        console.log("error to convertBase64ToFile in placeholder flow", e);
+      }
     } else {
       return pdfDetails[0].URL;
     }
@@ -1753,7 +1744,6 @@ function PlaceHolderSign() {
                 setPageNumber={setPageNumber}
                 setSignBtnPosition={setSignBtnPosition}
                 pageNumber={pageNumber}
-                setRotateDegree={setRotateDegree}
                 pdfRotateBase64={pdfRotateBase64}
               />
               {/* pdf render view */}
@@ -1764,8 +1754,6 @@ function PlaceHolderSign() {
                   containerWH={containerWH}
                   setZoomPercent={setZoomPercent}
                   zoomPercent={zoomPercent}
-                  setRotateDegree={setRotateDegree}
-                  rotateDegree={rotateDegree}
                   file={
                     pdfDetails[0] &&
                     (pdfDetails[0].SignedUrl || pdfDetails[0].URL)

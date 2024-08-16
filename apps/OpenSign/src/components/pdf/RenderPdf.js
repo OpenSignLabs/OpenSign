@@ -600,7 +600,6 @@ function RenderPdf({
               }
             >
               <Page
-                // rotate={rotateDegree}
                 key={index}
                 width={containerWH.width}
                 scale={scale || 1}
