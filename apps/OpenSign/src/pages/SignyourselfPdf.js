@@ -1093,7 +1093,11 @@ function SignYourSelf() {
                 name: dropdownName,
                 values: dropdownOptions,
                 isReadOnly: isReadOnly,
-                isHideLabel: isHideLabel || false
+                isHideLabel: isHideLabel || false,
+                fontSize:
+                  fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                fontColor:
+                  fontColor || currWidgetsDetails?.options?.fontColor || "black"
               }
             };
           }
@@ -1111,6 +1115,8 @@ function SignYourSelf() {
         handleCloseModal();
       }
     }
+    setFontSize();
+    setFontColor();
   };
   const handleCloseModal = () => {
     setCurrWidgetsDetails({});
@@ -1265,6 +1271,10 @@ function SignYourSelf() {
                   setCurrWidgetsDetails={setCurrWidgetsDetails}
                   isSignYourself={true}
                   handleClose={handleCloseModal}
+                  fontSize={fontSize}
+                  setFontSize={setFontSize}
+                  fontColor={fontColor}
+                  setFontColor={setFontColor}
                 />
                 <PlaceholderCopy
                   isPageCopy={isPageCopy}
@@ -1368,6 +1378,10 @@ function SignYourSelf() {
                       handleTextSettingModal={handleTextSettingModal}
                       setScale={setScale}
                       scale={scale}
+                      fontSize={fontSize}
+                      setFontSize={setFontSize}
+                      fontColor={fontColor}
+                      setFontColor={setFontColor}
                     />
                   )}
                 </div>

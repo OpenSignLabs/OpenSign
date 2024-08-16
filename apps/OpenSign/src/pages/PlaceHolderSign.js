@@ -1359,7 +1359,13 @@ function PlaceHolderSign() {
                     values: dropdownOptions,
                     isReadOnly: isReadOnly || false,
                     isHideLabel: isHideLabel || false,
-                    defaultValue: defaultValue
+                    defaultValue: defaultValue,
+                    fontSize:
+                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontColor:
+                      fontColor ||
+                      currWidgetsDetails?.options?.fontColor ||
+                      "black"
                   }
                 };
               }
@@ -1391,7 +1397,13 @@ function PlaceHolderSign() {
                     },
                     defaultValue: defaultValue,
                     isReadOnly: isReadOnly || false,
-                    isHideLabel: isHideLabel || false
+                    isHideLabel: isHideLabel || false,
+                    fontSize:
+                      fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                    fontColor:
+                      fontColor ||
+                      currWidgetsDetails?.options?.fontColor ||
+                      "black"
                   }
                 };
               }
@@ -1403,7 +1415,13 @@ function PlaceHolderSign() {
                   name: dropdownName,
                   status: status,
                   values: dropdownOptions,
-                  defaultValue: defaultValue
+                  defaultValue: defaultValue,
+                  fontSize:
+                    fontSize || currWidgetsDetails?.options?.fontSize || "12",
+                  fontColor:
+                    fontColor ||
+                    currWidgetsDetails?.options?.fontColor ||
+                    "black"
                 }
               };
             }
@@ -1430,6 +1448,8 @@ function PlaceHolderSign() {
         }
       }
     }
+    setFontSize();
+    setFontColor();
   };
   const handleWidgetdefaultdata = (defaultdata) => {
     const options = ["email", "number", "text"];
@@ -1580,7 +1600,6 @@ function PlaceHolderSign() {
   const handleRecipientSign = () => {
     navigate(`/recipientSignPdf/${documentId}/${currentId}`);
   };
-
   const handleLinkUser = (id) => {
     setIsAddUser({ [id]: true });
   };
@@ -1944,6 +1963,10 @@ function PlaceHolderSign() {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
                     isSubscribe={isSubscribe}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                    fontColor={fontColor}
+                    setFontColor={setFontColor}
                   />
                   <DropdownWidgetOption
                     type="checkbox"
@@ -1955,6 +1978,10 @@ function PlaceHolderSign() {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
                     isSubscribe={isSubscribe}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                    fontColor={fontColor}
+                    setFontColor={setFontColor}
                   />
                   <DropdownWidgetOption
                     type="dropdown"
@@ -1966,6 +1993,10 @@ function PlaceHolderSign() {
                     setCurrWidgetsDetails={setCurrWidgetsDetails}
                     handleClose={handleNameModal}
                     isSubscribe={isSubscribe}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                    fontColor={fontColor}
+                    setFontColor={setFontColor}
                   />
 
                   {/* pdf header which contain funish back button */}
@@ -2025,6 +2056,10 @@ function PlaceHolderSign() {
                         setScale={setScale}
                         scale={scale}
                         setIsSelectId={setIsSelectId}
+                        fontSize={fontSize}
+                        setFontSize={setFontSize}
+                        fontColor={fontColor}
+                        setFontColor={setFontColor}
                       />
                     )}
                   </div>
