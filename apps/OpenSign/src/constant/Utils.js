@@ -658,7 +658,12 @@ export const randomId = () => {
   return randomDigit;
 };
 
-export const createDocument = async (template, placeholders, signerData) => {
+export const createDocument = async (
+  template,
+  placeholders,
+  signerData,
+  pdfUrl
+) => {
   if (template && template.length > 0) {
     const Doc = template[0];
 
@@ -681,7 +686,7 @@ export const createDocument = async (template, placeholders, signerData) => {
     }
     const data = {
       Name: Doc.Name,
-      URL: Doc.URL,
+      URL: pdfUrl,
       SignedUrl: Doc.SignedUrl,
       SentToOthers: Doc.SentToOthers,
       Description: Doc.Description,

@@ -26,7 +26,8 @@ function PdfZoom(props) {
       props.pageNumber - 1,
       props.pdfRotateBase64
     );
-    props.setPdfArrayBuffer(urlDetails.arrayBuffer);
+    props?.setPdfArrayBuffer &&
+      props?.setPdfArrayBuffer(urlDetails.arrayBuffer);
     props.setPdfRotatese64(urlDetails.base64);
   };
   return (
