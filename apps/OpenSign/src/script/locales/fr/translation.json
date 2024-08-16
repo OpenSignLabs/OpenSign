@@ -604,5 +604,6 @@
   "Add-seats": "Ajouter des sièges",
   "format": "format",
   "select-date-format": "Sélectionnez un format de date",
-  "rotate-right": "Faire pivoter à droite"
+  "rotate-right": "Faire pivoter à droite",
+  "rotate-left": "Faire pivoter à gauche"
 }
