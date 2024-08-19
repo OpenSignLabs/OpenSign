@@ -1,9 +1,13 @@
 // `GetLogoByDomain` is used to get logo by domain as well as check any tenant exist or not in db
 export default async function GetLogoByDomain(request) {
+  console.log(request.params.domain);
+
   const domain = request.params.domain;
   try {
     const tenantCreditsQuery = new Parse.Query('partners_Tenant');
     tenantCreditsQuery.equalTo('Domain', domain);
+    console.log(tenantCreditsQuery, "Sfsdfds");
+
     const res = await tenantCreditsQuery.first();
     if (res) {
       const updateRes = JSON.parse(JSON.stringify(res));

@@ -13,12 +13,15 @@ async function sendMailProvider(req) {
     let mailgunClient;
     let mailgunDomain;
     if (smtpenable) {
+      console.log("Passou la");
+
       transporterSMTP = createTransport({
         host: process.env.SMTP_HOST,
+
         port: process.env.SMTP_PORT || 465,
         secure: smtpsecure,
         auth: {
-          user: process.env.SMTP_USER_EMAIL,
+          user: "resend",
           pass: process.env.SMTP_PASS,
         },
       });
@@ -86,7 +89,7 @@ async function sendMailProvider(req) {
         const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 
         const messageParams = {
-          from: from + ' <' + mailsender + '>',
+          from: "delivered@resend.dev",
           to: req.params.recipient,
           subject: req.params.subject,
           text: req.params.text || 'mail',
@@ -134,11 +137,12 @@ async function sendMailProvider(req) {
         }
       }
     } else {
-      const from = req.params.from || '';
+      console.log(req.params);
+
       const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
 
       const messageParams = {
-        from: from + ' <' + mailsender + '>',
+        from: "delivered@resend.dev",
         to: req.params.recipient,
         subject: req.params.subject,
         text: req.params.text || 'mail',

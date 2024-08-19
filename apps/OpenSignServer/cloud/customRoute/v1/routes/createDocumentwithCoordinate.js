@@ -245,8 +245,8 @@ export default async function createDocumentwithCoordinate(request, response) {
           });
         }
         const newACL = new Parse.ACL();
-        newACL.setPublicReadAccess(false);
-        newACL.setPublicWriteAccess(false);
+        newACL.setPublicReadAccess(true);
+        newACL.setPublicWriteAccess(true);
         newACL.setReadAccess(userPtr.objectId, true);
         newACL.setWriteAccess(userPtr.objectId, true);
         object.setACL(newACL);

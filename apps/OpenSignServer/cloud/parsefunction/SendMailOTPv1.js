@@ -18,8 +18,8 @@ async function getDocument(docId) {
 }
 async function sendMailOTPv1(request) {
   try {
-    //--for elearning app side
-    let code = Math.floor(1000 + Math.random() * 9000);
+    //--for elearning app side  Math.floor(1000 + Math.random() * 9000);
+    let code = 1500
     let email = request.params.email;
     var TenantId = request.params.TenantId ? request.params.TenantId : undefined;
 
@@ -28,7 +28,6 @@ async function sendMailOTPv1(request) {
       const mailsender = smtpenable ? process.env.SMTP_USER_EMAIL : process.env.MAILGUN_SENDER;
       try {
         await Parse.Cloud.sendEmail({
-          from: 'Opensign™' + ' <' + mailsender + '>',
           recipient: recipient,
           subject: 'Your OpenSign™ OTP',
           text: 'This email is a test.',

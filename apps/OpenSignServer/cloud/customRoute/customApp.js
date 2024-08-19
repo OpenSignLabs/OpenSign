@@ -16,6 +16,9 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.post('/file_upload', uploadFile);
+app.get("/test", (req, res) => {
+    res.send("test")
+})
 
 app.post('/savesubscription', saveSubscription);
 app.post('/saveinvoice', saveInvoice);

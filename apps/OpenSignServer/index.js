@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import morgan from 'morgan';
 import express from 'express';
 import cors from 'cors';
+import getUser from '../OpenSignServer/cloud/customRoute/v1/routes/getUser.js';
 import { ParseServer } from 'parse-server';
 import path from 'path';
 const __dirname = path.resolve();
@@ -93,7 +95,7 @@ export const config = {
     import('./cloud/main.js');
   },
   appId: process.env.APP_ID || 'opensign',
-  logLevel: ['error'],
+  logLevel: ['error', "info"],
   maxLimit: 500,
   maxUploadSize: '30mb',
   masterKey: process.env.MASTER_KEY, //Add your master key here. Keep it secret!
@@ -108,37 +110,37 @@ export const config = {
   encodeParseObjectInCloudFunction: true,
   ...(isMailAdapter === true
     ? {
-        emailAdapter: {
-          module: 'parse-server-api-mail-adapter',
-          options: {
-            // The email address from which emails are sent.
-            sender: 'Opensign™' + ' <' + mailsender + '>',
-            // The email templates.
-            templates: {
-              // The template used by Parse Server to send an email for password
-              // reset; this is a reserved template name.
-              passwordResetEmail: {
-                subjectPath: './files/password_reset_email_subject.txt',
-                textPath: './files/password_reset_email.txt',
-                htmlPath: './files/password_reset_email.html',
-              },
-              // The template used by Parse Server to send an email for email
-              // address verification; this is a reserved template name.
-              verificationEmail: {
-                subjectPath: './files/verification_email_subject.txt',
-                textPath: './files/verification_email.txt',
-                htmlPath: './files/verification_email.html',
-              },
+      emailAdapter: {
+        module: 'parse-server-api-mail-adapter',
+        options: {
+          // The email address from which emails are sent.
+          sender: 'delivered@resend.dev',
+          // The email templates.
+          templates: {
+            // The template used by Parse Server to send an email for password
+            // reset; this is a reserved template name.
+            passwordResetEmail: {
+              subjectPath: './files/password_reset_email_subject.txt',
+              textPath: './files/password_reset_email.txt',
+              htmlPath: './files/password_reset_email.html',
             },
-            apiCallback: async ({ payload, locale }) => {
-              if (mailgunClient) {
-                const mailgunPayload = ApiPayloadConverter.mailgun(payload);
-                await mailgunClient.messages.create(mailgunDomain, mailgunPayload);
-              } else if (transporterMail) await transporterMail.sendMail(payload);
+            // The template used by Parse Server to send an email for email
+            // address verification; this is a reserved template name.
+            verificationEmail: {
+              subjectPath: './files/verification_email_subject.txt',
+              textPath: './files/verification_email.txt',
+              htmlPath: './files/verification_email.html',
             },
           },
+          apiCallback: async ({ payload, locale }) => {
+            if (mailgunClient) {
+              const mailgunPayload = ApiPayloadConverter.mailgun(payload);
+              await mailgunClient.messages.create(mailgunDomain, mailgunPayload);
+            } else if (transporterMail) await transporterMail.sendMail(payload);
+          },
         },
-      }
+      },
+    }
     : {}),
   filesAdapter: fsAdapter,
   auth: {
@@ -153,6 +155,7 @@ export const config = {
 // javascriptKey, restAPIKey, dotNetKey, clientKey
 
 export const app = express();
+app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -201,6 +204,7 @@ app.use('/', customRoute);
 
 // Mount v1
 app.use('/v1', v1);
+
 
 // Parse Server plays nicely with the rest of your web routes
 app.get('/', function (req, res) {
