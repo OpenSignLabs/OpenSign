@@ -4,6 +4,8 @@ import ModalUi from "../../primitives/ModalUi";
 import { radioButtonWidget } from "../../constant/Utils";
 import Upgrade from "../../primitives/Upgrade";
 import { useTranslation } from "react-i18next";
+import { fontColorArr, fontsizeArr } from "../../constant/Utils";
+
 function DropdownWidgetOption(props) {
   const { t } = useTranslation();
   const [dropdownOptionList, setDropdownOptionList] = useState([
@@ -330,6 +332,55 @@ function DropdownWidgetOption(props) {
                 </div>
               </>
             )}
+            <div className="flex items-center mt-3 mb-3">
+              <span>{t("font-size")} :</span>
+              <select
+                className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                value={
+                  props.fontSize ||
+                  props.currWidgetsDetails?.options?.fontSize ||
+                  "12"
+                }
+                onChange={(e) => props.setFontSize(e.target.value)}
+              >
+                {fontsizeArr.map((size, ind) => {
+                  return (
+                    <option className="text-[13px]" value={size} key={ind}>
+                      {size}
+                    </option>
+                  );
+                })}
+              </select>
+              <div className="flex flex-row gap-1 items-center ml-4  ">
+                <span>{t("color")} : </span>
+                <select
+                  value={
+                    props.fontColor ||
+                    props.currWidgetsDetails?.options?.fontColor ||
+                    "black"
+                  }
+                  onChange={(e) => props.setFontColor(e.target.value)}
+                  className="ml-[7px] op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content text-xs"
+                >
+                  {fontColorArr.map((color, ind) => {
+                    return (
+                      <option value={color} key={ind}>
+                        {t(`color-type.${color}`)}
+                      </option>
+                    );
+                  })}
+                </select>
+                <span
+                  style={{
+                    background:
+                      props.fontColor ||
+                      props.currWidgetsDetails?.options?.fontColor ||
+                      "black"
+                  }}
+                  className="w-5 h-[19px] ml-1"
+                ></span>
+              </div>
+            </div>
             {["checkbox", radioButtonWidget].includes(props.type) && (
               <div className="flex flex-row gap-5 my-2 items-center text-center">
                 {!props.isSignYourself && (
@@ -362,6 +413,7 @@ function DropdownWidgetOption(props) {
               </div>
             )}
           </div>
+
           <div
             className={`${
               props.type === "checkbox" && !props.isSignYourself

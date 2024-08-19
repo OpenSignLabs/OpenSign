@@ -95,16 +95,16 @@ function RenderAllPdfPage({
             >
               {signerPos && addSignatureBookmark(index)}
 
-              <div className="relative z-[1] overflow-hidden">
-                <Page
-                  key={`page_${index + 1}`}
-                  pageNumber={index + 1}
-                  width={pageWidth - 60}
-                  scale={1}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
-                />
-              </div>
+              {/* <div className="relative z-[1] overflow-hidden"> */}
+              <Page
+                key={`page_${index + 1}`}
+                pageNumber={index + 1}
+                width={pageWidth - 60}
+                scale={1}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+              />
+              {/* </div> */}
             </div>
           ))}
         </Document>
