@@ -11,6 +11,7 @@ import SubscribeCard from "../primitives/SubscribeCard";
 import Tour from "reactour";
 import { validplan } from "../json/plansArr";
 import { useTranslation } from "react-i18next";
+import Parse from "parse";
 
 function GenerateToken() {
   const { t } = useTranslation();
@@ -18,10 +19,20 @@ function GenerateToken() {
   const [parseAppId] = useState(localStorage.getItem("parseAppId"));
   const [apiToken, SetApiToken] = useState("");
   const [isLoader, setIsLoader] = useState(true);
-  const [isModal, setIsModal] = useState(false);
+  const [isModal, setIsModal] = useState({
+    generateapi: false,
+    buyapis: false
+  });
   const [isSubscribe, setIsSubscribe] = useState({ plan: "", isValid: false });
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isTour, setIsTour] = useState(false);
+  const [amount, setAmount] = useState({
+    quantity: 1,
+    priceperapi: 0.15,
+    totalapis: 0,
+    price: 0.15
+  });
+  const [isFormLoader, setIsFormLoader] = useState(false);
   useEffect(() => {
     fetchToken();
     // eslint-disable-next-line
@@ -38,15 +49,16 @@ function GenerateToken() {
         const subscribe = await checkIsSubscribed();
         setIsSubscribe(subscribe);
       }
-      const url = parseBaseUrl + "functions/getapitoken";
-      const headers = {
-        "Content-Type": "application/json",
-        "X-Parse-Application-Id": parseAppId,
-        sessiontoken: localStorage.getItem("accesstoken")
-      };
-      const res = await axios.post(url, {}, { headers: headers });
+      const extUser =
+        localStorage.getItem("Extand_Class") &&
+        JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+      const res = await Parse.Cloud.run("getapitoken");
       if (res) {
-        SetApiToken(res.data?.result?.result);
+        const allowedapis = await Parse.Cloud.run("allowedapis", {
+          tenantId: extUser?.TenantId?.objectId
+        });
+        setAmount((obj) => ({ ...obj, totalapis: allowedapis }));
+        SetApiToken(res?.result);
       }
       setIsLoader(false);
     } catch (err) {
@@ -61,7 +73,7 @@ function GenerateToken() {
       setIsTour(true);
     } else {
       setIsLoader(true);
-      setIsModal(false);
+      setIsModal((obj) => ({ ...obj, generateapi: false }));
       try {
         const url = parseBaseUrl + "functions/generateapitoken";
         const headers = {
@@ -92,12 +104,51 @@ function GenerateToken() {
   const copytoclipboard = (text) => {
     copytoData(text);
     setIsAlert({ type: "success", msg: t("copied") });
-    setTimeout(() => {
-      setIsAlert({ type: "success", msg: "" });
-    }, 1500); // Reset copied state after 1.5 seconds
+    setTimeout(() => setIsAlert({ type: "success", msg: "" }), 1500); // Reset copied state after 1.5 seconds
   };
-  const handleModal = () => setIsModal(!isModal);
+  const handleModal = () => {
+    setIsModal((obj) => ({ ...obj, generateapi: !obj.generateapi }));
+  };
 
+  const handleBuyAPIsModal = () => {
+    setIsModal((obj) => ({ ...obj, buyapis: !obj.buyapis }));
+  };
+
+  const handlePricePerAPIs = (e) => {
+    const quantity = e.target?.value;
+    const price =
+      quantity > 0
+        ? (Math.round(quantity * amount.priceperapi * 100) / 100).toFixed(2)
+        : 1 * amount.priceperapi;
+    setAmount((prev) => ({ ...prev, quantity: quantity, price: price }));
+  };
+  const handleAddOnApiSubmit = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsFormLoader(true);
+    const extUser =
+      localStorage.getItem("Extand_Class") &&
+      JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
+    try {
+      const resAddon = await Parse.Cloud.run("buyapis", {
+        apis: amount.quantity,
+        tenantId: extUser?.TenantId?.objectId
+      });
+      if (resAddon) {
+        const _resAddon = JSON.parse(JSON.stringify(resAddon));
+        if (_resAddon.status === "success") {
+          // setAllowedUser(amount.quantity);
+          setAmount((obj) => ({ ...obj, totalapis: _resAddon.addon }));
+        }
+      }
+    } catch (err) {
+      console.log("Err in buy addon", err);
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
+    } finally {
+      setTimeout(() => setIsAlert({ type: "success", msg: "" }), 2000);
+      setIsFormLoader(false);
+    }
+  };
   return (
     <React.Fragment>
       <Title title={"API Token"} />
@@ -112,9 +163,7 @@ function GenerateToken() {
             <h1 className={"ml-4 mt-3 mb-2 font-semibold"}>
               OpenSign™ {t("API")}{" "}
               <Tooltip
-                url={
-                  "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
-                }
+                url="https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                 isSubscribe={true}
               />
             </h1>
@@ -151,8 +200,12 @@ function GenerateToken() {
                   {apiToken ? t("regenerate-token") : t("generate-token")}
                 </button>
               </li>
+              <div className="text-xs md:text-[15px] my-4">
+                {t("remainingapis")} {amount.totalapis}{" "}
+              </div>
+              <hr />
             </ul>
-            <div className="flex items-center justify-center">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-0 md:gap-1">
               <button
                 type="button"
                 onClick={() =>
@@ -160,13 +213,20 @@ function GenerateToken() {
                     "https://docs.opensignlabs.com/docs/API-docs/opensign-api-v-1"
                   )
                 }
-                className="op-btn op-btn-secondary mt-2 mb-3 px-8"
+                className="op-btn op-btn-secondary mt-2 md:mb-3 px-8"
               >
                 {t("view-docs")}
               </button>
+              <button
+                type="button"
+                onClick={() => handleBuyAPIsModal()}
+                className="op-btn op-btn-secondary mt-2 mb-3 px-8"
+              >
+                {t("buyapiaddon")}
+              </button>
             </div>
             <ModalUi
-              isOpen={isModal}
+              isOpen={isModal.generateapi}
               title={apiToken ? t("regenerate-token") : t("generate-token")}
               handleClose={handleModal}
             >
@@ -190,6 +250,52 @@ function GenerateToken() {
                   </button>
                 </div>
               </div>
+            </ModalUi>
+            {/* buy apis */}
+            <ModalUi
+              isOpen={isModal.buyapis}
+              title={"Addon apis"}
+              handleClose={handleBuyAPIsModal}
+            >
+              {isFormLoader && (
+                <div className="absolute w-full h-full inset-0 flex justify-center items-center bg-base-content/30 z-50">
+                  <Loader />
+                </div>
+              )}
+              <form onSubmit={handleAddOnApiSubmit} className="p-3">
+                <p className="flex justify-center text-center mx-2 mb-3 text-base op-text-accent font-medium">
+                  {t("additionalapis")}
+                </p>
+                <div className="mb-3 flex justify-between">
+                  <label
+                    htmlFor="quantity"
+                    className="block text-xs text-gray-700 font-semibold"
+                  >
+                    {t("quantityofapis")}
+                    <span className="text-[red] text-[13px]"> *</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={amount.quantity}
+                    onChange={(e) => handlePricePerAPIs(e)}
+                    className="w-1/4 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
+                    required
+                  />
+                </div>
+                <div className="mb-3 flex justify-between">
+                  <label className="block text-xs text-gray-700 font-semibold">
+                    {t("Price")} (1 * {amount.priceperapi})
+                  </label>
+                  <div className="w-1/4 flex justify-center items-center text-sm">
+                    USD {amount.price}
+                  </div>
+                </div>
+                <hr className="text-base-content mb-3" />
+                <button className="op-btn op-btn-primary w-full mt-2">
+                  {t("Proceed")}
+                </button>
+              </form>
             </ModalUi>
           </div>
           {!validplan[isSubscribe.plan] && isEnableSubscription && (

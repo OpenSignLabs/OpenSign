@@ -62,6 +62,8 @@ import getOrgAdmins from './parsefunction/getOrgAdmins.js';
 import getAllUserTeamByOrg from './parsefunction/getAllUserTeamByOrg.js';
 import AllowedUsers from './parsefunction/AlllowedUsers.js';
 import Buyaddon from './parsefunction/BuyAddon.js';
+import AllowedApis from './parsefunction/AllowedApis.js';
+import BuyApis from './parsefunction/BuyApis.js';
 
 // This afterSave function triggers after an object is added or updated in the specified class, allowing for post-processing logic.
 Parse.Cloud.afterSave('contracts_Document', DocumentAftersave);
@@ -133,3 +135,5 @@ Parse.Cloud.define('getorgadmins', getOrgAdmins);
 Parse.Cloud.define('getalluserteambyorg', getAllUserTeamByOrg);
 Parse.Cloud.define('allowedusers', AllowedUsers);
 Parse.Cloud.define('buyaddon', Buyaddon);
+Parse.Cloud.define('allowedapis', AllowedApis);
+Parse.Cloud.define('buyapis', BuyApis);
