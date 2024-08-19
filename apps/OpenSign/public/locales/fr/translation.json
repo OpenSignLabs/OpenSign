@@ -602,7 +602,11 @@
     "Total-price-for-next-time":"Prix ​​total pour la prochaine fois",
     "Proceed":"Procéder",
     "Select":"sélectionner",
-    "Add-seats":"Ajouter des sièges"
+    "Add-seats":"Ajouter des sièges",
+    "buyapiaddon":"Acheter des API",
+    "quantityofapis":"Quantité d'API",
+    "additionalapis":"Veuillez acheter des API complémentaires",
+    "remainingapis":"API restantes :"
    
 }
   
