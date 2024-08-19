@@ -57,35 +57,35 @@ function GenerateToken() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validplan[isSubscribe.plan] && isEnableSubscription) {
-      setIsTour(true);
-    } else {
-      setIsLoader(true);
-      setIsModal(false);
-      try {
-        const url = parseBaseUrl + "functions/generateapitoken";
-        const headers = {
-          "Content-Type": "application/json",
-          "X-Parse-Application-Id": parseAppId,
-          sessiontoken: localStorage.getItem("accesstoken")
-        };
-        const res = await axios.post(url, {}, { headers: headers });
-        if (res) {
-          SetApiToken(res.data.result.token);
-          setIsAlert({ type: "success", msg: t("token-generated") });
-        } else {
-          console.error("Error while generating Token");
-          setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
-        }
-      } catch (error) {
+    // if (!validplan[isSubscribe.plan] && isEnableSubscription) {
+    //   setIsTour(true);
+    // } else {
+    setIsLoader(true);
+    setIsModal(false);
+    try {
+      const url = parseBaseUrl + "functions/generateapitoken";
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Parse-Application-Id": parseAppId,
+        sessiontoken: localStorage.getItem("accesstoken")
+      };
+      const res = await axios.post(url, {}, { headers: headers });
+      if (res) {
+        SetApiToken(res.data.result.token);
+        setIsAlert({ type: "success", msg: t("token-generated") });
+      } else {
+        console.error("Error while generating Token");
         setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
-        console.log("while generating Token", error);
-      } finally {
-        setIsLoader(false);
-        setTimeout(() => {
-          setIsAlert({ type: "success", msg: "" });
-        }, 1500);
       }
+    } catch (error) {
+      setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
+      console.log("while generating Token", error);
+    } finally {
+      setIsLoader(false);
+      setTimeout(() => {
+        setIsAlert({ type: "success", msg: "" });
+      }, 1500);
+      // }
     }
   };
 
@@ -123,26 +123,17 @@ function GenerateToken() {
                 <div className="w-full md:w-[70%] flex-col md:flex-row text-xs md:text-[15px] flex items-center gap-x-5">
                   <span className="ml-1">{t("api-token")}:</span>{" "}
                   <span
-                    id="token"
-                    className={`${
-                      validplan[isSubscribe.plan]
-                        ? ""
-                        : "bg-white/20 pointer-events-none select-none"
-                    } md:text-end py-2 md:py-0`}
+                    className="cursor-pointer"
+                    onClick={() => copytoclipboard(apiToken)}
                   >
-                    <span
-                      className="cursor-pointer"
-                      onClick={() => copytoclipboard(apiToken)}
-                    >
-                      {apiToken ? apiToken : "_____"}
-                    </span>
-                    <button
-                      className="op-btn op-btn-accent op-btn-outline op-btn-sm ml-2 cursor-pointer"
-                      onClick={() => copytoclipboard(apiToken)}
-                    >
-                      <i className="fa-light fa-copy"></i>
-                    </button>
+                    {apiToken ? apiToken : "_____"}
                   </span>
+                  <button
+                    className="op-btn op-btn-accent op-btn-outline op-btn-sm ml-2 cursor-pointer"
+                    onClick={() => copytoclipboard(apiToken)}
+                  >
+                    <i className="fa-light fa-copy"></i>
+                  </button>
                 </div>
                 <button
                   onClick={apiToken ? handleModal : handleSubmit}

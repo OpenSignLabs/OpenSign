@@ -1085,6 +1085,7 @@ function PlaceHolderSign() {
   };
   const sendEmailToSigners = async () => {
     let htmlReqBody;
+
     setIsUiLoading(true);
     setIsSendAlert({});
     let sendMail;
@@ -1166,26 +1167,26 @@ function PlaceHolderSign() {
           html: isCustomize
             ? replaceVar?.body
             : "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> </head>   <body> <div style='background-color: #f5f5f5; padding: 20px'=> <div   style=' box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;background: white;padding-bottom: 20px;'> <div style='padding:10px 10px 0 10px'><img src=" +
-              imgPng +
-              " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
-              themeBGcolor +
-              ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
-              pdfDetails?.[0].ExtUserPtr.Name +
-              " has requested you to review and sign <strong> " +
-              pdfDetails?.[0].Name +
-              "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
-              senderEmail +
-              "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
-              orgName +
-              "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
-              localExpireDate +
-              "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
-              signPdf +
-              "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
-              senderEmail +
-              " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
-              openSignUrl +
-              " target=_blank>here</a>.</p> </div></div></body> </html>"
+            imgPng +
+            " height='50' style='padding: 20px,width:170px,height:40px' /></div>  <div  style=' padding: 2px;font-family: system-ui;background-color:" +
+            themeBGcolor +
+            ";'><p style='font-size: 20px;font-weight: 400;color: white;padding-left: 20px;' > Digital Signature Request</p></div><div><p style='padding: 20px;font-family: system-ui;font-size: 14px;   margin-bottom: 10px;'> " +
+            pdfDetails?.[0].ExtUserPtr.Name +
+            " has requested you to review and sign <strong> " +
+            pdfDetails?.[0].Name +
+            "</strong>.</p><div style='padding: 5px 0px 5px 25px;display: flex;flex-direction: row;justify-content: space-around;'><table> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Sender</td> <td> </td> <td  style='color:#626363;font-weight:bold'>" +
+            senderEmail +
+            "</td></tr><tr><td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Organization</td> <td> </td><td style='color:#626363;font-weight:bold'> " +
+            orgName +
+            "</td></tr> <tr> <td style='font-weight:bold;font-family:sans-serif;font-size:15px'>Expire on</td><td> </td> <td style='color:#626363;font-weight:bold'>" +
+            localExpireDate +
+            "</td></tr><tr> <td></td> <td> </td></tr></table> </div> <div style='margin-left:70px'><a href=" +
+            signPdf +
+            "> <button style='padding: 12px 12px 12px 12px;background-color: #d46b0f;color: white;  border: 0px;box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;font-weight:bold;margin-top:30px'>Sign here</button></a> </div> <div style='display: flex; justify-content: center;margin-top: 10px;'> </div></div></div><div><p> This is an automated email from OpenSign™. For any queries regarding this email, please contact the sender " +
+            senderEmail +
+            " directly.If you think this email is inappropriate or spam, you may file a complaint with OpenSign™   <a href= " +
+            openSignUrl +
+            " target=_blank>here</a>.</p> </div></div></body> </html>"
         };
 
         sendMail = await axios.post(url, params, { headers: headers });
@@ -1223,7 +1224,7 @@ function PlaceHolderSign() {
               }
             }
           )
-          .then(() => {})
+          .then(() => { })
           .catch((err) => {
             console.log("axois err ", err);
           });
@@ -1484,10 +1485,10 @@ function PlaceHolderSign() {
                   validation:
                     isSubscribe && inputype
                       ? {
-                          type: inputype,
-                          pattern:
-                            inputype === "regex" ? defaultdata.textvalidate : ""
-                        }
+                        type: inputype,
+                        pattern:
+                          inputype === "regex" ? defaultdata.textvalidate : ""
+                      }
                       : {},
                   fontSize:
                     fontSize || currWidgetsDetails?.options?.fontSize || "12",
@@ -1775,7 +1776,7 @@ function PlaceHolderSign() {
                     isOpen={isSendAlert.alert}
                     title={
                       isSendAlert.mssg === "sure" ||
-                      isSendAlert.mssg === textWidget
+                        isSendAlert.mssg === textWidget
                         ? t("fields-required")
                         : isSendAlert.mssg === "confirm" && t("send-mail")
                     }
@@ -2131,7 +2132,7 @@ function PlaceHolderSign() {
                           handleDeleteUser={handleDeleteUser}
                           roleName={roleName}
                           uniqueId={uniqueId}
-                          // handleAddSigner={handleAddSigner}
+                        // handleAddSigner={handleAddSigner}
                         />
                         <div data-tut="addWidgets">
                           <WidgetComponent
