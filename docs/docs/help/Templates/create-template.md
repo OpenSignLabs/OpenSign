@@ -116,17 +116,13 @@ Select the option that best suits the needs of your document processing.
 ### Step 8: Save Template 
 **Next button**: Once you’ve organized your widgets and set their properties, simply click the “Next” button to save your template.
 
-<br>
-
 After doing so, a “Create Document” popup will appear, prompting you with the question: “Do you want to create a document using the template you just created?” You’ll have the option to choose either “Yes” or “No.”
 **If you select "Yes"**: It will create a document using the template you just created.
 **If you select "No"**: You will be redirected to the Manage templates form.
 
 ### Step 9: Viewing and Managing Templates 
 
-<div>
-  <img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/86bf3628-987d-4ae2-89c3-b24ec1f6bdc2" />
-</div>
+<img width="828" alt="Manage Template" src="https://github.com/user-attachments/assets/86bf3628-987d-4ae2-89c3-b24ec1f6bdc2" />
 
 On the Manage templates page you will see a list of templates you have created or have access to. The list includes details such as the template title, file, owner, signers, and whether the template is public.
 
