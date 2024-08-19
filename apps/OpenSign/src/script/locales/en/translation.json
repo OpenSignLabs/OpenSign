@@ -91,6 +91,7 @@
       "API Token": "API Token",
       "Webhook": "Webhook",
       "Teams": "Teams",
+      "Team-update-successfully": "Team Updated successfully.",
       "Users": "Users"
     }
   },
@@ -592,5 +593,16 @@
   "expired-on-mssg": "This document expired on {{expiredDate}} and is no longer available to sign.",
   "signature-validate-alert": "Please confirm that you have selected at least {{minRequiredCount}} checkboxes.",
   "signature-validate-alert-2": "Ensure this field is accurately filled and meets all requirements.",
-  "user-name-exist": "user name already exist"
+  "remaing-users": "Remaining users",
+  "Role": "Role",
+  "additional-users": "Please purchase add-on users.",
+  "Quantity-of-users": "Quantity of users",
+  "Price": "Price",
+  "Total-price-for-next-time": "Total price for next time",
+  "Proceed": "Proceed",
+  "Select": "Select",
+  "Add-seats": "Add Seats",
+  "user-name-exist": "user name already exist",
+  "format": "format",
+  "select-date-format": "Select a date format"
 }

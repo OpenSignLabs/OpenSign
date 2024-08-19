@@ -59,12 +59,14 @@ export default async function BuyApis(request) {
             });
             // console.log('resAPis ', resAPis.data);
             if (resAPis.data) {
+              const existAllowedApis = _resSub?.AllowedApis ? _resSub.AllowedApis : 0;
+              const allowedapis = existAllowedApis + quantity;
               const updateSub = new Parse.Object('contracts_Subscriptions');
               updateSub.id = resSub.id;
-              // updateSub.set('AllowedApis', quantity);
+              updateSub.set('AllowedApis', allowedapis);
               const resupdateSub = await updateSub.save(null, { useMasterKey: true });
               // console.log('resupdateSub ', resupdateSub);
-              return { status: 'success', addon: quantity };
+              return { status: 'success', addon: allowedapis };
             }
           } else {
             throw new Parse.Error('400', 'Invalid access token.');

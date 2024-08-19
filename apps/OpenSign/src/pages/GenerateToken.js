@@ -126,21 +126,23 @@ function GenerateToken() {
     e.preventDefault();
     e.stopPropagation();
     setIsFormLoader(true);
-    const extUser =
-      localStorage.getItem("Extand_Class") &&
-      JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
     try {
       const resAddon = await Parse.Cloud.run("buyapis", {
-        apis: amount.quantity,
-        tenantId: extUser?.TenantId?.objectId
+        apis: amount.quantity
       });
       if (resAddon) {
         const _resAddon = JSON.parse(JSON.stringify(resAddon));
         if (_resAddon.status === "success") {
-          // setAllowedUser(amount.quantity);
-          setAmount((obj) => ({ ...obj, totalapis: _resAddon.addon }));
+          setAmount((obj) => ({
+            ...obj,
+            quantity: 1,
+            priceperapi: 0.15,
+            price: 0.15,
+            totalapis: _resAddon.addon
+          }));
         }
       }
+      setIsModal((obj) => ({ ...obj, buyapis: false }));
     } catch (err) {
       console.log("Err in buy addon", err);
       setIsAlert({ type: "danger", msg: t("something-went-wrong-mssg") });
