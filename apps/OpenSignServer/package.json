@@ -44,7 +44,7 @@
     "parse-server": "^7.2.0",
     "parse-server-api-mail-adapter": "^4.0.0",
     "pdf-lib": "^1.17.1",
-    "posthog-node": "^4.0.1",
+    "posthog-node": "^4.1.0",
     "ws": "^8.18.0"
   },
   "type": "module",
