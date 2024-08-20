@@ -413,7 +413,7 @@ export default async function createDocumentwithCoordinate(request, response) {
       } else {
         return response
           .status(429)
-          .json({ error: 'Quota reached. Please buy API credits and try again later.' });
+          .json({ error: 'Quota reached, Please buy API credits and try again later.' });
       }
     } else {
       return response.status(405).json({ error: 'Invalid API Token!' });
