@@ -32,7 +32,9 @@ import {
   handleToPrint,
   handleDownloadCertificate,
   openInNewTab,
-  getDefaultSignature
+  getDefaultSignature,
+  onClickZoomIn,
+  onClickZoomOut
 } from "../constant/Utils";
 import LoaderWithMsg from "../primitives/LoaderWithMsg";
 import HandleError from "../primitives/HandleError";
@@ -141,17 +143,20 @@ function PdfRequestFiles(props) {
   let isGuestSignFlow = false;
   let sendmail;
   let getDocId = "";
-  const route = !props.templateId && window.location.pathname;
+  const route = !props.templateId && window.location.pathname; //'/load/recipientSignPdf/TOAVuhXbfw/fPAKdK1qgX'
+  console.log(" window.location?.search", window.location?.search);
+
+  //window.location.search = ?sendmail=false
   const getQuery =
     !props.templateId &&
     window.location?.search &&
-    window.location?.search?.split("?");
+    window.location?.search?.split("?"); //['','sendmail=false']
 
+  //'sendmail=false'
   if (getQuery) {
-    sendmail = getQuery[1].split("=")[1];
+    sendmail = getQuery[1].split("=")[1]; //false
   }
-  const checkSplit = route && route?.split("/");
-
+  const checkSplit = route && route?.split("/"); // ['', 'load', 'recipientSignPdf', 'TOAVuhXbfw', 'fPAKdK1qgX']
   if (checkSplit && checkSplit.length > 4) {
     isGuestSignFlow = true;
     getDocId = checkSplit[3];
@@ -1598,6 +1603,12 @@ function PdfRequestFiles(props) {
     });
   };
 
+  const clickOnZoomIn = () => {
+    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
+  };
+  const clickOnZoomOut = () => {
+    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={props.templateId ? "Public Sign" : "Request Sign"} />
@@ -1921,11 +1932,8 @@ function PdfRequestFiles(props) {
                 {/* pdf render view */}
                 <div className=" w-full md:w-[57%] flex mr-4">
                   <PdfZoom
-                    setScale={setScale}
-                    scale={scale}
-                    containerWH={containerWH}
-                    setZoomPercent={setZoomPercent}
-                    zoomPercent={zoomPercent}
+                    clickOnZoomIn={clickOnZoomIn}
+                    clickOnZoomOut={clickOnZoomOut}
                     isDisableRotate={true}
                   />
                   <div className=" w-full md:w-[95%] ">
@@ -2076,6 +2084,9 @@ function PdfRequestFiles(props) {
                       setZoomPercent={setZoomPercent}
                       zoomPercent={zoomPercent}
                       isPublicTemplate={isPublicTemplate}
+                      clickOnZoomIn={clickOnZoomIn}
+                      clickOnZoomOut={clickOnZoomOut}
+                      isDisableRotate={true}
                     />
 
                     <div ref={divRef} data-tut="pdfArea" className="h-[95%]">

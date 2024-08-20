@@ -34,7 +34,10 @@ import {
   changeImageWH,
   handleSendOTP,
   getContainerScale,
-  getDefaultSignature
+  getDefaultSignature,
+  onClickZoomIn,
+  onClickZoomOut,
+  rotatePdfPage
 } from "../constant/Utils";
 import { useParams } from "react-router-dom";
 import Tour from "reactour";
@@ -53,6 +56,7 @@ import VerifyEmail from "../components/pdf/VerifyEmail";
 import PdfZoom from "../components/pdf/PdfZoom";
 import Loader from "../primitives/Loader";
 import { useTranslation } from "react-i18next";
+import RotateAlert from "../components/RotateAlert";
 //For signYourself inProgress section signer can add sign and complete doc sign.
 function SignYourSelf() {
   const { t } = useTranslation();
@@ -124,6 +128,7 @@ function SignYourSelf() {
   const isHeader = useSelector((state) => state.showHeader);
   const [scale, setScale] = useState(1);
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
+  const [isRotate, setIsRotate] = useState(false);
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -207,6 +212,7 @@ function SignYourSelf() {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [divRef.current, isHeader]);
+
   //function for get document details for perticular signer with signer'object id
   const getDocumentDetails = async (showComplete) => {
     try {
@@ -1162,6 +1168,48 @@ function SignYourSelf() {
       handleTextSettingModal(false);
     }
   };
+  const clickOnZoomIn = () => {
+    onClickZoomIn(scale, zoomPercent, setScale, setZoomPercent);
+  };
+  const clickOnZoomOut = () => {
+    onClickZoomOut(zoomPercent, scale, setZoomPercent, setScale);
+  };
+  //`handleRotationFun` function is used to roatate pdf particular page
+  const handleRotationFun = async (rotateDegree) => {
+    const isPlaceholder = handleRotateWarning();
+    if (isPlaceholder) {
+      setIsRotate(true);
+    } else {
+      const urlDetails = await rotatePdfPage(
+        pdfUrl || pdfDetails[0].URL,
+        rotateDegree,
+        pageNumber - 1,
+        pdfRotateBase64
+      );
+      setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
+      setPdfRotatese64(urlDetails.base64);
+    }
+  };
+
+  //function to show warning when user rotate page and there are some already widgets on that page
+  const handleRotateWarning = () => {
+    const placeholderData = xyPostion?.filter(
+      (data) => data.pageNumber === pageNumber
+    );
+    if (placeholderData && placeholderData.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  //function to use remove widgets from current page when user want to rotate page
+  const handleRemoveWidgets = () => {
+    const updatePlaceholder = xyPostion.filter(
+      (data) => data.pageNumber !== pageNumber
+    );
+    setXyPostion(updatePlaceholder);
+    setIsRotate(false);
+  };
   return (
     <DndProvider backend={HTML5Backend}>
       <Title title={"Self Sign"} />
@@ -1225,19 +1273,9 @@ function SignYourSelf() {
             />
             <div className=" w-full md:w-[57%] flex mr-4">
               <PdfZoom
-                setScale={setScale}
-                scale={scale}
-                containerWH={containerWH}
-                setZoomPercent={setZoomPercent}
-                zoomPercent={zoomPercent}
-                file={
-                  pdfDetails[0] &&
-                  (pdfDetails[0].SignedUrl || pdfDetails[0].URL)
-                }
-                setPdfArrayBuffer={setPdfArrayBuffer}
-                setPdfRotatese64={setPdfRotatese64}
-                pageNumber={pageNumber}
-                pdfRotateBase64={pdfRotateBase64}
+                clickOnZoomIn={clickOnZoomIn}
+                clickOnZoomOut={clickOnZoomOut}
+                handleRotationFun={handleRotationFun}
               />
               <div className="w-full md:w-[95%]">
                 <ModalUi
@@ -1345,12 +1383,12 @@ function SignYourSelf() {
                   isSignYourself={true}
                   setIsEmail={setIsEmail}
                   isCompleted={isCompleted}
+                  handleRotationFun={handleRotationFun}
+                  clickOnZoomIn={clickOnZoomIn}
+                  clickOnZoomOut={clickOnZoomOut}
+                  widgetsDetails={xyPostion}
                 />
-                <div
-                  ref={divRef}
-                  data-tut="reactourSecond"
-                  className="h-full md:h-[95%]"
-                >
+                <div ref={divRef} data-tut="reactourSecond" className="h-full">
                   {containerWH?.width && containerWH?.height && (
                     <RenderPdf
                       pageNumber={pageNumber}
@@ -1450,6 +1488,11 @@ function SignYourSelf() {
           </button>
         </div>
       </ModalUi>
+      <RotateAlert
+        isRotate={isRotate}
+        setIsRotate={setIsRotate}
+        handleRemoveWidgets={handleRemoveWidgets}
+      />
       <TextFontSetting
         isTextSetting={isTextSetting}
         setIsTextSetting={setIsTextSetting}

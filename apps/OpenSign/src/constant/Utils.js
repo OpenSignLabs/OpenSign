@@ -2406,3 +2406,52 @@ export const convertBase64ToFile = async (pdfName, pdfBase64) => {
   const pdfUrl = pdfData.url();
   return pdfUrl;
 };
+export const onClickZoomIn = (scale, zoomPercent, setScale, setZoomPercent) => {
+  setScale(scale + 0.1 * scale);
+  setZoomPercent(zoomPercent + 10);
+};
+export const onClickZoomOut = (
+  zoomPercent,
+  scale,
+  setZoomPercent,
+  setScale
+) => {
+  if (zoomPercent > 0) {
+    if (zoomPercent === 10) {
+      setScale(1);
+    } else {
+      setScale(scale - 0.1 * scale);
+    }
+    setZoomPercent(zoomPercent - 10);
+  }
+};
+
+//function to use remove widgets from current page when user want to rotate page
+export const handleRemoveWidgets = (
+  setSignerPos,
+  signerPos,
+  pageNumber,
+  setIsRotate
+) => {
+  const updatedSignerPos = signerPos.map((placeholderObj) => {
+    return {
+      ...placeholderObj,
+      placeHolder: placeholderObj?.placeHolder?.filter(
+        (data) => data?.pageNumber !== pageNumber
+      )
+    };
+  });
+  setSignerPos(updatedSignerPos);
+  setIsRotate(false);
+};
+//function to show warning when user rotate page and there are some already widgets on that page
+export const handleRotateWarning = (signerPos, pageNumber) => {
+  const placeholderExist = signerPos?.some((placeholderObj) =>
+    placeholderObj?.placeHolder?.some((data) => data?.pageNumber === pageNumber)
+  );
+  if (placeholderExist) {
+    return true;
+  } else {
+    return false;
+  }
+};
