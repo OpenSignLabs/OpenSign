@@ -34,7 +34,11 @@ function Header({
   setIsEmail,
   completeBtnTitle,
   setIsEditTemplate,
-  isPublicTemplate
+  isPublicTemplate,
+  clickOnZoomIn,
+  clickOnZoomOut,
+  handleRotationFun,
+  isDisableRotate
 }) {
   const { t } = useTranslation();
   const filterPrefill =
@@ -73,7 +77,7 @@ function Header({
               allPages={allPages}
               changePage={changePage}
             />
-            {pdfUrl && alreadySign ? (
+            {isCompleted && alreadySign ? (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <div className="op-link op-link-primary no-underline text-[16px] font-semibold pr-[3px] pl-[5px]">
@@ -185,11 +189,7 @@ function Header({
                       <div
                         data-tut="reactourThird"
                         onClick={() => {
-                          if (!pdfUrl) {
-                            embedWidgetsData();
-                          } else if (isPdfRequestFiles) {
-                            embedWidgetsData();
-                          }
+                          embedWidgetsData();
                         }}
                         className="border-none font-[650] text-[14px] op-link op-link-primary no-underline"
                       >
@@ -207,7 +207,7 @@ function Header({
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content
-                          className="bg-white shadow-md rounded-full px-3 py-2"
+                          className="bg-white shadow-md rounded-md px-3 py-2"
                           sideOffset={5}
                         >
                           <DropdownMenu.Item
@@ -215,7 +215,7 @@ function Header({
                             onClick={() =>
                               handleDownloadPdf(
                                 pdfDetails,
-                                pdfUrl,
+                                pdfDetails[0]?.URL,
                                 setIsDownloading
                               )
                             }
@@ -225,6 +225,43 @@ function Header({
                               aria-hidden="true"
                             ></i>
                             <span className="font-[500]">{t("download")}</span>
+                          </DropdownMenu.Item>
+                          {!isDisableRotate && (
+                            <>
+                              <DropdownMenu.Item
+                                className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                                onClick={() => handleRotationFun(90)}
+                              >
+                                <i className="fa-light fa-rotate-right text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                                <span className="font-[500]">
+                                  {t("rotate-right")}
+                                </span>
+                              </DropdownMenu.Item>
+                              <DropdownMenu.Item
+                                className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                                onClick={() => handleRotationFun(-90)}
+                              >
+                                <i className="fa-light fa-rotate-left text-gray-500 2xl:text-[30px] mr-[3px]"></i>
+                                <span className="font-[500]">
+                                  {t("rotate-left")}
+                                </span>
+                              </DropdownMenu.Item>
+                            </>
+                          )}
+
+                          <DropdownMenu.Item
+                            className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                            onClick={() => clickOnZoomIn()}
+                          >
+                            <i className="fa-light fa-magnifying-glass-plus text-gray-500 2xl:text-[30px]"></i>
+                            <span className="font-[500]">{t("zoom-in")}</span>
+                          </DropdownMenu.Item>
+                          <DropdownMenu.Item
+                            className="flex flex-row justify-center items-center text-[13px] focus:outline-none cursor-pointer"
+                            onClick={() => clickOnZoomOut()}
+                          >
+                            <i className="fa-light fa-magnifying-glass-minus text-gray-500 2xl:text-[30px]"></i>
+                            <span className="font-[500]">{t("zoom-out")}</span>
                           </DropdownMenu.Item>
                         </DropdownMenu.Content>
                       </DropdownMenu.Portal>
@@ -443,9 +480,7 @@ function Header({
                 type="button"
                 className="op-btn op-btn-primary op-btn-sm mr-[3px]"
                 onClick={() => {
-                  if (!pdfUrl) {
-                    embedWidgetsData();
-                  }
+                  embedWidgetsData();
                 }}
               >
                 {t("finish")}
