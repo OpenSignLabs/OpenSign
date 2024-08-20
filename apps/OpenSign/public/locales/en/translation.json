@@ -608,5 +608,9 @@
   "buyapiaddon":"Buy APIs",
   "quantityofapis" :"Quantity of APIs",
   "additionalapis":"Please purchase add-on APIs",
-  "remainingapis":"Remaining APIs:"
+  "remainingapis": "Remaining APIs Credits:",
+  "additional-quicksend": "Please purchase add-on quick send",
+  "quantityofquicksend": "Quantity of Quick send",
+  "quotaerrquicksend": "Quota Reached, You don't have enough credits.",
+  "buycredits": "Buy credits"
 }

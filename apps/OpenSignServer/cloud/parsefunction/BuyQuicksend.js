@@ -1,6 +1,6 @@
 import axios from 'axios';
-export default async function BuyApis(request) {
-  const apis = request.params.apis;
+export default async function BuyQuickSend(request) {
+  const apis = request.params.quicksend;
   if (!request?.user) {
     throw new Parse.Error(Parse.Error.INVALID_SESSION_TOKEN, 'User is not authenticated.');
   }
@@ -43,11 +43,11 @@ export default async function BuyApis(request) {
             const subscriptionId = _resSub.SubscriptionId;
             const plan_code = _resSub?.SubscriptionDetails?.data?.subscription?.plan?.plan_code;
             const quantity = parseInt(apis);
-            const addoncode = 'api-signatures';
+            const addoncode = 'bulk-signatures';
             const data = JSON.stringify({
               plan: { plan_code: plan_code },
               addons: [
-                { addon_code: addoncode, addon_description: 'API Signatures', quantity: quantity },
+                { addon_code: addoncode, addon_description: 'Bulk Signatures', quantity: quantity },
               ],
             });
             const apiUrl = `https://www.zohoapis.in/billing/v1/subscriptions/${subscriptionId}/buyonetimeaddon`;
@@ -57,16 +57,14 @@ export default async function BuyApis(request) {
                 'X-com-zoho-subscriptions-organizationid': process.env.ZOHO_BILLING_ORG_ID,
               },
             });
-            // console.log('resAPis ', resAPis.data);
             if (resAPis.data) {
-              const existAllowedApis = _resSub?.AllowedApis ? _resSub.AllowedApis : 0;
-              const allowedapis = existAllowedApis + quantity;
+              const existQuickSend = _resSub?.AllowedQuicksend ? _resSub.AllowedQuicksend : 0;
+              const allowedQuicksend = existQuickSend + quantity;
               const updateSub = new Parse.Object('contracts_Subscriptions');
               updateSub.id = resSub.id;
-              updateSub.set('AllowedApis', allowedapis);
+              updateSub.set('AllowedQuicksend', allowedQuicksend);
               const resupdateSub = await updateSub.save(null, { useMasterKey: true });
-              // console.log('resupdateSub ', resupdateSub);
-              return { status: 'success', addon: allowedapis };
+              return { status: 'success', addon: allowedQuicksend };
             }
           } else {
             throw new Parse.Error('400', 'Invalid access token.');
@@ -82,7 +80,7 @@ export default async function BuyApis(request) {
         err?.response?.data ||
         err?.message ||
         'Something went wrong.';
-      console.log('err in Buyaddonusers', code, msg);
+      console.log('err in buyaddon', code, msg);
       throw new Parse.Error(code, msg);
     }
   } else {

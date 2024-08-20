@@ -608,5 +608,10 @@
   "buyapiaddon":"Acheter des API",
   "quantityofapis":"Quantité d'API",
   "additionalapis":"Veuillez acheter des API complémentaires",
-  "remainingapis":"API restantes :"
+  "remainingapis":"API restantes Crédits:",
+  "additional-quicksend":"Veuillez acheter le module complémentaire quick send",
+  "quantityofquicksend": "Quantité de Quick send",
+  "quotaerrquicksend": "Quota atteint, vous n'avez pas assez de crédits.",
+  "buycredits": "Acheter des crédits"
+
  }

@@ -25,6 +25,8 @@ export default async function AllowedApis(request) {
         const allowedapis = _resSub?.AllowedApis || 0;
         return allowedapis;
       }
+    } else {
+      throw new Parse.Error(Parse.Error.OBJECT_NOT_FOUND, 'User not found.');
     }
   } catch (err) {
     console.log('err in allowedapis', err);

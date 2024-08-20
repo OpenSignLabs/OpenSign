@@ -27,12 +27,13 @@ function GenerateToken() {
   const [isAlert, setIsAlert] = useState({ type: "success", msg: "" });
   const [isTour, setIsTour] = useState(false);
   const [amount, setAmount] = useState({
-    quantity: 1,
+    quantity: 500,
     priceperapi: 0.15,
     totalapis: 0,
-    price: 0.15
+    price: (75.0).toFixed(2)
   });
   const [isFormLoader, setIsFormLoader] = useState(false);
+  const quantityList = [500, 1000, 5000, 50000];
   useEffect(() => {
     fetchToken();
     // eslint-disable-next-line
@@ -49,14 +50,9 @@ function GenerateToken() {
         const subscribe = await checkIsSubscribed();
         setIsSubscribe(subscribe);
       }
-      const extUser =
-        localStorage.getItem("Extand_Class") &&
-        JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       const res = await Parse.Cloud.run("getapitoken");
       if (res) {
-        const allowedapis = await Parse.Cloud.run("allowedapis", {
-          tenantId: extUser?.TenantId?.objectId
-        });
+        const allowedapis = await Parse.Cloud.run("allowedapis");
         setAmount((obj) => ({ ...obj, totalapis: allowedapis }));
         SetApiToken(res?.result);
       }
@@ -119,7 +115,7 @@ function GenerateToken() {
     const price =
       quantity > 0
         ? (Math.round(quantity * amount.priceperapi * 100) / 100).toFixed(2)
-        : 1 * amount.priceperapi;
+        : 500 * amount.priceperapi;
     setAmount((prev) => ({ ...prev, quantity: quantity, price: price }));
   };
   const handleAddOnApiSubmit = async (e) => {
@@ -137,7 +133,7 @@ function GenerateToken() {
             ...obj,
             quantity: 1,
             priceperapi: 0.15,
-            price: 0.15,
+            price: (75.0).toFixed(2),
             totalapis: _resAddon.addon
           }));
         }
@@ -276,14 +272,20 @@ function GenerateToken() {
                     {t("quantityofapis")}
                     <span className="text-[red] text-[13px]"> *</span>
                   </label>
-                  <input
-                    type="number"
-                    name="quantity"
+                  <select
                     value={amount.quantity}
                     onChange={(e) => handlePricePerAPIs(e)}
-                    className="w-1/4 op-input op-input-bordered op-input-sm focus:outline-none hover:border-base-content text-xs"
+                    name="quantity"
+                    className="op-select op-select-bordered op-select-sm focus:outline-none hover:border-base-content w-1/4 text-xs"
                     required
-                  />
+                  >
+                    {quantityList.length > 0 &&
+                      quantityList.map((x) => (
+                        <option key={x} value={x}>
+                          {x}
+                        </option>
+                      ))}
+                  </select>
                 </div>
                 <div className="mb-3 flex justify-between">
                   <label className="block text-xs text-gray-700 font-semibold">

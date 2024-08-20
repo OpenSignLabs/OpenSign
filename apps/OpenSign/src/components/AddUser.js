@@ -52,9 +52,6 @@ const AddUser = (props) => {
 
   const getTeamList = async () => {
     if (isEnableSubscription) {
-      const extUser =
-        localStorage.getItem("Extand_Class") &&
-        JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
       try {
         setIsLoader(true);
         const resSub = await fetchSubscriptionInfo();
@@ -70,9 +67,7 @@ const AddUser = (props) => {
             price: resSub.price,
             totalPrice: resSub.price + resSub.totalPrice
           }));
-          const res = await Parse.Cloud.run("allowedusers", {
-            tenantId: extUser?.TenantId?.objectId
-          });
+          const res = await Parse.Cloud.run("allowedusers");
           if (props.setFormHeader) {
             if (res > 0) {
               props.setFormHeader(t("add-user"));
@@ -304,13 +299,9 @@ const AddUser = (props) => {
     e.preventDefault();
     e.stopPropagation();
     setIsFormLoader(true);
-    const extUser =
-      localStorage.getItem("Extand_Class") &&
-      JSON.parse(localStorage.getItem("Extand_Class"))?.[0];
     try {
-      const resAddon = await Parse.Cloud.run("buyaddon", {
-        users: amount.quantity,
-        tenantId: extUser?.TenantId?.objectId
+      const resAddon = await Parse.Cloud.run("buyaddonusers", {
+        users: amount.quantity
       });
       if (resAddon) {
         const _resAddon = JSON.parse(JSON.stringify(resAddon));
@@ -352,7 +343,7 @@ const AddUser = (props) => {
                         allowedUser < 2 ? "op-text-accent" : "op-text-primary"
                       } font-medium ml-1`}
                     >
-                      {allowedUser} of {planInfo.totalAllowedUser}
+                      {allowedUser} {t("of")} {planInfo.totalAllowedUser}
                     </span>
                   </p>
                   <div className="mb-3">
