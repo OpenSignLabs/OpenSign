@@ -2437,7 +2437,10 @@ export const handleRemoveWidgets = (
     };
   });
   setSignerPos(updatedSignerPos);
-  setIsRotate(false);
+  setIsRotate({
+    status: false,
+    degree: 0
+  });
 };
 //function to show warning when user rotate page and there are some already widgets on that page
 export const handleRotateWarning = (signerPos, pageNumber) => {

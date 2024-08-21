@@ -140,7 +140,10 @@ function PlaceHolderSign() {
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState("");
   const isHeader = useSelector((state) => state.showHeader);
   const [activeMailAdapter, setActiveMailAdapter] = useState("");
-  const [isRotate, setIsRotate] = useState(false);
+  const [isRotate, setIsRotate] = useState({
+    status: false,
+    degree: 0
+  });
   const [isAlreadyPlace, setIsAlreadyPlace] = useState({
     status: false,
     message: ""
@@ -1732,7 +1735,7 @@ function PlaceHolderSign() {
   const handleRotationFun = async (rotateDegree) => {
     const isRotate = handleRotateWarning(signerPos, pageNumber);
     if (isRotate) {
-      setIsRotate(true);
+      setIsRotate({ status: true, degree: rotateDegree });
     } else {
       const urlDetails = await rotatePdfPage(
         pdfDetails[0].URL,
@@ -1744,8 +1747,16 @@ function PlaceHolderSign() {
       setPdfRotatese64(urlDetails.base64);
     }
   };
-  const handleRemovePlaceholder = () => {
+  const handleRemovePlaceholder = async () => {
     handleRemoveWidgets(setSignerPos, signerPos, pageNumber, setIsRotate);
+    const urlDetails = await rotatePdfPage(
+      pdfDetails[0].URL,
+      isRotate.degree,
+      pageNumber - 1,
+      pdfRotateBase64
+    );
+    setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
+    setPdfRotatese64(urlDetails.base64);
   };
   return (
     <>
@@ -2247,7 +2258,7 @@ function PlaceHolderSign() {
           setFontColor={setFontColor}
         />
         <RotateAlert
-          isRotate={isRotate}
+          isRotate={isRotate.status}
           setIsRotate={setIsRotate}
           handleRemoveWidgets={handleRemovePlaceholder}
         />

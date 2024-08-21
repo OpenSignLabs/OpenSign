@@ -128,7 +128,10 @@ function SignYourSelf() {
   const isHeader = useSelector((state) => state.showHeader);
   const [scale, setScale] = useState(1);
   const [pdfRotateBase64, setPdfRotatese64] = useState("");
-  const [isRotate, setIsRotate] = useState(false);
+  const [isRotate, setIsRotate] = useState({
+    status: false,
+    degree: 0
+  });
   const divRef = useRef(null);
   const nodeRef = useRef(null);
   const [, drop] = useDrop({
@@ -1178,7 +1181,7 @@ function SignYourSelf() {
   const handleRotationFun = async (rotateDegree) => {
     const isPlaceholder = handleRotateWarning();
     if (isPlaceholder) {
-      setIsRotate(true);
+      setIsRotate({ status: true, degree: rotateDegree });
     } else {
       const urlDetails = await rotatePdfPage(
         pdfUrl || pdfDetails[0].URL,
@@ -1203,12 +1206,20 @@ function SignYourSelf() {
     }
   };
   //function to use remove widgets from current page when user want to rotate page
-  const handleRemoveWidgets = () => {
+  const handleRemoveWidgets = async () => {
     const updatePlaceholder = xyPostion.filter(
       (data) => data.pageNumber !== pageNumber
     );
+    const urlDetails = await rotatePdfPage(
+      pdfUrl || pdfDetails[0].URL,
+      isRotate.degree,
+      pageNumber - 1,
+      pdfRotateBase64
+    );
+    setPdfArrayBuffer && setPdfArrayBuffer(urlDetails.arrayBuffer);
+    setPdfRotatese64(urlDetails.base64);
     setXyPostion(updatePlaceholder);
-    setIsRotate(false);
+    setIsRotate({ status: false, degree: 0 });
   };
   return (
     <DndProvider backend={HTML5Backend}>
@@ -1490,7 +1501,7 @@ function SignYourSelf() {
         </div>
       </ModalUi>
       <RotateAlert
-        isRotate={isRotate}
+        isRotate={isRotate.status}
         setIsRotate={setIsRotate}
         handleRemoveWidgets={handleRemoveWidgets}
       />
