@@ -603,5 +603,8 @@
   "Select": "sélectionner",
   "Add-seats": "Ajouter des sièges",
   "format": "format",
-  "select-date-format": "Sélectionnez un format de date"
+  "select-date-format": "Sélectionnez un format de date",
+  "rotate-right": "Faire pivoter à droite",
+  "rotate-left": "Faire pivoter à gauche",
+  "rotate-alert-mssg" :"Tous les widgets de cette page seront perdus. Êtes-vous sûr de vouloir continuer ?"
 }

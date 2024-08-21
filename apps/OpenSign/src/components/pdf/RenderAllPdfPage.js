@@ -12,7 +12,8 @@ function RenderAllPdfPage({
   pageNumber,
   signerPos,
   signerObjectId,
-  containerWH
+  containerWH,
+  pdfRotateBase64
 }) {
   const { t } = useTranslation();
   const [signPageNumber, setSignPageNumber] = useState([]);
@@ -66,6 +67,7 @@ function RenderAllPdfPage({
       )
     );
   };
+  const pdfDataBase64 = `data:application/pdf;base64,${pdfRotateBase64}`;
   return (
     <div ref={pageContainer} className="hidden w-[20%] bg-base-100 md:block">
       <div className="mx-2 pr-2 pt-2 pb-1 text-[15px] text-base-content font-semibold border-b-[1px] border-base-300">
@@ -78,7 +80,7 @@ function RenderAllPdfPage({
         <Document
           loading={t("loading-doc")}
           onLoadSuccess={onDocumentLoad}
-          file={signPdfUrl}
+          file={(pdfRotateBase64 && pdfDataBase64) || signPdfUrl}
         >
           {Array.from(new Array(allPages), (el, index) => (
             <div

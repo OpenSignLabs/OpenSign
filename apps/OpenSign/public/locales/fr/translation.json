@@ -369,7 +369,8 @@
   "copy-type": {
     "All pages": "Toutes les pages",
     "All pages but last": "Toutes les pages sauf la dernière",
-    "All pages but first": "Toutes les pages sauf la première"
+    "All pages but first": "Toutes les pages sauf la première",
+    "Beside to widget": "À côté du widget"
   },
   "options": "Possibilités",
   "minimun-check": "Vérification minimale",
@@ -612,6 +613,8 @@
   "additional-quicksend":"Veuillez acheter le module complémentaire quick send",
   "quantityofquicksend": "Quantité de Quick send",
   "quotaerrquicksend": "Quota atteint, vous n'avez pas assez de crédits.",
-  "buycredits": "Acheter des crédits"
-
- }
+  "buycredits": "Acheter des crédits",
+  "rotate-right"  :"Faire pivoter à droite",
+  "rotate-left" :"Faire pivoter à gauche",
+  "rotate-alert-mssg" :"Tous les widgets de cette page seront perdus. Êtes-vous sûr de vouloir continuer ?"
+}
