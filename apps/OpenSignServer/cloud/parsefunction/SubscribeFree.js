@@ -29,6 +29,17 @@ export default async function SubscribeFree(request) {
         }
       } else if (subcripitions?.get('Next_billing_date') > new Date()) {
         return { status: 'success', result: 'already subscribed!' };
+      } else if (!subcripitions?.get('PlanCode')) {
+        try {
+          const updateSubscription = new Parse.Object('contracts_Subscriptions');
+          updateSubscription.id = subcripitions.id;
+          updateSubscription.set('PlanCode', 'freeplan');
+          await updateSubscription.save(null, { useMasterKey: true });
+          return { status: 'success', result: 'subscribed!' };
+        } catch (err) {
+          console.log('err ', err);
+          return { status: 'error', result: err.message };
+        }
       } else {
         try {
           const createSubscription = new Parse.Object('contracts_Subscriptions');

@@ -336,16 +336,18 @@ const AddUser = (props) => {
             <div className="w-full mx-auto">
               {!isEnableSubscription || allowedUser > 0 ? (
                 <form onSubmit={handleSubmit}>
-                  <p className="flex justify-center mb-1">
-                    {t("remaing-users")}{" "}
-                    <span
-                      className={`${
-                        allowedUser < 2 ? "op-text-accent" : "op-text-primary"
-                      } font-medium ml-1`}
-                    >
-                      {allowedUser} {t("of")} {planInfo.totalAllowedUser}
-                    </span>
-                  </p>
+                  {isEnableSubscription && (
+                    <p className="flex justify-center mb-1">
+                      {t("remaing-users")}{" "}
+                      <span
+                        className={`${
+                          allowedUser < 2 ? "op-text-accent" : "op-text-primary"
+                        } font-medium ml-1`}
+                      >
+                        {allowedUser} {t("of")} {planInfo.totalAllowedUser}
+                      </span>
+                    </p>
+                  )}
                   <div className="mb-3">
                     <label
                       htmlFor="name"

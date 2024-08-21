@@ -22,14 +22,7 @@ export default async function AllowedUsers(request) {
       const resSub = await subscription.first({ useMasterKey: true });
       if (resSub) {
         const _resSub = JSON.parse(JSON.stringify(resSub));
-        const userCls = new Parse.Query('contracts_Users');
-        userCls.equalTo('OrganizationId', {
-          __type: 'Pointer',
-          className: 'contracts_Organizations',
-          objectId: _resSub.ExtUserPtr.OrganizationId.objectId,
-        });
-        userCls.notEqualTo('IsDisabled', true);
-        const count = await userCls.count({ useMasterKey: true });
+        const count = _resSub?.UsersCount || 0;
         if (count > 0) {
           const allowedUser = resSub.get('AllowedUsers') || 0;
           const remainUsers = allowedUser - count;

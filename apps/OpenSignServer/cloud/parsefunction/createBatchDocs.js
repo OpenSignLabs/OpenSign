@@ -3,7 +3,7 @@ import { cloudServerUrl } from '../../Utils.js';
 
 const serverUrl = cloudServerUrl; //process.env.SERVER_URL;
 const appId = process.env.APP_ID;
-async function deductcount(tenantId, docs) {
+async function deductcount(tenantId, docs, extUserId) {
   try {
     const subscription = new Parse.Query('contracts_Subscriptions');
     subscription.equalTo('TenantId', {
@@ -28,6 +28,11 @@ async function deductcount(tenantId, docs) {
       }
       const resSubcription = await subscriptionCls.save(null, { useMasterKey: true });
     }
+
+    const extCls = new Parse.Object('contracts_Users');
+    extCls.id = extUserId;
+    extCls.increment('DocumentCount', docs);
+    const resExt = await extCls.save(null, { useMasterKey: true });
   } catch (err) {
     console.log('Err in deduct in quick send', err);
   }
@@ -143,7 +148,6 @@ export default async function createBatchDocs(request) {
       const resExt = await extCls.first({ useMasterKey: true });
       if (resExt) {
         const _resExt = JSON.parse(JSON.stringify(resExt));
-        console.log('here');
         try {
           const requests = Documents.map(x => {
             const Signers = x.Signers;
@@ -216,7 +220,7 @@ export default async function createBatchDocs(request) {
               objectId: response.data[i]?.success?.objectId,
               createdAt: response.data[i]?.success?.createdAt,
             }));
-            deductcount(_resExt.TenantId.objectId, response.data.length);
+            deductcount(_resExt.TenantId.objectId, response.data.length, resExt.id);
             for (let i = 0; i < updateDocuments.length; i++) {
               sendMail(updateDocuments[i], sessionToken);
             }
