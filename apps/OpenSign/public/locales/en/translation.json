@@ -369,7 +369,8 @@
   "copy-type": {
     "All pages": "All pages",
     "All pages but last": "All pages but last",
-    "All pages but first": "All pages but first"
+    "All pages but first": "All pages but first",
+    "Beside to widget":"Beside to widget"
   },
   "options": "Options",
   "minimun-check": "Minimun check",

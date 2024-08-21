@@ -368,7 +368,8 @@
   "copy-type": {
     "All pages": "Toutes les pages",
     "All pages but last": "Toutes les pages sauf la dernière",
-    "All pages but first": "Toutes les pages sauf la première"
+    "All pages but first": "Toutes les pages sauf la première",
+    "Beside to widget": "À côté du widget"
   },
   "options": "Possibilités",
   "minimun-check": "Vérification minimale",
